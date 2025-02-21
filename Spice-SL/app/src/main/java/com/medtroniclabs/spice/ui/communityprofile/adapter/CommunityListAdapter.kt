@@ -4,16 +4,16 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.data.community.CommunityProfile
+import com.medtroniclabs.spice.data.community.CommunityProfileDetail
 import com.medtroniclabs.spice.databinding.ItemCommunityProfileBinding
 
 class CommunityListAdapter(
-    private val selectedItem: (CommunityProfile) -> Unit
+    private val selectedItem: (CommunityProfileDetail) -> Unit
 ) : RecyclerView.Adapter<CommunityListAdapter.CommunityViewHolder>() {
 
-    private val communityList = mutableListOf<CommunityProfile>()
+    private val communityList = mutableListOf<CommunityProfileDetail>()
 
-    fun updateList(newCommunityList: List<CommunityProfile>) {
+    fun updateList(newCommunityList: List<CommunityProfileDetail>) {
         val oldCount = communityList.size
         communityList.clear()
         communityList.addAll(newCommunityList)
@@ -23,7 +23,7 @@ class CommunityListAdapter(
 
     inner class CommunityViewHolder(private val binding: ItemCommunityProfileBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(profile: CommunityProfile) {
+        fun bind(profile: CommunityProfileDetail) {
             binding.tvCommunityName.text = profile.villageName
             binding.tvNoOfHouseholdCount.text = " ".plus(
                 binding.root.context.getString(

@@ -9,7 +9,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.setTextChangeListener
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.community.CommunityProfile
+import com.medtroniclabs.spice.data.community.CommunityProfileDetail
 import com.medtroniclabs.spice.databinding.FragmentCommunityProfileSearchBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -22,7 +22,6 @@ class CommunityProfileSearchFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentCommunityProfileSearchBinding
     private val communityProfileViewModel: CommunityProfileViewModel by activityViewModels()
     private lateinit var communityListAdapter: CommunityListAdapter
-    private var selectedCommunity: CommunityProfile? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,6 +58,8 @@ class CommunityProfileSearchFragment : BaseFragment(), View.OnClickListener {
 
     private fun initViews() {
         hideHomeIcon()
+        communityProfileViewModel.setSearchFilter("")
+        communityProfileViewModel.reinitSaveLiveData()
         binding.llExactSearch.etSearchTerm.setHint(R.string.community_name)
         binding.llExactSearch.etSearchTerm.setCompoundDrawablesWithIntrinsicBounds(
             ContextCompat.getDrawable(
@@ -70,8 +71,8 @@ class CommunityProfileSearchFragment : BaseFragment(), View.OnClickListener {
             null   // Bottom drawable
         )
         communityListAdapter = CommunityListAdapter { selectedCommunity ->
-            this.selectedCommunity = selectedCommunity
-            communityProfileViewModel.isCommunityExist(selectedCommunity.villageId)
+            val isExist = selectedCommunity.isCommunityProfileDetailAvailable?.let {  it > 0 } ?: false
+            loadFormOrDetailFragment(selectedCommunity, isExist)
         }
         binding.rvCommunities.adapter = communityListAdapter
         binding.llExactSearch.etSearchTerm.setText(communityProfileViewModel.getSearchFilter())
@@ -82,23 +83,19 @@ class CommunityProfileSearchFragment : BaseFragment(), View.OnClickListener {
             binding.tvCommunityCount.text = setLabel(it.size)
             communityListAdapter.updateList(it)
         }
+    }
 
-        communityProfileViewModel.isCommunityExist.observe(viewLifecycleOwner) { exist ->
-            selectedCommunity?.let { community ->
-                val bundle = Bundle().apply {
-                    putLong(DefinedParams.COMMUNITY_ID, community.villageId)
-                    putString(DefinedParams.COMMUNITY_NAME, community.villageName)
-                    exist?.let {
-                        putBoolean(DefinedParams.COMMUNITY_REGISTERED, it)
-                    }
+    private fun loadFormOrDetailFragment(community: CommunityProfileDetail, isExist: Boolean) {
+        val bundle = Bundle().apply {
+            putLong(DefinedParams.COMMUNITY_ID, community.villageId)
+            putString(DefinedParams.COMMUNITY_NAME, community.villageName)
+            putBoolean(DefinedParams.COMMUNITY_REGISTERED, isExist)
+        }
 
-                }
-                if (exist) {
-                    communityProfileViewModel.updateCurrentFragment(3, bundle)
-                } else {
-                    communityProfileViewModel.updateCurrentFragment(2, bundle)
-                }
-            }
+        if (isExist) {
+            communityProfileViewModel.updateCurrentFragment(3, bundle)
+        } else {
+            communityProfileViewModel.updateCurrentFragment(2, bundle)
         }
     }
 

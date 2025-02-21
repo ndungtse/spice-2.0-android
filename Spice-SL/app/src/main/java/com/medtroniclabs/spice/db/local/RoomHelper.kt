@@ -12,7 +12,7 @@ import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.ShortageReasonEntity
 import com.medtroniclabs.spice.data.UnitMetricEntity
 import com.medtroniclabs.spice.data.community.CommunityPopulationStatistics
-import com.medtroniclabs.spice.data.community.CommunityProfile
+import com.medtroniclabs.spice.data.community.CommunityProfileDetail
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
@@ -27,7 +27,7 @@ import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
-import com.medtroniclabs.spice.db.entity.CommunityDetailsEntity
+import com.medtroniclabs.spice.db.entity.CommunityProfile
 import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
@@ -185,6 +185,8 @@ interface RoomHelper {
 
     suspend fun deleteAllCallHistory()
 
+    suspend fun deleteAllCommunityProfiles()
+
     fun getFollowUpPatientListLiveData(
         type: String,
         search: String? = null,
@@ -216,6 +218,8 @@ interface RoomHelper {
 
     suspend fun getUnSyncedFollowUpCount(): Int
 
+    suspend fun getUnSyncedCommunityProfileCount(): Int
+
     fun getExaminationsComplaintByTypeLiveData(category: String): LiveData<List<MedicalReviewMetaItems>>
 
     fun getHouseholdCardDetailLiveData(id: Long): LiveData<HouseholdCardDetail>
@@ -243,6 +247,8 @@ interface RoomHelper {
     suspend fun changeFollowUpCallStatus(idList: List<Long>)
 
     suspend fun changeHHMLinkCallStatus(idList: List<String>, syncStatus: String)
+
+    suspend fun changeCommunityProfileStatus(idList: List<Long>, syncStatus: String)
 
     suspend fun changeAssignHHMStatus(idList: List<String>, syncStatus: String)
 
@@ -451,21 +457,25 @@ interface RoomHelper {
 
     suspend fun getHouseholdHeadDob(householdId: Long): String
 
-    fun getFilterVillagesWithHouseholdsCount(searchInput: String):LiveData<List<CommunityProfile>>
+    fun getFilterVillagesWithHouseholdsCount(searchInput: String):LiveData<List<CommunityProfileDetail>>
 
     suspend fun getCommunityStatistics(villageId: Long): CommunityPopulationStatistics
 
-    suspend fun insertCommunityDetails(communityDetailsEntity: CommunityDetailsEntity)
+    suspend fun insertCommunityDetails(communityProfile: CommunityProfile): Long
 
-    suspend fun getCommunityDetails(id: Long): CommunityDetailsEntity?
+    suspend fun getCommunityDetails(id: Long): CommunityProfile?
 
-    suspend fun updateCommunityDetails(communityDetailsEntity: CommunityDetailsEntity)
+    suspend fun getCommunityProfileId(villageId: Long): Long?
 
-    suspend fun isCommunityExist(villageId:Long):Int
+    suspend fun updateCommunityDetails(communityProfile: CommunityProfile)
 
     suspend fun updateUnSynStatus(villageId:Long,synStatus:String)
 
     suspend fun getHealthFacilityBasedOnVillageId(villageId: Long): List<HealthFacilityEntity>
 
     suspend fun getAssessment(assessmentId: Long): AssessmentEntity
+
+    suspend fun getUnSyncedCommunityDetails(): List<CommunityProfile>
+
+    suspend fun insertOrUpdateFromBE(communityProfile: CommunityProfile): Long
 }

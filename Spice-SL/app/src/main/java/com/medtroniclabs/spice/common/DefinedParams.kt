@@ -90,6 +90,7 @@ object DefinedParams {
     const val Frequency = "frequency"
     const val Description = "description"
     const val DisplayOrder = "displayOrder"
+    const val VillageId = "villageId"
 
     const val SIGN_DIR = "sign"
     const val SIGN_SUFFIX = "_signature"
@@ -99,6 +100,7 @@ object DefinedParams {
     const val Recovered = "Recovered"
     const val PatientReference = "patientReference"
     const val MemberReference = "memberReference"
+    const val ReferenceId = "referenceId"
     const val ProgramId = "programId"
     const val valueColor = "color"
     const val Above5MedicalReview = "Above5MedicalReview"

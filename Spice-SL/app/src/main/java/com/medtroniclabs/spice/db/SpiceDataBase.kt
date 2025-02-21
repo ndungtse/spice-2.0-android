@@ -43,7 +43,7 @@ import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
-import com.medtroniclabs.spice.db.entity.CommunityDetailsEntity
+import com.medtroniclabs.spice.db.entity.CommunityProfile
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.DistrictEntity
@@ -84,7 +84,8 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         LinkHouseholdMember::class, CallHistory::class, ProgramEntity::class, CulturesEntity::class, ConsentEntity::class,
         MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class,
         RiskFactorEntity::class, LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, UnitMetricEntity::class,
-        DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class, DosageDurationEntity::class, NCDFollowUp::class, LinkedVillageEntity::class, NCDCallDetails::class, NCDPatientDetailsEntity::class,CommunityDetailsEntity::class],
+        DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class, DosageDurationEntity::class, NCDFollowUp::class,
+        LinkedVillageEntity::class, NCDCallDetails::class, NCDPatientDetailsEntity::class,CommunityProfile::class],
     version = 4
 )
 @TypeConverters(OfflineStatusTypeConverter::class)

@@ -10,6 +10,7 @@ object OfflineConstant {
     const val ASSESSMENTS = "assessments"
     const val FOLLOWUPS = "followUps"
     const val HOUSEHOLD_MEMBER_LINK = "householdMemberLinks"
+    const val COMMUNITY_PROFILES = "communityProfiles"
     const val APP_VERSION_NAME = "appVersionName"
     const val APP_VERSION_CODE = "appVersionCode"
     const val DEVICE_ID = "deviceId"

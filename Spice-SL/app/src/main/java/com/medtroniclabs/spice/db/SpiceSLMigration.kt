@@ -459,16 +459,23 @@ object SpiceSLMigration {
     val MIGRATION_3_4 = object : Migration(3, 4){
         override fun migrate(database: SupportSQLiteDatabase) {
             // Create newly added table CommunityProfileEntity
-            database.execSQL("""
-                CREATE TABLE IF NOT EXISTS CommunityProfileEntity (
-                    id INTEGER PRIMARY KEY villageId NOT NULL,
-                    communityDescription TEXT NOT NULL,
-                    registeredDate TEXT NOT NULL,
-                    payload TEXT NOT NULL,
-                    latitude REAL NOT NULL,
-                    longitude REAL NOT NULL
+            database.execSQL(
+                """CREATE TABLE IF NOT EXISTS CommunityProfile (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                villageId INTEGER NOT NULL,
+                communityDescription TEXT,
+                registeredDate TEXT,
+                payload TEXT,
+                latitude REAL NOT NULL DEFAULT 0.0,
+                longitude REAL NOT NULL DEFAULT 0.0,
+                fhir_id TEXT,
+                sync_status INTEGER NOT NULL DEFAULT 0,
+                created_by INTEGER NOT NULL DEFAULT 0,
+                updated_at INTEGER NOT NULL DEFAULT 0,
+                created_at INTEGER NOT NULL DEFAULT 0
                 )
-                """.trimIndent())
+                """.trimIndent()
+             )
             database.execSQL("ALTER TABLE HealthFacilityEntity ADD COLUMN phoneNumber TEXT DEFAULT NULL")
             database.execSQL("ALTER TABLE VillageEntity ADD COLUMN healthFacilityId INTEGER DEFAULT NULL")
             database.execSQL("ALTER TABLE AssessmentEntity ADD COLUMN callResult TEXT DEFAULT NULL")

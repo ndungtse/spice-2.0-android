@@ -29,4 +29,8 @@ object CommunityDetails {
     const val True = "true"
     const val False = "false"
 
+    const val WaterAndSanitationFacilities = "waterAndSanitationFacilities"
+    const val Infrastructure = "infrastructure"
+    const val EmergencyManagementPlan = "emergencyManagementPlan"
+
 }

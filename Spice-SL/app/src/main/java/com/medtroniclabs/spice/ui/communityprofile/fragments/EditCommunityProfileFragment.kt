@@ -1,9 +1,7 @@
 package com.medtroniclabs.spice.ui.communityprofile.fragments
 
 import android.app.DatePickerDialog
-import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,40 +10,36 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.DividerItemDecoration
+import com.google.gson.internal.LinkedTreeMap
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_ddMMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_ID
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_REGISTERED
-import com.medtroniclabs.spice.common.DefinedParams.HouseholdHead
-import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
-import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.community.CommunityPopulation
-import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentEditCommunityBinding
-import com.medtroniclabs.spice.db.entity.CommunityDetailsEntity
+import com.medtroniclabs.spice.db.entity.CommunityProfile
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
+import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
-import com.medtroniclabs.spice.formgeneration.utility.MultiSelectSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.AccessRoadToPhu
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.Church
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.ChwHouseInCommunity
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.CourtBarrie
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.DescribeLocation
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.EmergencyContactPhu
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.EmergencyManagementPlan
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.EmergencyTransportAvailable
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.False
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.Infrastructure
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.JuniorSecondarySchool
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.Market
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.MarketDays
@@ -65,19 +59,12 @@ import com.medtroniclabs.spice.mappingkey.CommunityDetails.PrimarySchool
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.SelectedNetwork
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.SeniorSecondarySchool
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.True
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.householdName
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.isOwnedAnImprovedLatrine
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.no
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.WaterAndSanitationFacilities
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.MenuConstants
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.communityprofile.adapter.CommunityPopulationAdapter
 import com.medtroniclabs.spice.ui.communityprofile.viewmodel.CommunityProfileViewModel
-import timber.log.Timber
-import kotlin.math.truncate
 
 class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
@@ -103,7 +90,6 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         super.onViewCreated(view, savedInstanceState)
         initViews()
         setListener()
-        communityProfileViewModel.getFormData(DefinedParams.COMMUNITY_PROFILE)
         addObservers()
     }
 
@@ -120,55 +106,13 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
 
                 ResourceState.SUCCESS -> {
                     hideProgress()
-                    showErrorDialogue(
-                        title = getString(R.string.alert),
-                        message = getString(R.string.community_details_added_successfully),
-                        positiveButtonName = getString(R.string.ok),
-                    ) {
-                        if (it) {
-                            communityProfileViewModel.updateCurrentFragment(1)
-                            communityProfileViewModel.saveCommunityDetailsLiveDataLocal.postValue(
-                                Resource(ResourceState.ERROR)
-                            )
-                        }
-                    }
-
+                    communityProfileViewModel.updateCurrentFragment(3)
                 }
 
                 ResourceState.ERROR -> {
                     hideProgress()
                 }
             }
-        }
-
-        communityProfileViewModel.updateCommunityDetailsLiveDataLocal.observe(viewLifecycleOwner) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    showProgress()
-                }
-
-                ResourceState.SUCCESS -> {
-                    hideProgress()
-                    showErrorDialogue(
-                        title = getString(R.string.alert),
-                        message = getString(R.string.community_details_updated_successfully),
-                        positiveButtonName = getString(R.string.ok),
-                    ) {
-                        if (it) {
-                            communityProfileViewModel.updateCurrentFragment(1)
-                            communityProfileViewModel.updateCommunityDetailsLiveDataLocal.postValue(
-                                Resource(ResourceState.ERROR)
-                            )
-                            //communityProfileViewModel.updateUnSynStatus(arguments?.getLong(DefinedParams.COMMUNITY_ID)!!)
-                        }
-                    }
-                }
-
-                ResourceState.ERROR -> {
-                    hideProgress()
-                }
-            }
-
         }
 
         communityProfileViewModel.getCommunityDetailsLiveDataLocal.observe(viewLifecycleOwner) { resourceState ->
@@ -361,6 +305,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
     }
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+
         //Calling Local DB
         val regDateUtc = DateUtils.convertStringToDate(
             binding.etRegisteredDate.text.toString(),
@@ -368,40 +313,48 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         )?.let { regDate ->
             convertDateToStringWithUTC(regDate, DateUtils.DATE_ddMMyyyy)
         }
-        val payload = StringConverter.convertGivenMapToString(resultMap)
-        val villageId = arguments?.getLong(DefinedParams.COMMUNITY_ID)
+        val payload = StringConverter.convertGivenMapToString(getCommunityProfilePayload(resultMap, serverData))
+        val villageId = arguments?.getLong(COMMUNITY_ID)
         if (regDateUtc != null && payload != null && villageId != null) {
-            arguments?.getBoolean(COMMUNITY_REGISTERED)?.let {
-                if (it) {
-                    communityProfileViewModel.updateCommunityDetailsLocal(
-                        villageId = villageId,
-                        description = binding.etCommunityBoundaryDesc.text.toString(),
-                        regDate = regDateUtc,
-                        payload = payload
-                    )
-                } else {
-                    communityProfileViewModel.insertCommunityDetailsLocal(
-                        villageId = villageId,
-                        description = binding.etCommunityBoundaryDesc.text.toString(),
-                        regDate = regDateUtc,
-                        payload = payload
-                    )
+            communityProfileViewModel.insertOrUpdateCommunityProfile(
+                villageId = villageId,
+                description = binding.etCommunityBoundaryDesc.text.toString(),
+                regDate = regDateUtc,
+                payload = payload
+            )
+        }
+    }
+
+    private fun getCommunityProfilePayload(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?): HashMap<String, Any>? {
+        resultMap?.let { details ->
+            serverData?.let { form ->
+                val result = FormResultComposer().groupValues(
+                    context = requireContext(),
+                    serverData = form,
+                    resultMap = details
+                )
+
+                val requestMap = result.second
+                if (requestMap.containsKey(Infrastructure)) {
+                    val infrastructure = requestMap[Infrastructure] as HashMap<Any, Any>
+                    if (infrastructure.containsKey(MarketDays)) {
+                        val signsList = mutableListOf<String>()
+                        val list = infrastructure[MarketDays] as List<*>
+                        list.forEach { it ->
+                            if (it is HashMap<*, *>) {
+                                signsList.add(it[DefinedParams.Value] as String)
+                            }
+                        }
+                        infrastructure[MarketDays] = signsList
+                    }
                 }
+
+                return requestMap
+                //return Gson().toJsonTree(requestMap)
             }
         }
 
-        //Calling API
-        /*resultMap.apply {
-            this?.put(DefinedParams.VILLAGE_ID,arguments?.getLong(DefinedParams.COMMUNITY_ID).toString())
-            this?.put(DefinedParams.COMMUNITY_NAME,binding.etCommunityName.text.toString())
-            this?.put(DefinedParams.COMMUNITY_DESC,binding.etCommunityBoundaryDesc.text.toString())
-            regDateUtc?.let { utcDate ->
-                this?.put(DefinedParams.COMMUNITY_REGISTERED_DATE,utcDate)
-            }
-        }
-        resultMap?.let {
-            communityProfileViewModel.updateCommunityDetails(it)
-        }*/
+        return null;
     }
 
     override fun onRenderingComplete() {
@@ -485,6 +438,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
                 date = yearMonthDate,
+                disableFutureDate = true,
                 cancelCallBack = { datePickerDialog = null }
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
@@ -501,73 +455,50 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         }
     }
 
-    private fun autoPopulateFormField(details: CommunityDetailsEntity) {
+    private fun autoPopulateFormField(details: CommunityProfile) {
         binding.etCommunityBoundaryDesc.setText(details.communityDescription)
         binding.etRegisteredDate.text = DateUtils.convertUTCString(
             details.registeredDate,
             DateUtils.DATE_ddMMyyyy
         )
         details.payload?.let {
-            val payload = StringConverter.stringToMap(it)
-            formGenerator.getViewByTag(NumberOfImprovedWaterSources)?.let { view ->
-                formGenerator.setValueForView(payload[NumberOfImprovedWaterSources], view)
+            val dataMap = StringConverter.stringToMap(it)
+            //Water and sanitation
+            val waterAndSanitation = dataMap[WaterAndSanitationFacilities] as LinkedTreeMap<*, *>
+            waterAndSanitation.forEach { (key, value) ->
+                formGenerator.getViewByTag(key)?.let { view ->
+                    formGenerator.setValueForView(value, view)
+                }
             }
-            formGenerator.getViewByTag(NumberOfNonImprovedWaterSources)?.let { view ->
-                formGenerator.setValueForView(payload[NumberOfNonImprovedWaterSources], view)
+
+            //Infrastructure
+            val infrastructure = dataMap[Infrastructure] as LinkedTreeMap<*, *>
+            infrastructure.forEach { (key, value) ->
+                if (key.toString() == SelectedNetwork || key.toString() == DescribeLocation) {
+                    formGenerator.getViewByTag(key)?.let { view ->
+                        formGenerator.setValueForView(value, view)
+                    }
+                } else {
+                    setSingleSelection(value, key.toString())
+                }
             }
-            formGenerator.getViewByTag(NumberOfImprovedToilets)?.let { view ->
-                formGenerator.setValueForView(payload[NumberOfImprovedToilets], view)
+
+            //EmergencyManagementPlan
+            val emergency = dataMap[EmergencyManagementPlan] as LinkedTreeMap<*, *>
+            emergency.forEach { (key, value) ->
+                if (key.toString() == AccessRoadToPhu) {
+                    setSingleSelection(value, key.toString())
+                } else {
+                    formGenerator.getViewByTag(key)?.let { view ->
+                        formGenerator.setValueForView(value, view)
+                    }
+                }
             }
-            formGenerator.getViewByTag(NumberOfNonImprovedToilets)?.let { view ->
-                formGenerator.setValueForView(payload[NumberOfNonImprovedToilets], view)
-            }
-            formGenerator.getViewByTag(NumberOfHandPumpsNotFunctional)?.let { view ->
-                formGenerator.setValueForView(payload[NumberOfHandPumpsNotFunctional], view)
-            }
-            setSingleSelection(payload[PrimarySchool], PrimarySchool)
-            setSingleSelection(payload[JuniorSecondarySchool], JuniorSecondarySchool)
-            setSingleSelection(payload[SeniorSecondarySchool], SeniorSecondarySchool)
-            setSingleSelection(payload[Market], Market)
-            setSingleSelection(payload[CourtBarrie], CourtBarrie)
-            setSingleSelection(payload[Church], Church)
-            setSingleSelection(payload[Mosque], Mosque)
-            setSingleSelection(payload[MobileNetworkCoverage], MobileNetworkCoverage)
-            formGenerator.getViewByTag(SelectedNetwork)?.let { view ->
-                formGenerator.setValueForView(payload[SelectedNetwork], view)
-            }
+
             /*formGenerator.getViewByTag(MarketDays)?.let { view ->
                 payload[MarketDays] as? ArrayList<String>
                 formGenerator.setValueForView(,view)
             }*/
-            setSingleSelection(payload[ChwHouseInCommunity], ChwHouseInCommunity)
-            formGenerator.getViewByTag(DescribeLocation)?.let { view ->
-                formGenerator.setValueForView(payload[DescribeLocation], view)
-            }
-            formGenerator.getViewByTag(NearestPhu)?.let { view ->
-                formGenerator.setValueForView(payload[NearestPhu], view)
-            }
-            formGenerator.getViewByTag(EmergencyContactPhu)?.let { view ->
-                formGenerator.setValueForView(payload[EmergencyContactPhu], view)
-            }
-            setSingleSelection(payload[AccessRoadToPhu], AccessRoadToPhu)
-            formGenerator.getViewByTag(EmergencyTransportAvailable)?.let { view ->
-                formGenerator.setValueForView(payload[EmergencyTransportAvailable], view)
-            }
-            formGenerator.getViewByTag(NameOfEmergencyTransportContact)?.let { view ->
-                formGenerator.setValueForView(payload[NameOfEmergencyTransportContact], view)
-            }
-            formGenerator.getViewByTag(MobileNumberOfEmergencyTransportContact)?.let { view ->
-                formGenerator.setValueForView(
-                    payload[MobileNumberOfEmergencyTransportContact],
-                    view
-                )
-            }
-            formGenerator.getViewByTag(NameOfAmbulanceDriver)?.let { view ->
-                formGenerator.setValueForView(payload[NameOfAmbulanceDriver], view)
-            }
-            formGenerator.getViewByTag(MobileNumberOfAmbulanceDriver)?.let { view ->
-                formGenerator.setValueForView(payload[MobileNumberOfAmbulanceDriver], view)
-            }
         }
     }
 

@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.landing.OfflineSyncEntityDetail
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.AssessmentRepository
+import com.medtroniclabs.spice.repo.CommunityProfileRepository
 import com.medtroniclabs.spice.repo.FollowUpRepository
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
@@ -32,6 +33,7 @@ class OfflineSyncViewModel @Inject constructor(
     private val assessmentRepository: AssessmentRepository,
     private val followUpRepository: FollowUpRepository,
     private val householdMemberRepository: HouseholdMemberRepository,
+    private val communityProfileRepository: CommunityProfileRepository,
     private val offlineSyncRepository: OfflineSyncRepository,
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher
 ) :  BaseViewModel(dispatcherIO) {
@@ -40,7 +42,8 @@ class OfflineSyncViewModel @Inject constructor(
         OfflineSyncEntityDetail("Households", 0),
         OfflineSyncEntityDetail("Household Member", 0),
         OfflineSyncEntityDetail("Assessments", 0),
-        OfflineSyncEntityDetail("Follow-Up", 0)
+        OfflineSyncEntityDetail("Follow-Up", 0),
+        OfflineSyncEntityDetail("Community Profile", 0)
     )
 
     @Inject
@@ -100,6 +103,7 @@ class OfflineSyncViewModel @Inject constructor(
             updateSyncedCount(1, houseHoldRepository.getUnSyncedHouseholdMemberCount())
             updateSyncedCount(2, assessmentRepository.getUnSyncedAssessmentCount())
             updateSyncedCount(3, followUpRepository.getUnSyncedFollowUpCount())
+            updateSyncedCount(4, communityProfileRepository.getUnSyncedCommunityProfileCount())
         }
     }
 

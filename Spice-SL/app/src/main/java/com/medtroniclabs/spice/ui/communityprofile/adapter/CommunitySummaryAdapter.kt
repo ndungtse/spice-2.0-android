@@ -29,7 +29,7 @@ class CommunitySummaryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() 
         communitySummaryList.clear()
         communitySummaryList.addAll(list)
         notifyItemRangeRemoved(0, oldCount)
-        notifyItemRangeInserted(0, list.size)
+        notifyItemRangeChanged(0, list.size)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -83,6 +83,7 @@ class CommunitySummaryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() 
     class EmergencyViewHolder(val binding: ItemCommunityProfileEmergencyBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: CommunitySummaryListItem.EmergencyItem) {
+            binding.emergencyParent.removeAllViews()
             binding.tvCHCName.text = item.chcName
             item.valuesMap?.iterator()?.forEach {
                 val subView = ItemCommunityProfileEmergencyChildBinding.inflate(

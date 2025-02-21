@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.DialogMissedVaccinationBinding
-import com.medtroniclabs.spice.databinding.DialogUpdateVaccinationStatusBinding
 import com.medtroniclabs.spice.model.medicalreview.VaccinationDetail
 import com.medtroniclabs.spice.ui.BaseDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.epi.adapter.MissedVaccinationAdapter
@@ -49,6 +48,10 @@ class MissedImmunisationDialogFragment : BaseDialogFragment() {
         list.add(VaccinationDetail(type = "Week", vaccineName = "", scheduledDate = "", doseClosureWeeks = "", displayOrder = 0))
         list.addAll(viewModel.changesList)
         binding.rvVaccinationList.adapter = MissedVaccinationAdapter(list)
+
+        val missedItems = viewModel.changesList.filter { it.vaccinatedDate == null }.map { it.vaccineName }
+        binding.tvNoOfMissedVaccine.text = getString(R.string.missed_vaccination_count, missedItems.size)
+        binding.labelMissedVaccinationTitle.text = getString(R.string.reason_for_missed_vaccination, missedItems.joinToString(", "))
     }
 
     private fun clickListener() {

@@ -41,6 +41,7 @@ class CommunityProfileActivity : BaseActivity() {
     }
 
     private fun initView() {
+        communityViewModel.getFormData(DefinedParams.COMMUNITY_PROFILE)
         communityViewModel.updateCurrentFragment(1)
     }
 

@@ -3,8 +3,8 @@ package com.medtroniclabs.spice.db.local
 import androidx.lifecycle.LiveData
 import androidx.room.Transaction
 import androidx.sqlite.db.SimpleSQLiteQuery
-import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.CulturesEntity
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.DosageFrequency
@@ -16,7 +16,7 @@ import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.ShortageReasonEntity
 import com.medtroniclabs.spice.data.UnitMetricEntity
 import com.medtroniclabs.spice.data.community.CommunityPopulationStatistics
-import com.medtroniclabs.spice.data.community.CommunityProfile
+import com.medtroniclabs.spice.data.community.CommunityProfileDetail
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
@@ -50,7 +50,7 @@ import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
-import com.medtroniclabs.spice.db.entity.CommunityDetailsEntity
+import com.medtroniclabs.spice.db.entity.CommunityProfile
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.DistrictEntity
@@ -496,6 +496,10 @@ class RoomHelperImpl @Inject constructor(
         callHistoryDao.deleteAllCallHistory()
     }
 
+    override suspend fun deleteAllCommunityProfiles() {
+        communityDAO.deleteAllCommunityProfiles()
+    }
+
     override fun getFollowUpPatientListLiveData(
         type: String,
         search: String?,
@@ -573,6 +577,10 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getUnSyncedFollowUpCount(): Int {
         return followUpDao.getUnSyncedCount()
+    }
+
+    override suspend fun getUnSyncedCommunityProfileCount(): Int {
+        return communityDAO.getUnSyncedCount()
     }
 
     override suspend fun deleteAllAssessments() {
@@ -745,6 +753,10 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun changeHHMLinkCallStatus(idList: List<String>, syncStatus: String) {
         callHistoryDao.updateInProgress(idList, syncStatus)
+    }
+
+    override suspend fun changeCommunityProfileStatus(idList: List<Long>, syncStatus: String) {
+        communityDAO.updateInStatus(idList, syncStatus)
     }
 
     override suspend fun changeAssignHHMStatus(idList: List<String>, syncStatus: String) {
@@ -1198,7 +1210,7 @@ class RoomHelperImpl @Inject constructor(
        return memberDAO.getHouseholdHeadDob(householdId)
     }
 
-    override fun getFilterVillagesWithHouseholdsCount(searchInput: String): LiveData<List<CommunityProfile>> {
+    override fun getFilterVillagesWithHouseholdsCount(searchInput: String): LiveData<List<CommunityProfileDetail>> {
         return metaDataDAO.filterCommunityProfile(searchInput)
     }
 
@@ -1206,20 +1218,20 @@ class RoomHelperImpl @Inject constructor(
         return metaDataDAO.getCommunityPopulationStatistics(villageId)
     }
 
-    override suspend fun insertCommunityDetails(communityDetailsEntity: CommunityDetailsEntity) {
-        return communityDAO.insertCommunity(communityDetailsEntity)
+    override suspend fun insertCommunityDetails(communityProfile: CommunityProfile): Long {
+        return communityDAO.insertCommunity(communityProfile)
     }
 
-    override suspend fun getCommunityDetails(id: Long): CommunityDetailsEntity? {
+    override suspend fun getCommunityDetails(id: Long): CommunityProfile? {
         return communityDAO.getCommunityDetailsById(id)
     }
 
-    override suspend fun updateCommunityDetails(communityDetailsEntity: CommunityDetailsEntity){
-        return communityDAO.updateCommunity(communityDetailsEntity)
+    override suspend fun getCommunityProfileId(villageId: Long): Long? {
+        return communityDAO.getCommunityProfileId(villageId)
     }
 
-    override suspend fun isCommunityExist(villageId: Long): Int {
-       return communityDAO.isCommunityExists(villageId)
+    override suspend fun updateCommunityDetails(communityProfile: CommunityProfile){
+        return communityDAO.updateCommunity(communityProfile)
     }
 
     override suspend fun updateUnSynStatus(villageId: Long, synStatus: String) {
@@ -1232,5 +1244,13 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getAssessment(assessmentId: Long): AssessmentEntity {
         return assessmentDAO.getAssessment(assessmentId)
+    }
+
+    override suspend fun getUnSyncedCommunityDetails(): List<CommunityProfile> {
+        return communityDAO.getUnSyncedCommunityDetails()
+    }
+
+    override suspend fun insertOrUpdateFromBE(communityProfile: CommunityProfile): Long {
+        return communityDAO.insertOrUpdateFromBE(communityProfile)
     }
 }

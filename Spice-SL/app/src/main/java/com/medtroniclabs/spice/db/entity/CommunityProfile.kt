@@ -1,12 +1,12 @@
 package com.medtroniclabs.spice.db.entity
 
 import androidx.room.Entity
-import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "CommunityDetailsEntity")
-data class CommunityDetailsEntity(
-    @PrimaryKey
+@Entity(tableName = "CommunityProfile")
+data class CommunityProfile(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
     val villageId: Long,
     val communityDescription: String?,
     val registeredDate:String?,

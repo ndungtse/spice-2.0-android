@@ -1,11 +1,11 @@
 package com.medtroniclabs.spice.ui.communityprofile.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import com.google.gson.internal.LinkedTreeMap
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_ddMMMyyyy
@@ -13,40 +13,15 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.community.CommunityPopulationStatistics
 import com.medtroniclabs.spice.data.community.CommunitySummaryListItem
-import com.medtroniclabs.spice.data.model.SymptomModel
 import com.medtroniclabs.spice.databinding.FragmentCommunityProfileSummaryBinding
-import com.medtroniclabs.spice.db.entity.CommunityDetailsEntity
+import com.medtroniclabs.spice.db.entity.CommunityProfile
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.AccessRoadToPhu
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.Church
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.ChwHouseInCommunity
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.CourtBarrie
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.EmergencyContactPhu
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.EmergencyTransportAvailable
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.JuniorSecondarySchool
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.Market
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.MarketDays
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.MobileNetworkCoverage
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.MobileNumberOfAmbulanceDriver
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.MobileNumberOfEmergencyTransportContact
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.Mosque
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NameOfAmbulanceDriver
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NameOfEmergencyTransportContact
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NearestPhu
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfHandPumpsNotFunctional
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfImprovedToilets
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfImprovedWaterSources
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfNonImprovedToilets
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfNonImprovedWaterSources
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.PrimarySchool
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.SelectedNetwork
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.SeniorSecondarySchool
-import com.medtroniclabs.spice.model.communityprofile.CommunityProfileDetails
-import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.EmergencyManagementPlan
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.Infrastructure
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.WaterAndSanitationFacilities
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.communityprofile.adapter.CommunitySummaryAdapter
 import com.medtroniclabs.spice.ui.communityprofile.viewmodel.CommunityProfileViewModel
-import timber.log.Timber
 
 
 class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
@@ -95,7 +70,7 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun setData(
         statistics: CommunityPopulationStatistics?,
-        details: CommunityDetailsEntity?
+        details: CommunityProfile?
     ) {
         val communityList = mutableListOf<CommunitySummaryListItem>()
         communityList.add(CommunitySummaryListItem.TitleItem(getString(R.string.profile_details)))
@@ -143,7 +118,19 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
                 statistics?.belowFiveYearCount.toString()
             )
         )
-        details?.payload?.let {
+
+        details?.payload?.let { payloadString ->
+            val payload = StringConverter.stringToMap(payloadString)
+
+        }
+        
+        details?.payload?.let { payload ->
+            val forms = viewModel.formLayoutLiveData.value?.data?.formLayout?.filter { it.isSummary == true }
+            val dataMap = StringConverter.stringToMap(payload)
+            
+            //Water and sanitation
+            val waterAndSanitation = dataMap[WaterAndSanitationFacilities] as LinkedTreeMap<*, *>
+            val waterAndSanitationForms = forms?.filter { it.family == WaterAndSanitationFacilities }
             communityList.add(
                 CommunitySummaryListItem.TitleItem(
                     getString(
@@ -151,152 +138,74 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
                     )
                 )
             )
-            val payload = StringConverter.stringToMap(it)
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.no_of_improved_water_sources),
-                    payload[NumberOfImprovedWaterSources].toString()
+            waterAndSanitationForms?.forEach { form ->
+                val value = waterAndSanitation[form.id]
+                communityList.add(
+                    CommunitySummaryListItem.OtherItem(
+                        form.title,
+                        value.toString()
+                    )
                 )
-            )
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.no_of_non_improved_water_sources),
-                    payload[NumberOfNonImprovedWaterSources].toString()
-                )
-            )
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.no_of_imporved_toilets),
-                    payload[NumberOfImprovedToilets].toString()
-                )
-            )
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.no_of_non_improved_toilets),
-                    payload[NumberOfNonImprovedToilets].toString()
-                )
-            )
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.no_of_hand_pumps),
-                    payload[NumberOfHandPumpsNotFunctional].toString()
-                )
-            )
+            }
+
+
+            //Infrastructure
+            val infrastructure = dataMap[Infrastructure] as LinkedTreeMap<*, *>
+            val infrastructureForms = forms?.filter { it.family == Infrastructure }
             communityList.add(
                 CommunitySummaryListItem.TitleItem(
                     getString(R.string.infrastructure_facilities)
                 )
             )
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.primary_school),
-                    payload[PrimarySchool].toString(),
-                    false
+
+            infrastructureForms?.forEach { form ->
+                val value = infrastructure[form.id]
+                communityList.add(
+                    CommunitySummaryListItem.OtherItem(
+                        form.title,
+                        value.toString(),
+                        isText = (value is String)
+                    )
                 )
-            )
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.junior_secondary_school),
-                    payload[JuniorSecondarySchool].toString(),
-                    false
-                )
-            )
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.senior_secondary_school),
-                    payload[SeniorSecondarySchool].toString(),
-                    false
-                )
-            )
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.market),
-                    payload[Market].toString(),
-                    false
-                )
-            )
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.court_barrie),
-                    payload[CourtBarrie].toString(),
-                    false
-                )
-            )
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.church),
-                    payload[Church].toString(),
-                    false
-                )
-            )
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.mosque),
-                    payload[Mosque].toString(),
-                    false
-                )
-            )
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.mobile_network_coverage),
-                    payload[SelectedNetwork].toString()
-                )
-            )
-            /*val marketArray = payload[MarketDays] as? ArrayList<SymptomModel>
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.market_days),
-                    marketArray?.joinToString(","){ it.value?.take(3)?:""}
-                )
-            )*/
-            communityList.add(
-                CommunitySummaryListItem.OtherItem(
-                    getString(R.string.chw_house_in_this_community),
-                    payload[ChwHouseInCommunity].toString(),
-                    false
-                )
-            )
+            }
+
+            //EmergencyManagementPlan
+            val emergency = dataMap[EmergencyManagementPlan] as LinkedTreeMap<*, *>
+            val emergencyForms = forms?.filter { it.family == EmergencyManagementPlan }
             communityList.add(
                 CommunitySummaryListItem.TitleItem(
                     getString(R.string.emergency_management_plan)
                 )
             )
-            val emergencyMap = HashMap<String, String>().apply {
-                put(
-                    getString(R.string.emergency_contact_phu),
-                    payload[EmergencyContactPhu].toString()
-                )
-                put(getString(R.string.access_road_to_phu), payload[AccessRoadToPhu].toString())
-                put(
-                    getString(R.string.emergency_transport_available),
-                    payload[EmergencyTransportAvailable].toString()
-                )
-                put(
-                    getString(R.string.emergency_transport_contact),
-                    payload[NameOfEmergencyTransportContact].toString()
-                )
-                put(
-                    getString(R.string.emergency_transport_contact_no),
-                    payload[MobileNumberOfEmergencyTransportContact].toString()
-                )
-                put(getString(R.string.ambulance_driver), payload[NameOfAmbulanceDriver].toString())
-                put(
-                    getString(R.string.ambulance_driver_contact),
-                    payload[MobileNumberOfAmbulanceDriver].toString()
-                )
+
+            val emergencyMap = mutableMapOf<String,String>()
+            emergencyForms?.forEach { form ->
+                val value = emergency[form.id]
+                emergencyMap[form.title] = value.toString()
             }
 
             communityList.add(
                 CommunitySummaryListItem.EmergencyItem(
-                    payload[NearestPhu].toString(),
+                     "",
                     emergencyMap
                 )
             )
+            
         }
+
+        /*val marketArray = payload[MarketDays] as? ArrayList<SymptomModel>
+           communityList.add(
+               CommunitySummaryListItem.OtherItem(
+                   getString(R.string.market_days),
+                   marketArray?.joinToString(","){ it.value?.take(3)?:""}
+               )
+           )*/
 
 
         communitySummaryAdapter.updateList(communityList)
     }
+
+
 
     fun navigateToEditScreen() {
         arguments?.getLong(DefinedParams.COMMUNITY_ID)?.let {
@@ -324,7 +233,8 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.btnDone -> {
-                viewModel.updateCurrentFragment(1)
+                //viewModel.updateCurrentFragment(1)
+                requireActivity().finish()
             }
         }
     }

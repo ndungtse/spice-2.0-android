@@ -1324,6 +1324,8 @@
     <string name="next_vaccination_duration" translatable="false">Next Vaccination Duration</string>
     <string name="next_vaccination_dose" translatable="false">Next Vaccination Dose</string>
     <string name="next_vaccination_date" translatable="false">Next Vaccination Date</string>
+    <string name="missed_vaccination_count" translatable="false">You have missed %d vaccination</string>
+    <string name="reason_for_missed_vaccination" translatable="false">Please provide the reason for the missed vaccination - %s</string>
 
 
     <string name="date" translatable="false">Date</string>

@@ -48,7 +48,8 @@ class ImmunisationRepository @Inject constructor(
 
         val groupByType = vaccinationList?.groupBy { it.type }
         groupByType?.forEach { (typeKey, typeValue) ->
-            val groupByValue = typeValue.groupBy { it.value }
+            val sortedGroupValue = typeValue.sortedBy { it.value }
+            val groupByValue = sortedGroupValue.groupBy { it.value }
             groupByValue.forEach { (valueKey, valueList) ->
                 val temp = valueList.first()
                 val items = valueList.sortedBy { it.displayOrder }

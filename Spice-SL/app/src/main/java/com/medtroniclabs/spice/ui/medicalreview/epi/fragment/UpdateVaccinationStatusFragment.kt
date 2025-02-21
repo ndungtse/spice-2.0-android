@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.getLocalDate
 import com.medtroniclabs.spice.appextensions.getLongDate
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
@@ -28,6 +29,7 @@ class UpdateVaccinationStatusFragment(
 
     private lateinit var binding: DialogUpdateVaccinationStatusBinding
     private val viewModel: ImmunisationViewModel by activityViewModels()
+    private val displayFormatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,10 +58,10 @@ class UpdateVaccinationStatusFragment(
     private fun initView() {
         binding.tvVaccinationName.text = vaccinationItem.vaccineName
         binding.flEpiStatusNudge.addView(VaccinationStatusNudge(context = requireContext(), item = vaccinationItem))
-        binding.tvScheduledDate.text = DateUtils.convertDateTimeToDate(vaccinationItem.scheduledDate,DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
+        binding.tvScheduledDate.text = vaccinationItem.scheduledDate.getLocalDate().format(displayFormatter)
         if (vaccinationItem.vaccinatedDate != null) {
             shouldEnableUpdate(false)
-            binding.tvVaccinationDate.text = DateUtils.convertDateTimeToDate(vaccinationItem.vaccinatedDate, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
+            binding.tvVaccinationDate.text = vaccinationItem.vaccinatedDate!!.getLocalDate().format(displayFormatter)
         } else {
             shouldEnableUpdate(true)
             binding.tvVaccinationDate.text = LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
