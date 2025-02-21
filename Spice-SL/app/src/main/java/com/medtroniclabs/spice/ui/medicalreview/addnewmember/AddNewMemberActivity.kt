@@ -29,7 +29,11 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
             getString(R.string.member_registration),
             homeAndBackVisibility = Pair(true, true),
             callback = {
-                backNavigation()
+                if (validateFormInputs()){
+                    backNavigation()
+                } else {
+                    onBackPressPopStack()
+                }
             },
             callbackHome = {
                 backNavigationToHome()
@@ -115,5 +119,13 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
     override fun onResume() {
         super.onResume()
         getCurrentLocation()
+    }
+
+    private fun validateFormInputs(): Boolean {
+        val fragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+        if (fragment is MemberRegistrationFragment){
+            return fragment.getEnteredInputs()
+        }
+        return false
     }
 }

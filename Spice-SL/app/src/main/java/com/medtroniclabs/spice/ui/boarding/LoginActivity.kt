@@ -201,7 +201,6 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         binding.tvUserEmailError.visibility = View.GONE
         binding.tvUserPasswordError.visibility = View.GONE
         if (!connectivityManager.isNetworkAvailable()) {
-            showErrorSnackBar(getString(R.string.no_internet_error))
             val isToShowAlert = ((((userName == SecuredPreference.getString(
                 SecuredPreference.EnvironmentKey.USERNAME.name
             )) || (userName == SecuredPreference.getString(

@@ -43,7 +43,11 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
             isToolbarVisible = true,
             title = getString(R.string.household_registration),
             callback = {
-                backNavigation()
+                if (validateFormInputs()){
+                    backNavigation()
+                } else {
+                    logExitEventAnalytics()
+                }
             }
         )
 
@@ -64,6 +68,17 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
         phuMemberRegistration()
     }
 
+    private fun validateFormInputs(): Boolean {
+        val fragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+        if (fragment is HouseHoldRegistrationFragment) {
+            return fragment.getHouseHoldEnteredInputs()
+        }
+        else if (fragment is MemberRegistrationFragment){
+            return fragment.getEnteredInputs()
+        }
+        return false
+    }
+
     private fun backNavigation() {
         showErrorDialogue(
             getString(R.string.alert),
@@ -71,16 +86,20 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
-                householdRegistrationViewModel.setAnalyticsData(
-                    UserDetail.startDateTime,
-                    eventType = AnalyticsDefinedParams.HouseholdCreation,
-                    eventName = householdRegistrationViewModel.eventName,
-                    exitReason = AnalyticsDefinedParams.BackButtonClicked,
-                    isCompleted = false
-                )
-                this@HouseholdActivity.finish()
+                logExitEventAnalytics()
             }
         }
+    }
+
+    private fun logExitEventAnalytics() {
+        householdRegistrationViewModel.setAnalyticsData(
+            UserDetail.startDateTime,
+            eventType = AnalyticsDefinedParams.HouseholdCreation,
+            eventName = householdRegistrationViewModel.eventName,
+            exitReason = AnalyticsDefinedParams.BackButtonClicked,
+            isCompleted = false
+        )
+        this@HouseholdActivity.finish()
     }
 
     private fun getCurrentLocation() {

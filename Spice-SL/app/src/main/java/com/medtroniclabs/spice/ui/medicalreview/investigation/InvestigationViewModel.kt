@@ -192,7 +192,7 @@ class InvestigationViewModel @Inject constructor(
                 val request = LabTestCreateRequest(
                     EncounterDetails(
                         id = encounterId,
-                        patientReference = if (CommonUtils.isNonCommunity() ) patientDetail.patientId.orEmpty() else patientDetail.id.orEmpty(),
+                        patientReference = if (CommonUtils.isNonCommunity() ) patientDetail.patientId.orEmpty() else patientDetail.id,
                         patientId = if (CommonUtils.isNonCommunity() ) null else patientDetail.patientId.orEmpty(),
                         memberId = if (!CommonUtils.isNonCommunity() ) patientDetail.memberId.orEmpty() else patientDetail.id.orEmpty(),
                         provenance = ProvanceDto(),

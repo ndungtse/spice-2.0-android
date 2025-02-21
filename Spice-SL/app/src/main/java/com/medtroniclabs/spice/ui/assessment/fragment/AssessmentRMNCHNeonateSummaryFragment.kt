@@ -99,8 +99,14 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         if (map.containsKey(RMNCH.PNC)) {
             bindRmnchSummaryView(
                 getString(R.string.patient_status),
-                getStatus(assessmentRMNCHNeonateViewModel.referralStatus) ?: getString(R.string.seperator_hyphen),
-                parentLayout=binding.motherParentLayout
+                getStatus(
+                    if (map.containsKey(RMNCH.PNCNeonatal)) {
+                        assessmentRMNCHNeonateViewModel.referralStatus
+                    } else {
+                        viewModel.referralStatus
+                    }
+                ) ?: getString(R.string.seperator_hyphen),
+                parentLayout = binding.motherParentLayout
             )
             addDefaultSummaryView(map)
             showSummaryDetail(

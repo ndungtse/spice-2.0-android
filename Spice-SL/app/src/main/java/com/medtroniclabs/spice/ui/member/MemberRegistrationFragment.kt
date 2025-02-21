@@ -115,6 +115,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
         memberRegistrationViewModel.setUserJourney(eventType)
 
         onPhuAddMember()
+        withLocationCheck({})
     }
 
     private fun initializeFlow() {
@@ -714,6 +715,10 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             }
             scrollView.layoutParams = layoutParams
         }
+    }
+
+    fun getEnteredInputs(): Boolean {
+        return formGenerator.getResultMap().isNotEmpty()
     }
 
 

@@ -92,7 +92,15 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                 }
                 tvAncVisitLabelValue.text =
                     convertNullableStringToString(it.visitNumber, requireContext())
-                tvBmiValue.text = convertNullableDoubleToString(it.bmi, requireContext())
+                tvBmiValue.text = if (it.bmi != null) {
+                    convertNullableDoubleToString(it.bmi, requireContext())
+                } else {
+                    if (it.height != null && it.weight != null) {
+                        CommonUtils.getBMI(it.height, it.weight, requireContext())
+                    } else {
+                        getString(R.string.hyphen_symbol)
+                    }
+                }
                 // tvWeightValue.text = convertNullableDoubleToString(it.weight, requireContext())
                 if (it.weight != null && it.weight != 0.0) {
                     tvWeightValue.text = "${CommonUtils.getDecimalFormatted(

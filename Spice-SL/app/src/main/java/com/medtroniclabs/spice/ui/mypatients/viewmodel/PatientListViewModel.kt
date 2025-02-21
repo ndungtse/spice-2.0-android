@@ -71,7 +71,7 @@ class PatientListViewModel @Inject constructor(
                 apiHelper = apiHelper,
                 patientRepository = patientRepository,
                 searchText = searchText,
-                filter = if (isTiberbuUser) null else myFilter(),
+                filter = if (isTiberbuUser) null else if (CommonUtils.isCommunity()) getFilter() else myFilter(),
                 sort = if (isTiberbuUser) null else mySort(),
                 origin = getFormattedOrigin(origin),
                 isPatientListRequired = CommonUtils.isPatientListRequired(origin?.lowercase())

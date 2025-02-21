@@ -449,6 +449,9 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         val menu: Menu = binding.navView.menu
         val menuItemToRemove: MenuItem? = menu.findItem(R.id.offline_sync)
         val changeFacilityMenuItem: MenuItem? = menu.findItem(R.id.changeFacility)
+        if (CommonUtils.isCommunity()){
+            binding.navView.menu.findItem(R.id.support).isVisible = false
+        }
         if (CommonUtils.isCommunity() && !CommonUtils.isChw() && menuItemToRemove != null) {
             menu.removeItem(menuItemToRemove.itemId)
         }
@@ -482,6 +485,12 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         binding.drawerLayout.addDrawerListener(this)
         toggle.syncState()
         binding.navView.setNavigationItemSelectedListener(this)
+        if (CommonUtils.isNonCommunity()) {
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END)
+        } else {
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END)
+        }
+
     }
 
     private fun updateSideBarFooter() {

@@ -23,4 +23,5 @@ object FollowUpDefinedParams {
     const val FilterCough = "Cough"
     const val FilterGeneralDangerSigns = "General Danger Signs"
     const val FilterMUAC = "MUAC"
+    const val FilterTBSymptoms = "TB Symptoms"
 }

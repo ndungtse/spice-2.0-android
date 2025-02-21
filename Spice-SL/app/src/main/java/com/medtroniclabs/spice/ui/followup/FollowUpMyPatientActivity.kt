@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.followup
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Typeface
@@ -57,7 +58,6 @@ class FollowUpMyPatientActivity : BaseActivity() {
                 getString(R.string.search_patient)
             }
         )
-        setOrientation()
         if (CommonUtils.isCommunity()) {
             initView()
             initObserver()
@@ -440,6 +440,11 @@ class FollowUpMyPatientActivity : BaseActivity() {
                 binding.llFilter.btnFilter.text = getString(R.string.filter)
             }
         }
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase)
+        setOrientation()
     }
 }
 

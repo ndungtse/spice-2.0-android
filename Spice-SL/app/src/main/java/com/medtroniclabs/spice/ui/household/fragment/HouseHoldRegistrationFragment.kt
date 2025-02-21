@@ -342,4 +342,8 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
        Never used
         */
     }
+
+    fun getHouseHoldEnteredInputs(): Boolean {
+        return formGenerator.getResultMap().isNotEmpty()
+    }
 }

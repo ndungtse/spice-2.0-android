@@ -189,6 +189,15 @@ class GeneralExaminationFragment : BaseFragment() {
             )
             binding.breastConditionSelector.addView(view)
         }
+        viewModel.specifyCondition?.let {
+            if (viewModel.breastConditionMap[DefinedParams.BreastCondition] as? String == getString(
+                    R.string.abnormal
+                )
+            ) {
+                binding.specifyConditionGroup.visible()
+                binding.conditionSelector.setText(it)
+            }
+        }
     }
     private fun initializeUterusCondition() {
         getBreastConditionFlowData().let {
@@ -203,6 +212,16 @@ class GeneralExaminationFragment : BaseFragment() {
                 uterusSelectionCallback
             )
             binding.uterusSelector.addView(view)
+        }
+        viewModel.specifyConditionUterus?.let {
+            if (viewModel.uterusConditionMap[DefinedParams.UterusCondition] as? String == getString(
+                    R.string.abnormal
+                )
+            ) {
+                binding.specifyConditionGroupUterus
+                    .visible()
+                binding.conditionSelectorUterus.setText(it)
+            }
         }
     }
 
