@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white">
+
+    <!-- Navigation Controls -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/prevMonthButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="◀"
+            android:background="?android:selectableItemBackground"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/monthYearTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="January 2024"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:padding="8dp"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/nextMonthButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="▶"
+            android:background="?android:selectableItemBackground"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <!-- Weekday Headers -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingTop="8dp"
+        android:paddingBottom="4dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="S"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <TextView android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="M"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <TextView android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="T"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <TextView android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="W"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <TextView android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="T"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <TextView android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="F"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <TextView android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="S"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+    </LinearLayout>
+
+    <!-- Calendar Grid -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/calendarRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="never"
+        android:paddingBottom="8dp"
+        android:scrollbars="none"/>
+
+    <!-- Action Buttons -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:paddingTop="8dp">
+
+        <Button
+            android:id="@+id/clearAllBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:selectableItemBackground"
+            android:text="@string/clear_all"
+            android:textAllCaps="false"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:background="?android:selectableItemBackground"
+            android:textAllCaps="false"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/okButton"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <Button
+            android:id="@+id/okButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ok"
+            android:background="?android:selectableItemBackground"
+            android:textAllCaps="false"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

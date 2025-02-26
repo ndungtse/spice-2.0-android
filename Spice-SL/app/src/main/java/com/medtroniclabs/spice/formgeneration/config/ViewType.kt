@@ -6,6 +6,7 @@ object ViewType {
     const val VIEW_TYPE_FORM_EDITTEXT_AREA = "EditTextArea"
     const val VIEW_TYPE_FORM_RADIOGROUP = "RadioGroup"
     const val VIEW_TYPE_FORM_DATEPICKER = "DatePicker"
+    const val VIEW_TYPE_FORM_MULTISELECT_DATEPICKER = "MultiSelectDatePicker"
     const val VIEW_TYPE_FORM_SPINNER = "Spinner"
     const val VIEW_TYPE_FORM_BP = "BP"
     const val VIEW_TYPE_FORM_TEXTLABEL = "TextLabel"

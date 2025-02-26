@@ -31,6 +31,7 @@ import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
@@ -55,6 +56,10 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.convertDateFormat
 import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
+import com.medtroniclabs.spice.common.DefinedParams.BOLD
+import com.medtroniclabs.spice.common.DefinedParams.BOLD_ITALIC
+import com.medtroniclabs.spice.common.DefinedParams.DefaultID
+import com.medtroniclabs.spice.common.DefinedParams.ITALIC
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
@@ -82,7 +87,6 @@ import com.medtroniclabs.spice.formgeneration.FormSupport.isTranslatedOrNot
 import com.medtroniclabs.spice.formgeneration.FormSupport.translateTitle
 import com.medtroniclabs.spice.formgeneration.FormSupport.updateTitle
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.GONE
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.INVISIBLE
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
@@ -91,10 +95,6 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.VISIBLE
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.value
-import com.medtroniclabs.spice.common.DefinedParams.BOLD
-import com.medtroniclabs.spice.common.DefinedParams.BOLD_ITALIC
-import com.medtroniclabs.spice.common.DefinedParams.DefaultID
-import com.medtroniclabs.spice.common.DefinedParams.ITALIC
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_INFORMATION_LABEL
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_DIALOG_CHECKBOX
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_AGE
@@ -103,6 +103,7 @@ import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_CAR
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_DATEPICKER
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_EDITTEXT
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_EDITTEXT_AREA
+import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_MULTISELECT_DATEPICKER
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_RADIOGROUP
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_SPINNER
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_TEXTLABEL
@@ -124,10 +125,11 @@ import com.medtroniclabs.spice.formgeneration.model.ConditionModelConfig
 import com.medtroniclabs.spice.formgeneration.model.ConditionalModel
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.MentalHealthOption
+import com.medtroniclabs.spice.formgeneration.ui.MultiSelectDatePickerDialog
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
-import com.medtroniclabs.spice.formgeneration.utility.DecimalInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustomLayout
+import com.medtroniclabs.spice.formgeneration.utility.DecimalInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.FormFieldValidator
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
@@ -144,8 +146,10 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 class FormGenerator(
     var context: Context,
@@ -202,9 +206,77 @@ class FormGenerator(
                 VIEW_TYPE_FORM_DATEPICKER -> createDatePicker(serverViewModel)
                 VIEW_TYPE_FORM_BP -> createBPView(serverViewModel)
                 VIEW_TYPE_TIME -> createTimeView(serverViewModel)
+                VIEW_TYPE_FORM_MULTISELECT_DATEPICKER -> createMultiSelectDatePicker(serverViewModel)
             }
         }
         listener.onRenderingComplete()
+    }
+
+    private fun createMultiSelectDatePicker(serverViewModel: FormLayout) {
+        val binding = DatepickerLayoutBinding.inflate(LayoutInflater.from(context))
+        serverViewModel.apply {
+            binding.root.tag = id + rootSuffix
+            binding.etUserInput.tag = id
+            hint?.let {
+                binding.etUserInput.hint = if (translate) hintCulture ?: it else it
+            }
+            binding.tvErrorMessage.tag = id + errorSuffix
+            binding.tvTitle.text = if (translate) titleCulture ?: title else title
+            binding.tvTitle.tag = id + titleSuffix
+
+            binding.etUserInputHolder.safeClickListener {
+                val inputText = binding.etUserInput.text.toString()
+
+                // Extract previously selected dates
+                val initialSelectedDates = inputText.split(", ")
+                    .mapNotNull { dateString ->
+                        try {
+                            DateUtils.getDatePatternddMMyyyy().parse(dateString)?.time
+                        } catch (e: java.text.ParseException) {
+                            null
+                        }
+                    }
+
+                // Open MultiSelectDatePickerDialog with previously selected dates
+                MultiSelectDatePickerDialog(
+                    context = context,
+                    initialSelectedDates = initialSelectedDates,
+                    onDateSelected = { selectedDates ->
+                        val dateStrings = selectedDates.map { date ->
+                            DateUtils.getDateDDMMYYYY().format(Date(date))
+                        }
+                        binding.etUserInput.text = dateStrings.joinToString(", ")
+
+                        // Update resultHashMap
+                        resultHashMap[id] = selectedDates.joinToString(",") { date ->
+                            DateUtils.getDateString(
+                                date,
+                                inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
+                                outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                            )
+                        }
+
+                        // Trigger callback
+                        callback?.invoke(resultHashMap, id)
+                    }
+                ).show()
+            }
+
+            if (isMandatory) {
+                binding.tvTitle.markMandatory()
+            }
+
+            getFamilyView(family)?.addView(binding.root) ?: parentLayout.addView(binding.root)
+
+            (binding.etUserInput.background as? GradientDrawable)?.apply {
+                setStroke(
+                    resources.getDimensionPixelSize(R.dimen._1sdp),
+                    context.getColor(R.color.edittext_stroke)
+                )
+            }
+            setViewVisibility(visibility, binding.root)
+            setViewEnableDisable(isEnabled, binding.root)
+        }
     }
 
     private fun createCardViewFamily(serverViewModel: FormLayout) {

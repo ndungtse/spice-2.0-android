@@ -138,6 +138,7 @@ object DateUtils {
     }
 
     fun getDatePatternDDMMYYYY() = SimpleDateFormat(DATE_FORMAT_ddMMyyyy, Locale.ENGLISH)
+    fun getDatePatternddMMyyyy() = SimpleDateFormat(DATE_ddMMyyyy, Locale.ENGLISH)
 
     fun getDateDDMMYYYY(): SimpleDateFormat {
         return SimpleDateFormat(DATE_ddMMyyyy, Locale.ENGLISH)
