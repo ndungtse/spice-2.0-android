@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.landing
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -139,6 +140,9 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         UserDetail.updateUserIdIfEmpty(SecuredPreference.getUserId().toString())
         UserDetail.getAppVersion(BuildConfig.VERSION_NAME)
         attachObserver()
+
+        // Deeplink for directly goes to Search patient
+        patientSearchDeepLink()
     }
 
     private fun syncScreeningAndAssessment() {
@@ -666,7 +670,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         }
     }
 
-    private fun handleNavigation() {
+    private fun handleNavigation(isDeepLink :Boolean= false) {
         if (CommonUtils.isCommunity() && CommonUtils.isRolePresent()) {
             binding.appBarMain.tvTitle.text = getString(R.string.search_patient)
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
@@ -682,8 +686,12 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             binding.appBarMain.tvTitle.text = getString(R.string.home_title)
             if (CommonUtils.isChwChp())
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            val bundle = Bundle().apply {
+                putBoolean(DefinedParams.IsDeepLink,isDeepLink)
+            }
             replaceFragmentInId<HomeScreenFragment>(
                 R.id.fragmentContainerView,
+                bundle = bundle,
                 tag = HomeScreenFragment.TAG
             )
         }
@@ -910,5 +918,13 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             ) {}
         }
     }
+     private fun patientSearchDeepLink(){
+         val data: Uri? = intent?.data
+         val isDeepLink = data?.getQueryParameter("isDeepLink")
+         if (isDeepLink == "true") {
+             handleNavigation(true)
+             // Perform necessary action when deep link is detected
+         }
+     }
 
 }

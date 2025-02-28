@@ -16,6 +16,8 @@ import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.view.setPadding
 import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.labtest.LabTestAdapter
 import com.google.android.flexbox.FlexboxLayout
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -25,6 +27,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getDecimalFormatted
 import com.medtroniclabs.spice.common.CommonUtils.getMaxDateLimit
+import com.medtroniclabs.spice.common.CommonUtils.isTiberbuUser
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
@@ -48,6 +51,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
+import com.medtroniclabs.spice.model.LabTestResultModel
 import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
 import java.util.Calendar
 import kotlin.math.roundToInt
@@ -118,31 +122,106 @@ class InvestigationGenerator(
             investigationBinding.ivRemoveMedication.setOnClickListener {
                 listener.removeInvestigation(investigation)
             }
-            if (investigation.labTestResultList != null) {
-                investigationBinding.resultContainerHolder.setPadding(
-                    resources.getDimension(R.dimen._16sdp).roundToInt()
-                )
-                investigationBinding.resultViewContainer.visible()
-                investigationBinding.resultContainer.gone()
-                renderInvestigationResultViewContainer(
-                    investigation,
-                    investigationBinding.resultViewContainer
-                )
-            } else {
-                investigationBinding.resultContainerHolder.setPadding(
-                    resources.getDimension(R.dimen._0dp).roundToInt()
-                )
-                investigationBinding.resultViewContainer.gone()
-                investigationBinding.resultContainer.visible()
-                renderInvestigationResultContainer(
-                    investigation,
-                    investigationBinding.resultContainer
-                )
+            if(isTiberbuUser()){
+                if (investigation.components!=null){
+                    investigationBinding.resultTable.visible()
+                    resultTableData(investigationBinding,investigation.components)
+                    investigationBinding.comments.text = ":  ${if (investigation.comments.isNullOrEmpty()) getString(R.string.hyphen_symbol) else investigation.comments}"
+                    investigationBinding.descriptiveResult.text = ":  ${if (investigation.descriptiveResult.isNullOrEmpty()) getString(R.string.hyphen_symbol) else investigation.descriptiveResult}"
+
+                }else{
+                    investigationBinding.ivDropDown.invisible()
+                }
+            }else {
+                if (investigation.labTestResultList != null) {
+                    investigationBinding.resultContainerHolder.setPadding(
+                        resources.getDimension(R.dimen._16sdp).roundToInt()
+                    )
+                    investigationBinding.resultViewContainer.visible()
+                    investigationBinding.resultContainer.gone()
+                    renderInvestigationResultViewContainer(
+                        investigation,
+                        investigationBinding.resultViewContainer
+                    )
+                } else {
+                    investigationBinding.resultContainerHolder.setPadding(
+                        resources.getDimension(R.dimen._0dp).roundToInt()
+                    )
+                    investigationBinding.resultViewContainer.gone()
+                    investigationBinding.resultContainer.visible()
+                    renderInvestigationResultContainer(
+                        investigation,
+                        investigationBinding.resultContainer
+                    )
+                }
             }
             parentLayout.addView(investigationBinding.root)
         }
 
     }
+
+    // Table design for Lab test result
+    private fun resultTableData(
+        investigationBinding: LayoutInvestigationRowBinding,
+        components: ArrayList<Map<String, Any?>>
+    ) {
+        investigationBinding.recyclerView.layoutManager = LinearLayoutManager(this)
+
+        val labTestList = parseComponents(components)
+
+        if (labTestList.isNotEmpty()) {
+            val adapter = LabTestAdapter(labTestList)
+            investigationBinding.recyclerView.adapter = adapter
+            adapter.notifyDataSetChanged() // Ensure RecyclerView updates
+        }
+    }
+
+    // Updated Parsing Function
+    private fun parseComponents(components: ArrayList<Map<String, Any?>>): List<LabTestResultModel> {
+        val list = mutableListOf<LabTestResultModel>()
+
+        // Check if at least one valid row contains "result"
+        val hasValidEntries = components.any {
+            it[com.medtroniclabs.spice.common.DefinedParams.TestName] != null && it[com.medtroniclabs.spice.common.DefinedParams.Result] != null && it[com.medtroniclabs.spice.common.DefinedParams.Uom] != null
+        }
+
+        // Add Header if valid entries exist
+        if (hasValidEntries) {
+            list.add(
+                LabTestResultModel(
+                    labTestName = getString(R.string.test_name_),
+                    resultValue = getString(R.string.result),
+                    labTestUom =  getString(R.string.unit),
+                    normalRange = getString(R.string.description),
+                    isHeader = true
+                )
+            )
+        }
+
+        // Process each component
+        for (component in components) {
+            val testName = component[com.medtroniclabs.spice.common.DefinedParams.TestName] as? String ?: ""
+            val resultValue = component[com.medtroniclabs.spice.common.DefinedParams.Result] as? String ?: ""
+            val unit = component[com.medtroniclabs.spice.common.DefinedParams.Uom] as? String ?: ""
+            val normalRange = component[com.medtroniclabs.spice.common.DefinedParams.Description] as? String ?: "" // Assuming "description" holds the normal range
+
+            list.add(
+                LabTestResultModel(
+                    labTestName = testName,
+                    resultValue = resultValue,
+                    labTestUom = unit,
+                    normalRange = normalRange,
+                    isHeader = false
+                )
+            )
+        }
+
+        return list
+    }
+
+
+
+
 
     private fun toggleFacility(
         investigationBinding: LayoutInvestigationRowBinding,

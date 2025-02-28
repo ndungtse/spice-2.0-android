@@ -283,4 +283,11 @@ object DefinedParams {
     const val CBS_Referral = "CBS Referral"
     const val notifiableConditions = "notifiableConditions"
     const val otherNotifiableConditions = "otherNotifiableConditions"
+
+    const val IsDeepLink = "isDeepLink"
+
+    const val TestName = "testName"
+    const val Result = "result"
+    const val Uom = "uom"
+    const val Test_Name = "Test Name"
 }

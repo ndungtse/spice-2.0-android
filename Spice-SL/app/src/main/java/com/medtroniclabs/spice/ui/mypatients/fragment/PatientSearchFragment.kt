@@ -22,7 +22,6 @@ import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setVisible
-import com.medtroniclabs.spice.appextensions.takeIfNotNull
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -233,6 +232,10 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                                         DefinedParams.Gender,
                                         patientListViewModel.selectedPatientDetails?.gender
                                     )
+                                    putExtra(
+                                        DefinedParams.IsDeepLink,
+                                        arguments?.getBoolean(DefinedParams.IsDeepLink)
+                                    )
                                 }
                             startActivity(intent)
                         }
@@ -265,6 +268,17 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             binding.llExactSearch.etPatientSearch.hint = getString(R.string.search_by_national_id)
         }
 
+        // Deeplink for directly goes to MR
+        if (arguments?.getBoolean(DefinedParams.IsDeepLink) == true) {
+            if (arguments?.getString(DefinedParams.PatientId) != null) {
+                var patientId = arguments?.getString(DefinedParams.PatientId)
+                val id = arguments?.getString(DefinedParams.id)
+                val gender = arguments?.getString(DefinedParams.Gender)
+                val item = PatientListRespModel(patientId = patientId, id = id, gender = gender)
+                autoPatientSelect(item)
+            }
+        }
+
 
         binding.llExactSearch.etPatientSearch.addTextChangedListener(searchListener)
         binding.llExactSearch.btnSearch.safeClickListener(this)
@@ -283,6 +297,47 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 true
             } else
                 false
+        }
+    }
+    private fun autoPatientSelect(item: PatientListRespModel) {
+        patientListViewModel.origin = MenuConstants.MY_PATIENTS_MENU_ID.lowercase()
+        val origin = patientListViewModel.origin?.lowercase()
+        val destinationIntent = when (origin) {
+                    MenuConstants.REGISTRATION.lowercase() -> RegistrationActivity::class.java
+            MenuConstants.ASSESSMENT.lowercase() -> AssessmentToolsActivity::class.java
+            MenuConstants.INVESTIGATION.lowercase(),
+            MenuConstants.LIFESTYLE.lowercase(),
+            MenuConstants.PSYCHOLOGICAL.lowercase(),
+            MenuConstants.MY_PATIENTS_MENU_ID.lowercase(),
+            MenuConstants.DISPENSE.lowercase() -> {
+                if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isNonCommunity() && CommonUtils.isNURSE())) {
+                    NCDMedicalReviewCMRActivity::class.java
+                } else if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isNonCommunity() && CommonUtils.isHRIO())) {
+                    NCDHrioBaseActivity::class.java
+                } else {
+
+                    patientListViewModel.selectedPatientDetails = item
+                        patientListViewModel.createPatientVisit(
+                            PatientVisitRequest(
+                                patientReference = item.patientId,
+                                provenance = ProvanceDto(
+                                ),
+                                memberReference = item.id
+                            )
+                        )
+                    null
+                }
+            }
+
+            else -> null
+        }
+        destinationIntent?.let { destIntent ->
+            val intent = Intent(requireContext(), destIntent)
+            intent.putExtra(DefinedParams.FhirId, item.id)
+            intent.putExtra(DefinedParams.PatientId, item.patientId)
+            intent.putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
+            intent.putExtra(DefinedParams.Gender,item.gender)
+            startActivity(intent)
         }
     }
 

@@ -42,11 +42,13 @@ class AssessmentToolsActivity : BaseActivity() {
         toolsViewModel.selectedHouseholdMemberID = intent.getLongExtra(DefinedParams.MemberID, -1)
         toolsViewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
         toolsViewModel.followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1)
+        val isDeepLink = intent.getBooleanExtra(DefinedParams.IsDeepLink, false)
         val bundle = Bundle()
         bundle.putString(DefinedParams.FhirId, intent.getStringExtra(DefinedParams.FhirId))
         bundle.putString(DefinedParams.ORIGIN, intent.getStringExtra(DefinedParams.ORIGIN))
         bundle.putString(DefinedParams.Gender, intent.getStringExtra(DefinedParams.Gender))
         bundle.putBoolean(MenuConstants.FOLLOW_UP, intent.getBooleanExtra(MenuConstants.FOLLOW_UP,false))
+        bundle.putBoolean(DefinedParams.IsDeepLink,isDeepLink)
         // only for Africa encounterReference is visit id(Support landscape )
         intent.getStringExtra(EncounterReference)?.let { encounterReference ->
             bundle.putString(EncounterReference, encounterReference)

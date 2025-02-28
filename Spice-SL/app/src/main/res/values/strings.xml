@@ -1318,6 +1318,8 @@
     <string name="support_label" translatable="false">Please write your issues with the\napplication</string>
     <string name="support" translatable="false">Support</string>
     <string name="comment" translatable="false">Comment</string>
+    <string name="description">Description</string>
+    <string name="uom">UOM</string>
     <string name="scheduled_date" translatable="false">Scheduled Date</string>
     <string name="vaccination_date" translatable="false">Vaccination Date</string>
     <string name="vaccination_taken" translatable="false">Vaccinations Taken </string>
@@ -1343,4 +1345,7 @@
     <string name="emergency_contact_at_PHU" translatable="false">Emergency contact at PHU</string>
     <string name="cbs_register_updated" translatable="false">CBS Register Updated!</string>
     <string name="cbs" translatable="false">CBS</string>
+    <string name="lab_test_results">Lab Test Results</string>
+    <string name="descriptive_result">Descriptive Result</string>
+    <string name="test_name_">Test Name</string>
 </resources>

@@ -1032,7 +1032,18 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                         comments = lifeStyle.comments?.trim().takeIf { it?.isNotBlank() == true }
                     )
                 }
+                // if lifestyle question nothing is answered i need to send null
+                if (CommonUtils.isTiberbuUser()) {
+                    // Check if all answers are empty
+                    lifestyle =
+                        if (lifestyle?.all { it.answer?.name.isNullOrBlank() && it.answer?.value == null } == true) {
+                            null
+                        } else {
+                            lifestyle
+                        }
+                }
             }
+
             continuousMedicalReview = ContinuousMedicalReview(
                 physicalExams = obstetricExaminationViewModel.chips.map { chip ->
                     Chip(

@@ -65,6 +65,23 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         if (getEncounterReference().isNotBlank()) {
             setTitle(requireContext().getString(R.string.home_title))
         }
+
+        // Deeplink directly goes to Medical review
+       if (requireArguments().getBoolean(DefinedParams.IsDeepLink)){
+           if (getOrigin().equals(MenuConstants.MY_PATIENTS_MENU_ID, true)) {
+               val intent =
+                   Intent(requireContext(), NCDMedicalReviewActivity::class.java).apply {
+                       putExtra(EncounterReference, getEncounterReference())
+                       putExtra(MENU_ID, "ncd")
+                       putExtra(DefinedParams.FhirId, getMemberReference())
+                       putExtra(DefinedParams.PatientId, getPatientReference())
+                       putExtra(DefinedParams.ORIGIN, getOrigin())
+                   }
+               startActivity(intent)
+           } else {
+               startAssessmentActivity("ncd", null)
+           }
+       }
     }
 
     private fun attachObservers() {

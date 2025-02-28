@@ -86,7 +86,7 @@ android {
                             buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev.tbb.labsplatform.com/\"")
                             buildConfigField("String", "SALT", "\"spice_uat\"")
                             buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
-                            resValue("string", "spice_app_name", "SPICE Tiberbu Dev")
+                            resValue("string", "spice_app_name", "TaifaCare(by SPICE) Dev")
                         }
                     }
                 }
@@ -119,12 +119,12 @@ android {
                             buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.tiberbu.health/\"")
                             buildConfigField("String", "SALT", "\"spice_uat\"")
                             buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
-                            resValue("string", "spice_app_name", "SPICE Tiberbu Dev")
+                            resValue("string", "spice_app_name", "TaifaCare(by SPICE) Dev")
                         }
                     }
                 }
             }
-//            signingConfig = signingConfigs.getByName("staging")
+            signingConfig = signingConfigs.getByName("staging")
         }
 
         create("staging") {
@@ -187,7 +187,7 @@ android {
                             buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.tiberbu.health/\"")
                             buildConfigField("String", "SALT", "\"spice_uat\"")
                             buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
-                            resValue("string", "spice_app_name", "SPICE Tiberbu Training")
+                            resValue("string", "spice_app_name", "TaifaCare(by SPICE) Training")
                         }
                     }
                 }

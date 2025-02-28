@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.ChildViewLifeStyleBinding
 import com.medtroniclabs.spice.databinding.FragmentNcdLifestyleAssessmentBinding
 import com.medtroniclabs.spice.databinding.LayoutLifeStyleBinding
@@ -70,7 +71,9 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
         list?.forEach { style ->
             val lifeStyleBinding = LayoutLifeStyleBinding.inflate(LayoutInflater.from(context))
             lifeStyleBinding.tvTitle.text = style.lifestyle
-            lifeStyleBinding.tvTitle.markMandatory()
+            if (!CommonUtils.isTiberbuUser()) {
+                lifeStyleBinding.tvTitle.markMandatory()
+            }
             val selectedItem =
                 viewModel.lifestyle?.find { it.id == style._id }
             selectedItem?.let { style.lifestyleAnswer.find { it.name == selectedItem.lifestyleAnswer } }
@@ -268,34 +271,40 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
             viewModel.lifestyle = getSelectedLifeStyleList(it)
         }
         var isValid = true
-        if (viewModel.lifestyle != null) {
-            viewModel.lifestyle?.let {
-                val unAnsweredList = it.filter { it.lifestyleAnswer == null }
-                if (unAnsweredList.isNotEmpty()) {
-                    isValid = false
-                    showErrorMessage(
-                        getString(R.string.validation_message_lifestyle),
-                        binding.tvErrorLifeStyle
-                    )
-                } else {
-                    val unCommentedList =
-                        it.filter { it.isAnswerDependent && it.comments == null }
-                    if (unCommentedList.isNotEmpty()) {
+        if (!CommonUtils.isTiberbuUser()) {
+            if (viewModel.lifestyle != null) {
+                viewModel.lifestyle?.let {
+                    val unAnsweredList = it.filter { it.lifestyleAnswer == null }
+                    if (unAnsweredList.isNotEmpty()) {
                         isValid = false
                         showErrorMessage(
                             getString(R.string.validation_message_lifestyle),
                             binding.tvErrorLifeStyle
                         )
-                    } else
-                        hideErrorMessage(binding.tvErrorLifeStyle)
+                    } else {
+                        val unCommentedList =
+                            it.filter { it.isAnswerDependent && it.comments == null }
+                        if (unCommentedList.isNotEmpty()) {
+                            isValid = false
+                            showErrorMessage(
+                                getString(R.string.validation_message_lifestyle),
+                                binding.tvErrorLifeStyle
+                            )
+                        } else
+                            hideErrorMessage(binding.tvErrorLifeStyle)
+                    }
                 }
+            } else {
+                isValid = false
+                showErrorMessage(
+                    getString(R.string.validation_message_lifestyle),
+                    binding.tvErrorLifeStyle
+                )
             }
-        } else {
-            isValid = false
-            showErrorMessage(
-                getString(R.string.validation_message_lifestyle),
-                binding.tvErrorLifeStyle
-            )
+        }else{
+            if (viewModel.lifestyle == null){
+
+            }
         }
         return Pair(isValid, binding.tvErrorLifeStyle)
     }

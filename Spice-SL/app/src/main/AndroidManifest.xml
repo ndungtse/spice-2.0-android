@@ -133,6 +133,15 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Define HTTP and HTTPS support -->
+                <data android:scheme="http" android:host="spice-training.tiberbu.health" android:pathPrefix="/patient-list-search" />
+                <data android:scheme="https" android:host="spice-training.tiberbu.health" android:pathPrefix="/patient-list-search" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.BaseActivity"

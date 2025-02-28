@@ -113,6 +113,87 @@
             app:justifyContent="flex_start" />
 
         <LinearLayout
+            android:id="@+id/resultTable"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="@dimen/_18sdp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lab_test_results"
+                android:textSize="@dimen/_18ssp"
+                android:textStyle="bold"
+                android:layout_marginStart="@dimen/_6sdp"
+                android:gravity="start"
+                android:paddingBottom="@dimen/_8sdp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:weightSum="2"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:paddingStart="@dimen/_2sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/comments"
+                    android:textSize="@dimen/_16ssp"
+                    android:textStyle="bold"
+                    android:layout_weight="1.5"
+                    android:layout_marginStart="@dimen/_4sdp"
+                    android:gravity="start" />
+                <TextView
+                    android:id="@+id/comments"
+                    android:layout_weight=".5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/_14ssp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/_4sdp"
+                    android:gravity="start" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:weightSum="2"
+                android:paddingStart="@dimen/_2sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/_16ssp"
+                    android:text="@string/descriptive_result"
+                    android:textStyle="bold"
+                    android:layout_weight="1.5"
+                    android:layout_marginStart="@dimen/_4sdp"
+                    android:gravity="start" />
+                <TextView
+                    android:id="@+id/descriptiveResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:textSize="@dimen/_14ssp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/_4sdp"
+                    android:gravity="start" />
+            </LinearLayout>
+
+
+
+
+        </LinearLayout>
+        <LinearLayout
             android:id="@+id/resultViewContainer"
             android:layout_width="match_parent"
             android:visibility="gone"

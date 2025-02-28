@@ -59,6 +59,7 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
         attachObservers()
         viewModel.getMenus()
         viewModel.setUserJourney(getString(R.string.home))
+        isDeeplink(arguments?.getBoolean(DefinedParams.IsDeepLink,false))
     }
 
     private fun attachObservers() {
@@ -214,6 +215,26 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
                     val intent = Intent(requireContext(), NCDFollowUpActivity::class.java)
                     startActivity(intent)
                 }
+            }
+        }
+    }
+
+    // Deeplink  redirecting to Search Patient
+    private fun isDeeplink(isDeepLink: Boolean?) {
+        if (isDeepLink == true) {
+            val bundle = Bundle().apply {
+                putString(DefinedParams.ORIGIN, MenuConstants.MY_PATIENTS_MENU_ID)
+            }
+            val intent = if (CommonUtils.isCommunity()) Intent(
+                requireContext(),
+                FollowUpMyPatientActivity::class.java
+            ) else Intent(requireContext(), PatientSearchActivity::class.java)
+
+            intent.putExtras(bundle)
+            if (CommonUtils.isCommunity()) {
+                startActivity(intent)
+            } else {
+                    startActivity(intent)
             }
         }
     }
