@@ -85,11 +85,7 @@ class NCDMedicalReviewRepository @Inject constructor(
                     })
 
                     // Insert everything at once into the table
-                    roomHelper.insertNCDMedicalReviewMeta(allData.map { item ->
-                        item.apply {
-                            id = 0
-                        }
-                    })
+                    roomHelper.insertNCDMedicalReviewMeta(allData)
 
                     //Handle Treatment Plan Separately
                     roomHelper.deleteTreatmentPlan()

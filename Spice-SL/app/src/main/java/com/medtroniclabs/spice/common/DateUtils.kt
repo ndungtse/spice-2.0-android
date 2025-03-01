@@ -675,11 +675,13 @@ object DateUtils {
     }
 
     fun convertDateTimeToMillisUsingLocal(dateTimeString: String): Long {
-        val formatter = DateTimeFormatter.ofPattern(CALENDAR_FORMAT)
-        val dateTime = LocalDateTime.parse(dateTimeString, formatter)
-        val offset = ZoneOffset.of(dateTimeString.takeLast(6))
-        val instant = dateTime.toInstant(offset)
-        return instant.toEpochMilli()
+        return try {
+            // Parse using ZonedDateTime to handle both UTC (Z) and offset-based timestamps
+            val zonedDateTime = ZonedDateTime.parse(dateTimeString, DateTimeFormatter.ISO_DATE_TIME)
+            zonedDateTime.toInstant().toEpochMilli() // Convert to UTC millis
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Invalid date format: $dateTimeString", e)
+        }
     }
 
     fun getStartDate(): Long {

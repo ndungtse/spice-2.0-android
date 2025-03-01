@@ -24,10 +24,9 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivPrevious"
+                style="@style/AppLogo"
                 android:layout_gravity="center"
                 android:layout_marginVertical="@dimen/_32sdp"
-                android:layout_width="280dp"
-                android:layout_height="60dp"
                 android:contentDescription="@string/logo_description"
                 android:src="@drawable/ic_spice_logo" />
 

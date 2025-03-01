@@ -147,10 +147,8 @@ abstract class SpiceDataBase : RoomDatabase() {
                 db.addMigrations(SpiceSLMigration.MIGRATION_3_4)
             } else if (CommonUtils.isAfrica()) {
                 db.addMigrations(SpiceAfricaMigration.MIGRATION_1_2)
+                db.addMigrations(SpiceAfricaMigration.MIGRATION_4_5)
             }
-
-            if (CommonUtils.isNonCommunity())
-                db.fallbackToDestructiveMigration()
 
             return db.build()
         }

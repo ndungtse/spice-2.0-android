@@ -23,8 +23,7 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivPrevious"
-                android:layout_width="280dp"
-                android:layout_height="60dp"
+                style="@style/AppLogo"
                 android:layout_gravity="center"
                 android:layout_marginVertical="@dimen/_32sdp"
                 android:contentDescription="@string/logo_description"

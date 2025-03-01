@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "NCDMedicalReviewMetaEntity")
 data class NCDMedicalReviewMetaEntity(
     @PrimaryKey(autoGenerate = true)
+    var primaryId: Long = 0,
     var id: Long,
     val name: String,
     val displayValue: String,

@@ -445,4 +445,38 @@ object SpiceAfricaMigration {
 
         }
     }
+
+    val MIGRATION_4_5 = object : Migration(4, 5) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Step 1: Create new table with updated schema
+            db.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS NCDMedicalReviewMetaEntity_new (
+                primaryId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                id INTEGER NOT NULL,
+                name TEXT NOT NULL,
+                displayValue TEXT NOT NULL,
+                displayOrder INTEGER NOT NULL,
+                type TEXT,
+                category TEXT,
+                value TEXT
+            )
+            """.trimIndent()
+            )
+
+            // Step 2: Copy data from old table to new table
+            db.execSQL(
+                """
+            INSERT INTO NCDMedicalReviewMetaEntity_new (id, name, displayValue, displayOrder, type, category, value)
+            SELECT id, name, displayValue, displayOrder, type, category, value FROM NCDMedicalReviewMetaEntity
+            """.trimIndent()
+            )
+
+            // Step 3: Drop the old table
+            db.execSQL("DROP TABLE NCDMedicalReviewMetaEntity")
+
+            // Step 4: Rename the new table to the original name
+            db.execSQL("ALTER TABLE NCDMedicalReviewMetaEntity_new RENAME TO NCDMedicalReviewMetaEntity")
+        }
+    }
 }

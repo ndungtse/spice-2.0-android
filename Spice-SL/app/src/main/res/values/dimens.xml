@@ -711,4 +711,6 @@
         <dimen name="labeled_default_height">32dp</dimen>
         <dimen name="viewpager_next_item_visible">100dp</dimen>
         <dimen name="viewpager_current_item_horizontal_margin">90dp</dimen>
+        <dimen name="default_logo_width">-2</dimen>
+        <dimen name="default_logo_height">-2</dimen>
 </resources>
