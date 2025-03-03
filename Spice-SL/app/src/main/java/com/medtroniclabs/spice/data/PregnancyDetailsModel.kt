@@ -27,7 +27,7 @@ data class PregnancyDetailsModel(
     var diagnosisTime: String? = null,
     var maternalOutcomes: String? = null,
     var neonatalOutcomes: String? = null,
-    var temperature: Int? = null,
+    var temperature: Double? = null,
     var ncdPatientStatus: NcdPatientStatus? = null,
     val provenance: ProvanceDto = ProvanceDto(),
     var patientVisitId: String? = null

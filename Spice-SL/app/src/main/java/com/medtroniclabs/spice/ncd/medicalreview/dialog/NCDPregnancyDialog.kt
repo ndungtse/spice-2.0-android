@@ -57,6 +57,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.Diabetes
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.Hypertension
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.Known_patient
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.Newly_Diagnosed
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDPregnancyViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -181,7 +182,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
             initTextWatcherForInt(etParity) {
                 viewModel.ncdPregnancyCreateModel.parity = it
             }
-            initTextWatcherForInt(etTemperature) {
+            initTextWatcherForDouble(etTemperature) {
                 viewModel.ncdPregnancyCreateModel.temperature = it
             }
             tvLastMenstrualPeriodDate.addTextChangedListener {
@@ -484,9 +485,9 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         )
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                NEW_PATIENT,
-                NEW_PATIENT,
-                getString(R.string.new_patient)
+                Newly_Diagnosed,
+                Newly_Diagnosed,
+                getString(R.string.newly_Diagnosed)
             )
         )
         yearOfDiagnosis.add(
@@ -894,7 +895,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
                     } else {
                         diagnosis?.let { list ->
                             if (list.isNotEmpty()) {
-                                val isNone = list.size == 1 && list[0][DefinedParams.Value] == NONE
+                                val isNone = list.size == 1
                                 if (!isNone && isOnTreatment == null) {
                                     binding.tvPatientTreatmentError.visible()
                                     return false

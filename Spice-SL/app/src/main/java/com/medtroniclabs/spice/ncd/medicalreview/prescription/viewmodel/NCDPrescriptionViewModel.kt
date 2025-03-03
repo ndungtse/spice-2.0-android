@@ -70,6 +70,7 @@ class NCDPrescriptionViewModel @Inject constructor(
     val medicationHistoryLiveData = MutableLiveData<Resource<ArrayList<Prescription>>>()
     val prescriptionPredictionResponseLiveDate =
         SingleLiveEvent<Resource<PrescriptionNudgeResponse>>()
+    var prescriptionId: String? = null
 
     fun searchMedication(request: MedicationSearchRequest? = null) {
         viewModelScope.launch(dispatcherIO) {
@@ -94,6 +95,7 @@ class NCDPrescriptionViewModel @Inject constructor(
     }
 
     fun removePrescription(prescriptionId: String, reason: String?) {
+        this.prescriptionId = prescriptionId
         viewModelScope.launch(dispatcherIO) {
             removePrescriptionLiveData.postLoading()
             setAnalyticsData(

@@ -2,6 +2,6 @@ package com.medtroniclabs.spice.ncd.data
 
 data class NCDSupportRequest(
     val userId: String,
-    val siteId: Long,
-    val summary: String
+    val summary: String,
+    val healthFacilityId:Long
 )

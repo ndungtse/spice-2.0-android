@@ -92,6 +92,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
         const val N_A = "N/A"
         const val New_Patient = "New Patient"
         const val Known_patient = "Known Patient"
+        const val Newly_Diagnosed = "Newly Diagnosed"
         fun newInstance(
             visitId: String?,
             patientReference: String?,
@@ -375,9 +376,9 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
         )
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                New_Patient,
-                New_Patient,
-                getString(R.string.new_patient)
+                Newly_Diagnosed,
+                Newly_Diagnosed,
+                getString(R.string.newly_Diagnosed)
             )
         )
         yearOfDiagnosis.add(

@@ -245,7 +245,10 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resourceState.data?.let { prescriptionListData ->
-                        prescriptionViewModel.prescriptionUIModel = ArrayList()
+                        // Prescription changes regarding deleting the current medication
+                        prescriptionViewModel.prescriptionUIModel?.removeAll { it.prescriptionId == prescriptionViewModel.prescriptionId }
+                        prescriptionViewModel.prescriptionUIModel = prescriptionViewModel.prescriptionUIModel ?: ArrayList()
+
                         val prescriptionUIModel = ArrayList<MedicationResponse>()
                         prescriptionListData.forEach { prescription ->
                             prescriptionUIModel.add(
@@ -272,7 +275,12 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                                 )
                             )
                         }
-                        prescriptionViewModel.prescriptionUIModel!!.addAll(prescriptionUIModel)
+                        val existingIds = prescriptionViewModel.prescriptionUIModel?.map { it.prescriptionId }?.toSet() ?: emptySet()
+
+                        val newItems = prescriptionUIModel.filter { it.prescriptionId !in existingIds }
+
+                        prescriptionViewModel.prescriptionUIModel?.addAll(newItems)
+
                     } ?: kotlin.run {
                         prescriptionViewModel.prescriptionUIModel = null
                     }

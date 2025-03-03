@@ -39,7 +39,7 @@
         <item
             android:id="@+id/support"
             android:icon="@drawable/ic_mail"
-            android:title="@string/support" />
+            android:title="@string/support_" />
 
         <item
             android:id="@+id/logout"

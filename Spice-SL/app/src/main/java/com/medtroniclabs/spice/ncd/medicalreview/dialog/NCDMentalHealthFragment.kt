@@ -41,6 +41,7 @@ import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
 import com.medtroniclabs.spice.ncd.data.NcdPatientStatus
 import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.Newly_Diagnosed
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMentalHealthViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -336,9 +337,9 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         )
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                New_Patient,
-                New_Patient,
-                getString(R.string.new_patient)
+                Newly_Diagnosed,
+                Newly_Diagnosed,
+                getString(R.string.newly_Diagnosed)
             )
         )
         yearOfDiagnosis.add(

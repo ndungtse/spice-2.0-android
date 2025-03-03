@@ -904,9 +904,9 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             message?.let {
                 val request =
                     NCDSupportRequest(
-                        siteId = 6,// need to change
                         userId = SecuredPreference.getUserId().toString(),
-                        summary = it
+                        summary = it,
+                        healthFacilityId = SecuredPreference.getOrganizationId().toLong()
                     )
                 viewModel.createSupportRequest(request)
             }

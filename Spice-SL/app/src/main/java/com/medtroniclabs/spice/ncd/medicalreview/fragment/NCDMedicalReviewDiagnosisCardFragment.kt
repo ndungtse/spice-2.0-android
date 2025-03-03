@@ -284,7 +284,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             eddCard.tvDiagnosisConfirm.text =
                 pregnantDetails?.gestationalAge?.toLongOrNull()?.let { gestationalAge ->
                     DateUtils.formatGestationalAge(gestationalAge, requireContext())
-                } ?: hyphen
+                }
             eddCard.tvDiagnosisConfirm.apply {
                 setTextColor(getColor(requireContext(), R.color.text_label_color))
                 typeface = ResourcesCompat.getFont(requireContext(), R.font.inter_regular)

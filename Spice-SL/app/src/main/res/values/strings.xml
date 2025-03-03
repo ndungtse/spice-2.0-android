@@ -1348,4 +1348,6 @@
     <string name="lab_test_results">Lab Test Results</string>
     <string name="descriptive_result">Descriptive Result</string>
     <string name="test_name_">Test Name</string>
+    <string name="support_">SUPPORT</string>
+    <string name="newly_Diagnosed" translatable="false">Newly Diagnosed</string>
 </resources>
