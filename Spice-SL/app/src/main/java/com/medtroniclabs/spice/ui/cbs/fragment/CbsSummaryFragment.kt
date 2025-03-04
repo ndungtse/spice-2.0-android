@@ -14,8 +14,10 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.notifiableConditions
-import com.medtroniclabs.spice.common.DefinedParams.otherNotifiableConditions
+import com.medtroniclabs.spice.common.DefinedParams.CbsNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.NotifiableConditions
+import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditions
+import com.medtroniclabs.spice.common.DefinedParams.RmnchNotifiableCondition
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentIccmSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -173,12 +175,17 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
 
     private fun composeSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
         if (viewModel.workflowName.equals(ANC, true)) {
-            listSummaryData.filter { it.value != null }.forEach { item ->
-                if (item.id.equals(notifiableConditions, true)) {
+            listSummaryData.filter { it.value != null && !it.id.equals(OtherNotifiableConditions,true)  }.forEach { item ->
+                if (setOf(
+                        NotifiableConditions,
+                        CbsNotifiableCondition,
+                        RmnchNotifiableCondition
+                    ).contains(item.id?.lowercase())
+                ) {
                     val otherValue =
                         listSummaryData.find {
                             it.id.equals(
-                                otherNotifiableConditions,
+                                OtherNotifiableConditions,
                                 true
                             )
                         }?.value
@@ -190,12 +197,15 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
                 }
             }
         } else {
-            listSummaryData.filter { it.value != null }.forEach { item ->
-                if (item.id.equals(notifiableConditions, true)) {
+            listSummaryData.filter { it.value != null && !it.id.equals(OtherNotifiableConditions,true) }.forEach { item ->
+                if (setOf(NotifiableConditions,
+                        CbsNotifiableCondition,
+                        RmnchNotifiableCondition).contains(item.id?.lowercase())
+                ) {
                     val otherValue =
                         listSummaryData.find {
                             it.id.equals(
-                                otherNotifiableConditions,
+                                OtherNotifiableConditions,
                                 true
                             )
                         }?.value

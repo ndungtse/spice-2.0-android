@@ -28,6 +28,10 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ICCM
 import com.medtroniclabs.spice.common.DefinedParams.True
 import com.medtroniclabs.spice.common.DefinedParams.Yes
+import com.medtroniclabs.spice.common.DefinedParams.IccmDiarrheaNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.IccmFeverNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditionsForDiarrhoea
+import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditionsForFever
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
@@ -165,26 +169,47 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.cbsEmptyErrorMessage.visibility = View.GONE
             binding.cbsParentLayout.visibility = View.VISIBLE
             binding.cbsParentLayout.removeAllViews()
-            composeSummaryView(summaryData)
+            composeSummaryView(
+                summaryData.filter {
+                    listOf(
+                        IccmDiarrheaNotifiableCondition,
+                        IccmFeverNotifiableCondition,
+                        OtherNotifiableConditionsForFever,
+                        OtherNotifiableConditionsForDiarrhoea
+                    ).contains(it.id)
+                }.toCollection(
+                    mutableListOf()
+                )
+            )
         } ?: kotlin.run {
             showErrorInSummaryCbs()
         }
     }
 
     private fun composeSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        val cbsList = listOf(DefinedParams.notifiableConditions)
-        listSummaryData.filter { it.value != null && cbsList.contains(it.id) }.forEach { item ->
-            if (item.id.equals(DefinedParams.notifiableConditions, true)) {
+        listSummaryData.filter { it.value != null && !listOf(OtherNotifiableConditionsForDiarrhoea,OtherNotifiableConditionsForFever).contains(it.id) }.forEach { item ->
+            if (item.id.equals(IccmDiarrheaNotifiableCondition, true)) {
                 val otherValue =
                     listSummaryData.find {
                         it.id.equals(
-                            DefinedParams.otherNotifiableConditions,
+                            OtherNotifiableConditionsForDiarrhoea,
                             true
                         )
                     }?.value
                 val value =
                     if (otherValue != null) "${item.value} - $otherValue" else item.value
-                bindSummaryView(item.title, value)
+                bindSummaryView(item.title+" "+getString(R.string.hyphen_symbol) +" "+ getString(R.string.diarrhoea), value)
+            } else if (item.id.equals(IccmFeverNotifiableCondition, true)) {
+                val otherValue =
+                    listSummaryData.find {
+                        it.id.equals(
+                            OtherNotifiableConditionsForFever,
+                            true
+                        )
+                    }?.value
+                val value =
+                    if (otherValue != null) "${item.value} - $otherValue" else item.value
+                bindSummaryView(item.title +" "+getString(R.string.hyphen_symbol) +" "+getString(R.string.fever), value)
             } else {
                 bindSummaryView(item.title, item.value)
             }
@@ -394,7 +419,17 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.emptyErrorMessage.visibility = View.GONE
             binding.parentLayout.visibility = View.VISIBLE
             binding.parentLayout.removeAllViews()
-            composeIccmSummaryView(summaryData)
+            val cbsList = listOf(
+                IccmDiarrheaNotifiableCondition,
+                IccmFeverNotifiableCondition,
+                OtherNotifiableConditionsForFever,
+                OtherNotifiableConditionsForDiarrhoea
+            )
+            composeIccmSummaryView(
+                summaryData.filter { !cbsList.contains(it.id) }.toCollection(
+                    mutableListOf()
+                )
+            )
         } ?: kotlin.run {
             showErrorInSummary()
         }

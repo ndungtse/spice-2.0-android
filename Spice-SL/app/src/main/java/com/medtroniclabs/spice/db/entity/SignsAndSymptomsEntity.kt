@@ -22,4 +22,7 @@ data class SignsAndSymptomsEntity(
 ) {
     @Ignore
     var isSelected = false
+
+    @Ignore
+    var isEnabled = true
 }

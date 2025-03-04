@@ -281,8 +281,14 @@ object DefinedParams {
     const val ps = "ps"
     const val phu = "phu"
     const val CBS_Referral = "CBS Referral"
-    const val notifiableConditions = "notifiableConditions"
-    const val otherNotifiableConditions = "otherNotifiableConditions"
+    const val NotifiableConditions = "notifiableConditions"
+    const val IccmDiarrheaNotifiableCondition = "iccmDiarrheaNotifiableCondition"
+    const val IccmFeverNotifiableCondition = "iccmFeverNotifiableCondition"
+    const val OtherNotifiableConditionsForFever = "otherNotifiableConditionsForFever"
+    const val OtherNotifiableConditionsForDiarrhoea = "otherNotifiableConditionsForDiarrhoea"
+    const val CbsNotifiableCondition = "cbsNotifiableCondition"
+    const val RmnchNotifiableCondition = "rmnchNotifiableCondition"
+    const val OtherNotifiableConditions = "otherNotifiableConditions"
 
     const val IsDeepLink = "isDeepLink"
 
@@ -290,4 +296,8 @@ object DefinedParams {
     const val Result = "result"
     const val Uom = "uom"
     const val Test_Name = "Test Name"
+    const val birth = "birth"
+    const val ANC_CBS = "anc_cbs"
+    const val BOY = "Boy"
+    const val GIRL = "Girl"
 }

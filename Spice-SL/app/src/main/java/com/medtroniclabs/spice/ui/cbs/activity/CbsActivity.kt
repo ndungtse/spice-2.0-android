@@ -15,8 +15,11 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.cbs.fragment.CbsFragment
+import com.medtroniclabs.spice.ui.cbs.fragment.CbsMemberRegistration
 import com.medtroniclabs.spice.ui.cbs.fragment.CbsSummaryFragment
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.landing.LandingActivity
@@ -46,6 +49,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
         initView()
         attachObservers()
     }
+
     override fun onDialogDismissListener(isFinish: Boolean) {
         finishSuccessFlow()
     }
@@ -64,6 +68,8 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
             Pair(fragment.getCurrentAnsweredStatus(), false)
         } else if (fragment is CbsSummaryFragment) {
             Pair(true, true)
+        } else if (fragment is CbsMemberRegistration){
+            Pair(fragment.getCurrentAnsweredStatus(), true)
         } else {
             Pair(false, false)
         }
@@ -120,6 +126,24 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                 }
             }
         }
+        viewModel.birthLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resource.data?.let {
+                        loadMemberRegistration()
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
         viewModel.callResultSaveLiveData.observe(this) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
@@ -128,10 +152,49 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    resource.data?.let { it ->
+                    resource.data?.let {
                         // insertOtherAssessmentDetails()
                         viewModel.assessmentSaveLiveData.postValue(resource)
                         viewModel.callResultSaveLiveData.postError()
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
+        viewModel.memberCbsDetailsLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resource.data?.let {
+                        // insertOtherAssessmentDetails()
+                        val isAncOrNormal = viewModel.birthLiveData.value?.data?.third ?: false
+                        if (isAncOrNormal) {
+                            val isDelete = viewModel.birthLiveData.value?.data?.second ?: false
+                            if (isDelete) {
+                                viewModel.updateMemberDeceasedStatus(
+                                    viewModel.memberDetailsLiveData.value?.data?.id ?: -1L, false
+                                )
+                            }
+                            viewModel.saveAssessment(
+                                viewModel.assessmentMap,
+                                viewModel.referralResult,
+                                viewModel.menuId
+                            )
+                        } else {
+                            viewModel.assessment?.let {
+                                viewModel.saveCallResult(
+                                    it,
+                                    viewModel.resultValue
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -148,6 +211,14 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
         replaceFragmentInId<CbsSummaryFragment>(
             binding.formsFragmentContainer.id,
             tag = CbsSummaryFragment.TAG
+        )
+    }
+
+    private fun loadMemberRegistration() {
+        setTitle(getString(R.string.member_registration))
+        replaceFragmentInId<CbsMemberRegistration>(
+            binding.formsFragmentContainer.id,
+            tag = CbsMemberRegistration.TAG
         )
     }
 
@@ -168,8 +239,13 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
         val bundle = Bundle()
         bundle.putString(DefinedParams.FhirId, intent.getStringExtra(DefinedParams.FhirId))
         bundle.putString(DefinedParams.ORIGIN, intent.getStringExtra(DefinedParams.ORIGIN))
-        bundle.putString(MenuConstants.WorkFlowName, intent.getStringExtra(MenuConstants.WorkFlowName))
+        bundle.putString(
+            MenuConstants.WorkFlowName,
+            intent.getStringExtra(MenuConstants.WorkFlowName)
+        )
         bundle.putLong(AssessmentId, intent.getLongExtra(AssessmentId, 0L))
+        bundle.putBoolean(RMNCH.deathOfNewborn, intent.getBooleanExtra(RMNCH.deathOfNewborn, false))
+        bundle.putBoolean(DeathOfMother, intent.getBooleanExtra(DeathOfMother, false))
         setTitle(getString(R.string.cbs_register))
         replaceFragmentInId<CbsFragment>(
             binding.formsFragmentContainer.id,

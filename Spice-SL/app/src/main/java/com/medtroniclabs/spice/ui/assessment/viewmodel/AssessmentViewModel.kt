@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
-import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
@@ -18,7 +17,14 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.CBS
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.DefinedParams.TbScreening
-import com.medtroniclabs.spice.common.DefinedParams.notifiableConditions
+import com.medtroniclabs.spice.common.DefinedParams.CbsNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.IccmDiarrheaNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.IccmFeverNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.NotifiableConditions
+import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditions
+import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditionsForDiarrhoea
+import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditionsForFever
+import com.medtroniclabs.spice.common.DefinedParams.RmnchNotifiableCondition
 import com.medtroniclabs.spice.common.DefinedParams.surveillanceDetails
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
@@ -39,6 +45,7 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.mappingkey.UnderFiveYearExaminationKeyMapping.DiseaseName.fever
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -88,7 +95,7 @@ class AssessmentViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private var memberRegistrationRepository: HouseholdMemberRepository,
     private var assessmentRepository: AssessmentRepository,
-    private val metaRepository: MetaRepository
+    private val metaRepository: MetaRepository,
 ) : BaseViewModel(dispatcherIO) {
 
     var selectedHouseholdMemberId = -1L
@@ -452,13 +459,35 @@ class AssessmentViewModel @Inject constructor(
                             signsList.add(it[DefinedParams.Value] as String)
                         }
                     }
-                    diarrhoea[notifiableConditions]?.let { cbs ->
-                        diarrhoea.remove(notifiableConditions)
-                        val cbsData = hashMapOf<String, Any>()
-                        cbsData[notifiableConditions] = cbs
-                        map[CBS.lowercase()] = cbsData
-                    }
                     diarrhoea[DiarrhoeaSigns] = signsList
+                }
+                diarrhoea[IccmDiarrheaNotifiableCondition]?.let { cbs ->
+                    diarrhoea.remove(IccmDiarrheaNotifiableCondition)
+                    val cbsData = hashMapOf<String, Any>()
+                    cbsData[NotifiableConditions] = cbs
+                    diarrhoea[CBS.lowercase()] = cbsData
+                    diarrhoea.remove(OtherNotifiableConditionsForDiarrhoea)?.let {
+                        (diarrhoea[CBS.lowercase()] as? HashMap<String, Any>)?.set(
+                            OtherNotifiableConditions,
+                            it
+                        )
+                    }
+                }
+            }
+
+            if (iccm.containsKey(fever.lowercase())) {
+                val fever = iccm[fever.lowercase()] as HashMap<Any, Any>
+                fever[IccmFeverNotifiableCondition]?.let { cbs ->
+                    fever.remove(IccmFeverNotifiableCondition)
+                    val cbsData = hashMapOf<String, Any>()
+                    cbsData[NotifiableConditions] = cbs
+                    fever[CBS.lowercase()] = cbsData
+                    fever.remove(OtherNotifiableConditionsForFever)?.let {
+                        (fever[CBS.lowercase()] as? HashMap<String, Any>)?.set(
+                            OtherNotifiableConditions,
+                            it
+                        )
+                    }
                 }
             }
         }
@@ -548,10 +577,18 @@ class AssessmentViewModel @Inject constructor(
         if (map.containsKey(CBS.lowercase())) {
             val result = map[CBS.lowercase()] as? HashMap<Any, Any>
             if (result != null && result.containsKey(surveillanceDetails)) {
-                val value = result[surveillanceDetails] as? HashMap<Any, Any>
-                if (!value.isNullOrEmpty()) {
+                val value = result[surveillanceDetails] as? HashMap<*, *>
+                value?.takeIf { it.isNotEmpty() }?.let {
                     map.remove(CBS.lowercase())
-                    map[CBS.lowercase()] = value
+                    val notifiableCondition =
+                        (it[CbsNotifiableCondition] as? ArrayList<Map<String, Any>>)
+                            ?: (it[RmnchNotifiableCondition] as? ArrayList<Map<String, Any>>)
+                            ?: arrayListOf()
+                    map[CBS.lowercase()] = it.toMutableMap().apply {
+                        remove(CbsNotifiableCondition)
+                        remove(RmnchNotifiableCondition)
+                        put(NotifiableConditions, notifiableCondition)
+                    }
                 }
             }
         }
@@ -992,5 +1029,63 @@ class AssessmentViewModel @Inject constructor(
                 )
             )
         }
+    }
+    val triggerGetForm = MutableLiveData<Boolean>()
+    fun triggerGetForm() {
+        triggerGetForm.value = true
+    }
+    val formLayoutsCbsLiveData = MutableLiveData<Resource<FormResponse>>()
+    fun getFormDataCbs(formType: String) {
+        viewModelScope.launch(dispatcherIO) {
+            formLayoutsCbsLiveData.postLoading()
+            formLayoutsCbsLiveData.postValue(assessmentRepository.getFormData(formType))
+        }
+    }
+    var assessmentMap: HashMap<String, Any> = hashMapOf()
+    var referralResult: Pair<String?, ArrayList<String>>? = Pair(null, ArrayList<String>())
+    val birthLiveData = MutableLiveData<Resource<Triple<String,Boolean,Boolean>>>()
+     fun setBirth(
+         resultValue: HashMap<String, Any>,
+         referralResult: Pair<String?, ArrayList<String>>,
+         birth: String,
+         isDelete: Boolean
+     ) {
+        this.assessmentMap = resultValue
+        this.referralResult = referralResult
+         birthLiveData.postValue(Resource(ResourceState.SUCCESS, Triple(birth,isDelete,true)))
+    }
+
+    val memberCbsDetailsLiveData = MutableLiveData<Resource<AssessmentMemberDetails>>()
+    fun saveMember(
+        memberMap: HashMap<String, Any>,
+        householdId: Long,
+        motherID: Long,
+        location: Location?
+    ) {
+        viewModelScope.launch(dispatcherIO) {
+           val id =  memberRegistrationRepository.registerMember(
+                memberMap,
+                householdId,
+                null,
+                motherID,
+                location = location
+            )
+            id?.let {
+                memberCbsDetailsLiveData.postValue(memberRegistrationRepository.getAssessmentMemberDetails(id))
+            }
+        }
+    }
+
+    var assessment: AssessmentEntity? = null
+    var resultValue: HashMap<String, Any> = hashMapOf()
+
+    fun saveAssessmentCbs(
+        data: AssessmentEntity,
+        resultValue: HashMap<String, Any>,
+        birth: String
+    ) {
+        this.assessment = data
+        this.resultValue = resultValue
+        birthLiveData.postValue(Resource(ResourceState.SUCCESS, Triple(birth, false,false)))
     }
 }

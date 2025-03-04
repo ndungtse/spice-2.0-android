@@ -67,6 +67,11 @@
                         layout="@layout/summary_layout" />
 
                     <include
+                        android:id="@+id/pregnancy"
+                        layout="@layout/summary_layout"
+                        android:visibility="gone" />
+
+                    <include
                         android:id="@+id/dateOfOccurrence"
                         layout="@layout/summary_layout"
                         android:visibility="gone" />

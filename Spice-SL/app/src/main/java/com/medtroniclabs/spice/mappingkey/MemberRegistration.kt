@@ -19,12 +19,12 @@ object MemberRegistration {
     const val householdId = "household_id"
     const val isPregnant= "isPregnant"
 
-    private const val WifeOrHusband = "Wife / Husband"
+    const val WifeOrHusband = "Wife / Husband"
     private const val SonOrDaughter = "Son / Daughter"
-    private const val FatherOrMother = "Father / Mother"
+    const val FatherOrMother = "Father / Mother"
     private const val BrotherOrSister = "Brother / Sister"
     private const val Grandchild = "Grandchild"
-    private const val Grandparent = "Grandparent"
+    const val Grandparent = "Grandparent"
     private const val OtherRelation = "Other Family Member (specify)"
 
     fun isValidRelationAge(ctx: Context, dob: String, relation: String, headDob: String?): String? {
@@ -65,5 +65,14 @@ object MemberRegistration {
         val today = LocalDate.now()
         val age = Period.between(dateOfBirth, today).years
         return age >= 10
+    }
+
+    fun isValidMinAgeForCbsMemberAdd(dob: String): Boolean {
+        val memberDOB = LocalDate.parse(
+            dob,
+            DateTimeFormatter.ofPattern(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+        )
+        val ageDifference = Period.between(memberDOB, LocalDate.now())
+        return ageDifference.years == 0
     }
 }

@@ -17,14 +17,17 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
     private var callback: ((result: ArrayList<HashMap<String, Any>>) -> Unit)? = null
     var resultMap: Any? = null
     var title : String? = null
+    var autoPopulate:List<String> = emptyList()
     constructor(
         callback: (result: ArrayList<HashMap<String, Any>>) -> Unit,
         resultMap: Any?,
-        title:String?
+        title:String?,
+        autoPopulate:List<String> = emptyList()
     ) : this() {
         this.callback = callback
         this.resultMap = resultMap
         this.title = title
+        this.autoPopulate = autoPopulate
     }
 
     lateinit var binding: CheckboxDialogLayoutBinding
@@ -37,11 +40,12 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
             key: String,
             resultMap: Any?,
             title:String?=null,
+            autoPopulate:List<String> = emptyList(),
             callback: (result: ArrayList<HashMap<String, Any>>) -> Unit
         ): CheckBoxDialog {
             val args = Bundle()
             args.putString(KEY_TYPE, key)
-            val fragment = CheckBoxDialog(callback, resultMap,title)
+            val fragment = CheckBoxDialog(callback, resultMap,title,autoPopulate)
             fragment.arguments = args
             return fragment
         }
@@ -87,7 +91,19 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
                         translate = SecuredPreference.getIsTranslationEnabled()
                     )
                 } else {
-                    binding.rvItems.adapter = CheckboxDialogAdapter(list, translate = SecuredPreference.getIsTranslationEnabled())
+                    if (autoPopulate.isNotEmpty()) {
+                        list.forEach { symptom ->
+                            if (symptom.value in autoPopulate) {
+                                symptom.isSelected = true
+                                symptom.isEnabled = false
+                            }
+                        }
+                        binding.rvItems.adapter = CheckboxDialogAdapter(list, translate = SecuredPreference.getIsTranslationEnabled()).apply {
+                            callback?.invoke(getSelectedItems())
+                        }
+                    } else {
+                        binding.rvItems.adapter = CheckboxDialogAdapter(list, translate = SecuredPreference.getIsTranslationEnabled())
+                    }
                 }
             } else {
                 binding.rvItems.adapter = null
@@ -99,6 +115,7 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
         list: List<SignsAndSymptomsEntity>,
         resultMap: ArrayList<*>
     ): List<SignsAndSymptomsEntity> {
+        var value = emptyList<SignsAndSymptomsEntity>()
         if (resultMap.isNotEmpty()) {
             resultMap.forEach { resultSymptom ->
                 if (resultSymptom is Map<*, *>) {
@@ -106,10 +123,19 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
                     map?.isSelected = true
                 }
             }
-            return list
+            value = list
         } else {
-            return list
+            value = list
         }
+        if (autoPopulate.isNotEmpty()) {
+            value.forEach { symptom ->
+                if (symptom.value in autoPopulate) {
+                    symptom.isSelected = true
+                    symptom.isEnabled = false
+                }
+            }
+        }
+        return value
     }
 
     private fun getRespectiveList(key: String?) {

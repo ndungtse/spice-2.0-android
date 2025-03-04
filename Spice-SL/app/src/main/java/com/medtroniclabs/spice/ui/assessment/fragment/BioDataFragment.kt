@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.calculateEstimatedDeliveryDate
 import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentBioDataBinding
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
@@ -52,7 +53,6 @@ class BioDataFragment : BaseFragment() {
     }
 
     private fun attachObserver() {
-
         viewModel.memberDetailsLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -252,14 +252,21 @@ class BioDataFragment : BaseFragment() {
             if (viewModel.menuId.equals(MenuConstants.CBS_MENU_ID, true)) {
                 binding.dateOfOccurrence.root.visible()
                 binding.dateOfOccurrence.tvKey.text = getString(R.string.date_of_occurrence)
-                binding.dateOfOccurrence.tvValue.text =
-                    DateUtils.getTodayDateDDMMYYYY(DATE_ddMMyyyy)
+                binding.dateOfOccurrence.tvValue.text = DateUtils.getTodayDateDDMMYYYY(DATE_ddMMyyyy)
+                if (gender.equals(DefinedParams.female, true)) {
+                    binding.pregnancy.root.visible()
+                    binding.pregnancy.tvKey.text = getString(R.string.pregnant)
+                    binding.pregnancy.tvValue.text = CommonUtils.getBooleanAsString(isPregnant ?: false).capitalizeFirstChar()
+                } else {
+                    binding.pregnancy.root.gone()
+                }
+                viewModel.triggerGetForm()
             } else {
                 binding.dateOfOccurrence.root.gone()
+                binding.pregnancy.root.gone()
+
                 viewModel.ageInMonth.postValue(age)
-                viewModel.workflowName?.let { workFlowName ->
-                    viewModel.getPatientVisitCountByType(workFlowName, id)
-                }
+                viewModel.workflowName?.let { viewModel.getPatientVisitCountByType(it, id) }
             }
         }
     }

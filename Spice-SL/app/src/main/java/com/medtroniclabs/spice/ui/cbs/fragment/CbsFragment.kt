@@ -4,11 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.ANC_CBS
 import com.medtroniclabs.spice.common.DefinedParams.AssessmentId
+import com.medtroniclabs.spice.common.DefinedParams.CBS
+import com.medtroniclabs.spice.common.DefinedParams.birth
+import com.medtroniclabs.spice.common.DefinedParams.RmnchNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.surveillanceDetails
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -22,8 +30,10 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.fragment.BioDataFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfNewborn
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
-import timber.log.Timber
 
 class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
     private lateinit var binding: FragmentAssessmentBinding
@@ -49,10 +59,9 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         initFormView()
-        getFormDataForWorkflow()
         attachObservers()
         setListeners()
-        if(requireArguments().getLong(AssessmentId) != 0L) {
+        if (requireArguments().getLong(AssessmentId) != 0L) {
             viewModel.getAssessmentDetailsById(requireArguments().getLong(AssessmentId))
         }
     }
@@ -65,7 +74,53 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
             translate = false
-        )
+        ) { map, id ->
+            when (id) {
+                RmnchNotifiableCondition -> {
+                    if (map.containsKey(RmnchNotifiableCondition)) {
+                        val value = map[RmnchNotifiableCondition] as? ArrayList<Map<String, String>>
+                        val filteredValues = value?.firstOrNull {
+                            it[DefinedParams.Value].equals(
+                                deathOfNewborn,
+                                true
+                            )
+                        }
+                        if (filteredValues.isNullOrEmpty()) {
+                            formGenerator.getViewByTag(birth + formGenerator.rootSuffix)
+                                ?.visible()
+                        } else {
+                            formGenerator.getViewByTag(birth + formGenerator.rootSuffix)?.gone()
+                            viewModel.formLayoutsLiveData.value?.data?.formLayout
+                                ?.firstOrNull { it.id.equals(birth, true) }
+                                ?.apply {
+                                    val removeValue = map[birth] as? String
+                                    optionsList?.firstOrNull {
+                                        (it[DefinedParams.id] as? String).equals(
+                                            removeValue,
+                                            true
+                                        )
+                                    }
+                                        ?.let {
+                                            map.remove(birth)
+                                            singleSelectValueOption(
+                                                it[DefinedParams.id] as? String ?: "", birth
+                                            )
+                                        }
+                                }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun singleSelectValueOption(value: String, key: String) {
+        formGenerator.getViewByTag("${value}_${key}")
+            ?.let { view ->
+                if (view is TextView) {
+                    view.isSelected = false
+                }
+            }
     }
 
     private fun attachObservers() {
@@ -78,7 +133,11 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resourceState.data?.let { data ->
-                        formGenerator.populateViews(data.formLayout)
+                        if (arguments?.getBoolean(deathOfNewborn) == true) {
+                            formGenerator.populateViews(data.formLayout.filter { it.id != birth })
+                        } else {
+                            formGenerator.populateViews(data.formLayout)
+                        }
                     }
                 }
 
@@ -102,13 +161,30 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                 }
             }
         }
+        viewModel.triggerGetForm.observe(viewLifecycleOwner) {
+            getFormDataForWorkflow()
+        }
     }
 
     private fun getFormDataForWorkflow() {
-        if (requireArguments().getString(MenuConstants.WorkFlowName) != null) {
-            viewModel.getFormData(MenuConstants.CBS_MENU_ID)
-        } else {
-            viewModel.getFormData(MenuConstants.CBS_MENU_ID)
+        val workflowName = requireArguments().getString(MenuConstants.WorkFlowName)
+        val memberData = viewModel.memberDetailsLiveData.value?.data
+        when {
+            workflowName.equals(ANC, true) -> viewModel.getFormData(ANC_CBS)
+            memberData?.gender.equals(DefinedParams.male, true) -> viewModel.getFormData(
+                MenuConstants.CBS_MENU_ID
+            )
+
+            memberData?.gender.equals(
+                DefinedParams.female,
+                true
+            ) && memberData?.isPregnant == true -> {
+                viewModel.getFormData(ANC_CBS)
+            }
+
+            memberData?.gender.equals(DefinedParams.female, true) -> {
+                viewModel.getFormData(MenuConstants.CBS_MENU_ID)
+            }
         }
     }
 
@@ -132,7 +208,12 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         serverViewModel: FormLayout,
         resultMap: Any?
     ) {
-        CheckBoxDialog.newInstance(id, resultMap) { map ->
+        val value = if (requireArguments().getBoolean(DeathOfMother, false)) {
+            listOf(DeathOfMother)
+        } else {
+            listOf()
+        }
+        CheckBoxDialog.newInstance(id, resultMap, autoPopulate = value) { map ->
             formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
@@ -149,7 +230,6 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         val assessmentId = requireArguments().getLong(AssessmentId)
-        Timber.d("$assessmentId")
         resultMap?.let { details ->
             val gson = Gson()
             val result = serverData?.let {
@@ -157,7 +237,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                     context = requireContext(),
                     serverData = it,
                     details,
-                    DefinedParams.CBS.lowercase()
+                    CBS.lowercase()
                 )
             }
             if (assessmentId != 0L) {
@@ -169,18 +249,40 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                         gson.fromJson(assessmentDetailsJson, type) ?: hashMapOf()
                     // Add result to HashMap if not null
                     result?.second?.let { resultValue ->
-                        (resultValue[DefinedParams.CBS.lowercase()] as? HashMap<String, Any>)?.let {
-                            if (it.containsKey(DefinedParams.surveillanceDetails)) {
+                        (resultValue[CBS.lowercase()] as? HashMap<String, Any>)?.let {
+                            if (it.containsKey(surveillanceDetails)) {
                                 val value =
-                                    it[DefinedParams.surveillanceDetails] as? HashMap<Any, Any>
+                                    it[surveillanceDetails] as? HashMap<Any, Any>
                                 if (!value.isNullOrEmpty()) {
-                                    assessmentDetailsMap[DefinedParams.CBS.lowercase()] = value
+                                    value.takeIf { value -> value.isNotEmpty() }?.let { values ->
+                                        val notifiableCondition =
+                                            (values[DefinedParams.CbsNotifiableCondition] as? ArrayList<Map<String, Any>>)
+                                                ?: (values[RmnchNotifiableCondition] as? ArrayList<Map<String, Any>>)
+                                                ?: arrayListOf()
+                                        assessmentDetailsMap[CBS.lowercase()] =
+                                            values.toMutableMap().apply {
+                                                remove(DefinedParams.CbsNotifiableCondition)
+                                                remove(RmnchNotifiableCondition)
+                                                put(
+                                                    DefinedParams.NotifiableConditions,
+                                                    notifiableCondition
+                                                )
+                                            }
+                                    }
                                 }
                             }
                         }
+                        data.assessmentDetails = gson.toJson(assessmentDetailsMap)
+                        val birth = ((resultValue[CBS.lowercase()] as? Map<String, Any>)
+                            ?.get(surveillanceDetails) as? Map<String, Any>)
+                            ?.get(birth) as? String
+                        if (!birth.isNullOrBlank()) {
+                            viewModel.saveAssessmentCbs(data, resultValue, birth)
+                            return
+                        }
                     }
                     // Convert HashMap back to JSON and save
-                    data.assessmentDetails = gson.toJson(assessmentDetailsMap)
+
                     result?.second?.let { resultValue ->
                         viewModel.saveCallResult(data, resultValue)
                     }
@@ -188,6 +290,25 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
             } else {
                 val referralResult = ReferralResultGenerator().calculateCBSReferralResult(details)
                 result?.second?.let { resultValue ->
+                    val rmnchList = ((resultValue[CBS.lowercase()] as? Map<String, Any>)
+                        ?.get(surveillanceDetails) as? Map<String, Any>)
+                        ?.get(RmnchNotifiableCondition) as? List<Map<String, Any>>
+                    val isDelete = rmnchList?.any {
+                        it[DefinedParams.Value]?.toString().equals(DeathOfMother, true)
+                    } == true
+
+                    val birth = ((resultValue[CBS.lowercase()] as? Map<String, Any>)
+                        ?.get(surveillanceDetails) as? Map<String, Any>)
+                        ?.get(birth) as? String
+                    if (!birth.isNullOrBlank()) {
+                        viewModel.setBirth(resultValue, referralResult, birth, isDelete)
+                        return
+                    }
+                    if (isDelete) {
+                        viewModel.updateMemberDeceasedStatus(
+                            viewModel.memberDetailsLiveData.value?.data?.id ?: -1L, false
+                        )
+                    }
                     viewModel.saveAssessment(resultValue, referralResult, viewModel.menuId)
                 }
             }

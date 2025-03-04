@@ -36,6 +36,9 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfNewborn
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getValueFromMap
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentRMNCHNeonateViewModel
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -118,6 +121,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
             showNextFollowUpDate(map)
         }
         if (map.containsKey(RMNCH.PNCNeonatal)) {
+            showCallDialog(map)
             binding.resultNeonateCardView.visible()
             showSummaryDetail(
                 map,
@@ -130,6 +134,12 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
             updateStatusBar(viewModel.referralStatus)
         }
 
+    }
+
+    private fun showCallDialog(hashMap: HashMap<String, Any>) {
+        val isChildDeath = (hashMap[PNCNeonatal] as? Map<String, Any>)
+            ?.get(deathOfNewborn) as? Boolean ?: false
+        binding.callSupervisor.setVisible(isChildDeath)
     }
 
     private fun loadPhuSitesList(siteList: ArrayList<Map<String, Any>>) {
@@ -338,6 +348,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberId)
         intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
         intent.putExtra(MenuConstants.WorkFlowName, workFlowName)
+        intent.putExtra(deathOfNewborn, true)
         intent.putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
         startActivity(intent)
     }
@@ -415,7 +426,6 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
     private fun showQuestionBasedAge(): List<String> {
         var questionList = ArrayList<String>()
         if (viewModel.isDeathOfNewborn) {
-            binding.callSupervisor.setVisible(viewModel.isDeathOfNewborn)
             questionList.add(AssessmentDefinedParams.ExclusivelyBreastfeeding)
         }
         return questionList

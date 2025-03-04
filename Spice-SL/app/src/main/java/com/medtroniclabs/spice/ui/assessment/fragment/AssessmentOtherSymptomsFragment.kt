@@ -33,7 +33,6 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerat
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.OnClickListener {

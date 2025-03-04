@@ -31,6 +31,7 @@ class CheckboxDialogAdapter(
         val item = dialogList[position]
         holder.checkBox.text = if (translate) item.displayValue ?: item.symptom else item.symptom
         holder.checkBox.isChecked = item.isSelected
+        holder.checkBox.isEnabled = item.isEnabled
         holder.Root.safeClickListener {
             checkDataAndUpdate(item, dialogList)
         }

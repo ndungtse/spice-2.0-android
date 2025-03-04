@@ -377,6 +377,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         viewModel.assessmentSaveLiveData.value?.data?.id?.let {
             intent.putExtra(AssessmentId, it)
         }
+        intent.putExtra(RMNCH.DeathOfMother, true)
         intent.putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
         startActivity(intent)
     }
