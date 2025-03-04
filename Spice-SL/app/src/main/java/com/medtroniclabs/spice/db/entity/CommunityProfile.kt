@@ -2,8 +2,9 @@ package com.medtroniclabs.spice.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.medtroniclabs.spice.db.entity.EntitiesName.COMMUNITY_PROFILE
 
-@Entity(tableName = "CommunityProfile")
+@Entity(tableName = COMMUNITY_PROFILE)
 data class CommunityProfile(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,

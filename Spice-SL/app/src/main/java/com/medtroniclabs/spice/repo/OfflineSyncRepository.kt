@@ -37,6 +37,7 @@ import com.medtroniclabs.spice.data.offlinesync.utils.OfflineUtils
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.db.entity.CommunityProfile
 import com.medtroniclabs.spice.db.entity.EntitiesName
+import com.medtroniclabs.spice.db.entity.EntitiesName.COMMUNITY_PROFILE
 import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
@@ -671,7 +672,7 @@ class OfflineSyncRepository @Inject constructor(
                 response.body()?.entityList?.forEach { entity ->
                     when(entity.status) {
                         OfflineSyncStatus.Success.name -> {
-                            if (entity.type != null && entity.referenceId != null) {
+                            if (entity.referenceId != null && (entity.type == COMMUNITY_PROFILE || entity.type != null && entity.fhirId != null)) {
                                 updateFhirId(
                                     entity.type,
                                     entity.referenceId,
