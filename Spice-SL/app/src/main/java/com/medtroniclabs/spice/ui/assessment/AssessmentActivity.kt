@@ -18,6 +18,8 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OtherSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Summary
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentFamilyPlanningFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentFamilyPlanningSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentNCDFragment
@@ -239,6 +241,15 @@ class AssessmentActivity : BaseActivity() {
                     tag = AssessmentNCDSummaryFragment.TAG
                 )
             }
+
+            MenuConstants.FP_MENU_ID -> {
+                setTitle(Summary.capitalizeFirstChar())
+                hideBackButton()
+                replaceFragmentInId<AssessmentFamilyPlanningSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentFamilyPlanningSummaryFragment::class.simpleName
+                )
+            }
         }
     }
 
@@ -310,6 +321,14 @@ class AssessmentActivity : BaseActivity() {
                     binding.formsFragmentContainer.id,
                     bundle = bundle,
                     tag = AssessmentNCDFragment.TAG
+                )
+            }
+
+            MenuConstants.FP_MENU_ID -> {
+                setTitle(MenuConstants.FP_MENU_ID.uppercase())
+                replaceFragmentInId<AssessmentFamilyPlanningFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentFamilyPlanningFragment.TAG
                 )
             }
 

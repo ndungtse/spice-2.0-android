@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.databinding.FragmentInformationLayoutBinding
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.InformationModel
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Contraceptive
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
@@ -66,6 +67,7 @@ class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
             isUnusualSleepy,isVomiting,isConvulsionPastFewDays,isBreastfeed->{InformationUtils().getDangerSignsInstructions(requireContext(),arguments?.getString(ID))
             }
             rdtTest -> { InformationUtils().getRdtTest(requireContext()) }
+            Contraceptive -> { InformationUtils().getContraceptiveInformation(requireContext()) }
             else -> null
         }
         binding.rvInfoList.apply {

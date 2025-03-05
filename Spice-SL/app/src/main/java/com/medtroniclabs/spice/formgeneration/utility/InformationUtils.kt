@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.formgeneration.utility
 import android.content.Context
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.formgeneration.model.InformationModel
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Contraceptive
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isBreastfeed
@@ -239,6 +240,24 @@ class InformationUtils {
                 )
             }
         }
+        return informationList
+    }
+
+    fun getContraceptiveInformation(context: Context): ArrayList<InformationModel>? {
+        val informationList = ArrayList<InformationModel>()
+        informationList.add(
+            InformationModel(
+                imageId = R.drawable.ic_contraceptive,
+                inputText = context.getString(R.string.advise_to),
+                type = Contraceptive
+            )
+        )
+        informationList.add(
+            InformationModel(
+                inputText = context.getString(R.string.explain_that),
+                type = Contraceptive
+            )
+        )
         return informationList
     }
 

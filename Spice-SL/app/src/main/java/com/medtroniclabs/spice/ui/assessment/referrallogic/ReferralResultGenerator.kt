@@ -3,6 +3,9 @@ package com.medtroniclabs.spice.ui.assessment.referrallogic
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams.CBS_Referral
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsAnySideEffects
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MemberUsingAnyFamilyPlanning
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NeedOfOtherFamilyPlanning
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NoSymptoms
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
@@ -637,5 +640,18 @@ class ReferralResultGenerator {
             return ReferralStatus.OnTreatment.name
         }
         return null
+    }
+
+     fun calculateFamilyPlanningStatus(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
+        val memberUsingAnyFamilyPlanning =
+            map[MemberUsingAnyFamilyPlanning] is Boolean && map[MemberUsingAnyFamilyPlanning] == false
+        val isAnySideEffects = map[IsAnySideEffects] is Boolean && map[IsAnySideEffects] == true
+        val needOfOtherFamilyPlanning =
+            map[NeedOfOtherFamilyPlanning] is Boolean && map[NeedOfOtherFamilyPlanning] == true
+        if (memberUsingAnyFamilyPlanning || isAnySideEffects || needOfOtherFamilyPlanning) {
+            addResultMap("Family Planning", ReferralStatus.Referred.name)
+            addReferralReason(referralReason, "Family Planning")
+        }
+        return Pair(checkStatus(), referralReason)
     }
 }

@@ -160,4 +160,12 @@ object AssessmentDefinedParams {
     const val HasNightSweatsTB = "hasNightSweats"
     const val DateOfOnset = "dateOfOnset"
 
+    const val MemberUsingAnyFamilyPlanning = "memberUsingAnyFamilyPlanning"
+    const val IsAnySideEffects = "isAnySideEffects"
+    const val NeedOfOtherFamilyPlanning = "needOfOtherFamilyPlanning"
+    const val WhichMethod = "whichMethod"
+    const val SpecifySideEffects = "specifySideEffects"
+    const val Contraceptive = "contraceptive"
+    const val Family_Planning = "family_planning"
+
 }
