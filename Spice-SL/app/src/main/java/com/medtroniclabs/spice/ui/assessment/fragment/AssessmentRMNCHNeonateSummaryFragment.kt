@@ -35,8 +35,6 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummar
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfNewborn
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getValueFromMap
@@ -338,7 +336,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                 showDatePickerDialog()
             }
             binding.callSupervisor.id -> {
-                startCbsActivity(ANC)
+                startCbsActivity(PNCNeonatal)
             }
         }
     }
@@ -349,6 +347,9 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
         intent.putExtra(MenuConstants.WorkFlowName, workFlowName)
         intent.putExtra(deathOfNewborn, true)
+        assessmentRMNCHNeonateViewModel.assessmentSaveLiveData.value?.data?.second?.id?.let {
+            intent.putExtra(DefinedParams.AssessmentId, it)
+        }
         intent.putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
         startActivity(intent)
     }

@@ -30,7 +30,9 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.fragment.BioDataFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfNewborn
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -170,6 +172,12 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         val workflowName = requireArguments().getString(MenuConstants.WorkFlowName)
         val memberData = viewModel.memberDetailsLiveData.value?.data
         when {
+            workflowName.equals(ChildHoodVisit,true) -> viewModel.getFormData(
+                MenuConstants.CBS_MENU_ID
+            )
+            workflowName.equals(RMNCH.PNCNeonatal,true) -> viewModel.getFormData(
+                MenuConstants.CBS_MENU_ID
+            )
             workflowName.equals(ANC, true) -> viewModel.getFormData(ANC_CBS)
             memberData?.gender.equals(DefinedParams.male, true) -> viewModel.getFormData(
                 MenuConstants.CBS_MENU_ID

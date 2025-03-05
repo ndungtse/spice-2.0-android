@@ -27,6 +27,8 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -120,7 +122,9 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     hideProgress()
-                    if (viewModel.workflowName.equals(ANC, true)) {
+                    if (viewModel.workflowName.equals(ANC, true)
+                        || viewModel.workflowName.equals(PNCNeonatal, true)
+                        || viewModel.workflowName.equals(ChildHoodVisit, true)) {
                         binding.callSupervisor.visible()
                     } else {
                         binding.callSupervisor.gone()
@@ -174,7 +178,10 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
     }
 
     private fun composeSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        if (viewModel.workflowName.equals(ANC, true)) {
+        if (viewModel.workflowName.equals(ANC, true)
+            || viewModel.workflowName.equals(PNCNeonatal, true)
+            || viewModel.workflowName.equals(ChildHoodVisit, true)
+        ) {
             listSummaryData.filter { it.value != null && !it.id.equals(OtherNotifiableConditions,true)  }.forEach { item ->
                 if (setOf(
                         NotifiableConditions,

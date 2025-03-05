@@ -333,7 +333,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             createListSummaryData(result)?.let {
                 it.filter { it.title?.lowercase() != General_Danger_Signs.lowercase() }
                     .forEach { item ->
-                        if (item.id.equals(hasDiarrhoea,true)) {
+                        if (item.id.equals(hasDiarrhoea,true) || item.id.equals(hasFever,true)) {
                             if (item.value == Yes) {
                                 isCbs = true
                                 viewModel.getUserProfile()

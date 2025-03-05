@@ -179,7 +179,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     val miscarriageValue = workflowMap[RMNCH.Miscarriage]
                     val deathOfMother = workflowMap[DeathOfMother]
                     val deathOfBaby = workflowMap[deathOfBaby]
-                    showCallBtnForDeathMother(deathOfMother is Boolean && deathOfMother)
+                    showCallBtnForDeathMother((deathOfMother is Boolean && deathOfMother) || deathOfBaby is Boolean && deathOfBaby)
                     if ((miscarriageValue is Boolean && miscarriageValue) || (deathOfMother is Boolean && deathOfMother) || (deathOfBaby is Boolean && deathOfBaby)) {
                         binding.etNextFollowUpDate.gone()
                         binding.tvNextFollowupDateTitle.gone()
