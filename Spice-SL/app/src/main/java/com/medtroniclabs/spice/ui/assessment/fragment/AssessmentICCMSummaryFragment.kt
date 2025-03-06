@@ -158,7 +158,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             ?.firstOrNull()
             ?.phoneNumber
         val resultPhoneNumber = if (!phoneNumber.isNullOrBlank()) phoneNumber else "-"
-        bindSummaryView(getString(R.string.emergency_contact_at_PHU), resultPhoneNumber, isCallShown = true)
+        bindSummaryView(getString(R.string.emergency_contact_at_PHU), resultPhoneNumber, isCallShown = true, forCbs = true)
     }
 
     private fun createSummaryViewCbs(
@@ -198,7 +198,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     }?.value
                 val value =
                     if (otherValue != null) "${item.value} - $otherValue" else item.value
-                bindSummaryView(item.title+" "+getString(R.string.hyphen_symbol) +" "+ getString(R.string.diarrhoea), value)
+                bindSummaryView(item.title+" "+getString(R.string.hyphen_symbol) +" "+ getString(R.string.diarrhoea), value, forCbs = true)
             } else if (item.id.equals(IccmFeverNotifiableCondition, true)) {
                 val otherValue =
                     listSummaryData.find {
@@ -209,9 +209,9 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     }?.value
                 val value =
                     if (otherValue != null) "${item.value} - $otherValue" else item.value
-                bindSummaryView(item.title +" "+getString(R.string.hyphen_symbol) +" "+getString(R.string.fever), value)
+                bindSummaryView(item.title +" "+getString(R.string.hyphen_symbol) +" "+getString(R.string.fever), value,forCbs = true)
             } else {
-                bindSummaryView(item.title, item.value)
+                bindSummaryView(item.title, item.value,forCbs = true)
             }
         }
         val supervisor = viewModel.userProfileLiveData.value?.data?.supervisor
@@ -231,17 +231,18 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
 
         // Handle the case where phoneNumber might be null or empty
 
-        bindSummaryView(getString(R.string.peer_supervisor_name), supervisorName)
+        bindSummaryView(getString(R.string.peer_supervisor_name), supervisorName,forCbs = true)
         bindSummaryView(
             getString(R.string.peer_supervisor_number),
             supervisorNumber,
-            isCallShown = true
+            isCallShown = true,
+            forCbs = true
         )
         val organizations = viewModel.userProfileLiveData.value?.data?.organizations
         val linkedPHU = organizations?.takeIf { it.isNotEmpty() }
             ?.joinToString(", ") { it.name }
             ?: getString(R.string.hyphen_symbol)
-        bindSummaryView(getString(R.string.linked_phu), linkedPHU)
+        bindSummaryView(getString(R.string.linked_phu), linkedPHU,forCbs = true)
     }
 
 
@@ -784,7 +785,8 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         title: String?,
         value: String?,
         valueTextColor: Int? = null,
-        isCallShown: Boolean = false
+        isCallShown: Boolean = false,
+        forCbs: Boolean = false
     ) {
         value?.let { result ->
             binding.cbsParentLayout.addView(
@@ -799,7 +801,8 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                         tag?.let {
                             handleCallBtnClick(tag, value)
                         }
-                    }
+                    },
+                    forCbs = forCbs
                 )
             )
         }

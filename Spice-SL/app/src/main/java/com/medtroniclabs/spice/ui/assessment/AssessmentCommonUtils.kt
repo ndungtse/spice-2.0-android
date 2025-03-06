@@ -76,7 +76,7 @@ object AssessmentCommonUtils {
         return null
     }
 
-    fun addViewSummaryLayout(title: String?, value: String?, valueTextColor: Int? = null, context:Context, isCallShown:Boolean = false, callBtnTag : String? = null,   callback: ((String?,String?) -> Unit)? = null): ConstraintLayout {
+    fun addViewSummaryLayout(title: String?, value: String?, valueTextColor: Int? = null, context:Context, isCallShown:Boolean = false, callBtnTag : String? = null,   callback: ((String?,String?) -> Unit)? = null, forCbs:Boolean = false): ConstraintLayout {
         val summaryBinding = AssessmentSummaryLayoutBinding.inflate(LayoutInflater.from(context))
         summaryBinding.tvKey.text = title ?: context.getString(R.string.separator_hyphen)
         summaryBinding.tvValue.text = getSummaryValue(context, value)
@@ -85,6 +85,15 @@ object AssessmentCommonUtils {
             summaryBinding.tvValue.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
         }
         summaryBinding.callButton.setVisible(isCallShown)
+        if (forCbs) {
+            val params = summaryBinding.tvKey.layoutParams as ConstraintLayout.LayoutParams
+            params.horizontalWeight = 0.3f
+            summaryBinding.tvKey.layoutParams = params
+            val paramsSep =
+                summaryBinding.tvRowSeparator.layoutParams as ConstraintLayout.LayoutParams
+            paramsSep.horizontalWeight = 0.2f
+            summaryBinding.tvRowSeparator.layoutParams = paramsSep
+        }
         callBtnTag?.let {
             summaryBinding.callButton.tag = callBtnTag
             summaryBinding.callButton.safeClickListener{

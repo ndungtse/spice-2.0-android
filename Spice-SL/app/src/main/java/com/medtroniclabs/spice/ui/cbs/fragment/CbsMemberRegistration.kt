@@ -53,8 +53,9 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
     }
 
     private fun initView() {
-        binding.btnStartAssessment.gone()
-        binding.btnSubmit.safeClickListener(this)
+        binding.btnSubmit.gone()
+        binding.btnStartAssessment.safeClickListener(this)
+        binding.btnStartAssessment.text = getString(R.string.submit)
         childFormGenerator = FormGenerator(
             requireContext(),
             binding.llForm,
@@ -114,7 +115,7 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
 
     override fun onClick(v: View) {
         when (v.id) {
-            binding.btnSubmit.id -> {
+            binding.btnStartAssessment.id -> {
                 withLocationCheck({
                     viewModel.fetchCurrentLocation(requireContext())
                     childFormGenerator.formSubmitAction(v)

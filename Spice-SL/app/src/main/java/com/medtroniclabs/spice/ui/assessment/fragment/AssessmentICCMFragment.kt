@@ -19,7 +19,12 @@ import com.medtroniclabs.spice.common.CommonUtils.isMandateOrNot
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.getYearMonthAndWeek
+import com.medtroniclabs.spice.common.DefinedParams.CbsNotifiableCondition
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
+import com.medtroniclabs.spice.common.DefinedParams.IccmDiarrheaNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.IccmFeverNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.NotifiableConditions
+import com.medtroniclabs.spice.common.DefinedParams.RmnchNotifiableCondition
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
@@ -275,7 +280,19 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         serverViewModel: FormLayout,
         resultMap: Any?
     ) {
-        CheckBoxDialog.newInstance(id, resultMap) { map ->
+        val title = if (setOf(
+                CbsNotifiableCondition,
+                IccmFeverNotifiableCondition,
+                IccmDiarrheaNotifiableCondition,
+                NotifiableConditions,
+                RmnchNotifiableCondition
+            ).contains(id)
+        ) {
+            getString(R.string.notifiable_conditions)
+        } else {
+            null
+        }
+        CheckBoxDialog.newInstance(id, resultMap, title = title) { map ->
             formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }

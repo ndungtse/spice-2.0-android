@@ -187,7 +187,7 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
                         NotifiableConditions,
                         CbsNotifiableCondition,
                         RmnchNotifiableCondition
-                    ).contains(item.id?.lowercase())
+                    ).contains(item.id)
                 ) {
                     val otherValue =
                         listSummaryData.find {
@@ -207,7 +207,7 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
             listSummaryData.filter { it.value != null && !it.id.equals(OtherNotifiableConditions,true) }.forEach { item ->
                 if (setOf(NotifiableConditions,
                         CbsNotifiableCondition,
-                        RmnchNotifiableCondition).contains(item.id?.lowercase())
+                        RmnchNotifiableCondition).contains(item.id)
                 ) {
                     val otherValue =
                         listSummaryData.find {
@@ -270,6 +270,7 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
                             handleCallBtnClick(tag,value)
                         }
                     }
+                    ,forCbs = true
                 )
             )
         }

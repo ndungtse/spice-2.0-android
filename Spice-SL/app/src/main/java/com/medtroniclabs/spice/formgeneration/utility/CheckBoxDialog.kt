@@ -79,7 +79,7 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
             binding.labelHeader.text = if(title.isNullOrEmpty()) {
                 getString(R.string.symptoms)
             }else{
-                getString(R.string.market_days)
+                title
             }
             if (list.isNotEmpty()) {
                 if (resultMap != null && resultMap is ArrayList<*>) {

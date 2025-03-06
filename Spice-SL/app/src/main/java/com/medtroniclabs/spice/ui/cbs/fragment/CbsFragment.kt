@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
@@ -90,7 +91,9 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                         if (filteredValues.isNullOrEmpty()) {
                             formGenerator.getViewByTag(birth + formGenerator.rootSuffix)
                                 ?.visible()
+                            binding.btnSubmit.text = getString(R.string.next)
                         } else {
+                            binding.btnSubmit.text = getString(R.string.submit)
                             formGenerator.getViewByTag(birth + formGenerator.rootSuffix)?.gone()
                             viewModel.formLayoutsLiveData.value?.data?.formLayout
                                 ?.firstOrNull { it.id.equals(birth, true) }
@@ -221,7 +224,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         } else {
             listOf()
         }
-        CheckBoxDialog.newInstance(id, resultMap, autoPopulate = value) { map ->
+        CheckBoxDialog.newInstance(id, resultMap, autoPopulate = value, title = getString(R.string.notifiable_conditions)) { map ->
             formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
