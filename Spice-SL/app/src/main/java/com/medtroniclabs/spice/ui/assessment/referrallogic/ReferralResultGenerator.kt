@@ -20,7 +20,9 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasNightSwe
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasWeightLoss
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.LittleOrNoUrine
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoTearsWhenCrying
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RelationshipToIC
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SkinPinch
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SleepLocation
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SunkenEyes
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SunkenFontanella
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.VeryThirsty
@@ -313,10 +315,13 @@ class ReferralResultGenerator {
     fun calculateTBReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
         val hasCough = map[hasCough] is Boolean && map[hasCough] == true
         val hasCoughLastLonger = map.containsKey(HasCoughLastedLonger) && map[HasCoughLastedLonger] is Boolean && map[HasCoughLastedLonger] == true
-        if (hasCough && hasCoughLastLonger) {
+        val isContactTracing = map.containsKey(RelationshipToIC) && map[RelationshipToIC] is String && map[RelationshipToIC] != ""
+        if (hasCough && hasCoughLastLonger || isContactTracing) {
             if ((map[HasNightSweatsTB] is Boolean && map[HasNightSweatsTB] == true) ||
                 (map[HasFever] is Boolean && map[HasFever] == true) ||
-                (map[HasWeightLoss] is Boolean && map[HasWeightLoss] == true) ) {
+                (map[HasWeightLoss] is Boolean && map[HasWeightLoss] == true) ||
+                (map[RelationshipToIC] is String && map[RelationshipToIC] != "") ||
+                (map[SleepLocation] is String && map[SleepLocation] != "")) {
                 addResultMap("TB Symptoms", ReferralStatus.Referred.name)
                 addReferralReason(referralReason, "TB Symptoms")
             }

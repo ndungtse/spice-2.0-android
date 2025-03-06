@@ -9,7 +9,8 @@
     app:cardCornerRadius="@dimen/_16sdp"
     app:cardUseCompatPadding="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:background="@drawable/default_color_bg"
@@ -39,6 +40,51 @@
             app:layout_constraintBottom_toBottomOf="@id/tvMemberName"/>
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvDiagnosis"
+            style="@style/TextStyle_Regular_16"
+            android:layout_width="@dimen/_0dp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="@string/diagnosis_tb"
+            android:textColor="@color/table_title"
+            app:layout_constraintEnd_toStartOf="@id/tvPatientIDSeparator"
+            app:layout_constraintHorizontal_weight="0.3"
+            app:layout_constraintStart_toStartOf="@id/tvMemberName"
+            app:layout_constraintTop_toBottomOf="@id/tvMemberName" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvDiagnosisSeparator"
+            style="@style/TextStyle_Regular_16"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/separator_colon"
+            app:layout_constraintEnd_toStartOf="@id/tvDiagnosisStatus"
+            app:layout_constraintHorizontal_weight="0.05"
+            app:layout_constraintStart_toEndOf="@id/tvDiagnosis"
+            app:layout_constraintTop_toTopOf="@id/tvDiagnosis" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvDiagnosisStatus"
+            style="@style/TextStyle_Medium"
+            android:textSize="@dimen/_16ssp"
+            android:textColor="@color/a_red_error"
+            android:gravity="start"
+            android:layout_width="@dimen/_0dp"
+            tools:text="Trug sensitive TB"
+            app:layout_constraintEnd_toEndOf="@id/tvMemberName"
+            app:layout_constraintHorizontal_weight="0.6"
+            app:layout_constraintBottom_toBottomOf="@id/tvDiagnosisSeparator"
+            app:layout_constraintStart_toEndOf="@id/tvDiagnosisSeparator"
+            app:layout_constraintTop_toTopOf="@id/tvDiagnosisSeparator" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/groupViewContactTrace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="tvDiagnosis,tvDiagnosisSeparator,tvDiagnosisStatus"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvPatientIDLabel"
             style="@style/TextStyle_Regular_16"
             android:layout_width="@dimen/_0dp"
@@ -48,7 +94,7 @@
             app:layout_constraintEnd_toStartOf="@id/tvPatientIDSeparator"
             app:layout_constraintHorizontal_weight="0.3"
             app:layout_constraintStart_toStartOf="@id/tvMemberName"
-            app:layout_constraintTop_toBottomOf="@id/tvMemberName" />
+            app:layout_constraintTop_toBottomOf="@id/tvDiagnosis" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvPatientIDSeparator"
@@ -75,6 +121,21 @@
             app:layout_constraintStart_toEndOf="@id/tvPatientIDSeparator"
             app:layout_constraintTop_toTopOf="@id/tvPatientIDLabel" />
 
+       <androidx.appcompat.widget.AppCompatTextView
+           android:id="@+id/tvContactTracingStatus"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           style="@style/TextStyle_Medium"
+           android:layout_marginTop="@dimen/_4sdp"
+           android:gravity="start"
+           android:textSize="@dimen/_14ssp"
+           android:visibility="gone"
+           android:text="@string/contact_tracing_updated"
+           android:drawablePadding="@dimen/_4sdp"
+           android:textColor="@color/a_red_error"
+           app:layout_constraintTop_toBottomOf="@+id/tvPatientId"
+           android:drawableStart="@drawable/ic_circle_tick_green"
+           tools:ignore="MissingConstraints" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clReasonOfDeath"
@@ -82,7 +143,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="@id/tvMemberName"
-            app:layout_constraintTop_toBottomOf="@+id/tvPatientIDLabel">
+            app:layout_constraintTop_toBottomOf="@+id/tvContactTracingStatus">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvReasonForDeathLabel"

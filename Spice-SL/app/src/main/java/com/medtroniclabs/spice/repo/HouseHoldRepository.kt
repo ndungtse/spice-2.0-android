@@ -221,4 +221,12 @@ class HouseHoldRepository @Inject constructor(
     suspend fun getConsentForm() : ConsentForm? {
         return roomHelper.getConsentFormByType(ConsentFormType.Household)
     }
+
+    fun getAllHouseHoldMembersWithTbStatusLiveData(hhvId: Long) : LiveData<List<HouseholdMemberEntity>> {
+        return roomHelper.householdMemberWithTbStatus(hhvId)
+    }
+
+    suspend fun updateHouseholdMemberTbContactTraceStatus(hhmId: Long,tbContactTracingStatus:Int) {
+        return roomHelper.updateTBContactTraceStatus(hhmId,tbContactTracingStatus)
+    }
 }

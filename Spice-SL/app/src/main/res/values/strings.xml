@@ -1356,4 +1356,11 @@
     <string name="advise_to" translatable="false">Advise to:\n – Take her contraceptive pills once a day at the same time every day. It’s easier to remember if she takes her pill at the same time.</string>
     <string name="explain_that" translatable="false">Explain that:\n – As soon as she finishes one pack of pills she continues on to a new pack.\n – If she forgets one pill, take it as soon as she remembers.</string>
 
+
+    <string name="diagnosis_tb">Diagnosis</string>
+    <string name="trug_sensitive_tb">Trug sensitive TB</string>
+    <string name="contact_tracing_updated">Contact Tracing Updated</string>
+    <string name="update_contact_tracing">Update contact tracing</string>
+    <string name="contact_tracing">Contact Tracing</string>
+    <string name="tb_symptoms">TB Symptoms</string>
 </resources>

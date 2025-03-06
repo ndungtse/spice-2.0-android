@@ -479,6 +479,7 @@ object SpiceSLMigration {
             database.execSQL("ALTER TABLE HealthFacilityEntity ADD COLUMN phoneNumber TEXT DEFAULT NULL")
             database.execSQL("ALTER TABLE VillageEntity ADD COLUMN healthFacilityId INTEGER DEFAULT NULL")
             database.execSQL("ALTER TABLE AssessmentEntity ADD COLUMN callResult TEXT DEFAULT NULL")
+            database.execSQL("ALTER TABLE PregnancyDetail ADD COLUMN tBContactTraceStatus INTEGER DEFAULT NULL")
         }
     }
 }

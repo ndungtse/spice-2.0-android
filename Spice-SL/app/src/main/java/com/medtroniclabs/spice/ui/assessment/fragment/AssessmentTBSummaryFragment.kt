@@ -23,11 +23,14 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getValueOfKeyFromMap
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DateOfOnset
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasCoughLastedLonger
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasNightSweatsTB
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasWeightLoss
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.PreviouslyTreatedForTB
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DateOfOnset
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RelationshipToIC
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SleepLocation
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
@@ -102,32 +105,73 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun composeTbSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        getStatus(viewModel.referralStatus)?.let {
-            bindTbSummaryView(
-                getString(R.string.patient_status),
-                it
-            )
+        val isContactTrace = listSummaryData.any {
+            it.id == RelationshipToIC && it.value.isNullOrBlank()
         }
-
-        listSummaryData.forEach { item ->
-            item.value?.let {
-                when (item.id) {
-                    hasCough -> bindTbSummaryView(item.title, capitalizeYesNo(it))
-                    HasCoughLastedLonger, HasNightSweatsTB, hasFever, HasWeightLoss ->
-                        bindTbSummaryView(removeLastChar(item.title), it)
-                    DateOfOnset -> {
-                        bindTbSummaryView(
-                            getString(R.string.date_of_onset),
-                            DateUtils.convertDateFormat(
-                                it,
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                DateUtils.DATE_ddMMyyyy
+        if(!isContactTrace){
+            binding.tvTitle.text = binding.root.context.getString(R.string.contact_tracing)
+            val stringBuilder = StringBuilder()
+            listSummaryData.forEach{ item ->
+                item.value?.let {
+                    when (item.id) {
+                        RelationshipToIC -> bindTbSummaryView(item.title, it)
+                        SleepLocation -> bindTbSummaryView(removeTextInBrackets(item.title), it)
+                        PreviouslyTreatedForTB,hasCough -> bindTbSummaryView(item.title, capitalizeYesNo(it))
+                        HasCoughLastedLonger,HasNightSweatsTB, hasFever, HasWeightLoss ->
+                            stringBuilder.appendWithComma(removeLastChar(item.title))
+                        DateOfOnset -> {
+                            bindTbSummaryView(
+                                getString(R.string.date_of_onset),
+                                DateUtils.convertDateFormat(
+                                    it,
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                    DateUtils.DATE_ddMMyyyy
+                                )
                             )
-                        )
+                        }
+                    }
+                }
+            }
+            bindTbSummaryView(getString(R.string.tb_symptoms), stringBuilder.toString())
+        }else {
+            getStatus(viewModel.referralStatus)?.let {
+                bindTbSummaryView(
+                    getString(R.string.patient_status),
+                    it
+                )
+            }
+
+            listSummaryData.forEach { item ->
+                item.value?.let {
+                    when (item.id) {
+                        hasCough -> bindTbSummaryView(item.title, capitalizeYesNo(it))
+                        HasCoughLastedLonger, HasNightSweatsTB, hasFever, HasWeightLoss ->
+                            bindTbSummaryView(removeLastChar(item.title), it)
+                        DateOfOnset -> {
+                            bindTbSummaryView(
+                                getString(R.string.date_of_onset),
+                                DateUtils.convertDateFormat(
+                                    it,
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                    DateUtils.DATE_ddMMyyyy
+                                )
+                            )
+                        }
                     }
                 }
             }
         }
+    }
+
+    private fun StringBuilder.appendWithComma(text: String) {
+        if (this.isNotEmpty()) append(", ")
+        append(text)
+    }
+
+    private fun removeTextInBrackets(input: String?):String{
+        return input?.let {
+            if (it.isNotEmpty()) it.replace(Regex("\\(.*?\\)"), "").trim() else ""
+        } ?: ""
     }
 
     private fun removeLastChar(input: String?): String {

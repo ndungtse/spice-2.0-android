@@ -8,6 +8,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.Contact_Trace_Updated
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
@@ -19,8 +20,10 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SleepLocation
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import timber.log.Timber
 
 class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
@@ -42,7 +45,9 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         viewModel.getMemberDetailsById()
         initView()
         setListeners()
-        viewModel.getFormData(DefinedParams.TB.lowercase())
+        arguments?.getBoolean(DefinedParams.CONTACT_TRACING,false)?.let { isContactTrace ->
+            viewModel.getFormData(DefinedParams.TB.lowercase(),isContactTrace)
+        }
         viewModel.getNearestHealthFacility()
         attachObservers()
         viewModel.setUserJourney(AnalyticsDefinedParams.TBAssessement)
@@ -116,6 +121,19 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
     ) {}
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+        serverData?.forEach { view ->
+            if(view?.id == SleepLocation){
+                val option= view.optionsList
+                val sleepLocationId = resultMap?.get(SleepLocation)
+                option?.forEach { item ->
+                    if(item[DefinedParams.id] == sleepLocationId){
+                        item[DefinedParams.name]?.let {
+                            resultMap?.put(SleepLocation,it)
+                        }
+                    }
+                }
+            }
+        }
         resultMap?.let { details ->
             val referralResult = ReferralResultGenerator().calculateTBReferralResult(details)
             val result = serverData?.let {
@@ -127,6 +145,12 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                 )
             }
             result?.second?.let {
+                viewModel.memberDetailsLiveData.value?.data?.id?.let { hhmId ->
+                    viewModel.updateTBContactTraceStatus(
+                        hhmId = hhmId,
+                        tbContactTracingStatus = Contact_Trace_Updated
+                    )
+                }
                 viewModel.saveAssessment(it, referralResult, viewModel.menuId)
             }
         }

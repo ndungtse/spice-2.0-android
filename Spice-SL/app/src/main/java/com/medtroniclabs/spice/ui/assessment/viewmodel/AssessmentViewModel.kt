@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.assessment.viewmodel
 
 import android.content.Context
 import android.location.Location
+import android.view.View
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -15,6 +16,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.CBS
+import com.medtroniclabs.spice.common.DefinedParams.CONTACT_TRACING
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.DefinedParams.TbScreening
 import com.medtroniclabs.spice.common.DefinedParams.CbsNotifiableCondition
@@ -51,6 +53,7 @@ import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.AssessmentRepository
+import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
@@ -96,6 +99,7 @@ class AssessmentViewModel @Inject constructor(
     private var memberRegistrationRepository: HouseholdMemberRepository,
     private var assessmentRepository: AssessmentRepository,
     private val metaRepository: MetaRepository,
+    private val houseHoldRepository: HouseHoldRepository
 ) : BaseViewModel(dispatcherIO) {
 
     var selectedHouseholdMemberId = -1L
@@ -566,7 +570,8 @@ class AssessmentViewModel @Inject constructor(
         // Request modification for syncing TB to Backend
         if (map.containsKey(TB.lowercase())) {
             val result = map[TB.lowercase()] as? HashMap<Any, Any>
-            if ( result != null && result.containsKey(TbScreening) ) {
+            val contactTracing =result?.get(CONTACT_TRACING) as? HashMap<Any,Any>
+            if ( result != null && result.containsKey(TbScreening) && contactTracing?.size == 0) {
                 val value = result[TbScreening] as? HashMap<Any, Any>
                 if (!value.isNullOrEmpty()) {
                     map.remove(TB.lowercase())
@@ -623,6 +628,24 @@ class AssessmentViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             formLayoutsLiveData.postLoading()
             formLayoutsLiveData.postValue(assessmentRepository.getFormData(formType))
+        }
+    }
+
+    fun getFormData(formType: String,isContactTracking:Boolean=false){
+        viewModelScope.launch(dispatcherIO) {
+            formLayoutsLiveData.postLoading()
+            val formData = assessmentRepository.getFormData(formType)
+            if(isContactTracking)
+                updateFieldViewStatus(formData)
+            formLayoutsLiveData.postValue(formData)
+        }
+    }
+
+    private fun updateFieldViewStatus(formResponse: Resource<FormResponse>) {
+        formResponse.data?.formLayout?.forEach { field ->
+            if(field.id == CONTACT_TRACING || field.family == CONTACT_TRACING){
+                field.visibility = "visible"
+            }
         }
     }
 
@@ -1087,5 +1110,14 @@ class AssessmentViewModel @Inject constructor(
         this.assessment = data
         this.resultValue = resultValue
         birthLiveData.postValue(Resource(ResourceState.SUCCESS, Triple(birth, false,false)))
+    }
+
+    fun updateTBContactTraceStatus(hhmId:Long,tbContactTracingStatus:Int){
+        viewModelScope.launch(dispatcherIO) {
+            houseHoldRepository.updateHouseholdMemberTbContactTraceStatus(
+                hhmId,
+                tbContactTracingStatus
+            )
+        }
     }
 }

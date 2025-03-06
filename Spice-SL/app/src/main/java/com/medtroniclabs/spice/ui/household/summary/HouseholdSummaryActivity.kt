@@ -18,12 +18,16 @@ import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
+import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.databinding.ActivityHouseholdSummaryBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.MenuConstants.WorkFlowName
+import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.dialog.LinkPatientDialogFragment
 import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
 import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
@@ -63,6 +67,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     }
 
     private fun attachObserver() {
+
         householdSummaryViewModel.householdCardDetailLiveData.observe(this) {
             setTitle(it.name.capitalizeFirstChar() +" "+ getString(R.string.household))
             initializePhuLinkFlow()
@@ -87,7 +92,8 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     }
 
     private fun initializeAdapter(data: List<HouseholdMemberEntity>) {
-        val householdListAdapter = HouseholdMemberListAdapter(data, this,householdSummaryViewModel.isPhuWalkInsFlow)
+        val householdListAdapter =
+            HouseholdMemberListAdapter(data, this, householdSummaryViewModel.isPhuWalkInsFlow)
         binding.rvHouseholdList.apply {
             layoutManager =
                 GridLayoutManager(this@HouseholdSummaryActivity, DefinedParams.span_count_1)
@@ -210,16 +216,26 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         popupMenu.show()
     }
 
-    override fun onMemberSelected(item: Long, isEdit: Boolean, dateOfBirth: String?) {
-        if (isEdit){
-            val intent = Intent(this, HouseholdActivity::class.java)
-            intent.putExtra(DefinedParams.MemberID, item)
-            startActivity(intent)
-        } else {
-            val intent = Intent(this, AssessmentToolsActivity::class.java)
+    override fun onMemberSelected(item: Long, isEdit: Boolean, dateOfBirth: String?,isContactTrace:Boolean) {
+        if(isContactTrace){
+            val intent = Intent(this, AssessmentActivity::class.java)
             intent.putExtra(DefinedParams.MemberID, item)
             intent.putExtra(DefinedParams.DOB, dateOfBirth)
+            intent.putExtra(DefinedParams.MenuId, TB)
+            intent.putExtra(DefinedParams.FhirId, linkFhirMemberId)
+            intent.putExtra(DefinedParams.CONTACT_TRACING, true)
             startActivity(intent)
+        }else {
+            if (isEdit) {
+                val intent = Intent(this, HouseholdActivity::class.java)
+                intent.putExtra(DefinedParams.MemberID, item)
+                startActivity(intent)
+            } else {
+                val intent = Intent(this, AssessmentToolsActivity::class.java)
+                intent.putExtra(DefinedParams.MemberID, item)
+                intent.putExtra(DefinedParams.DOB, dateOfBirth)
+                startActivity(intent)
+            }
         }
     }
 

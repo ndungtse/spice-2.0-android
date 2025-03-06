@@ -268,9 +268,11 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.TB_MENU_ID -> {
+                bundle.putBoolean(DefinedParams.CONTACT_TRACING,intent.getBooleanExtra(DefinedParams.CONTACT_TRACING,false))
                 setTitle(MenuConstants.TB_MENU_ID.uppercase())
                 replaceFragmentInId<AssessmentTBFragment>(
                     binding.formsFragmentContainer.id,
+                    bundle = bundle,
                     tag = AssessmentTBFragment.TAG
                 )
             }

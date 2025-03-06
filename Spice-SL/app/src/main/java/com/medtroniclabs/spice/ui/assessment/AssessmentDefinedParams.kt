@@ -159,6 +159,9 @@ object AssessmentDefinedParams {
     const val HasWeightLoss = "hasWeightLoss"
     const val HasNightSweatsTB = "hasNightSweats"
     const val DateOfOnset = "dateOfOnset"
+    const val RelationshipToIC = "relationshipToIC"
+    const val SleepLocation = "sleepLocation"
+    const val PreviouslyTreatedForTB = "previouslyTreatedForTB"
 
     const val MemberUsingAnyFamilyPlanning = "memberUsingAnyFamilyPlanning"
     const val IsAnySideEffects = "isAnySideEffects"

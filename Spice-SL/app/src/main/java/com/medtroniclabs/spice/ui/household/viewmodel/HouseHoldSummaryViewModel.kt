@@ -40,10 +40,9 @@ class HouseHoldSummaryViewModel @Inject constructor(
 
     val householdMembersLiveData: LiveData<List<HouseholdMemberEntity>> =
         houseHoldNoLiveData.switchMap { id ->
-            houseHoldRepository.getAllHouseHoldMembersLiveData(id)
+            //houseHoldRepository.getAllHouseHoldMembersLiveData(id)
+            houseHoldRepository.getAllHouseHoldMembersWithTbStatusLiveData(id)
         }
-
-
 
     fun setHouseholdId(hhId: Long) {
         this.houseHoldId = hhId

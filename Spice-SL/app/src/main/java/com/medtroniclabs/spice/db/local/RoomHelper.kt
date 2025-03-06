@@ -478,4 +478,8 @@ interface RoomHelper {
     suspend fun getUnSyncedCommunityDetails(): List<CommunityProfile>
 
     suspend fun insertOrUpdateFromBE(communityProfile: CommunityProfile): Long
+
+    fun householdMemberWithTbStatus(hhId: Long): LiveData<List<HouseholdMemberEntity>>
+
+    suspend fun updateTBContactTraceStatus(hhmId: Long, tbContactTracingStatus: Int)
 }

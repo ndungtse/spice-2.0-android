@@ -1253,4 +1253,12 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun insertOrUpdateFromBE(communityProfile: CommunityProfile): Long {
         return communityDAO.insertOrUpdateFromBE(communityProfile)
     }
+
+    override fun householdMemberWithTbStatus(hhId: Long): LiveData<List<HouseholdMemberEntity>> {
+        return memberDAO.getHouseholdMemberWithTBContactTraceStatus(hhId)
+    }
+
+    override suspend fun updateTBContactTraceStatus(hhmId: Long, tbContactTracingStatus: Int){
+        return memberDAO.updateTBContactTraceStatus(hhmId,tbContactTracingStatus)
+    }
 }

@@ -128,4 +128,11 @@ interface MemberDAO {
 
     @Query("SELECT date_of_birth FROM HouseholdMember WHERE household_id = :householdId AND household_head_relationship = :houseHoldRelationShip LIMIT 1")
     suspend fun getHouseholdHeadDob(householdId: Long, houseHoldRelationShip:String= DefinedParams.HosueHoldHead): String
+
+    @Query("SELECT hm.*, pd.tbContactTraceStatus as tBContactTraceStatus FROM HouseholdMember AS hm LEFT JOIN PregnancyDetail AS pd ON hm.id = pd.householdMemberLocalId WHERE hm.household_id = :hhId")
+    fun getHouseholdMemberWithTBContactTraceStatus(hhId: Long): LiveData<List<HouseholdMemberEntity>>
+
+    @Query("UPDATE PregnancyDetail SET tbContactTraceStatus = :tbContactTraceStatus WHERE householdMemberLocalId = :householdMemberId")
+    suspend fun updateTBContactTraceStatus(householdMemberId: Long, tbContactTraceStatus: Int)
+
 }
