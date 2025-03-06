@@ -208,6 +208,7 @@ class OfflineSyncRepository @Inject constructor(
         // 3. Delete All FollowUp where isCompleted true and syncStatus is Success
         // Insert follow up
         requestInitialDownload.followUps?.forEach { followUp ->
+            followUp.patientStatus = followUp.patientStatus ?: ""
             followUp.syncStatus = OfflineSyncStatus.Success
             roomHelper.insertOrUpdateFollowUp(followUp)
         }
