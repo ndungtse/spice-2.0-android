@@ -198,7 +198,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     resorceState.data?.let {
                         val generalErrorDialog =
                             GeneralErrorDialog.newInstance(
-                                getString(R.string.transfer),
+                                if(viewModel.isSupport){getString(R.string.alert)}else{getString(R.string.transfer)},
                                 callback = {
                                     viewModel.patientUpdateResponse.setError(message = null)
                                     val dialog = supportFragmentManager.findFragmentByTag(
@@ -902,6 +902,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onSubmitClicked(message: String?) {
         if (connectivityManager.isNetworkAvailable()) {
             message?.let {
+                viewModel.isSupport = true
                 val request =
                     NCDSupportRequest(
                         userId = SecuredPreference.getUserId().toString(),

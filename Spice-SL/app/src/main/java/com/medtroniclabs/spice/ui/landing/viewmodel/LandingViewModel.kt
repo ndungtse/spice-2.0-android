@@ -43,7 +43,7 @@ class LandingViewModel @Inject constructor(
     val supportResponseLiveData: LiveData<Resource<String>>
         get() = supportResponseMutableLiveData
 
-
+    var isSupport = false
     fun getMenus() {
         viewModelScope.launch(dispatcherIO) {
             menuListLiveData.postLoading()

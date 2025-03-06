@@ -163,15 +163,19 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                         invisible()
                 }
                 binding.llSortFilter.btnFilter.apply {
-                    val patientCount = count.toLong()
-                    if (patientCount ==0L) {
-                        binding.tvNoPatientsFound.visible()
-                    }
-                    val filterCount = patientListViewModel.filterCount()
-                    text = if (filterCount > 0)
-                        getString(R.string.filter_count, filterCount)
-                    else
-                        getString(R.string.filter)
+                    if (CommonUtils.canShowFilter(patientListViewModel.origin)) {
+                        visible()
+                        val patientCount = count.toLong()
+                        if (patientCount == 0L) {
+                            binding.tvNoPatientsFound.visible()
+                        }
+                        val filterCount = patientListViewModel.filterCount()
+                        text = if (filterCount > 0)
+                            getString(R.string.filter_count, filterCount)
+                        else
+                            getString(R.string.filter)
+                    } else
+                        invisible()
                 }
             } else {
                 binding.tvNoPatientsFound.visible()
@@ -508,7 +512,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         val existingFragment =
             childFragmentManager.findFragmentByTag(PatientSearchFilterDialog.TAG) as? PatientSearchFilterDialog
         if (existingFragment == null) {
-            PatientSearchFilterDialog.newInstance()
+            PatientSearchFilterDialog.newInstance(patientListViewModel.origin)
                 .show(childFragmentManager, PatientSearchFilterDialog.TAG)
         } else {
             existingFragment.show(childFragmentManager, PatientSearchFilterDialog.TAG)

@@ -26,8 +26,8 @@ android {
     productFlavors {
         create("africa") {
             dimension = "version"
-            versionName = "2.1.0"
-            versionCode = 19
+            versionName = "2.1.1"
+            versionCode = 20
         }
         create("sl") {
             dimension = "version"
@@ -75,8 +75,8 @@ android {
                             resValue("string", "spice_app_name", "SPICE 2.0")
                         }
                         "africa" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"https://spice-backend.af.medtroniclabs.org/\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.v2.1.labsplatform.com/\"")
+                            buildConfigField("String", "API_BASE_URL", "\"https://spice-backend.medtroniclabs.org/\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spiceadmin.medtroniclabs.org/\"")
                             buildConfigField("String", "SALT", "\"spice_prod\"")
                             buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                             resValue("string", "spice_app_name", "SPICE")
@@ -176,8 +176,8 @@ android {
                             resValue("string", "spice_app_name", "SPICE 2.0 Training")
                         }
                         "africa" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"https://spice-training-backend.v2.1.labsplatform.com/\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.v2.1.labsplatform.com/\"")
+                            buildConfigField("String", "API_BASE_URL", "\"https://spice-training-backend.labsplatform.com/\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.labsplatform.com/\"")
                             buildConfigField("String", "SALT", "\"spice_uat\"")
                             buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                             resValue("string", "spice_app_name", "SPICE 2.1 Training")

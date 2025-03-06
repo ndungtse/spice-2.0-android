@@ -446,7 +446,7 @@ object SpiceAfricaMigration {
         }
     }
 
-    val MIGRATION_4_5 = object : Migration(4, 5) {
+    val MIGRATION_2_5 = object : Migration(2, 5) {
         override fun migrate(db: SupportSQLiteDatabase) {
             // Step 1: Create new table with updated schema
             db.execSQL(
@@ -477,6 +477,142 @@ object SpiceAfricaMigration {
 
             // Step 4: Rename the new table to the original name
             db.execSQL("ALTER TABLE NCDMedicalReviewMetaEntity_new RENAME TO NCDMedicalReviewMetaEntity")
+
+
+            // 2.1.1 migration
+            /*  In Assessment callResult is Newly added */
+            db.execSQL("ALTER TABLE Assessment ADD COLUMN callResult TEXT DEFAULT NULL")
+
+            /* CommunityProfile new  entity is Added */
+            // Step 1: Create new table with full schema
+            db.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS CommunityProfile_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                villageId INTEGER NOT NULL,
+                communityDescription TEXT,
+                registeredDate TEXT,
+                payload TEXT,
+                latitude REAL NOT NULL DEFAULT 0.0,
+                longitude REAL NOT NULL DEFAULT 0.0,
+                created_at INTEGER NOT NULL DEFAULT 0,
+                updated_at INTEGER NOT NULL DEFAULT 0,
+                created_by INTEGER NOT NULL DEFAULT 0,
+                sync_status TEXT NOT NULL DEFAULT 'NotSynced',
+                fhir_id TEXT  
+            )
+            """.trimIndent()
+            )
+
+            // Step 2: Check if the old table exists
+            val cursor = db.query("SELECT name FROM sqlite_master WHERE type='table' AND name='CommunityProfile'")
+            val tableExists = cursor.count > 0
+            cursor.close()
+
+            if (tableExists) {
+                try {
+                    // Step 3: Copy existing data (set default values for new columns)
+                    db.execSQL(
+                        """
+                    INSERT INTO CommunityProfile_new (id, villageId, communityDescription, registeredDate, payload, latitude, longitude, created_at, updated_at, created_by, sync_status, fhir_id)
+                    SELECT id, villageId, communityDescription, registeredDate, payload, latitude, longitude, 0, 0, 0, 'NotSynced', NULL
+                    FROM CommunityProfile
+                    """.trimIndent()
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace() // Logs migration errors
+                }
+
+                // Step 4: Drop old table
+                db.execSQL("DROP TABLE CommunityProfile")
+            }
+
+            // Step 5: Rename new table to original name
+            db.execSQL("ALTER TABLE CommunityProfile_new RENAME TO CommunityProfile")
+
+            /*HealthFacilityEntity phoneNumber is Newly added */
+            db.execSQL("ALTER TABLE HealthFacilityEntity ADD COLUMN phoneNumber TEXT DEFAULT NULL")
+
+            /* HouseholdMemberEntity deceasedReason is Newly added */
+            db.execSQL("ALTER TABLE HouseholdMember ADD COLUMN deceasedReason TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE HouseholdMember ADD COLUMN latitude REAL NOT NULL DEFAULT 0.0")
+            db.execSQL("ALTER TABLE HouseholdMember ADD COLUMN longitude REAL NOT NULL DEFAULT 0.0")
+
+            /*LinkHouseholdMemberEntity is Added */
+            // Step 1: Create the new table
+            db.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS LinkedVillageEntity_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                villageId INTEGER NOT NULL,
+                tenantId INTEGER NOT NULL,
+                name TEXT NOT NULL,
+                villagecode TEXT,
+                chiefdomId INTEGER,
+                countryId INTEGER NOT NULL,
+                districtId INTEGER,
+                isUserVillage INTEGER NOT NULL DEFAULT 0,
+                chiefdomCode TEXT,
+                districtCode TEXT
+            )
+            """.trimIndent()
+            )
+
+            // Step 2: Check if the old table exists
+            val cursorLink = db.query("SELECT name FROM sqlite_master WHERE type='table' AND name='LinkedVillageEntity'")
+            val tableExistsLink = cursorLink.count > 0
+            cursor.close()
+
+            if (tableExistsLink) {
+                db.execSQL(
+                    """
+                INSERT INTO LinkedVillageEntity_new (id, villageId, tenantId, name, villagecode, chiefdomId, countryId, districtId, isUserVillage, chiefdomCode, districtCode)
+                SELECT id, villageId, tenantId, name, villagecode, chiefdomId, countryId, districtId, isUserVillage, chiefdomCode, districtCode FROM LinkedVillageEntity
+                """.trimIndent()
+                )
+
+                // Step 3: Drop the old table
+                db.execSQL("DROP TABLE LinkedVillageEntity")
+            }
+
+            // Step 4: Rename new table to the original name
+            db.execSQL("ALTER TABLE LinkedVillageEntity_new RENAME TO LinkedVillageEntity")
+
+
+            /*MemberClinicalEntity is Added */
+            // Check if table exists
+            val cursorMemberClinicalEntity = db.query("SELECT name FROM sqlite_master WHERE type='table' AND name='MemberClinicalEntity'")
+            val tableExistsMemberClinicalEntity = cursorMemberClinicalEntity.count > 0
+            cursorMemberClinicalEntity.close()
+
+            if (!tableExistsMemberClinicalEntity) {
+                // Create the table
+                db.execSQL(
+                    """
+                CREATE TABLE IF NOT EXISTS MemberClinicalEntity (
+                    patientId TEXT,
+                    visitCount INTEGER NOT NULL,
+                    clinicalDate TEXT,
+                    numberOfNeonate INTEGER,
+                    isDeliveryAtHome INTEGER,
+                    neonateHouseholdMemberLocalId INTEGER DEFAULT NULL, -- Newly Added Column
+                    isNeonateDeathRecordedByPHU INTEGER
+                )
+                """.trimIndent()
+                )
+            } else {
+                // Only alter if table exists
+                db.execSQL("ALTER TABLE MemberClinicalEntity ADD COLUMN neonateHouseholdMemberLocalId INTEGER DEFAULT NULL;")
+                db.execSQL("ALTER TABLE MemberClinicalEntity ADD COLUMN isNeonateDeathRecordedByPHU INTEGER DEFAULT NULL;")
+            }
+
+            /*PregnancyDetailEntity  isNeonateDeathRecordedByPHU Newly Added */
+            db.execSQL("ALTER TABLE PregnancyDetail ADD COLUMN isNeonateDeathRecordedByPHU INTEGER DEFAULT NULL")
+
+            /*VillageEntity healthFacilityId is Newly Added */
+            db.execSQL("ALTER TABLE VillageEntity ADD COLUMN healthFacilityId INTEGER DEFAULT NULL")
+
+
         }
     }
 }

@@ -1982,7 +1982,7 @@ object CommonUtils {
     }
 
     fun mandatoryNotRequired(): Boolean {
-        return isNonCommunity() && isProvider()
+        return isNonCommunity() && (isProvider() || isPhysicianPrescriber())
     }
 
     fun isDateHigherThanInput(dateString: String, noOfDayFever: Int): Boolean {
