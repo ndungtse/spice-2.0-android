@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ANC_CBS
 import com.medtroniclabs.spice.common.DefinedParams.AssessmentId
 import com.medtroniclabs.spice.common.DefinedParams.CBS
+import com.medtroniclabs.spice.common.DefinedParams.CbsNotifiableCondition
 import com.medtroniclabs.spice.common.DefinedParams.birth
 import com.medtroniclabs.spice.common.DefinedParams.RmnchNotifiableCondition
 import com.medtroniclabs.spice.common.DefinedParams.surveillanceDetails
@@ -281,17 +282,22 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                                     it[surveillanceDetails] as? HashMap<Any, Any>
                                 if (!value.isNullOrEmpty()) {
                                     value.takeIf { value -> value.isNotEmpty() }?.let { values ->
-                                        val notifiableCondition =
-                                            (values[DefinedParams.CbsNotifiableCondition] as? ArrayList<Map<String, Any>>)
-                                                ?: (values[RmnchNotifiableCondition] as? ArrayList<Map<String, Any>>)
-                                                ?: arrayListOf()
+                                        val conditions = mutableListOf<String>()
+                                        if (value.containsKey(CbsNotifiableCondition)) {
+                                            conditions.addAll(viewModel.getFormatedNotifiableCondition(value, CbsNotifiableCondition))
+                                        }
+
+                                        if (value.containsKey(RmnchNotifiableCondition)) {
+                                            conditions.addAll(viewModel.getFormatedNotifiableCondition(value, RmnchNotifiableCondition))
+                                        }
+
                                         assessmentDetailsMap[CBS.lowercase()] =
                                             values.toMutableMap().apply {
-                                                remove(DefinedParams.CbsNotifiableCondition)
+                                                remove(CbsNotifiableCondition)
                                                 remove(RmnchNotifiableCondition)
                                                 put(
                                                     DefinedParams.NotifiableConditions,
-                                                    notifiableCondition
+                                                    conditions
                                                 )
                                             }
                                     }

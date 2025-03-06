@@ -407,7 +407,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 ),
 
                 mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.scheduled_date),
+                    DefinedParams.label to requireContext().getString(R.string.next_vaccination_date),
                     DefinedParams.Value to (medicalReviewHistory.reviewDetails?.nextVaccinationDate?.let {
                         DateUtils.convertDateFormat(
                             it,

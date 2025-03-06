@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.assessment.viewmodel
 
 import android.content.Context
 import android.location.Location
-import android.view.View
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -465,33 +464,32 @@ class AssessmentViewModel @Inject constructor(
                     }
                     diarrhoea[DiarrhoeaSigns] = signsList
                 }
-                diarrhoea[IccmDiarrheaNotifiableCondition]?.let { cbs ->
-                    diarrhoea.remove(IccmDiarrheaNotifiableCondition)
+
+                if (diarrhoea.containsKey(IccmDiarrheaNotifiableCondition)) {
                     val cbsData = hashMapOf<String, Any>()
-                    cbsData[NotifiableConditions] = cbs
-                    diarrhoea[CBS.lowercase()] = cbsData
-                    diarrhoea.remove(OtherNotifiableConditionsForDiarrhoea)?.let {
-                        (diarrhoea[CBS.lowercase()] as? HashMap<String, Any>)?.set(
-                            OtherNotifiableConditions,
-                            it
-                        )
+                    val conditions = getFormatedNotifiableCondition(diarrhoea, IccmDiarrheaNotifiableCondition)
+                    cbsData[NotifiableConditions] = conditions
+                    if (diarrhoea.containsKey(OtherNotifiableConditionsForDiarrhoea)) {
+                        cbsData[OtherNotifiableConditions] = diarrhoea[OtherNotifiableConditionsForDiarrhoea] as String
                     }
+                    diarrhoea.remove(IccmDiarrheaNotifiableCondition)
+                    diarrhoea.remove(OtherNotifiableConditionsForDiarrhoea)
+                    diarrhoea[CBS.lowercase()] = cbsData
                 }
             }
 
             if (iccm.containsKey(fever.lowercase())) {
                 val fever = iccm[fever.lowercase()] as HashMap<Any, Any>
-                fever[IccmFeverNotifiableCondition]?.let { cbs ->
-                    fever.remove(IccmFeverNotifiableCondition)
+                if (fever.containsKey(IccmFeverNotifiableCondition)) {
                     val cbsData = hashMapOf<String, Any>()
-                    cbsData[NotifiableConditions] = cbs
-                    fever[CBS.lowercase()] = cbsData
-                    fever.remove(OtherNotifiableConditionsForFever)?.let {
-                        (fever[CBS.lowercase()] as? HashMap<String, Any>)?.set(
-                            OtherNotifiableConditions,
-                            it
-                        )
+                    val conditions = getFormatedNotifiableCondition(fever, IccmFeverNotifiableCondition)
+                    cbsData[NotifiableConditions] = conditions
+                    if (fever.containsKey(OtherNotifiableConditionsForFever)) {
+                        cbsData[OtherNotifiableConditions] = fever[OtherNotifiableConditionsForFever] as String
                     }
+                    fever.remove(IccmFeverNotifiableCondition)
+                    fever.remove(OtherNotifiableConditionsForFever)
+                    fever[CBS.lowercase()] = cbsData
                 }
             }
         }
@@ -579,26 +577,44 @@ class AssessmentViewModel @Inject constructor(
                 }
             }
         }
+
+        // Request modification for CBS Register
         if (map.containsKey(CBS.lowercase())) {
             val result = map[CBS.lowercase()] as? HashMap<Any, Any>
             if (result != null && result.containsKey(surveillanceDetails)) {
                 val value = result[surveillanceDetails] as? HashMap<*, *>
                 value?.takeIf { it.isNotEmpty() }?.let {
-                    map.remove(CBS.lowercase())
-                    val notifiableCondition =
-                        (it[CbsNotifiableCondition] as? ArrayList<Map<String, Any>>)
-                            ?: (it[RmnchNotifiableCondition] as? ArrayList<Map<String, Any>>)
-                            ?: arrayListOf()
+                    val conditions = mutableListOf<String>()
+                    if (value.containsKey(CbsNotifiableCondition)) {
+                        conditions.addAll(getFormatedNotifiableCondition(value, CbsNotifiableCondition))
+                    }
+
+                    if (value.containsKey(RmnchNotifiableCondition)) {
+                        conditions.addAll(getFormatedNotifiableCondition(value, RmnchNotifiableCondition))
+                    }
+
                     map[CBS.lowercase()] = it.toMutableMap().apply {
                         remove(CbsNotifiableCondition)
                         remove(RmnchNotifiableCondition)
-                        put(NotifiableConditions, notifiableCondition)
+                        put(NotifiableConditions, conditions)
                     }
                 }
             }
         }
+
         val assessmentDetailBE = StringConverter.convertGivenMapToString(map) ?: ""
         return Pair(assessmentDetail, assessmentDetailBE)
+    }
+
+    fun getFormatedNotifiableCondition(map: HashMap<*, *>, key: String): List<String> {
+        val conditions = mutableListOf<String>()
+        val list = map[key] as List<*>
+        list.forEach { condition ->
+            if (condition is HashMap<*, *>) {
+                conditions.add(condition[DefinedParams.Value] as String)
+            }
+        }
+        return conditions
     }
 
     fun updateOtherAssessmentDetails() {

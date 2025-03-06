@@ -5,6 +5,7 @@ import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityImmunizationBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
@@ -39,15 +40,39 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
                 backNavigation()
             })
 
+
+        binding.refreshLayout.setOnRefreshListener {
+            swipeRefresh()
+        }
         initView()
         attachObserver()
         initializePatientDetailFragment()
         initImmunisationDetailFragment()
     }
 
+    private fun swipeRefresh() {
+        if (connectivityManager.isNetworkAvailable()) {
+            supportFragmentManager.findFragmentById(R.id.patientDetailFragment)
+                .let {
+                    patientViewModel.getPatientId()?.let { id ->
+                        patientViewModel.getPatients(id)
+                    }
+                }
+        } else {
+            showErrorDialogue(
+                getString(R.string.error), getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false,
+            ) {
+                if (binding.refreshLayout.isRefreshing) {
+                    binding.refreshLayout.isRefreshing = false
+                }
+            }
+        }
+    }
+
     private fun initView() {
         binding.btnDone.isEnabled = false
-        binding.btnDone.setOnClickListener {
+        binding.btnDone.safeClickListener {
             if (binding.btnDone.text == getString(R.string.next)) {
                 viewModel.computeAnyMissedSummary()
             } else {
@@ -142,6 +167,34 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
                 }
             }
         }
+
+        patientViewModel.patientDetailsLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    if (binding.refreshLayout.isRefreshing) {
+                        binding.refreshLayout.isRefreshing = false
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+                        if (it) {
+                            finish()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun backNavigationToHome() {
@@ -149,8 +202,10 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
             getString(R.string.alert),
             getString(R.string.exit_reason),
             isNegativeButtonNeed = true
-        ) { _ ->
-            startActivityWithoutSplashScreen()
+        ) { flag ->
+            if (flag) {
+                startActivityWithoutSplashScreen()
+            }
         }
     }
 

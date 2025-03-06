@@ -64,7 +64,7 @@ class VaccinationStatusNudge @JvmOverloads constructor(
             return if (dayDiff <= 0)
                 Pair(Upcoming, null)
             else
-                Pair(Missed, null)
+                Pair(Missed, dayDiff)
         }
     }
 
@@ -82,7 +82,7 @@ class VaccinationStatusNudge @JvmOverloads constructor(
                 flIconEpiStatus.background = ContextCompat.getDrawable(context, R.drawable.bg_ic_epi_upcoming)
                 ivIconEpiStatus.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_epi_upcoming))
                 tvEpiStatus.setTextColor(context.getColor(R.color.epi_upcoming_primary))
-                tvEpiStatus.text = "UPCOMING"
+                tvEpiStatus.text = context.getString(R.string.upcoming)
             }
 
             Vaccinated -> {
@@ -91,7 +91,7 @@ class VaccinationStatusNudge @JvmOverloads constructor(
                 flIconEpiStatus.background = ContextCompat.getDrawable(context, R.drawable.bg_ic_epi_vaccinated)
                 ivIconEpiStatus.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_epi_vaccinated))
                 tvEpiStatus.setTextColor(context.getColor(R.color.epi_vaccinated_primary))
-                tvEpiStatus.text = "VACCINATED (On Time)"
+                tvEpiStatus.text = context.getString(R.string.vaccinated_on_time)
             }
 
             VaccinatedWithDelay -> {
@@ -99,7 +99,7 @@ class VaccinationStatusNudge @JvmOverloads constructor(
                 flIconEpiStatus.background = ContextCompat.getDrawable(context, R.drawable.bg_ic_epi_delay_vaccinated)
                 ivIconEpiStatus.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_epi_vaccinated))
                 tvEpiStatus.setTextColor(context.getColor(R.color.epi_vaccinated_delay_primary))
-                tvEpiStatus.text = "VACCINATED (${status.second} days delay)"
+                tvEpiStatus.text = context.getString(R.string.vaccinated_with_delay, status.second?.toInt())
             }
 
             else -> {
@@ -107,7 +107,7 @@ class VaccinationStatusNudge @JvmOverloads constructor(
                 flIconEpiStatus.background = ContextCompat.getDrawable(context, R.drawable.bg_ic_epi_missed)
                 ivIconEpiStatus.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_epi_missed))
                 tvEpiStatus.setTextColor(context.getColor(R.color.epi_missed_primary))
-                tvEpiStatus.text = "MISSED"
+                tvEpiStatus.text = context.getString(R.string.missed_vaccination, status.second?.toInt())
             }
         }
     }

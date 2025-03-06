@@ -11,9 +11,9 @@ data class RequestImmunisationSummaryCreate(
     val encounterId: String,
     val memberId: String?,
     val patientId: String?,
-    val nextVaccinationDuration: String,
-    val nextVaccinationDose: List<String>,
-    val nextVaccinationDate: String,
+    val nextVaccinationDuration: String?,
+    val nextVaccinationDose: List<String>?,
+    val nextVaccinationDate: String?,
     val provenance: ProvanceDto,
     val villageId: String?,
     val patientReference: String?

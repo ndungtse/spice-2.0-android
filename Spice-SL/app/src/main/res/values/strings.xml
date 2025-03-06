@@ -1370,4 +1370,10 @@
     <string name="contact_tracing" translatable="false">Contact Tracing</string>
     <string name="tb_symptoms" translatable="false">TB Symptoms</string>
     <string name="notifiable_conditions" translatable="false">Notifiable Conditions</string>
+    <string name="upcoming" translatable="false">UPCOMING</string>
+    <string name="vaccinated_on_time" translatable="false">VACCINATED\n(On Time)</string>
+    <string name="vaccinated_with_delay" translatable="false">VACCINATED\n(%d days delay)</string>
+    <string name="missed_vaccination" translatable="false">MISSED\n(By %d Days)</string>
+    <string name="days_delay" translatable="false">%d Days Delay</string>
+    <string name="on_time" translatable="false">On Time</string>
 </resources>

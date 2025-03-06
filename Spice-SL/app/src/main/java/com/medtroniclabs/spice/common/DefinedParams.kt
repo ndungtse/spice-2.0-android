@@ -304,6 +304,10 @@ object DefinedParams {
     const val familyPlanning = "familyPlanning"
     const val notifiableConditions = "notifiableConditions"
     const val otherNotifiableConditions = "otherNotifiableConditions"
+    const val PeerSupervisor = "PeerSupervisor"
+    const val PHU = "PHU"
+    const val FollowUp = "followUp"
+    const val FollowUpDetails = "followUpDetails"
 
     const val CONTACT_TRACING = "contactTracing"
     const val Contact_Trace_Updated = 3

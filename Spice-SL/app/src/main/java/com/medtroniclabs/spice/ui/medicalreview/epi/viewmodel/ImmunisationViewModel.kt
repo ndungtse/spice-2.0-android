@@ -44,6 +44,7 @@ class ImmunisationViewModel @Inject constructor(
     val saveImmunisationListLiveData = MutableLiveData<Resource<ResponseCreateImmunisation>>()
     val immunisationSummaryLiveData = MutableLiveData<Resource<ResponseImmunisationSummaryDetails>>()
     var nextVaccinationDetails :EpiNextVaccinationDetails? = null
+    var lastVaccineScheduleDate: LocalDate? = null
     val saveImmunisationSummaryLiveData = MutableLiveData<Resource<ResponseImmunisationSummaryCreate>>()
 
     fun getImmunisationDetails(id: String?, memberId: String?, patientId: String?, dob: String?) {
@@ -79,6 +80,7 @@ class ImmunisationViewModel @Inject constructor(
                 nextVaccinationDetails = nextEpi
                 break
             } else {
+                lastVaccineScheduleDate = scheduleDate
                 item.vaccinationItems.forEach { vaccine ->
                     if (vaccine.isEdited == true) {
                         changesList.add(vaccine.copy())
@@ -124,25 +126,23 @@ class ImmunisationViewModel @Inject constructor(
         patientId: String?,
         villageId: String?) {
         viewModelScope.launch(dispatcherIO) {
-            nextVaccinationDetails?.let { nextEpiDetails ->
-                immunisationSummaryLiveData.value?.data?.let { summaryDetails ->
-                    val request = RequestImmunisationSummaryCreate(
-                        vaccinated = summaryDetails.vaccinated,
-                        missedVaccine = summaryDetails.missedVaccine,
-                        missedReason = summaryDetails.missedReason,
-                        lastScheduledDate = summaryDetails.lastScheduledDate,
-                        lastScheduledDateReason = "",
-                        encounterId = encounterId,
-                        memberId = memberId,
-                        patientId = patientId,
-                        nextVaccinationDuration = nextEpiDetails.nextVaccinationDuration,
-                        nextVaccinationDose = nextEpiDetails.nextVaccinationDose,
-                        nextVaccinationDate = nextEpiDetails.nextVisitDate,
-                        provenance = ProvanceDto(),
-                        villageId = villageId,
-                        patientReference = id)
-                    immunisationRepository.saveImmunisationSummaryDetails(request, saveImmunisationSummaryLiveData)
-                }
+            immunisationSummaryLiveData.value?.data?.let { summaryDetails ->
+                val request = RequestImmunisationSummaryCreate(
+                    vaccinated = summaryDetails.vaccinated,
+                    missedVaccine = summaryDetails.missedVaccine,
+                    missedReason = summaryDetails.missedReason,
+                    lastScheduledDate = summaryDetails.lastScheduledDate,
+                    lastScheduledDateReason = "",
+                    encounterId = encounterId,
+                    memberId = memberId,
+                    patientId = patientId,
+                    nextVaccinationDuration = nextVaccinationDetails?.nextVaccinationDuration,
+                    nextVaccinationDose = nextVaccinationDetails?.nextVaccinationDose,
+                    nextVaccinationDate = nextVaccinationDetails?.nextVisitDate,
+                    provenance = ProvanceDto(),
+                    villageId = villageId,
+                    patientReference = id)
+                immunisationRepository.saveImmunisationSummaryDetails(request, saveImmunisationSummaryLiveData)
             }
         }
     }

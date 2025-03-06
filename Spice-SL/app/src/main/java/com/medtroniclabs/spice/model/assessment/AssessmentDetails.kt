@@ -9,6 +9,7 @@ data class AssessmentDetails(
     val referralStatus: String,
     val referredReason: ArrayList<String>?= null,
     var otherDetails: String? = null,
+    val callResult: String? = null, // Call logs for PS and PHU
     val memberId: String?, // Member -FHIR id
     val householdId: String?, // Household - FHIR id
     var isReferred: Boolean = false,

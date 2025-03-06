@@ -12,8 +12,10 @@ import com.medtroniclabs.spice.appextensions.imgFileNameExtension
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.appextensions.signatureFolder
+import com.medtroniclabs.spice.common.DefinedParams.CBS
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_REGISTERED_DATE
 import com.medtroniclabs.spice.common.DefinedParams.Description
+import com.medtroniclabs.spice.common.DefinedParams.FollowUp
 import com.medtroniclabs.spice.common.DefinedParams.Provenance
 import com.medtroniclabs.spice.common.DefinedParams.ReferenceId
 import com.medtroniclabs.spice.common.DefinedParams.UnAssigned
@@ -43,6 +45,7 @@ import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
@@ -80,7 +83,7 @@ class OfflineSyncRepository @Inject constructor(
 
     private fun convertEntityToRequest(list: List<AssessmentDetails>): List<Assessment> {
         return list.map { entity ->
-            val assessmentDetail = JsonParser.parseString(entity.assessmentDetails)
+            val assessmentDetail = getAssessmentDetails(entity)
             Assessment(
                 referenceId = entity.id,
                 villageId = entity.villageId,
@@ -102,6 +105,62 @@ class OfflineSyncRepository @Inject constructor(
                 followUpId = entity.followUpId,
                 updatedAt = entity.createdAt
             )
+        }
+    }
+
+    private fun getAssessmentDetails(assessment: AssessmentDetails): JsonElement {
+       val assessmentDetails =  JsonParser.parseString(assessment.assessmentDetails)
+        val followUpDetails = assessment.callResult?.let { JsonParser.parseString(it) }
+
+        val assessmentType = assessment.assessmentType.lowercase()
+
+        // CBS Registration changes
+        if (assessmentType == CBS.lowercase()) {
+            val assessmentObject =
+                assessmentDetails.asJsonObject.get(CBS.lowercase()).asJsonObject
+            followUpDetails?.let {
+                assessmentObject.add(FollowUp, it)
+            }
+        }
+
+        // CBS changes for ICCM
+        if (assessmentType == ICCM_MENU_ID.lowercase()) {
+            val assessmentObject =
+                assessmentDetails.asJsonObject.get(ICCM_MENU_ID.lowercase()).asJsonObject
+            followUpDetails?.let {
+                assessmentObject.add(FollowUp, it)
+            }
+        }
+
+        // CBS changes for ANC
+        if (assessmentType == RMNCH.ANC_MENU.lowercase()) {
+            updateCbsForRMNCH(assessmentDetails, followUpDetails, ANC)
+        }
+
+        // CBS changes for PNC Neonate
+        if (assessmentType == RMNCH.pnc_neonate_key.lowercase()) {
+            updateCbsForRMNCH(assessmentDetails, followUpDetails, PNCNeonatal)
+        }
+
+        // CBS changes for Childhood Visit
+        if (assessmentType == RMNCH.CHILD_MENU.lowercase()) {
+            updateCbsForRMNCH(assessmentDetails, followUpDetails, ChildHoodVisit)
+        }
+
+        return assessmentDetails
+    }
+
+    private fun updateCbsForRMNCH(assessmentDetails: JsonElement, followUpDetails: JsonElement?, key: String ) {
+        val mainObject = assessmentDetails.asJsonObject
+        val asst = mainObject.get(key).asJsonObject
+        mainObject.get(CBS.lowercase())?.let { 
+            val cbs = it.asJsonObject
+            followUpDetails?.let {
+                cbs.add(FollowUp, followUpDetails)
+            }
+            asst.add(CBS.lowercase(), cbs)
+
+            mainObject.remove(CBS.lowercase())
         }
     }
 

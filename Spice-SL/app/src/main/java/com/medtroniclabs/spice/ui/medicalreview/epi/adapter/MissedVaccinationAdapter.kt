@@ -45,6 +45,24 @@ class MissedVaccinationAdapter(private val list: List<VaccinationDetail>) : Recy
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
          if (position != 0) {
              val itemHolder = holder as ItemViewHolder
+
+             if (position % 2 == 0) {
+                 itemHolder.binding.clRootMissedVaccineItem.setBackgroundColor(
+                     ContextCompat.getColor(
+                         holder.context,
+                         R.color.table_row_color
+                     )
+                 )
+             } else {
+                 itemHolder.binding.clRootMissedVaccineItem.setBackgroundColor(
+                     ContextCompat.getColor(
+                         holder.context,
+                         R.color.white
+                     )
+                 )
+             }
+
+
              val vaccinationDetail = list[position]
              itemHolder.binding.tvVaccinationName.text = vaccinationDetail.vaccineName
 

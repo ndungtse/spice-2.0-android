@@ -16,7 +16,10 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.PHU
+import com.medtroniclabs.spice.common.DefinedParams.PeerSupervisor
 import com.medtroniclabs.spice.data.CbsCallResult
+import com.medtroniclabs.spice.data.CbsFollowUp
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
 import com.medtroniclabs.spice.databinding.FragmentBottomCallResultDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -140,12 +143,12 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
     private fun saveCallResult() {
         viewModel.assessmentSaveLiveData.value?.data?.let { data ->
             val gson = Gson()
-            val type = object : TypeToken<List<CbsCallResult>>() {}.type
+            val type = object : TypeToken<CbsFollowUp>() {}.type
 
             // Convert callResult JSON to list, handling null safely
-            val callResults: ArrayList<CbsCallResult> = data.callResult?.let { json ->
+            val callResults: CbsFollowUp = data.callResult?.let { json ->
                 gson.fromJson(json, type)
-            } ?: arrayListOf()
+            } ?: CbsFollowUp()
 
             // Determine the type and result status
             val typeValue = arguments?.getString(DefinedParams.type)?.trim()?.lowercase()
@@ -160,11 +163,17 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
                 else -> FollowUpCallStatus.UNSUCCESSFUL
             }
 
+            val followUpReason = if (isPsType) {
+                PeerSupervisor
+            } else {
+                PHU
+            }
+
             // Add new CbsCallResult entry
-            callResults.add(
+            callResults.followUpDetails.add(
                 CbsCallResult(
                     status = followUpStatus.name,
-                    reason = selectedResult.orEmpty()
+                    reason = followUpReason
                 )
             )
 

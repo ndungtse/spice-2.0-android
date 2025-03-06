@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.getDisplayDimensions
 import com.medtroniclabs.spice.databinding.DialogMissedVaccinationBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.model.medicalreview.VaccinationDetail
 import com.medtroniclabs.spice.ui.BaseDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.epi.adapter.MissedVaccinationAdapter
@@ -30,10 +33,8 @@ class MissedImmunisationDialogFragment : BaseDialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setLayout(
-            (600 * resources.displayMetrics.density).toInt(),
-            (700 * resources.displayMetrics.density).toInt(),
-        )
+        val (targetWidth, targetHeight) = getDisplayDimensions(requireActivity(), 0.5, 0.8)
+        dialog?.window?.setLayout(targetWidth, targetHeight)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,9 +53,16 @@ class MissedImmunisationDialogFragment : BaseDialogFragment() {
         val missedItems = viewModel.changesList.filter { it.vaccinatedDate == null }.map { it.vaccineName }
         binding.tvNoOfMissedVaccine.text = getString(R.string.missed_vaccination_count, missedItems.size)
         binding.labelMissedVaccinationTitle.text = getString(R.string.reason_for_missed_vaccination, missedItems.joinToString(", "))
+        binding.labelMissedVaccinationTitle.markMandatory()
+
+        binding.etMissedReason.addTextChangedListener {
+            val reason = it?.trim().toString()
+            binding.btnNext.isEnabled = reason.isNotEmpty()
+        }
     }
 
     private fun clickListener() {
+        binding.btnNext.isEnabled = false
         binding.btnBack.setOnClickListener {
             dismiss()
         }

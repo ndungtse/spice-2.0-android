@@ -126,7 +126,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                     MenuConstants.GENERAL_ID -> menuItem.isDisabled = isGeneralDisabled(dob)
                     MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID -> menuItem.isDisabled =isUnderFiveToTwoMonthsDisabled(dob)
                     MenuConstants.UNDER_AGE_ABOVE_FIVE_YEAR_ID ->menuItem.isDisabled = isUnderAgeAboveFiveYearsDisabled(dob)
-                    MenuConstants.EPI_ID -> menuItem.isDisabled = !isUnderFifteenMonths(dob)
+                    MenuConstants.EPI_ID -> menuItem.isDisabled = !isUnderSixtyMonths(dob)
                     MenuConstants.TB_MENU_ID -> menuItem.isDisabled = isGeneralDisabled(dob)
                     else -> {}
 
@@ -281,13 +281,12 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
         }
     }
 
-    private fun isUnderFifteenMonths(dob: String?): Boolean {
-        val maxMonthAgeForEPI = 24
+    private fun isUnderSixtyMonths(dob: String?): Boolean {
+        val maxMonthAgeForEPI = 60
         if (dob.isNullOrBlank()) return false
         val age = DateUtils.getV2YearMonthAndWeek(dob)
         val ageInMonths = (age.years * 12) + age.months
 
-        return ageInMonths < maxMonthAgeForEPI ||
-                (ageInMonths == maxMonthAgeForEPI && age.weeks == 0 && age.days == 0)
+        return ageInMonths < maxMonthAgeForEPI
     }
 }

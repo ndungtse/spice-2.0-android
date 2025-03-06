@@ -1,9 +1,13 @@
 package com.medtroniclabs.spice.ui.medicalreview.epi.fragment
 
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -23,6 +27,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 @AndroidEntryPoint
 class ImmunisationSummaryFragment :  BaseFragment() {
@@ -124,6 +129,10 @@ class ImmunisationSummaryFragment :  BaseFragment() {
             }
         }
 
+        viewModel.lastVaccineScheduleDate?.let {
+            binding.tvScheduledDate.text = getColoredSpannableString(it)
+        }
+
         viewModel.nextVaccinationDetails?.let {
             binding.tvNextDuration.text = it.nextVaccinationDuration
             binding.tvNextDose.text = it.nextVaccinationDose.joinToString(separator = ", ")
@@ -132,6 +141,18 @@ class ImmunisationSummaryFragment :  BaseFragment() {
                 DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                 DATE_ddMMyyyy
             )
+        } ?: run {
+            binding.lblNextDuration.gone()
+            binding.tvNextDuration.gone()
+            binding.tvNextDurationSeparator.gone()
+
+            binding.lblNextDose.gone()
+            binding.tvNextDose.gone()
+            binding.tvNextDoseSeparator.gone()
+
+            binding.lblNextVaccinationDate.gone()
+            binding.tvNextVaccinationDate.gone()
+            binding.tvNextVaccinationDateSeparator.gone()
         }
     }
 
@@ -154,6 +175,35 @@ class ImmunisationSummaryFragment :  BaseFragment() {
             val missedReason = response.missedReason ?: "--"
             binding.tvMissedReason.text = missedReason
         }
+    }
+
+    private  fun getColoredSpannableString(scheduleDate: LocalDate): Spannable {
+        val today = LocalDate.now()
+        val dayDiff = ChronoUnit.DAYS.between(scheduleDate, today)
+        val date = scheduleDate.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
+
+        val status = if (dayDiff > 0) {
+            getString(R.string.days_delay, dayDiff.toInt())
+        } else {
+            getString(R.string.on_time)
+        }
+
+        val fullText = "$date, ($status)"
+        val spannable = SpannableString(fullText)
+
+        val color = if (dayDiff > 0)
+            ContextCompat.getColor(requireContext(), R.color.epi_missed_primary)
+        else
+            ContextCompat.getColor(requireContext(), R.color.green_attention_color)
+
+        val startIndex = fullText.indexOf("($status)")
+        val endIndex = startIndex + status.length + 2 // +2 for parentheses
+
+        if (startIndex != -1) {
+            spannable.setSpan(ForegroundColorSpan(color), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+
+        return spannable
     }
 
 }

@@ -21,7 +21,7 @@
 
     <FrameLayout
         android:id="@+id/flEpiStatusNudge"
-        android:layout_width="@dimen/_142sdp"
+        android:layout_width="@dimen/_160sdp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_16sdp"
         android:minHeight="@dimen/_44sdp"

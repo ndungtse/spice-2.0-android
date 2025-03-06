@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.getLocalDate
 import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.combineText
@@ -42,6 +43,7 @@ import com.medtroniclabs.spice.ui.common.GeneralInfoDialog
 import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class PatientInfoFragment : BaseFragment() {
@@ -242,12 +244,23 @@ class PatientInfoFragment : BaseFragment() {
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.landmark),
-                    DefinedParams.Value to (patientListRespModel.landmark.takeIf { it?.isNotBlank() == true }?.trim()
-                        ?: requireContext().getString(R.string.hyphen_symbol))),
+                    DefinedParams.Value to (patientListRespModel.landmark.takeIf { it?.isNotBlank() == true }
+                        ?.trim()
+                        ?: requireContext().getString(R.string.hyphen_symbol))
+                ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.household_location),
-                    DefinedParams.Value to (patientListRespModel.village.takeIf { it?.isNotBlank() == true }?.trim()
-                        ?: requireContext().getString(R.string.hyphen_symbol)))
+                    DefinedParams.Value to (patientListRespModel.village.takeIf { it?.isNotBlank() == true }
+                        ?.trim()
+                        ?: requireContext().getString(R.string.hyphen_symbol))
+                ),
+
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.dateofbirth),
+                    DefinedParams.Value to (patientListRespModel.birthDate?.getLocalDate()
+                        ?.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
+                        ?: requireContext().getString(R.string.hyphen_symbol))
+                )
             )
             if (isAnc == true && lastMenstrualDate != null) {
                 dataList.add(
