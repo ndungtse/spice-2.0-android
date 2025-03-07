@@ -10,15 +10,17 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentSystemicExaminationsBinding
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.SystemicExaminationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isDataValid
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.respiratory
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -71,6 +73,18 @@ class SystemicExaminationsFragment : BaseFragment() {
             it?.let {
                 val value = it.trim().toString()
                 viewModel.fundalHeight = if (value.isNotBlank()) value.toDoubleOrNull() else null
+                setFragmentResult(
+                    MedicalReviewDefinedParams.SE_ITEM, bundleOf(
+                        MedicalReviewDefinedParams.CHIP_ITEMS to true
+                    )
+                )
+            }
+        }
+
+        binding.tvRespiratoryText.addTextChangedListener {
+            it?.let {
+                val value = it.trim().toString()
+                viewModel.respiratoryNotes = value.ifBlank { null }
                 setFragmentResult(
                     MedicalReviewDefinedParams.SE_ITEM, bundleOf(
                         MedicalReviewDefinedParams.CHIP_ITEMS to true
@@ -143,7 +157,7 @@ class SystemicExaminationsFragment : BaseFragment() {
             )
             MedicalReviewTypeEnums.TB.name -> {
                 binding.etPhysicalExaminationComments.gone()
-                Pair(R.string.systemic_examinations, false)
+                Pair(R.string.general_systemic_examinations, false)
             }
 
             else -> return // Handle other cases or provide a default behavior
@@ -166,6 +180,7 @@ class SystemicExaminationsFragment : BaseFragment() {
             TagListCustomView(binding.root.context, binding.tagPhysicalExamination) { _, _, _ ->
                 viewModel.selectedSystemicExaminations =
                     ArrayList(examinationsTagView.getSelectedTags())
+                showRespiratory()
                 setFragmentResult(
                     MedicalReviewDefinedParams.SE_ITEM, bundleOf(
                         MedicalReviewDefinedParams.CHIP_ITEMS to true
@@ -173,6 +188,20 @@ class SystemicExaminationsFragment : BaseFragment() {
                 )
             }
         viewModel.getSystemicExaminationList(viewModel.systemicExaminationsType)
+    }
+
+    private fun showRespiratory() {
+        viewModel.selectedSystemicExaminations.find { it.value == respiratory }?.let {
+            if (viewModel.systemicExaminationsType == MedicalReviewTypeEnums.TB.name) {
+                binding.tvRespiratoryText.setText("")
+                binding.tbGroup.visible()
+                binding.tvErrorMessage.invisible()
+            }
+        } ?: kotlin.run {
+            binding.tbGroup.gone()
+            binding.tvErrorMessage.gone()
+            binding.tvRespiratoryText.setText("")
+        }
     }
 
     fun validateInput(): Boolean {

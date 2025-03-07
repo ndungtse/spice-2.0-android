@@ -43,6 +43,7 @@ import com.medtroniclabs.spice.data.ReferPatientRequest
 import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
 import com.medtroniclabs.spice.data.SummaryCreateRequest
+import com.medtroniclabs.spice.data.TbMetaResponse
 import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
@@ -723,5 +724,17 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun createSupportRequest(request: NCDSupportRequest): Response<APIResponse<String>> {
         return apiService.createSupportRequest(request)
+    }
+
+    override suspend fun getTbStaticData(): Response<APIResponse<TbMetaResponse>> {
+        return apiService.getTbStaticData()
+    }
+
+    override suspend fun createHeight(request: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.createHeight(request)
+    }
+
+    override suspend fun fetchHeight(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>> {
+        return apiService.fetchHeight(motherNeonateAncRequest)
     }
 }

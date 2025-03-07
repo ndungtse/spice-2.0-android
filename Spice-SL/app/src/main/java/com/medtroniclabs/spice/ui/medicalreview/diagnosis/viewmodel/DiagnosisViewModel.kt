@@ -28,6 +28,7 @@ class DiagnosisViewModel @Inject constructor(
     lateinit var connectivityManager: ConnectivityManager
 
     val diagnosisMetaList = MutableLiveData<Resource<List<DiseaseCategoryItems>>>()
+    val siteOfDiseaseMetaList = MutableLiveData<Resource<List<DiseaseCategoryItems>>>()
     val diagnosisDetailsList = MutableLiveData<Resource<ArrayList<DiagnosisDiseaseModel>>>()
     val diagnosisSaveUpdateResponse = MutableLiveData<Resource<ArrayList<DiagnosisDiseaseModel>>>()
     var viewDiagnosis: Boolean = true
@@ -36,6 +37,12 @@ class DiagnosisViewModel @Inject constructor(
     fun getDiagnosisMetaList(diagnosisType: String) {
         viewModelScope.launch(dispatcherIO) {
             repository.getDiagnosisList(diagnosisMetaList, diagnosisType)
+        }
+    }
+
+    fun getSiteOfDiseaseMetaList(siteOfDiseaseType: String) {
+        viewModelScope.launch(dispatcherIO) {
+            repository.getDiagnosisList(siteOfDiseaseMetaList, siteOfDiseaseType)
         }
     }
 

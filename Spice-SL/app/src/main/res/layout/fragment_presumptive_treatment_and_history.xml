@@ -298,6 +298,12 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="tvPrescriptionsLabel, tvPrescriptionsText" />
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/groupCMRTb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="tvPrescriptionsText,tvPrescriptionsSeparator,tvPrescriptionsLabel, tvInvestigationsText,tvInvestigationsSeparator,tvInvestigationsLabel,tvClinicalNotesText,tvClinicalNotesSeparator,tvClinicalNotesLabel,tvSystemicText,tvSystemicSeparator,tvSystemicLabel,tvComorbiditiesText,tvComorbiditiesSeparator,tvComorbiditiesLabel" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,20 +10,27 @@ import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityTbMedicalReviewBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
 import com.medtroniclabs.spice.ui.medicalreview.SystemicExaminationsFragment
+import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
+import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
+import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.SystemicExaminationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.ComorbiditiesFragment
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.PresumptiveTreatmentAndHistoryFragment
-import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.TbSummaryFragment
+import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.ComorbiditiesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.TbViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.respiratory
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
@@ -36,6 +43,11 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     private lateinit var binding: ActivityTbMedicalReviewBinding
     private val patientViewModel: PatientDetailViewModel by viewModels()
     private val viewModel: TbViewModel by viewModels()
+    private val clinicalNotesViewModel: ClinicalNotesViewModel by viewModels()
+    private val presentingComplaintsViewModel: PresentingComplaintsViewModel by viewModels()
+    private val systemicExaminationViewModel: SystemicExaminationViewModel by viewModels()
+    private val comorbiditiesViewModel: ComorbiditiesViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -58,10 +70,68 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         initStaticDataCall()
         setButtonClickListener()
+        attachObserver()
+    }
+
+    private fun attachObserver() {
+        viewModel.tbMetaResponse.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    initView()
+                }
+
+                ResourceState.ERROR -> {
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+                        if (it) {
+                            onBackPressPopStack()
+                        }
+                    }
+                }
+            }
+        }
+        patientViewModel.patientDetailsLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    if (binding.refreshLayout.isRefreshing) {
+                        binding.refreshLayout.isRefreshing = false
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+                        if (it) {
+                            onBackPressPopStack()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun onBackPressPopStack() {
+        this@TBMedicalReviewActivity.finish()
     }
 
     private fun initStaticDataCall() {
-        if (false) {
+        if (!SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_TB_LOADED.name)) {
             viewModel.getTbStaticData()
         } else {
             initView()
@@ -73,29 +143,16 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     }
 
     private fun initializePatientDetailFragment() {
-        val fragmentManager = supportFragmentManager
-        val existingFragment = fragmentManager.findFragmentById(R.id.patientDetailFragment)
-        if (existingFragment == null) {
-            val fragment =
-                PatientInfoFragment.newInstance(
-                    intent.getStringExtra(DefinedParams.PatientId),
-                    isTb = true
-                )
-            fragment.setDataCallback(this)
-            fragmentManager.beginTransaction()
-                .add(R.id.patientDetailFragment, fragment)
-                .commit()
-        } else if (existingFragment !is PatientInfoFragment) {
-            val fragment =
-                PatientInfoFragment.newInstance(
-                    intent.getStringExtra(DefinedParams.PatientId),
-                    isTb = true
-                )
-            fragment.setDataCallback(this)
-            fragmentManager.beginTransaction()
-                .replace(R.id.patientDetailFragment, fragment)
-                .commit()
-        }
+        replaceFragment(
+            R.id.patientDetailFragment,
+            PatientInfoFragment.TAG,
+            PatientInfoFragment.newInstance(
+                intent.getStringExtra(DefinedParams.PatientId),
+                isTb = true
+            ).apply {
+                setDataCallback(this@TBMedicalReviewActivity)
+            }
+        )
     }
 
 
@@ -126,9 +183,12 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
             binding.ivPrescription.id -> openPrescriptionActivity()
             binding.ivInvestigation.id -> openInvestigationActivity()
             binding.loadingProgress.id -> {}
+            binding.btnSubmit.id -> clickSubmit()
         }
     }
+    private fun clickSubmit() {
 
+    }
     private fun openPrescriptionActivity() {
         patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
             val intent = Intent(this, PrescriptionActivity::class.java)
@@ -173,8 +233,9 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     }
 
     private fun replaceWithDiagnosisFragment() {
-        supportFragmentManager.beginTransaction().replace(
-            R.id.patientMedicalReviewDiagnosis,
+        addOrReuseFragment(
+            R.id.patientSummaryContainer,
+            MedicalReviewPatientDiagnosisFragment.TAG,
             MedicalReviewPatientDiagnosisFragment.newInstance(
                 isAnc = false,
                 isPnc = false,
@@ -183,19 +244,17 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
                 memberID = viewModel.memberId,
                 id = intent.getStringExtra(DefinedParams.ID)
             )
-        ).commit()
-        supportFragmentManager.beginTransaction().replace(
-            R.id.patientHistoryContainer,
-            PresumptiveTreatmentAndHistoryFragment.newInstance()
-        ).commit()
-        supportFragmentManager.beginTransaction().replace(
-            R.id.patientSummaryContainer,
-            TbSummaryFragment.newInstance()
-        ).commit()
-        supportFragmentManager.beginTransaction().replace(
+        )
+        replaceFragment(
             R.id.comorbiditiesContainer,
+            ComorbiditiesFragment.TAG,
             ComorbiditiesFragment.newInstance()
-        ).commit()
+        )
+        replaceFragment(
+            R.id.patientMedicalReviewDiagnosis,
+            PresumptiveTreatmentAndHistoryFragment.TAG,
+            PresumptiveTreatmentAndHistoryFragment.newInstance()
+        )
         initializeFragments()
     }
 
@@ -230,5 +289,63 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
             bundle = bundle,
             tag = ClinicalNotesFragment.TAG
         )
+        supportFragmentManager
+            .setFragmentResultListener(MedicalReviewDefinedParams.PC_ITEM, this) { _, _ ->
+                enableSubmitBtn()
+            }
+        supportFragmentManager
+            .setFragmentResultListener(MedicalReviewDefinedParams.SE_ITEM, this) { _, _ ->
+                enableSubmitBtn()
+            }
+        supportFragmentManager
+            .setFragmentResultListener(MedicalReviewDefinedParams.CLINICAL_NOTES, this) { _, _ ->
+                enableSubmitBtn()
+            }
+        supportFragmentManager
+            .setFragmentResultListener(MedicalReviewDefinedParams.CF_ITEM, this) { _, _ ->
+                enableSubmitBtn()
+            }
+    }
+
+    private fun enableSubmitBtn() {
+        val comorbiditiesFragment =
+            supportFragmentManager.findFragmentByTag(ComorbiditiesFragment.TAG) as? ComorbiditiesFragment
+        val isValidFragment = comorbiditiesFragment?.validateInput(true)?.first ?: false
+
+        val hasClinicalNotes = clinicalNotesViewModel.enteredClinicalNotes.isNotBlank()
+        val hasSelectedPresentingComplaints =
+            presentingComplaintsViewModel.selectedPresentingComplaints.isNotEmpty()
+        val hasEnteredComplaintNotes =
+            presentingComplaintsViewModel.enteredComplaintNotes.isNotBlank()
+        val hasEnteredExaminationNotes =
+            systemicExaminationViewModel.enteredExaminationNotes.isNotBlank()
+
+        val hasSelectedSystemicExaminations =
+            systemicExaminationViewModel.selectedSystemicExaminations.isNotEmpty()
+        val isRespiratorySelected =
+            systemicExaminationViewModel.selectedSystemicExaminations.any { it.value == respiratory }
+        val hasValidRespiratoryNotes =
+            !systemicExaminationViewModel.respiratoryNotes.isNullOrBlank()
+        val hasComorbidities = comorbiditiesViewModel.chips.isNotEmpty()
+        // If "Ear" is selected, respiratoryNotes must not be blank
+        val isSystemicExaminationValid = !isRespiratorySelected || hasValidRespiratoryNotes
+
+        binding.btnSubmit.isEnabled = (hasClinicalNotes ||
+                hasSelectedPresentingComplaints ||
+                hasEnteredComplaintNotes ||
+                hasEnteredExaminationNotes ||
+                hasSelectedPresentingComplaints ||
+                isValidFragment)
+
+        if (hasSelectedSystemicExaminations) {
+            binding.btnSubmit.isEnabled = isSystemicExaminationValid
+            if (!isSystemicExaminationValid) {
+                return
+            }
+        }
+        if (hasComorbidities) {
+            binding.btnSubmit.isEnabled = isValidFragment
+            return
+        }
     }
 }

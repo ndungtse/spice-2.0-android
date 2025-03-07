@@ -122,7 +122,7 @@ object NCDMRUtil {
         isMandatory: Boolean = false,
         chips: ArrayList<ChipViewItemModel>,
         etPhysicalExaminationComments: AppCompatEditText,
-        tvErrorMessage: TextView
+        tvErrorMessage: TextView? = null
     ): Boolean {
         val hasChips = chips.isNotEmpty() // Check if there are any chips selected
         val hasOtherChip = chips.any {
@@ -141,26 +141,26 @@ object NCDMRUtil {
                 // If 'Other' chip is selected, check for non-blank comments
                 if (hasOtherChip) {
                     return if (commentsNotBlank) {
-                        tvErrorMessage.invisible() // Hide error if comments are valid
+                        tvErrorMessage?.invisible() // Hide error if comments are valid
                         true
                     } else {
-                        tvErrorMessage.visible() // Show error if comments are empty
+                        tvErrorMessage?.visible() // Show error if comments are empty
                         false
                     }
                 }
                 // If no 'Other' chip is selected, input is valid
-                tvErrorMessage.gone()
+                tvErrorMessage?.gone()
                 return true
             } else {
                 // If no chips are selected and mandatory, show error
-                tvErrorMessage.visible()
+                tvErrorMessage?.visible()
                 return false
             }
         }
 
         // If chips are empty and comments are blank, input is valid
         if (!hasChips && etPhysicalExaminationComments.text?.isBlank() == true) {
-            tvErrorMessage.gone()
+            tvErrorMessage?.gone()
             return true
         }
 
@@ -168,15 +168,15 @@ object NCDMRUtil {
         if (hasChips) {
             if (hasOtherChip) {
                 return if (commentsNotBlank) {
-                    tvErrorMessage.invisible() // Hide error if comments are valid
+                    tvErrorMessage?.invisible() // Hide error if comments are valid
                     true
                 } else {
-                    tvErrorMessage.visible() // Show error if comments are empty
+                    tvErrorMessage?.visible() // Show error if comments are empty
                     false
                 }
             }
             // If no 'Other' chip is selected, input is valid
-            tvErrorMessage.gone()
+            tvErrorMessage?.gone()
             return true
         }
 

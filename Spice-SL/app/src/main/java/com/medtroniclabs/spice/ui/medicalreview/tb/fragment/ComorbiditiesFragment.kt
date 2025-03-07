@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
@@ -20,6 +22,7 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.ComorbiditiesViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -60,7 +63,7 @@ class ComorbiditiesFragment : BaseFragment() {
                 ResourceState.SUCCESS -> {
                     resource.data?.let { listItems ->
                         val chipItemList =
-                            listItems.filter { it.category == MedicalReviewTypeEnums.PresentingComplaints.name }
+                            listItems.filter { it.category == MedicalReviewTypeEnums.comorbidities.name }
                                 .map {
                                     ChipViewItemModel(
                                         id = it.id,
@@ -83,6 +86,10 @@ class ComorbiditiesFragment : BaseFragment() {
     private fun setObserver() {
         MotherNeonateUtil.initTextWatcherForString(binding.etPhysicalExaminationComments) {
             viewModel.comments = it
+            setFragmentResult(
+                MedicalReviewDefinedParams.CF_ITEM, bundleOf(
+                    MedicalReviewDefinedParams.CHIP_ITEMS to true)
+            )
         }
     }
 
@@ -93,6 +100,7 @@ class ComorbiditiesFragment : BaseFragment() {
         with(binding) {
             binding.tvCommentsTitle.text = getString(R.string.please_specify_the_comorbidity)
             binding.tvCommentsTitle.markMandatory()
+            binding.tvCommentsTitle.gone()
             binding.etPhysicalExaminationComments.gone()
             binding.tvCommentsTitle.gone()
             tvSystemicExaminationTitle.text = getString(R.string.comorbidities)
@@ -105,6 +113,10 @@ class ComorbiditiesFragment : BaseFragment() {
                         viewModel.chips =
                             ArrayList(tagView.getSelectedTags())
                         showNotes()
+                        setFragmentResult(
+                            MedicalReviewDefinedParams.CF_ITEM, bundleOf(
+                                MedicalReviewDefinedParams.CHIP_ITEMS to true)
+                        )
                     }
                 )
             tagView.addChipItemList(complaintList, viewModel.chips)
@@ -119,7 +131,7 @@ class ComorbiditiesFragment : BaseFragment() {
                 )
             } != null) {
             binding.etPhysicalExaminationComments.visible()
-            binding.tvCommentsTitle.visible()
+            binding.tvCommentsTitle.gone()
         } else {
             binding.etPhysicalExaminationComments.gone()
             binding.tvCommentsTitle.gone()
@@ -133,8 +145,7 @@ class ComorbiditiesFragment : BaseFragment() {
         val isValid = NCDMRUtil.validateInput(
             isMandatory,
             viewModel.chips,
-            binding.etPhysicalExaminationComments,
-            binding.tvErrorMessage
+            binding.etPhysicalExaminationComments
         )
         return Pair(isValid, binding.etPhysicalExaminationComments)
     }

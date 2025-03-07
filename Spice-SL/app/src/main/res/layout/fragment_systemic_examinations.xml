@@ -156,6 +156,74 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="tvFetalHeartRateError, tvFundalHeightError" />
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/tbGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="tvRespiratoryLabel,tvRespiratorySeparator,tvRespiratoryText" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRespiratoryLabel"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginStart="@dimen/_16ssp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="@string/respiratory"
+                app:layout_constraintEnd_toStartOf="@id/tvRespiratorySeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/barrier" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRespiratorySeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvRespiratoryText"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/tvRespiratoryLabel"
+                app:layout_constraintTop_toTopOf="@id/tvRespiratoryLabel" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/tvRespiratoryText"
+                style="@style/Form_BP_Input_Box_Style"
+                android:layout_width="0dp"
+                android:padding="@dimen/_10sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_16sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:textAlignment="textStart"
+                android:inputType="text"
+                app:layout_constraintBottom_toBottomOf="@id/tvRespiratoryLabel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvRespiratorySeparator"
+                app:layout_constraintTop_toTopOf="@id/tvRespiratoryLabel" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRespiratoryError"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/default_user_input_error"
+                android:textColor="@color/a_red_error"
+                android:textSize="@dimen/_12ssp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/tvRespiratoryText"
+                app:layout_constraintStart_toStartOf="@id/tvRespiratoryText"
+                app:layout_constraintTop_toBottomOf="@id/tvRespiratoryText" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/tbBarrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="tvRespiratoryLabel, tvRespiratorySeparator, tvRespiratoryError" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvCommentsTitle"
                 android:layout_width="0dp"
@@ -167,7 +235,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/barrier" />
+                app:layout_constraintTop_toBottomOf="@id/tbBarrier" />
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/etPhysicalExaminationComments"

@@ -43,6 +43,7 @@ import com.medtroniclabs.spice.data.ReferPatientRequest
 import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
 import com.medtroniclabs.spice.data.SummaryCreateRequest
+import com.medtroniclabs.spice.data.TbMetaResponse
 import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
@@ -588,4 +589,13 @@ interface ApiService {
 
     @POST("/user-service/user/support")
     suspend fun createSupportRequest(@Body request: NCDSupportRequest): Response<APIResponse<String>>
+
+    @POST("/spice-service/static-data/meta-data/tb")
+    suspend fun getTbStaticData(): Response<APIResponse<TbMetaResponse>>
+
+    @POST("/spice-service//medical-review/height/create")
+    suspend fun createHeight(@Body request: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("/spice-service/medical-review/height")
+    suspend fun fetchHeight(@Body motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>>
 }

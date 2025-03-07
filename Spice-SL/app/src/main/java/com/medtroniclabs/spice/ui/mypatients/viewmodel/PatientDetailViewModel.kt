@@ -6,7 +6,6 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientDetailRequest
@@ -204,4 +203,9 @@ class PatientDetailViewModel @Inject constructor(
             patientDetailsNeonateLiveData.postValue(patientRepository.getPatients(PatientDetailRequest(patientId = id, assessmentType = assessmentType, id = id, type = origin)))
         }
     }
+
+    fun getTbMedicalReviewStatus(): Boolean {
+        return patientDetailsLiveData.value?.data?.tbIMRCompleted ?: false
+    }
+
 }

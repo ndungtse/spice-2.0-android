@@ -12,7 +12,6 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.setWidth
@@ -103,7 +102,7 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     binding.loader.gone()
                     dismiss()
-                    listener?.onDialogDismissed(true)
+                    listener?.onDialogDismissed(isBp = true, false)
                     viewModel.saveBloodPressure.postError(optionalData = true)
                 }
 

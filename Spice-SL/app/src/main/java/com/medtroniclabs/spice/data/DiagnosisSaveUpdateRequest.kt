@@ -16,5 +16,6 @@ data class DiagnosisDiseaseModel(
     val diseaseConditionId: Long?,
     val diseaseCategory: String,
     val notes: String? = null,
-    val diseaseCondition: String?
+    val diseaseCondition: String?,
+    val siteOfDisease:Boolean = false
 )

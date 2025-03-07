@@ -1345,6 +1345,12 @@
     <string name="emergency_contact_at_PHU" translatable="false">Emergency contact at PHU</string>
     <string name="cbs_register_updated" translatable="false">CBS Register Updated!</string>
     <string name="cbs" translatable="false">CBS</string>
+    <string name="respiratory" translatable="false">Respiratory</string>
+    <string name="enter_the_height" translatable="false">Enter the Height</string>
+    <string name="height" translatable="false">Height (in cms)</string>
+    <string name="tb_sign_symptoms" translatable="false">TB Signs &amp; Symptoms</string>
+    <string name="presumptive_treatment_summary" translatable="false">Presumptive Treatment Summary</string>
+    <string name="add_disease" translatable="false">Add Disease </string>
     <string name="lab_test_results" translatable="false">Lab Test Results</string>
     <string name="descriptive_result" translatable="false">Descriptive Result</string>
     <string name="test_name_" translatable="false">Test Name</string>

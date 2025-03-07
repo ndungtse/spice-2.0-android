@@ -7,6 +7,7 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/commonLl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_4sdp"
@@ -81,6 +82,7 @@
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_marginBottom="@dimen/_8sdp"
             android:layout_weight="1"
+            android:visibility="gone"
             app:cardCornerRadius="@dimen/_5sdp"
             app:cardElevation="@dimen/_4sdp">
 
@@ -115,7 +117,7 @@
                     app:layout_constraintTop_toBottomOf="@id/tvSiteDiseaseLbl" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvSiteDiseaseConfirm"
+                    android:id="@+id/tvAddSiteDisease"
                     style="@style/TextStyle_Regular_16_Size"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:ellipsize="end"
@@ -141,6 +143,7 @@
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_marginBottom="@dimen/_8sdp"
             android:layout_weight="1"
+            android:visibility="gone"
             app:cardCornerRadius="@dimen/_5sdp"
             app:cardElevation="@dimen/_4sdp">
 
@@ -175,7 +178,7 @@
                     app:layout_constraintTop_toBottomOf="@id/tvPatientTypeLbl" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvPatientTypeConfirm"
+                    android:id="@+id/tvAddPatientType"
                     style="@style/TextStyle_Regular_16_Size"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:ellipsize="end"
@@ -234,8 +237,8 @@
                     app:layout_constraintTop_toBottomOf="@id/tvPatientStatusLbl" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvBPViewDetail"
-                    style="@style/TextStyle_Regular_18"
+                    android:id="@+id/tvAddPatientStatus"
+                    style="@style/TextStyle_Regular_16_Size"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:ellipsize="end"
                     android:gravity="center"
@@ -438,11 +441,22 @@
             app:cardElevation="@dimen/_4sdp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clHeight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:background="@color/white"
                 android:padding="@dimen/_10sdp">
+
+                <ProgressBar
+                    android:id="@+id/tbHeightPageProgress"
+                    android:layout_width="@dimen/_35sdp"
+                    android:layout_height="@dimen/_35sdp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"  />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvHeightLbl"
@@ -467,7 +481,7 @@
                     app:layout_constraintTop_toBottomOf="@id/tvHeightLbl" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvHeightConfirm"
+                    android:id="@+id/tvAddHeight"
                     style="@style/TextStyle_Regular_16_Size"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:ellipsize="end"
@@ -479,6 +493,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvHeight" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/retryButtonTbHeightConfirm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="@string/retry"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:visibility="gone"
+                    app:cornerRadius="18dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvAddHeight" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -497,14 +524,25 @@
             app:cardElevation="@dimen/_4sdp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clTbWeight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:background="@color/white"
                 android:padding="@dimen/_10sdp">
 
+                <ProgressBar
+                    android:id="@+id/tbWeightPageProgress"
+                    android:layout_width="@dimen/_35sdp"
+                    android:layout_height="@dimen/_35sdp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"  />
+
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvWeightLabel"
+                    android:id="@+id/tvTbWeightLabel"
                     style="@style/TextStyle_Regular_16"
                     android:ellipsize="end"
                     android:gravity="center"
@@ -515,7 +553,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvWeight"
+                    android:id="@+id/tvTbWeight"
                     style="@style/TextStyle_Bold_16_Size"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:ellipsize="end"
@@ -524,10 +562,10 @@
                     android:text="@string/hyphen_symbol"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvWeightLabel" />
+                    app:layout_constraintTop_toBottomOf="@id/tvTbWeightLabel" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvWeightConfirm"
+                    android:id="@+id/tvTbAddWeight"
                     style="@style/TextStyle_Regular_16_Size"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:ellipsize="end"
@@ -537,7 +575,21 @@
                     android:textColor="@color/medium_blue"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvWeight" />
+                    app:layout_constraintTop_toBottomOf="@id/tvTbWeight" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/retryButtonTbWeight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="@string/retry"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:visibility="gone"
+                    app:cornerRadius="18dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvTbAddWeight" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -563,6 +615,16 @@
                 android:background="@color/white"
                 android:padding="@dimen/_10sdp">
 
+                <ProgressBar
+                    android:id="@+id/tbBMIPageProgress"
+                    android:layout_width="@dimen/_35sdp"
+                    android:layout_height="@dimen/_35sdp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvBmiLbl"
                     style="@style/TextStyle_Regular_16"
@@ -587,7 +649,7 @@
                     app:layout_constraintTop_toBottomOf="@id/tvBmiLbl" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvBmiConfirm"
+                    android:id="@+id/tvBmiHistory"
                     style="@style/TextStyle_Regular_16_Size"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:ellipsize="end"
@@ -598,6 +660,20 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvBmi" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/retryButtonTbBMI"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="@string/retry"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:visibility="gone"
+                    app:cornerRadius="18dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvBmiHistory" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -617,14 +693,25 @@
             app:cardElevation="@dimen/_4sdp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clTbBp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:background="@color/white"
                 android:padding="@dimen/_10sdp">
 
+                <ProgressBar
+                    android:id="@+id/tbBpPageProgress"
+                    android:layout_width="@dimen/_35sdp"
+                    android:layout_height="@dimen/_35sdp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"  />
+
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvBpLbl"
+                    android:id="@+id/tvTbBpLbl"
                     style="@style/TextStyle_Regular_16"
                     android:ellipsize="end"
                     android:gravity="center"
@@ -635,7 +722,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvBp"
+                    android:id="@+id/tvTbBp"
                     style="@style/TextStyle_Bold_16_Size"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:ellipsize="end"
@@ -644,21 +731,35 @@
                     android:text="@string/hyphen_symbol"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvBpLbl" />
+                    app:layout_constraintTop_toBottomOf="@id/tvTbBpLbl" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvBPDetail"
-                    style="@style/TextStyle_Regular_18"
+                    android:id="@+id/tvTbAddBp"
+                    style="@style/TextStyle_Regular_16"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:ellipsize="end"
                     android:gravity="center"
                     android:maxLines="1"
                     android:text="@string/add_blood_pressure"
-                    android:textColor="@color/medium_blue"
                     android:visibility="visible"
+                    android:textColor="@color/medium_blue"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvBp" />
+                    app:layout_constraintTop_toBottomOf="@id/tvTbBp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/retryButtonTbBp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="@string/retry"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:visibility="gone"
+                    app:cornerRadius="18dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvTbAddBp" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

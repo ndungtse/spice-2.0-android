@@ -24,6 +24,7 @@ class TbSummaryFragment : BaseFragment() {
     }
 
     companion object {
+        const val TAG = "TbSummaryFragment"
         fun newInstance() =
             TbSummaryFragment()
     }

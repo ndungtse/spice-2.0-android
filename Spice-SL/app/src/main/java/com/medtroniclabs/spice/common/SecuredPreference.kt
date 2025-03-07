@@ -71,7 +71,8 @@ object SecuredPreference {
         INITIAL_CALL,
         OFFLINE_FOLLOW_UP_SYNC_REQUEST_ID,
         USER_CULTURE,
-        OLD_USER_ID
+        OLD_USER_ID,
+        IS_TB_LOADED
     }
 
 
@@ -531,6 +532,7 @@ object SecuredPreference {
 //        remove(EnvironmentKey.USER_RESPONSE.name)
         remove(EnvironmentKey.IS_ABOVE_FIVE_YEARS_LOADED.name)
         remove(EnvironmentKey.IS_MOTHER_NEONATE_LOADEDANC.name)
+        remove(EnvironmentKey.IS_TB_LOADED.name)
         remove(EnvironmentKey.IS_UNDER_TWO_MONTHS_LOADED.name)
         remove(EnvironmentKey.IS_LABOUR_DELIVERY_LOADED.name)
         remove(EnvironmentKey.IS_UNDER_FIVE_YEARS_LOADED.name)

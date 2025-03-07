@@ -31,17 +31,11 @@ enum class MedicalReviewTypeEnums{
     PNC,
     ICCM,
     RMNCH,
-    OD,
-    BD,
-    TDS,
-    QDS,
-    Baby,
     immunisation_status,
     muac,
-    ANC_MEDICAL_REVIEW,
-    PNC_MEDICAL_REVIEW,
-    MOTHER_LABOUR_MEDICAL_REVIEW,
     StateOfPerineum,
     PNCNeonateOutcome,
-    TB
+    TB,
+    patient_type,
+    comorbidities
 }

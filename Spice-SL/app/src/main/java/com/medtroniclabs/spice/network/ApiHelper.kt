@@ -43,6 +43,7 @@ import com.medtroniclabs.spice.data.ReferPatientRequest
 import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
 import com.medtroniclabs.spice.data.SummaryCreateRequest
+import com.medtroniclabs.spice.data.TbMetaResponse
 import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
@@ -312,4 +313,8 @@ interface ApiHelper {
     suspend fun getCommunityProfile(request:HashMap<String,Any>): Response<APIResponse<CommunityProfileDetails>>
 
     suspend fun createSupportRequest(request: NCDSupportRequest): Response<APIResponse<String>>
+    suspend fun getTbStaticData(): Response<APIResponse<TbMetaResponse>>
+    suspend fun createHeight(request: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>>
+
+    suspend fun fetchHeight(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>>
 }

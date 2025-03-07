@@ -23,6 +23,6 @@ object MedicalReviewDefinedParams {
     const val StillBirth = "stillBirth"
     const val Miscarriage="miscarriage"
     const val LiveBirth="liveBirth"
-    const val PHUFlow="PHUFlow"
-
+    const val CF_ITEM = "ComorbiditiesFragment"
+    const val respiratory = "respiratory"
 }

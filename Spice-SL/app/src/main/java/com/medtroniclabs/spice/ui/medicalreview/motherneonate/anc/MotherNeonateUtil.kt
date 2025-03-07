@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 
 object MotherNeonateUtil {
+    const val TB_SITE_OF_DISEASE = "TB_SITE_OF_DISEASE"
     const val EstimatedDeliveryDate: Long = 280
     fun convertNullableIntToString(value: Int?, context: Context): String {
         return value?.toString() ?: context.getString(R.string.hyphen_symbol)
