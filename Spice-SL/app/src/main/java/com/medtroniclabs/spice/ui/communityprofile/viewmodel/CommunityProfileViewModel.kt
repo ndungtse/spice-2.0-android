@@ -27,13 +27,17 @@ class CommunityProfileViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val repository: CommunityProfileRepository
 ) : BaseViewModel(dispatcherIO) {
-
+    var chwHome = ""
+    var isChwHome = false
+    var nearestPhu = ""
+    var isNetworkCoverage = false
+    var networkName = ""
     var currentFragment = MutableLiveData<Pair<Int, Bundle?>>()
     var communityStatistics = MutableLiveData<Resource<CommunityPopulationStatistics>>()
     var searchFilter = MutableLiveData<String>().apply { value = value ?: "" }
     val formLayoutLiveData = MutableLiveData<Resource<FormResponse>>()
     val nearestHealthFacilityLiveData = MutableLiveData<Resource<ArrayList<Map<String, Any>>>>()
-
+    var marketDays = mutableListOf<String>()
     val getCommunityDetailsLiveDataLocal = MutableLiveData<Resource<CommunityProfile>>()
     var saveCommunityDetailsLiveDataLocal = MutableLiveData<Resource<Long>>()
     val combinedLiveData = MediatorLiveData<Pair<

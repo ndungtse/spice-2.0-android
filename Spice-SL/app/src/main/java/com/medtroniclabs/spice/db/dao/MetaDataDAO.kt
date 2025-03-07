@@ -269,7 +269,18 @@ interface MetaDataDAO {
     @Query("SELECT v.id as villageId, v.name as villageName, COUNT(h.id) as houseHoldCount, COUNT(cd.villageId) as isCommunityProfileDetailAvailable FROM VillageEntity v LEFT JOIN Household h ON v.id = h.village_id LEFT JOIN CommunityProfile cd ON cd.villageId = v.id WHERE (:searchText = '' OR v.name LIKE '%' || :searchText || '%') GROUP BY v.id")
     fun filterCommunityProfile(searchText:String):LiveData<List<CommunityProfileDetail>>
 
-    @Query("SELECT COUNT(DISTINCT household_id) as householdCount,COUNT( CASE WHEN isActive = 1 THEN 1 END) as populationCount,COUNT(CASE WHEN isPregnant = 1 THEN 1 END) as pregnantCount,COUNT(CASE WHEN date(date_of_birth) > date('now','-1 year') THEN 1 END ) as belowOneYearCount,COUNT(CASE WHEN date(date_of_birth) BETWEEN date('now','-5 year') AND date('now','-1 year') THEN 1 END ) as belowFiveYearCount FROM HOUSEHOLDMEMBER WHERE villageId = :villageId")
+    @Query("""
+        SELECT COUNT(DISTINCT household_id) as householdCount,
+        COUNT(CASE WHEN isActive = 1 THEN 1 END) as populationCount,
+        COUNT(CASE WHEN isPregnant = 1 AND isActive = 1 THEN 1 END) as pregnantCount,
+        COUNT(CASE WHEN substr(date_of_birth, 1, 10) > date('now','-1 year') AND isActive = 1 THEN 1 END ) as belowOneYearCount,
+        COUNT(CASE WHEN substr(date_of_birth, 1, 10) >= date('now', '-5 years')
+               AND substr(date_of_birth, 1, 10) < date('now', '-1 year') AND isActive = 1 THEN 1 END) AS belowFiveYearCount,
+        COUNT(CASE WHEN gender = 'female'
+               AND substr(date_of_birth, 1, 10) <= date('now','-10 years') 
+               AND substr(date_of_birth, 1, 10) > date('now','-49 years') AND isActive = 1 THEN 1 END) AS childBearingAgeOfWomen
+        FROM HOUSEHOLDMEMBER 
+        WHERE villageId = :villageId""")
     suspend fun getCommunityPopulationStatistics(villageId:Long):CommunityPopulationStatistics
 
     @Query("""

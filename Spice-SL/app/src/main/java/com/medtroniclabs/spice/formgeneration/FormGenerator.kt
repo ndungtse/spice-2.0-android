@@ -132,6 +132,7 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustom
 import com.medtroniclabs.spice.formgeneration.utility.DecimalInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.FormFieldValidator
+import com.medtroniclabs.spice.mappingkey.CommunityDetails
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
@@ -393,9 +394,10 @@ class FormGenerator(
             }
             binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
 
-            if (serverViewModel.id.contains(Screening.phoneNumber) || serverViewModel.id.contains(phoneNumber) || serverViewModel.id.contains(
-                    headPhoneNumber
-                )
+            if (serverViewModel.id.contains(Screening.phoneNumber) || serverViewModel.id.contains(phoneNumber)
+                || serverViewModel.id.contains(headPhoneNumber) || serverViewModel.id.contains(CommunityDetails.EmergencyContactPhu)
+                || serverViewModel.id.contains(CommunityDetails.EmergencyTransportContactNo)
+                || serverViewModel.id.contains(CommunityDetails.AmbulanceDriverContactNo)
             ) {
                 SecuredPreference.getPhoneNumberCode()?.let { phoneNumberCode ->
                     binding.llCountryCode.visibility = View.VISIBLE

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatSpinner
@@ -16,7 +17,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_ID
-import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_REGISTERED
+import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_NAME
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.community.CommunityPopulation
@@ -24,6 +25,8 @@ import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentEditCommunityBinding
 import com.medtroniclabs.spice.db.entity.CommunityProfile
 import com.medtroniclabs.spice.formgeneration.FormGenerator
+import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_DIALOG_CHECKBOX
+import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_SPINNER
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -31,36 +34,15 @@ import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.AccessRoadToPhu
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.Church
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.ChwHouseInCommunity
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.CourtBarrie
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.DescribeLocation
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.EmergencyContactPhu
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.EmergencyManagementPlan
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.EmergencyTransportAvailable
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.False
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.Infrastructure
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.JuniorSecondarySchool
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.Market
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.MarketDays
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.MobileNetworkCoverage
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.MobileNumberOfAmbulanceDriver
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.MobileNumberOfEmergencyTransportContact
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.Mosque
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NameOfAmbulanceDriver
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NameOfEmergencyTransportContact
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.NearestPhu
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfHandPumpsNotFunctional
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfImprovedToilets
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfImprovedWaterSources
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfNonImprovedToilets
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfNonImprovedWaterSources
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.PrimarySchool
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.SelectedNetwork
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.SeniorSecondarySchool
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.True
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.WaterAndSanitationFacilities
-import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.communityprofile.adapter.CommunityPopulationAdapter
@@ -106,7 +88,15 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
 
                 ResourceState.SUCCESS -> {
                     hideProgress()
-                    communityProfileViewModel.updateCurrentFragment(3)
+                    val bundle = Bundle().apply {
+                        arguments?.getLong(COMMUNITY_ID)?.let {
+                            putLong(COMMUNITY_ID, it)
+                        }
+                        arguments?.getString(COMMUNITY_NAME)?.let {
+                            putString(COMMUNITY_NAME, it)
+                        }
+                    }
+                    communityProfileViewModel.updateCurrentFragment(3,bundle)
                 }
 
                 ResourceState.ERROR -> {
@@ -150,6 +140,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                         if (view != null) {
                             (view.adapter as CustomSpinnerAdapter).setData(data)
                         }
+                        prepopulateNearestPhu()
                     }
                 }
 
@@ -185,7 +176,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                         list.add(
                             CommunityPopulation(
                                 getString(R.string.no_of_women_of_child_bearing_age),
-                                it.populationCount
+                                it.childBearingAgeOfWomen
                             )
                         )
                         list.add(
@@ -237,8 +228,15 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         }
     }
 
+    private fun prepopulateNearestPhu() {
+        formGenerator.getViewByTag(NearestPhu)?.let { view ->
+            formGenerator.setValueForView(communityProfileViewModel.nearestPhu, view)
+        }
+    }
+
     private fun initViews() {
         hideHomeIcon()
+        communityProfileViewModel.reinitSaveLiveData()
         arguments?.getLong(DefinedParams.COMMUNITY_ID)?.let { villageId ->
             communityProfileViewModel.getPopulationStatistics(villageId = villageId)
         }
@@ -288,7 +286,8 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         CheckBoxDialog.newInstance(
             id,
             resultMap,
-            title = getString(R.string.market_days)
+            title = getString(R.string.market_days),
+            autoPopulate = communityProfileViewModel.marketDays
         ) { resultMap ->
             formGenerator.validateCheckboxDialogue(id, serverViewModel, resultMap)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
@@ -339,13 +338,33 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                     val infrastructure = requestMap[Infrastructure] as HashMap<Any, Any>
                     if (infrastructure.containsKey(MarketDays)) {
                         val signsList = mutableListOf<String>()
-                        val list = infrastructure[MarketDays] as List<*>
-                        list.forEach { it ->
-                            if (it is HashMap<*, *>) {
-                                signsList.add(it[DefinedParams.Value] as String)
+                        val list = infrastructure[MarketDays] as List<HashMap<*,*>>
+                        list.forEach {
+                            (it[DefinedParams.name] as? String)?.let { day ->
+                                signsList.add(
+                                    day
+                                )
                             }
                         }
                         infrastructure[MarketDays] = signsList
+                    }
+                }
+
+                if(requestMap.containsKey(EmergencyManagementPlan)) {
+                    val emergency = requestMap[EmergencyManagementPlan] as HashMap<Any, Any>
+                    if(emergency.containsKey(NearestPhu)) {
+                        serverData.forEach{ serverData ->
+                            when(serverData?.viewType){
+                                VIEW_TYPE_FORM_SPINNER -> {
+                                    val nearestPhu = emergency[NearestPhu].toString()
+                                    val view = formGenerator.getViewByTag(NearestPhu) as? Spinner
+                                    val adapter = view?.adapter as? CustomSpinnerAdapter
+                                    val index = adapter?.getIndexOfItemById(nearestPhu)
+                                    val name = adapter?.getItem(index?:0) as String
+                                    emergency[NearestPhu] = name
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -362,7 +381,6 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         arguments?.getLong(DefinedParams.COMMUNITY_ID)?.let { villageId ->
             communityProfileViewModel.getCommunityDetailsLocal(villageId)
         }
-
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
@@ -408,6 +426,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
 
         if (binding.etRegisteredDate.text.toString().isEmpty()) {
             binding.tvErrorRegisteredDate.visibility = View.VISIBLE
+            formGenerator.validateInputs()
             isValid = false
         } else {
             binding.tvErrorRegisteredDate.visibility = View.GONE
@@ -422,6 +441,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
     ): Boolean {
         return if (editText.text.isNullOrEmpty()) {
             errorView.visibility = View.VISIBLE
+            formGenerator.validateInputs()
             false
         } else {
             errorView.visibility = View.GONE
@@ -481,24 +501,46 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                 } else {
                     setSingleSelection(value, key.toString())
                 }
+
+                if (key.toString() == MarketDays) {
+                    formGenerator.getViewByTag(key)?.let { view ->
+                        if (view is TextView) {
+                            formGenerator.getServerData()?.forEach { serverData ->
+                                when (serverData.viewType) {
+                                    VIEW_TYPE_DIALOG_CHECKBOX -> {
+                                        val list = infrastructure[MarketDays] as List<String>
+                                        communityProfileViewModel.marketDays = list.toMutableList()
+                                        val daysMap = ArrayList<HashMap<String,Any>>()
+                                        list.forEach {
+                                            daysMap.add(hashMapOf(DefinedParams.name to it))
+                                        }
+                                        formGenerator.validateCheckboxDialogue(MarketDays,
+                                            serverData, daysMap)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             //EmergencyManagementPlan
             val emergency = dataMap[EmergencyManagementPlan] as LinkedTreeMap<*, *>
             emergency.forEach { (key, value) ->
-                if (key.toString() == AccessRoadToPhu) {
-                    setSingleSelection(value, key.toString())
-                } else {
-                    formGenerator.getViewByTag(key)?.let { view ->
-                        formGenerator.setValueForView(value, view)
+                when(key.toString()){
+                    AccessRoadToPhu -> {
+                        setSingleSelection(value, key.toString())
+                    }
+                    NearestPhu -> {
+                        communityProfileViewModel.nearestPhu = value.toString()
+                    }
+                    else -> {
+                        formGenerator.getViewByTag(key)?.let { view ->
+                            formGenerator.setValueForView(value, view)
+                        }
                     }
                 }
             }
-
-            /*formGenerator.getViewByTag(MarketDays)?.let { view ->
-                payload[MarketDays] as? ArrayList<String>
-                formGenerator.setValueForView(,view)
-            }*/
         }
     }
 

@@ -6,4 +6,5 @@ data class CommunityPopulationStatistics(
     val pregnantCount:Int,
     val belowOneYearCount:Int,
     val belowFiveYearCount:Int,
+    val childBearingAgeOfWomen:Int,
 )

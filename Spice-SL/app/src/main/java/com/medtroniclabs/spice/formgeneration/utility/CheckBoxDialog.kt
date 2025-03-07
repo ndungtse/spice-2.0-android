@@ -95,7 +95,8 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
                         list.forEach { symptom ->
                             if (symptom.value in autoPopulate) {
                                 symptom.isSelected = true
-                                symptom.isEnabled = false
+                                if(title.isNullOrEmpty())
+                                    symptom.isEnabled = false
                             }
                         }
                         binding.rvItems.adapter = CheckboxDialogAdapter(list, translate = SecuredPreference.getIsTranslationEnabled()).apply {
@@ -131,7 +132,8 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
             value.forEach { symptom ->
                 if (symptom.value in autoPopulate) {
                     symptom.isSelected = true
-                    symptom.isEnabled = false
+                    if(title.isNullOrEmpty())
+                        symptom.isEnabled = false
                 }
             }
         }

@@ -1214,7 +1214,7 @@ class RoomHelperImpl @Inject constructor(
         return metaDataDAO.filterCommunityProfile(searchInput)
     }
 
-    override suspend fun getCommunityStatistics(villageId: Long): CommunityPopulationStatistics {
+    override suspend fun  getCommunityStatistics(villageId: Long): CommunityPopulationStatistics {
         return metaDataDAO.getCommunityPopulationStatistics(villageId)
     }
 

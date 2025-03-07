@@ -23,9 +23,9 @@ object CommunityDetails {
     const val AccessRoadToPhu = "accessRoadToPhu"
     const val EmergencyTransportAvailable = "emergencyTransportAvailable"
     const val NameOfEmergencyTransportContact = "nameOfEmergencyTransportContact"
-    const val MobileNumberOfEmergencyTransportContact = "mobileNumberOfEmergencyTransportContact"
-    const val NameOfAmbulanceDriver = "nameOfAmbulanceDriver"
-    const val MobileNumberOfAmbulanceDriver = "mobileNumberOfAmbulanceDriver"
+    const val EmergencyTransportContactNo = "emergencyTransportContactNo"
+    const val AmbulanceDriver = "ambulanceDriver"
+    const val AmbulanceDriverContactNo = "ambulanceDriverContactNo"
     const val True = "true"
     const val False = "false"
 

@@ -1269,7 +1269,7 @@
     <string name="profile_details" translatable="false">Profile Details</string>
     <string name="name_of_community" translatable="false">Name of community</string>
     <string name="community_boundary_desc" translatable="false">Community boundary description</string>
-    <string name="month_and_year_this_register_is_complete" translatable="false">Month and year this register is complete</string>
+    <string name="month_and_year_this_register_is_complete" translatable="false">Month and year this register is completed</string>
     <string name="community_population_statistics" translatable="false">Community Population Statistics</string>
     <string name="total_population" translatable="false">Total Population</string>
     <string name="no_of_household_families" translatable="false">Number of household/families</string>
