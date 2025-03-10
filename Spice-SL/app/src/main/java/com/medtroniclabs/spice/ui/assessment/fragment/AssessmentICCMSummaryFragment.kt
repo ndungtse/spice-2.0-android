@@ -331,23 +331,25 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun attachObservers() {
         viewModel.assessmentStringLiveData.value?.let { result ->
             var isCbs = false
-            createListSummaryData(result)?.let {
-                it.filter { it.title?.lowercase() != General_Danger_Signs.lowercase() }
-                    .forEach { item ->
-                        if (item.id.equals(hasDiarrhoea,true) || item.id.equals(hasFever,true)) {
-                            if (item.value == Yes) {
-                                isCbs = true
-                                viewModel.getUserProfile()
-                                viewModel.memberDetailsLiveData.value?.data?.villageId
-                                    ?.takeIf { it.isNotBlank() }
-                                    ?.toLongOrNull()
-                                    ?.let { id -> viewModel.getHealthFacilityBasedOnVillageId(id) }
-                                binding.cbsResultCardView.visible()
-                            }
-                        }
-                    }
+            createListSummaryData(result)?.let { summaryList ->
+                val filteredList = summaryList.filter { it.title?.equals(General_Danger_Signs, ignoreCase = true) == false }
+
+                val hasCbsCondition = filteredList.any { item ->
+                    (item.id.equals(hasDiarrhoea, true) || item.id.equals(hasFever, true)) &&
+                            summaryList.any { (it.id == IccmDiarrheaNotifiableCondition && it.value != null) || it.id == IccmFeverNotifiableCondition && it.value != null } &&
+                            item.value == Yes
+                }
+                if (hasCbsCondition) {
+                    isCbs = true
+                    viewModel.getUserProfile()
+                    viewModel.memberDetailsLiveData.value?.data?.villageId
+                        ?.takeIf { it.isNotBlank() }
+                        ?.toLongOrNull()
+                        ?.let(viewModel::getHealthFacilityBasedOnVillageId)
+                    binding.cbsResultCardView.visible()
+                }
                 updateStatusBar(isCbs)
-                createSummaryView(it)
+                createSummaryView(summaryList)
             }
         }
 

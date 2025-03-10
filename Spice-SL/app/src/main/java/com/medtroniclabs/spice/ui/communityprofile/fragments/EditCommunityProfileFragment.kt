@@ -509,7 +509,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                                 when (serverData.viewType) {
                                     VIEW_TYPE_DIALOG_CHECKBOX -> {
                                         val list = infrastructure[MarketDays] as List<String>
-                                        communityProfileViewModel.marketDays = list.toMutableList()
+                                        communityProfileViewModel.marketDays = list.map { data -> Pair(data,true) }.toMutableList()
                                         val daysMap = ArrayList<HashMap<String,Any>>()
                                         list.forEach {
                                             daysMap.add(hashMapOf(DefinedParams.name to it))

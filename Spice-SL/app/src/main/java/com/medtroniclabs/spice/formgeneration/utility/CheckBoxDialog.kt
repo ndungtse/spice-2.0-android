@@ -17,12 +17,12 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
     private var callback: ((result: ArrayList<HashMap<String, Any>>) -> Unit)? = null
     var resultMap: Any? = null
     var title : String? = null
-    var autoPopulate:List<String> = emptyList()
+    var autoPopulate:List<Pair<String,Boolean>> = emptyList()
     constructor(
         callback: (result: ArrayList<HashMap<String, Any>>) -> Unit,
         resultMap: Any?,
         title:String?,
-        autoPopulate:List<String> = emptyList()
+        autoPopulate:List<Pair<String,Boolean>> = emptyList()
     ) : this() {
         this.callback = callback
         this.resultMap = resultMap
@@ -40,7 +40,7 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
             key: String,
             resultMap: Any?,
             title:String?=null,
-            autoPopulate:List<String> = emptyList(),
+            autoPopulate:List<Pair<String,Boolean>> = emptyList(),
             callback: (result: ArrayList<HashMap<String, Any>>) -> Unit
         ): CheckBoxDialog {
             val args = Bundle()
@@ -76,39 +76,33 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
 
     private fun attachObserver() {
         viewModel.symptomTypeListResponse.observe(viewLifecycleOwner) { list ->
-            binding.labelHeader.text = if(title.isNullOrEmpty()) {
-                getString(R.string.symptoms)
-            }else{
-                title
+            binding.labelHeader.text = title.takeIf { !it.isNullOrEmpty() } ?: getString(R.string.symptoms)
+
+            if (list.isEmpty()) {
+                binding.rvItems.adapter = null
+                return@observe
             }
-            if (list.isNotEmpty()) {
-                if (resultMap != null && resultMap is ArrayList<*>) {
-                    binding.rvItems.adapter = CheckboxDialogAdapter(
-                        getSelectedSymptomList(
-                            list,
-                            resultMap as ArrayList<*>
-                        ),
-                        translate = SecuredPreference.getIsTranslationEnabled()
-                    )
-                } else {
-                    if (autoPopulate.isNotEmpty()) {
-                        list.forEach { symptom ->
-                            if (symptom.value in autoPopulate) {
-                                symptom.isSelected = true
-                                if(title.isNullOrEmpty())
-                                    symptom.isEnabled = false
-                            }
-                        }
-                        binding.rvItems.adapter = CheckboxDialogAdapter(list, translate = SecuredPreference.getIsTranslationEnabled()).apply {
-                            callback?.invoke(getSelectedItems())
-                        }
-                    } else {
-                        binding.rvItems.adapter = CheckboxDialogAdapter(list, translate = SecuredPreference.getIsTranslationEnabled())
+
+            val shouldAutoPopulate = autoPopulate.isNotEmpty()
+
+            if (shouldAutoPopulate) {
+                val autoPopulateMap = autoPopulate.toMap()
+                list.forEach { symptom ->
+                    autoPopulateMap[symptom.value]?.let { isEnabled ->
+                        symptom.isSelected = true
+                        symptom.isEnabled = isEnabled
                     }
                 }
-            } else {
-                binding.rvItems.adapter = null
             }
+
+            val adapterList = if (resultMap != null && resultMap is ArrayList<*>) {
+                getSelectedSymptomList(list, resultMap as ArrayList<*>)
+            } else list
+
+            binding.rvItems.adapter = CheckboxDialogAdapter(
+                adapterList,
+                translate = SecuredPreference.getIsTranslationEnabled()
+            )
         }
     }
 
@@ -130,7 +124,7 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
         }
         if (autoPopulate.isNotEmpty()) {
             value.forEach { symptom ->
-                if (symptom.value in autoPopulate) {
+                if (symptom.value in autoPopulate.map { it.first }) {
                     symptom.isSelected = true
                     if(title.isNullOrEmpty())
                         symptom.isEnabled = false

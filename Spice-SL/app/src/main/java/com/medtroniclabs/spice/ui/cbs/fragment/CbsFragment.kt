@@ -129,6 +129,21 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
     }
 
     private fun attachObservers() {
+        viewModel.symptomTypeListResponse.observe(viewLifecycleOwner) { list ->
+            list.firstOrNull { it.value == DeathOfMother }?.let { symptom ->
+                val selectedItemMap = hashMapOf<String, Any>(
+                    com.medtroniclabs.spice.formgeneration.config.DefinedParams.ID to symptom._id,
+                    com.medtroniclabs.spice.formgeneration.config.DefinedParams.NAME to symptom.symptom
+                ).apply {
+                    symptom.displayValue?.let { put(com.medtroniclabs.spice.formgeneration.config.DefinedParams.cultureValue, it) }
+                    symptom.value?.let { put(com.medtroniclabs.spice.formgeneration.config.DefinedParams.value, it) }
+                }
+
+                viewModel.formLayoutsLiveData?.value?.data?.formLayout
+                    ?.firstOrNull { it.id == RmnchNotifiableCondition }
+                    ?.let { formGenerator.validateCheckboxDialogue(RmnchNotifiableCondition, it, arrayListOf(selectedItemMap)) }
+            }
+        }
         viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -220,7 +235,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         resultMap: Any?
     ) {
         val value = if (requireArguments().getBoolean(DeathOfMother, false)) {
-            listOf(DeathOfMother)
+            listOf(Pair(DeathOfMother,false))
         } else {
             listOf()
         }
@@ -327,7 +342,9 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
     }
 
     override fun onRenderingComplete() {
-
+        if (requireArguments().getBoolean(DeathOfMother, false)) {
+            viewModel.getSymptomListByType(RmnchNotifiableCondition)
+        }
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
