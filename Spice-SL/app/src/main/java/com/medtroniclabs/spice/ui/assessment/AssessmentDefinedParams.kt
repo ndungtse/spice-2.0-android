@@ -171,4 +171,10 @@ object AssessmentDefinedParams {
     const val Contraceptive = "contraceptive"
     const val Family_Planning = "family_planning"
 
+    const val DiagnosedWithDiabetes = "isFamilyDHDiagnosed"
+    const val RegularSmoker = "isSmoker"
+    const val AlcoholConsumption = "isAlcoholic"
+    const val WaistCircumference = "waistCircumference"
+    const val NCDDetails = "ncdDetails"
+
 }

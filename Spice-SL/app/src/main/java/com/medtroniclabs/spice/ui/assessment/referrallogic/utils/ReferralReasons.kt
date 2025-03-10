@@ -16,7 +16,9 @@ enum class ReferralReasons {
     childhoodVisitSigns,
     PNCNeonateSigns,
     Cough,
-    Miscarriage;
+    Miscarriage,
+    NCD,
+    ncdSymptoms;
 
     companion object {
         fun aliasOf(value: ReferralReasons): String {

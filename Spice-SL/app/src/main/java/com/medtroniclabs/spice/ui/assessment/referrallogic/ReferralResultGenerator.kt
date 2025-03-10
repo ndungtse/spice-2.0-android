@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.ui.assessment.referrallogic
 
+import android.content.Context
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams.CBS_Referral
@@ -8,7 +10,11 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MemberUsing
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NeedOfOtherFamilyPlanning
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NoSymptoms
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
+import com.medtroniclabs.spice.ui.MenuConstants.NCD_MENU_ID
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AlcoholConsumption
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DiagnosedWithDiabetes
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DryMouthOrTongue
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_BREATHING
@@ -21,12 +27,14 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasWeightLo
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.LittleOrNoUrine
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoTearsWhenCrying
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RelationshipToIC
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RegularSmoker
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SkinPinch
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SleepLocation
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SunkenEyes
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SunkenFontanella
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.VeryThirsty
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.symptomsDTO
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.ACT
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Amoxicillin
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.BreathPerMinute
@@ -306,7 +314,7 @@ class ReferralResultGenerator {
     }
 
     fun calculateOtherSymptomsReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
-        calculateSymptomsStatus(map, otherSymptoms)
+        calculateSymptomsStatus(map, otherSymptoms, ReferralReasons.Symptoms.name)
         calculateFeverStatus(map, ReferralReasons.Fever.name)
         return Pair(checkStatus(), referralReason)
     }
@@ -623,7 +631,7 @@ class ReferralResultGenerator {
         return status
     }
 
-    private fun calculateSymptomsStatus(map: HashMap<String, Any>, symptomType: String) {
+    private fun calculateSymptomsStatus(map: HashMap<String, Any>, symptomType: String, referedReason: String) {
         val selectedSignsList = ArrayList<String>()
         if (map.containsKey(symptomType) && map[symptomType] is ArrayList<*>) {
             (map[symptomType] as ArrayList<*>).forEach { result ->
@@ -633,8 +641,8 @@ class ReferralResultGenerator {
             }
         }
         if (!selectedSignsList.contains(NoSymptoms.lowercase())) {
-            addResultMap(ReferralReasons.Symptoms.name.lowercase(), ReferralStatus.Referred.name)
-            addReferralReason(referralReason, ReferralReasons.Symptoms.name)
+            addResultMap(referedReason.lowercase(), ReferralStatus.Referred.name)
+            addReferralReason(referralReason, referedReason)
         }
     }
 
@@ -658,5 +666,30 @@ class ReferralResultGenerator {
             addReferralReason(referralReason, "Family Planning")
         }
         return Pair(checkStatus(), referralReason)
+    }
+
+    fun calculateNCDStatus(context: Context, map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
+        val diagnosedWithDiabetes =
+            map[DiagnosedWithDiabetes] is Boolean && map[DiagnosedWithDiabetes] == true
+        val regularSmoker = map[RegularSmoker] is Boolean && map[RegularSmoker] == true
+        val alcoholConsumption =
+            map[AlcoholConsumption] is Boolean && map[AlcoholConsumption] == true
+        val bmiReferral = getBmiReferral ( CommonUtils.getBMIInformation(context, map[Screening.BMI] as? Double), context)
+        calculateSymptomsStatus(map, symptomsDTO, ReferralReasons.ncdSymptoms.name)
+        if (diagnosedWithDiabetes || regularSmoker || alcoholConsumption || bmiReferral) {
+            addResultMap(NCD_MENU_ID, ReferralStatus.Referred.name)
+            addReferralReason(referralReason, NCD_MENU_ID)
+        }
+        return Pair(checkStatus(), referralReason)
+    }
+
+    private fun getBmiReferral(bmiInformation: Pair<String, Int>?, context: Context): Boolean {
+        return if (bmiInformation?.first.equals(
+                context.getString(R.string.under_weight),
+                true
+            ) || bmiInformation?.first.equals(context.getString(R.string.over_weight), true)
+        ) {
+            return true
+        } else false
     }
 }

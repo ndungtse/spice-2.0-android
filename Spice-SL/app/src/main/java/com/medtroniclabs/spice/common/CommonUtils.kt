@@ -2008,4 +2008,19 @@ object CommonUtils {
         return BuildConfig.FLAVOR == BUILD_FLAVOR_SL
     }
 
+    fun formatDecimalValue(value: String?): String? {
+        if (value.isNullOrEmpty()) return null
+
+        return try {
+            val number = value.toDouble()
+            if (number % 1.0 == 0.0) {
+                number.toInt().toString()
+            } else {
+                number.toString()
+            }
+        } catch (e: NumberFormatException) {
+            null
+        }
+    }
+
 }

@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityAssessmentBinding
@@ -30,6 +31,8 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHNeonateFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHNeonateSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHSummaryFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentSLNCDFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentSLNCDSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -216,12 +219,21 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.NCD_MENU_ID -> {
-                setTitle(getString(R.string.assessment_summary))
-                showBackButton()
-                replaceFragmentInId<AssessmentNCDSummaryFragment>(
-                    binding.formsFragmentContainer.id,
-                    tag = AssessmentNCDSummaryFragment.TAG
-                )
+                if (CommonUtils.isNonCommunity()){
+                    setTitle(getString(R.string.assessment_summary))
+                    showBackButton()
+                    replaceFragmentInId<AssessmentNCDSummaryFragment>(
+                        binding.formsFragmentContainer.id,
+                        tag = AssessmentNCDSummaryFragment.TAG
+                    )
+                } else {
+                    setTitle(Summary.capitalizeFirstChar())
+                    hideBackButton()
+                    replaceFragmentInId<AssessmentSLNCDSummaryFragment>(
+                        binding.formsFragmentContainer.id,
+                        tag = AssessmentSLNCDSummaryFragment.TAG
+                    )
+                }
             }
 
             MenuConstants.MATERNAL_HEALTH -> {
@@ -294,14 +306,26 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.NCD_MENU_ID -> {
-                setTitle(AssessmentDefinedParams.ncd.uppercase())
-                bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
-                showLoading()
-                replaceFragmentInId<AssessmentNCDFragment>(
-                    binding.formsFragmentContainer.id,
-                    bundle = bundle,
-                    tag = AssessmentNCDFragment.TAG
-                )
+                if (CommonUtils.isNonCommunity()){
+                    setTitle(AssessmentDefinedParams.ncd.uppercase())
+                    bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
+                    showLoading()
+                    replaceFragmentInId<AssessmentNCDFragment>(
+                        binding.formsFragmentContainer.id,
+                        bundle = bundle,
+                        tag = AssessmentNCDFragment.TAG
+                    )
+                } else {
+                    setTitle(AssessmentDefinedParams.ncd.uppercase())
+                    bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
+                    showLoading()
+                    replaceFragmentInId<AssessmentSLNCDFragment>(
+                        binding.formsFragmentContainer.id,
+                        bundle = bundle,
+                        tag = AssessmentSLNCDFragment.TAG
+                    )
+                }
+
             }
 
             MenuConstants.MATERNAL_HEALTH -> {

@@ -2,15 +2,21 @@ package com.medtroniclabs.spice.ui.assessment.viewmodel
 
 import android.content.Context
 import android.location.Location
+import android.view.View
+import android.text.SpannableStringBuilder
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.text.color
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
@@ -43,6 +49,7 @@ import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.mappingkey.Screening
@@ -59,9 +66,11 @@ import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsClinicTaken
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ncd
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.signsAndSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.symptoms
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.symptomsDTO
 import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Diarrhoea
@@ -514,6 +523,26 @@ class AssessmentViewModel @Inject constructor(
             }
             map.remove(OTHER_SYMPTOMS)
             map[otherSymptoms] = otherSymptom
+        }
+
+        // Request modification for syncing NCD Symptoms to Backend
+        if (map.containsKey(ncd)) {
+            val otherSymptom = map[ncd] as HashMap<Any, Any>
+            if (otherSymptom.containsKey(signsAndSymptoms)) {
+                val signsAndSymptom = otherSymptom[signsAndSymptoms] as HashMap<Any, Any>
+                if (signsAndSymptom.containsKey(symptomsDTO)) {
+                    val signsList = mutableListOf<String>()
+                    val list = signsAndSymptom[symptomsDTO] as List<*>
+                    list.forEach { it ->
+                        if (it is HashMap<*, *>) {
+                            signsList.add(it[DefinedParams.Value] as String)
+                        }
+                    }
+
+                    signsAndSymptom.remove(symptomsDTO)
+                    signsAndSymptom[symptoms] = signsList
+                }
+            }
         }
 
         // Request modification for syncing RMNCH Childhood Visit to Backend
@@ -1134,6 +1163,51 @@ class AssessmentViewModel @Inject constructor(
                 hhmId,
                 tbContactTracingStatus
             )
+        }
+    }
+
+    fun renderBMIValue(
+        context: Context,
+        formGenerator: FormGenerator,
+        resultHashMap: HashMap<String, Any>
+    ) {
+        val bmiView = formGenerator.getViewByTag(Screening.BMI) as? AppCompatTextView
+        bmiView?.let { view ->
+            if (!resultHashMap.containsKey(Screening.Weight) || !resultHashMap.containsKey(Screening.Height)) {
+                view.text = context.getString(R.string.hyphen_symbol)
+                formGenerator.removeIfContains(Screening.BMI)
+            } else {
+                if (resultHashMap.containsKey(Screening.Weight) && resultHashMap.containsKey(
+                        Screening.Height
+                    )
+                ) {
+                    val weight = resultHashMap[Screening.Weight] as? Double
+                    val height = resultHashMap[Screening.Height] as? Double
+
+                    if (weight == null || height == null) {
+                        view.text = context.getString(R.string.hyphen_symbol)
+                    } else {
+                        val bmi = CommonUtils.getBMIForNcd(height, weight)
+                        CommonUtils.getBMIInformation(context, bmi?.toDoubleOrNull())
+                            ?.let { info ->
+                                bmi?.toDoubleOrNull()?.let {
+                                    resultHashMap[Screening.BMI] = it
+                                }
+                                resultHashMap[Screening.BMI_CATEGORY] = info.first
+
+                                val bmiWithInfoSpannableStringBuilder = if (bmi == null) {
+                                    context.getString(R.string.hyphen_symbol)
+                                } else {
+                                    SpannableStringBuilder().append(bmi)
+                                        .color(context.getColor(info.second)) {
+                                            append(" (${info.first})")
+                                        }
+                                }
+                                view.text = bmiWithInfoSpannableStringBuilder
+                            }
+                    }
+                }
+            }
         }
     }
 }

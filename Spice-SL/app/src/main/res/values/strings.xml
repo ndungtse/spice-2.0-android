@@ -1361,6 +1361,9 @@
     <string name="job_aid_contraceptive" translatable="false">Job Aid (Contraceptive)</string>
     <string name="advise_to" translatable="false">Advise to:\n – Take her contraceptive pills once a day at the same time every day. It’s easier to remember if she takes her pill at the same time.</string>
     <string name="explain_that" translatable="false">Explain that:\n – As soon as she finishes one pack of pills she continues on to a new pack.\n – If she forgets one pill, take it as soon as she remembers.</string>
+    <string name="diabetes_or_hypertension" translatable="false">Diabetes or Hypertension</string>
+    <string name="tobacco_consumption" translatable="false">Tobacco Consumption</string>
+    <string name="alcohol_consumption" translatable="false">Alcohol Consumption</string>
 
 
     <string name="diagnosis_tb" translatable="false">Diagnosis</string>
