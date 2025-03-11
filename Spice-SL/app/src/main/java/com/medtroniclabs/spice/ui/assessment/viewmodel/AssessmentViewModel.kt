@@ -32,6 +32,7 @@ import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditions
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditionsForDiarrhoea
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditionsForFever
 import com.medtroniclabs.spice.common.DefinedParams.RmnchNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.familyPlanning
 import com.medtroniclabs.spice.common.DefinedParams.surveillanceDetails
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
@@ -65,6 +66,7 @@ import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanning
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsClinicTaken
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ncd
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
@@ -627,6 +629,18 @@ class AssessmentViewModel @Inject constructor(
                         remove(RmnchNotifiableCondition)
                         put(NotifiableConditions, conditions)
                     }
+                }
+            }
+        }
+
+        // Request modification for Family Planning
+        if (map.containsKey(familyPlanning.lowercase())) {
+           val familyPlanning =  (map[familyPlanning] as? Map<String, Any>)
+            if (familyPlanning != null && familyPlanning.containsKey(FamilyPlanning)) {
+                val result = familyPlanning[FamilyPlanning] as? HashMap<String, Any>
+                result?.let {
+                    map.remove(DefinedParams.familyPlanning)
+                    map[FamilyPlanning] = it
                 }
             }
         }

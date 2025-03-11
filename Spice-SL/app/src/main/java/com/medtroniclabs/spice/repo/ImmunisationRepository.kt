@@ -1,11 +1,16 @@
 package com.medtroniclabs.spice.repo
 
 import androidx.lifecycle.MutableLiveData
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.appextensions.getLocalDate
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.ConsentFormType
 import com.medtroniclabs.spice.common.EpiGroupName
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.model.medicalreview.EpiCatchUpPolicyItem
 import com.medtroniclabs.spice.model.medicalreview.RequestCreateImmunisation
 import com.medtroniclabs.spice.model.medicalreview.RequestImmunisationSummaryCreate
 import com.medtroniclabs.spice.model.medicalreview.RequestImmunisationSummaryDetail
@@ -17,6 +22,7 @@ import com.medtroniclabs.spice.model.medicalreview.VaccinationDetail
 import com.medtroniclabs.spice.model.medicalreview.VaccinationGroupItem
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
+import java.time.LocalDate
 import javax.inject.Inject
 
 class ImmunisationRepository @Inject constructor(
@@ -46,13 +52,35 @@ class ImmunisationRepository @Inject constructor(
         // Need to do Schedule Date based on Date of Birth
         val list = mutableListOf<VaccinationGroupItem>()
 
+        val historyMap = mutableMapOf<String, LocalDate?>()
+
         val groupByType = vaccinationList?.groupBy { it.type }
+        var takenAnyOneLastSchedule = true
         groupByType?.forEach { (typeKey, typeValue) ->
             val sortedGroupValue = typeValue.sortedBy { it.value }
             val groupByValue = sortedGroupValue.groupBy { it.value }
             groupByValue.forEach { (valueKey, valueList) ->
                 val temp = valueList.first()
                 val items = valueList.sortedBy { it.displayOrder }
+                // Logic to handle minimum 4 weeks gap for two vaccine
+                items.forEach { item ->
+                    if (takenAnyOneLastSchedule) {
+                        val lastVaccinatedDate = historyMap[item.category]
+                        val scheduledDate = item.scheduledDate.getLocalDate()
+
+                        item.updatedScheduleDate = when {
+                            item.vaccineOrder == 1 -> scheduledDate
+                            lastVaccinatedDate != null && lastVaccinatedDate.isBefore(scheduledDate) -> scheduledDate
+                            else -> lastVaccinatedDate
+                        }
+
+                        historyMap[item.category] = item.vaccinatedDate?.getLocalDate()?.plusWeeks(4)
+                    } else {
+                        item.updatedScheduleDate = null
+                        historyMap[item.category] = null
+                    }
+                }
+                takenAnyOneLastSchedule = items.any { it.vaccinatedDate != null }
                 list.add(VaccinationGroupItem(EpiGroupName.getGroupName(valueKey, typeKey), temp.scheduledDate, false, items))
             }
         }
@@ -108,6 +136,20 @@ class ImmunisationRepository @Inject constructor(
             }
         } catch (e: Exception) {
             response.postError(e.message)
+        }
+    }
+
+    suspend fun getCatchUpPolicyItems(
+        response: MutableLiveData<Resource<List<EpiCatchUpPolicyItem>>>
+    ) {
+        response.postLoading()
+        roomHelper.getConsentFormByType(ConsentFormType.EPI)?.let { consentForm ->
+            val responseType = object : TypeToken<List<EpiCatchUpPolicyItem>>() {}.type
+            val result: MutableList<EpiCatchUpPolicyItem> = Gson().fromJson(consentForm.content, responseType)
+            result.add(0, EpiCatchUpPolicyItem("","","",""))
+            response.postSuccess(result)
+        } ?: run {
+            response.postError()
         }
     }
 

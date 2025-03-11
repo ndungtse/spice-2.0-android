@@ -14,6 +14,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clRootView"
             android:layout_width="@dimen/_290sdp"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/_10sdp">

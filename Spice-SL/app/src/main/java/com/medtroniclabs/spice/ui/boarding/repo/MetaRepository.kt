@@ -430,6 +430,15 @@ class MetaRepository @Inject constructor(
                     )
                 )
             }
+
+            forms.EPI?.let {
+                roomHelper.insertConsentForm(
+                    ConsentForm(
+                        type = ConsentFormType.EPI,
+                        content = it
+                    )
+                )
+            }
         }
     }
 
@@ -568,6 +577,12 @@ class MetaRepository @Inject constructor(
     }
 
     private suspend fun saveUserProfileDetailsInDb(userProfile: UserProfile) {
+        userProfile.supervisor?.id?.let {
+            SecuredPreference.putLong(SecuredPreference.EnvironmentKey.PEER_SUPERVISOR_ID.name, it)
+        } ?: run {
+            SecuredPreference.remove(SecuredPreference.EnvironmentKey.PEER_SUPERVISOR_ID.name)
+        }
+
         roomHelper.deleteAllUserProfileDetails()
         roomHelper.saveUserProfileDetails(
             UserProfileEntity(

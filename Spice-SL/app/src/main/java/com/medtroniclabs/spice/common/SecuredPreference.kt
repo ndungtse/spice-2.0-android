@@ -72,7 +72,8 @@ object SecuredPreference {
         OFFLINE_FOLLOW_UP_SYNC_REQUEST_ID,
         USER_CULTURE,
         OLD_USER_ID,
-        IS_TB_LOADED
+        IS_TB_LOADED,
+        PEER_SUPERVISOR_ID
     }
 
 

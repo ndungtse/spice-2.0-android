@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.model.medicalreview
 
+import java.time.LocalDate
+
 data class VaccinationDetail(
     val id: String? = null,
     val type: String,
@@ -11,6 +13,9 @@ data class VaccinationDetail(
     val doseClosureWeeks: String,
     val reason: String? = null,
     val displayOrder: Int,
+    val category: String,
+    val vaccineOrder: Int,
+    var updatedScheduleDate: LocalDate ? = null,
     var isEdited: Boolean? = false,
 )
 

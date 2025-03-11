@@ -170,6 +170,7 @@ object AssessmentDefinedParams {
     const val SpecifySideEffects = "specifySideEffects"
     const val Contraceptive = "contraceptive"
     const val Family_Planning = "family_planning"
+    const val FamilyPlanning = "familyPlanning"
 
     const val DiagnosedWithDiabetes = "isFamilyDHDiagnosed"
     const val RegularSmoker = "isSmoker"

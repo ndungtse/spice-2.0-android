@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.common.EpiGroupName
 import com.medtroniclabs.spice.data.EncounterDetails
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.model.medicalreview.EpiCatchUpPolicyItem
 import com.medtroniclabs.spice.model.medicalreview.EpiNextVaccinationDetails
 import com.medtroniclabs.spice.model.medicalreview.RequestCreateImmunisation
 import com.medtroniclabs.spice.model.medicalreview.RequestImmunisationSummaryCreate
@@ -47,10 +48,18 @@ class ImmunisationViewModel @Inject constructor(
     var lastVaccineScheduleDate: LocalDate? = null
     val saveImmunisationSummaryLiveData = MutableLiveData<Resource<ResponseImmunisationSummaryCreate>>()
 
+    val epiCatchUpPolicyItems = MutableLiveData<Resource<List<EpiCatchUpPolicyItem>>>()
+
     fun getImmunisationDetails(id: String?, memberId: String?, patientId: String?, dob: String?) {
         viewModelScope.launch(dispatcherIO) {
             val request = RequestVaccinationList(id, memberId, patientId, dob)
             immunisationRepository.getImmunisationDetails(request, immunisationDetailListLiveData)
+        }
+    }
+
+    fun getEpiCatchUpPolicyItems() {
+        viewModelScope.launch(dispatcherIO) {
+            immunisationRepository.getCatchUpPolicyItems(epiCatchUpPolicyItems)
         }
     }
 

@@ -58,9 +58,9 @@ class ImmunisationListAdapter(private val callback: (VaccinationDetail) -> Unit)
             holder.binding.flVaccinationItems.addView(view)
         }
 
-        holder.binding.flTransparentView.gone()
-        val dayDiff = ChronoUnit.DAYS.between(groupItem.scheduleDate.getLocalDate(), LocalDate.now())
-        if (dayDiff < 0)
-            holder.binding.flTransparentView.visible()
+
+       /* val dayDiff = ChronoUnit.DAYS.between(groupItem.scheduleDate.getLocalDate(), LocalDate.now())
+        if (dayDiff < 0)*/
+
     }
 }

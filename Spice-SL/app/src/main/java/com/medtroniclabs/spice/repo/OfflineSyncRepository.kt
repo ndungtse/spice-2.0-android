@@ -82,6 +82,7 @@ class OfflineSyncRepository @Inject constructor(
     }
 
     private fun convertEntityToRequest(list: List<AssessmentDetails>): List<Assessment> {
+        val peerSupervisorId = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.PEER_SUPERVISOR_ID.name)
         return list.map { entity ->
             val assessmentDetail = getAssessmentDetails(entity)
             Assessment(
@@ -92,6 +93,7 @@ class OfflineSyncRepository @Inject constructor(
                 patientStatus = entity.referralStatus,
                 referredReasons = entity.referredReason?.joinToString(", "),
                 summary = entity.otherDetails?.let { JsonParser.parseString(it) },
+                peerSupervisorId = peerSupervisorId,
                 encounter = AssessmentEncounter(
                     householdId = entity.householdId,
                     memberId = entity.memberId,

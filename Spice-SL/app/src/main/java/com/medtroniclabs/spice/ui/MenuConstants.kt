@@ -35,5 +35,5 @@ object MenuConstants {
     const val NO_OF_REFERRALS = "NO OF REFERRALS"
 
     const val COMMUNITY_PROFILE = "COMMUNITY PROFILE"
-    const val FP_MENU_ID = "familyPlanning"
+    const val FP_MENU_ID = "family_planning"
 }

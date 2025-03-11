@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.ImmunisationSummaryFragmentBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.medicalreview.ResponseImmunisationSummaryDetails
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -75,6 +76,11 @@ class ImmunisationSummaryFragment :  BaseFragment() {
 
         binding.tvNextVaccinationDate.setOnClickListener {
             showDatePicker()
+        }
+
+        binding.lblCatchUpPolicy.safeClickListener {
+            val dialog = EpiCatchUpPolicyDialogFragment()
+            dialog.show(childFragmentManager, "EpiCatchPolicy")
         }
 
         binding.tvClinicalName.text = requireContext().getString(

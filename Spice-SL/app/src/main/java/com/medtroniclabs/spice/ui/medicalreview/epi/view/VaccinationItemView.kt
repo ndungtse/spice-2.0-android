@@ -13,6 +13,8 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.model.medicalreview.VaccinationDetail
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 class VaccinationItemView @JvmOverloads constructor(
     context: Context,
@@ -25,14 +27,25 @@ class VaccinationItemView @JvmOverloads constructor(
     private val tvImmunisationName: AppCompatTextView
     private val tvImmunisationDate: AppCompatTextView
     private val flEpiStatusNudge: FrameLayout
-
-
+    private val clRootView: ConstraintLayout
 
     init {
         LayoutInflater.from(context).inflate(R.layout.view_epi_detail, this, true)
+        clRootView = findViewById(R.id.clRootView)
         tvImmunisationName = findViewById(R.id.tvImmunisationName)
         tvImmunisationDate = findViewById(R.id.tvImmunisationDate)
         flEpiStatusNudge = findViewById(R.id.flEpiStatusNudge)
+
+        if (item?.updatedScheduleDate != null) {
+            val dayDiff = ChronoUnit.DAYS.between(item.updatedScheduleDate, LocalDate.now())
+            if (dayDiff >= 0) {
+                enableOrDisableView(true)
+            } else {
+                enableOrDisableView(false)
+            }
+        } else {
+            enableOrDisableView(false)
+        }
 
         tvImmunisationName.text = item?.vaccineName ?: "--"
         tvImmunisationName.setOnClickListener {
@@ -53,5 +66,18 @@ class VaccinationItemView @JvmOverloads constructor(
         flEpiStatusNudge.addView(VaccinationStatusNudge(context = context, item = item))
     }
 
+    private fun enableOrDisableView(shouldEnable: Boolean) {
+        if (shouldEnable) {
+            clRootView.alpha = 1.0f
+            clRootView.isEnabled = true
+            clRootView.isClickable = true
+            tvImmunisationName.isEnabled = true
+        } else {
+            clRootView.alpha = 0.4f
+            clRootView.isEnabled = false
+            clRootView.isClickable = false
+            tvImmunisationName.isEnabled = false
+        }
+    }
 
 }

@@ -1379,4 +1379,11 @@
     <string name="missed_vaccination" translatable="false">MISSED\n(By %d Days)</string>
     <string name="days_delay" translatable="false">%d Days Delay</string>
     <string name="on_time" translatable="false">On Time</string>
+    <string name="epi_catch_up_policy" translatable="false">EPI Catch-Up Policy</string>
+    <string name="vaccine" translatable="false">Vaccine</string>
+    <string name="minimum_age" translatable="false">Minimum Age</string>
+    <string name="maximum_age" translatable="false">Maximum Age</string>
+    <string name="number_and_interval" translatable="false">Number &amp; Interval between doses</string>
+    <string name="view_catch_up_policy" translatable="false">View EPI Catch-Up Policy</string>
+
 </resources>

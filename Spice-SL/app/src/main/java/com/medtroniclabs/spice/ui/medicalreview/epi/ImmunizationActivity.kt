@@ -3,6 +3,8 @@ package com.medtroniclabs.spice.ui.medicalreview.epi
 import android.os.Bundle
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityImmunizationBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -10,6 +12,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
+import com.medtroniclabs.spice.ui.medicalreview.epi.fragment.EpiCatchUpPolicyDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.epi.fragment.ImmunisationDetailFragment
 import com.medtroniclabs.spice.ui.medicalreview.epi.fragment.ImmunisationSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.epi.fragment.MissedImmunisationDialogFragment
@@ -79,6 +82,11 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
                 saveSummaryDetails()
             }
         }
+
+        binding.btnViewCatchUpPolicy.safeClickListener {
+            val dialog = EpiCatchUpPolicyDialogFragment()
+            dialog.show(supportFragmentManager, "EpiCatchPolicy")
+        }
     }
 
     private fun initializePatientDetailFragment() {
@@ -90,6 +98,7 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
     }
 
     private fun initImmunisationDetailFragment() {
+        binding.btnViewCatchUpPolicy.visible()
         binding.btnDone.text = getString(R.string.next)
         val immunisationDetailFragment =
             ImmunisationDetailFragment.newInstance(
@@ -103,6 +112,7 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
     }
 
     private fun showImmunisationSummaryFragment(encounterId: String) {
+        binding.btnViewCatchUpPolicy.gone()
         binding.btnDone.text = getString(R.string.done)
         val immunisationSummaryFragment =
             ImmunisationSummaryFragment.newInstance(

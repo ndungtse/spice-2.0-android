@@ -46,7 +46,7 @@ class MissedImmunisationDialogFragment : BaseDialogFragment() {
     private fun initView() {
         val list = mutableListOf<VaccinationDetail>()
         //Adding dummy object for header
-        list.add(VaccinationDetail(type = "Week", vaccineName = "", scheduledDate = "", doseClosureWeeks = "", displayOrder = 0))
+        list.add(VaccinationDetail(type = "Week", vaccineName = "", scheduledDate = "", doseClosureWeeks = "", displayOrder = 0, category = "", vaccineOrder = 0))
         list.addAll(viewModel.changesList)
         binding.rvVaccinationList.adapter = MissedVaccinationAdapter(list)
 

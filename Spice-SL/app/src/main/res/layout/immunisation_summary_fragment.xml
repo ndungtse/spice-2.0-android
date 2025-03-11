@@ -295,6 +295,21 @@
                 app:layout_constraintStart_toEndOf="@id/tvNextVaccinationDateSeparator"
                 app:layout_constraintTop_toBottomOf="@id/tvNextDose" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/lblCatchUpPolicy"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:padding="@dimen/_16sdp"
+                android:background="#30EB956A"
+                android:drawableRight="@drawable/ic_epi_job_aid"
+                android:textColor="@color/ncd_accent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="EPI Catch-up Policy"
+               app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvNextVaccinationDate"/>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
