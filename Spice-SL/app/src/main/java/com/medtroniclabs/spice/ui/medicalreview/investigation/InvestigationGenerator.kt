@@ -123,7 +123,7 @@ class InvestigationGenerator(
                 listener.removeInvestigation(investigation)
             }
             if(isTiberbuUser()){
-                if (investigation.components!=null){
+                if (!investigation.components.isNullOrEmpty()){
                     investigationBinding.resultTable.visible()
                     resultTableData(investigationBinding,investigation.components)
                     investigationBinding.comments.text = ":  ${if (investigation.comments.isNullOrEmpty()) getString(R.string.hyphen_symbol) else investigation.comments}"

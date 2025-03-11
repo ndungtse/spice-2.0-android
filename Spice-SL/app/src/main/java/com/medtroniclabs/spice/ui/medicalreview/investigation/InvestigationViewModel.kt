@@ -88,7 +88,7 @@ class InvestigationViewModel @Inject constructor(
     fun addInvestigationModelToUI(investigationResponse: SearchLabTestResponse) {
         viewModelScope.launch(dispatcherIO) {
             val investigationList = investigationListLiveData.value ?: ArrayList()
-            if (investigationResponse.formInput != null) {
+            if (investigationResponse.formInput != null || CommonUtils.isTiberbuUser()) {
                 investigationList.forEach { it.dropdownState = false }
                 try {
                     investigationList.add(
