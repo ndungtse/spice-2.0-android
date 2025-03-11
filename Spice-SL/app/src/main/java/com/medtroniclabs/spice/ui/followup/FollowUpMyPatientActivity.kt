@@ -18,6 +18,9 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.COUNTER_REFERRAL_TAB
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HH_VISIT_TAB
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.REFERRED_TAB
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -188,8 +191,13 @@ class FollowUpMyPatientActivity : BaseActivity() {
                     viewModel.updateFollowUpFilter(pageType = it.position)
                    // binding.llExactSearch.etSearchTerm.setText("")
                     binding.viewPager.currentItem = it.position
-
-                    setTabTypeface(it, ResourcesCompat.getFont(applicationContext, R.font.inter_bold))
+                    getTabScreenName(it.position)?.let {
+                        viewModel.setUserJourney(it)
+                    }
+                    setTabTypeface(
+                        it,
+                        ResourcesCompat.getFont(applicationContext, R.font.inter_bold)
+                    )
                 }
             }
 
@@ -204,6 +212,15 @@ class FollowUpMyPatientActivity : BaseActivity() {
 
         binding.llExactSearch.tabLayout.getTabAt(0)?.let {
             setTabTypeface(it, ResourcesCompat.getFont(applicationContext, R.font.inter_bold))
+        }
+    }
+
+    private fun getTabScreenName(position: Int): String? {
+        return when (position) {
+            0 -> HH_VISIT_TAB
+            1 -> REFERRED_TAB
+            2 -> COUNTER_REFERRAL_TAB
+            else -> return null
         }
     }
 

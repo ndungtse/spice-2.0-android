@@ -60,9 +60,6 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
         }
 
         UserDetail.eventName=AnalyticsDefinedParams.HouseholdCreation
-        householdRegistrationViewModel.setUserJourney(
-            getString(R.string.household_registration)
-        )
         initializeView()
         attachObserver()
         phuMemberRegistration()

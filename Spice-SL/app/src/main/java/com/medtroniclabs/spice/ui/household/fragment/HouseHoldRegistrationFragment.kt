@@ -230,6 +230,9 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
             householdRegistrationViewModel.eventName = HouseholdEdit
             householdRegistrationViewModel.setUserJourney(HouseholdEdit)
         } else {
+            householdRegistrationViewModel.setUserJourney(
+                getString(R.string.household_registration)
+            )
             householdRegistrationViewModel.eventName = HouseholdCreation
             householdRegistrationViewModel.setUserJourney(HouseholdCreation)
         }

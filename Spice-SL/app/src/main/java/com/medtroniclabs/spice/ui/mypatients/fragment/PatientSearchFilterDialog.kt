@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentPatientSearchFilterDialogBinding
@@ -50,6 +51,7 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun initView() {
+        patientListViewModel.setUserJourney(AnalyticsDefinedParams.PatientFilter)
         binding.apply {
             if (CommonUtils.isNonCommunity()) {
                 if (CommonUtils.isDispenseOrInvestigation(arguments?.getString(ORIGIN))) {

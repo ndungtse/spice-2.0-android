@@ -141,18 +141,24 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
             AssessmentDefinedParams.ACT.lowercase() -> {
                 RecommendedDosageFragment.newInstance(id, titleById)
                     .show(childFragmentManager, RecommendedDosageFragment.TAG)
+
+                viewModel.setUserJourney(AnalyticsDefinedParams.ACTINFORMATIONDIALOUGE)
             }
 
             AssessmentDefinedParams.rdtTest -> {
                 InformationLayoutFragment.newInstance(id, titleById)
                     .show(childFragmentManager, InformationLayoutFragment.TAG)
+
+                viewModel.setUserJourney(AnalyticsDefinedParams.RDTTESTINFORMATIONDIALOUGE)
+
             }
         }
     }
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { details ->
-            val referralResult = ReferralResultGenerator().calculateOtherSymptomsReferralResult(details)
+            val referralResult =
+                ReferralResultGenerator().calculateOtherSymptomsReferralResult(details)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
                     context = requireContext(),
@@ -163,7 +169,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
             }
 
             result?.second?.let {
-                viewModel.saveAssessment(it, referralResult,viewModel.menuId)
+                viewModel.saveAssessment(it, referralResult, viewModel.menuId)
             }
         }
         viewModel.setAnalyticsData(
@@ -180,10 +186,11 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
         when (id) {
             AssessmentDefinedParams.hasFever -> {
-                    renderDosageDetails()
+                renderDosageDetails()
             }
-            AssessmentDefinedParams.rdtTest->{
-                if (selectedId==ReferralDefinedParams.RdtPositive){
+
+            AssessmentDefinedParams.rdtTest -> {
+                if (selectedId == ReferralDefinedParams.RdtPositive) {
                     renderDosageDetails()
                 }
             }
@@ -219,22 +226,27 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
             AssessmentDefinedParams.hasOedemaOfBothFeet -> getString(R.string.checking_for_oedema)
             AssessmentDefinedParams.chestInDrawing -> getString(R.string.chest_in_drawing)
             AssessmentDefinedParams.rdtTest -> getString(R.string.job_aid_reading_result)
-            else -> {id}
+            else -> {
+                id
+            }
         }
     }
 
     private fun getACTSuffixText(age: Int?): String {
-        return when(age){
+        return when (age) {
             in 6..36 -> {
                 requireContext().getString(R.string.no_of_tablets_no_of_days, 2, 3)
             }
+
             in 37..96 -> {
                 requireContext().getString(R.string.no_of_tablets_no_of_days, 4, 3)
             }
+
             in 97..168 -> {
                 requireContext().getString(R.string.no_of_tablets_no_of_days, 6, 3)
             }
-            else ->{
+
+            else -> {
                 requireContext().getString(R.string.no_of_tablets_no_of_days, 8, 3)
             }
         }
@@ -244,8 +256,11 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
         id: String, noOfDays: Int, enteredDays: Int?,
         resultMap: HashMap<String, Any>?
     ) {
-        if (enteredDays!=null && enteredDays > noOfDays) {
-            updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color))
+        if (enteredDays != null && enteredDays > noOfDays) {
+            updateColorCode(
+                id,
+                ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color)
+            )
             displayDaysInformation(id, View.VISIBLE)
         } else {
             updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.secondary_black))
@@ -254,7 +269,8 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     }
 
     private fun displayDaysInformation(id: String, viewVisibility: Int) {
-        formGenerator.getViewByTag(id + DefinedParams.Information)?.apply { visibility = viewVisibility }
+        formGenerator.getViewByTag(id + DefinedParams.Information)
+            ?.apply { visibility = viewVisibility }
     }
 
     override fun onAgeCheckForPregnancy() {
@@ -276,11 +292,12 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     }
 
     private fun updateColorCode(id: String, colorCode: Int) {
-        formGenerator.getViewByTag(id + com.medtroniclabs.spice.formgeneration.config.DefinedParams.Information)?.let { view ->
-            if (view is TextView){
-                view.setTextColor(colorCode)
+        formGenerator.getViewByTag(id + DefinedParams.Information)
+            ?.let { view ->
+                if (view is TextView) {
+                    view.setTextColor(colorCode)
+                }
             }
-        }
     }
 
     override fun onClick(view: View) {
@@ -288,14 +305,16 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
             binding.btnSubmit.id -> {
                 withLocationCheck({
                     viewModel.fetchCurrentLocation(requireContext())
-                    formGenerator.formSubmitAction(view) })
+                    formGenerator.formSubmitAction(view)
+                })
             }
         }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        val dosageDialog = childFragmentManager.findFragmentByTag("RecommendedDosageFragment") as? DialogFragment
+        val dosageDialog =
+            childFragmentManager.findFragmentByTag("RecommendedDosageFragment") as? DialogFragment
         if (dosageDialog != null && dosageDialog.showsDialog) {
             dosageDialog.dismiss()
             showDialogBasedOnId()

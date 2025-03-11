@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.loadAsGif
@@ -16,11 +17,14 @@ import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.databinding.FragmentPrivacyPolicyBinding
 import com.medtroniclabs.spice.network.NetworkConstants.PRIVACY_POLICY
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
 @AndroidEntryPoint
 class PrivacyPolicyFragment : BaseFragment() {
+
+    private val viewModel: LandingViewModel by activityViewModels()
 
     lateinit var binding: FragmentPrivacyPolicyBinding
 
@@ -36,6 +40,7 @@ class PrivacyPolicyFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        viewModel.setUserJourney(getString(R.string.privacy_policy))
     }
 
     private fun initView() {

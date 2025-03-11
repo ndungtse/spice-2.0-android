@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.repo.HouseHoldRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -13,9 +14,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ConsentFormViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val houseHoldRepository: HouseHoldRepository
-) : ViewModel() {
+) : BaseViewModel(dispatcherIO) {
 
     var enableConfirmLiveData = MutableLiveData<Pair<Boolean, Boolean>>()
     val termsAndConditionStringLiveData = MutableLiveData<String>()

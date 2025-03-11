@@ -9,6 +9,7 @@ import android.view.WindowManager
 import android.widget.AdapterView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.FragmentMemberEditDialogBinding
@@ -48,6 +49,7 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
+        householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.MEMBEREDITCHOOSERDIALOGUE)
         attachListeners()
         loadSpinnerData()
     }

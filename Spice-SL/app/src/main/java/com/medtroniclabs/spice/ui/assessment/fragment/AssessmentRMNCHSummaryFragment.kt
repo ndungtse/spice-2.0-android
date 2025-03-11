@@ -70,7 +70,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         setListener()
         initSummaryViewByWorkFlowName()
-        viewModel.setUserJourney(AnalyticsDefinedParams.RMNCHSummaryAssessment)
+        viewModel.setUserJourney("${viewModel.workflowName}${AnalyticsDefinedParams.RMNCHSummaryAssessment}")
         binding.etNextFollowUpDate.background= ContextCompat.getDrawable(requireContext(),R.drawable.edittext_background)
         val background = binding.etNextFollowUpDate.background as? GradientDrawable
         background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), ContextCompat.getColor(requireContext(), R.color.edittext_stroke))
@@ -133,11 +133,17 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     ) == true
                 }
                 ?.filterNot { it.id in showQuestionBasedAge(map,it) } // Remove the item with id "childhoodVisitSigns"
+                ?.filterNot {
+                    it.id in showQuestionBasedAge(
+                        map,
+                        it
+                    )
+                } // Remove the item with id "childhoodVisitSigns"
                 ?.forEach { data ->
                     with(data) {
                         updateStatusBar()
                         binding.parentLayout.addView(
-                            AssessmentCommonUtils.addViewSummaryLayout(
+                            addViewSummaryLayout(
                                 titleSummary ?: (titleCulture ?: title),
                                 getValueFromMap(
                                     map,
@@ -244,7 +250,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
 
         if (viewModel.workflowName == RMNCH.ANC) {
             binding.parentLayout.addView(
-                AssessmentCommonUtils.addViewSummaryLayout(
+                addViewSummaryLayout(
                     getString(R.string.gestational_age),
                     getValueFromMap(
                         map,
@@ -272,7 +278,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     val formattedEstimatedDeliveryDate =
                         DateUtils.getDateFormat().format(estimatedDeliveryDate.time)
                     binding.parentLayout.addView(
-                        AssessmentCommonUtils.addViewSummaryLayout(
+                        addViewSummaryLayout(
                             getString(R.string.estimated_delivery_date),
                             formattedEstimatedDeliveryDate,
                             null,
@@ -318,7 +324,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         }
 
         binding.parentLayout.addView(
-            AssessmentCommonUtils.addViewSummaryLayout(
+            addViewSummaryLayout(
                 title,
                 getValueFromMap(
                     map,

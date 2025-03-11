@@ -10,18 +10,17 @@ import android.widget.AdapterView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.MemberDeceased
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentMemberDeceasedDialogBinding
-import com.medtroniclabs.spice.databinding.FragmentMemberEditDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.MemberDetailsSpinnerModel
 import com.medtroniclabs.spice.ui.household.MemberSelectionListener
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
 import timber.log.Timber
-import java.lang.reflect.Member
 
-class MemberDeceasedDialogFragment()  : DialogFragment(), View.OnClickListener {
+class MemberDeceasedDialogFragment() : DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentMemberDeceasedDialogBinding
     private var listener: MemberSelectionListener? = null
@@ -31,9 +30,9 @@ class MemberDeceasedDialogFragment()  : DialogFragment(), View.OnClickListener {
         this.listener = listener
     }
 
-    companion object{
+    companion object {
         val TAG = "MemberEditDialogFragment"
-        fun newInstance(listener: MemberSelectionListener):MemberDeceasedDialogFragment{
+        fun newInstance(listener: MemberSelectionListener): MemberDeceasedDialogFragment {
             return MemberDeceasedDialogFragment(listener)
         }
     }
@@ -52,19 +51,16 @@ class MemberDeceasedDialogFragment()  : DialogFragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
+        householdSummaryViewModel.setUserJourney(MemberDeceased)
         attachListeners()
         loadSpinnerData()
         onEnterReason()
     }
 
-    private fun onEnterReason(){
+    private fun onEnterReason() {
         binding.etReason.addTextChangedListener {
             Timber.d("onEnterReason = ${it.toString()}")
-            if (it.toString().isNotEmpty() && householdSummaryViewModel.hasDeceasedReason) {
-                binding.btnOkay.isEnabled = true
-            }else{
-                binding.btnOkay.isEnabled = false
-            }
+            binding.btnOkay.isEnabled = it.toString().isNotEmpty() && householdSummaryViewModel.hasDeceasedReason
         }
     }
 
@@ -103,15 +99,15 @@ class MemberDeceasedDialogFragment()  : DialogFragment(), View.OnClickListener {
                     selectedItem?.let {
                         if (it.id != -1L) {
                             Timber.d("onEnterReason = ${selectedItem}")
-                            householdSummaryViewModel.hasDeceasedReason=true
+                            householdSummaryViewModel.hasDeceasedReason = true
                             householdSummaryViewModel.selectedMemberId = it.id
                             householdSummaryViewModel.selectedMemberDob = it.dob
-                            if(binding.etReason.text.toString().isNotEmpty()){
+                            if (binding.etReason.text.toString().isNotEmpty()) {
                                 binding.btnOkay.isEnabled = true
                             }
                         } else {
                             Timber.d("onEnterReason = ${selectedItem}")
-                            householdSummaryViewModel.hasDeceasedReason=false
+                            householdSummaryViewModel.hasDeceasedReason = false
                             binding.btnOkay.isEnabled = false
 
                         }

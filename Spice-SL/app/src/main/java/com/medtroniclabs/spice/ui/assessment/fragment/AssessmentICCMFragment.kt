@@ -315,15 +315,18 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             isUnusualSleepy,isVomiting,isConvulsionPastFewDays,isBreastfeed,muacCode, hasOedemaOfBothFeet, chestInDrawing, rdtTest -> {
                 InformationLayoutFragment.newInstance(id, titleById)
                     .show(childFragmentManager, InformationLayoutFragment.TAG)
+                viewModel.setUserJourney("$id ${AnalyticsDefinedParams.INFORMATIONDIALOUGE}")
             }
 
             Amoxicillin.lowercase(), ZincDispensedStatus, ACT.lowercase(), OrsDispensedStatus, JellyWaterDispensedStatus, SssDispensedStatus -> {
                 RecommendedDosageFragment.newInstance(id, titleById)
                     .show(childFragmentManager, RecommendedDosageFragment.TAG)
+                viewModel.setUserJourney("$id ${AnalyticsDefinedParams.RecommendedDosage}")
             }
 
             BreathPerMinute -> {
                 FastBreathingLayoutFragment.newInstance().show(childFragmentManager, FastBreathingLayoutFragment.TAG)
+                viewModel.setUserJourney(AnalyticsDefinedParams.FastBreathingINFO)
             }
         }
     }
@@ -518,7 +521,8 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                     }
                     formGenerator.getViewByTag(muacCode)?.apply {
                         val background = background as? GradientDrawable
-                        background?.setStroke(resources.getDimensionPixelSize(R.dimen._4sdp), getMuacColorCode(selectedId as String, requireContext()))
+                        background?.setStroke(resources.getDimensionPixelSize(R.dimen._4sdp), getMuacColorCode(
+                            selectedId, requireContext()))
                     }
                 } else {
                     formGenerator.getViewByTag(muacStatus + rootSuffix)?.apply {

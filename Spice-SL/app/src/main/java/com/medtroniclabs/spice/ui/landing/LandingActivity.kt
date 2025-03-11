@@ -529,6 +529,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                         isNegativeButtonNeed = true
                     ) { isPositive ->
                         if (isPositive && SecuredPreference.logout()) {
+                            viewModel.setUserJourney(AnalyticsDefinedParams.LOGOUT)
                             cancelAllWorker()
                             startActivity(Intent(this, LoginActivity::class.java))
                             finish()

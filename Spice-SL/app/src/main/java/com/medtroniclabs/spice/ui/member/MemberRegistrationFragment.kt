@@ -104,9 +104,12 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
         attachObserver()
         handleAddNewMember()
         val eventType =
-            if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L)
-                EditNewMember
-            else
+            if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L) {
+                if (householdRegistrationViewModel.isMemberRegistration)
+                    AddNewMember
+                else
+                    EditNewMember
+            } else
                 AnalyticsDefinedParams.MemberRegistration
 
         memberRegistrationViewModel.getHouseholdHeadDob(householdRegistrationViewModel.householdId)

@@ -79,6 +79,8 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
         childFormGenerator = FormGenerator(
             requireContext(), binding.llChildForm, null, this, binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
         )
+
+        viewModel.setUserJourney(AnalyticsDefinedParams.RMNCHNeonateAssessment)
     }
 
     private fun loadJson() {
@@ -180,14 +182,14 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
             tvTitle.text = getString(R.string.relationship_to_household_head)
         }
 
-         childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship)?.let {view ->
-             if (view is AppCompatSpinner){
-                 val adapter = view.adapter
-                 if (adapter is CustomSpinnerAdapter){
-                     adapter.removeItemById(DefinedParams.HouseholdHead)
-                 }
-             }
-         }
+        childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship)?.let { view ->
+            if (view is AppCompatSpinner) {
+                val adapter = view.adapter
+                if (adapter is CustomSpinnerAdapter) {
+                    adapter.removeItemById(DefinedParams.HouseholdHead)
+                }
+            }
+        }
     }
 
     private fun disableDateOfBirth() {
@@ -208,7 +210,10 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                         childFormGenerator.setValueForView(dateOfBirth, view)
                     }
 
-                    val dateDob = DateUtils.convertStringToDate(dateOfDelivery, DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+                    val dateDob = DateUtils.convertStringToDate(
+                        dateOfDelivery,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    )
                     dateDob?.let { dob ->
                         childFormGenerator.fillDetailsOnDatePickerSet(dob, false)
                     }
@@ -223,7 +228,8 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
             binding.btnSubmit.id -> {
                 withLocationCheck({
                     assessmentRMNCHNeonateViewModel.fetchCurrentLocation(requireContext())
-                    handleSubmitFormWithClinicalDateCheck(v) })
+                    handleSubmitFormWithClinicalDateCheck(v)
+                })
             }
         }
     }
@@ -233,11 +239,17 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
             if (childFormGenerator.formSubmitAction(v)) {
                 val map = childFormGenerator.getResultMap()
                 if (map.containsKey(MemberRegistration.dateOfBirth) &&
-                    map.containsKey(MemberRegistration.householdHeadRelationship)) {
+                    map.containsKey(MemberRegistration.householdHeadRelationship)
+                ) {
                     val dob = map[MemberRegistration.dateOfBirth] as String
                     val relation = map[MemberRegistration.householdHeadRelationship] as String
                     val headDob = assessmentRMNCHNeonateViewModel.householdHeadDobLiveData.value
-                    isValidRelationAge(requireContext(), dob, relation, headDob)?.let { validAgeErrorMessage ->
+                    isValidRelationAge(
+                        requireContext(),
+                        dob,
+                        relation,
+                        headDob
+                    )?.let { validAgeErrorMessage ->
                         showInValidDob(validAgeErrorMessage)
                         return
                     }
@@ -277,16 +289,16 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
     }
 
 
-
-
     private fun showInValidDob(message: String) {
-        childFormGenerator.getViewByTag(AssessmentDefinedParams.DateOfBirth + AssessmentDefinedParams.errorSuffix)?.apply {
-            visibility = View.VISIBLE
-            childFormGenerator.scrollView?.let { scrollView ->
-                childFormGenerator.scrollToView(scrollView, this)
-            }
-        }.takeIf { it is TextView }?.let { textView->(textView as TextView).text=
-            message
+        childFormGenerator.getViewByTag(AssessmentDefinedParams.DateOfBirth + AssessmentDefinedParams.errorSuffix)
+            ?.apply {
+                visibility = View.VISIBLE
+                childFormGenerator.scrollView?.let { scrollView ->
+                    childFormGenerator.scrollToView(scrollView, this)
+                }
+            }.takeIf { it is TextView }?.let { textView ->
+            (textView as TextView).text =
+                message
         }
 
 
@@ -314,7 +326,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                                 memberDetail,
                                 assessmentRMNCHNeonateViewModel.childMemberDetailsLiveData.value?.data,
                                 viewModel.followUpId,
-                                location= viewModel.getCurrentLocation()
+                                location = viewModel.getCurrentLocation()
                             )
                         }
                     }
@@ -362,7 +374,8 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
     }
 
     fun getCurrentAnsweredStatus(): Boolean {
-        return formGenerator.getResultMap().isNotEmpty() || childFormGenerator.getResultMap().isNotEmpty()
+        return formGenerator.getResultMap().isNotEmpty() || childFormGenerator.getResultMap()
+            .isNotEmpty()
     }
 
 

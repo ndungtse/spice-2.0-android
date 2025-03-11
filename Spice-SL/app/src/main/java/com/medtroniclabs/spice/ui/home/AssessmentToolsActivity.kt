@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityToolsBinding
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
@@ -39,6 +40,7 @@ class AssessmentToolsActivity : BaseActivity() {
     }
 
     private fun initializeView() {
+        toolsViewModel.setUserJourney(AnalyticsDefinedParams.ASSESSMENTTOOLSELECTION)
         toolsViewModel.selectedHouseholdMemberID = intent.getLongExtra(DefinedParams.MemberID, -1)
         toolsViewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
         toolsViewModel.followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1)

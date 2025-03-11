@@ -4,9 +4,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.http.SslError
 import android.os.Bundle
-import android.util.Log
-import android.view.MotionEvent
-import android.webkit.JavascriptInterface
 import android.webkit.SslErrorHandler
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
@@ -42,8 +39,14 @@ class ConsentFormActivity : BaseActivity() {
     }
 
     private fun initView() {
+
+        viewModel.setUserJourney(getString(R.string.terms_and_condition))
+
         binding.btnSignature.setOnClickListener {
-            ConsentSignatureDialogFragment().show(supportFragmentManager, ConsentSignatureDialogFragment.TAG)
+            ConsentSignatureDialogFragment().show(
+                supportFragmentManager,
+                ConsentSignatureDialogFragment.TAG
+            )
         }
 
         binding.wvTermAndCondition.webViewClient = webViewClientCallBack

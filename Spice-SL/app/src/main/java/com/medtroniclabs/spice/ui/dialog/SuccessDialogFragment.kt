@@ -8,7 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.common.DefinedParams
@@ -17,6 +19,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.IsHousehold
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.IsHouseholdMember
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isPhuWalkInsFlow
+import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.phuwalkins.activity.PhuWalkInsActivity
 
@@ -24,6 +27,8 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentSuccessDialogBinding
     private var onDismissListener: OnDialogDismissListener? = null
+    private val viewModel: HouseRegistrationViewModel by activityViewModels()
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -82,10 +87,12 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
             binding.successMessage.text = arguments?.getString(DefinedParams.label)
         }
         if (arguments?.getBoolean(IsHousehold) == true) {
+            viewModel.setUserJourney(AnalyticsDefinedParams.HouseHoldRegistrationSuccess)
             binding.successMessage.text = getString(R.string.household_successfully)
         }
 
         if (arguments?.getBoolean(IsHouseholdMember) == true) {
+            viewModel.setUserJourney(AnalyticsDefinedParams.MemberRegistrationSuccess)
             binding.successMessage.text = getString(R.string.member_registered_successfully)
         }
 

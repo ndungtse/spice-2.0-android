@@ -531,6 +531,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
             MUAC -> {
                 InformationLayoutFragment.newInstance(id, titleById)
                     .show(childFragmentManager, InformationLayoutFragment.TAG)
+                viewModel.setUserJourney("$id ${AnalyticsDefinedParams.INFORMATIONDIALOUGE}")
             }
         }
     }

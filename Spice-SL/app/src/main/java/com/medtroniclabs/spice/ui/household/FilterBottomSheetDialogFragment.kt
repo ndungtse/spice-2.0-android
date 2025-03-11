@@ -10,6 +10,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HOUSEHOLDFILTER
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentFilterBottomSheetDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -56,7 +57,7 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
     }
 
     private fun enableConfirm() {
-        val isVillageValid =  villageListTagView.getSelectedTags().isNotEmpty()
+        val isVillageValid = villageListTagView.getSelectedTags().isNotEmpty()
         val isStatusListValid = statusListTagView.getSelectedTags().isNotEmpty()
 
         binding.btnApply.isEnabled = isVillageValid || isStatusListValid
@@ -101,6 +102,7 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
     }
 
     private fun initView() {
+        householdListViewModel.setUserJourney(HOUSEHOLDFILTER)
         villageListTagView =
             TagListCustomView(binding.root.context, binding.villageChipGroup) { _, _, _ ->
                 enableConfirm()

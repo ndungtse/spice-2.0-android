@@ -10,6 +10,7 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.saveBitmapAsJpeg
 import com.medtroniclabs.spice.appextensions.setTextChangeListener
@@ -60,6 +61,7 @@ class ConsentSignatureDialogFragment : DialogFragment() {
 
     private fun initializeView() {
         isCancelable = false
+        viewModel.setUserJourney(getString(R.string.signature_or_initial))
     }
 
     private fun setListeners() {
