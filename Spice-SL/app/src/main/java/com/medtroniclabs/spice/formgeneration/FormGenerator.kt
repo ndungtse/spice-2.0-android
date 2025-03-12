@@ -3201,7 +3201,8 @@ class FormGenerator(
     fun validateCheckboxDialogue(
         id: String,
         serverViewModel: FormLayout,
-        resultMap: ArrayList<HashMap<String, Any>>
+        resultMap: ArrayList<HashMap<String, Any>>,
+        isListenerEnable: Boolean = true
     ) {
         if (resultMap.isEmpty()) {
             if (resultHashMap.containsKey(id)) {
@@ -3226,7 +3227,9 @@ class FormGenerator(
                 null
             )
         }
-        callback?.invoke(resultHashMap,id)
+        if (isListenerEnable) {
+            callback?.invoke(resultHashMap,id)
+        }
     }
 
     private fun setCheckBoxDialogText(

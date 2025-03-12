@@ -88,7 +88,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                 }
             }
         } else {
-            finish()
+            navigationHandling(isHome, backButtonStatus.second)
         }
     }
 

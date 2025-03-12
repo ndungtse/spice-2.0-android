@@ -154,11 +154,19 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun setEmergencyPHUPhoneNumber() {
+        val phoneCode =
+            SecuredPreference.getPhoneNumberCode()?.let { if (it.startsWith("+")) it else "+$it" }
         val phoneNumber = viewModel.patientHealthFacility.value?.data
             ?.firstOrNull()
             ?.phoneNumber
         val resultPhoneNumber = if (!phoneNumber.isNullOrBlank()) phoneNumber else "-"
-        bindSummaryView(getString(R.string.emergency_contact_at_PHU), resultPhoneNumber, isCallShown = true, forCbs = true)
+        bindSummaryView(
+            getString(R.string.emergency_contact_at_PHU),
+            resultPhoneNumber,
+            isCallShown = true,
+            forCbs = true,
+            countryCode = phoneCode
+        )
     }
 
     private fun createSummaryViewCbs(
@@ -232,11 +240,14 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         // Handle the case where phoneNumber might be null or empty
 
         bindSummaryView(getString(R.string.peer_supervisor_name), supervisorName,forCbs = true)
+
+        val phoneCode = SecuredPreference.getPhoneNumberCode()?.let { if (it.startsWith("+")) it else "+$it" }
         bindSummaryView(
             getString(R.string.peer_supervisor_number),
             supervisorNumber,
             isCallShown = true,
-            forCbs = true
+            forCbs = true,
+            countryCode = phoneCode
         )
         val organizations = viewModel.userProfileLiveData.value?.data?.organizations
         val linkedPHU = organizations?.takeIf { it.isNotEmpty() }
@@ -788,7 +799,8 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         value: String?,
         valueTextColor: Int? = null,
         isCallShown: Boolean = false,
-        forCbs: Boolean = false
+        forCbs: Boolean = false,
+        countryCode:String? = null
     ) {
         value?.let { result ->
             binding.cbsParentLayout.addView(
@@ -804,7 +816,8 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                             handleCallBtnClick(tag, value)
                         }
                     },
-                    forCbs = forCbs
+                    forCbs = forCbs,
+                    countryCode = countryCode
                 )
             )
         }
@@ -836,10 +849,14 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun navToDial(phoneNumber: String?) {
-        phoneNumber?.let {
-            val dialIntent = Intent(Intent.ACTION_DIAL)
-            dialIntent.data = Uri.parse("tel:$it")
-            dialerLauncher.launch(dialIntent)
+        if (hasTelephonyFeature(requireContext())) {
+            phoneNumber?.let {
+                val dialIntent = Intent(Intent.ACTION_DIAL)
+                dialIntent.data = Uri.parse("tel:$it")
+                dialerLauncher.launch(dialIntent)
+            }
+        } else {
+            showCallDialError(false)
         }
     }
 

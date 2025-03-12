@@ -343,7 +343,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
 
     private fun startCbsActivity(workFlowName: String) {
         val intent = Intent(requireContext(), CbsActivity::class.java)
-        intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberId)
+        intent.putExtra(DefinedParams.MemberID, assessmentRMNCHNeonateViewModel.childId)
         intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
         intent.putExtra(MenuConstants.WorkFlowName, workFlowName)
         intent.putExtra(deathOfNewborn, true)

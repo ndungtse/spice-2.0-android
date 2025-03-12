@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.common.DefinedParams.CbsNotifiableCondition
 import com.medtroniclabs.spice.common.DefinedParams.NotifiableConditions
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditions
 import com.medtroniclabs.spice.common.DefinedParams.RmnchNotifiableCondition
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentIccmSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -55,11 +56,8 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.resultCardView.gone()
         viewModel.getUserProfile()
-        viewModel.memberDetailsLiveData.value?.data?.villageId
-            ?.takeIf { it.isNotBlank() }
-            ?.toLongOrNull()
-            ?.let { id -> viewModel.getHealthFacilityBasedOnVillageId(id) }
         binding.btnDone.safeClickListener(this)
         binding.callSupervisor.safeClickListener(this)
         attachObservers()
@@ -87,8 +85,9 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
         val phoneNumber = viewModel.patientHealthFacility.value?.data
             ?.firstOrNull()
             ?.phoneNumber
+        val phoneCode = SecuredPreference.getPhoneNumberCode()?.let { if (it.startsWith("+")) it else "+$it" }
         if (!phoneNumber.isNullOrBlank()) {
-            navToDial(phoneNumber)
+            navToDial(phoneCode + phoneNumber)
         }
     }
 
@@ -100,12 +99,10 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
                 }
 
                 ResourceState.SUCCESS -> {
+                    binding.resultCardView.visible()
                     (activity as? BaseActivity)?.hideLoading()
                     resourceState.data?.let {
-                        viewModel.assessmentStringLiveData.value?.let { result ->
-                            updateStatusBar()
-                            createSummaryView(createListSummaryData(result))
-                        }
+                        getPHUDetails()
                     }
                 }
 
@@ -117,18 +114,17 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
         viewModel.patientHealthFacility.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
+                    binding.emptyErrorMessage.gone()
+                    binding.parentLayout.visible()
                     showProgress()
                 }
 
                 ResourceState.SUCCESS -> {
+                    binding.resultCardView.visible()
                     hideProgress()
-                    if (viewModel.workflowName.equals(ANC, true)
-                        || viewModel.workflowName.equals(PNCNeonatal, true)
-                        || viewModel.workflowName.equals(ChildHoodVisit, true)) {
-                        binding.callSupervisor.visible()
-                    } else {
-                        binding.callSupervisor.gone()
-                        setEmergencyPHUPhoneNumber()
+                    viewModel.assessmentStringLiveData.value?.let { result ->
+                        updateStatusBar()
+                        createSummaryView(createListSummaryData(result))
                     }
                 }
 
@@ -139,12 +135,36 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
         }
     }
 
+    private fun showPHU() {
+        if (viewModel.workflowName.equals(ANC, true)
+            || viewModel.workflowName.equals(PNCNeonatal, true)
+            || viewModel.workflowName.equals(ChildHoodVisit, true)) {
+            binding.callSupervisor.visible()
+        } else {
+            binding.callSupervisor.gone()
+            setEmergencyPHUPhoneNumber()
+        }
+    }
+
+    private fun getPHUDetails() {
+        viewModel.memberDetailsLiveData.value?.data?.villageId
+            ?.takeIf { it.isNotBlank() }
+            ?.toLongOrNull()
+            ?.let { id -> viewModel.getHealthFacilityBasedOnVillageId(id) }
+    }
+
     private fun setEmergencyPHUPhoneNumber() {
-        val phoneNumber = viewModel.patientHealthFacility.value?.data
-            ?.firstOrNull()
-            ?.phoneNumber
-        val resultPhoneNumber = if (!phoneNumber.isNullOrBlank()) phoneNumber else "-"
-        bindSummaryView(getString(R.string.emergency_contact_at_PHU), resultPhoneNumber, isCallShown = true)
+        val phoneNumber =
+            viewModel.patientHealthFacility.value?.data?.firstOrNull()?.phoneNumber?.takeIf { it.isNotBlank() }
+                ?: "-"
+        val phoneCode =
+            SecuredPreference.getPhoneNumberCode()?.let { if (it.startsWith("+")) it else "+$it" }
+
+        bindSummaryView(
+            getString(R.string.emergency_contact_at_PHU),
+            phoneNumber,
+            isCallShown = true,
+            countryCode = phoneCode )
     }
 
     private fun createListSummaryData(data: String): MutableList<AssessmentSummaryModel>? {
@@ -241,10 +261,12 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
             // Handle the case where phoneNumber might be null or empty
 
             bindSummaryView(getString(R.string.peer_supervisor_name), supervisorName)
+            val phoneCode = SecuredPreference.getPhoneNumberCode()?.let { if (it.startsWith("+")) it else "+$it" }
             bindSummaryView(
                 getString(R.string.peer_supervisor_number),
                 supervisorNumber,
-                isCallShown = true
+                isCallShown = true,
+                countryCode = phoneCode
             )
             val organizations = viewModel.userProfileLiveData.value?.data?.organizations
             val linkedPHU = organizations?.takeIf { it.isNotEmpty() }
@@ -252,10 +274,11 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
                 ?: getString(R.string.hyphen_symbol)
             bindSummaryView(getString(R.string.linked_phu), linkedPHU)
         }
+        showPHU()
     }
 
 
-    private fun bindSummaryView(title: String?, value: String?, valueTextColor: Int? = null,isCallShown :Boolean = false) {
+    private fun bindSummaryView(title: String?, value: String?, valueTextColor: Int? = null,isCallShown :Boolean = false,countryCode:String? = null) {
         value?.let { result ->
             binding.parentLayout.addView(
                 AssessmentCommonUtils.addViewSummaryLayout(
@@ -270,7 +293,8 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
                             handleCallBtnClick(tag,value)
                         }
                     }
-                    ,forCbs = true
+                    ,forCbs = true,
+                    countryCode = countryCode
                 )
             )
         }
@@ -291,10 +315,14 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
 
 
     private fun navToDial(phoneNumber: String?) {
-        phoneNumber?.let {
-            val dialIntent = Intent(Intent.ACTION_DIAL)
-            dialIntent.data = Uri.parse("tel:$it")
-            dialerLauncher.launch(dialIntent)
+        if (hasTelephonyFeature(requireContext())) {
+            phoneNumber?.let {
+                val dialIntent = Intent(Intent.ACTION_DIAL)
+                dialIntent.data = Uri.parse("tel:$it")
+                dialerLauncher.launch(dialIntent)
+            }
+        } else {
+            showCallDialError(false)
         }
     }
 

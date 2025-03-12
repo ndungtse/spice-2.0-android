@@ -123,11 +123,11 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
             value = list
         }
         if (autoPopulate.isNotEmpty()) {
+            val autoPopulateMap = autoPopulate.toMap()
             value.forEach { symptom ->
-                if (symptom.value in autoPopulate.map { it.first }) {
+                autoPopulateMap[symptom.value]?.let { isEnabled ->
                     symptom.isSelected = true
-                    if(title.isNullOrEmpty())
-                        symptom.isEnabled = false
+                    symptom.isEnabled = isEnabled
                 }
             }
         }

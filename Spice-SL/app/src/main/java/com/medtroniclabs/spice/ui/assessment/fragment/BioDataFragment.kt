@@ -253,7 +253,8 @@ class BioDataFragment : BaseFragment() {
                 binding.dateOfOccurrence.root.visible()
                 binding.dateOfOccurrence.tvKey.text = getString(R.string.date_of_occurrence)
                 binding.dateOfOccurrence.tvValue.text = DateUtils.getTodayDateDDMMYYYY(DATE_ddMMyyyy)
-                if (gender.equals(DefinedParams.female, true)) {
+                if (gender.equals(DefinedParams.female, true)
+                    && doesShowPregnant(dateOfBirth)) {
                     binding.pregnancy.root.visible()
                     binding.pregnancy.tvKey.text = getString(R.string.pregnant)
                     binding.pregnancy.tvValue.text = CommonUtils.getBooleanAsString(isPregnant ?: false).capitalizeFirstChar()
@@ -269,6 +270,15 @@ class BioDataFragment : BaseFragment() {
                 viewModel.workflowName?.let { viewModel.getPatientVisitCountByType(it, id) }
             }
         }
+    }
+
+    private fun doesShowPregnant(dateOfBirth: String): Boolean {
+        val ageAndWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth)
+        val ageYears = ageAndWeek.years
+        val ageMonths = ageAndWeek.months
+        val ageWeeks = ageAndWeek.weeks
+        val ageDays = ageAndWeek.days
+        return !((ageYears !in RMNCH.PREGNANCY_MIN_AGE..RMNCH.PREGNANCY_MAX_AGE) || (ageYears == RMNCH.PREGNANCY_MAX_AGE && (ageMonths + ageWeeks + ageDays) != 0))
     }
 
     private fun getAgeValue(ageFromDob: String): String {

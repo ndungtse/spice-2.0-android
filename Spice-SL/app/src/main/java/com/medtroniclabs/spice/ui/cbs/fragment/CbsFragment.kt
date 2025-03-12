@@ -9,8 +9,6 @@ import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ANC_CBS
 import com.medtroniclabs.spice.common.DefinedParams.AssessmentId
@@ -81,68 +79,96 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         ) { map, id ->
             when (id) {
                 RmnchNotifiableCondition -> {
-                    if (map.containsKey(RmnchNotifiableCondition)) {
-                        val value = map[RmnchNotifiableCondition] as? ArrayList<Map<String, String>>
-                        val filteredValues = value?.firstOrNull {
-                            it[DefinedParams.Value].equals(
-                                deathOfNewborn,
-                                true
-                            )
+                    (map[RmnchNotifiableCondition] as? ArrayList<Map<String, String>>)
+                        ?.firstOrNull { it[DefinedParams.Value].equals(deathOfNewborn, true) }
+                        .let { filteredValue ->
+                            val isStillBirth = (map[birth] as? String).equals(DefinedParams.still_birth, true)
+                            if (filteredValue == null && isStillBirth) {
+                                map.remove(birth)
+                            }
+                            singleSelectValueOption(DefinedParams.still_birth, birth, filteredValue != null)
+                            binding.btnSubmit.text = getString(if (filteredValue != null) R.string.submit else R.string.next)
                         }
-                        if (filteredValues.isNullOrEmpty()) {
-                            formGenerator.getViewByTag(birth + formGenerator.rootSuffix)
-                                ?.visible()
-                            binding.btnSubmit.text = getString(R.string.next)
-                        } else {
-                            binding.btnSubmit.text = getString(R.string.submit)
-                            formGenerator.getViewByTag(birth + formGenerator.rootSuffix)?.gone()
-                            viewModel.formLayoutsLiveData.value?.data?.formLayout
-                                ?.firstOrNull { it.id.equals(birth, true) }
-                                ?.apply {
-                                    val removeValue = map[birth] as? String
-                                    optionsList?.firstOrNull {
-                                        (it[DefinedParams.id] as? String).equals(
-                                            removeValue,
-                                            true
-                                        )
-                                    }
-                                        ?.let {
-                                            map.remove(birth)
-                                            singleSelectValueOption(
-                                                it[DefinedParams.id] as? String ?: "", birth
-                                            )
-                                        }
-                                }
-                        }
+                }
+
+                birth -> {
+                    (map[birth] as? String)?.takeIf { it.equals(DefinedParams.still_birth, true) }?.let {
+                        showInCheckBox((map[RmnchNotifiableCondition] as? ArrayList<*>) ?: arrayListOf<Any>())
+                    } ?: run {
+                        (map[RmnchNotifiableCondition] as? ArrayList<*>)?.let { removeInCheckBox(it) }
                     }
                 }
             }
         }
     }
 
-    private fun singleSelectValueOption(value: String, key: String) {
+    private fun showInCheckBox(resultMap: ArrayList<*>) {
+        viewModel.symptomTypeListResponse.value
+            ?.firstOrNull { it.value.equals(deathOfNewborn,true) }
+            ?.let { symptom ->
+                val selectedItemMap = hashMapOf<String, Any>(
+                    DefinedParams.ID to symptom._id,
+                    DefinedParams.NAME to symptom.symptom
+                ).apply {
+                    symptom.displayValue?.let { put(DefinedParams.cultureValue, it) }
+                    symptom.value?.let { put(DefinedParams.Value, it) }
+                }
+
+                val mapList = (resultMap as? ArrayList<HashMap<String, Any>>)?.apply {
+                    if (none { (it[DefinedParams.Value] as? String).equals(deathOfNewborn,true) }) add(selectedItemMap)
+                } ?: arrayListOf(selectedItemMap)
+
+                viewModel.formLayoutsLiveData.value?.data?.formLayout
+                    ?.firstOrNull { it.id == RmnchNotifiableCondition }
+                    ?.let { formGenerator.validateCheckboxDialogue(RmnchNotifiableCondition, it, mapList,false) }
+            }
+    }
+
+
+    private fun removeInCheckBox(resultMap: ArrayList<*>) {
+        (resultMap as? ArrayList<HashMap<String, Any>>)?.let { mapList ->
+            // Remove items where the value matches 'deathOfNewborn'
+            mapList.removeAll {
+                (it[DefinedParams.Value] as? String)?.equals(deathOfNewborn, true) == true
+            }
+            viewModel.formLayoutsLiveData.value?.data?.formLayout
+                ?.firstOrNull { it.id == RmnchNotifiableCondition }
+                ?.let { formLayout ->
+                    formGenerator.validateCheckboxDialogue(
+                        RmnchNotifiableCondition,
+                        formLayout,
+                        mapList
+                    )
+                }
+        }
+    }
+    private fun singleSelectValueOption(value: String, key: String, isSelected: Boolean) {
         formGenerator.getViewByTag("${value}_${key}")
             ?.let { view ->
                 if (view is TextView) {
-                    view.isSelected = false
+                    view.isSelected = isSelected
+                    if (isSelected) {
+                        view.performClick()
+                    }
                 }
             }
     }
 
     private fun attachObservers() {
         viewModel.symptomTypeListResponse.observe(viewLifecycleOwner) { list ->
-            list.firstOrNull { it.value == DeathOfMother }?.let { symptom ->
-                val selectedItemMap = hashMapOf<String, Any>(
-                    com.medtroniclabs.spice.formgeneration.config.DefinedParams.ID to symptom._id,
-                    com.medtroniclabs.spice.formgeneration.config.DefinedParams.NAME to symptom.symptom
-                ).apply {
-                    symptom.displayValue?.let { put(com.medtroniclabs.spice.formgeneration.config.DefinedParams.cultureValue, it) }
-                    symptom.value?.let { put(com.medtroniclabs.spice.formgeneration.config.DefinedParams.value, it) }
+            if (requireArguments().getBoolean(DeathOfMother, false)) {
+                list.firstOrNull { it.value == DeathOfMother }?.let { symptom ->
+                    val selectedItemMap = hashMapOf<String, Any>(
+                        com.medtroniclabs.spice.formgeneration.config.DefinedParams.ID to symptom._id,
+                        com.medtroniclabs.spice.formgeneration.config.DefinedParams.NAME to symptom.symptom
+                    ).apply {
+                        symptom.displayValue?.let { put(com.medtroniclabs.spice.formgeneration.config.DefinedParams.cultureValue, it) }
+                        symptom.value?.let { put(com.medtroniclabs.spice.formgeneration.config.DefinedParams.value, it) }
+                    }
+                    viewModel.formLayoutsLiveData.value?.data?.formLayout
+                        ?.firstOrNull { it.id == RmnchNotifiableCondition }
+                        ?.let { formGenerator.validateCheckboxDialogue(RmnchNotifiableCondition, it, arrayListOf(selectedItemMap)) }
                 }
-
-                viewModel.formLayoutsLiveData?.value?.data?.formLayout
-                    ?.firstOrNull { it.id == RmnchNotifiableCondition }
-                    ?.let { formGenerator.validateCheckboxDialogue(RmnchNotifiableCondition, it, arrayListOf(selectedItemMap)) }
             }
         }
         viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resourceState ->
@@ -308,7 +334,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                         val birth = ((resultValue[CBS.lowercase()] as? Map<String, Any>)
                             ?.get(surveillanceDetails) as? Map<String, Any>)
                             ?.get(birth) as? String
-                        if (!birth.isNullOrBlank()) {
+                        if (!birth.isNullOrBlank() && !birth.equals(DefinedParams.still_birth,true)) {
                             viewModel.saveAssessmentCbs(data, resultValue, birth)
                             return
                         }
@@ -332,7 +358,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                     val birth = ((resultValue[CBS.lowercase()] as? Map<String, Any>)
                         ?.get(surveillanceDetails) as? Map<String, Any>)
                         ?.get(birth) as? String
-                    if (!birth.isNullOrBlank()) {
+                    if (!birth.isNullOrBlank() && !birth.equals(DefinedParams.still_birth,true)) {
                         viewModel.setBirth(resultValue, referralResult, birth, isDelete)
                         return
                     }
@@ -348,7 +374,10 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
     }
 
     override fun onRenderingComplete() {
-        if (requireArguments().getBoolean(DeathOfMother, false)) {
+        val memberData = viewModel.memberDetailsLiveData.value?.data
+        if (requireArguments().getBoolean(DeathOfMother, false) ||
+            (memberData?.gender.equals(DefinedParams.female, true) && memberData?.isPregnant == true)
+        ) {
             viewModel.getSymptomListByType(RmnchNotifiableCondition)
         }
     }

@@ -53,6 +53,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
 
     val householdHeadDobLiveData = MutableLiveData<String?>()
 
+    var childId = -1L
 
     fun getHouseholdHeadDob(householdId: Long?) {
         if (householdId != null && householdId != -1L) {
@@ -109,6 +110,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                     location = location
                 )
                 if (childMemberId != null) {
+                    childId = childMemberId
                     savePNCDetails(
                         motherDetailMap,
                         childDetailMap,

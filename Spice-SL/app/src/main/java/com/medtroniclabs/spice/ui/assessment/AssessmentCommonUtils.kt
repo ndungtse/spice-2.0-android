@@ -76,10 +76,11 @@ object AssessmentCommonUtils {
         return null
     }
 
-    fun addViewSummaryLayout(title: String?, value: String?, valueTextColor: Int? = null, context:Context, isCallShown:Boolean = false, callBtnTag : String? = null,   callback: ((String?,String?) -> Unit)? = null, forCbs:Boolean = false): ConstraintLayout {
+    fun addViewSummaryLayout(title: String?, value: String?, valueTextColor: Int? = null, context:Context, isCallShown:Boolean = false, callBtnTag : String? = null,   callback: ((String?,String?) -> Unit)? = null, forCbs:Boolean = false, countryCode:String? = null): ConstraintLayout {
         val summaryBinding = AssessmentSummaryLayoutBinding.inflate(LayoutInflater.from(context))
         summaryBinding.tvKey.text = title ?: context.getString(R.string.separator_hyphen)
-        summaryBinding.tvValue.text = getSummaryValue(context, value)
+        val formattedTitle = countryCode?.let { it + value } ?: value
+        summaryBinding.tvValue.text = getSummaryValue(context, formattedTitle)
         valueTextColor?.let {
             summaryBinding.tvValue.setTextColor(it)
             summaryBinding.tvValue.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
@@ -87,11 +88,11 @@ object AssessmentCommonUtils {
         summaryBinding.callButton.setVisible(isCallShown)
         if (forCbs) {
             val params = summaryBinding.tvKey.layoutParams as ConstraintLayout.LayoutParams
-            params.horizontalWeight = 0.3f
+            params.horizontalWeight = 0.4f
             summaryBinding.tvKey.layoutParams = params
             val paramsSep =
                 summaryBinding.tvRowSeparator.layoutParams as ConstraintLayout.LayoutParams
-            paramsSep.horizontalWeight = 0.2f
+            paramsSep.horizontalWeight = 0.125f
             summaryBinding.tvRowSeparator.layoutParams = paramsSep
         }
         callBtnTag?.let {

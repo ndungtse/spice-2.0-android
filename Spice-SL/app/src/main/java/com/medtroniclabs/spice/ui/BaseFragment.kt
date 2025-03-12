@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -121,12 +122,19 @@ open class BaseFragment : Fragment(){
         }
     }
 
-    fun showCallDialError() {
+    fun showCallDialError(isActivityFinish: Boolean = true) {
         (activity as BaseActivity).showErrorDialogue(
             message = getString(R.string.device_phone_info)
         ) {
-            requireActivity().finish()
+            if (isActivityFinish) {
+                requireActivity().finish()
+            }
         }
+    }
+
+    fun hasTelephonyFeature(context: Context): Boolean {
+        val packageManager = context.packageManager
+        return packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)
     }
 
     fun launchAssessment(item: PatientFollowUpEntity, context: Context) {
