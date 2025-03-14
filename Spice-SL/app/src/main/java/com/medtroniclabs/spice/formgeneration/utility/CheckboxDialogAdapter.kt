@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
@@ -15,28 +16,59 @@ class CheckboxDialogAdapter(
     private val dialogList: List<SignsAndSymptomsEntity>,
     val translate: Boolean = false
 ) :
-    RecyclerView.Adapter<CheckboxDialogAdapter.DialogViewHolder>() {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    companion object {
+        private const val VIEW_TYPE_HEADER = 0
+        private const val VIEW_TYPE_ITEM = 1
+    }
+
+    inner class DialogHeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val checkBoxHeader: TextView = itemView.findViewById(R.id.checkboxItemHeader)
+    }
+
     inner class DialogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val checkBox: CheckBox = itemView.findViewById(R.id.checkboxItem)
         val Root: LinearLayout = itemView.findViewById(R.id.root)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DialogViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.checkbox_dialog_items, parent, false)
-        return DialogViewHolder(view)
+    override fun getItemViewType(position: Int): Int {
+        return if (dialogList[position].isTitle) {
+            VIEW_TYPE_HEADER
+        } else {
+            VIEW_TYPE_ITEM
+        }
     }
 
-    override fun onBindViewHolder(holder: DialogViewHolder, position: Int) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return if (viewType == VIEW_TYPE_HEADER) {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.checkbox_dialog_header, parent, false)
+            DialogHeaderViewHolder(view)
+        } else {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.checkbox_dialog_items, parent, false)
+            DialogViewHolder(view)
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = dialogList[position]
-        holder.checkBox.text = if (translate) item.displayValue ?: item.symptom else item.symptom
-        holder.checkBox.isChecked = item.isSelected
-        holder.checkBox.isEnabled = item.isEnabled
-        holder.Root.safeClickListener {
+        if (holder is DialogHeaderViewHolder) {
+            holder.checkBoxHeader.text =
+                if (translate) item.displayValue ?: item.symptom else item.symptom
+        } else if (holder is DialogViewHolder) {
+            holder.checkBox.text =
+                if (translate) item.displayValue ?: item.symptom else item.symptom
+            holder.checkBox.isChecked = item.isSelected
+            holder.checkBox.isEnabled = item.isEnabled
+            holder.Root.safeClickListener {
             if (item.isEnabled) {
                 checkDataAndUpdate(item, dialogList)
             }
         }
+    }
+
     }
 
     private fun checkDataAndUpdate(

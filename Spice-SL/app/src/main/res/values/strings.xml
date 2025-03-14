@@ -1379,6 +1379,7 @@
     <string name="missed_vaccination" translatable="false">MISSED\n(By %d Days)</string>
     <string name="days_delay" translatable="false">%d Days Delay</string>
     <string name="on_time" translatable="false">On Time</string>
+    <string name="family_planning" translatable="false">Family Planning</string>
     <string name="epi_catch_up_policy" translatable="false">EPI Catch-Up Policy</string>
     <string name="vaccine" translatable="false">Vaccine</string>
     <string name="minimum_age" translatable="false">Minimum Age</string>

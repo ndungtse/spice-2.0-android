@@ -33,6 +33,7 @@ import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
+import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
@@ -50,6 +51,7 @@ import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanningMethods
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -213,7 +215,19 @@ class MetaRepository @Inject constructor(
                                 metadataResponse.body()?.entity?.let { res ->
                                     res.symptoms.let {
                                         roomHelper.deleteAllSymptoms()
-                                        roomHelper.insertSymptoms(it)
+                                        val maxId = it.maxBy { it._id }._id
+                                        it.filter { it.type != FamilyPlanningMethods }?.let {
+                                            roomHelper.insertSymptoms(it)
+                                        }
+                                        it.filter { it.type.equals(FamilyPlanningMethods, true) }.sortedBy { it.displayOrder }
+                                            ?.let { list ->
+                                                roomHelper.insertSymptoms(
+                                                    convertFamilyPlanningMethodToSymptoms(
+                                                        list,
+                                                        maxId
+                                                    )
+                                                )
+                                            }
                                     }
                                     res.medicalCompliances?.let {
                                         roomHelper.deleteMedicalCompliance()
@@ -902,6 +916,44 @@ class MetaRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
+    }
+
+    private fun convertFamilyPlanningMethodToSymptoms(inputList: List<SignsAndSymptomsEntity>, maxId: Long): List<SignsAndSymptomsEntity> {
+        val resultList = mutableListOf<SignsAndSymptomsEntity>()
+        val categoryMap = mutableMapOf<String, Int>()
+        var idCounter = 1
+        var categoryId = maxId+1
+        for (item in inputList) {
+            if (!categoryMap.containsKey(item.category)) {
+                item.category?.let { categoryName ->
+                    resultList.add(
+                        SignsAndSymptomsEntity(
+                            _id = categoryId++,
+                            symptom = categoryName,
+                            type = item.type,
+                            displayValue = categoryName,
+                            displayOrder = idCounter++,
+                            value = categoryName,
+                            isTitle = true
+                        )
+                    )
+                    categoryMap[categoryName] = idCounter
+                }
+            }
+
+            resultList.add(
+                SignsAndSymptomsEntity(
+                    _id = item._id,
+                    symptom = item.symptom,
+                    type = item.type,
+                    displayValue = item.displayValue,
+                    displayOrder = idCounter++,
+                    value = item.value,
+                    isTitle = false
+                )
+            )
+        }
+        return resultList
     }
 }
 

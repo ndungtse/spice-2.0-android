@@ -187,4 +187,8 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
     companion object {
         const val TAG = "AssessmentSLNCDFragment"
     }
+
+    fun getCurrentAnsweredStatus(): Boolean {
+        return formGenerator.getResultMap().isNotEmpty()
+    }
 }

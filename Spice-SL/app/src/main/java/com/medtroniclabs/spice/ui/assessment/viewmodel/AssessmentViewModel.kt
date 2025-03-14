@@ -67,6 +67,8 @@ import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanning
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanningDetails
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanningMethods
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsClinicTaken
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ncd
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
@@ -525,6 +527,26 @@ class AssessmentViewModel @Inject constructor(
             }
             map.remove(OTHER_SYMPTOMS)
             map[otherSymptoms] = otherSymptom
+        }
+
+        // Request modification for syncing Other Symptoms to Backend
+        if (map.containsKey(familyPlanning.lowercase())) {
+            val otherSymptom = map[familyPlanning.lowercase()] as HashMap<Any, Any>
+            if (otherSymptom.containsKey(FamilyPlanningDetails)) {
+                val signsAndSymptom = otherSymptom[FamilyPlanningDetails] as HashMap<Any, Any>
+                if (signsAndSymptom.containsKey(FamilyPlanningMethods)) {
+                    val signsList = mutableListOf<String>()
+                    val list = signsAndSymptom[FamilyPlanningMethods] as List<*>
+                    list.forEach { it ->
+                        if (it is HashMap<*, *>) {
+                            signsList.add(it[DefinedParams.Value] as String)
+                        }
+                    }
+
+                    signsAndSymptom.remove(FamilyPlanningMethods)
+                    signsAndSymptom[FamilyPlanningMethods] = signsList
+                }
+            }
         }
 
         // Request modification for syncing NCD Symptoms to Backend

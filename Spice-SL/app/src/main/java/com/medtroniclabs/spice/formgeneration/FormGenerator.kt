@@ -3301,7 +3301,7 @@ class FormGenerator(
         mapList.forEach { map ->
             if (map is HashMap<*, *>) {
                 val name = map[DefinedParams.NAME]
-                if (name is String && name.equals(DefinedParams.Other, true)) {
+                if (name is String && (name.equals(DefinedParams.Other, true) || name.contains(DefinedParams.Other, true))) {
                     status = true
                     return@forEach
                 }

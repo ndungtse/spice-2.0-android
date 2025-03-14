@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.familyPlanning
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentFamilyPlanningSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -21,6 +22,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import org.json.JSONObject
 
 
 class AssessmentFamilyPlanningSummaryFragment : BaseFragment(), View.OnClickListener {
@@ -70,7 +72,7 @@ class AssessmentFamilyPlanningSummaryFragment : BaseFragment(), View.OnClickList
                 value = AssessmentCommonUtils.getValueOfKeyFromMap(
                     StringConverter.stringToMap(data),
                     formLayout.id,
-                    menuType = DefinedParams.familyPlanning
+                    menuType = familyPlanning.lowercase()
                 )
             )
         }?.toMutableList()
@@ -145,20 +147,40 @@ class AssessmentFamilyPlanningSummaryFragment : BaseFragment(), View.OnClickList
     }
 
     private fun composeSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        /*getStatus(viewModel.referralStatus)?.let {
+        getStatus(viewModel.referralStatus)?.let {
             bindSummaryView(
                 getString(R.string.patient_status),
                 it
             )
-        }*/
+        }
 
         listSummaryData.forEach { item ->
             item.value?.let {
                 when (item.id) {
-                    AssessmentDefinedParams.WhichMethod -> bindSummaryView(item.title, it)
+                    AssessmentDefinedParams.FamilyPlanningMethods -> renderDangerSigns(item.title, listSummaryData)
                     AssessmentDefinedParams.SpecifySideEffects -> bindSummaryView(item.title, it)
                 }
             }
+        }
+    }
+
+    private fun renderDangerSigns(title: String?, summaryData: MutableList<AssessmentSummaryModel>) {
+        val otherConcernSymptoms = viewModel.assessmentStringLiveData.value?.let {
+            val jsonObject = JSONObject(it)
+            val feverObject = jsonObject.optJSONObject(familyPlanning.lowercase())?.optJSONObject(
+                AssessmentDefinedParams.FamilyPlanningDetails
+            )
+            feverObject?.optString(AssessmentDefinedParams.OtherFamilyPlanningMethod)
+        }
+
+        summaryData.find { it.id == AssessmentDefinedParams.FamilyPlanningMethods }?.let { item ->
+            val result = if (!otherConcernSymptoms.isNullOrBlank()) {
+                requireContext().getString(R.string.other_value, item.value, otherConcernSymptoms)
+            } else item.value
+            bindSummaryView(
+                title,
+                result ?: getString(R.string.seperator_hyphen)
+            )
         }
     }
 
@@ -194,6 +216,10 @@ class AssessmentFamilyPlanningSummaryFragment : BaseFragment(), View.OnClickList
         fun newInstance(): AssessmentFamilyPlanningSummaryFragment {
             return AssessmentFamilyPlanningSummaryFragment()
         }
+    }
+
+    fun getCurrentAnsweredStatus():Boolean {
+        return viewModel.otherAssessmentDetails.isNotEmpty()
     }
 
 }

@@ -308,5 +308,7 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-
+    fun getCurrentAnsweredStatus():Boolean {
+        return viewModel.otherAssessmentDetails.isNotEmpty()
+    }
 }

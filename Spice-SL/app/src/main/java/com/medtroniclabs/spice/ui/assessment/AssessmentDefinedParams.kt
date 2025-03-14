@@ -163,12 +163,12 @@ object AssessmentDefinedParams {
     const val SleepLocation = "sleepLocation"
     const val PreviouslyTreatedForTB = "previouslyTreatedForTB"
 
-    const val MemberUsingAnyFamilyPlanning = "memberUsingAnyFamilyPlanning"
-    const val IsAnySideEffects = "isAnySideEffects"
-    const val NeedOfOtherFamilyPlanning = "needOfOtherFamilyPlanning"
-    const val WhichMethod = "whichMethod"
-    const val SpecifySideEffects = "specifySideEffects"
-    const val Contraceptive = "contraceptive"
+    const val MemberUsingAnyFamilyPlanning = "isUsingFamilyPlanningMethod"
+    const val IsAnySideEffects = "hasSideEffects"
+    const val NeedOfOtherFamilyPlanning = "needsOtherFamilyPlanningMethod"
+    const val WhichMethod = "familyPlanningMethod"
+    const val SpecifySideEffects = "sideEffectsDescription"
+    const val Contraceptive = "contraceptiveStatus"
     const val Family_Planning = "family_planning"
     const val FamilyPlanning = "familyPlanning"
 
@@ -177,5 +177,8 @@ object AssessmentDefinedParams {
     const val AlcoholConsumption = "isAlcoholic"
     const val WaistCircumference = "waistCircumference"
     const val NCDDetails = "ncdDetails"
+    const val FamilyPlanningMethods = "familyPlanningMethods"
+    const val FamilyPlanningDetails = "familyPlanningDetails"
+    const val OtherFamilyPlanningMethod= "otherFamilyPlanningMethod"
 
 }

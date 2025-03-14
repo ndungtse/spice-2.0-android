@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
+import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.formgeneration.utility.InformationLayoutFragment
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -94,6 +95,9 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
         serverViewModel: FormLayout,
         resultMap: Any?
     ) {
+        CheckBoxDialog.newInstance(id, resultMap) { resultMap ->
+            formGenerator.validateCheckboxDialogue(id, serverViewModel, resultMap)
+        }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
     override fun onInstructionClicked(
@@ -189,5 +193,9 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
             Contraceptive -> return getString(R.string.job_aid_contraceptive)
             else -> ""
         }
+    }
+
+    fun getCurrentAnsweredStatus(): Boolean {
+        return formGenerator.getResultMap().isNotEmpty()
     }
 }

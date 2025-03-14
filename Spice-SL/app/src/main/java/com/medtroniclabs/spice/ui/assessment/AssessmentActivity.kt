@@ -129,12 +129,20 @@ class AssessmentActivity : BaseActivity() {
             return Pair(fragment.getCurrentAnsweredStatus(), true)
         } else if(fragment is AssessmentNCDSummaryFragment) {
             return Pair(false, false)
+        } else if(fragment is AssessmentSLNCDFragment){
+            return Pair(fragment.getCurrentAnsweredStatus(), false)
+        } else if(fragment is AssessmentSLNCDSummaryFragment){
+            return Pair(fragment.getCurrentAnsweredStatus(), true)
+        } else if(fragment is AssessmentFamilyPlanningFragment){
+            return Pair(fragment.getCurrentAnsweredStatus(), false)
+        } else if(fragment is AssessmentFamilyPlanningSummaryFragment){
+            return Pair(fragment.getCurrentAnsweredStatus(), true)
         }
         return Pair(false, false)
     }
 
     private fun navigationHandling(isHome: Boolean, isFromSummary: Boolean) {
-        if (isFromSummary && !com.medtroniclabs.spice.common.CommonUtils.isNonCommunity() )
+        if (isFromSummary && !CommonUtils.isNonCommunity() )
             startBackgroundOfflineSync()
 
         if (isHome) {
@@ -356,7 +364,7 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.FP_MENU_ID -> {
-                setTitle(MenuConstants.FP_MENU_ID.uppercase())
+                setTitle(getString(R.string.family_planning).uppercase())
                 replaceFragmentInId<AssessmentFamilyPlanningFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentFamilyPlanningFragment.TAG
