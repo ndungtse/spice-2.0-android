@@ -33,7 +33,9 @@ class CheckboxDialogAdapter(
         holder.checkBox.isChecked = item.isSelected
         holder.checkBox.isEnabled = item.isEnabled
         holder.Root.safeClickListener {
-            checkDataAndUpdate(item, dialogList)
+            if (item.isEnabled) {
+                checkDataAndUpdate(item, dialogList)
+            }
         }
     }
 

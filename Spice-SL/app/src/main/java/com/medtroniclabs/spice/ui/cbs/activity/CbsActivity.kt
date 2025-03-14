@@ -40,14 +40,26 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
             title = getString(R.string.cbs_register),
             homeAndBackVisibility = Pair(true, true),
             callback = {
-                navigateHome()
+                handleBack()
             },
             callbackHome = {
-                navigateHome(true)
+                if (intent.getBooleanExtra(DeathOfMother, false)) {
+                    navigateAncCbs()
+                } else {
+                    navigateHome(true)
+                }
             },
         )
         initView()
         attachObservers()
+    }
+
+    fun handleBack() {
+        if (intent.getBooleanExtra(DeathOfMother, false)) {
+            navigateAncCbs()
+        } else {
+            navigateHome()
+        }
     }
 
     override fun onDialogDismissListener(isFinish: Boolean) {
@@ -69,7 +81,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
         } else if (fragment is CbsSummaryFragment) {
             Pair(true, true)
         } else if (fragment is CbsMemberRegistration){
-            Pair(fragment.getCurrentAnsweredStatus(), true)
+            Pair(fragment.getCurrentAnsweredStatus(), false)
         } else {
             Pair(false, false)
         }
@@ -89,6 +101,18 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
             }
         } else {
             navigationHandling(isHome, backButtonStatus.second)
+        }
+    }
+
+    private fun navigateAncCbs() {
+        showErrorDialogue(
+            getString(R.string.alert),
+            getString(R.string.exit_reason),
+            isNegativeButtonNeed = true
+        ) { isPositive ->
+            if (isPositive) {
+                navigationHandling(isHome = true, true)
+            }
         }
     }
 
@@ -229,6 +253,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
     private val onBackPressedCallback: OnBackPressedCallback =
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                handleBack()
             }
         }
 

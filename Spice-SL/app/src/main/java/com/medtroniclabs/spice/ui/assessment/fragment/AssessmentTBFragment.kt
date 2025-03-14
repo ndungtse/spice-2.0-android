@@ -23,7 +23,6 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SleepLocation
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
-import timber.log.Timber
 
 class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 

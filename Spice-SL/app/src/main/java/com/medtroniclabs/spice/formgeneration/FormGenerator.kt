@@ -31,7 +31,6 @@ import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
@@ -147,10 +146,8 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 
 class FormGenerator(
     var context: Context,
@@ -164,7 +161,7 @@ class FormGenerator(
 
     private var serverData: List<FormLayout>? = null
     val rootSuffix = "rootView"
-    private val titleSuffix = "titleTextView"
+    val titleSuffix = "titleTextView"
     private val errorSuffix = "errorMessageView"
     private val resultHashMap = HashMap<String, Any>()
     private val tvKey = "summaryKey"
@@ -1357,6 +1354,10 @@ class FormGenerator(
 
     fun getServerData(): List<FormLayout>? {
         return serverData
+    }
+
+    fun setServerData(serverData: List<FormLayout>) {
+        this.serverData = serverData
     }
 
     private fun saveSelectedOptionValue(

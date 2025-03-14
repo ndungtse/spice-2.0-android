@@ -123,6 +123,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                 }
             } else {
                 childBioDataDetail?.let { childDetail ->
+                    childId = childDetail.id
                     savePNCDetails(
                         motherDetailMap,
                         childDetailMap,

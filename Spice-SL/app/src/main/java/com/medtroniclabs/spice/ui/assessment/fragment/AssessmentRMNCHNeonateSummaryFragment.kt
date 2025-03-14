@@ -218,8 +218,8 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         parentLayout: LinearLayout,
         value: Resource<FormResponse>?
     ) {
-
         value?.data?.formLayout?.filter { it.family == pnc && it.isSummary == true }
+            ?.filter { pnc != PNCNeonatal || (map[PNCNeonatal] as? Map<String, Any>)?.containsKey(it.id) == true }
             ?.filterNot { it.id in showQuestionBasedAge() }
             ?.forEach { formlayout ->
                 formlayout.apply {

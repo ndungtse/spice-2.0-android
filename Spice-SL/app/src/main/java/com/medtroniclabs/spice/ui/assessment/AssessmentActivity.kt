@@ -35,11 +35,16 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentSLNCDFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentSLNCDSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
 import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
+import org.json.JSONObject
 
 @AndroidEntryPoint
 class AssessmentActivity : BaseActivity() {
@@ -370,9 +375,16 @@ class AssessmentActivity : BaseActivity() {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    resource.data?.let { _ ->
+                    resource.data?.let { assessment  ->
+                        val detailsJson = JSONObject(assessment.assessmentDetails)
+                        val ancObject = detailsJson.optJSONObject(ANC_MENU)
+                        val isDeathOfMother = ancObject?.optBoolean(DeathOfMother, false) == true
                         // insertOtherAssessmentDetails()
-                        loadSummaryFragment()
+                        if (CommonUtils.isCommunity() && isDeathOfMother) {
+                            viewModel.workflowName?.let { startCbsActivity(it) }
+                        } else {
+                            loadSummaryFragment()
+                        }
                     }
                 }
 
@@ -417,6 +429,19 @@ class AssessmentActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun startCbsActivity(workFlowName: String) {
+        val intent = Intent(this, CbsActivity::class.java)
+        intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberId)
+        intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
+        intent.putExtra(MenuConstants.WorkFlowName, workFlowName)
+        viewModel.assessmentSaveLiveData.value?.data?.id?.let {
+            intent.putExtra(DefinedParams.AssessmentId, it)
+        }
+        intent.putExtra(RMNCH.DeathOfMother, true)
+        intent.putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
+        startActivity(intent)
     }
 
     private fun finishSuccessFlow() {

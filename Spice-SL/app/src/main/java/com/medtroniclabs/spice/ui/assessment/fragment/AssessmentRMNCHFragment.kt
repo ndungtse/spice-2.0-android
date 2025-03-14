@@ -26,6 +26,7 @@ import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.VISIBLE
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -213,7 +214,45 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         childFragmentManager.executePendingTransactions() // Ensures transaction is complete
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
-            translate = SecuredPreference.getIsTranslationEnabled()
+            translate = SecuredPreference.getIsTranslationEnabled(),
+            callback = { map, id ->
+                when (id) {
+                    deathOfBaby -> {
+                        val isDeathOfBaby = (map[deathOfBaby] as? Boolean) ?: false
+                        if (!isDeathOfBaby && map.containsKey(deathOfBaby)) {
+                            viewModel.selectedMemberDob?.let { dateOfBirth ->
+                                formGenerator.getServerData()?.let { serverDataList ->
+                                    val visible = isMandateOrNot(dateOfBirth)
+
+                                    serverDataList.forEach { serverData ->
+                                        if (serverData.id == MUAC) {
+                                            serverData.apply {
+                                                visibility = visible
+                                                isMandatory = (visible == VISIBLE)
+                                                isSummary = (visible == VISIBLE)
+                                                if ((visible == VISIBLE)) {
+                                                    formGenerator.getViewByTag(MUAC + rootSuffix)?.visible()
+                                                    (formGenerator.getViewByTag(MUAC + formGenerator.titleSuffix) as? TextView)?.let { textView ->
+                                                        val text = textView.text.toString()
+                                                        if (!text.endsWith("*")) {
+                                                            textView.markMandatory()
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    formGenerator.setServerData(serverDataList)
+                                }
+                            }
+                        } else {
+                            formGenerator.getViewByTag(MUAC + rootSuffix)?.gone()
+                            formGenerator.getViewByTag(muacStatus + rootSuffix)?.gone()
+                        }
+                    }
+                }
+            }
         )
         showRespectiveWorkflow()
     }
@@ -604,20 +643,6 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     override fun handleMandatoryCondition(serverData: FormLayout?) {
-        if (serverData?.id == MUAC) {
-            viewModel.selectedMemberDob?.let { dateOfBirth ->
-                val visibility = isMandateOrNot(dateOfBirth)
-                serverData.visibility = visibility
-                serverData.isMandatory = (visibility == VISIBLE)
-                serverData.isSummary = (visibility == VISIBLE)
-            }
-        }
-
-        if (serverData?.id == muacStatus) {
-            viewModel.selectedMemberDob?.let { dateOfBirth ->
-                serverData.visibility = isMandateOrNot(dateOfBirth)
-            }
-        }
     }
 
     override fun onAgeUpdateListener(

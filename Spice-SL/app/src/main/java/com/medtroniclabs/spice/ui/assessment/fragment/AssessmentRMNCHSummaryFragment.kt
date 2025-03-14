@@ -40,6 +40,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DEATH_OF_MO
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.childHoodVisitMaxMonth
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
@@ -126,6 +127,11 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             conditionBasedRendering(map)
             addDefaultSummaryView(map)
             viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }
+                ?.filter {
+                    map.entries.any { map -> map.key != ChildHoodVisit } || (map[ChildHoodVisit] as? Map<String, Any>)?.containsKey(
+                        it.id
+                    ) == true
+                }
                 ?.filterNot { it.id in showQuestionBasedAge(map,it) } // Remove the item with id "childhoodVisitSigns"
                 ?.forEach { data ->
                     with(data) {
