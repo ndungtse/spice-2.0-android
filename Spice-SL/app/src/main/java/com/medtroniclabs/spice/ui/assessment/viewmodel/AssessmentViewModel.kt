@@ -621,14 +621,18 @@ class AssessmentViewModel @Inject constructor(
         // Request modification for syncing TB to Backend
         if (map.containsKey(TB.lowercase())) {
             val result = map[TB.lowercase()] as? HashMap<Any, Any>
-            val contactTracing =result?.get(CONTACT_TRACING) as? HashMap<Any,Any>
-            if ( result != null && result.containsKey(TbScreening) && contactTracing?.size == 0) {
+            val contactTracing = result?.get(CONTACT_TRACING) as? HashMap<Any,Any>
+            if (contactTracing?.size == 0) {
+                result.remove(CONTACT_TRACING)
+            }
+
+           /* if ( result != null && result.containsKey(TbScreening) && contactTracing?.size == 0) {
                 val value = result[TbScreening] as? HashMap<Any, Any>
                 if (!value.isNullOrEmpty()) {
                     map.remove(TB.lowercase())
                     map[TB.lowercase()] = value
                 }
-            }
+            }*/
         }
 
         // Request modification for CBS Register
@@ -1174,6 +1178,8 @@ class AssessmentViewModel @Inject constructor(
                 motherID,
                 location = location
             )
+            //Update Mother member details to NotSynced for PNC Flow
+            memberRegistrationRepository.changeMemberDetailsToNotSynced(motherID)
             id?.let {
                 memberCbsDetailsLiveData.postValue(memberRegistrationRepository.getAssessmentMemberDetails(id))
             }

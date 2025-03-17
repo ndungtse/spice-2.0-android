@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.getLocalDate
 import com.medtroniclabs.spice.common.EpiGroupName
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.EncounterDetails
+import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.medicalreview.EpiCatchUpPolicyItem
@@ -108,11 +110,13 @@ class ImmunisationViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             val request = RequestCreateImmunisation(
                 immunisationList = changesList,
-                encounter = EncounterDetails(
+                encounter = MedicalReviewEncounter(
                     patientReference = id,
                     patientId = patientId,
                     memberId = memberId,
-                    provenance = ProvanceDto()
+                    provenance = ProvanceDto(),
+                    latitude = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name),
+                    longitude = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name)
                 ),
                 missedReason = missedReason
             )

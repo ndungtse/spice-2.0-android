@@ -105,6 +105,10 @@ class HouseholdMemberListAdapter(
 
         }
 
+        // Need to remove this lines when contact tracing live
+        holder.binding.groupViewContactTrace.gone()
+        holder.binding.tvContactTracingStatus.gone()
+
         if (item.isActive) {
             holder.binding.tvMemberName.text = getMemberInfoText(context, item)
             holder.binding.clPatientRoot.setBackgroundResource(R.drawable.default_color_bg)
