@@ -270,7 +270,7 @@ object DefinedParams {
     const val COMMUNITY_REGISTERED_DATE = "communityRegisteredDate"
     const val VILLAGE_ID = "villageId"
     const val MARKET_DAYS = "marketDays"
-    const val NEAREST_PHU = "nearestPhu"
+    const val NEAREST_PHU = "nearestPHU"
     const val COMMUNITY_REGISTERED ="community_registered"
     const val CBS = "CBS"
     const val isDefault = "isDefault"
