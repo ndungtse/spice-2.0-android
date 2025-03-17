@@ -301,6 +301,7 @@ object DefinedParams {
     const val ANC_CBS = "anc_cbs"
     const val BOY = "Boy"
     const val GIRL = "Girl"
+    const val isFamilyPlanSummary = "isFamilyPlanSummary"
     const val familyPlanning = "family_planning"
     const val notifiableConditions = "notifiableConditions"
     const val otherNotifiableConditions = "otherNotifiableConditions"

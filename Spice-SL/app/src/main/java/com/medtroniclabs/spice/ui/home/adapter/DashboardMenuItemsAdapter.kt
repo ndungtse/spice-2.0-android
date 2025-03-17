@@ -218,6 +218,11 @@ class DashboardMenuItemsAdapter(
                 R.drawable.ic_family_planning
             )
 
+            MenuConstants.FP_MENU_MR -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_family_planning
+            )
+
             else -> null
         }
     }

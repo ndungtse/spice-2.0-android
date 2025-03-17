@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.mappingkey.CommunityDetails.NearestPhu
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.SelectedNetwork
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.True
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.WaterAndSanitationFacilities
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.market
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.communityprofile.adapter.CommunitySummaryAdapter
 import com.medtroniclabs.spice.ui.communityprofile.viewmodel.CommunityProfileViewModel
@@ -178,12 +179,15 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
                 when(form.id){
                     MarketDays -> {
                         val marketDays = infrastructure[form.id] as? ArrayList<String>
-                        communityList.add(
-                            CommunitySummaryListItem.OtherItem(
-                                getString(R.string.market_days),
-                                marketDays?.joinToString(",") { it.take(3) ?: "" }
+                        val size = marketDays?.size?:0
+                        if(size > 0) {
+                            communityList.add(
+                                CommunitySummaryListItem.OtherItem(
+                                    getString(R.string.market_days),
+                                    marketDays?.joinToString(",") { it.take(3) ?: "" }
+                                )
                             )
-                        )
+                        }
                     }
                     MobileNetworkCoverage -> {
                         val value = infrastructure[form.id]

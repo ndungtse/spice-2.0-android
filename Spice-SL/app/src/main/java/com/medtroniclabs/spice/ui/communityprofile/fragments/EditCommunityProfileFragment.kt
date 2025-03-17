@@ -43,6 +43,7 @@ import com.medtroniclabs.spice.mappingkey.CommunityDetails.NearestPhu
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.SelectedNetwork
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.True
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.WaterAndSanitationFacilities
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.market
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.communityprofile.adapter.CommunityPopulationAdapter
@@ -336,15 +337,20 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                 val requestMap = result.second
                 if (requestMap.containsKey(Infrastructure)) {
                     val infrastructure = requestMap[Infrastructure] as HashMap<Any, Any>
-                    if (infrastructure.containsKey(MarketDays)) {
+                    if (infrastructure.containsKey(market)) {
+                        val isMarket = infrastructure[market] as Boolean
                         val signsList = mutableListOf<String>()
-                        val list = infrastructure[MarketDays] as List<HashMap<*,*>>
-                        list.forEach {
-                            (it[DefinedParams.name] as? String)?.let { day ->
-                                signsList.add(
-                                    day
-                                )
+                        if(isMarket  && infrastructure.containsKey(MarketDays)){
+                            val list = infrastructure[MarketDays] as List<HashMap<*,*>>
+                            list.forEach {
+                                (it[DefinedParams.name] as? String)?.let { day ->
+                                    signsList.add(
+                                        day
+                                    )
+                                }
                             }
+                        }else{
+                            communityProfileViewModel.marketDays.clear()
                         }
                         infrastructure[MarketDays] = signsList
                     }

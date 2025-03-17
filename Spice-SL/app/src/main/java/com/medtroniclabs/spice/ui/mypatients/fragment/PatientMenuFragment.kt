@@ -40,6 +40,7 @@ import com.medtroniclabs.spice.ui.medicalreview.underfiveyears.UnderFiveYearsBas
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.ui.medicalreview.epi.ImmunizationActivity
+import com.medtroniclabs.spice.ui.medicalreview.familyplan.activity.FamilyPlanMedicalReviewActivity
 import com.medtroniclabs.spice.ui.medicalreview.tb.activity.TBMedicalReviewActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -224,6 +225,14 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                 startActivity(intent)
             }
 
+            MenuConstants.FP_MENU_MR -> {
+                val intent = Intent(requireContext(),FamilyPlanMedicalReviewActivity::class.java)
+                intent.putExtra(PatientId, arguments?.getString(PatientId))
+                intent.putExtra(DOB, arguments?.getString(DOB))
+                intent.putExtra(ID, arguments?.getString(ID))
+                intent.putExtra(MemberID, arguments?.getString(MemberID))
+                startActivity(intent)
+            }
             else -> {
                 startAssessmentActivity()
             }

@@ -27,7 +27,6 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@id/centreOneGuideline"
         app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -62,10 +61,10 @@
         android:id="@+id/smHighRisk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:layout_marginTop="@dimen/_8sdp"
-        android:layout_marginBottom="@dimen/_8sdp"
         android:layout_marginEnd="@dimen/_8sdp"
+        android:layout_marginBottom="@dimen/_8sdp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/tvSeparator"
         app:layout_constraintEnd_toStartOf="@id/tvHighRiskPregnancyCriteria"
         app:layout_constraintStart_toEndOf="@id/tvValue"
@@ -112,5 +111,38 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/dummyGuideLone"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/etOccupation"
+        style="@style/Form_Input_Style_BG"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/_8sdp"
+        android:layout_marginEnd="@dimen/_8sdp"
+        android:gravity="start|top"
+        android:hint="@string/enter"
+        android:padding="@dimen/_8sdp"
+        android:visibility="gone"
+        android:inputType="text"
+        android:imeOptions="actionDone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvLabel" />
+
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/spinnerMaritalStatus"
+        style="@style/Labour_Delivery_Spinner_Style"
+        android:layout_width="0dp"
+        android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:minHeight="@dimen/_40sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_14ssp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvLabel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

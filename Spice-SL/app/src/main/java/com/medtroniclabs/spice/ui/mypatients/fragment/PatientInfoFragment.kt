@@ -21,6 +21,8 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.IsReferredScreen
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.common.DefinedParams.TB
+import com.medtroniclabs.spice.common.DefinedParams.familyPlanning
+import com.medtroniclabs.spice.common.DefinedParams.isFamilyPlanSummary
 import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
@@ -68,7 +70,9 @@ class PatientInfoFragment : BaseFragment() {
             isAnc: Boolean = false,
             isPnc:Boolean =false,
             isReferredScreen: Boolean = false,
-            isTb:Boolean = false
+            isTb:Boolean = false,
+            isFamilyPlan:Boolean = false,
+            isFPSummary:Boolean = false
         ): PatientInfoFragment {
             val fragment = PatientInfoFragment()
             val bundle = Bundle()
@@ -77,6 +81,8 @@ class PatientInfoFragment : BaseFragment() {
             bundle.putBoolean(PNC,isPnc)
             bundle.putBoolean(TB,isTb)
             bundle.putBoolean(IsReferredScreen, isReferredScreen)
+            bundle.putBoolean(familyPlanning,isFamilyPlan)
+            bundle.putBoolean(isFamilyPlanSummary,isFPSummary)
             fragment.arguments = bundle
             return fragment
         }
@@ -199,12 +205,21 @@ class PatientInfoFragment : BaseFragment() {
     private fun isReferredScreen(): Boolean? {
         return arguments?.getBoolean(IsReferredScreen, false)
     }
+
+    private fun isFamilyPlan():Boolean?{
+        return arguments?.getBoolean(familyPlanning,false)
+    }
+
+    private fun isFamilyPlanSummary():Boolean?{
+        return arguments?.getBoolean(isFamilyPlanSummary,false)
+    }
     private fun setDataInInfo(patientListRespModel: PatientListRespModel) {
         showProgress()
         viewModel.patientDetailsId = patientListRespModel.id
         viewModel.childPatientDetails=patientListRespModel.pregnancyDetails?.neonatePatientId
         viewModel.dateOfDelivery=patientListRespModel.pregnancyDetails?.dateOfDelivery
         viewModel.neonateOutCome=patientListRespModel.pregnancyDetails?.neonatalOutcomes
+        viewModel.chwName = patientListRespModel.chwName
         val isAnc = isAnc()
         val isPnc= isPnc()
         val name =
@@ -310,6 +325,54 @@ class PatientInfoFragment : BaseFragment() {
                     )
                 )
             }
+            if (isFamilyPlan() == true || isFamilyPlanSummary() == true){
+                dataList.removeAt(5)
+                dataList.removeAt(3)
+                dataList.add(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.chw),
+                        DefinedParams.Value to (viewModel.chwName ?: requireContext().getString(R.string.hyphen_symbol))
+                    )
+                )
+                dataList.add(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.date_of_delivery),
+                        DefinedParams.Value to (dateOfDelivery?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+                    )
+                )
+                if(isFamilyPlanSummary() == true){
+                    dataList.add(
+                        mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.occupation_summary),
+                            DefinedParams.Value to (viewModel.occupation ?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+                        )
+                    )
+                    dataList.add(
+                        mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.marital_status_summary),
+                            DefinedParams.Value to (viewModel.maritalStatus ?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+                        )
+                    )
+                }else {
+                    dataList.add(
+                        mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.occupation),
+                            DefinedParams.Value to (dateOfDelivery
+                                ?: requireContext().getString(R.string.hyphen_symbol)).toString()
+                                .trim()
+                        )
+                    )
+                    dataList.add(
+                        mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.marital_status),
+                            DefinedParams.Value to (dateOfDelivery
+                                ?: requireContext().getString(R.string.hyphen_symbol)).toString()
+                                .trim()
+                        )
+                    )
+                }
+            }
+
             commonAdapter(dataList as MutableList<Map<String, Any>>)
         }
     }
@@ -350,6 +413,12 @@ class PatientInfoFragment : BaseFragment() {
                         )
                         viewModel.ncdUpdatePregnancyRisk(request)
                     })
+                },
+                occupation = {
+                    viewModel.occupation = it
+                },
+                maritalStatus = {
+                    viewModel.maritalStatus = it
                 })
         val isLandscape =
             resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE

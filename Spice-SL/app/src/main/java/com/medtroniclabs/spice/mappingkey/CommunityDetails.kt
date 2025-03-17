@@ -32,5 +32,5 @@ object CommunityDetails {
     const val WaterAndSanitationFacilities = "waterAndSanitationFacilities"
     const val Infrastructure = "infrastructure"
     const val EmergencyManagementPlan = "emergencyManagementPlan"
-
+    const val market = "market"
 }

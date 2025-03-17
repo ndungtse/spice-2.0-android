@@ -25,4 +25,18 @@ object MedicalReviewDefinedParams {
     const val LiveBirth="liveBirth"
     const val CF_ITEM = "ComorbiditiesFragment"
     const val respiratory = "respiratory"
+    const val PHUFlow="PHUFlow"
+
+    const val CONTRACEPTIVES_ITEMS = "ContraceptivesItems"
+    const val CONTRACEPTIVES_VALUES = "ContraceptivesValues"
+    const val ClientType = "clientType"
+    const val PostPartum = "PostPartum"
+    const val CombineOralContraceptive = "CombinedOralContraceptive"
+    const val ProgestinOnlyOrals= "Progestin Only Orals"
+    const val Microlut = "Microlut"
+    const val Injectables = "Injectables"
+    const val Implants = "Implants"
+    const val Condoms = "Condoms"
+    const val EmergencyContraceptive = "Emergency contraceptive"
+    const val PermanentMethod = "Permanent Method"
 }

@@ -51,6 +51,9 @@ class PatientDetailViewModel @Inject constructor(
 
     var neonateOutCome: String?=null
 
+    var chwName:String?=null
+    var occupation:String?=null
+    var maritalStatus:String?=null
     val clinicalWorkflowsMenusLiveData = MutableLiveData<List<ClinicalWorkflowEntity>>()
 
     fun getPatients(id: String, assessmentType: String? = null, origin: String? = null) {
