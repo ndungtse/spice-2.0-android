@@ -1424,4 +1424,6 @@
     <string name="occupation_summary">Occupation Summary</string>
     <string name="marital_status_summary">Marital Status Summary</string>
     <string name="quantity_microlut">Quantity (Microlut)</string>
+    <string name="methods" translatable="false">Methods</string>
+    <string name="methods_selected" translatable="false">Methods Selected</string>
 </resources>

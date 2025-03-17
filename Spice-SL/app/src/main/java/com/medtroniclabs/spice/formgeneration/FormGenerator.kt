@@ -89,6 +89,7 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.GONE
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.INVISIBLE
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.OtherMethodSpecify
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.SSP16
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.VISIBLE
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
@@ -142,6 +143,7 @@ import com.medtroniclabs.spice.mappingkey.Screening.DateOfBirth
 import com.medtroniclabs.spice.mappingkey.Screening.Hour
 import com.medtroniclabs.spice.mappingkey.Screening.Minute
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanningMethods
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
@@ -3214,7 +3216,11 @@ class FormGenerator(
         }
         getViewByTag(id)?.let { view ->
             if (view is AppCompatTextView) {
-                view.text = setCheckBoxDialogText(resultHashMap, id)
+                val checkBoxText = when(id){
+                    FamilyPlanningMethods -> getString(R.string.methods_selected)
+                    else -> getString(R.string.symptoms_selected)
+                }
+                view.text = setCheckBoxDialogText(resultHashMap, id, checkBoxText)
             }
         }
         if (isContainsOther(resultMap)) {
@@ -3235,7 +3241,8 @@ class FormGenerator(
 
     private fun setCheckBoxDialogText(
         resultHashMap: HashMap<String, Any>,
-        id: String
+        id: String,
+        checkBoxText: String
     ): String {
         var text = ""
         if(id.equals(getString(R.string.market_days_key),true)){
@@ -3252,14 +3259,12 @@ class FormGenerator(
                 val mapList = resultHashMap[id]
                 if (mapList is java.util.ArrayList<*>) {
                     if (mapList.size == 1) {
-                        text = setDialogText(mapList)
+                        text = setDialogText(mapList, checkBoxText)
                     } else if (mapList.size > 1) {
                         text = if (isContainsOther(mapList)) {
-                            "${mapList.size - 1} and ${getString(R.string.other)} ${
-                                getString(R.string.symptoms_selected)
-                            }"
+                            "${mapList.size - 1} and ${getString(R.string.other)} $checkBoxText"
                         } else {
-                            "${mapList.size} ${getString(R.string.symptoms_selected)}"
+                            "${mapList.size} $checkBoxText"
                         }
                     } else {
                         text = ""
@@ -3270,15 +3275,13 @@ class FormGenerator(
         return text
     }
 
-    private fun setDialogText(mapList: java.util.ArrayList<*>): String {
+    private fun setDialogText(mapList: java.util.ArrayList<*>, checkBoxText: String): String {
         return if (isContainsOther(mapList)) {
-            "${DefinedParams.Other} ${
-                getString(R.string.symptoms_selected)
-            }"
+            "${DefinedParams.Other} $checkBoxText"
         } else if (isNoSymptomContain(mapList)) {
             getString(R.string.no_symptom_selected)
         } else {
-            "${mapList.size} ${getString(R.string.symptoms_selected)}"
+            "${mapList.size} $checkBoxText"
         }
     }
 
@@ -3301,7 +3304,7 @@ class FormGenerator(
         mapList.forEach { map ->
             if (map is HashMap<*, *>) {
                 val name = map[DefinedParams.NAME]
-                if (name is String && (name.equals(DefinedParams.Other, true) || name.contains(DefinedParams.Other, true))) {
+                if (name is String && (name.equals(DefinedParams.Other, true) || name.equals(OtherMethodSpecify, true))) {
                     status = true
                     return@forEach
                 }

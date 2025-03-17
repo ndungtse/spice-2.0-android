@@ -663,7 +663,7 @@ class ReferralResultGenerator {
             map[NeedOfOtherFamilyPlanning] is Boolean && map[NeedOfOtherFamilyPlanning] == true
         if (memberUsingAnyFamilyPlanning || isAnySideEffects || needOfOtherFamilyPlanning) {
             addResultMap("Family Planning", ReferralStatus.Referred.name)
-            addReferralReason(referralReason, "Family Planning")
+            addReferralReason(referralReason, "Family Planning Consult")
         }
         return Pair(checkStatus(), referralReason)
     }

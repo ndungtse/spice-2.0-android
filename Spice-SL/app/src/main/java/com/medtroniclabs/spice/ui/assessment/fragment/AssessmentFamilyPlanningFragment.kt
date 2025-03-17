@@ -95,7 +95,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
         serverViewModel: FormLayout,
         resultMap: Any?
     ) {
-        CheckBoxDialog.newInstance(id, resultMap) { resultMap ->
+        CheckBoxDialog.newInstance(id, resultMap,title = getString(R.string.methods)) { resultMap ->
             formGenerator.validateCheckboxDialogue(id, serverViewModel, resultMap)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }

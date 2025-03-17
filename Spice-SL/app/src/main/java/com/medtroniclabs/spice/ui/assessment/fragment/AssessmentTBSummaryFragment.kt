@@ -79,7 +79,7 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
     private fun createTBListSummaryData(data: String): MutableList<AssessmentSummaryModel>? {
         return viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }?.map { formLayout ->
             AssessmentSummaryModel(
-                title = formLayout.title,
+                title = formLayout.titleSummary ?: formLayout.title,
                 id = formLayout.id,
                 cultureValue = formLayout.titleCulture,
                 value = getValueOfKeyFromMap(
