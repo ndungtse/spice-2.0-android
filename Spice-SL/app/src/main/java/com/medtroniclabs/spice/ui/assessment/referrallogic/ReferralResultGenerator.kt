@@ -14,6 +14,8 @@ import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.ui.MenuConstants.NCD_MENU_ID
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AlcoholConsumption
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.CondomsStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Contraceptive
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DiagnosedWithDiabetes
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DryMouthOrTongue
@@ -26,6 +28,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasNightSwe
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasWeightLoss
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.LittleOrNoUrine
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoTearsWhenCrying
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Not_Available
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RelationshipToIC
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RegularSmoker
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SkinPinch
@@ -661,7 +664,9 @@ class ReferralResultGenerator {
         val isAnySideEffects = map[IsAnySideEffects] is Boolean && map[IsAnySideEffects] == true
         val needOfOtherFamilyPlanning =
             map[NeedOfOtherFamilyPlanning] is Boolean && map[NeedOfOtherFamilyPlanning] == true
-        if (memberUsingAnyFamilyPlanning || isAnySideEffects || needOfOtherFamilyPlanning) {
+         val condomStatus = map[CondomsStatus] is String && map[CondomsStatus] == Not_Available
+         val contraceptiveStatus = map[Contraceptive] is String && map[Contraceptive] == Not_Available
+        if (memberUsingAnyFamilyPlanning || isAnySideEffects || needOfOtherFamilyPlanning || condomStatus || contraceptiveStatus) {
             addResultMap("Family Planning", ReferralStatus.Referred.name)
             addReferralReason(referralReason, "Family Planning Consult")
         }
@@ -675,7 +680,7 @@ class ReferralResultGenerator {
         val alcoholConsumption =
             map[AlcoholConsumption] is Boolean && map[AlcoholConsumption] == true
         val bmiReferral = getBmiReferral ( CommonUtils.getBMIInformation(context, map[Screening.BMI] as? Double), context)
-        calculateSymptomsStatus(map, symptomsDTO, ReferralReasons.ncdSymptoms.name)
+        calculateSymptomsStatus(map, symptomsDTO, ReferralReasons.NCDSymptoms.name)
         if (diagnosedWithDiabetes || regularSmoker || alcoholConsumption || bmiReferral) {
             addResultMap(NCD_MENU_ID, ReferralStatus.Referred.name)
             addReferralReason(referralReason, NCD_MENU_ID)

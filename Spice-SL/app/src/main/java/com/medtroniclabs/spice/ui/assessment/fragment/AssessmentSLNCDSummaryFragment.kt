@@ -133,7 +133,7 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                 binding.phuReferredGroup.visible()
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
-                binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
+                binding.riskResultLayout.text = getString(R.string.referred_for_ncd_assessment)
             }
 
             else -> {
@@ -203,7 +203,7 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
             item.value?.let {
                 when (item.id) {
                     DiagnosedWithDiabetes, RegularSmoker, AlcoholConsumption -> showRiskFactors(listSummaryData)
-                    Height, Weight, WaistCircumference -> bindSummaryView(item.title, formatDecimalValue(it))
+                    Height, Weight, WaistCircumference -> bindSummaryView(item.title, CommonUtils.getDecimalFormatted(formatDecimalValue(it)))
                     BMI -> bindSummaryView(item.title, renderBMISummary(listSummaryData))
                     symptomsDTO -> renderDangerSigns(listSummaryData)
                     else -> bindSummaryView(item.title, it)
@@ -270,7 +270,9 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                 }
             }
             riskFactors = true
-            bindSummaryView(getString(R.string.risk_factor),risks.joinToString(", "))
+            if (risks.isNotEmpty()){
+                bindSummaryView(getString(R.string.ncd_risk_factor),risks.joinToString(", "))
+            }
         }
     }
 

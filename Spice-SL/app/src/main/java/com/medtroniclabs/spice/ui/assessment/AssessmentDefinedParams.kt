@@ -180,5 +180,7 @@ object AssessmentDefinedParams {
     const val FamilyPlanningMethods = "familyPlanningMethods"
     const val FamilyPlanningDetails = "familyPlanningDetails"
     const val OtherFamilyPlanningMethod= "otherFamilyPlanningMethod"
+    const val CondomsStatus = "condomsStatus"
+    const val Not_Available = "Not Available"
 
 }

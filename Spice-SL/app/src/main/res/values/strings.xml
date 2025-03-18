@@ -1388,42 +1388,46 @@
     <string name="view_catch_up_policy" translatable="false">View EPI Catch-Up Policy</string>
 
 
-    <string name="client_type">Client Type</string>
-    <string name="new_family_planning_method">New family planning method</string>
-    <string name="continuing_family_planning_method">Continuing family planning method</string>
-    <string name="post_partum">Post Partum </string>
-    <string name="after_delivery"> &lt; 48 hours after delivery</string>
-    <string name="forty_nine_hrs_siz_weeks">49 hours-6 weeks</string>
-    <string name="seven_week_one_year">7 weeks-1 year</string>
-    <string name="combined_oral_contraceptive">Combined Oral Contraceptive</string>
-    <string name="microgynon">Microgynon</string>
-    <string name="other_oral_specify">Other oral specify</string>
-    <string name="progestin_only_orals">Progestin Only Orals</string>
-    <string name="microlut">Microlut</string>
-    <string name="other_specify">Other specify</string>
-    <string name="injectables">Injectables</string>
-    <string name="depo_provera">Depo provera</string>
-    <string name="sayana_press">Sayana press</string>
-    <string name="other_injectables_specify">Other injectables specify</string>
-    <string name="contraceptives">Contraceptives</string>
-    <string name="enter_quantity">Enter Quantity (Microlut)</string>
-    <string name="iucd">IUCD :</string>
-    <string name="implants">Implants</string>
-    <string name="five_year_implant">5 yr implant (ie. jadelle)</string>
-    <string name="three_year_implant">3 yr implant (ie. levoplant)</string>
-    <string name="other_implant">Other implant specify</string>
-    <string name="condoms">Condoms</string>
-    <string name="emergency_contraceptive">Emergency contraceptive</string>
-    <string name="permanent_method">Permanent Method</string>
-    <string name="tubal_ligation">Tubal ligation</string>
-    <string name="vasectomy">Vasectomy</string>
-    <string name="other_fp_method">Other FP method</string>
-    <string name="copper_t">Copper T</string>
-    <string name="marital_status">Marital Status</string>
-    <string name="enter">Enter</string>
-    <string name="occupation_summary">Occupation Summary</string>
-    <string name="marital_status_summary">Marital Status Summary</string>
-    <string name="quantity_microlut">Quantity (Microlut)</string>
+    <string name="client_type" translatable="false">Client Type</string>
+    <string name="new_family_planning_method" translatable="false">New family planning method</string>
+    <string name="continuing_family_planning_method" translatable="false">Continuing family planning method</string>
+    <string name="post_partum" translatable="false">Post Partum </string>
+    <string name="after_delivery" translatable="false"> &lt; 48 hours after delivery</string>
+    <string name="forty_nine_hrs_siz_weeks" translatable="false">49 hours-6 weeks</string>
+    <string name="seven_week_one_year" translatable="false">7 weeks-1 year</string>
+    <string name="combined_oral_contraceptive" translatable="false">Combined Oral Contraceptive</string>
+    <string name="microgynon" translatable="false">Microgynon</string>
+    <string name="other_oral_specify" translatable="false">Other oral specify</string>
+    <string name="progestin_only_orals" translatable="false">Progestin Only Orals</string>
+    <string name="microlut" translatable="false">Microlut</string>
+    <string name="other_specify" translatable="false">Other specify</string>
+    <string name="injectables" translatable="false">Injectables</string>
+    <string name="depo_provera" translatable="false">Depo provera</string>
+    <string name="sayana_press" translatable="false">Sayana press</string>
+    <string name="other_injectables_specify" translatable="false">Other injectables specify</string>
+    <string name="contraceptives" translatable="false">Contraceptives</string>
+    <string name="enter_quantity" translatable="false">Enter Quantity (Microlut)</string>
+    <string name="iucd" translatable="false">IUCD :</string>
+    <string name="implants" translatable="false">Implants</string>
+    <string name="five_year_implant" translatable="false">5 yr implant (ie. jadelle)</string>
+    <string name="three_year_implant" translatable="false">3 yr implant (ie. levoplant)</string>
+    <string name="other_implant" translatable="false">Other implant specify</string>
+    <string name="condoms" translatable="false">Condoms</string>
+    <string name="emergency_contraceptive" translatable="false">Emergency contraceptive</string>
+    <string name="permanent_method" translatable="false">Permanent Method</string>
+    <string name="tubal_ligation" translatable="false">Tubal ligation</string>
+    <string name="vasectomy" translatable="false">Vasectomy</string>
+    <string name="other_fp_method" translatable="false">Other FP method</string>
+    <string name="copper_t" translatable="false">Copper T</string>
+    <string name="marital_status" translatable="false">Marital Status</string>
+    <string name="enter" translatable="false">Enter</string>
+    <string name="occupation_summary" translatable="false">Occupation Summary</string>
+    <string name="marital_status_summary" translatable="false">Marital Status Summary</string>
+    <string name="quantity_microlut" translatable="false">Quantity (Microlut)</string>
     <string name="methods" translatable="false">Methods</string>
     <string name="methods_selected" translatable="false">Methods Selected</string>
+    <string name="referred_for_ncd_assessment" translatable="false">Referred for NCD Assessment</string>
+    <string name="was_the_member_taken_to_clinic" translatable="false">Was the member taken to the Clinic</string>
+    <string name="ncd_risk_factor" translatable="false">NCD Risk Factors</string>
+    <string name="the_dates_should_be_less_than_age" translatable="false">The date should be less than Age</string>
 </resources>

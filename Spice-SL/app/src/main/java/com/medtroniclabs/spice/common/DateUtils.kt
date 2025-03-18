@@ -886,4 +886,13 @@ object DateUtils {
             }
             return outputFormat.format(date) // Format to required output
         }
+
+    fun compareDates(dobDate: String, selectedDate: String): Boolean {
+        val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+
+        val dobZonedDateTime = ZonedDateTime.parse(dobDate, formatter)
+        val selectedZonedDateTime = ZonedDateTime.parse(selectedDate, formatter)
+
+        return selectedZonedDateTime >= dobZonedDateTime
+    }
 }

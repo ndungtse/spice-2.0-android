@@ -4,9 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
 import androidx.fragment.app.activityViewModels
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Contact_Trace_Updated
 import com.medtroniclabs.spice.common.DefinedParams.TB
@@ -20,6 +25,8 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DateOfOnset
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SleepLocation
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -91,7 +98,24 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled()
-        )
+        ) { map, id ->
+            when (id) {
+                DateOfOnset -> {
+                    formGenerator.getViewByTag(id)?.let {
+                        val dob = viewModel.memberDetailsLiveData.value?.data?.dateOfBirth
+                        if (!dob.isNullOrEmpty() && map.containsKey(id)) {
+                            val selectedDate = map[id].toString()
+                            val isValid = DateUtils.compareDates(dob, selectedDate)
+                            formGenerator.getViewByTag(id + AssessmentDefinedParams.errorSuffix)?.apply {
+                                visibility = if (isValid) View.GONE else View.VISIBLE
+                            }.takeIf { it is TextView }?.let { textView->(textView as TextView).text=
+                                getString(R.string.the_day_s_should_be_less_than_age)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     companion object {
@@ -192,7 +216,10 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnSubmit.id -> {
-                formGenerator.formSubmitAction(view)
+                withLocationCheck({
+                    viewModel.fetchCurrentLocation(requireContext())
+                    formGenerator.formSubmitAction(view)
+                })
             }
         }
     }

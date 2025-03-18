@@ -8,8 +8,11 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.OtherMethodSpecify
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class CheckboxDialogAdapter(
@@ -24,10 +27,12 @@ class CheckboxDialogAdapter(
     }
 
     inner class DialogHeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val seperator : View = itemView.findViewById(R.id.seperatorView)
         val checkBoxHeader: TextView = itemView.findViewById(R.id.checkboxItemHeader)
     }
 
     inner class DialogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val seperator: View = itemView.findViewById(R.id.seperatorView)
         val checkBox: CheckBox = itemView.findViewById(R.id.checkboxItem)
         val Root: LinearLayout = itemView.findViewById(R.id.root)
     }
@@ -55,14 +60,24 @@ class CheckboxDialogAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = dialogList[position]
         if (holder is DialogHeaderViewHolder) {
+            if (item.displayOrder != 1){
+                holder.seperator.visible()
+            } else {
+                holder.seperator.gone()
+            }
             holder.checkBoxHeader.text =
                 if (translate) item.displayValue ?: item.symptom else item.symptom
         } else if (holder is DialogViewHolder) {
+            if (item.symptom == OtherMethodSpecify){
+                holder.seperator.visible()
+            } else {
+                holder.seperator.gone()
+            }
             holder.checkBox.text =
                 if (translate) item.displayValue ?: item.symptom else item.symptom
             holder.checkBox.isChecked = item.isSelected
             holder.checkBox.isEnabled = item.isEnabled
-            holder.Root.safeClickListener {
+            holder.checkBox.safeClickListener {
             if (item.isEnabled) {
                 checkDataAndUpdate(item, dialogList)
             }
