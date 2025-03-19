@@ -662,8 +662,8 @@ class AssessmentViewModel @Inject constructor(
         // Request modification for Family Planning
         if (map.containsKey(familyPlanning.lowercase())) {
            val familyPlanning =  (map[familyPlanning] as? Map<String, Any>)
-            if (familyPlanning != null && familyPlanning.containsKey(FamilyPlanning)) {
-                val result = familyPlanning[FamilyPlanning] as? HashMap<String, Any>
+            if (familyPlanning != null && familyPlanning.containsKey(FamilyPlanningDetails)) {
+                val result = familyPlanning[FamilyPlanningDetails] as? HashMap<String, Any>
                 result?.let {
                     map.remove(DefinedParams.familyPlanning)
                     map[FamilyPlanning] = it
@@ -674,6 +674,7 @@ class AssessmentViewModel @Inject constructor(
         val assessmentDetailBE = StringConverter.convertGivenMapToString(map) ?: ""
         return Pair(assessmentDetail, assessmentDetailBE)
     }
+
 
     fun getFormatedNotifiableCondition(map: HashMap<*, *>, key: String): List<String> {
         val conditions = mutableListOf<String>()

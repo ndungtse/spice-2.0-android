@@ -56,15 +56,11 @@ class VaccinationStatusNudge @JvmOverloads constructor(
                 Pair(Vaccinated, null)
 
         } else {
-            val dayDiff = ChronoUnit.DAYS.between(
-                vaccinationDetail.scheduledDate.getLocalDate(),
-                LocalDate.now()
-            )
+            val dayDiff = vaccinationDetail.updatedScheduleDate
+                ?.let { ChronoUnit.DAYS.between(it, LocalDate.now()) }
+                ?: return Pair(Upcoming, null)
 
-            return if (dayDiff <= 0)
-                Pair(Upcoming, null)
-            else
-                Pair(Missed, dayDiff)
+            return if (dayDiff <= 0) Pair(Upcoming, null) else Pair(Missed, dayDiff)
         }
     }
 

@@ -1386,6 +1386,8 @@
     <string name="maximum_age" translatable="false">Maximum Age</string>
     <string name="number_and_interval" translatable="false">Number &amp; Interval between doses</string>
     <string name="view_catch_up_policy" translatable="false">View EPI Catch-Up Policy</string>
+    <string name="birth_details" translatable="false">Birth Details</string>
+    <string name="no_birth_details" translatable="false">No Birth Details Found</string>
 
 
     <string name="client_type" translatable="false">Client Type</string>

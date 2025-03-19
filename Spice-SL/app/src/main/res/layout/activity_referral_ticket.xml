@@ -35,10 +35,18 @@
                     android:id="@+id/patientDetailsContainer"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toTopOf="@id/cardReferralTicket"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/cardBirthDetailContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/patientDetailsContainer" />
 
 
                 <androidx.fragment.app.FragmentContainerView
@@ -47,7 +55,7 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/patientDetailsContainer" />
+                    app:layout_constraintTop_toBottomOf="@id/cardBirthDetailContainer" />
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/cardMedicalReviewContainer"

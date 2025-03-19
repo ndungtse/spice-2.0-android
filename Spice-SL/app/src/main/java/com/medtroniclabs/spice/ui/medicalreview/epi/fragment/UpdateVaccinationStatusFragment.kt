@@ -58,13 +58,18 @@ class UpdateVaccinationStatusFragment(
     private fun initView() {
         binding.tvVaccinationName.text = vaccinationItem.vaccineName
         binding.flEpiStatusNudge.addView(VaccinationStatusNudge(context = requireContext(), item = vaccinationItem))
-        binding.tvScheduledDate.text = vaccinationItem.scheduledDate.getLocalDate().format(displayFormatter)
+
+        vaccinationItem.updatedScheduleDate?.let {
+            binding.tvScheduledDate.text = it.format(displayFormatter)
+        }
+
         if (vaccinationItem.vaccinatedDate != null) {
             shouldEnableUpdate(false)
             binding.tvVaccinationDate.text = vaccinationItem.vaccinatedDate!!.getLocalDate().format(displayFormatter)
         } else {
             shouldEnableUpdate(true)
             binding.tvVaccinationDate.text = LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
+            //binding.tvVaccinationDate.text = vaccinationItem.updatedScheduleDate!!.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
         }
     }
 
@@ -106,7 +111,10 @@ class UpdateVaccinationStatusFragment(
 
     private fun showDatePicker() {
         val selectedDate = DateUtils.convertedMMMToddMM(binding.tvVaccinationDate.text.toString())
-        val minDate = vaccinationItem.scheduledDate.getLongDate(DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+        val minDate = vaccinationItem.updatedScheduleDate?.atStartOfDay(ZoneOffset.UTC)?.toInstant()
+            ?.toEpochMilli() ?: vaccinationItem.scheduledDate.getLongDate(
+            DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+        )
         ViewUtils.showDatePicker(
             context = requireContext(),
             disableFutureDate = true,

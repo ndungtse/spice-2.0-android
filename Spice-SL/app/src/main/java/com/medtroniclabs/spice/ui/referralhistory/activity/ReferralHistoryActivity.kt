@@ -9,6 +9,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
 import com.medtroniclabs.spice.appextensions.isGpsEnabled
 import com.medtroniclabs.spice.common.CommonUtils
@@ -24,6 +25,7 @@ import com.medtroniclabs.spice.ui.home.MedicalReviewToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
+import com.medtroniclabs.spice.ui.referralhistory.fragment.BirthDetailsFragment
 import com.medtroniclabs.spice.ui.referralhistory.fragment.InvestigationHistoryFragment
 import com.medtroniclabs.spice.ui.referralhistory.fragment.MedicalReviewHistoryFragment
 import com.medtroniclabs.spice.ui.referralhistory.fragment.MotherPncVisitSummaryHistoryFragment
@@ -80,34 +82,45 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
         }
 
 
-            viewModel.medicalReviewTicketLiveDataPNC.observe(this) { resource ->
-                when (resource.state) {
-                    ResourceState.LOADING -> {
-                        showLoading()
-                    }
+        viewModel.medicalReviewTicketLiveDataPNC.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
 
-                    ResourceState.SUCCESS -> {
-                        hideLoading()
-                        if (resource.data?.id != null) {
-                            val medicalReviewFragmentPNC = MotherPncVisitSummaryHistoryFragment.newInstance(resource.data)
-                            addFragmentIfAbsent(
-                                R.id.cardMedicalReviewContainer,
-                                MotherPncVisitSummaryHistoryFragment.TAG,
-                                medicalReviewFragmentPNC
-                            )
-                        }
-                            val medicalReviewFragment = MedicalReviewHistoryFragment.newInstance(viewModel.patientReference)
-                            addFragmentIfAbsent(
-                                R.id.cardMotherNeonateContainer,
-                                MedicalReviewHistoryFragment.TAG,
-                                medicalReviewFragment
-                            )
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    if (resource.data?.id != null) {
+                        val medicalReviewFragmentPNC =
+                            MotherPncVisitSummaryHistoryFragment.newInstance(resource.data)
+                        addFragmentIfAbsent(
+                            R.id.cardMedicalReviewContainer,
+                            MotherPncVisitSummaryHistoryFragment.TAG,
+                            medicalReviewFragmentPNC
+                        )
+                    }
+                    val medicalReviewFragment =
+                        MedicalReviewHistoryFragment.newInstance(viewModel.patientReference)
+                    addFragmentIfAbsent(
+                        R.id.cardMotherNeonateContainer,
+                        MedicalReviewHistoryFragment.TAG,
+                        medicalReviewFragment
+                    )
 
-                    }
-                    ResourceState.ERROR -> {
-                    }
+                    val birthDetailFragment =
+                        BirthDetailsFragment.newInstance(viewModel.patientReference)
+                    addFragmentIfAbsent(
+                        R.id.cardBirthDetailContainer,
+                        BirthDetailsFragment.TAG,
+                        birthDetailFragment
+                    )
+
+                }
+
+                ResourceState.ERROR -> {
                 }
             }
+        }
     }
 
     private fun initializeListener() {
@@ -118,6 +131,7 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
 
 
     private fun initView() {
+        binding.cardBirthDetailContainer.gone()
         patientDetailViewModel.origin = intent.extras?.getString(DefinedParams.ORIGIN)
         val patientFragment =
             PatientInfoFragment.newInstance(

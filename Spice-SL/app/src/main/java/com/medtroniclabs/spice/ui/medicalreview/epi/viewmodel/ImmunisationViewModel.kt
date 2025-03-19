@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.getLocalDate
+import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.EpiGroupName
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.EncounterDetails
@@ -49,6 +50,7 @@ class ImmunisationViewModel @Inject constructor(
     var nextVaccinationDetails :EpiNextVaccinationDetails? = null
     var lastVaccineScheduleDate: LocalDate? = null
     val saveImmunisationSummaryLiveData = MutableLiveData<Resource<ResponseImmunisationSummaryCreate>>()
+    val shouldRefreshListLiveData = MutableLiveData<Boolean>()
 
     val epiCatchUpPolicyItems = MutableLiveData<Resource<List<EpiCatchUpPolicyItem>>>()
 
@@ -57,6 +59,33 @@ class ImmunisationViewModel @Inject constructor(
             val request = RequestVaccinationList(id, memberId, patientId, dob)
             immunisationRepository.getImmunisationDetails(request, immunisationDetailListLiveData)
         }
+    }
+
+    fun updateImmunisationDetails(list: List<VaccinationGroupItem>) {
+        var takenAnyOneLastSchedule = true
+        val historyMap = mutableMapOf<String, LocalDate?>()
+        list.forEach { group ->
+            group.vaccinationItems.forEach { item ->
+                if (takenAnyOneLastSchedule) {
+                    val lastVaccinatedDate = historyMap[item.category]
+                    val scheduledDate = item.scheduledDate.getLocalDate()
+
+                    item.updatedScheduleDate = when {
+                        item.vaccineOrder == 1 -> scheduledDate
+                        lastVaccinatedDate != null && lastVaccinatedDate.isBefore(scheduledDate) -> scheduledDate
+                        else -> lastVaccinatedDate
+                    }
+
+                    historyMap[item.category] = item.vaccinatedDate?.getLocalDate()?.plusWeeks(4)
+                } else {
+                    item.updatedScheduleDate = null
+                    historyMap[item.category] = null
+                }
+            }
+            takenAnyOneLastSchedule = group.vaccinationItems.any { it.vaccinatedDate != null }
+        }
+
+        shouldRefreshListLiveData.postValue(true)
     }
 
     fun getEpiCatchUpPolicyItems() {
@@ -93,11 +122,13 @@ class ImmunisationViewModel @Inject constructor(
             } else {
                 lastVaccineScheduleDate = scheduleDate
                 item.vaccinationItems.forEach { vaccine ->
-                    if (vaccine.isEdited == true) {
-                        changesList.add(vaccine.copy())
-                    } else if (vaccine.vaccinatedDate == null) {
-                        containsAnyMissedVaccine = true
-                        changesList.add(vaccine.copy(status = "Missed"))
+                    if (vaccine.updatedScheduleDate != null) {
+                        if (vaccine.isEdited == true) {
+                            changesList.add(vaccine.copy())
+                        } else if (vaccine.vaccinatedDate == null) {
+                            containsAnyMissedVaccine = true
+                            changesList.add(vaccine.copy(status = "Missed"))
+                        }
                     }
                 }
             }

@@ -26,6 +26,10 @@ class ImmunisationListAdapter(private val callback: (VaccinationDetail) -> Unit)
         notifyItemRangeInserted(0, list.size)
     }
 
+    fun refreshAdapterList() {
+        notifyItemRangeChanged(0, items.size )
+    }
+
     fun getVaccinationGroupItems(): List<VaccinationGroupItem> {
         return items
     }

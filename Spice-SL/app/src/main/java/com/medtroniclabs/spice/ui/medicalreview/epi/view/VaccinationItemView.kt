@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.model.medicalreview.VaccinationDetail
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 class VaccinationItemView @JvmOverloads constructor(
@@ -43,7 +44,16 @@ class VaccinationItemView @JvmOverloads constructor(
             } else {
                 enableOrDisableView(false)
             }
+            tvImmunisationDate.text =
+                item.updatedScheduleDate?.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
         } else {
+            tvImmunisationDate.text = item?.scheduledDate?.let {
+                DateUtils.convertDateTimeToDate(
+                    it,
+                    DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    DATE_ddMMyyyy
+                )
+            } ?: "--"
             enableOrDisableView(false)
         }
 
@@ -53,14 +63,6 @@ class VaccinationItemView @JvmOverloads constructor(
                 callback.invoke(it)
             }
         }
-
-        tvImmunisationDate.text = item?.scheduledDate?.let {
-            DateUtils.convertDateTimeToDate(
-                it,
-                DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                DATE_ddMMyyyy
-            )
-        } ?: "--"
 
         flEpiStatusNudge.removeAllViews()
         flEpiStatusNudge.addView(VaccinationStatusNudge(context = context, item = item))

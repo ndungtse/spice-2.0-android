@@ -97,8 +97,15 @@ class ImmunisationDetailFragment: BaseFragment() {
 
         viewModel.addedVaccinationItemLiveData.observe(viewLifecycleOwner) { updatedItem ->
             val adapterList = immunisationListAdapter.getVaccinationGroupItems()
-            val index = adapterList.indexOfFirst { it.scheduleDate == updatedItem.scheduledDate }
-            immunisationListAdapter.notifyItemChanged(index)
+            viewModel.updateImmunisationDetails(adapterList)
+            showProgress()
+           // val index = adapterList.indexOfFirst { it.scheduleDate == updatedItem.scheduledDate }
+           // immunisationListAdapter.notifyItemChanged(index)
+        }
+
+        viewModel.shouldRefreshListLiveData.observe(viewLifecycleOwner) {
+            immunisationListAdapter.refreshAdapterList()
+            hideProgress()
         }
     }
 

@@ -52,7 +52,38 @@ class EpiProgressIndicatorView @JvmOverloads constructor(
         vaccinationList.clear()
         val ldToday = LocalDate.now()
 
+        /*#####################*/
         for (item in list) {
+            val scheduleDate = item.scheduleDate.getLocalDate()
+            val anyUpdatedScheduleDate =
+                item.vaccinationItems.filter { it.updatedScheduleDate != null }.minOfOrNull { it.updatedScheduleDate!! }
+
+            if (anyUpdatedScheduleDate != null) { // There is some vaccination case
+
+                if (anyUpdatedScheduleDate.isBefore(ldToday)) {
+                    val anyMissed = item.vaccinationItems.any { it.vaccinatedDate == null }
+                    if (anyMissed) {
+                        vaccinationList.add(Pair(Missed, formatter.format(scheduleDate)))
+                    } else {
+                        vaccinationList.add(Pair(Vaccinated, formatter.format(scheduleDate)))
+                    }
+                } else { // Same Day - Upcoming or Vaccinated
+                    val anyMissed = item.vaccinationItems.any { it.vaccinatedDate == null }
+                    if (anyMissed) {
+                        vaccinationList.add(Pair(Upcoming, formatter.format(scheduleDate)))
+                    } else {
+                        vaccinationList.add(Pair(Vaccinated, formatter.format(scheduleDate)))
+                    }
+                }
+
+            } else { // No pending vaccination
+                break
+            }
+        }
+
+        /*#####################*/
+
+        /*for (item in list) {
             val scheduleDate = item.scheduleDate.getLocalDate()
             if (scheduleDate.isAfter(ldToday)) { // After - Upcoming
                 //vaccinationList.add(Pair(Upcoming, formatter.format(scheduleDate)))
@@ -72,7 +103,8 @@ class EpiProgressIndicatorView @JvmOverloads constructor(
                     vaccinationList.add(Pair(Vaccinated, formatter.format(scheduleDate)))
                 }
             }
-        }
+        }*/
+
         invalidate()
     }
 
