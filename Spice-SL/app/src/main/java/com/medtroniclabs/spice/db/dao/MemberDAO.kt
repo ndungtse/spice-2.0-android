@@ -135,4 +135,6 @@ interface MemberDAO {
     @Query("UPDATE PregnancyDetail SET tbContactTraceStatus = :tbContactTraceStatus WHERE householdMemberLocalId = :householdMemberId")
     suspend fun updateTBContactTraceStatus(householdMemberId: Long, tbContactTraceStatus: Int)
 
+    @Query("UPDATE HouseholdMember SET isPregnant = :isPregnant , sync_status =:syncStatus WHERE id = :memberId")
+    suspend fun resetPregnant(memberId: Long, isPregnant: Boolean, syncStatus: String)
 }

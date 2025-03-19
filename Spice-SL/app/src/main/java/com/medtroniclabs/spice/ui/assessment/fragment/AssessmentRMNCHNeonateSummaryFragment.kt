@@ -40,7 +40,6 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfNewborn
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getValueFromMap
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentRMNCHNeonateViewModel
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
-import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 
 class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListener {
@@ -63,6 +62,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.callSupervisor.isEnabled = false
         initView()
         setListener()
         viewModel.setUserJourney(AnalyticsDefinedParams.RMNCHNeonateSummaryAssessment)
@@ -101,7 +101,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
             bindRmnchSummaryView(
                 getString(R.string.patient_status),
                 getStatus(
-                    if (map.containsKey(RMNCH.PNCNeonatal)) {
+                    if (map.containsKey(PNCNeonatal)) {
                         assessmentRMNCHNeonateViewModel.referralStatus
                     } else {
                         viewModel.referralStatus
@@ -118,26 +118,27 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
             )
             showNextFollowUpDate(map)
         }
-        if (map.containsKey(RMNCH.PNCNeonatal)) {
-            showCallDialog(map)
+        if (map.containsKey(PNCNeonatal)) {
+            val resultForShow = showCallDialog(map)
             binding.resultNeonateCardView.visible()
             showSummaryDetail(
                 map,
-                RMNCH.PNCNeonatal,
+                PNCNeonatal,
                 binding.neonateParentLayout,
                 assessmentRMNCHNeonateViewModel.formLayoutsLiveData.value
             )
-            updateStatusBar(assessmentRMNCHNeonateViewModel.referralStatus)
+            updateStatusBar(assessmentRMNCHNeonateViewModel.referralStatus, resultForShow)
         } else {
             updateStatusBar(viewModel.referralStatus)
         }
 
     }
 
-    private fun showCallDialog(hashMap: HashMap<String, Any>) {
+    private fun showCallDialog(hashMap: HashMap<String, Any>) : Boolean {
         val isChildDeath = (hashMap[PNCNeonatal] as? Map<String, Any>)
             ?.get(deathOfNewborn) as? Boolean ?: false
         binding.callSupervisor.setVisible(isChildDeath)
+        return isChildDeath
     }
 
     private fun loadPhuSitesList(siteList: ArrayList<Map<String, Any>>) {
@@ -171,7 +172,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
             }
     }
 
-    private fun updateStatusBar(referralStatus: String?) {
+    private fun updateStatusBar(referralStatus: String?, isCbs: Boolean = false) {
         when (referralStatus) {
             ReferralStatus.Referred.name -> {
                 viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
@@ -200,6 +201,11 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                 binding.etPhuChange.gone()
             }
         }
+        if (isCbs) {
+            binding.riskResultLayout.backgroundTintList =
+                ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
+            binding.riskResultLayout.text = getString(R.string.urgent_referral)
+        }
     }
 
 
@@ -208,6 +214,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         binding.etNextFollowUpDate.safeClickListener(this)
         binding.etNextFollowUpDate.addTextChangedListener {
             binding.btnDone.isEnabled = !it.isNullOrEmpty()
+            binding.callSupervisor.isEnabled = !it.isNullOrEmpty()
         }
         binding.callSupervisor.safeClickListener(this)
     }
@@ -336,23 +343,12 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                 showDatePickerDialog()
             }
             binding.callSupervisor.id -> {
-                startCbsActivity(PNCNeonatal)
+                viewModel.isCbs = true
+                withLocationCheck(::handleRMNCHNeonateDone)
             }
         }
     }
 
-    private fun startCbsActivity(workFlowName: String) {
-        val intent = Intent(requireContext(), CbsActivity::class.java)
-        intent.putExtra(DefinedParams.MemberID, assessmentRMNCHNeonateViewModel.childId)
-        intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
-        intent.putExtra(MenuConstants.WorkFlowName, workFlowName)
-        intent.putExtra(deathOfNewborn, true)
-        assessmentRMNCHNeonateViewModel.assessmentSaveLiveData.value?.data?.second?.id?.let {
-            intent.putExtra(DefinedParams.AssessmentId, it)
-        }
-        intent.putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
-        startActivity(intent)
-    }
 
     private fun showDatePickerDialog() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
@@ -411,6 +407,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                                 ))
                                 if (binding.etNextFollowUpDate.text.isNotEmpty()) {
                                     binding.btnDone.isEnabled = true
+                                    binding.callSupervisor.isEnabled = true
                                 }
                             }
                         }

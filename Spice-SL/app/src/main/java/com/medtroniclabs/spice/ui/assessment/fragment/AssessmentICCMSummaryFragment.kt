@@ -390,7 +390,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 binding.phuReferredGroup.visibility = View.VISIBLE
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
-                if (viewModel.isDangerSignFlow || isCbs) {
+                if (viewModel.isDangerSignFlow) {
                     binding.riskResultLayout.text =
                         getString(R.string.urgent_referral)
                 } else {
@@ -418,6 +418,12 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     ContextCompat.getColorStateList(requireContext(), R.color.green_attention_color)
                 binding.riskResultLayout.text = getString(R.string.no_refferral_treatment_required)
             }
+        }
+        if (isCbs) {
+            binding.riskResultLayout.text =
+                getString(R.string.urgent_referral)
+            binding.riskResultLayout.backgroundTintList =
+                ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
         }
     }
 

@@ -138,6 +138,7 @@ class AssessmentViewModel @Inject constructor(
     val treatmentDays = HashMap<String, Int>()
     var referralReason: ArrayList<String>? = null
     var pregnancyDetail: PregnancyDetail? = null
+    var pregnancyDetailForMother: PregnancyDetail? = null
     var selectedMemberDob: String? = null
     var selectedSymptoms = MutableLiveData<List<SymptomModel>>()
     var medicationParentComplianceResponse = MutableLiveData<List<MedicalComplianceEntity>>()
@@ -164,7 +165,8 @@ class AssessmentViewModel @Inject constructor(
     val patientHealthFacility = MutableLiveData<Resource<List<HealthFacilityEntity>>>()
     val callResultSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
     val getAssessmentDetails = MutableLiveData<Resource<AssessmentEntity>>()
-
+    var isCbs = false
+    var motherID: Long? = null
     val childhoodVisitConditionLiveData = MediatorLiveData<String>().apply {
         addSource(ageInMonth) { age ->
             if (formRenderedLiveData.value == true && age != null) {
@@ -256,13 +258,17 @@ class AssessmentViewModel @Inject constructor(
 
     fun saveCallResult(
        assessmentEntity: AssessmentEntity,
-       assessmentMap: HashMap<String, Any>? = null
+       assessmentMap: HashMap<String, Any>? = null,
+       memberId: Long? = null
     ) {
         viewModelScope.launch(dispatcherIO) {
             assessmentMap?.let {
                 val assessmentDetail =
                     getAssessmentDetails(it as HashMap<Any, Any>)
                 assessmentStringLiveData.postValue(assessmentDetail.first)
+            }
+            memberId?.let {
+                savePatientClinicalInformation(getUpdatedPregnancyDetail(memberId,pregnancyDetailForMother,true))
             }
             callResultSaveLiveData.postValue(assessmentRepository.saveCallResult(assessmentEntity))
         }
@@ -782,7 +788,6 @@ class AssessmentViewModel @Inject constructor(
         memberDetail: AssessmentMemberDetails,
         memberClinicalEntity: MemberClinicalEntity?,
         childDetailsMap: HashMap<String, Any>? = null
-
     ) {
         memberDetail.apply {
             if (details.containsKey(workflowName) && details[workflowName] is Map<*, *>) {
@@ -831,7 +836,7 @@ class AssessmentViewModel @Inject constructor(
         return null
     }
 
-    private fun savePatientClinicalInformation(
+    fun savePatientClinicalInformation(
         pregnancyDetail: PregnancyDetail,
     ) {
         viewModelScope.launch(dispatcherIO) {
@@ -937,11 +942,12 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun updateMemberDeceasedStatus(id: Long, status: Boolean) {
+    fun updateMemberDeceasedStatus(id: Long, status: Boolean,deceasedReason: String? = null) {
         viewModelScope.launch(dispatcherIO) {
-            memberRegistrationRepository.updateMemberDeceasedStatus(
+            memberRegistrationRepository.updateMemberDeceasedReason(
                 id,
-                status
+                status,
+                deceasedReason
             )
         }
     }
@@ -1157,13 +1163,39 @@ class AssessmentViewModel @Inject constructor(
          resultValue: HashMap<String, Any>,
          referralResult: Pair<String?, ArrayList<String>>,
          birth: String,
-         isDelete: Boolean
+         isDelete: Boolean,
+         memberId:Long? = null
      ) {
         this.assessmentMap = resultValue
         this.referralResult = referralResult
+         memberId?.let {
+             savePatientClinicalInformation(getUpdatedPregnancyDetail(memberId, pregnancyDetail,true))
+         }
          birthLiveData.postValue(Resource(ResourceState.SUCCESS, Triple(birth,isDelete,true)))
     }
 
+    fun getUpdatedPregnancyDetail(
+        memberId: Long,
+        pregnancyDetail: PregnancyDetail?,
+        isResetPregnancy: Boolean = false
+    ): PregnancyDetail {
+        if (isResetPregnancy) {
+            resetPregnancy(memberId, false)
+        }
+        return (pregnancyDetail ?: PregnancyDetail(householdMemberLocalId = memberId)).apply {
+            this.pncVisitNo = 0
+            this.dateOfDelivery = null
+            this.noOfNeonates = null
+            this.neonatePatientId = null
+            this.isDeliveryAtHome = null
+            this.neonateHouseholdMemberLocalId = null
+            this.isNeonateDeathRecordedByPHU = null
+
+            this.ancVisitNo = 0
+            this.lastMenstrualPeriod = null
+            this.estimatedDeliveryDate = null
+        }
+    }
     val memberCbsDetailsLiveData = MutableLiveData<Resource<AssessmentMemberDetails>>()
     fun saveMember(
         memberMap: HashMap<String, Any>,
@@ -1193,10 +1225,14 @@ class AssessmentViewModel @Inject constructor(
     fun saveAssessmentCbs(
         data: AssessmentEntity,
         resultValue: HashMap<String, Any>,
-        birth: String
+        birth: String,
+        memberId: Long? = null
     ) {
         this.assessment = data
         this.resultValue = resultValue
+        memberId?.let {
+            savePatientClinicalInformation(getUpdatedPregnancyDetail(memberId , pregnancyDetail,true))
+        }
         birthLiveData.postValue(Resource(ResourceState.SUCCESS, Triple(birth, false,false)))
     }
 
@@ -1251,6 +1287,21 @@ class AssessmentViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun getPregnancyDetailInformationForMother() {
+        viewModelScope.launch(dispatcherIO) {
+            motherID?.let { id ->
+                pregnancyDetailForMother =
+                    memberRegistrationRepository.getPregnancyDetailByPatientId(id)
+            }
+        }
+    }
+
+    fun resetPregnancy(memberId: Long, isPregnant: Boolean) {
+        viewModelScope.launch(dispatcherIO) {
+            memberRegistrationRepository.resetPregnant(memberId, isPregnant)
         }
     }
 }

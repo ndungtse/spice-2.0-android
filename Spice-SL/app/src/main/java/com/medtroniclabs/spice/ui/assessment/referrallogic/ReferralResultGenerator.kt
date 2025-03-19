@@ -5,6 +5,8 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams.CBS_Referral
+import com.medtroniclabs.spice.common.DefinedParams.IccmDiarrheaNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.IccmFeverNotifiableCondition
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsAnySideEffects
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MemberUsingAnyFamilyPlanning
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NeedOfOtherFamilyPlanning

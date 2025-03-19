@@ -246,6 +246,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                                     formGenerator.setServerData(serverDataList)
                                 }
                             }
+                            viewModel.formRenderedLiveData.postValue(true)
                         } else {
                             formGenerator.getViewByTag(MUAC + rootSuffix)?.gone()
                             formGenerator.getViewByTag(muacStatus + rootSuffix)?.gone()
@@ -673,7 +674,6 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                     }
 
                     in 6..12 -> {
-
                         formGenerator.getViewByTag(ExclusivelyBreastfeeding + rootSuffix)?.apply {
                             visibility = View.GONE
                         }

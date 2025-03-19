@@ -38,6 +38,8 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragmen
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
+import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentRMNCHNeonateViewModel
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
 import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
@@ -51,6 +53,7 @@ class AssessmentActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAssessmentBinding
     private val viewModel: AssessmentViewModel by viewModels()
+    private val assessmentRMNCHNeonateViewModel: AssessmentRMNCHNeonateViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -389,7 +392,14 @@ class AssessmentActivity : BaseActivity() {
                         val isDeathOfMother = ancObject?.optBoolean(DeathOfMother, false) == true
                         // insertOtherAssessmentDetails()
                         if (CommonUtils.isCommunity() && isDeathOfMother) {
-                            viewModel.workflowName?.let { startCbsActivity(it) }
+                            viewModel.workflowName?.let {
+                                startCbsActivity(
+                                    workFlowName = it,
+                                    memberId = viewModel.selectedHouseholdMemberId,
+                                    assessmentId = viewModel.assessmentSaveLiveData.value?.data?.id,
+                                    deathOfMother = true
+                                )
+                            }
                         } else {
                             loadSummaryFragment()
                         }
@@ -406,9 +416,20 @@ class AssessmentActivity : BaseActivity() {
             when (resource.state) {
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    finishSuccessFlow()
-                    if (!com.medtroniclabs.spice.common.CommonUtils.isNonCommunity() ) {
-                        startBackgroundOfflineSync()
+                    if (!viewModel.isCbs) {
+                        finishSuccessFlow()
+                        if (!com.medtroniclabs.spice.common.CommonUtils.isNonCommunity() ) {
+                            startBackgroundOfflineSync()
+                        }
+                    } else {
+                        viewModel.isCbs = false
+                        startCbsActivity(
+                            workFlowName = PNCNeonatal,
+                            memberId = assessmentRMNCHNeonateViewModel.childId,
+                            assessmentId = assessmentRMNCHNeonateViewModel.assessmentSaveLiveData.value?.data?.second?.id,
+                            deathOfNewborn = true,
+                            motherId = viewModel.memberDetailsLiveData.value?.data?.id
+                        )
                     }
                 }
 
@@ -438,17 +459,24 @@ class AssessmentActivity : BaseActivity() {
             }
         }
     }
-
-    private fun startCbsActivity(workFlowName: String) {
-        val intent = Intent(this, CbsActivity::class.java)
-        intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberId)
-        intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
-        intent.putExtra(MenuConstants.WorkFlowName, workFlowName)
-        viewModel.assessmentSaveLiveData.value?.data?.id?.let {
-            intent.putExtra(DefinedParams.AssessmentId, it)
+    private fun startCbsActivity(
+        workFlowName: String,
+        memberId: Long?,
+        assessmentId: Long?,
+        deathOfMother: Boolean = false,
+        deathOfNewborn: Boolean = false,
+        motherId:Long? = null
+    ) {
+        val intent = Intent(this, CbsActivity::class.java).apply {
+            putExtra(DefinedParams.MemberID, memberId)
+            putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
+            putExtra(MenuConstants.WorkFlowName, workFlowName)
+            putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
+            putExtra(DefinedParams.MOTHER_ID, motherId)
+            if (assessmentId != null) putExtra(DefinedParams.AssessmentId, assessmentId)
+            if (deathOfMother) putExtra(DeathOfMother, true)
+            if (deathOfNewborn) putExtra(RMNCH.deathOfNewborn, true)
         }
-        intent.putExtra(RMNCH.DeathOfMother, true)
-        intent.putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
         startActivity(intent)
     }
 

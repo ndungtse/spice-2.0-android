@@ -79,8 +79,9 @@ object AssessmentCommonUtils {
     fun addViewSummaryLayout(title: String?, value: String?, valueTextColor: Int? = null, context:Context, isCallShown:Boolean = false, callBtnTag : String? = null,   callback: ((String?,String?) -> Unit)? = null, forCbs:Boolean = false, countryCode:String? = null): ConstraintLayout {
         val summaryBinding = AssessmentSummaryLayoutBinding.inflate(LayoutInflater.from(context))
         summaryBinding.tvKey.text = title ?: context.getString(R.string.separator_hyphen)
-        val formattedTitle = countryCode?.let { it + value } ?: value
+        val formattedTitle = countryCode?.let { "$it $value" } ?: value
         summaryBinding.tvValue.text = getSummaryValue(context, formattedTitle)
+        summaryBinding.tvValue.tag = value
         valueTextColor?.let {
             summaryBinding.tvValue.setTextColor(it)
             summaryBinding.tvValue.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
@@ -97,9 +98,9 @@ object AssessmentCommonUtils {
         }
         callBtnTag?.let {
             summaryBinding.callButton.tag = callBtnTag
-            summaryBinding.callButton.safeClickListener{
+            summaryBinding.callButton.safeClickListener {
                 val tag = summaryBinding.callButton.tag as? String ?: ""
-                val value = summaryBinding.tvValue.text as? String ?: ""
+                val value = summaryBinding.tvValue.tag as? String ?: ""
                 callback?.invoke(tag, value)
             }
         }

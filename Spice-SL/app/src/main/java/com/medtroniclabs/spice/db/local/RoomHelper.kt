@@ -482,4 +482,6 @@ interface RoomHelper {
     fun householdMemberWithTbStatus(hhId: Long): LiveData<List<HouseholdMemberEntity>>
 
     suspend fun updateTBContactTraceStatus(hhmId: Long, tbContactTracingStatus: Int)
+
+    suspend fun resetPregnant(memberId: Long, isPregnant: Boolean)
 }

@@ -87,7 +87,7 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
             ?.phoneNumber
         val phoneCode = SecuredPreference.getPhoneNumberCode()?.let { if (it.startsWith("+")) it else "+$it" }
         if (!phoneNumber.isNullOrBlank()) {
-            navToDial(phoneCode + phoneNumber)
+            navToDial(phoneNumber)
         }
     }
 

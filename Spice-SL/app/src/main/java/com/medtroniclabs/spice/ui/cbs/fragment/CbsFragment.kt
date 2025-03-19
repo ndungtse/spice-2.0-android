@@ -34,6 +34,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfNewborn
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
@@ -65,6 +66,13 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         setListeners()
         if (requireArguments().getLong(AssessmentId) != 0L) {
             viewModel.getAssessmentDetailsById(requireArguments().getLong(AssessmentId))
+        }
+        if (viewModel.motherID != null && viewModel.motherID != -1L && viewModel.workflowName.equals(
+                PNCNeonatal,
+                ignoreCase = true
+            )
+        ) {
+            viewModel.getPregnancyDetailInformationForMother()
         }
     }
 
@@ -293,6 +301,9 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                     CBS.lowercase()
                 )
             }
+            var memberIdOfMotherForResetPNCANC: Long? = null
+
+            // Navigate after the assessment only if it contains the assessment ID, e.g., ICCM, RMNCH ANC, PNC, or Childhood Visit.
             if (assessmentId != 0L) {
                 viewModel.getAssessmentDetails.value?.data?.let { data ->
                     // Convert JSON String to HashMap
@@ -335,14 +346,24 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                             ?.get(surveillanceDetails) as? Map<String, Any>)
                             ?.get(birth) as? String
                         if (!birth.isNullOrBlank() && !birth.equals(DefinedParams.still_birth,true)) {
+                            // If the birth value is "boy" or "girl," the data will not be saved in the database but only in the ViewModel.
+                            // Once the member is saved in the CBS activity, all data will be stored in the database(In cbsActivity).
+                            // If the birth value is "boy" or "girl," the PNC and ANC will be reset, as the pregnancy flow will conclude after childbirth.
                             viewModel.saveAssessmentCbs(data, resultValue, birth)
                             return
                         }
+                        memberIdOfMotherForResetPNCANC = viewModel.motherID.takeIf {
+                            it != null && it != -1L && viewModel.workflowName.equals(PNCNeonatal, ignoreCase = true)
+                        } ?: data.householdMemberLocalId.takeIf {
+                            memberIdOfMotherForResetPNCANC == null && !birth.isNullOrBlank() && birth.equals(DefinedParams.still_birth, ignoreCase = true)
+                        }
                     }
-                    // Convert HashMap back to JSON and save
 
+                    // Convert HashMap back to JSON and save
+                    // The memberIdOfMotherForResetPNCANC will have a value only if the birth value is "still birth"; otherwise, it will be null.
+                    // It is used to reset PNC and ANC and update the pregnancy status in the member table.
                     result?.second?.let { resultValue ->
-                        viewModel.saveCallResult(data, resultValue)
+                        viewModel.saveCallResult(data, resultValue, memberIdOfMotherForResetPNCANC)
                     }
                 }
             } else {
@@ -359,12 +380,31 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                         ?.get(surveillanceDetails) as? Map<String, Any>)
                         ?.get(birth) as? String
                     if (!birth.isNullOrBlank() && !birth.equals(DefinedParams.still_birth,true)) {
-                        viewModel.setBirth(resultValue, referralResult, birth, isDelete)
+                        viewModel.setBirth(resultValue, referralResult, birth, isDelete,viewModel.memberDetailsLiveData.value?.data?.id)
                         return
                     }
+                    if (!birth.isNullOrBlank() && birth.equals(DefinedParams.still_birth, true)) {
+                        viewModel.memberDetailsLiveData.value?.data?.id?.let {
+                            viewModel.savePatientClinicalInformation(viewModel.getUpdatedPregnancyDetail(it, viewModel.pregnancyDetail,true))
+                        }
+                    }
+                    val rmnchText = rmnchList?.mapNotNull { it[DefinedParams.NAME] as? String }?.toMutableList() ?: mutableListOf()
+
+                    val otherText = ((viewModel.assessmentMap[CBS.lowercase()] as? Map<String, Any>)
+                        ?.get(surveillanceDetails) as? Map<String, Any>)
+                        ?.get(DefinedParams.OtherNotifiableConditions) as? String
+
+                    val index = rmnchText.indexOfFirst { it.equals(DefinedParams.Other, ignoreCase = true) }
+
+                    if (index != -1 && !otherText.isNullOrBlank()) {
+                        rmnchText[index] = "${DefinedParams.Other} ($otherText)"
+                    }
+                    val finalText = rmnchText.joinToString(",")
                     if (isDelete) {
                         viewModel.updateMemberDeceasedStatus(
-                            viewModel.memberDetailsLiveData.value?.data?.id ?: -1L, false
+                            viewModel.memberDetailsLiveData.value?.data?.id ?: -1L,
+                            false,
+                            finalText
                         )
                     }
                     viewModel.saveAssessment(resultValue, referralResult, viewModel.menuId)

@@ -155,21 +155,32 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
 
     private fun getPatientStatusData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(ReferralStatus.Recovered.name, getString(R.string.recovered)))
-        if (viewModel.selectedFollowUpDetail?.type?.equals(
-                ReferralStatus.Referred.name,
-                true
-            ) != true
-        ) {
+        val data = setOf("NCD", "IMMUNISATION")
+        val value = viewModel.selectedFollowUpDetail?.encounterType
+        if (data.contains(value)) {
+            flowList.add(getOptionMap(getString(R.string.inform), getString(R.string.inform)))
             flowList.add(
                 getOptionMap(
-                    ReferralStatus.OnTreatment.name,
-                    getString(R.string.on_treatment)
+                    getString(R.string.not_inform),
+                    getString(R.string.not_inform)
                 )
             )
+        } else {
+            flowList.add(getOptionMap(ReferralStatus.Recovered.name, getString(R.string.recovered)))
+            if (viewModel.selectedFollowUpDetail?.type?.equals(
+                    ReferralStatus.Referred.name,
+                    true
+                ) != true
+            ) {
+                flowList.add(
+                    getOptionMap(
+                        ReferralStatus.OnTreatment.name,
+                        getString(R.string.on_treatment)
+                    )
+                )
+            }
+            flowList.add(getOptionMap(ReferralStatus.Referred.name, getString(R.string.referred)))
         }
-
-        flowList.add(getOptionMap(ReferralStatus.Referred.name, getString(R.string.referred)))
         return flowList
     }
 

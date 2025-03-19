@@ -1432,4 +1432,6 @@
     <string name="was_the_member_taken_to_clinic" translatable="false">Was the member taken to the Clinic</string>
     <string name="ncd_risk_factor" translatable="false">NCD Risk Factors</string>
     <string name="the_dates_should_be_less_than_age" translatable="false">The date should be less than Age</string>
+    <string name="inform" translatable="false">Informed</string>
+    <string name="not_inform" translatable="false">Not Informed</string>
 </resources>

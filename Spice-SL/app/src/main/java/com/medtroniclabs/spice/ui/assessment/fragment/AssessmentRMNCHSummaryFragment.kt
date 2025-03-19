@@ -237,7 +237,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
 
         val title: String = when (viewModel.workflowName) {
             RMNCH.ANC -> getString(R.string.anc_visit)
-            RMNCH.ChildHoodVisit -> getString(R.string.child_hood_visit)
+            ChildHoodVisit -> getString(R.string.child_hood_visit)
             RMNCH.PNC -> getString(R.string.pnc_visit)
             else -> getString(R.string.hyphen_symbol)
         }
@@ -297,7 +297,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     }
                 }
             }
-        } else if (viewModel.workflowName == RMNCH.ChildHoodVisit) {
+        } else if (viewModel.workflowName == ChildHoodVisit) {
             viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let {
                 calculateAgeInMonths(it)?.let { pair ->
                     if (pair.first <= childHoodVisitMaxMonth) {
@@ -383,7 +383,11 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         viewModel.assessmentSaveLiveData.value?.data?.id?.let {
             intent.putExtra(AssessmentId, it)
         }
-        intent.putExtra(RMNCH.DeathOfMother, true)
+        if (workFlowName.equals(ChildHoodVisit,true)) {
+            intent.putExtra(RMNCH.deathOfNewborn, true)
+        } else {
+            intent.putExtra(DeathOfMother, true)
+        }
         intent.putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
         startActivity(intent)
     }

@@ -72,7 +72,6 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
     }
 
     private fun initView() {
-
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled()
@@ -139,6 +138,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resources.data?.let { data ->
+                        binding.llChildForm.visible()
                         childFormGenerator.populateViews(data.formLayout)
                         disableDateOfBirth()
                         removeHouseHoldHeadMemberRelationShip()
