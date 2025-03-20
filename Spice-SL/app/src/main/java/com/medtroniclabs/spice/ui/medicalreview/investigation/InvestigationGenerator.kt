@@ -794,8 +794,8 @@ class InvestigationGenerator(
                                 // hideValidationField(data)
                             }
                         } ?: kotlin.run {
-                            isValid = false
-                            data.dataError = false
+                            isValid = true
+                            data.dataError = true
                         }
                     }
                 }
