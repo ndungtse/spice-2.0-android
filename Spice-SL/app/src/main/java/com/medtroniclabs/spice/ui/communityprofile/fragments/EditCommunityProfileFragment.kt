@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_ID
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_NAME
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.community.CommunityPopulation
@@ -34,8 +35,11 @@ import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.AccessRoadToPhu
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.AmbulanceDriverContactNo
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.DescribeLocation
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.EmergencyContactPhu
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.EmergencyManagementPlan
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.EmergencyTransportContactNo
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.False
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.Infrastructure
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.MarketDays
@@ -372,6 +376,17 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                             }
                         }
                     }
+
+                    val countryCode = SecuredPreference.getPhoneNumberCode()
+                    if(emergency.containsKey(EmergencyContactPhu)){
+                        emergency[EmergencyContactPhu] = "+$countryCode " + emergency[EmergencyContactPhu]
+                    }
+                    if(emergency.containsKey(EmergencyTransportContactNo)){
+                        emergency[EmergencyTransportContactNo] = "+$countryCode " + emergency[EmergencyTransportContactNo]
+                    }
+                    if(emergency.containsKey(AmbulanceDriverContactNo)){
+                        emergency[AmbulanceDriverContactNo] = "+$countryCode " + emergency[AmbulanceDriverContactNo]
+                    }
                 }
 
                 return requestMap
@@ -539,6 +554,13 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                     }
                     NearestPhu -> {
                         communityProfileViewModel.nearestPhu = value.toString()
+                    }
+                    EmergencyContactPhu, EmergencyTransportContactNo ,
+                    AmbulanceDriverContactNo -> {
+                        val phoneNumber = value.toString().substringAfter(" ")
+                        formGenerator.getViewByTag(key)?.let { view ->
+                            formGenerator.setValueForView(phoneNumber, view)
+                        }
                     }
                     else -> {
                         formGenerator.getViewByTag(key)?.let { view ->

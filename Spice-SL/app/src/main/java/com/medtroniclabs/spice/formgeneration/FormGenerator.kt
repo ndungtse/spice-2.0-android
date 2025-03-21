@@ -2713,7 +2713,9 @@ class FormGenerator(
                 ) {
                     isValid = false
                     requestFocusView(data)
-                } else if ((id == Screening.phoneNumber || id == headPhoneNumber || id == phoneNumber) && isMandatory && resultHashMap.containsKey(
+                } else if ((id == Screening.phoneNumber || id == headPhoneNumber || id == phoneNumber
+                            || id == CommunityDetails.EmergencyContactPhu || id == CommunityDetails.EmergencyTransportContactNo
+                            || id == CommunityDetails.AmbulanceDriverContactNo) && isMandatory && resultHashMap.containsKey(
                         id
                     )
                 ) {
