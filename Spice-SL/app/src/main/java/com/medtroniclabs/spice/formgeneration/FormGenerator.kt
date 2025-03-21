@@ -81,6 +81,7 @@ import com.medtroniclabs.spice.databinding.RadioGroupLayoutBinding
 import com.medtroniclabs.spice.databinding.TextLabelLayoutBinding
 import com.medtroniclabs.spice.databinding.TimeViewLayoutBinding
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
+import com.medtroniclabs.spice.db.entity.RxBuddyDetails
 import com.medtroniclabs.spice.formgeneration.FormSupport.getSpannableString
 import com.medtroniclabs.spice.formgeneration.FormSupport.isTranslatedOrNot
 import com.medtroniclabs.spice.formgeneration.FormSupport.translateTitle
@@ -139,6 +140,7 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
+import com.medtroniclabs.spice.mappingkey.RxBuddy
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.mappingkey.Screening.DateOfBirth
 import com.medtroniclabs.spice.mappingkey.Screening.Hour
@@ -398,6 +400,7 @@ class FormGenerator(
                 || serverViewModel.id.contains(headPhoneNumber) || serverViewModel.id.contains(CommunityDetails.EmergencyContactPhu)
                 || serverViewModel.id.contains(CommunityDetails.EmergencyTransportContactNo)
                 || serverViewModel.id.contains(CommunityDetails.AmbulanceDriverContactNo)
+                || serverViewModel.id.contains(RxBuddy.rxBuddyPhoneNumber)
             ) {
                 SecuredPreference.getPhoneNumberCode()?.let { phoneNumberCode ->
                     binding.llCountryCode.visibility = View.VISIBLE
@@ -2716,7 +2719,7 @@ class FormGenerator(
                     requestFocusView(data)
                 } else if ((id == Screening.phoneNumber || id == headPhoneNumber || id == phoneNumber
                             || id == CommunityDetails.EmergencyContactPhu || id == CommunityDetails.EmergencyTransportContactNo
-                            || id == CommunityDetails.AmbulanceDriverContactNo) && isMandatory && resultHashMap.containsKey(
+                            || id == CommunityDetails.AmbulanceDriverContactNo || id == RxBuddy.rxBuddyPhoneNumber) && isMandatory && resultHashMap.containsKey(
                         id
                     )
                 ) {

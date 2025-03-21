@@ -476,6 +476,48 @@ object SpiceSLMigration {
                 )
                 """.trimIndent()
              )
+            //Create newly added table RXBuddy Details
+            database.execSQL(
+                """CREATE TABLE IF NOT EXIST RxBuddyDetails(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    rxBuddyId INTEGER,
+                    patientMemberId TEXT NOT NULL,
+                    memberId TEXT,
+                    name TEXT,
+                    phoneNumber TEXT,
+                    relationship TEXT NOT NULL,
+                    isMonitorSheetProvider INTEGER NOT NULL
+                )
+                """.trimMargin()
+            )
+            //Create newly added table Treatment Details
+            database.execSQL(
+                """CREATE TABLE IF NOT EXISTS TreatmentDetailsEntity(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    memberId TEXT NOT NULL,
+                    type TEXT NOT NULL,
+                    diagnoses TEXT NOT NULL,
+                    diagnosedDate TEXT NOT NULL,
+                    treatmentStartDate TEXT NOT NULL,
+                    healthUnitNo INTEGER NOT NULL,
+                    icDistrictTBNo INTEGER NOT NULL,
+                    typeOfDrug TEXT NOT NULL,
+                    noOfTabletsGivenForTB TEXT NOT NULL
+                    )
+                    """.trimMargin()
+            )
+            //Create newly added table TBRxBuddyFollowUp
+            database.execSQL(
+                """CREATE TABLE IF NOT EXISTS RxBuddyFollowUpEntity(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    rxBuddyId INTEGER,
+                    patientMemberId TEXT NOT NULL,
+                    rxBuddyMonitoringSheetDate TEXT NOT NULL,
+                    isAnyOfSymptomsWorse INTEGER NOT NULL,
+                    isAnyOfMedicationNeeded INTEGER NOT NULL
+                    )
+                    """.trimMargin()
+            )
             database.execSQL("ALTER TABLE HealthFacilityEntity ADD COLUMN phoneNumber TEXT DEFAULT NULL")
             database.execSQL("ALTER TABLE VillageEntity ADD COLUMN healthFacilityId INTEGER DEFAULT NULL")
             database.execSQL("ALTER TABLE AssessmentEntity ADD COLUMN callResult TEXT DEFAULT NULL")

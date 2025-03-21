@@ -37,7 +37,10 @@ import com.medtroniclabs.spice.db.dao.NcdMedicalReviewDao
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.dao.RiskFactorDAO
+import com.medtroniclabs.spice.db.dao.RxBuddyDetailsDAO
+import com.medtroniclabs.spice.db.dao.RxBuddyFollowUpDAO
 import com.medtroniclabs.spice.db.dao.ScreeningDAO
+import com.medtroniclabs.spice.db.dao.TreatmentDetailsDAO
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.db.local.RoomHelperImpl
 import com.medtroniclabs.spice.network.ApiHelper
@@ -337,6 +340,24 @@ object AppModule {
     @Provides
     fun provideConsentForm(db: SpiceDataBase): CommunityDetailsDAO {
         return db.communityDetailsDao()
+    }
+
+    @Singleton
+    @Provides
+    fun providesRxBuddyDAO(db: SpiceDataBase):RxBuddyDetailsDAO{
+        return db.rxBuddyDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideTreatmentDetailsDAO(db: SpiceDataBase):TreatmentDetailsDAO{
+        return db.treatmentDetailsDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideRxBuddyFollowUpDAO(db: SpiceDataBase): RxBuddyFollowUpDAO {
+        return db.rxBuddyFollowUpDao()
     }
 }
 

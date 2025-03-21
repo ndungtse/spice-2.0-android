@@ -53,6 +53,9 @@ import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.db.entity.NCDFollowUp
 import com.medtroniclabs.spice.db.entity.NCDPatientDetailsEntity
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
+import com.medtroniclabs.spice.db.entity.RxBuddyDetails
+import com.medtroniclabs.spice.db.entity.RxBuddyFollowUpEntity
+import com.medtroniclabs.spice.db.entity.TreatmentDetailsEntity
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -486,4 +489,18 @@ interface RoomHelper {
     suspend fun updatePregnantStatus(memberId: Long, isPregnant: Boolean)
 
     suspend fun getSymptomListByTypes(types: List<String>): List<SignsAndSymptomsEntity>
+
+    suspend fun insertRxBuddyDetails(rxBuddyDetails: RxBuddyDetails):Long
+
+    suspend fun getRxBuddyDetails(patientMemberId:String):RxBuddyDetails?
+
+    suspend fun getOtherHouseholdExcludeTBPatient(householdId:Long,patientId:Long):List<HouseholdMemberEntity>
+
+    suspend fun insertTreatmentDetails(treatmentDetails: TreatmentDetailsEntity):Long
+
+    suspend fun updateTreatmentDetails(treatmentDetails: TreatmentDetailsEntity):Int
+
+    suspend fun getTreatmentDetails(memberId: Long):TreatmentDetailsEntity?
+
+    suspend fun insertRxBuddyFollowUp(rxBuddyFollowUp: RxBuddyFollowUpEntity):Long
 }

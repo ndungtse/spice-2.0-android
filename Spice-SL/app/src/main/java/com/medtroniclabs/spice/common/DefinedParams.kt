@@ -317,4 +317,18 @@ object DefinedParams {
     const val householdId = "HOUSEHOLD_ID"
     const val villageId = "VILLAGE_ID"
     const val Referred_NCD = "NCD"
+    const val isTbPatient = "isTbPatient"
+    const val HouseholdId = "HouseholdId"
+
+    const val RxBuddyName = "rxBuddyName"
+    const val RxRelationShip = "rxRelationShip"
+    const val RxPhoneNo = "rxPhoneNo"
+    const val RxMonitoringSheetProvided = "hasProvidedMonitoringSheet"
+
+    const val RX_BUDDY_FOLLOW_UP = "rxBuddyFollowUp"
+    const val RX_BUDDY_FOLLOW_UP_VALUES = "rxBuddyFollowUpValues"
+    const val MonitoringSheetDate = "MonitoringSheetDate"
+    const val SymptomsFollowUp = "SymptomsFollowUp"
+    const val MedicationFollowUp = "MedicationFollowUp"
+    const val isRxBuddyFollowUp = "isRxBuddyFollowUp"
 }

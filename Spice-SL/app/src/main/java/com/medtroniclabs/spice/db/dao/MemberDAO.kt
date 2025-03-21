@@ -137,4 +137,8 @@ interface MemberDAO {
 
     @Query("UPDATE HouseholdMember SET isPregnant = :isPregnant , sync_status =:syncStatus WHERE id = :memberId")
     suspend fun updatePregnantStatus(memberId: Long, isPregnant: Boolean, syncStatus: String)
+
+    @Query("SELECT * FROM HouseholdMember WHERE household_id = :householdId AND id != :patientId AND isActive=1 AND substr(date_of_birth, 1, 10) < date('now','-10 years') ")
+    suspend fun getOtherHouseholdExcludeTBPatient(householdId: Long,patientId:Long):List<HouseholdMemberEntity>
+
 }

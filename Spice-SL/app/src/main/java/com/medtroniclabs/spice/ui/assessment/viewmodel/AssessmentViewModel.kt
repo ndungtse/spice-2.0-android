@@ -23,15 +23,16 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.CBS
 import com.medtroniclabs.spice.common.DefinedParams.CONTACT_TRACING
 import com.medtroniclabs.spice.common.DefinedParams.TB
-import com.medtroniclabs.spice.common.DefinedParams.TbScreening
 import com.medtroniclabs.spice.common.DefinedParams.CbsNotifiableCondition
 import com.medtroniclabs.spice.common.DefinedParams.IccmDiarrheaNotifiableCondition
 import com.medtroniclabs.spice.common.DefinedParams.IccmFeverNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.MonitoringSheetDate
 import com.medtroniclabs.spice.common.DefinedParams.NotifiableConditions
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditions
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditionsForDiarrhoea
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditionsForFever
 import com.medtroniclabs.spice.common.DefinedParams.RmnchNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.SymptomsFollowUp
 import com.medtroniclabs.spice.common.DefinedParams.familyPlanning
 import com.medtroniclabs.spice.common.DefinedParams.surveillanceDetails
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -48,11 +49,21 @@ import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
+import com.medtroniclabs.spice.db.entity.RxBuddyDetails
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.TreatmentDetailsEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.mappingkey.RxBuddy.hasCough
+import com.medtroniclabs.spice.mappingkey.RxBuddy.hasProvidedMonitoringSheet
+import com.medtroniclabs.spice.mappingkey.RxBuddy.relationshipToPatient
+import com.medtroniclabs.spice.mappingkey.RxBuddy.rxBuddy
+import com.medtroniclabs.spice.mappingkey.RxBuddy.rxBuddyName
+import com.medtroniclabs.spice.mappingkey.RxBuddy.rxBuddyPhoneNumber
+import com.medtroniclabs.spice.mappingkey.RxBuddy.selectHouseholdMember
+import com.medtroniclabs.spice.mappingkey.RxBuddy.tbScreening
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.mappingkey.UnderFiveYearExaminationKeyMapping.DiseaseName.fever
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
@@ -62,6 +73,8 @@ import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
+import com.medtroniclabs.spice.repo.RxBuddyRepository
+import com.medtroniclabs.spice.repo.TreatmentDetailsRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
@@ -111,10 +124,13 @@ class AssessmentViewModel @Inject constructor(
     private var memberRegistrationRepository: HouseholdMemberRepository,
     private var assessmentRepository: AssessmentRepository,
     private val metaRepository: MetaRepository,
-    private val houseHoldRepository: HouseHoldRepository
+    private val houseHoldRepository: HouseHoldRepository,
+    private val rxBuddyRepository: RxBuddyRepository,
+    private val treatmentDetailsRepository: TreatmentDetailsRepository
 ) : BaseViewModel(dispatcherIO) {
 
     var selectedHouseholdMemberId = -1L
+    var selectedHouseholdId = -1L
     var followUpId: Long? = null
     val assessmentSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
     val assessmentStringLiveData = MutableLiveData<String?>()
@@ -167,6 +183,12 @@ class AssessmentViewModel @Inject constructor(
     val getAssessmentDetails = MutableLiveData<Resource<AssessmentEntity>>()
     var isCbs = false
     var motherID: Long? = null
+    val otherHouseholdMemberLiveData = MutableLiveData<Resource<ArrayList<Map<String, Any>>>>()
+    val saveRxBuddyDetails = MutableLiveData<Resource<Long>>()
+    val treatmentDetailsLiveData = MutableLiveData<Resource<TreatmentDetailsEntity>>()
+    val rxBuddyDetailsLiveData = MutableLiveData<Resource<RxBuddyDetails?>>()
+    val saveRxBuddyFollowUpLiveData = MutableLiveData<Resource<Long>>()
+    val rxBuddyFollowUpResultHashMap = HashMap<String, Any>()
     val childhoodVisitConditionLiveData = MediatorLiveData<String>().apply {
         addSource(ageInMonth) { age ->
             if (formRenderedLiveData.value == true && age != null) {
@@ -715,7 +737,6 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-
     fun getSymptomListByType(type: String) {
         viewModelScope.launch(dispatcherIO) {
             symptomTypeListResponse.postValue(assessmentRepository.getSymptomListByType(type))
@@ -729,12 +750,15 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun getFormData(formType: String,isContactTracking:Boolean=false){
+    fun getFormData(formType: String,isContactTracking:Boolean?,isTbPatient:Boolean?,isRxBuddy:Boolean){
         viewModelScope.launch(dispatcherIO) {
             formLayoutsLiveData.postLoading()
             val formData = assessmentRepository.getFormData(formType)
-            if(isContactTracking)
+            if(isContactTracking == true)
                 updateFieldViewStatus(formData)
+            else if(isTbPatient == true)
+                updateRxBuddyFieldViewStatus(formData,isRxBuddy)
+
             formLayoutsLiveData.postValue(formData)
         }
     }
@@ -743,6 +767,33 @@ class AssessmentViewModel @Inject constructor(
         formResponse.data?.formLayout?.forEach { field ->
             if(field.id == CONTACT_TRACING || field.family == CONTACT_TRACING){
                 field.visibility = "visible"
+                field.isMandatory = true
+            }else{
+                field.isMandatory = false
+            }
+        }
+    }
+
+    private fun updateRxBuddyFieldViewStatus(formResponse: Resource<FormResponse>,isRxBuddy: Boolean) {
+        formResponse.data?.formLayout?.forEach { field ->
+            when (field.id) {
+                tbScreening -> {
+                    field.visibility = "gone"
+                    field.isMandatory = false
+                }
+                hasCough -> {
+                    field.visibility = "gone"
+                    field.isMandatory = false
+                }
+                rxBuddyName, rxBuddyPhoneNumber -> {
+                    field.visibility = "gone"
+                }
+
+                rxBuddy, selectHouseholdMember,
+                relationshipToPatient,
+                hasProvidedMonitoringSheet -> {
+                    field.visibility = if(isRxBuddy) "gone" else "visible"
+                }
             }
         }
     }
@@ -1322,6 +1373,94 @@ class AssessmentViewModel @Inject constructor(
     fun getSymptomListByTypes(types: List<String>) {
         viewModelScope.launch(dispatcherIO) {
             symptomTypeListResponse.postValue(assessmentRepository.getSymptomListByTypes(types))
+        }
+    }
+
+    fun getOtherHouseholdMemberExcludeTBPatient(){
+        if (selectedHouseholdMemberId == -1L || selectedHouseholdId == -1L) {
+            return
+        }
+        viewModelScope.launch(dispatcherIO) {
+            otherHouseholdMemberLiveData.postValue(
+                rxBuddyRepository.getOtherHouseholdMembersExcludeTBPatient(
+                    selectedHouseholdId, selectedHouseholdMemberId
+                )
+            )
+        }
+    }
+
+    fun insertRxBuddyDetails(rxBuddyId:Long?,
+                             patientMemberId:String,
+                             memberId:String?,
+                             name:String?,
+                             phoneNumber:String?,
+                             relationShip:String,
+                             isMonitorSheetProvider:Boolean){
+        viewModelScope.launch {
+            saveRxBuddyDetails.postLoading()
+            saveRxBuddyDetails.postValue(
+                rxBuddyRepository.insertRxBuddyDetails(
+                    rxBuddyId,
+                    patientMemberId,
+                    if(memberId?.equals("0") == true) null else memberId,
+                    name,
+                    phoneNumber,
+                    relationShip,
+                    isMonitorSheetProvider
+                )
+            )
+        }
+    }
+
+    fun getRxBuddyDetails(patientMemberId: String) {
+        viewModelScope.launch {
+            rxBuddyDetailsLiveData.postLoading()
+            rxBuddyDetailsLiveData.postValue(
+                rxBuddyRepository.getRxBuddyDetails(patientMemberId)
+            )
+        }
+    }
+
+    fun insertTreatmentDetails(){
+        viewModelScope.launch {
+            val treatmentDetails = TreatmentDetailsEntity(
+                memberId = selectedHouseholdMemberId.toString(),
+                type = "TB",
+                diagnoses = "Drug Sensitive TB",
+                diagnosedDate = "23/02/2025",
+                treatmentStartDate = "23/02/2025",
+                healthUnitNo = 156L,
+                icDistrictTBNo = 1019283L,
+                typeOfDrug = "Bedaquiline  - 400mg/15 Tablets" +
+                        "Pretomanid - 200mg/15 Tablets",
+                noOfTabletsGivenForTB = 50L
+            )
+            treatmentDetailsRepository.insertOrUpdateTreatmentDetails(treatmentDetails)
+        }
+    }
+
+    fun getTreatmentDetails(hhmId:Long){
+        viewModelScope.launch {
+            treatmentDetailsLiveData.postLoading()
+            treatmentDetailsLiveData.postValue(
+                treatmentDetailsRepository.getTreatmentDetails(hhmId)
+            )
+        }
+    }
+
+    fun insertRxBuddyFollowUp(rxBuddyId: Long?,patientMemberId: String,monitoringSheetDate:String,
+                              isSymptomsWorse:Boolean,isMedication:Boolean){
+        viewModelScope.launch {
+            saveRxBuddyFollowUpLiveData.postLoading()
+            saveRxBuddyFollowUpLiveData.postValue(
+                rxBuddyRepository.insertRxBuddyFollowUp(
+                    rxBuddyId = null,
+                    patientMemberId = patientMemberId,
+                    rxBuddyMonitoringSheetDate = monitoringSheetDate,
+                    isAnyOfSymptomsWorse = isSymptomsWorse,
+                    isAnyOfMedicationNeeded = isMedication
+                )
+            )
         }
     }
 }

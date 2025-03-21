@@ -44,7 +44,10 @@ import com.medtroniclabs.spice.db.dao.NCDFollowUpDao
 import com.medtroniclabs.spice.db.dao.NcdMedicalReviewDao
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
 import com.medtroniclabs.spice.db.dao.RiskFactorDAO
+import com.medtroniclabs.spice.db.dao.RxBuddyDetailsDAO
+import com.medtroniclabs.spice.db.dao.RxBuddyFollowUpDAO
 import com.medtroniclabs.spice.db.dao.ScreeningDAO
+import com.medtroniclabs.spice.db.dao.TreatmentDetailsDAO
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
@@ -77,8 +80,11 @@ import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.NCDPatientDetailsEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
+import com.medtroniclabs.spice.db.entity.RxBuddyDetails
+import com.medtroniclabs.spice.db.entity.RxBuddyFollowUpEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.TreatmentDetailsEntity
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -114,7 +120,10 @@ class RoomHelperImpl @Inject constructor(
     private val riskFactorDAO: RiskFactorDAO,
     private val ncdMedicalReviewDao: NcdMedicalReviewDao,
     private val ncdFollowUpDao: NCDFollowUpDao,
-    private val communityDAO: CommunityDetailsDAO
+    private val communityDAO: CommunityDetailsDAO,
+    private val rxBuddyDetailsDAO: RxBuddyDetailsDAO,
+    private val treatmentDetailsDAO: TreatmentDetailsDAO,
+    private val rxBuddyFollowUpDAO: RxBuddyFollowUpDAO
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -1268,5 +1277,36 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getSymptomListByTypes(types: List<String>): List<SignsAndSymptomsEntity> {
         return assessmentDAO.getSymptomListByTypes(types)
+    }
+
+    override suspend fun insertRxBuddyDetails(rxBuddyDetails: RxBuddyDetails): Long {
+        return rxBuddyDetailsDAO.insertRxBuddyDetails(rxBuddyDetails)
+    }
+
+    override suspend fun getRxBuddyDetails(patientMemberId: String): RxBuddyDetails? {
+        return rxBuddyDetailsDAO.getRxBuddyDetailsByPatientMemberId(patientMemberId)
+    }
+
+    override suspend fun getOtherHouseholdExcludeTBPatient(
+        householdId: Long,
+        patientId: Long
+    ): List<HouseholdMemberEntity> {
+        return memberDAO.getOtherHouseholdExcludeTBPatient(householdId, patientId)
+    }
+
+    override suspend fun insertTreatmentDetails(treatmentDetails: TreatmentDetailsEntity): Long {
+        return treatmentDetailsDAO.insertTreatmentDetails(treatmentDetails)
+    }
+
+    override suspend fun updateTreatmentDetails(treatmentDetails: TreatmentDetailsEntity): Int {
+        return treatmentDetailsDAO.updateTreatmentDetails(treatmentDetails)
+    }
+
+    override suspend fun getTreatmentDetails(memberId: Long): TreatmentDetailsEntity? {
+        return treatmentDetailsDAO.getTreatmentDetailsByMemberId(memberId)
+    }
+
+    override suspend fun insertRxBuddyFollowUp(rxBuddyFollowUp: RxBuddyFollowUpEntity): Long {
+        return rxBuddyFollowUpDAO.insertRxBuddyFollowUp(rxBuddyFollowUp)
     }
 }

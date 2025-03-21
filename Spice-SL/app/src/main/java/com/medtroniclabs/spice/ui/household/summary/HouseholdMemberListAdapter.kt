@@ -128,7 +128,8 @@ class HouseholdMemberListAdapter(
         if(!phuWalkInsFlow) {
         holder.binding.cardPatient.safeClickListener {
             if (item.isActive) {
-                listener.onMemberSelected(item.id, false, item.dateOfBirth)
+                listener.onMemberSelected(item.id, false, item.dateOfBirth,
+                    houseHoldId =item.householdId)
             }
         }
         } else {
@@ -177,7 +178,8 @@ class HouseholdMemberListAdapter(
         when (view?.id){
             R.id.tvContactTracingStatus -> {
                 val pos = view.tag as Int
-                listener.onMemberSelected(houseHoldMembersList[pos].id, true, houseHoldMembersList[pos].dateOfBirth,true)
+                listener.onMemberSelected(houseHoldMembersList[pos].id, true,
+                    houseHoldMembersList[pos].dateOfBirth,true)
             }
         }
     }

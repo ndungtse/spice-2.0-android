@@ -37,7 +37,10 @@ import com.medtroniclabs.spice.db.dao.NCDFollowUpDao
 import com.medtroniclabs.spice.db.dao.NcdMedicalReviewDao
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
 import com.medtroniclabs.spice.db.dao.RiskFactorDAO
+import com.medtroniclabs.spice.db.dao.RxBuddyDetailsDAO
+import com.medtroniclabs.spice.db.dao.RxBuddyFollowUpDAO
 import com.medtroniclabs.spice.db.dao.ScreeningDAO
+import com.medtroniclabs.spice.db.dao.TreatmentDetailsDAO
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
@@ -68,8 +71,11 @@ import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.NCDPatientDetailsEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
+import com.medtroniclabs.spice.db.entity.RxBuddyDetails
+import com.medtroniclabs.spice.db.entity.RxBuddyFollowUpEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.TreatmentDetailsEntity
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -85,7 +91,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class,
         RiskFactorEntity::class, LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, UnitMetricEntity::class,
         DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class, DosageDurationEntity::class, NCDFollowUp::class,
-        LinkedVillageEntity::class, NCDCallDetails::class, NCDPatientDetailsEntity::class,CommunityProfile::class],
+        LinkedVillageEntity::class, NCDCallDetails::class, NCDPatientDetailsEntity::class,CommunityProfile::class,RxBuddyDetails::class,TreatmentDetailsEntity::class,RxBuddyFollowUpEntity::class],
     version = 5
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
@@ -119,6 +125,9 @@ abstract class SpiceDataBase : RoomDatabase() {
     abstract fun ncdMedicalReviewDao(): NcdMedicalReviewDao
     abstract fun ncdFollowUpDao(): NCDFollowUpDao
     abstract fun communityDetailsDao(): CommunityDetailsDAO
+    abstract fun rxBuddyDao(): RxBuddyDetailsDAO
+    abstract fun treatmentDetailsDao():TreatmentDetailsDAO
+    abstract fun rxBuddyFollowUpDao():RxBuddyFollowUpDAO
     companion object {
         private const val DATABASE_NAME = "SpiceDataBase"
 

@@ -1436,6 +1436,7 @@
     <string name="the_dates_should_be_less_than_age" translatable="false">The date should be less than Age</string>
     <string name="inform" translatable="false">Informed</string>
     <string name="not_inform" translatable="false">Not Informed</string>
+    <string name="treatment_details" translatable="false">Treatment Details</string>
     <string name="describe" translatable="false">Describe</string>
     <string name="no_community_found" translatable="false">No community found</string>
     <string name="two_zero" translatable="false">00</string>
@@ -1445,4 +1446,23 @@
     <string name="default_user_input_error_date" translatable="false">Please enter a valid date</string>
     <string name="networks" translatable="false">Networks</string>
     <string name="community_boundary_desc_required" translatable="false">Community boundary description is required</string>
+    <string name="start_contact_tracing" translatable="false">Start Contact Tracing</string>
+    <string name="update_contact_tracing_for_other" translatable="false">Update Contact Tracing for other household members!</string>
+    <string name="rx_buddy_details" translatable="false">Rx Buddy Details</string>
+    <string name="relation_ship_with_patient" translatable="false">Relationship with Patient</string>
+    <string name="date_diagnosed" translatable="false">Date Diagnosed</string>
+    <string name="health_unit_no" translatable="false">Health Unit No</string>
+    <string name="ic_district_tb_no" translatable="false">IC District TB No</string>
+    <string name="type_of_drug" translatable="false">Type of Drug</string>
+    <string name="no_of_tablets_given_for_tb" translatable="false">No of tablets given for TB</string>
+    <string name="patient_treatment_details_error" translatable="false">Patient\'s Treatment details Could not be fetched</string>
+    <string name="rx_buddy_details_error" translatable="false">RxBuddy details Could not be fetched</string>
+    <string name="rx_buddy_name" translatable="false">RxBuddy Name</string>
+    <string name="contact_no" translatable="false">Contact No</string>
+    <string name="rx_buddy_monitoring_sheet_provided" translatable="false">Rx Buddy monitoring sheet provided?</string>
+    <string name="patient_followup_details_error" translatable="false">Patient\'s Followup details Could not be fetched</string>
+    <string name="rx_buddy_monitoring_sheet" translatable="false">RxBuddy monitoring sheet</string>
+    <string name="any_of_your_symptoms_getting_worse" translatable="false">Are any of your symptoms getting worse?</string>
+    <string name="have_you_had_a_reaction_to_any_of_your_medications" translatable="false">Have you had a reaction to any of your medications?</string>
+    <string name="follow_up_details" translatable="false">Follow Up Details</string>
 </resources>

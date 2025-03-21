@@ -19,6 +19,7 @@ class ToolsViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
 
+    var selectedHouseholdId = -1L
     var selectedHouseholdMemberID = -1L
     var selectedMemberDob: String? = null
     var followUpId = -1L

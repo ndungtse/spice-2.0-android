@@ -35,6 +35,7 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentSLNCDFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentSLNCDSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.RxBuddySummaryFragment
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
@@ -301,6 +302,8 @@ class AssessmentActivity : BaseActivity() {
 
             MenuConstants.TB_MENU_ID -> {
                 bundle.putBoolean(DefinedParams.CONTACT_TRACING,intent.getBooleanExtra(DefinedParams.CONTACT_TRACING,false))
+                bundle.putLong(DefinedParams.HouseholdId,viewModel.selectedHouseholdId)
+                bundle.putBoolean(DefinedParams.isTbPatient,false)
                 setTitle(MenuConstants.TB_MENU_ID.uppercase())
                 replaceFragmentInId<AssessmentTBFragment>(
                     binding.formsFragmentContainer.id,
@@ -466,6 +469,64 @@ class AssessmentActivity : BaseActivity() {
                 }
             }
         }
+
+        viewModel.saveRxBuddyDetails.observe(this){ resourceState ->
+            when(resourceState.state){
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let {
+                        showErrorDialogue(
+                            getString(R.string.error),
+                            it,
+                            isNegativeButtonNeed = false
+                        ) {}
+                    }
+                }
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    setTitle(Summary.capitalizeFirstChar())
+                    hideBackButton()
+                    replaceFragmentInId<RxBuddySummaryFragment>(
+                        binding.formsFragmentContainer.id,
+                        tag = RxBuddySummaryFragment.TAG
+                    )
+                }
+            }
+        }
+
+        viewModel.saveRxBuddyFollowUpLiveData.observe(this){ resourceState ->
+            when(resourceState.state){
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let {
+                        showErrorDialogue(
+                            getString(R.string.error),
+                            it,
+                            isNegativeButtonNeed = false
+                        ) {}
+                    }
+                }
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    val bundle = Bundle().apply {
+                        putBoolean(DefinedParams.isRxBuddyFollowUp,true)
+                    }
+                    setTitle(Summary.capitalizeFirstChar())
+                    hideBackButton()
+                    replaceFragmentInId<RxBuddySummaryFragment>(
+                        binding.formsFragmentContainer.id,
+                        bundle = bundle,
+                        tag = RxBuddySummaryFragment.TAG
+                    )
+                }
+            }
+        }
     }
     private fun startCbsActivity(
         workFlowName: String,
@@ -504,6 +565,7 @@ class AssessmentActivity : BaseActivity() {
         viewModel.menuId = intent.getStringExtra(DefinedParams.MenuId)
         viewModel.workflowName = intent.getStringExtra(MenuConstants.WorkFlowName)
         viewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
+        viewModel.selectedHouseholdId = intent.getLongExtra(DefinedParams.HouseholdId, -1L)
         val followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1L)
         if (followUpId != -1L)
             viewModel.followUpId = followUpId
