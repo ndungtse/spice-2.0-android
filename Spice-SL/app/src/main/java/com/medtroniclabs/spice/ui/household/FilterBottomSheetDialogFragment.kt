@@ -10,6 +10,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HOUSEHOLDFILTER
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentFilterBottomSheetDialogBinding
@@ -146,6 +147,7 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
             }
 
             R.id.btnCancel -> {
+                householdListViewModel.setUserJourney(AnalyticsDefinedParams.HOUSEHOLDFILTERCANCELTRIGGERED)
                 householdListViewModel.setFilterLiveData(
                     villageFilter = listOf(),
                     statusFilter = listOf()
@@ -158,6 +160,7 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
     }
 
     private fun applyFilter() {
+        householdListViewModel.setUserJourney(AnalyticsDefinedParams.HOUSEHOLDFILTERAPPLYTRIGGERED)
         householdListViewModel.setFilterLiveData(
             villageFilter = villageListTagView.getSelectedTags(),
             statusFilter = statusListTagView.getSelectedTags()

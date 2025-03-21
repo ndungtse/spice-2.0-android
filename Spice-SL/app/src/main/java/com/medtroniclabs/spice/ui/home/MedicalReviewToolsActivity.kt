@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewToolsBinding
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -26,6 +27,7 @@ class MedicalReviewToolsActivity : BaseActivity() {
             title = getString(R.string.search_patient),
             homeAndBackVisibility = Pair(true, true),
             callbackHome = {
+                toolsViewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
                 val intent = Intent(this, LandingActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 startActivity(intent)
@@ -33,6 +35,11 @@ class MedicalReviewToolsActivity : BaseActivity() {
             }
         )
         initializeView()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        toolsViewModel.setUserJourney(AnalyticsDefinedParams.MEDICALREVIEWTOOLS)
     }
 
     private fun initializeView() {

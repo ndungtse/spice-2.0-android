@@ -5,12 +5,15 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HOUSEHOLDLISTSEARCHTRIGGERED
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HOUSEHOLDS
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
 import com.medtroniclabs.spice.appextensions.isGpsEnabled
@@ -32,6 +35,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
 
+
+
     private lateinit var binding: ActivityHouseholdSearchBinding
     private val householdListViewModel: HouseholdListViewModel by viewModels()
     private lateinit var householdListAdapter: HouseholdListAdapter
@@ -48,8 +53,13 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
         initViews()
         setListeners()
         attachObserver()
-        householdListViewModel.setUserJourney(getString(R.string.households))
+     }
+
+    override fun onResume() {
+        super.onResume()
+        householdListViewModel.setUserJourney(HOUSEHOLDS)
     }
+
 
 
     private fun initViews() {
@@ -153,6 +163,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
 
             R.id.btnSearch -> {
                 withLocationCheck({
+                    householdListViewModel.setUserJourney(HOUSEHOLDLISTSEARCHTRIGGERED)
                     val searchTerm = binding.llExactSearch.etSearchTerm.text.toString()
                     householdListViewModel.setFilterLiveData(search = searchTerm)
 //                if (!searchTerm.isNullOrBlank()) {

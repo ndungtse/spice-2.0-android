@@ -10,6 +10,7 @@ import android.widget.AdapterView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.MemberDeceased
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.common.DefinedParams
@@ -137,10 +138,12 @@ class MemberDeceasedDialogFragment() : DialogFragment(), View.OnClickListener {
                     binding.etReason.text.toString()
                 )
                 requireActivity().startBackgroundOfflineSync()
+                householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.MEMBERDECEASEDSUMBITTRIGGERED)
                 dismiss()
             }
 
             binding.imgClose.id -> {
+                householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.MEMBERDECEASEDCLOSETRIGGERED)
                 dismiss()
             }
         }

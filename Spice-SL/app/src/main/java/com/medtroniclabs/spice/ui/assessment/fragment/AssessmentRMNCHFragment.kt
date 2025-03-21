@@ -323,6 +323,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { details ->
+            viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
                     context = requireContext(),

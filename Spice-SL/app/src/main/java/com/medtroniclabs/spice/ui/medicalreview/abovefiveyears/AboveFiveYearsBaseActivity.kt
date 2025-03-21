@@ -112,6 +112,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
+                viewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
                 supportFragmentManager.findFragmentById(R.id.presentingComplaintsContainer)
                 .let { currentFragment ->
                     if (currentFragment !is AboveFiveYearsTreatmentSummaryFragment) {

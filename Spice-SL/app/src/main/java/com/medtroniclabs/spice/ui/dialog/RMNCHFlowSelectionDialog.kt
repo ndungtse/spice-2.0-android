@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.FragmentRmnchSelectionDialogBinding
@@ -64,7 +65,7 @@ class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun initView() {
-
+        viewModel.setUserJourney(AnalyticsDefinedParams.RMNCHSELECTFLOWDIALOUGE)
         getRMNCHFlowData().let {
             val view = SingleSelectionCustomView(binding.root.context)
             view.tag = TAG
@@ -109,6 +110,7 @@ class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
     override fun onClick(v: View) {
         when (v.id) {
             binding.ivClose.id -> {
+                viewModel.setUserJourney(AnalyticsDefinedParams.RMNCHSELECTFLOWDIALOUGECLOSETRIGGERED)
                 dismiss()
             }
         }

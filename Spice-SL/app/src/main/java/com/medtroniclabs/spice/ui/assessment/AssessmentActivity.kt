@@ -70,6 +70,7 @@ class AssessmentActivity : BaseActivity() {
                 backNavigation(false)
             },
             callbackHome = {
+                viewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
                 backNavigation(true)
             }
 

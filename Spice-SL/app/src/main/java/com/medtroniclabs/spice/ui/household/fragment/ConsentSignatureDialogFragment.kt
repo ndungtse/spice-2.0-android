@@ -11,6 +11,8 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.EnterSignatureorInitial
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.saveBitmapAsJpeg
 import com.medtroniclabs.spice.appextensions.setTextChangeListener
@@ -61,7 +63,7 @@ class ConsentSignatureDialogFragment : DialogFragment() {
 
     private fun initializeView() {
         isCancelable = false
-        viewModel.setUserJourney(getString(R.string.signature_or_initial))
+        viewModel.setUserJourney(EnterSignatureorInitial)
     }
 
     private fun setListeners() {
@@ -75,14 +77,17 @@ class ConsentSignatureDialogFragment : DialogFragment() {
         }
 
         binding.clTitleCard.ivClose.setOnClickListener {
+            viewModel.setUserJourney(AnalyticsDefinedParams.SIGNATUREDIALOGUEDISMISS)
             dismiss()
         }
 
         binding.btnCancel.setOnClickListener {
+            viewModel.setUserJourney(AnalyticsDefinedParams.SIGNATUREDIALOGUECANCEL)
             dismiss()
         }
 
         binding.btnConfirm.setOnClickListener {
+            viewModel.setUserJourney(AnalyticsDefinedParams.SIGNATUREDIALOGUECONFIRM)
             onConfirm()
         }
     }

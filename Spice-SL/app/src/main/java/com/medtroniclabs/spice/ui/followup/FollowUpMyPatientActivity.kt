@@ -20,7 +20,10 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.COUNTER_REFERRAL_TAB
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HH_VISIT_TAB
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.MYFOLLOWUPPATIENTS
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.ONMOREBUTTONTRIGGERED
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.REFERRED_TAB
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.SEARCHBUTTONTRIGGERED
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -65,7 +68,6 @@ class FollowUpMyPatientActivity : BaseActivity() {
             initView()
             initObserver()
             setTabLayout()
-            viewModel.setUserJourney(getString(R.string.my_patients))
             showHideVerticalIcon(true)
         } else {
             initViewForNcd()
@@ -166,6 +168,11 @@ class FollowUpMyPatientActivity : BaseActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.setUserJourney(MYFOLLOWUPPATIENTS)
+    }
+
 
     private fun setTabLayout() {
 
@@ -242,6 +249,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
             }
 
             llExactSearch.btnSearch.setOnClickListener {
+                viewModel.setUserJourney(SEARCHBUTTONTRIGGERED)
                 viewModel.updateFollowUpFilter(
                     search = llExactSearch.etSearchTerm.text?.trim().toString()
                 )
@@ -306,6 +314,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
 
 
     private fun onMoreIconClicked(view: View) {
+        viewModel.setUserJourney(ONMOREBUTTONTRIGGERED)
         val popupMenu = PopupMenu(this, view)
         popupMenu.menuInflater.inflate(R.menu.mypatient_menu, popupMenu.menu)
         popupMenu.safePopupMenuClickListener(object :

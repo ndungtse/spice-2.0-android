@@ -227,6 +227,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
         when (v.id) {
             binding.btnSubmit.id -> {
                 withLocationCheck({
+                    viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                     assessmentRMNCHNeonateViewModel.fetchCurrentLocation(requireContext())
                     handleSubmitFormWithClinicalDateCheck(v)
                 })

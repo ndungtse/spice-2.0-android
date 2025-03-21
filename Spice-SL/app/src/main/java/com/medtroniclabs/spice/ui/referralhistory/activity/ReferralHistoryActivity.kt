@@ -49,10 +49,11 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             getString(R.string.patient_medical_review)
         )
         initView()
-        viewModel.setUserJourney(AnalyticsDefinedParams.ReferralTicket)
         initializeListener()
         attachObserver()
     }
+
+
 
     private fun attachObserver() {
         patientDetailViewModel.patientDetailsLiveData.observe(this) { resource ->
@@ -305,5 +306,6 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
                 patientDetailViewModel.getPatients(it, origin = patientDetailViewModel.origin)
             }
         }
+        viewModel.setUserJourney(AnalyticsDefinedParams.ReferralTicket)
     }
 }

@@ -7,6 +7,7 @@ import androidx.lifecycle.switchMap
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.repo.MotherNeonateANCRepo
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,8 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PregnancyDetailsViewModel @Inject constructor(
     private val motherNeonateANCRepo: MotherNeonateANCRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
-) : ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
+) : BaseViewModel(dispatcherIO) {
 
     val pregnancyDetailsModel: PregnancyDetailsModel = PregnancyDetailsModel()
     val checkSubmitBtn = MutableLiveData<Boolean>()

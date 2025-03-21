@@ -13,6 +13,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.DONEBUTTONTRIGGERED
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
@@ -365,6 +366,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         } else {
             viewModel.updateOtherAssessmentDetails()
         }
+        viewModel.setUserJourney(DONEBUTTONTRIGGERED)
     }
 
     override fun onClick(v: View) {

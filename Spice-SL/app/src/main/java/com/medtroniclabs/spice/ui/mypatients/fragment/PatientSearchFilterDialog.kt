@@ -176,7 +176,10 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            binding.imgClose.id -> dismiss()
+            binding.imgClose.id -> {
+                patientListViewModel.setUserJourney(AnalyticsDefinedParams.CLOSEICONTRIGGERED)
+                dismiss()
+            }
             binding.btnLayout.btnCancel.id -> {
                 patientListViewModel.apply {
                     patientStatusTag = null
@@ -190,6 +193,7 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
                 }
                 patientListViewModel.setFilter(true)
                 dismiss()
+                patientListViewModel.setUserJourney(AnalyticsDefinedParams.CANCELBUTTONTRIGGERED)
             }
 
             binding.btnLayout.btnConfirm.id -> {
@@ -220,6 +224,7 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
                 )
                 patientListViewModel.setFilter(true)
                 dismiss()
+                patientListViewModel.setUserJourney(AnalyticsDefinedParams.CONFIRMBUTTONTRIGGERED)
             }
         }
     }

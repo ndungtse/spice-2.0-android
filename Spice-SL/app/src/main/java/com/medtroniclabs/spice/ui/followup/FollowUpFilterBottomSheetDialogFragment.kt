@@ -219,6 +219,7 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
             }
 
             R.id.btnCancel -> {
+                viewModel.setUserJourney(AnalyticsDefinedParams.CANCELBUTTONTRIGGERED)
                 viewModel.updateFollowUpFilter(
                     selectedVillages = listOf(),
                     selectedDateRange = listOf(),
@@ -242,6 +243,7 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
             fromDate = binding.etFromDate.text.toString(),
             toDate = binding.etToDate.text.toString()
         )
+        viewModel.setUserJourney(AnalyticsDefinedParams.APPLYBUTTONTRIGGERED)
         dismiss()
     }
 

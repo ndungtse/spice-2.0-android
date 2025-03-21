@@ -9,6 +9,7 @@ import android.widget.AdapterView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -251,6 +252,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun initView() {
+        pregnancyDetailsViewModel.setUserJourney(AnalyticsDefinedParams.MOTHERANCPREGNANCYDETAIL)
         pregnancyDetailsViewModel.setAncReqToGetMetaForBloodGroup(MedicalReviewTypeEnums.BloodGroup.name)
         adapter = CustomSpinnerAdapter(requireContext())
         with(binding) {

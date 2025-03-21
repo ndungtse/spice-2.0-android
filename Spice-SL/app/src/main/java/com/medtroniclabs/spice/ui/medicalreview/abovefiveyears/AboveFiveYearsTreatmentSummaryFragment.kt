@@ -12,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.CommonUtils.combineText
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.CommonUtils.createInvestigation
@@ -169,6 +170,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     private fun initView() {
+        patientDetailViewModel.setUserJourney(AnalyticsDefinedParams.ABOVEFIVEYEARSSUMMARY)
         binding.tvNextMedicalReviewLabel.markMandatory()
         binding.tvPatientStatus.markMandatory()
         viewModel.getSummaryListMetaItems(MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name)

@@ -99,6 +99,7 @@ class LinkPatientDialogFragment : DialogFragment(), View.OnClickListener {
 
             binding.btnCancel.id -> {
                 dismiss()
+                householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.CANCELBUTTONTRIGGERED)
             }
         }
     }

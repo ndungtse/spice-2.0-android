@@ -7,6 +7,7 @@ import android.widget.AdapterView
 import androidx.activity.viewModels
 import androidx.core.widget.addTextChangedListener
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
@@ -284,6 +285,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
     }
 
     private fun initView() {
+        patientViewModel.setUserJourney(AnalyticsDefinedParams.INVESTIGATIONSCREEN)
         investigationViewModel.patientReference = intent.getStringExtra(DefinedParams.PatientReference)
         investigationViewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         investigationViewModel.encounterId = intent.getStringExtra(DefinedParams.EncounterId)
@@ -361,6 +363,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                             geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation()),
                             data
                         )
+                        patientViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                     }
                 } else {
                     investigationGenerator.getResultFromInvestigation()?.let {

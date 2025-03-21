@@ -755,6 +755,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         when (view.id) {
             binding.btnSubmit.id -> {
                 withLocationCheck({
+                    viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                     viewModel.fetchCurrentLocation(requireContext())
                     formGenerator.formSubmitAction(view) })
             }

@@ -18,6 +18,8 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -28,6 +30,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
 import com.medtroniclabs.spice.appextensions.isGpsEnabled
 import com.medtroniclabs.spice.appextensions.loadAsGif
@@ -43,6 +47,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.prescription.dialog.CommentsAle
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.ui.household.viewmodel.ConsentFormViewModel
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.abs
@@ -50,6 +55,8 @@ import kotlin.math.abs
 @AndroidEntryPoint
 open class BaseActivity : SpiceRootActivity() {
     private lateinit var binding: ActivityBaseBinding
+
+    private val viewModel: BaseViewModel by viewModels()
 
     private var downX: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -128,6 +135,7 @@ open class BaseActivity : SpiceRootActivity() {
     }
 
     fun redirectToHome() {
+        viewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
         startAsNewActivity(Intent(this, LandingActivity::class.java))
     }
 

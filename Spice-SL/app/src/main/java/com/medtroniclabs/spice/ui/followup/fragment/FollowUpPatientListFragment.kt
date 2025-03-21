@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.callButtonClicked
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.appextensions.gone
@@ -113,6 +114,7 @@ class FollowUpPatientListFragment: BaseFragment(), FollowUpDialogFragment.Follow
             intent.putExtra(DefinedParams.FollowUpId, data.id)
             intent.putExtra(DefinedParams.DOB, data.dateOfBirth)
             startActivity(intent)
+            viewModel.setUserJourney(AnalyticsDefinedParams.STARTASSESSMENTTRIGGERED)
         }
     }
 

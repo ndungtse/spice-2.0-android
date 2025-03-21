@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityAddNewMemberBinding
@@ -81,6 +82,7 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
+                householdRegistrationViewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
                 startActivityWithoutSplashScreen()
             }
         }

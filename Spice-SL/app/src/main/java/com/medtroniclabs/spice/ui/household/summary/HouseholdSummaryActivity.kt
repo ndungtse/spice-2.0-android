@@ -64,10 +64,13 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         setListener()
         attachObserver()
 
+    }
+
+    override fun onResume() {
+        super.onResume()
         if (!householdSummaryViewModel.isPhuWalkInsFlow) {
             householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.HouseHoldSummary)
         }
-
     }
 
     private fun attachObserver() {

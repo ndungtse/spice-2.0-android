@@ -9,6 +9,7 @@ import android.widget.AdapterView
 import androidx.activity.viewModels
 import androidx.core.widget.addTextChangedListener
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -46,6 +47,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
         withNetworkCheck(connectivityManager,::initView,::finish)
         attachObserver()
         initListener()
+        patientViewModel.setUserJourney(AnalyticsDefinedParams.PERSCRIPTIONSCREEN)
     }
 
     private fun initListener() {
@@ -448,6 +450,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnPrescribe.id -> {
+                patientViewModel.setUserJourney(AnalyticsDefinedParams.DISPENSEMEDICATION)
                 val status = checkValidation()
                 if (status) {
                     val list =
@@ -470,11 +473,13 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                 if (binding.tvDiscontinuedMedication.text.toString() == getString(R.string.hide_discontinued_medication)) {
                     binding.tvDiscontinuedMedication.text =
                         getText(R.string.view_discontinued_medication)
+                    patientViewModel.setUserJourney(AnalyticsDefinedParams.HIDEDISCONTINUEDMEDICATION)
                     binding.cardDiscontinuedPrescriptionContainer.gone()
                 } else {
                     patientViewModel.patientDetailsLiveData.value?.data?.let {
                         prescriptionViewModel.getPrescriptionList(it, false)
                     }
+                    patientViewModel.setUserJourney(AnalyticsDefinedParams.VIEWDISCONTINUEDMEDICATION)
                 }
             }
 

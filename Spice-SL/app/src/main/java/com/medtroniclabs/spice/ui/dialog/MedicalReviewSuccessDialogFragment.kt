@@ -6,8 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.viewModels
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.setWidth
@@ -16,10 +19,13 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewSucessDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class MedicalReviewSuccessDialogFragment : DialogFragment(), View.OnClickListener {
     private lateinit var binding: FragmentMedicalReviewSucessDialogBinding
     private var onDismissListener: OnDialogDismissListener? = null
+
+    private val viewModel: PatientDetailViewModel by activityViewModels()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -56,6 +62,7 @@ class MedicalReviewSuccessDialogFragment : DialogFragment(), View.OnClickListene
     }
 
     private fun initializeListeners() {
+        viewModel.setUserJourney(AnalyticsDefinedParams.MEDICALREVIEWCOMPLETEDSUCCESSDIALOGUE)
         binding.btnEnroll.setVisible(CommonUtils.isNonCommunity() && (!getIsEnroll()))
         binding.btnDone.safeClickListener(this)
         binding.ivClose.safeClickListener(this)

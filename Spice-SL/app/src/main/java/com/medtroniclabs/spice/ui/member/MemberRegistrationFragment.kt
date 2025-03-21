@@ -543,6 +543,11 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { map ->
+            if (memberRegistrationViewModel.startAssessment == true) {
+                memberRegistrationViewModel.setUserJourney(AnalyticsDefinedParams.STARTASSESSMENTTRIGGERED)
+            } else {
+                memberRegistrationViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
+            }
             // Hide Error message
             formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
                 visibility = View.GONE

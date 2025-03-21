@@ -80,11 +80,12 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         setAdapterViews()
         attachObservers()
         getPatientList()
-        patientListViewModel.setUserJourney(AnalyticsDefinedParams.PatientSearch)
         binding.refreshLayout.setOnRefreshListener {
             swipeRefresh()
         }
     }
+
+
 
     private fun swipeRefresh() {
         withNetworkAvailability(online = {
@@ -462,6 +463,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             binding.llExactSearch.btnSearch.id -> {
                 requireContext().hideKeyboard(v)
                 networkAvailability()
+                patientListViewModel.setUserJourney(AnalyticsDefinedParams.SEARCHBUTTONTRIGGERED)
             }
 
             binding.llSortFilter.btnFilter.id -> {
@@ -501,6 +503,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 binding.llExactSearch.etPatientSearch.text?.trim().toString()
             getPatientList()
             scrollTop()
+
         })
     }
 
@@ -532,6 +535,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
     override fun onResume() {
         super.onResume()
+        patientListViewModel.setUserJourney(AnalyticsDefinedParams.PatientSearch)
         withNetworkAvailability(online = {
             getPatientList()
         })

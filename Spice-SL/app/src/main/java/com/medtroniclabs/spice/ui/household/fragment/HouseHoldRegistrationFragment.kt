@@ -251,12 +251,15 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnNext -> {
-                withLocationCheck({formGenerator.formSubmitAction(v)})
+                withLocationCheck({
+                    formGenerator.formSubmitAction(v)
+                })
                 /*if (activity is HouseholdActivity) {
                     (activity as HouseholdActivity).loadFragment(2)
                 }*/
             }
             R.id.btnCancel -> {
+                householdRegistrationViewModel.setUserJourney(AnalyticsDefinedParams.CANCELBUTTONTRIGGERED)
                 householdRegistrationViewModel.setAnalyticsData(
                     UserDetail.startDateTime,
                     eventName = if (householdRegistrationViewModel.householdId != -1L) HouseholdEdit else HouseholdCreation,
@@ -295,6 +298,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { map ->
+            householdRegistrationViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
             if (householdRegistrationViewModel.householdId != -1L) {
                 householdRegistrationViewModel.setAnalyticsData(
                     UserDetail.startDateTime,

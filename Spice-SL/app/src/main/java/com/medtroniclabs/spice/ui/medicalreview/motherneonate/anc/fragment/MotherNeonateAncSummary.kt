@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.visible
@@ -226,6 +227,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
     }
 
     private fun initView() {
+        patientViewModel.setUserJourney(AnalyticsDefinedParams.MOTHERANCSUMMARY)
         binding.tvNextMedicalReviewLabel.markMandatory()
         binding.tvPatientStatus.markMandatory()
         binding.tvClinicalName.text = requireContext().getString(

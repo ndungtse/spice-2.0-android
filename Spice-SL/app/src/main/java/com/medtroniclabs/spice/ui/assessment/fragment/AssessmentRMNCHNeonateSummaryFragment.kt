@@ -13,6 +13,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.DONEBUTTONTRIGGERED
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.setVisible
@@ -323,7 +324,6 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
             } else {
                 viewModel.pncAssessmentSaveLiveData.value?.data
             }
-
             assessmentRMNCHNeonateViewModel.updateOtherAssessmentDetails(
                 pncDetails,
                 viewModel.otherAssessmentDetails,
@@ -331,6 +331,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                 viewModel.assessmentUpdateLiveData
             )
         }
+        viewModel.setUserJourney(DONEBUTTONTRIGGERED)
     }
 
     override fun onClick(v: View) {

@@ -82,13 +82,17 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
         initializeListener()
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         viewModel.isDirectPnc = intent.getBooleanExtra(DefinedParams.DirectPNCFlow,false)
+        if (viewModel.isDirectPnc) {
+            viewModel.setUserJourney(AnalyticsDefinedParams.MOTHERDIRECTPNC)
+        }else{
+            viewModel.setUserJourney(AnalyticsDefinedParams.MotherNeonateLabourDelivery)
+        }
         viewModel.set(this)
         setAnalytics()
     }
 
     private fun setAnalytics(){
         UserDetail.eventName= AnalyticsDefinedParams.MedicalReviewCreation
-        viewModel.setUserJourney(AnalyticsDefinedParams.MotherNeonateLabourDelivery)
     }
 
     private fun backNavigation() {
@@ -483,6 +487,7 @@ private fun showLabourDeliverySummary() {
     viewModel.isRefresh = true
     binding.bottomNavigationView.visibility = View.INVISIBLE
     binding.referalBottomView.visibility = View.VISIBLE
+    patientViewModel.setUserJourney(AnalyticsDefinedParams.MOTHERPNCSUMMARY)
     supportFragmentManager.beginTransaction()
         .replace(R.id.labourDeliveryContainer, MotherSummaryFragment()).commit()
     if (viewModel.neonateOutcome==MedicalReviewDefinedParams.MaceratedStillBirth||viewModel.neonateOutcome==MedicalReviewDefinedParams.FreshStillBirth) {

@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREEN
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREENCALLBUTTON
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREENHOUSEHOLDLISTLINK
@@ -78,6 +79,7 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
             callback = {
                 backNavigation()
             }, callbackHome = {
+                viewModel.setUserJourney(AnalyticsDefinedParams.HomeButtonClicked)
                 backNavigationToHome()
             }
 

@@ -120,10 +120,12 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
                     true,
                     householdSummaryViewModel.selectedMemberDob
                 )
+                householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.MEMBEREDITOKAYBUTTONTRIGGERED)
                 dismiss()
             }
             binding.imgClose.id -> {
                 dismiss()
+                householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.MEMBEREDITCLOSEBUTTONTRIGGERED)
             }
         }
     }

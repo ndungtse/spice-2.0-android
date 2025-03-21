@@ -9,6 +9,7 @@ import android.widget.AdapterView
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.appextensions.visible
@@ -65,6 +66,7 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
     }
 
     private fun initViews() {
+        patientViewModel.setUserJourney(AnalyticsDefinedParams.REFERPATIENTDIALOGUE)
         binding.tvNameNumberLabel.markMandatory()
         binding.tvReferToLabel.markMandatory()
         binding.tvReferredReasonLabel.markMandatory()

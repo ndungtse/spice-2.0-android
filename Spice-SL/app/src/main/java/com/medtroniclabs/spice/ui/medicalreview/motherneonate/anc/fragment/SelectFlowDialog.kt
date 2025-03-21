@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -160,6 +161,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
 
 
     private fun initView() {
+        viewModel.setUserJourney(AnalyticsDefinedParams.SELECTFLOWDIALOGUE)
         viewModel.resultANCFlowHashMap.clear()
         getRMNCHFlowData().let {
             val view = SingleSelectionCustomView(requireContext())

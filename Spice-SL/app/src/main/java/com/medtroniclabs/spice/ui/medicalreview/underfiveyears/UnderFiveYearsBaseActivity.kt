@@ -93,6 +93,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
+                viewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
                 supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer)
                     .let { currentFragment ->
                         if (currentFragment !is UnderFiveYearsTreatmentSummaryFragment) {

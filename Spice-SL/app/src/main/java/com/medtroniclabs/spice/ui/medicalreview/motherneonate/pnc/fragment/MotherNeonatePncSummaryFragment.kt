@@ -11,6 +11,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.visible
@@ -68,6 +69,7 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        patientDetailViewModel.setUserJourney(AnalyticsDefinedParams.MOTHERNEONATEPNCSUMMARY)
         getPncSummaryDetails()
         getPncPatientStatus(MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name)
         clickListener()

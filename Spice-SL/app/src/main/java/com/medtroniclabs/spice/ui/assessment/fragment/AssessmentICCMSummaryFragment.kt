@@ -900,6 +900,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         } else {
             viewModel.updateOtherAssessmentDetails()
         }
+        viewModel.setUserJourney(AnalyticsDefinedParams.DONEBUTTONTRIGGERED)
     }
 
 

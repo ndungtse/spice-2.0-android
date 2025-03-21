@@ -30,6 +30,7 @@ class AssessmentToolsActivity : BaseActivity() {
             title = getString(R.string.assessment),
             homeAndBackVisibility = Pair(true, true),
             callbackHome = {
+                toolsViewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
                 val intent = Intent(this, LandingActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 startActivity(intent)
@@ -37,6 +38,11 @@ class AssessmentToolsActivity : BaseActivity() {
             }
         )
         initializeView()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        toolsViewModel.setUserJourney(AnalyticsDefinedParams.ASSESSMENTTOOLSELECTION)
     }
 
     private fun initializeView() {

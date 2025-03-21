@@ -21,9 +21,9 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
-import com.medtroniclabs.spice.ui.dashboard.ncd.NCDDashboardViewActivity
 import com.medtroniclabs.spice.ui.common.PatientSearchActivity
 import com.medtroniclabs.spice.ui.communityprofile.CommunityProfileActivity
+import com.medtroniclabs.spice.ui.dashboard.ncd.NCDDashboardViewActivity
 import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
@@ -58,9 +58,14 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
         super.onViewCreated(view, savedInstanceState)
         attachObservers()
         viewModel.getMenus()
+    }
+
+    override fun onResume() {
+        super.onResume()
         viewModel.setUserJourney(getString(R.string.home))
         isDeeplink(arguments?.getBoolean(DefinedParams.IsDeepLink,false))
     }
+
 
     private fun attachObservers() {
         viewModel.menuListLiveData.observe(viewLifecycleOwner) { resourceState ->

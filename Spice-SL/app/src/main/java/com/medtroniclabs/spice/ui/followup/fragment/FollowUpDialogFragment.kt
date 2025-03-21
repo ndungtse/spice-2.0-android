@@ -73,6 +73,7 @@ class FollowUpDialogFragment : DialogFragment() {
             listener?.onCallClicked()
         }
         binding.ivClose.setOnClickListener {
+            viewModel.setUserJourney(AnalyticsDefinedParams.CLOSEICONTRIGGERED)
             dismiss()
         }
 

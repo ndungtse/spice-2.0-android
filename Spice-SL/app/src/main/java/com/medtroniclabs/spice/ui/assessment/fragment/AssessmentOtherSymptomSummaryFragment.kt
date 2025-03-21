@@ -319,6 +319,7 @@ class AssessmentOtherSymptomSummaryFragment : BaseFragment(), View.OnClickListen
                         updateFollowUpDate(it.trim().toString())
                     }
                     viewModel.updateOtherAssessmentDetails()
+                    viewModel.setUserJourney(AnalyticsDefinedParams.DONEBUTTONTRIGGERED)
                 })
             }
 
