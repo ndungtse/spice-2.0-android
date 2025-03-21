@@ -11,5 +11,7 @@ data class FollowUpCriteria(
     val pncVisit: Int,
     val childVisit: Int,
     val successfulAttempts: Int,
-    val unsuccessfulAttempts: Int
+    val unsuccessfulAttempts: Int,
+    val informedCallAttempts: Int,
+    val notInformedCallAttempts: Int
 )

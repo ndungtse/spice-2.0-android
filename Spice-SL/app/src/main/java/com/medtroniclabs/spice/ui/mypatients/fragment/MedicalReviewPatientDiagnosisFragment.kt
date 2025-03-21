@@ -470,9 +470,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 }
             }
         }
-        diagnosisViewModel.siteOfDiseaseMetaList.observe(viewLifecycleOwner) { resource ->
 
-        }
         diagnosisViewModel.diagnosisDetailsList.observe(viewLifecycleOwner) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {

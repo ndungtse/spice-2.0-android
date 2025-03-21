@@ -17,6 +17,8 @@ import com.medtroniclabs.spice.model.followup.FollowUpFilter
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams
+import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.INFORMED
+import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.NOT_INFORMED
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -123,6 +125,7 @@ class FollowUpRepository @Inject constructor(
     suspend fun addCallHistory(
         maxSuccessfulCallLimit: Int,
         maxUnSuccessfulCallLimit: Int,
+        informedCallAttempts: Int,
         followUpId: Long,
         callStatus: FollowUpCallStatus,
         patientStatus: String? = null,
@@ -144,7 +147,7 @@ class FollowUpRepository @Inject constructor(
 
         var newFollowUp: FollowUp? = null
         if (callDetail.status == FollowUpCallStatus.SUCCESSFUL) {
-            newFollowUp = handleSuccessCall(followUpId, followUp, callDetail, maxSuccessfulCallLimit)
+            newFollowUp = handleSuccessCall(followUpId, followUp, callDetail, maxSuccessfulCallLimit, informedCallAttempts)
         } else {
             handleUnSuccessfulCall(followUpId, followUp, callDetail, maxUnSuccessfulCallLimit)
         }
@@ -152,17 +155,26 @@ class FollowUpRepository @Inject constructor(
         roomHelper.addCallHistory(followUp, callDetail, newFollowUp)
     }
 
-    private suspend fun handleSuccessCall(id: Long,followUp: FollowUp, call: FollowUpCall, maxSuccessfulCallLimit: Int): FollowUp? {
+    private suspend fun handleSuccessCall(id: Long,followUp: FollowUp, call: FollowUpCall, maxSuccessfulCallLimit: Int, informedCallAttempts: Int ): FollowUp? {
         // Get All other followup with same reason
         call.patientStatus?.let {
             updatePatientStatus(it, id, followUp)
         }
 
         followUp.successfulAttempts = followUp.successfulAttempts + 1
-        if (followUp.successfulAttempts >= maxSuccessfulCallLimit) {
-            followUp.isCompleted = true
-            roomHelper.updateOtherDuplicateTickets(id, followUp)
+        if (call.patientStatus == INFORMED || call.patientStatus == NOT_INFORMED) {
+            if (followUp.successfulAttempts >= informedCallAttempts) {
+                followUp.isCompleted = true
+                roomHelper.updateOtherDuplicateTickets(id, followUp)
+            }
+        } else {
+            if (followUp.successfulAttempts >= maxSuccessfulCallLimit) {
+                followUp.isCompleted = true
+                roomHelper.updateOtherDuplicateTickets(id, followUp)
+            }
         }
+
+
 
         return null
     }

@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.PHU
 import com.medtroniclabs.spice.common.DefinedParams.PeerSupervisor
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.CbsCallResult
 import com.medtroniclabs.spice.data.CbsFollowUp
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
@@ -28,6 +29,7 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.followup.fragment.CallResultDialogFragment
+import kotlin.math.ln
 
 class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener {
 
@@ -169,11 +171,19 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
                 PHU
             }
 
+            val attempts = callResults.followUpDetails.size + 1
+            val lat = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name)
+            val lng = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name)
+
             // Add new CbsCallResult entry
             callResults.followUpDetails.add(
                 CbsCallResult(
+                    duration = 0,
+                    attempts = attempts,
                     status = followUpStatus.name,
-                    reason = followUpReason
+                    reason = followUpReason,
+                    latitude = lat,
+                    longitude = lng
                 )
             )
 

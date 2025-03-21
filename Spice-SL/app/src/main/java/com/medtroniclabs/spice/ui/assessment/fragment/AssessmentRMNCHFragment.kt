@@ -344,7 +344,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     private fun shouldHideNeonateFlow(): Boolean {
         val memberClinicalDetail = viewModel.memberClinicalLiveData.value
         if (memberClinicalDetail != null) {
-            if (memberClinicalDetail.isNeonateDeathRecordedByPHU == true)
+            if (memberClinicalDetail.isNeonateAlive == false || memberClinicalDetail.isNeonateDeathRecordedByPHU == true)
                 return true // Marked child death by provider
 
             if (memberClinicalDetail.visitCount >= 1 && memberClinicalDetail.neonateHouseholdMemberLocalId == null) {
@@ -459,6 +459,13 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                     viewModel.updateMemberClinicalData(it.id, 0L, null)
                 }
             }
+
+            if (name.lowercase() == RMNCH.ANC && !deathOfMotherReset) {
+                viewModel.memberDetailsLiveData.value?.data?.let {
+                    viewModel.updatePregnantStatus(it.id, !miscarriageReset)
+                }
+            }
+
         }
         return status
     }

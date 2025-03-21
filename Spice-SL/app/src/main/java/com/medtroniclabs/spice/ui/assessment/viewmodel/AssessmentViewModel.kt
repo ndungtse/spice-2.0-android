@@ -268,7 +268,8 @@ class AssessmentViewModel @Inject constructor(
                 assessmentStringLiveData.postValue(assessmentDetail.first)
             }
             memberId?.let {
-                savePatientClinicalInformation(getUpdatedPregnancyDetail(memberId,pregnancyDetailForMother,true))
+                val pregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(it)
+                savePatientClinicalInformation(getUpdatedPregnancyDetail(memberId, pregnancyDetail,true))
             }
             callResultSaveLiveData.postValue(assessmentRepository.saveCallResult(assessmentEntity))
         }
@@ -656,11 +657,16 @@ class AssessmentViewModel @Inject constructor(
                         conditions.addAll(getFormatedNotifiableCondition(value, RmnchNotifiableCondition))
                     }
 
-                    map[CBS.lowercase()] = it.toMutableMap().apply {
-                        remove(CbsNotifiableCondition)
-                        remove(RmnchNotifiableCondition)
-                        put(NotifiableConditions, conditions)
+                    val cbs = it.toMutableMap()
+                    if (conditions.contains(DeathOfMother)) {
+                        cbs[DeathOfMother] = true
                     }
+
+                    cbs.remove(CbsNotifiableCondition)
+                    cbs.remove(RmnchNotifiableCondition)
+                    cbs[NotifiableConditions] = conditions
+
+                    map[CBS.lowercase()] = cbs
                 }
             }
         }
@@ -798,6 +804,7 @@ class AssessmentViewModel @Inject constructor(
                     map,
                     workflowName,
                     pregnancyDetail,
+                    memberDetail,
                     childDetailsMap
                 )
                 savePatientClinicalInformation(pregnancyDetail)
@@ -859,6 +866,7 @@ class AssessmentViewModel @Inject constructor(
         details: HashMap<String, Any>,
         workflowName: String,
         pregnancyDetail: PregnancyDetail,
+        memberDetail: AssessmentMemberDetails,
         childDetailsMap: HashMap<String, Any>?
     ) {
         when (workflowName) {
@@ -904,6 +912,7 @@ class AssessmentViewModel @Inject constructor(
                 pregnancyDetail.ancVisitNo = 0
                 pregnancyDetail.lastMenstrualPeriod = null
                 pregnancyDetail.estimatedDeliveryDate = null
+                updatePregnantStatus(memberDetail.id, false)
             }
 
             else -> {
@@ -1180,7 +1189,7 @@ class AssessmentViewModel @Inject constructor(
         isResetPregnancy: Boolean = false
     ): PregnancyDetail {
         if (isResetPregnancy) {
-            resetPregnancy(memberId, false)
+            updatePregnantStatus(memberId, false)
         }
         return (pregnancyDetail ?: PregnancyDetail(householdMemberLocalId = memberId)).apply {
             this.pncVisitNo = 0
@@ -1299,9 +1308,9 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun resetPregnancy(memberId: Long, isPregnant: Boolean) {
+    fun updatePregnantStatus(memberId: Long, isPregnant: Boolean) {
         viewModelScope.launch(dispatcherIO) {
-            memberRegistrationRepository.resetPregnant(memberId, isPregnant)
+            memberRegistrationRepository.updatePregnantStatus(memberId, isPregnant)
         }
     }
 }

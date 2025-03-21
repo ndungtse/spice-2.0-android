@@ -114,7 +114,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
         memberRegistrationViewModel.setUserJourney(eventType)
 
         onPhuAddMember()
-        withLocationCheck({})
+        withLocationCheck({}, shouldHideProgress = true)
     }
 
     private fun initializeFlow() {

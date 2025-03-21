@@ -33,8 +33,16 @@ class BioDataFragment : BaseFragment() {
 
     private val viewModel: AssessmentViewModel by activityViewModels()
 
+    private var isCbs: Boolean = false
+
     companion object {
         const val TAG = "BioDataFragment"
+
+        fun newInstance(isCbs: Boolean): BioDataFragment {
+            val fragment = BioDataFragment()
+            fragment.isCbs = isCbs
+            return fragment
+        }
     }
 
     override fun onCreateView(
@@ -235,6 +243,14 @@ class BioDataFragment : BaseFragment() {
 
     private fun showPatientBioData(data: AssessmentMemberDetails?) {
         data?.apply {
+            if (isCbs) {
+                binding.householdNo.root.visible()
+                binding.householdNo.tvKey.text = getString(R.string.household_no)
+                binding.householdNo.tvValue.text = householdNo?.toString() ?: getString(R.string.separator_double_hyphen)
+            } else {
+                binding.householdNo.root.gone()
+            }
+
             binding.patientName.tvKey.text = getString(R.string.name)
             binding.patientName.tvValue.text = name.capitalizeFirstChar()
             binding.patientId.tvKey.text = getString(R.string.patient_id)

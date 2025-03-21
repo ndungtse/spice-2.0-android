@@ -50,12 +50,14 @@ class FollowUpViewModel @Inject constructor(
     var maxSuccessfulCallLimit: Int = 5
     private var maxUnSuccessfulCallLimit: Int = 5
     val addCallHistoryLiveData = MutableLiveData<Resource<Boolean>>()
+    var informedCallAttempts: Int = 5
 
     init {
         SecuredPreference.getFollowUpCriteria()?.let { followUpCriteria ->
             referralDayLimitLiveData.postValue(followUpCriteria.referral)
             maxSuccessfulCallLimit = followUpCriteria.successfulAttempts
             maxUnSuccessfulCallLimit = followUpCriteria.unsuccessfulAttempts
+            informedCallAttempts = followUpCriteria.informedCallAttempts
         }
 
         viewModelScope.launch {
@@ -174,6 +176,7 @@ class FollowUpViewModel @Inject constructor(
                 followUpRepository.addCallHistory(
                     maxSuccessfulCallLimit,
                     maxUnSuccessfulCallLimit,
+                    informedCallAttempts,
                     it.id,
                     callStatus,
                     patientStatus,

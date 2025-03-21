@@ -298,7 +298,7 @@ class HouseholdMemberRepository @Inject constructor(
         return roomHelper.getHouseholdHeadDob(householdId)
     }
 
-    suspend fun resetPregnant(memberId: Long, isPregnant: Boolean) {
-        return roomHelper.resetPregnant(memberId, isPregnant)
+    suspend fun updatePregnantStatus(memberId: Long, isPregnant: Boolean) {
+        return roomHelper.updatePregnantStatus(memberId, isPregnant)
     }
 }

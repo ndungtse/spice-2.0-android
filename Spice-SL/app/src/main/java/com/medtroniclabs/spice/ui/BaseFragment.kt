@@ -163,9 +163,13 @@ open class BaseFragment : Fragment(){
             ) && !isFemalePregnant
         ) NCDMRUtil.NCD.lowercase() else type
     }
+
+
+
     fun withLocationCheck(
         onLocationAvailable: () -> Unit,
-        onLocationNotAvailable: (() -> Unit)? = null
+        onLocationNotAvailable: (() -> Unit)? = null,
+        shouldHideProgress: Boolean = false,
     ) {
         when {
             !requireContext().isGpsEnabled() -> {
@@ -179,6 +183,8 @@ open class BaseFragment : Fragment(){
                         val locationManager = SpiceLocationManager(requireContext())
                         locationManager.getCurrentLocation {
                             onLocationAvailable()
+                            if (shouldHideProgress)
+                                hideProgress()
                         }
                     } else {
                         showErrorDialogue(

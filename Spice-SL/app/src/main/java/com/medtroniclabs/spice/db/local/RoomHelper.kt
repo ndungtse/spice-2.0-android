@@ -483,5 +483,5 @@ interface RoomHelper {
 
     suspend fun updateTBContactTraceStatus(hhmId: Long, tbContactTracingStatus: Int)
 
-    suspend fun resetPregnant(memberId: Long, isPregnant: Boolean)
+    suspend fun updatePregnantStatus(memberId: Long, isPregnant: Boolean)
 }

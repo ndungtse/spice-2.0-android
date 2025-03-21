@@ -250,10 +250,11 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
     }
 
     private fun initViews() {
-        replaceFragmentInId<BioDataFragment>(
-            binding.bioDataFragmentContainer.id,
-            tag = BioDataFragment.TAG
-        )
+        val bioFragment = BioDataFragment.newInstance(true)
+
+        childFragmentManager.beginTransaction().replace(
+            binding.bioDataFragmentContainer.id, bioFragment
+        ).commit()
     }
 
     override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
@@ -328,15 +329,16 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                                             conditions.addAll(viewModel.getFormatedNotifiableCondition(value, RmnchNotifiableCondition))
                                         }
 
-                                        assessmentDetailsMap[CBS.lowercase()] =
-                                            values.toMutableMap().apply {
-                                                remove(CbsNotifiableCondition)
-                                                remove(RmnchNotifiableCondition)
-                                                put(
-                                                    DefinedParams.NotifiableConditions,
-                                                    conditions
-                                                )
-                                            }
+                                        val cbs = values.toMutableMap()
+                                        if (conditions.contains(DeathOfMother)) {
+                                            cbs[DeathOfMother] = true
+                                        }
+
+                                        cbs.remove(CbsNotifiableCondition)
+                                        cbs.remove(RmnchNotifiableCondition)
+                                        cbs[DefinedParams.NotifiableConditions] = conditions
+
+                                        assessmentDetailsMap[CBS.lowercase()] = cbs
                                     }
                                 }
                             }
@@ -399,7 +401,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                     if (index != -1 && !otherText.isNullOrBlank()) {
                         rmnchText[index] = "${DefinedParams.Other} ($otherText)"
                     }
-                    val finalText = rmnchText.joinToString(",")
+                    val finalText = rmnchText.joinToString(", ")
                     if (isDelete) {
                         viewModel.updateMemberDeceasedStatus(
                             viewModel.memberDetailsLiveData.value?.data?.id ?: -1L,

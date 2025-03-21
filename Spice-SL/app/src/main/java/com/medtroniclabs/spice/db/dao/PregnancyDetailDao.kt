@@ -23,7 +23,7 @@ interface PregnancyDetailDao {
     @Query("SELECT patientId, ancVisitNo as visitCount, lastMenstrualPeriod as clinicalDate FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
     suspend fun getAncDetail(hhmLocalId: Long): MemberClinicalEntity?
 
-    @Query("SELECT patientId, pncVisitNo as visitCount, dateOfDelivery as clinicalDate, noOfNeonates as numberOfNeonate, isDeliveryAtHome, neonateHouseholdMemberLocalId, isNeonateDeathRecordedByPHU FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
+    @Query("SELECT pd.patientId, pd.pncVisitNo as visitCount, pd.dateOfDelivery as clinicalDate, pd.noOfNeonates as numberOfNeonate, pd.isDeliveryAtHome, pd.neonateHouseholdMemberLocalId, hhm.isActive as isNeonateAlive, pd.isNeonateDeathRecordedByPHU FROM PregnancyDetail AS pd INNER JOIN HouseholdMember AS hhm ON pd.neonateHouseholdMemberLocalId = hhm.id WHERE pd.householdMemberLocalId = :hhmLocalId Limit 1")
     suspend fun getPncDetail(hhmLocalId: Long): MemberClinicalEntity?
 
     @Query("SELECT patientId, childVisitNo as visitCount FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")

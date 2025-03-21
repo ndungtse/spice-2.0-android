@@ -11,5 +11,6 @@ data class MemberClinicalEntity(
     val numberOfNeonate: Long? = null,
     val isDeliveryAtHome: Boolean? = null,
     val neonateHouseholdMemberLocalId: Long? = null,
+    val isNeonateAlive: Boolean? = null,
     val isNeonateDeathRecordedByPHU: Boolean? = null
 )

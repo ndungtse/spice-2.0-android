@@ -1262,7 +1262,7 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.updateTBContactTraceStatus(hhmId,tbContactTracingStatus)
     }
 
-    override suspend fun resetPregnant(memberId: Long, isPregnant: Boolean) {
-        return memberDAO.resetPregnant(memberId,isPregnant,syncStatus = OfflineSyncStatus.NotSynced.name)
+    override suspend fun updatePregnantStatus(memberId: Long, isPregnant: Boolean) {
+        return memberDAO.updatePregnantStatus(memberId, isPregnant, syncStatus = OfflineSyncStatus.NotSynced.name)
     }
 }

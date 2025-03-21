@@ -37,8 +37,10 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentRMNCHNeonateViewModel
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
@@ -390,8 +392,11 @@ class AssessmentActivity : BaseActivity() {
                         val detailsJson = JSONObject(assessment.assessmentDetails)
                         val ancObject = detailsJson.optJSONObject(ANC_MENU)
                         val isDeathOfMother = ancObject?.optBoolean(DeathOfMother, false) == true
+
+                        val childHoodObject = detailsJson.optJSONObject(ChildHoodVisit)
+                        val isDeathOfNeonate = childHoodObject?.optBoolean(deathOfBaby, false) == true
                         // insertOtherAssessmentDetails()
-                        if (CommonUtils.isCommunity() && isDeathOfMother) {
+                        if (CommonUtils.isCommunity() && (isDeathOfMother || isDeathOfNeonate)) {
                             viewModel.workflowName?.let {
                                 startCbsActivity(
                                     workFlowName = it,

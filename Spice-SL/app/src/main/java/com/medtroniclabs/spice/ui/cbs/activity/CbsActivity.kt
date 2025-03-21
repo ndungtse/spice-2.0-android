@@ -239,7 +239,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                         if (index != -1 && !otherText.isNullOrBlank()) {
                             rmnchText[index] = "${DefinedParams.Other} ($otherText)"
                         }
-                        val finalText = rmnchText.joinToString(",")
+                        val finalText = rmnchText.joinToString(", ")
 
                         val isAncOrNormal = viewModel.birthLiveData.value?.data?.third ?: false
                         if (isAncOrNormal) {
@@ -296,7 +296,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                             "${DefinedParams.Other}($otherValue)"
                     }
                 }
-                conditions.joinToString(",")
+                conditions.joinToString(", ")
             } ?: ""
         } catch (e: Exception) {
             "" // Return an empty string if parsing fails

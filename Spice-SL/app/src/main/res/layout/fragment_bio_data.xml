@@ -51,6 +51,11 @@
                     android:orientation="vertical">
 
                     <include
+                        android:id="@+id/householdNo"
+                        android:visibility="gone"
+                        layout="@layout/summary_layout" />
+
+                    <include
                         android:id="@+id/patientName"
                         layout="@layout/summary_layout" />
 
