@@ -7,12 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentLinkpatientDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
+import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.phuwalkins.listener.LinkSuccessListener
 
@@ -22,6 +26,7 @@ class LinkPatientDialogFragment : DialogFragment(), View.OnClickListener {
     private var onDismissListener: OnDialogDismissListener? = null
     private var onLinkSuccessListener: LinkSuccessListener? = null
 
+    private val householdSummaryViewModel: HouseHoldSummaryViewModel by activityViewModels()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -64,6 +69,7 @@ class LinkPatientDialogFragment : DialogFragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.PHUWALKINSCREENLINKCONFIRMATION)
         setListener()
     }
 

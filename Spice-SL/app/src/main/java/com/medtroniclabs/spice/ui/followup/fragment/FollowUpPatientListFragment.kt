@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.callButtonClicked
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
@@ -100,6 +101,7 @@ class FollowUpPatientListFragment: BaseFragment(), FollowUpDialogFragment.Follow
                 val dialIntent = Intent(Intent.ACTION_DIAL)
                 dialIntent.data = Uri.parse("tel:$phoneNumber")
                 dialerLauncher.launch(dialIntent)
+                viewModel.setUserJourney(callButtonClicked)
             }
         }
     }

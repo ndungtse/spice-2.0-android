@@ -11,6 +11,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREENMEMBERLINKSUCCESS
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.common.DefinedParams
@@ -100,6 +102,7 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
             binding.successMessage.setPadding(50, 0, 50, 0)
             binding.successMessage.text = getString(R.string.member_registered_successfully_linked)
             binding.householdNo.gone()
+            viewModel.setUserJourney(PHUWALKINSCREENMEMBERLINKSUCCESS)
         }
 
     }

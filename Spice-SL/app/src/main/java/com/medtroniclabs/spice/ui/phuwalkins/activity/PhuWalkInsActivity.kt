@@ -10,6 +10,10 @@ import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREEN
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREENCALLBUTTON
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREENHOUSEHOLDLISTLINK
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREENLINKBUTTON
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -57,6 +61,7 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
                 PhuWalkInsListFragment.newInstance()
             phuWalkInsListFragment.setDataCallback(this@PhuWalkInsActivity)
             addReplaceFragment(R.id.phuListFragment, phuWalkInsListFragment)
+            viewModel.setUserJourney(PHUWALKINSCREEN)
         }
     }
 
@@ -123,6 +128,7 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
             setTitle(getString(R.string.link_patient))
             viewModel.memberID = patientLinkedDetails.lMemberId.toLong()
             viewModel.fhirMemberID = patientLinkedDetails.memberId.toLong()
+            viewModel.setUserJourney(PHUWALKINSCREENHOUSEHOLDLISTLINK)
             val phuLinkedHouseHoldListFragment =
                 PhuLinkedHouseHoldListFragment.newInstance(patientLinkedDetails)
             addReplaceFragment(R.id.phuListFragment, phuLinkedHouseHoldListFragment)
@@ -143,6 +149,7 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
             intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, false)
             intent.putExtra(HouseholdDefinedParams.isPhuWalkInsFlow, true)
             startActivity(intent)
+            viewModel.setUserJourney(PHUWALKINSCREENLINKBUTTON)
         }
     }
 
@@ -162,6 +169,8 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
         val dialIntent = Intent(Intent.ACTION_DIAL)
         dialIntent.data = Uri.parse("tel:${patientLinkedDetails.phoneNumber}")
         dialerLauncher.launch(dialIntent)
+        viewModel.setUserJourney(PHUWALKINSCREENCALLBUTTON)
+
     }
 
     fun backNavigation() {

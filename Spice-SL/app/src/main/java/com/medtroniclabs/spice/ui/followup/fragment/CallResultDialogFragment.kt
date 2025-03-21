@@ -10,6 +10,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.CallResultDialogue
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.CallResult
 import com.medtroniclabs.spice.common.DefinedParams.PatientStatus
@@ -70,6 +71,7 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
     }
 
     private fun initView() {
+        viewModel.setUserJourney(CallResultDialogue)
         viewModel.callResultHashMap[CallResult] = FollowUpCallStatus.SUCCESSFUL.name
         getCallResultData().let {
             val view = SingleSelectionCustomView(binding.root.context)

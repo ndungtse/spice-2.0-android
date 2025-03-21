@@ -11,17 +11,15 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FollowupFilterBottomSheetDialogBinding
-import com.medtroniclabs.spice.databinding.FragmentFilterBottomSheetDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.ZoneOffset
 
 class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClickListener {
@@ -67,7 +65,8 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
     private fun enableConfirm() {
 
         val isCustomizedOptionSelected =
-            dataRangesListTagView.getSelectedTags().any { it.name == FollowUpDefinedParams.FilterCustomize }
+            dataRangesListTagView.getSelectedTags()
+                .any { it.name == FollowUpDefinedParams.FilterCustomize }
 
         val isDateRangeValid = if (dataRangesListTagView.getSelectedTags().isNotEmpty()) {
             if (isCustomizedOptionSelected) {
@@ -118,22 +117,29 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
 
     private fun initView() {
 
+        viewModel.setUserJourney(AnalyticsDefinedParams.FollowUPFilter)
+
         villageListTagView =
             TagListCustomView(binding.root.context, binding.villageChipGroup) { _, _, _ ->
                 enableConfirm()
             }
 
-        referralReasonTagView = TagListCustomView(binding.root.context, binding.cgReferralReason) { _, _, _ ->
-            enableConfirm()
-        }
+        referralReasonTagView =
+            TagListCustomView(binding.root.context, binding.cgReferralReason) { _, _, _ ->
+                enableConfirm()
+            }
 
         dataRangesListTagView =
-            TagListCustomView(binding.root.context, binding.registrationStatusChipGroup) { _, _, _ ->
+            TagListCustomView(
+                binding.root.context,
+                binding.registrationStatusChipGroup
+            ) { _, _, _ ->
                 if (dataRangesListTagView.getSelectedTags().isEmpty()) {
                     goneDatePicker()
                 } else {
                     val isCustomized =
-                        dataRangesListTagView.getSelectedTags().any { it.name == FollowUpDefinedParams.FilterCustomize }
+                        dataRangesListTagView.getSelectedTags()
+                            .any { it.name == FollowUpDefinedParams.FilterCustomize }
                     if (isCustomized) {
                         binding.clDateRange.visibility = View.VISIBLE
                         binding.tvApplyError.visibility = View.GONE

@@ -191,8 +191,8 @@ class FollowUpMyPatientActivity : BaseActivity() {
                     viewModel.updateFollowUpFilter(pageType = it.position)
                    // binding.llExactSearch.etSearchTerm.setText("")
                     binding.viewPager.currentItem = it.position
-                    getTabScreenName(it.position)?.let {
-                        viewModel.setUserJourney(it)
+                    getTabScreenName(it.position)?.let { tabName ->
+                        viewModel.setUserJourney(tabName)
                     }
                     setTabTypeface(
                         it,
@@ -211,6 +211,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
         })
 
         binding.llExactSearch.tabLayout.getTabAt(0)?.let {
+            viewModel.setUserJourney(HH_VISIT_TAB)
             setTabTypeface(it, ResourcesCompat.getFont(applicationContext, R.font.inter_bold))
         }
     }

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.getPatientStatus
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setDialogWidthAndHeightAsWrapPercent
@@ -66,6 +67,7 @@ class FollowUpDialogFragment : DialogFragment() {
     }
 
     private fun initViews() {
+        viewModel.setUserJourney(AnalyticsDefinedParams.FollowUPDetailDialogue)
         binding.btnCall.setOnClickListener {
             dismiss()
             listener?.onCallClicked()

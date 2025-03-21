@@ -73,6 +73,19 @@ object AnalyticsDefinedParams {
     const val COUNTER_REFERRAL_TAB = "Counter Referral"
 
 
+    const val FollowUPFilter = "FollowUpFilter Dialogue"
+    const val FollowUPDetailDialogue = "FollowUp Detail Dialogue"
+    const val callButtonClicked = "FollowUp Call Triggered"
+    const val CallResultDialogue = "FollowUp Call Result Dialogue"
+    const val PHUWALKINSCREEN = "PHU Walk-in Screen"
+    const val PHUWALKINSCREENCALLBUTTON = "PHU Walk-in Screen Call Triggered"
+    const val PHUWALKINSCREENHOUSEHOLDLISTLINK = "PHU Walk-in HouseHold List Screen to Link Patient"
+    const val PHUWALKINSCREENLINKBUTTON = "PHU Walk-in HouseHold Summary to Link Patient Screen"
+    const val PHUWALKINSCREENLINKCONFIRMATION = "PHU Walk-in Link Patient Confirmation Dialogue"
+    const val PHUWALKINSCREENMEMBERLINKSUCCESS = "PHU Walk-in Link Patient Success Dialogue"
+    const val PHUWALKINSCREENHOUSEHOLDLISTCALLBUTTON = "PHU Walk-in House Hold List Screen Call Triggered"
+
+
     //Non Community
     const val ScreeningCreation = "ScreeningCreation"
     const val NCDAssessmentCreation = "AssessmentCreation"

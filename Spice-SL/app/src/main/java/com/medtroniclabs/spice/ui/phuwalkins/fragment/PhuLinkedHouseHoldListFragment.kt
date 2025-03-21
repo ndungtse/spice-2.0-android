@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREENCALLBUTTON
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREENHOUSEHOLDLISTCALLBUTTON
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setTextChangeListener
 import com.medtroniclabs.spice.appextensions.visible
@@ -60,6 +62,7 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
             val dialIntent = Intent(Intent.ACTION_DIAL)
             dialIntent.data = Uri.parse("tel:${patientLinkedDetails.phoneNumber}")
             dialerLauncher.launch(dialIntent)
+            viewModel.setUserJourney(PHUWALKINSCREENHOUSEHOLDLISTCALLBUTTON)
         }
         searchHouseHoldMembers()
     }

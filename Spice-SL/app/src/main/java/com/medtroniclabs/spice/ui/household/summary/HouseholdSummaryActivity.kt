@@ -63,7 +63,11 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         initializeView()
         setListener()
         attachObserver()
-        householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.HouseHoldSummary)
+
+        if (!householdSummaryViewModel.isPhuWalkInsFlow) {
+            householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.HouseHoldSummary)
+        }
+
     }
 
     private fun attachObserver() {
