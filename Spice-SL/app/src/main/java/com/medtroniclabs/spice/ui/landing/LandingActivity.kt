@@ -131,7 +131,12 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         binding = ActivityLandingBinding.inflate(layoutInflater)
         splashScreen.setKeepOnScreenCondition { false }
         setContentView(binding.root)
-        languageViewModel.getCultures()
+        if (CommonUtils.isNonCommunity()) {
+            languageViewModel.getCultures()
+        } else {
+            val menu = binding.navView.menu
+            menu.findItem(R.id.switch_language)?.let { menu.removeItem(it.itemId) }
+        }
         initializeDrawerView()
         initializeHomeViews()
         updateSideBarFooter()

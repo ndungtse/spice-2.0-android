@@ -57,6 +57,7 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.resultCardView.gone()
+        binding.emptyErrorMessage.gone()
         viewModel.getUserProfile()
         binding.btnDone.safeClickListener(this)
         binding.callSupervisor.safeClickListener(this)

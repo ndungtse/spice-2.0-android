@@ -44,5 +44,6 @@ object DefinedParams {
     const val AccordionGroup = "accordionGroup"
     const val ChipGroup = "chipGroup"
     const val OtherMethodSpecify = "Other Method (specify)"
-
+    const val NCD = "NCD"
+    const val IMMUNISATION = "IMMUNISATION"
 }

@@ -80,6 +80,11 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         binding.btnSubmit.safeClickListener(this)
     }
 
+    // In the case of a mother's death, the "Death of Mother" option should be auto-selected by default.
+    // This should only be done the first time. Avoid using LiveData, as it is shared between the Checkbox Fragment and CBS Fragment.
+    // Instead, check if the selected value is empty before applying the default selection.
+    private var selectedSymptoms = ArrayList<Map<String, String>>()
+
     private fun initFormView() {
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
@@ -87,6 +92,12 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         ) { map, id ->
             when (id) {
                 RmnchNotifiableCondition -> {
+                    (map[RmnchNotifiableCondition] as? ArrayList<Map<String, String>>)?.let { symptoms ->
+                        selectedSymptoms.apply {
+                            clear()
+                            addAll(symptoms)
+                        }
+                    }
                     (map[RmnchNotifiableCondition] as? ArrayList<Map<String, String>>)
                         ?.firstOrNull { it[DefinedParams.Value].equals(deathOfNewborn, true) }
                         .let { filteredValue ->
@@ -173,9 +184,11 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                         symptom.displayValue?.let { put(com.medtroniclabs.spice.formgeneration.config.DefinedParams.cultureValue, it) }
                         symptom.value?.let { put(com.medtroniclabs.spice.formgeneration.config.DefinedParams.value, it) }
                     }
-                    viewModel.formLayoutsLiveData.value?.data?.formLayout
-                        ?.firstOrNull { it.id == RmnchNotifiableCondition }
-                        ?.let { formGenerator.validateCheckboxDialogue(RmnchNotifiableCondition, it, arrayListOf(selectedItemMap)) }
+                    if (selectedSymptoms.isEmpty()) {
+                        viewModel.formLayoutsLiveData.value?.data?.formLayout
+                            ?.firstOrNull { it.id == RmnchNotifiableCondition }
+                            ?.let { formGenerator.validateCheckboxDialogue(RmnchNotifiableCondition, it, arrayListOf(selectedItemMap)) }
+                    }
                 }
             }
         }

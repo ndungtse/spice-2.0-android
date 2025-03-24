@@ -20,6 +20,8 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallReason
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
 import com.medtroniclabs.spice.databinding.FragmentBottomCallResultDialogBinding
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.IMMUNISATION
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NCD
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
@@ -32,7 +34,7 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
 
     private lateinit var binding: FragmentBottomCallResultDialogBinding
     private val viewModel: FollowUpViewModel by activityViewModels()
-
+    val data = setOf(NCD, IMMUNISATION)
     companion object {
         const val TAG = "CallResultDialogFragment"
         fun newInstance(): CallResultDialogFragment {
@@ -158,7 +160,6 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
 
     private fun getPatientStatusData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        val data = setOf("NCD", "IMMUNISATION")
         val value = viewModel.selectedFollowUpDetail?.encounterType
         if (data.contains(value)) {
             flowList.add(getOptionMap(getString(R.string.inform), getString(R.string.inform)))
@@ -227,7 +228,9 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
         } else {
             viewModel.patientStatusHashMap[PatientStatus] = ReferralStatus.OnTreatment.name
         }
-
+        if (data.contains(viewModel.selectedFollowUpDetail?.encounterType)) {
+            viewModel.patientStatusHashMap[PatientStatus] = getString(R.string.inform)
+        }
         binding.selectionPatientStatus.removeAllViews()
         binding.tvPatientStatus.text = getString(R.string.patient_status)
         getPatientStatusData().let {

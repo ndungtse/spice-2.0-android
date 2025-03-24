@@ -13,6 +13,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.activityViewModels
 import com.google.gson.internal.LinkedTreeMap
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
 import com.medtroniclabs.spice.common.DefinedParams
@@ -102,6 +103,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                         }
                     }
                     communityProfileViewModel.updateCurrentFragment(3,bundle)
+                    requireActivity().startBackgroundOfflineSync()
                 }
 
                 ResourceState.ERROR -> {

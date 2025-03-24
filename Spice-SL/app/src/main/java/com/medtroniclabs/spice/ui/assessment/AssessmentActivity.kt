@@ -403,7 +403,8 @@ class AssessmentActivity : BaseActivity() {
                                     workFlowName = it,
                                     memberId = viewModel.selectedHouseholdMemberId,
                                     assessmentId = viewModel.assessmentSaveLiveData.value?.data?.id,
-                                    deathOfMother = true
+                                    deathOfMother = isDeathOfMother,
+                                    deathOfNewborn = isDeathOfNeonate
                                 )
                             }
                         } else {
