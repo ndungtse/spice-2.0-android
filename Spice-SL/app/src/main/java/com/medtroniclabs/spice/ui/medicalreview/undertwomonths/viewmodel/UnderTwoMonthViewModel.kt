@@ -80,7 +80,7 @@ class UnderTwoMonthViewModel @Inject constructor(
                             clinicalSummaryAndSigns = clinicalSummaryAndSigns.takeIf { it.isNotEmpty() },
                             examination = examination,
                             presentingComplaints = presentingComplaints.takeIf { it.isNotEmpty() },
-                            encounter = createUnderTwoMonthsEncounter(hhId, selectedPatientId, memberId,prescriptionEncounterId)
+                            encounter = createUnderTwoMonthsEncounter(hhId, selectedPatientId, memberId,prescriptionEncounterId,villageId = details.villageId)
                         )
 
                         createUnderTwoMonthsMedicalReviewLiveData.postLoading()
@@ -97,7 +97,8 @@ class UnderTwoMonthViewModel @Inject constructor(
         householdId: String?,
         patientId: String,
         memberId: String,
-        prescriptionEncounterId: String?
+        prescriptionEncounterId: String?,
+        villageId:String?
     ): MedicalReviewEncounter {
         val currentTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
         return MedicalReviewEncounter(
@@ -110,7 +111,8 @@ class UnderTwoMonthViewModel @Inject constructor(
             patientId = patientId,
             memberId = memberId,
             referred = true,
-            provenance = ProvanceDto()
+            provenance = ProvanceDto(),
+            villageId = villageId
         )
     }
 

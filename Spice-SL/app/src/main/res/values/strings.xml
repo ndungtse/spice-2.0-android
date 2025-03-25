@@ -1438,4 +1438,6 @@
     <string name="no_community_found" translatable="false">No community found</string>
     <string name="two_zero" translatable="false">00</string>
     <string name="three_zero" translatable="false">000</string>
+    <string name="visited" translatable="false">Visited</string>
+    <string name="not_visited" translatable="false">Not Visited</string>
 </resources>

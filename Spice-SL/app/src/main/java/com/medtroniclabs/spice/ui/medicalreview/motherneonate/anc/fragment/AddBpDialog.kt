@@ -60,10 +60,12 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
             return AddBpDialog()
         }
 
-        fun newInstance(patientId: String?): AddBpDialog {
+        fun newInstance(patientId: String?,villageId:String?, householdId:String?): AddBpDialog {
             val fragment = AddBpDialog()
             fragment.arguments = Bundle().apply {
                 putString(DefinedParams.PatientId, patientId)
+                putString(DefinedParams.villageId, villageId)
+                putString(DefinedParams.householdId, householdId)
             }
             return fragment
         }
@@ -277,7 +279,9 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
             longitude = viewModel.lastLocation?.longitude,
             patientId = arguments?.getString(DefinedParams.PatientId, ""),
             startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
-            endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+            endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
+            villageId = arguments?.getString(DefinedParams.villageId),
+            householdId = arguments?.getString(DefinedParams.householdId)
         )
     }
 }

@@ -13,6 +13,7 @@ import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ChildPatientId
 import com.medtroniclabs.spice.common.DefinedParams.DOB
 import com.medtroniclabs.spice.common.DefinedParams.DateOfDelivery
@@ -151,7 +152,9 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             dob: String?,
             childPatientId: String?,
             dateOfDelivery:String?,
-            neonateOutcome: String?
+            neonateOutcome: String?,
+            householdId:String?,
+            villageId:String?
         ): PatientMenuFragment {
             val fragment = PatientMenuFragment()
             val bundle = Bundle()
@@ -163,6 +166,8 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             bundle.putString(ChildPatientId, childPatientId)
             bundle.putString(DateOfDelivery, dateOfDelivery)
             bundle.putString(NeonateOutcome,neonateOutcome)
+            bundle.putString(DefinedParams.householdId, householdId)
+            bundle.putString(DefinedParams.villageId, villageId)
             fragment.arguments = bundle
             return fragment
         }
@@ -222,6 +227,8 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                 intent.putExtra(DOB, arguments?.getString(DOB))
                 intent.putExtra(ID, arguments?.getString(ID))
                 intent.putExtra(MemberID, arguments?.getString(MemberID))
+                intent.putExtra(DefinedParams.householdId, arguments?.getString(DefinedParams.householdId))
+                intent.putExtra(DefinedParams.villageId, arguments?.getString(DefinedParams.villageId))
                 startActivity(intent)
             }
 

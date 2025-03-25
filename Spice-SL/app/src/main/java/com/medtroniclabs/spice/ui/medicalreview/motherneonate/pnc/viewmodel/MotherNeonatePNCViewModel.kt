@@ -209,7 +209,8 @@ class MotherNeonatePNCViewModel @Inject constructor(
         householdId = details.houseHoldId,
         memberId = if (type) details.memberId else childMemberId,
         referred = true,
-        visitNumber = pncVisit.toInt()
+        visitNumber = pncVisit.toInt(),
+        villageId = details.villageId
     )
 
     fun setNeonateDetailsReq(

@@ -13,7 +13,6 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.changePatientStatus
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
@@ -382,18 +381,18 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     }
 
     private fun showAddHeightDialog() {
-        AddHeightDialog.newInstance(getPatientId(),getMemberId()).apply {
+        AddHeightDialog.newInstance(getPatientId(),getMemberId(),villageId = patientViewModel.getVillageId(),householdId = patientViewModel.getPatientHouseholdId()).apply {
             listener = this@MedicalReviewPatientDiagnosisFragment
         }.show(childFragmentManager, AddHeightDialog.TAG)
     }
 
     private fun showAddBpOrWeightDialog(isBp: Boolean) {
         val dialog = if (isBp) {
-            AddBpDialog.newInstance(getPatientId()).apply {
+            AddBpDialog.newInstance(getPatientId(),villageId = patientViewModel.getVillageId(),householdId = patientViewModel.getPatientHouseholdId()).apply {
                 listener = this@MedicalReviewPatientDiagnosisFragment
             }
         } else {
-            AddWeightDialog.newInstance(getPatientId()).apply {
+            AddWeightDialog.newInstance(getPatientId(),villageId = patientViewModel.getVillageId(),householdId = patientViewModel.getPatientHouseholdId()).apply {
                 listener = this@MedicalReviewPatientDiagnosisFragment
             }
         }

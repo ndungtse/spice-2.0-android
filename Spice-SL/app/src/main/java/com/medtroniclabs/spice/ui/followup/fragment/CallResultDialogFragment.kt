@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NCD
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,6 +36,7 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
     private lateinit var binding: FragmentBottomCallResultDialogBinding
     private val viewModel: FollowUpViewModel by activityViewModels()
     val data = setOf(NCD, IMMUNISATION)
+    val familyPlanningData = setOf(AssessmentDefinedParams.Family_Planning.uppercase())
     companion object {
         const val TAG = "CallResultDialogFragment"
         fun newInstance(): CallResultDialogFragment {
@@ -169,6 +171,14 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
                     getString(R.string.not_inform)
                 )
             )
+        } else if (familyPlanningData.contains(value)) {
+            flowList.add(getOptionMap(getString(R.string.visited), getString(R.string.visited)))
+            flowList.add(
+                getOptionMap(
+                    getString(R.string.not_visited),
+                    getString(R.string.not_visited)
+                )
+            )
         } else {
             flowList.add(getOptionMap(ReferralStatus.Recovered.name, getString(R.string.recovered)))
             if (viewModel.selectedFollowUpDetail?.type?.equals(
@@ -230,6 +240,9 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
         }
         if (data.contains(viewModel.selectedFollowUpDetail?.encounterType)) {
             viewModel.patientStatusHashMap[PatientStatus] = getString(R.string.inform)
+        }
+        if (familyPlanningData.contains(viewModel.selectedFollowUpDetail?.encounterType)) {
+            viewModel.patientStatusHashMap[PatientStatus] = getString(R.string.visited)
         }
         binding.selectionPatientStatus.removeAllViews()
         binding.tvPatientStatus.text = getString(R.string.patient_status)

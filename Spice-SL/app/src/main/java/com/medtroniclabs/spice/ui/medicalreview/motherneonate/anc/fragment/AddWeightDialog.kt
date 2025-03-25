@@ -47,10 +47,12 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
             return AddWeightDialog()
         }
 
-        fun newInstance(patientId: String?): AddWeightDialog {
+        fun newInstance(patientId: String?,villageId:String?, householdId:String?): AddWeightDialog {
             val fragment = AddWeightDialog()
             fragment.arguments = Bundle().apply {
                 putString(DefinedParams.PatientId, patientId)
+                putString(DefinedParams.villageId, villageId)
+                putString(DefinedParams.householdId, householdId)
             }
             return fragment
         }
@@ -174,7 +176,9 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
                 longitude = viewModel.lastLocation?.longitude,
                 patientId = arguments?.getString(DefinedParams.PatientId, ""),
                 startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
-                endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+                endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
+                villageId = arguments?.getString(DefinedParams.villageId),
+                householdId = arguments?.getString(DefinedParams.householdId)
             )
         )
     }

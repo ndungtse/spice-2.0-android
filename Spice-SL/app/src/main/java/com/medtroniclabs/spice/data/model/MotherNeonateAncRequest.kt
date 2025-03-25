@@ -36,7 +36,8 @@ data class MedicalReviewEncounter(
     val endTime: String? = null,
     val householdId: String? =null,
     val memberId: String? = null,
-    var visitNumber: Int? = null
+    var visitNumber: Int? = null,
+    val villageId: String? = null
 )
 
 data class PatientEncounterResponse(

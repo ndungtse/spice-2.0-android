@@ -137,7 +137,7 @@ class ImmunisationViewModel @Inject constructor(
         showMissedVaccinationDialog.postValue(Pair(containsAnyMissedVaccine,null))
     }
 
-    fun postVaccinationChanges(id: String?, memberId: String?, patientId: String?, missedReason: String?) {
+    fun postVaccinationChanges(id: String?, memberId: String?, patientId: String?, missedReason: String?,householdId:String?, villageId: String?) {
         viewModelScope.launch(dispatcherIO) {
             val request = RequestCreateImmunisation(
                 immunisationList = changesList,
@@ -147,7 +147,9 @@ class ImmunisationViewModel @Inject constructor(
                     memberId = memberId,
                     provenance = ProvanceDto(),
                     latitude = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name),
-                    longitude = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name)
+                    longitude = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name),
+                    villageId = villageId,
+                    householdId = householdId
                 ),
                 missedReason = missedReason
             )

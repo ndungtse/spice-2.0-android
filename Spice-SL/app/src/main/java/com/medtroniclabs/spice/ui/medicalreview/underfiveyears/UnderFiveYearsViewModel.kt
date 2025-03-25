@@ -96,7 +96,8 @@ class UnderFiveYearsViewModel @Inject constructor(
                     patientId = selectedPatientId,
                     memberId = memberId,
                     referred = true,
-                    provenance = ProvanceDto()
+                    provenance = ProvanceDto(),
+                    villageId = patientDetail.villageId
                 )
                 val underFiveMedicalReviewRequest = CreateUnderFiveYearsRequest(
                     id = encounterId,

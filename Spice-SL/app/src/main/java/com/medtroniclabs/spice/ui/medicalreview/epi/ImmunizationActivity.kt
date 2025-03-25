@@ -136,7 +136,9 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
                 val id = intent.getStringExtra(DefinedParams.ID)
                 val patientId = intent.getStringExtra(DefinedParams.PatientId)
                 val memberId = intent.getStringExtra(DefinedParams.MemberID)
-                viewModel.postVaccinationChanges(id, memberId, patientId, it.second)
+                val villageId = intent.getStringExtra(DefinedParams.villageId)
+                val householdId = intent.getStringExtra(DefinedParams.householdId)
+                viewModel.postVaccinationChanges(id, memberId, patientId, it.second,villageId = villageId, householdId = householdId)
             }
         }
 

@@ -314,4 +314,6 @@ object DefinedParams {
     const val Contact_Trace_Updated = 3
     const val still_birth = "Still Birth"
     const val MOTHER_ID = "MOTHER_ID"
+    const val householdId = "HOUSEHOLD_ID"
+    const val villageId = "VILLAGE_ID"
 }

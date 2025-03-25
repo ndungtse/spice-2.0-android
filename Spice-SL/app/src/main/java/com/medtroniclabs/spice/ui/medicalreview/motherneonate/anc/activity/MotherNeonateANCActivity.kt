@@ -569,7 +569,8 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             viewModel.createMotherNeonate(
                 patientViewModel.encounterId,
                 patientViewModel.getPatientHouseholdId(),
-                patientViewModel.getPatientMemberId()
+                patientViewModel.getPatientMemberId(),
+                villageId = patientViewModel.getVillageId()
             )
         } else {
             showErrorDialogue(
@@ -628,14 +629,16 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         }
     }
 
-    private fun createEncounter(viewModel: MotherNeonateANCViewModel): MedicalReviewEncounter {
+    private fun createEncounter(viewModel: MotherNeonateANCViewModel, villageId: String?, householdId: String?): MedicalReviewEncounter {
         return MedicalReviewEncounter(
             provenance = ProvanceDto(),
             latitude = viewModel.lastLocation?.latitude,
             longitude = viewModel.lastLocation?.longitude,
             patientId = viewModel.patientId,
             startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
-            endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+            endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
+            villageId = villageId,
+            householdId = householdId
         )
     }
 
@@ -648,7 +651,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             weightViewModel.saveWeight(
                 BpAndWeightRequestModel(
                     weight = it,
-                    encounter = createEncounter(viewModel)
+                    encounter = createEncounter(viewModel,villageId = patientViewModel.getVillageId(),householdId = patientViewModel.getPatientHouseholdId())
                 )
             )
         }
@@ -668,7 +671,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     diastolic = pregnancyDetailsViewModel.pregnancyDetailsModel.diastolic,
                     systolic = pregnancyDetailsViewModel.pregnancyDetailsModel.systolic,
                     pulse = pregnancyDetailsViewModel.pregnancyDetailsModel.pulse,
-                    encounter = createEncounter(viewModel)
+                    encounter = createEncounter(viewModel,villageId = patientViewModel.getVillageId(),householdId = patientViewModel.getPatientHouseholdId())
                 )
             )
         }

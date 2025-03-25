@@ -61,11 +61,13 @@ class AddHeightDialog : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "AddHeightDialog"
-        fun newInstance(patientId: String?= null, memberId: String?= null): AddHeightDialog {
+        fun newInstance(patientId: String?= null, memberId: String?= null,villageId:String?, householdId:String?): AddHeightDialog {
             val fragment = AddHeightDialog()
             fragment.arguments = Bundle().apply {
                 putString(DefinedParams.PatientId, patientId)
                 putString(DefinedParams.MemberID, memberId)
+                putString(DefinedParams.villageId, villageId)
+                putString(DefinedParams.householdId, householdId)
             }
             return fragment
         }
@@ -146,7 +148,9 @@ class AddHeightDialog : DialogFragment(), View.OnClickListener {
                 patientId = arguments?.getString(DefinedParams.PatientId, ""),
                 memberId = arguments?.getString(DefinedParams.MemberID, ""),
                 startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
-                endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+                endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
+                villageId = arguments?.getString(DefinedParams.villageId),
+                householdId = arguments?.getString(DefinedParams.householdId)
             )
         )
     }

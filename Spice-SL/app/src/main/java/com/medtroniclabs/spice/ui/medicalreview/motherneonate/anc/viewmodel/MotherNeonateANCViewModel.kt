@@ -42,12 +42,12 @@ class MotherNeonateANCViewModel @Inject constructor(
         }
     }
 
-    fun createMotherNeonate(encounterId: String?, patientHouseholdId: String?,memberId: String?) {
+    fun createMotherNeonate(encounterId: String?, patientHouseholdId: String?,memberId: String?,villageId: String?) {
         viewModelScope.launch(dispatcherIO) {
             try {
                 motherNeonateAncRequest.apply {
                     encounter =
-                        createMedicalReviewEncounter(encounterId, patientHouseholdId, memberId)
+                        createMedicalReviewEncounter(encounterId, patientHouseholdId, memberId,villageId)
                 }
                 motherNeonateCreateResponse.postLoading()
                 motherNeonateCreateResponse.postValue(
@@ -64,7 +64,8 @@ class MotherNeonateANCViewModel @Inject constructor(
     private fun createMedicalReviewEncounter(
         encounterId: String?,
         patientHouseholdId: String?,
-        memberId: String?
+        memberId: String?,
+        villageId: String?
     ): MedicalReviewEncounter {
         val currentTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
         return MedicalReviewEncounter(
@@ -78,7 +79,8 @@ class MotherNeonateANCViewModel @Inject constructor(
             endTime = currentTime,
             householdId = patientHouseholdId,
             referred = true,
-            visitNumber = ancVisit
+            visitNumber = ancVisit,
+            villageId = villageId
         )
     }
 
