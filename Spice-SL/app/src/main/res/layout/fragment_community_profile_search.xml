@@ -53,4 +53,17 @@
         app:layout_constraintTop_toBottomOf="@+id/tvCommunityCount"
         tools:listitem="@layout/item_community_profile" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvNoCommunityFound"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_0dp"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/_15sdp"
+        android:text="@string/no_community_found"
+        android:textColor="@color/medium_risk_color"
+        android:textSize="@dimen/_16ssp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

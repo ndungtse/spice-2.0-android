@@ -8,4 +8,5 @@ sealed class CommunitySummaryListItem {
         val valuesMap:Map<String,String>?
         ):CommunitySummaryListItem()
     data class TitleItem(val title:String):CommunitySummaryListItem()
+    data class OtherItemText(val label:String?,val value:String?):CommunitySummaryListItem()
 }

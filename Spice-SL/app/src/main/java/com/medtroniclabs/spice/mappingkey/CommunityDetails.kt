@@ -14,6 +14,7 @@ object CommunityDetails {
     const val Church = "church"
     const val Mosque = "mosque"
     const val MobileNetworkCoverage = "mobileNetworkCoverage"
+    const val OtherNetwork = "otherNetwork"
     const val SelectedNetwork = "selectedNetwork"
     const val MarketDays = "marketDays"
     const val ChwHouseInCommunity = "chwHouseInCommunity"

@@ -22,6 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/TextStyle_Bold_14_black_Medium"
+        android:layout_marginTop="@dimen/_4sdp"
         app:layout_constraintStart_toStartOf="@id/tvProfileName"
         app:layout_constraintTop_toBottomOf="@+id/tvProfileName"
         tools:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."/>
@@ -32,6 +33,7 @@
         android:layout_height="wrap_content"
         tools:text="Register Completed on Oct 2023"
         style="@style/TextStyle_Bold_14_black_Medium"
+        android:layout_marginTop="@dimen/_4sdp"
         app:layout_constraintTop_toBottomOf="@+id/tvProfileDescription"
         app:layout_constraintStart_toStartOf="@id/tvProfileName"/>
 

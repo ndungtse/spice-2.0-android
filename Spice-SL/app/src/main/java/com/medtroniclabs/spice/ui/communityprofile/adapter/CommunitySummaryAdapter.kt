@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.databinding.ItemCommunityProfileEmergencyBinding
 import com.medtroniclabs.spice.databinding.ItemCommunityProfileEmergencyChildBinding
 import com.medtroniclabs.spice.databinding.ItemCommunityProfileHeaderBinding
 import com.medtroniclabs.spice.databinding.ItemCommunityProfileOthersBinding
+import com.medtroniclabs.spice.databinding.ItemCommunityProfileOthersTxtBinding
 import com.medtroniclabs.spice.mappingkey.CommunityDetails
 
 class CommunitySummaryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -20,6 +21,7 @@ class CommunitySummaryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() 
         const val TYPE_OTHER = 1
         const val TYPE_TITLE = 2
         const val TYPE_EMERGENCY = 3
+        const val TYPE_OTHER_TXT = 4
     }
 
     private val communitySummaryList = ArrayList<CommunitySummaryListItem>()
@@ -38,6 +40,7 @@ class CommunitySummaryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() 
             is CommunitySummaryListItem.OtherItem -> TYPE_OTHER
             is CommunitySummaryListItem.TitleItem -> TYPE_TITLE
             is CommunitySummaryListItem.EmergencyItem -> TYPE_EMERGENCY
+            is CommunitySummaryListItem.OtherItemText -> TYPE_OTHER_TXT
         }
     }
 
@@ -98,6 +101,14 @@ class CommunitySummaryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() 
         }
     }
 
+    class OtherTextViewHolder(val binding: ItemCommunityProfileOthersTxtBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: CommunitySummaryListItem.OtherItemText) {
+            binding.tvLabelName.text = item.label
+            binding.tvText.text = item.value
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
@@ -133,6 +144,13 @@ class CommunitySummaryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() 
                 )
             )
 
+            TYPE_OTHER_TXT -> OtherTextViewHolder(
+                ItemCommunityProfileOthersTxtBinding.inflate(
+                    inflater,
+                    parent,
+                    false
+                )
+            )
             else -> throw IllegalArgumentException("Invalid view type")
         }
     }
@@ -148,6 +166,7 @@ class CommunitySummaryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() 
             is CommunitySummaryListItem.OtherItem -> (holder as OtherViewHolder).bind(item)
             is CommunitySummaryListItem.TitleItem -> (holder as TitleViewHolder).bind(item)
             is CommunitySummaryListItem.EmergencyItem -> (holder as EmergencyViewHolder).bind(item)
+            is CommunitySummaryListItem.OtherItemText -> (holder as OtherTextViewHolder).bind(item)
         }
     }
 }

@@ -274,8 +274,8 @@ interface MetaDataDAO {
         COUNT(CASE WHEN isActive = 1 THEN 1 END) as populationCount,
         COUNT(CASE WHEN isPregnant = 1 AND isActive = 1 THEN 1 END) as pregnantCount,
         COUNT(CASE WHEN substr(date_of_birth, 1, 10) > date('now','-1 year') AND isActive = 1 THEN 1 END ) as belowOneYearCount,
-        COUNT(CASE WHEN substr(date_of_birth, 1, 10) >= date('now', '-5 years')
-               AND substr(date_of_birth, 1, 10) < date('now', '-1 year') AND isActive = 1 THEN 1 END) AS belowFiveYearCount,
+        COUNT(CASE WHEN substr(date_of_birth, 1, 10) > date('now', '-5 years')
+               AND substr(date_of_birth, 1, 10) <= date('now', '-1 year') AND isActive = 1 THEN 1 END) AS belowFiveYearCount,
         COUNT(CASE WHEN gender = 'female'
                AND substr(date_of_birth, 1, 10) <= date('now','-10 years') 
                AND substr(date_of_birth, 1, 10) > date('now','-49 years') AND isActive = 1 THEN 1 END) AS childBearingAgeOfWomen

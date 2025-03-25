@@ -32,6 +32,8 @@ class CommunityProfileViewModel @Inject constructor(
     var nearestPhu = ""
     var isNetworkCoverage = false
     var networkName = ""
+    var isOtherNetwork = false
+    var otherNetwork = ""
     var currentFragment = MutableLiveData<Pair<Int, Bundle?>>()
     var communityStatistics = MutableLiveData<Resource<CommunityPopulationStatistics>>()
     var searchFilter = MutableLiveData<String>().apply { value = value ?: "" }

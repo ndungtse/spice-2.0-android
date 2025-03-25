@@ -43,16 +43,25 @@ import com.medtroniclabs.spice.mappingkey.CommunityDetails.EmergencyManagementPl
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.EmergencyTransportContactNo
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.False
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.Infrastructure
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.Market
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.MarketDays
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.NearestPhu
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfHandPumpsNotFunctional
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfImprovedToilets
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfImprovedWaterSources
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfNonImprovedToilets
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfNonImprovedWaterSources
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.OtherNetwork
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.SelectedNetwork
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.True
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.WaterAndSanitationFacilities
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.market
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.communityprofile.adapter.CommunityPopulationAdapter
 import com.medtroniclabs.spice.ui.communityprofile.viewmodel.CommunityProfileViewModel
+import timber.log.Timber
 
 class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
@@ -254,7 +263,17 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         binding.rvCommunitiesStatistics.adapter = communityPopulationAdapter
         formGenerator = FormGenerator(
             requireContext(), binding.llForm,
-            null, this, binding.nestedScrollView, translate = false
+            null, this, binding.nestedScrollView, translate = false,callback = {
+                map,id ->
+                when(id){
+                    Market -> {
+                        val isMarket = (map[Market] as? Boolean) ?: false
+                        if(!isMarket){
+                            communityProfileViewModel.marketDays.clear()
+                        }
+                    }
+                }
+            }
         )
         binding.etRegisteredDate.safeClickListener(this)
     }
@@ -341,6 +360,44 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                 )
 
                 val requestMap = result.second
+                if(requestMap.containsKey(WaterAndSanitationFacilities)){
+                    val waterAndSanitation = requestMap[WaterAndSanitationFacilities] as HashMap<Any, Any>
+                    if(waterAndSanitation.containsKey(NumberOfImprovedWaterSources)){
+                        val numberOfImprovedWaterSources = waterAndSanitation[NumberOfImprovedWaterSources] as String
+                        if(numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) || numberOfImprovedWaterSources.equals(getString(R.string.three_zero))){
+                            waterAndSanitation[NumberOfImprovedWaterSources] = "0"
+                        }
+                    }
+
+                    if(waterAndSanitation.containsKey(NumberOfNonImprovedWaterSources)){
+                        val numberOfImprovedWaterSources = waterAndSanitation[NumberOfNonImprovedWaterSources] as String
+                        if(numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) || numberOfImprovedWaterSources.equals(getString(R.string.three_zero))){
+                            waterAndSanitation[NumberOfNonImprovedWaterSources] = "0"
+                        }
+                    }
+
+                    if(waterAndSanitation.containsKey(NumberOfImprovedToilets)){
+                        val numberOfImprovedWaterSources = waterAndSanitation[NumberOfImprovedToilets] as String
+                        if(numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) || numberOfImprovedWaterSources.equals(getString(R.string.three_zero))){
+                            waterAndSanitation[NumberOfImprovedToilets] = "0"
+                        }
+                    }
+
+                    if(waterAndSanitation.containsKey(NumberOfNonImprovedToilets)){
+                        val numberOfImprovedWaterSources = waterAndSanitation[NumberOfNonImprovedToilets] as String
+                        if(numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) || numberOfImprovedWaterSources.equals(getString(R.string.three_zero))){
+                            waterAndSanitation[NumberOfNonImprovedToilets] = "0"
+                        }
+                    }
+
+                    if(waterAndSanitation.containsKey(NumberOfHandPumpsNotFunctional)){
+                        val numberOfImprovedWaterSources = waterAndSanitation[NumberOfHandPumpsNotFunctional] as String
+                        if(numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) || numberOfImprovedWaterSources.equals("000")){
+                            waterAndSanitation[NumberOfHandPumpsNotFunctional] = "0"
+                        }
+                    }
+
+                }
                 if (requestMap.containsKey(Infrastructure)) {
                     val infrastructure = requestMap[Infrastructure] as HashMap<Any, Any>
                     if (infrastructure.containsKey(market)) {
@@ -360,6 +417,23 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                         }
                         infrastructure[MarketDays] = signsList
                     }
+
+                    if(infrastructure.containsKey(SelectedNetwork)){
+                       serverData.forEach {  serverData ->
+                           when(serverData?.viewType){
+                                VIEW_TYPE_FORM_SPINNER -> {
+                                    val network = infrastructure[SelectedNetwork].toString()
+                                    val view = formGenerator.getViewByTag(SelectedNetwork) as? Spinner
+                                    val adapter = view?.adapter as? CustomSpinnerAdapter
+                                    val index = adapter?.getIndexOfItemByName(network)
+                                    if(index != -1) {
+                                        val name = adapter?.getItem(index ?: 0) as String
+                                        infrastructure[SelectedNetwork] = name
+                                    }
+                                }
+                           }
+                       }
+                    }
                 }
 
                 if(requestMap.containsKey(EmergencyManagementPlan)) {
@@ -372,8 +446,10 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                                     val view = formGenerator.getViewByTag(NearestPhu) as? Spinner
                                     val adapter = view?.adapter as? CustomSpinnerAdapter
                                     val index = adapter?.getIndexOfItemById(nearestPhu)
-                                    val name = adapter?.getItem(index?:0) as String
-                                    emergency[NearestPhu] = name
+                                    if(index != -1) {
+                                        val name = adapter?.getItem(index ?: 0) as String
+                                        emergency[NearestPhu] = name
+                                    }
                                 }
                             }
                         }
@@ -517,7 +593,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
             //Infrastructure
             val infrastructure = dataMap[Infrastructure] as LinkedTreeMap<*, *>
             infrastructure.forEach { (key, value) ->
-                if (key.toString() == SelectedNetwork || key.toString() == DescribeLocation) {
+                if (key.toString() == DescribeLocation || key.toString() == OtherNetwork) {
                     formGenerator.getViewByTag(key)?.let { view ->
                         formGenerator.setValueForView(value, view)
                     }
@@ -543,6 +619,12 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                                 }
                             }
                         }
+                    }
+                }
+
+                if( key.toString() == SelectedNetwork){
+                    formGenerator.getViewByTag(key)?.let { view ->
+                        formGenerator.setValueForView(value, view)
                     }
                 }
             }

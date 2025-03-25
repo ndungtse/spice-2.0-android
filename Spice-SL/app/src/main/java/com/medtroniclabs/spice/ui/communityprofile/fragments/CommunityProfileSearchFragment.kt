@@ -80,6 +80,11 @@ class CommunityProfileSearchFragment : BaseFragment(), View.OnClickListener {
 
     private fun addObserver() {
         communityProfileViewModel.searchFilterLiveData.observe(viewLifecycleOwner) {
+            if(it.isEmpty()){
+                binding.tvNoCommunityFound.visibility = View.VISIBLE
+            }else{
+                binding.tvNoCommunityFound.visibility = View.GONE
+            }
             binding.tvCommunityCount.text = setLabel(it.size)
             communityListAdapter.updateList(it)
         }
@@ -100,10 +105,10 @@ class CommunityProfileSearchFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun setLabel(size: Int): String {
-        return if (size == 1) {
-            getString(R.string.no_of_community, size)
+        return if (size > 1) {
+            getString(R.string.no_of_communities, size)
         } else {
-            return getString(R.string.no_of_communities, size)
+            return getString(R.string.no_of_community, size)
         }
     }
 

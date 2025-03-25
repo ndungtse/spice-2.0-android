@@ -165,23 +165,26 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
                 else -> FollowUpCallStatus.UNSUCCESSFUL
             }
 
+            val psAttempts = callResults.followUpDetails.filter { it.reason == PeerSupervisor }.size + 1
+            val phuAttempts = callResults.followUpDetails.filter { it.reason == PHU }.size + 1
+
             val followUpReason = if (isPsType) {
-                PeerSupervisor
+               Pair(PeerSupervisor, psAttempts)
             } else {
-                PHU
+                Pair(PHU, phuAttempts)
             }
 
-            val attempts = callResults.followUpDetails.size + 1
+
             val lat = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name)
-            val lng = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name)
+            val lng = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name)
 
             // Add new CbsCallResult entry
             callResults.followUpDetails.add(
                 CbsCallResult(
                     duration = 0,
-                    attempts = attempts,
+                    attempts = followUpReason.second,
                     status = followUpStatus.name,
-                    reason = followUpReason,
+                    reason = followUpReason.first,
                     latitude = lat,
                     longitude = lng
                 )

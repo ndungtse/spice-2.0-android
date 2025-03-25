@@ -26,6 +26,7 @@ import com.medtroniclabs.spice.mappingkey.CommunityDetails.Infrastructure
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.MarketDays
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.MobileNetworkCoverage
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.NearestPhu
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.OtherNetwork
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.SelectedNetwork
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.True
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.WaterAndSanitationFacilities
@@ -182,7 +183,7 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
                         val size = marketDays?.size?:0
                         if(size > 0) {
                             communityList.add(
-                                CommunitySummaryListItem.OtherItem(
+                                CommunitySummaryListItem.OtherItemText(
                                     getString(R.string.market_days),
                                     marketDays?.joinToString(",") { it.take(3) ?: "" }
                                 )
@@ -207,17 +208,45 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
                             }
                         }
                     }
-                    SelectedNetwork -> {
+                    OtherNetwork -> {
                         val value = infrastructure[form.id]
-                        if(viewModel.isNetworkCoverage) {
+                        if(value == null && viewModel.isOtherNetwork){
                             communityList.add(
-                                CommunitySummaryListItem.OtherItem(
+                                CommunitySummaryListItem.OtherItemText(
+                                    viewModel.networkName,
+                                    viewModel.otherNetwork
+                                )
+                            )
+                            viewModel.isOtherNetwork = false
+                            viewModel.otherNetwork = ""
+                        }
+                        if(value != null  && viewModel.isOtherNetwork) {
+                            communityList.add(
+                                CommunitySummaryListItem.OtherItemText(
                                     viewModel.networkName,
                                     value.toString()
                                 )
                             )
-                            viewModel.isNetworkCoverage = false
-                            viewModel.networkName = ""
+                            viewModel.isOtherNetwork = false
+                            viewModel.otherNetwork = ""
+                        }
+                    }
+                    SelectedNetwork -> {
+                        val value = infrastructure[form.id]
+                        if(viewModel.isNetworkCoverage) {
+                            if(!value.toString().equals(getString(R.string.other),true)){
+                                communityList.add(
+                                    CommunitySummaryListItem.OtherItemText(
+                                        viewModel.networkName,
+                                        value.toString()
+                                    )
+                                )
+                                viewModel.isNetworkCoverage = false
+                                viewModel.networkName = ""
+                            }else{
+                                viewModel.otherNetwork = value.toString()
+                                viewModel.isOtherNetwork = true
+                            }
                         }
                     }
                     ChwHouseInCommunity -> {
@@ -242,7 +271,7 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
                         val value = infrastructure[form.id]
                         if(viewModel.isChwHome) {
                             communityList.add(
-                                CommunitySummaryListItem.OtherItem(
+                                CommunitySummaryListItem.OtherItemText(
                                     viewModel.chwHome,
                                     value.toString()
                                 )

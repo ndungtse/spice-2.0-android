@@ -1272,7 +1272,7 @@
     <string name="month_and_year_this_register_is_complete" translatable="false">Month and year this register is completed</string>
     <string name="community_population_statistics" translatable="false">Community Population Statistics</string>
     <string name="total_population" translatable="false">Total Population</string>
-    <string name="no_of_household_families" translatable="false">Number of household/families</string>
+    <string name="no_of_household_families" translatable="false">Number of households/families</string>
     <string name="no_of_women_of_child_bearing_age" translatable="false">Number of women of child-bearing age</string>
     <string name="no_of_pregnant_women" translatable="false">Number of pregnant women</string>
     <string name="no_of_child_under_one_year" translatable="false">Number of children under 1 year</string>
@@ -1435,4 +1435,7 @@
     <string name="inform" translatable="false">Informed</string>
     <string name="not_inform" translatable="false">Not Informed</string>
     <string name="describe" translatable="false">Describe</string>
+    <string name="no_community_found" translatable="false">No community found</string>
+    <string name="two_zero" translatable="false">00</string>
+    <string name="three_zero" translatable="false">000</string>
 </resources>

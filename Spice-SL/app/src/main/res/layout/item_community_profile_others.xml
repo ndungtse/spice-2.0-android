@@ -23,7 +23,7 @@
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvValue"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="0.35"
         android:maxLines="5"
         android:ellipsize="none"
