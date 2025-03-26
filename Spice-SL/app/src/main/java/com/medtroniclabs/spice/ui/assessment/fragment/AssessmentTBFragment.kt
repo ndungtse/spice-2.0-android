@@ -144,37 +144,56 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
     ) {}
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+        val dob = viewModel.memberDetailsLiveData.value?.data?.dateOfBirth
         serverData?.forEach { view ->
-            if(view?.id == SleepLocation){
-                val option= view.optionsList
+            if (view?.id == SleepLocation) {
+                val option = view.optionsList
                 val sleepLocationId = resultMap?.get(SleepLocation)
                 option?.forEach { item ->
-                    if(item[DefinedParams.id] == sleepLocationId){
+                    if (item[DefinedParams.id] == sleepLocationId) {
                         item[DefinedParams.name]?.let {
-                            resultMap?.put(SleepLocation,it)
+                            resultMap?.put(SleepLocation, it)
                         }
                     }
                 }
             }
         }
         resultMap?.let { details ->
-            val referralResult = ReferralResultGenerator().calculateTBReferralResult(details)
-            val result = serverData?.let {
-                FormResultComposer().groupValues(
-                    context = requireContext(),
-                    serverData = it,
-                    details,
-                    TB.lowercase()
-                )
-            }
-            result?.second?.let {
-                viewModel.memberDetailsLiveData.value?.data?.id?.let { hhmId ->
-                    viewModel.updateTBContactTraceStatus(
-                        hhmId = hhmId,
-                        tbContactTracingStatus = Contact_Trace_Updated
-                    )
+            dob?.let { dobDate ->
+                val isValid = if (details.containsKey(DateOfOnset)) {
+                    val selectedDate = details[DateOfOnset].toString()
+                    DateUtils.compareDates(dobDate, selectedDate)
+                } else {
+                    true
                 }
-                viewModel.saveAssessment(it, referralResult, viewModel.menuId)
+                formGenerator.getViewByTag("${DateOfOnset}${AssessmentDefinedParams.errorSuffix}")?.apply {
+                    visibility = if (isValid) View.GONE else View.VISIBLE
+                }.takeIf { it is TextView }?.let { textView ->
+                    (textView as TextView).text =
+                        getString(R.string.the_day_s_should_be_less_than_age)
+                }
+
+                if (isValid) {
+                    val referralResult =
+                        ReferralResultGenerator().calculateTBReferralResult(details)
+                    val result = serverData?.let {
+                        FormResultComposer().groupValues(
+                            context = requireContext(),
+                            serverData = it,
+                            details,
+                            TB.lowercase()
+                        )
+                    }
+                    result?.second?.let {
+                        viewModel.memberDetailsLiveData.value?.data?.id?.let { hhmId ->
+                            viewModel.updateTBContactTraceStatus(
+                                hhmId = hhmId,
+                                tbContactTracingStatus = Contact_Trace_Updated
+                            )
+                        }
+                        viewModel.saveAssessment(it, referralResult, viewModel.menuId)
+                    }
+                }
             }
         }
     }

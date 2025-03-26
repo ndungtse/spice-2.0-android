@@ -161,7 +161,9 @@ class FollowUpViewModel @Inject constructor(
             FollowUpDefinedParams.FilterCough,
             FollowUpDefinedParams.FilterGeneralDangerSigns,
             FollowUpDefinedParams.FilterMUAC,
-            FollowUpDefinedParams.FilterTBSymptoms
+            FollowUpDefinedParams.FilterTBSymptoms,
+            FollowUpDefinedParams.FilterNCD,
+            FollowUpDefinedParams.FilterFPConsult
         )
     }
 

@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.familyPlanning
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentFamilyPlanningSummaryBinding
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.OtherMethodSpecify
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
@@ -158,7 +159,7 @@ class AssessmentFamilyPlanningSummaryFragment : BaseFragment(), View.OnClickList
             item.value?.let {
                 when (item.id) {
                     AssessmentDefinedParams.FamilyPlanningMethods -> renderDangerSigns(item.title, listSummaryData)
-                    AssessmentDefinedParams.SpecifySideEffects -> bindSummaryView(item.title, it)
+                    AssessmentDefinedParams.SpecifySideEffects, AssessmentDefinedParams.CondomsStatus, AssessmentDefinedParams.Contraceptive -> bindSummaryView(item.title, it)
                 }
             }
         }
@@ -167,22 +168,44 @@ class AssessmentFamilyPlanningSummaryFragment : BaseFragment(), View.OnClickList
     private fun renderDangerSigns(title: String?, summaryData: MutableList<AssessmentSummaryModel>) {
         val otherConcernSymptoms = viewModel.assessmentStringLiveData.value?.let {
             val jsonObject = JSONObject(it)
-            val feverObject = jsonObject.optJSONObject(familyPlanning.lowercase())?.optJSONObject(
-                AssessmentDefinedParams.FamilyPlanningDetails
-            )
-            feverObject?.optString(AssessmentDefinedParams.OtherFamilyPlanningMethod)
+            jsonObject.optJSONObject(familyPlanning.lowercase())
+                ?.optJSONObject(AssessmentDefinedParams.FamilyPlanningDetails)
+                ?.optString(AssessmentDefinedParams.OtherFamilyPlanningMethod)
+        }
+        val symptomsMeta = viewModel.symptomTypeListResponse.value ?: return
+        val titleEntities = symptomsMeta.filter { it.isTitle }.sortedBy { it.displayOrder ?: Int.MAX_VALUE }
+        val methodEntities = symptomsMeta.filter { !it.isTitle }
+        val categoryMap = mutableMapOf<String, String>()
+        methodEntities.forEach { entity ->
+            val entityDisplayOrder = entity.displayOrder ?: Int.MAX_VALUE
+            val category = titleEntities.lastOrNull { (it.displayOrder ?: Int.MIN_VALUE) < entityDisplayOrder }?.symptom
+            if (category != null) {
+                categoryMap[entity.symptom] = category
+            }
         }
 
         summaryData.find { it.id == AssessmentDefinedParams.FamilyPlanningMethods }?.let { item ->
+            val methodList = item.value?.split(", ") ?: emptyList()
+            val hasOtherMethod = OtherMethodSpecify in methodList
+            val groupedMethods = methodList.filter { it != OtherMethodSpecify }
+                .groupBy { categoryMap[it] ?: "Unknown" }
+            var formattedResult = groupedMethods.entries.joinToString(", ") { (category, methods) ->
+                "$category - (${methods.joinToString(", ")})"
+            }
+            if (hasOtherMethod) {
+                formattedResult = if (formattedResult.isNotBlank()) {
+                    "$formattedResult, $OtherMethodSpecify"
+                } else {
+                    OtherMethodSpecify
+                }
+            }
             val result = if (!otherConcernSymptoms.isNullOrBlank()) {
-                requireContext().getString(R.string.other_value, item.value, otherConcernSymptoms)
-            } else item.value
-            bindSummaryView(
-                title,
-                result ?: getString(R.string.seperator_hyphen)
-            )
+                requireContext().getString(R.string.other_value, formattedResult, otherConcernSymptoms)
+            } else formattedResult
+            bindSummaryView(title, result.ifBlank { getString(R.string.seperator_hyphen) })
         }
     }
+
 
     private fun showErrorInSummary() {
         binding.emptyErrorMessage.visibility = View.VISIBLE

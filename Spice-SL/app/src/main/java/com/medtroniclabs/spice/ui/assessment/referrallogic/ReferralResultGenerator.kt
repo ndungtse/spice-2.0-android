@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams.CBS_Referral
 import com.medtroniclabs.spice.common.DefinedParams.IccmDiarrheaNotifiableCondition
 import com.medtroniclabs.spice.common.DefinedParams.IccmFeverNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.Referred_NCD
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsAnySideEffects
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MemberUsingAnyFamilyPlanning
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NeedOfOtherFamilyPlanning
@@ -319,7 +320,7 @@ class ReferralResultGenerator {
     }
 
     fun calculateOtherSymptomsReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
-        calculateSymptomsStatus(map, otherSymptoms, ReferralReasons.Symptoms.name)
+        calculateSymptomsStatus(map, otherSymptoms, ReferralReasons.Symptoms.name, ReferralReasons.Symptoms.name.lowercase())
         calculateFeverStatus(map, ReferralReasons.Fever.name)
         return Pair(checkStatus(), referralReason)
     }
@@ -636,7 +637,7 @@ class ReferralResultGenerator {
         return status
     }
 
-    private fun calculateSymptomsStatus(map: HashMap<String, Any>, symptomType: String, referedReason: String) {
+    private fun calculateSymptomsStatus(map: HashMap<String, Any>, symptomType: String, referedReason: String, referralKey: String) {
         val selectedSignsList = ArrayList<String>()
         if (map.containsKey(symptomType) && map[symptomType] is ArrayList<*>) {
             (map[symptomType] as ArrayList<*>).forEach { result ->
@@ -646,7 +647,7 @@ class ReferralResultGenerator {
             }
         }
         if (!selectedSignsList.contains(NoSymptoms.lowercase())) {
-            addResultMap(referedReason.lowercase(), ReferralStatus.Referred.name)
+            addResultMap(referralKey, ReferralStatus.Referred.name)
             addReferralReason(referralReason, referedReason)
         }
     }
@@ -682,10 +683,10 @@ class ReferralResultGenerator {
         val alcoholConsumption =
             map[AlcoholConsumption] is Boolean && map[AlcoholConsumption] == true
         val bmiReferral = getBmiReferral ( CommonUtils.getBMIInformation(context, map[Screening.BMI] as? Double), context)
-        calculateSymptomsStatus(map, symptomsDTO, ReferralReasons.NCDSymptoms.name)
-        if (diagnosedWithDiabetes || regularSmoker || alcoholConsumption || bmiReferral) {
+        calculateSymptomsStatus(map, symptomsDTO, Referred_NCD, NCD_MENU_ID)
+        if ((!patientStatus.containsKey(NCD_MENU_ID)) && (diagnosedWithDiabetes || regularSmoker || alcoholConsumption || bmiReferral)) {
             addResultMap(NCD_MENU_ID, ReferralStatus.Referred.name)
-            addReferralReason(referralReason, NCD_MENU_ID)
+            addReferralReason(referralReason, Referred_NCD)
         }
         return Pair(checkStatus(), referralReason)
     }
@@ -694,7 +695,13 @@ class ReferralResultGenerator {
         return if (bmiInformation?.first.equals(
                 context.getString(R.string.under_weight),
                 true
-            ) || bmiInformation?.first.equals(context.getString(R.string.over_weight), true)
+            ) || bmiInformation?.first.equals(
+                context.getString(R.string.over_weight),
+                true
+            ) || bmiInformation?.first.equals(
+                context.getString(R.string.obese),
+                true
+            ) || bmiInformation?.first.equals(context.getString(R.string.extremely_obese), true)
         ) {
             return true
         } else false

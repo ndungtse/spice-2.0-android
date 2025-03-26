@@ -27,4 +27,6 @@ object FollowUpDefinedParams {
     const val FilterGeneralDangerSigns = "General Danger Signs"
     const val FilterMUAC = "MUAC"
     const val FilterTBSymptoms = "TB Symptoms"
+    const val FilterNCD = "NCD"
+    const val FilterFPConsult = "Family Planning Consult"
 }
