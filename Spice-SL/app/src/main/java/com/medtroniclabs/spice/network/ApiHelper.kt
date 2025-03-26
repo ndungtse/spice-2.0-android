@@ -48,6 +48,7 @@ import com.medtroniclabs.spice.data.TbMetaResponse
 import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
+import com.medtroniclabs.spice.data.history.BirthDetails
 import com.medtroniclabs.spice.data.history.HistoryEntity
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.data.history.NCDMedicalReviewHistory
@@ -94,6 +95,7 @@ import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
+import com.medtroniclabs.spice.model.medicalreview.RequestBirthDetails
 import com.medtroniclabs.spice.model.medicalreview.RequestCreateImmunisation
 import com.medtroniclabs.spice.model.medicalreview.RequestImmunisationSummaryCreate
 import com.medtroniclabs.spice.model.medicalreview.RequestImmunisationSummaryDetail
@@ -154,6 +156,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
+import retrofit2.http.Body
 
 interface ApiHelper {
     suspend fun doLogin(loginRequest: MultipartBody): Response<LoginResponse>
@@ -329,4 +332,6 @@ interface ApiHelper {
     suspend fun saveTbMedicalReview(request: TbMedicalReviewCreateRequest): Response<APIResponse<PatientEncounterResponse>>
     suspend fun createPatientType(request: PatientTypeCreateRequest): Response<APIResponse<HashMap<String, Any>>>
     suspend fun getPatientType(request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, Any>>>
+
+    suspend fun getBirthDetails(request: RequestBirthDetails): Response<APIResponse<BirthDetails>>
 }

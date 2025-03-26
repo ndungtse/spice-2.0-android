@@ -4,12 +4,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.PncChildMedicalReview
+import com.medtroniclabs.spice.data.history.BirthDetails
 import com.medtroniclabs.spice.data.history.HistoryEntity
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.ReferredDate
+import com.medtroniclabs.spice.model.medicalreview.RequestBirthDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.BaseViewModel
@@ -32,6 +34,7 @@ class ReferralHistoryViewModel @Inject constructor(
     val prescriptionTicketLiveData = MutableLiveData<Resource<HistoryEntity>>()
     val investigationTicketLiveData = MutableLiveData<Resource<HistoryEntity>>()
     val medicalReviewTicketLiveData = MutableLiveData<Resource<MedicalReviewHistory>>()
+    val birthDetailsLiveData = MutableLiveData<Resource<BirthDetails>>()
     val medicalReviewTicketLiveDataPNC = MutableLiveData<Resource<PncChildMedicalReview>>()
     var referralDates = MutableLiveData<List<ReferredDate>>()
     var prescriptionReferralDates = MutableLiveData<List<ReferredDate>>()
@@ -95,6 +98,20 @@ class ReferralHistoryViewModel @Inject constructor(
                     ReferralDetailRequest(
                         patientReference = patientId,
                         encounterId = medicalTicketId,
+                    )
+                )
+            )
+        }
+    }
+
+    fun getBirthDetails(memberId: String? = null, patientReference: String? = null) {
+        viewModelScope.launch(dispatcherIO) {
+            birthDetailsLiveData.postLoading()
+            birthDetailsLiveData.postValue(
+                referralHistoryRepository.getBirthDetails(
+                    RequestBirthDetails(
+                        patientReference = patientReference,
+                        memberId = memberId,
                     )
                 )
             )

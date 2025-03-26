@@ -48,6 +48,7 @@ import com.medtroniclabs.spice.data.TbMetaResponse
 import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
+import com.medtroniclabs.spice.data.history.BirthDetails
 import com.medtroniclabs.spice.data.history.HistoryEntity
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.data.history.NCDMedicalReviewHistory
@@ -94,6 +95,7 @@ import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
+import com.medtroniclabs.spice.model.medicalreview.RequestBirthDetails
 import com.medtroniclabs.spice.model.medicalreview.RequestCreateImmunisation
 import com.medtroniclabs.spice.model.medicalreview.RequestImmunisationSummaryCreate
 import com.medtroniclabs.spice.model.medicalreview.RequestImmunisationSummaryDetail
@@ -772,5 +774,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun getPatientType(request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.getPatientType(request)
+    }
+
+    override suspend fun getBirthDetails(request: RequestBirthDetails): Response<APIResponse<BirthDetails>> {
+        return apiService.getBirthDetails(request)
     }
 }

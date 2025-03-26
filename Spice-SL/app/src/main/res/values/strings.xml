@@ -329,7 +329,7 @@
     <string name="TT_does_taken_so_far">TT Dose taken so far</string>
     <string name="status">Status</string>
     <string name="title_neonate">Neonate</string>
-    <string name="neonate_outcome">Neonate Outcome</string>
+    <string name="neonate_outcome" translatable="false">Neonate Outcome</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
     <string name="state_of_baby">State of Baby</string>

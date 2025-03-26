@@ -1314,4 +1314,6 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun insertRxBuddyFollowUp(rxBuddyFollowUp: RxBuddyFollowUpEntity): Long {
         return rxBuddyFollowUpDAO.insertRxBuddyFollowUp(rxBuddyFollowUp)
     }
+
+
 }

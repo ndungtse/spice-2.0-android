@@ -84,4 +84,13 @@ data class LabourDTO(
     val deliveryStatus: String? = null,
 )
 
+data class BirthDetails(
+    val neonateOutcome: String?,
+    val gender: String?,
+    val birthWeight: Double?,
+    val stateOfBaby: String?,
+    val signs: List<String>?,
+    val gestationalAge: String?,
+    val total: Int?
+)
 

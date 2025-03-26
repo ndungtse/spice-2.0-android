@@ -9,9 +9,11 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.appextensions.getLocalDate
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
 import com.medtroniclabs.spice.appextensions.isGpsEnabled
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -33,6 +35,7 @@ import com.medtroniclabs.spice.ui.referralhistory.fragment.PrescriptionHistoryFr
 import com.medtroniclabs.spice.ui.referralhistory.fragment.ReferralTicketFragment
 import com.medtroniclabs.spice.ui.referralhistory.viewmodel.ReferralHistoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalDate
 
 @AndroidEntryPoint
 class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
@@ -54,7 +57,6 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
     }
 
 
-
     private fun attachObserver() {
         patientDetailViewModel.patientDetailsLiveData.observe(this) { resource ->
             when (resource.state) {
@@ -66,6 +68,10 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
                     hideLoading()
                     if (binding.refreshLayout.isRefreshing) {
                         binding.refreshLayout.isRefreshing = false
+                    }
+
+                    resource.data?.let {
+                        showBirthDetailsCard(resource.data)
                     }
                 }
 
@@ -107,20 +113,27 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
                         MedicalReviewHistoryFragment.TAG,
                         medicalReviewFragment
                     )
-
-                    val birthDetailFragment =
-                        BirthDetailsFragment.newInstance(viewModel.patientReference)
-                    addFragmentIfAbsent(
-                        R.id.cardBirthDetailContainer,
-                        BirthDetailsFragment.TAG,
-                        birthDetailFragment
-                    )
-
                 }
 
                 ResourceState.ERROR -> {
                 }
             }
+        }
+    }
+
+    private fun showBirthDetailsCard(detail: PatientListRespModel) {
+        val sixWeeks = LocalDate.now().minusWeeks(6)
+        val birthDate = detail.birthDate?.getLocalDate()
+        if (birthDate != null && birthDate.isAfter(sixWeeks)) {
+            binding.cardBirthDetailContainer.visible()
+            val birthDetailFragment = BirthDetailsFragment.newInstance(detail.memberId, detail.id)
+            addFragmentIfAbsent(
+                R.id.cardBirthDetailContainer,
+                BirthDetailsFragment.TAG,
+                birthDetailFragment
+            )
+        } else {
+            binding.cardBirthDetailContainer.gone()
         }
     }
 
