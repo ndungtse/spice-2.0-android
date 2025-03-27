@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.common.DefinedParams
@@ -45,6 +46,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                 handleBack()
             },
             callbackHome = {
+                viewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
                 if (intent.getBooleanExtra(DeathOfMother, false)
                     || intent.getBooleanExtra(deathOfNewborn,false)) {
                     navigateAncCbs()

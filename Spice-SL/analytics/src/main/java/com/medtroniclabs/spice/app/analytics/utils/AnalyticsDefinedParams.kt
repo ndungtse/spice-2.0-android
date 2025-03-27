@@ -175,4 +175,15 @@ object AnalyticsDefinedParams {
     const val NCDDashBoardCount = "DashBoardCount"
     const val NCDInvestigationResultCreation = "InvestigationResultCreation"
     const val NCDScheduleCreation = "ScheduleCreation"
+    const val FAMILYPLANNING = "Family Planning"
+    const val FAMILYPLANNINGSUMMARY = "Family Planning Summary"
+    const val NCDASSESSMENT = "NCD Assessment"
+    const val NCDASSESSMENTSUMMARY = "NCD Assessment Summary"
+    const val CBSFRAGMENT = "CBS Register"
+    const val CBSFRAGMENTSUMMARY = "CBS Register Summary"
+    const val CBSFRAGMENTSUMMARYSUCCESS = "CBS Register Updated Success Dialogue"
+    const val COMMUNITYPROFILELISTSCREEN = "Community Profile Search Screen"
+    const val COMMUNITYPROFILEDETAILSCREEN = "Community Profile Summary Screen"
+    const val COMMUNITYPROFILEEDITSCREEN = "Community Profile Edit Screen"
+
 }

@@ -64,6 +64,7 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
     override fun onClick(view: View) {
         when(view.id) {
             binding.btnDone.id -> {
+                viewModel.setUserJourney(AnalyticsDefinedParams.DONEBUTTONTRIGGERED)
                 viewModel.updateOtherAssessmentDetails()
             }
         }

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
@@ -51,6 +52,7 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
     }
 
     private fun initView() {
+        viewModel.setUserJourney(AnalyticsDefinedParams.NCDASSESSMENT)
         replaceFragmentInId<BioDataFragment>(
             binding.bioDataFragmentContainer.id,
             tag = BioDataFragment.TAG
@@ -137,6 +139,7 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
                 }
                 map.remove(ncd)
                 map[ncd] = ncdResultMap
+                viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                 viewModel.saveAssessment(map, referralResult, viewModel.menuId)
             }
         }

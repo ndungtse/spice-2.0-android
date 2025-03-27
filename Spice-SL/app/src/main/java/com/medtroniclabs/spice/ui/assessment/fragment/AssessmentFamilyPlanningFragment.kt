@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
@@ -46,6 +47,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
         getFormDataForWorkflow()
         setListeners()
         attachObservers()
+        viewModel.setUserJourney(AnalyticsDefinedParams.FAMILYPLANNING)
     }
 
     private fun initView() {
@@ -122,6 +124,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
                 )
             }
             result?.second?.let {
+                viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                 viewModel.saveAssessment(it, referralResult, viewModel.menuId)
             }
         }

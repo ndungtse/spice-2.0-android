@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ANC_CBS
 import com.medtroniclabs.spice.common.DefinedParams.AssessmentId
@@ -268,6 +269,8 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         childFragmentManager.beginTransaction().replace(
             binding.bioDataFragmentContainer.id, bioFragment
         ).commit()
+
+        viewModel.setUserJourney(AnalyticsDefinedParams.CBSFRAGMENT)
     }
 
     override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
@@ -376,6 +379,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                     // The memberIdOfMotherForResetPNCANC will have a value only if the birth value is "still birth"; otherwise, it will be null.
                     // It is used to reset PNC and ANC and update the pregnancy status in the member table.
                     result?.second?.let { resultValue ->
+                        viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                         viewModel.saveCallResult(data, resultValue, memberIdOfMotherForResetPNCANC)
                     }
                 }
@@ -420,6 +424,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                             finalText
                         )
                     }
+                    viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                     viewModel.saveAssessment(resultValue, referralResult, viewModel.menuId)
                 }
             }

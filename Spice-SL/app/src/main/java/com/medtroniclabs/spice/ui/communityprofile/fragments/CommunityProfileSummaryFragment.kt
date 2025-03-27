@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.google.gson.internal.LinkedTreeMap
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_ddMMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
@@ -78,6 +79,11 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
             viewModel.getPopulationStatistics(villageId = villageId)
         }
         binding.btnDone.safeClickListener(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.setUserJourney(AnalyticsDefinedParams.COMMUNITYPROFILEDETAILSCREEN)
     }
 
     private fun setData(
@@ -363,6 +369,7 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
             R.id.btnDone -> {
                 //viewModel.updateCurrentFragment(1)
                 requireActivity().finish()
+                viewModel.setUserJourney(AnalyticsDefinedParams.DONEBUTTONTRIGGERED)
             }
         }
     }

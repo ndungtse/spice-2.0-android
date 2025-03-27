@@ -509,7 +509,9 @@ class AssessmentActivity : BaseActivity() {
         else
             viewModel.followUpId = null
 
-        viewModel.setUserJourney(viewModel.workflowName?.plus(getString(R.string.assessment)) ?:getString(R.string.assessment))
+        viewModel.workflowName?.let {
+            viewModel.setUserJourney(it.plus(getString(R.string.assessment)))
+        }
     }
 
     fun replaceAssessmentRMNCHNeonateFragment() {

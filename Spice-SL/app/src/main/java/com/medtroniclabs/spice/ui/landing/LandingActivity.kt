@@ -371,7 +371,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         }
     }
     private fun onClickUploadLog(){
-        if (BuildConfig.BUILD_TYPE == "staging") {
+        if (BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "staging") {
             binding.uploadLog.setOnClickListener {
                 val uploadWorkRequest = OneTimeWorkRequest.Builder(UploadWorker::class.java)
                     .setInputData(periodicUploaderInputData())

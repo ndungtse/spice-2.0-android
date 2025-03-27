@@ -13,6 +13,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.activityViewModels
 import com.google.gson.internal.LinkedTreeMap
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
@@ -283,6 +284,11 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         const val TAG = "EditCommunityFragment"
     }
 
+    override fun onResume() {
+        super.onResume()
+        communityProfileViewModel.setUserJourney(AnalyticsDefinedParams.COMMUNITYPROFILEEDITSCREEN)
+    }
+
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.etRegisteredDate -> {
@@ -349,6 +355,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         val payload = StringConverter.convertGivenMapToString(getCommunityProfilePayload(resultMap, serverData))
         val villageId = arguments?.getLong(COMMUNITY_ID)
         if (regDateUtc != null && payload != null && villageId != null) {
+            communityProfileViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
             communityProfileViewModel.insertOrUpdateCommunityProfile(
                 villageId = villageId,
                 description = binding.etCommunityBoundaryDesc.text.toString(),

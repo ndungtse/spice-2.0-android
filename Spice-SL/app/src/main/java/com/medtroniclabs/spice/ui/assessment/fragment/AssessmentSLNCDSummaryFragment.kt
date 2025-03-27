@@ -8,6 +8,7 @@ import android.widget.AdapterView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -79,6 +80,7 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.llClinicTakenGroup.addView(view)
         }
         binding.btnDone.safeClickListener(this)
+        viewModel.setUserJourney(AnalyticsDefinedParams.NCDASSESSMENTSUMMARY)
     }
 
     private fun getClinicTakenData(): ArrayList<Map<String, Any>> {
@@ -118,6 +120,7 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.btnDone -> {
+                viewModel.setUserJourney(AnalyticsDefinedParams.DONEBUTTONTRIGGERED)
                 viewModel.updateOtherAssessmentDetails()
             }
         }

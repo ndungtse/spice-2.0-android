@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.setTextChangeListener
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.community.CommunityProfileDetail
@@ -41,6 +42,11 @@ class CommunityProfileSearchFragment : BaseFragment(), View.OnClickListener {
         initViews()
         addObserver()
         setListener()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        communityProfileViewModel.setUserJourney(AnalyticsDefinedParams.COMMUNITYPROFILELISTSCREEN)
     }
 
     private fun setListener() {

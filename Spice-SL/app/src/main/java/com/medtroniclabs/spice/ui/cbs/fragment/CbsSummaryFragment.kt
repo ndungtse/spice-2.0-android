@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
@@ -56,6 +57,7 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.setUserJourney(AnalyticsDefinedParams.CBSFRAGMENTSUMMARY)
         binding.resultCardView.gone()
         binding.emptyErrorMessage.gone()
         viewModel.getUserProfile()
@@ -67,9 +69,11 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnDone -> {
+                viewModel.setUserJourney(AnalyticsDefinedParams.DONEBUTTONTRIGGERED)
                 val existingFragment =
                     childFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
                 if (existingFragment == null) {
+                    viewModel.setUserJourney(AnalyticsDefinedParams.CBSFRAGMENTSUMMARYSUCCESS)
                     SuccessDialogFragment.newInstance(descText = getString(R.string.cbs_register_updated))
                         .show(childFragmentManager, SuccessDialogFragment.TAG)
                 }
