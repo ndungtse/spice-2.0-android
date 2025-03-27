@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.convertDateTimeToMillisUsingLocal
 import com.medtroniclabs.spice.common.DateUtils.getCalendarFromString
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -36,12 +37,14 @@ import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import java.util.Calendar
 
 class LabourOrDeliveryFragment : BaseFragment() {
 
     private lateinit var binding: FragmentLabourOrDeliveryBinding
     private val viewModel: LabourDeliveryViewModel by activityViewModels()
+    private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
     private lateinit var cgNeonateOutcome: TagListCustomView
     private lateinit var  viewTimeOfDelivery:SingleSelectionCustomView
     private lateinit var  viewTimeOfDeliveryOnset:SingleSelectionCustomView
@@ -309,6 +312,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
             requireContext(),
             date = yearMonthDate,
             maxDate = if (isDelivery) Calendar.getInstance().timeInMillis else getMaxDateForOnset(),
+            minDate = patientDetailViewModel.patientDetailsLiveData.value?.data?.birthDate?.let { convertDateTimeToMillisUsingLocal(it) },
             cancelCallBack = { }
         ) { _, year, month, dayOfMonth ->
             val stringDate = "$dayOfMonth-$month-$year"

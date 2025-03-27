@@ -135,6 +135,9 @@ class FollowUpRepository @Inject constructor(
         followUp.syncStatus = OfflineSyncStatus.NotSynced
         followUp.attempts = followUp.attempts + 1
 
+        val lat = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name)
+        val lng = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name)
+
         val callDetail = FollowUpCall(
             followUpId = followUpId,
             callDate = System.currentTimeMillis().convertToUtcDateTime(),
@@ -142,7 +145,9 @@ class FollowUpRepository @Inject constructor(
             attempts =  followUp.attempts,
             status = callStatus,
             patientStatus = patientStatus,
-            reason = reason
+            reason = reason,
+            latitude = lat,
+            longitude = lng
         )
 
         var newFollowUp: FollowUp? = null
