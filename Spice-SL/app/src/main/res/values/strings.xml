@@ -698,7 +698,6 @@
     <string name="upload_log">Upload Log</string>
     <string name="enter_less_than_2">Please enter a value less than or equal to 2</string>
     <string name="phu_walk_ins">PHU Walk-ins</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="link_patient">Link Patient</string>
     <string name="please_select_valid_input">Please select a valid input</string>
     <string name="search_by_hh_name_hh_no_mobile">Search by HH Name, HH No, Mobile</string>
@@ -1465,4 +1464,8 @@
     <string name="any_of_your_symptoms_getting_worse" translatable="false">Are any of your symptoms getting worse?</string>
     <string name="have_you_had_a_reaction_to_any_of_your_medications" translatable="false">Have you had a reaction to any of your medications?</string>
     <string name="follow_up_details" translatable="false">Follow Up Details</string>
+    <string name="no_bmi_history" translatable="false">No Bmi History Found</string>
+    <string name="cough_2weeks" translatable="false">Cough (>2 weeks)</string>
+    <string name="drenching_night_sweats" translatable="false">Drenching night sweats</string>
+    <string name="weight_loss" translatable="false">Weight loss</string>
 </resources>

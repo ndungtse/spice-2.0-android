@@ -8,6 +8,7 @@ import androidx.core.widget.doAfterTextChanged
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 
 object MotherNeonateUtil {
@@ -200,6 +201,32 @@ object MotherNeonateUtil {
             context.getString(R.string.hyphen_symbol)
         }
     }
+
+    fun convertHeight(value: Double?, context: Context): String {
+        return if (value != null) {
+            val formattedValue = if (value % 1 == 0.0) {
+                value.toInt().toString()
+            } else {
+                String.format("%.2f", value).trimEnd('0').trimEnd('.')
+            }
+            "$formattedValue ${context.getString(R.string.cms)}"
+        } else {
+            context.getString(R.string.hyphen_symbol)
+        }
+    }
+
+    fun convertBmi(value: Double?, context: Context): String {
+        if (value == null) return context.getString(R.string.hyphen_symbol)
+        val formattedValue = when {
+            value % 1 == 0.0 -> value.toInt().toString() // Convert whole numbers to Int
+            else -> String.format("%.2f", value).trimEnd('0').trimEnd('.') // Format decimal
+        }
+
+        return CommonUtils.getBMIInformation(context, value)?.first
+            ?.takeIf { it.isNotBlank() }
+            ?.let { "$formattedValue( ${it.capitalizeFirstChar()} )" } ?: formattedValue
+    }
+
     fun convertCMS(value: Double?, context: Context): String {
         return if (value != null) {
             "${value.toInt()} ${context.getString(R.string.cms)}"

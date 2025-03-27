@@ -9,6 +9,9 @@ import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
+import com.medtroniclabs.spice.data.model.PatientEncounterResponse
+import com.medtroniclabs.spice.data.model.TbHistory
+import com.medtroniclabs.spice.data.model.TbMedicalReviewCreateRequest
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
@@ -100,8 +103,7 @@ class TbMedicalReviewRepo @Inject constructor(
         return chipItemList
     }
 
-    suspend fun fetchHeight(motherNeonateAncRequest: MotherNeonateAncRequest):
-            Resource<BpAndWeightResponse> {
+    suspend fun fetchHeight(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<BpAndWeightResponse> {
         return try {
             val response = apiHelper.fetchHeight(motherNeonateAncRequest)
             if (response.isSuccessful) {
@@ -134,6 +136,80 @@ class TbMedicalReviewRepo @Inject constructor(
                 Resource(state = ResourceState.ERROR)
             }
         } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun fetchBmi(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<BpAndWeightResponse> {
+        return try {
+            val response = apiHelper.fetchBmi(motherNeonateAncRequest)
+            if (response.isSuccessful) {
+                val res = response.body()
+                if (res?.status == true) {
+                    Resource(state = ResourceState.SUCCESS, data = res.entity)
+                } else {
+                    Resource(state = ResourceState.ERROR)
+                }
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun fetchBmiList(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<List<BpAndWeightResponse>> {
+        return try {
+            apiHelper.fetchList(motherNeonateAncRequest).let { response ->
+                if (response.isSuccessful) {
+                    response.body()?.let { body ->
+                        if (body.status) {
+                            Resource(ResourceState.SUCCESS, body.entity ?: emptyList())
+                        } else {
+                            Resource(ResourceState.ERROR)
+                        }
+                    } ?: Resource(ResourceState.ERROR)
+                } else {
+                    Resource(ResourceState.ERROR)
+                }
+            }
+        } catch (e: Exception) {
+            Resource(ResourceState.ERROR)
+        }
+    }
+
+    suspend fun fetchTbAssessmentDetails(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<TbHistory> {
+        return try {
+            apiHelper.fetchTbAssessmentDetails(motherNeonateAncRequest).let { response ->
+                if (response.isSuccessful) {
+                    response.body()?.let { body ->
+                        if (body.status) {
+                            Resource(ResourceState.SUCCESS, body.entity)
+                        } else {
+                            Resource(ResourceState.ERROR)
+                        }
+                    } ?: Resource(ResourceState.ERROR)
+                } else {
+                    Resource(ResourceState.ERROR)
+                }
+            }
+        } catch (e: Exception) {
+            Resource(ResourceState.ERROR)
+        }
+    }
+
+    suspend fun saveTbMedicalReview(
+        request: TbMedicalReviewCreateRequest
+    ): Resource<PatientEncounterResponse> {
+        return try {
+            val response = apiHelper.saveTbMedicalReview(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
     }

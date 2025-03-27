@@ -596,7 +596,6 @@
     <string name="upload_log">Ingiza log</string>
     <string name="enter_less_than_2">Tafadhali weka namba 2 au ndogo zaidi</string>
     <string name="phu_walk_ins">Maelekezo ya kutumia PHU</string>
-    <string name="hello_blank_fragment">Habari</string>
     <string name="link_patient">Muunganishe mgonjwa</string>
     <string name="please_select_valid_input">Tafadhali chagua inayostahili</string>
     <string name="are_you_sure_you_want_to_link_this_patient_to_this_household">Unahakika kuwa unataka kumuungisha huyu mgonjwa katika hii nyumba</string>

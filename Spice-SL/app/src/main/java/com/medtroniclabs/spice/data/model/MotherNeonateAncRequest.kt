@@ -22,7 +22,8 @@ data class MotherNeonateAncRequest(
     var clinicalNotes: String? = null,
     var pregnancyDetails: PregnancyDetailsModel? = null,
     var encounter: MedicalReviewEncounter? = null,
-    var deliveryKit: Boolean? = null
+    var deliveryKit: Boolean? = null,
+    val tbIMRCompleted:Boolean? = false
 )
 data class MedicalReviewEncounter(
     var id: String? = null,

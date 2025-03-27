@@ -24,6 +24,7 @@ class MotherNeonateBpWeightViewModel @Inject constructor(
     val getBloodPressure = MutableLiveData<Resource<BpAndWeightResponse>>()
     val getWeight = MutableLiveData<Resource<BpAndWeightResponse>>()
     val getHeight = MutableLiveData<Resource<BpAndWeightResponse>>()
+    val getBmi = MutableLiveData<Resource<BpAndWeightResponse>>()
     fun fetchBloodPressure(motherNeonateAncRequest: MotherNeonateAncRequest) {
         viewModelScope.launch(dispatcherIO) {
             getBloodPressure.postLoading()
@@ -56,4 +57,12 @@ class MotherNeonateBpWeightViewModel @Inject constructor(
             getHeight.postValue(tbMedicalReviewRepo.fetchHeight(motherNeonateAncRequest))
         }
     }
+
+    fun fetchBmi(motherNeonateAncRequest: MotherNeonateAncRequest) {
+        viewModelScope.launch(dispatcherIO) {
+            getBmi.postLoading()
+            getBmi.postValue(tbMedicalReviewRepo.fetchBmi(motherNeonateAncRequest))
+        }
+    }
+
 }

@@ -9,8 +9,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.SpiceLocationManager
+import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
+import com.medtroniclabs.spice.data.model.TbMedicalReviewCreateRequest
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityTbMedicalReviewBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -73,6 +78,13 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
         attachObserver()
     }
 
+    private fun getCurrentLocation() {
+        val locationManager = SpiceLocationManager(this)
+        locationManager.getCurrentLocation {
+            viewModel.lastLocation = it
+        }
+    }
+
     private fun attachObserver() {
         viewModel.tbMetaResponse.observe(this) { resource ->
             when (resource.state) {
@@ -121,6 +133,24 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
                             onBackPressPopStack()
                         }
                     }
+                }
+            }
+        }
+        viewModel.tbCreateResponse.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resource.data?.let {
+
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
                 }
             }
         }
@@ -183,11 +213,52 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
             binding.ivPrescription.id -> openPrescriptionActivity()
             binding.ivInvestigation.id -> openInvestigationActivity()
             binding.loadingProgress.id -> {}
-            binding.btnSubmit.id -> clickSubmit()
+            binding.btnSubmit.id -> withLocationCheck(::clickSubmit)
         }
     }
     private fun clickSubmit() {
+        val request = createMedicalReviewRequest()
+        withNetworkAvailability(online = {
+            viewModel.createMotherNeonate(request)
+        })
+    }
 
+    /**
+     * Creates a `TbMedicalReviewCreateRequest` with safe handling.
+     */
+    private fun createMedicalReviewRequest(): TbMedicalReviewCreateRequest {
+        return TbMedicalReviewCreateRequest(
+            presentingComplaints = presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value },
+            presentingComplaintsNotes = presentingComplaintsViewModel.enteredComplaintNotes,
+            systemicExaminations = systemicExaminationViewModel.selectedSystemicExaminations.map { it.value },
+            clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
+            comorbidities = comorbiditiesViewModel.chips.map { it.value },
+            encounter = createMedicalReviewEncounter(
+                encounterId = patientViewModel.encounterId,
+                patientHouseholdId = patientViewModel.getPatientHouseholdId(),
+                memberId = patientViewModel.getPatientMemberId()
+            )
+        )
+    }
+
+    private fun createMedicalReviewEncounter(
+        encounterId: String?,
+        patientHouseholdId: String?,
+        memberId: String?
+    ): MedicalReviewEncounter {
+        val currentTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+        return MedicalReviewEncounter(
+            id = encounterId,
+            patientId = viewModel.patientId,
+            provenance = ProvanceDto(),
+            memberId = memberId,
+            latitude = viewModel.lastLocation?.latitude ?: 0.0,
+            longitude = viewModel.lastLocation?.longitude ?: 0.0,
+            startTime = currentTime,
+            endTime = currentTime,
+            householdId = patientHouseholdId,
+            referred = true
+        )
     }
     private fun openPrescriptionActivity() {
         patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
@@ -347,5 +418,10 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
             binding.btnSubmit.isEnabled = isValidFragment
             return
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation()
     }
 }

@@ -41,6 +41,7 @@ import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisVie
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddBpDialog
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddWeightDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.AddHeightDialog
+import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.BMIListDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.PatientStatusDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.TbConfirmDiagnosisAndSiteOfDiseaseDialog
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
@@ -236,7 +237,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                     resourceState.data?.let {
                         binding.tvHeightLbl.text = getString(R.string.height_hint)
                         binding.tvHeight.text =
-                            MotherNeonateUtil.convertWeight(
+                            MotherNeonateUtil.convertHeight(
                                 it.height,
                                 requireContext()
                             )
@@ -250,6 +251,45 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                         binding.clHeight,
                         binding.retryButtonTbHeightConfirm,
                         binding.tvHeight
+                    )
+                }
+            }
+        }
+
+        viewModel.getBmi.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    handleLoading(
+                        binding.tbBMIPageProgress,
+                        binding.tvBmiHistory,
+                        binding.clBmi
+                    )
+                }
+
+                ResourceState.SUCCESS -> {
+                    handleSuccess(
+                        binding.tbBMIPageProgress,
+                        binding.retryButtonTbBMI,
+                        binding.clBmi,
+                        binding.tvBmiHistory
+                    )
+                    resourceState.data?.let {
+                        binding.tvBmiLbl.text = getString(R.string.bmi)
+                        binding.tvBmi.text =
+                            MotherNeonateUtil.convertBmi(
+                                it.bmi,
+                                requireContext()
+                            )
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    handleError(
+                        binding.tbBMIPageProgress,
+                        binding.tvBmiHistory,
+                        binding.clBmi,
+                        binding.retryButtonTbBMI,
+                        binding.tvBmi
                     )
                 }
             }
@@ -325,12 +365,15 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
                 viewModel.fetchBloodPressure(MotherNeonateAncRequest(memberId = getMemberId()))
                 viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
+                viewModel.fetchBmi(MotherNeonateAncRequest(memberId = getMemberId()))
                 retryButtonTbBp.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
                 retryButtonTbWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
                 retryButtonTbHeightConfirm.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+                retryButtonTbBMI.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
                 tvAddHeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
                 tvAddPatientStatus.visible()
                 tvAddPatientStatus.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+                tvBmiHistory.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
             }
             tbLl.setVisible(isTb)
         }
@@ -357,12 +400,20 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             binding.tvAddHeight.id -> showAddHeightDialog()
             binding.tvAddPatientStatus.id -> showPatientStatusDialog()
             binding.retryButtonTbHeightConfirm.id -> retryFetchingDataForHeight()
+            binding.tvBmiHistory.id -> showBmiDialog()
+            binding.retryButtonTbBMI.id -> retryFetchingDataForBMI()
         }
     }
 
     private fun retryFetchingDataForHeight() {
         if (connectivityManager.isNetworkAvailable()) {
             viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
+        }
+    }
+
+    private fun retryFetchingDataForBMI() {
+        if (connectivityManager.isNetworkAvailable()) {
+            viewModel.fetchBmi(MotherNeonateAncRequest(memberId = getMemberId()))
         }
     }
 
@@ -399,6 +450,22 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         dialog.show(childFragmentManager, if (isBp) AddBpDialog.TAG else AddWeightDialog.TAG)
     }
 
+    private fun showBmiDialog() {
+        if (connectivityManager.isNetworkAvailable()) {
+            BMIListDialog.newInstance(getMemberId()).show(
+                childFragmentManager,
+                BMIListDialog.TAG
+            )
+        } else {
+            (activity as BaseActivity?)?.showErrorDialogue(
+                getString(R.string.error),
+                getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false
+            ) {
+
+            }
+        }
+    }
 
     private fun showDiagnosisDialog() {
         if (connectivityManager.isNetworkAvailable()){
@@ -622,7 +689,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
     override fun onDialogDismissed(isBp: Boolean, isHeight: Boolean) {
         if (connectivityManager.isNetworkAvailable()) {
-            if (isBp) {
+            if (isBp && !isHeight) {
                 viewModel.fetchBloodPressure(MotherNeonateAncRequest(memberId = getMemberId()))
             } else {
                 viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
@@ -630,6 +697,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             if (isHeight) {
                 viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
             }
+        }
+        if (isTb() && !isHeight) {
+            viewModel.fetchBmi(MotherNeonateAncRequest(memberId = getMemberId()))
         }
         val dialog =
             childFragmentManager.findFragmentByTag(if (isBp) AddBpDialog.TAG else AddWeightDialog.TAG) as? AddBpDialog

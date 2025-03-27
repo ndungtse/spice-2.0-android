@@ -64,6 +64,8 @@ import com.medtroniclabs.spice.data.model.PncSubmitResponse
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.data.model.RequestChangePassword
 import com.medtroniclabs.spice.data.model.ResponseChangePassword
+import com.medtroniclabs.spice.data.model.TbHistory
+import com.medtroniclabs.spice.data.model.TbMedicalReviewCreateRequest
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseSignatureUpload
@@ -745,5 +747,21 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun fetchHeight(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>> {
         return apiService.fetchHeight(motherNeonateAncRequest)
+    }
+
+    override suspend fun fetchBmi(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>> {
+        return apiService.fetchBmi(motherNeonateAncRequest)
+    }
+
+    override suspend fun fetchList(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<List<BpAndWeightResponse>>> {
+        return apiService.fetchList(motherNeonateAncRequest)
+    }
+
+    override suspend fun fetchTbAssessmentDetails(request: MotherNeonateAncRequest): Response<APIResponse<TbHistory>> {
+        return apiService.fetchTbAssessmentDetails(request)
+    }
+
+    override suspend fun saveTbMedicalReview(request: TbMedicalReviewCreateRequest): Response<APIResponse<PatientEncounterResponse>> {
+        return apiService.saveTbMedicalReview(request)
     }
 }

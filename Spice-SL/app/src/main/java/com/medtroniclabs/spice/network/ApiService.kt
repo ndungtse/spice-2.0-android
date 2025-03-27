@@ -64,6 +64,8 @@ import com.medtroniclabs.spice.data.model.PncSubmitResponse
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.data.model.RequestChangePassword
 import com.medtroniclabs.spice.data.model.ResponseChangePassword
+import com.medtroniclabs.spice.data.model.TbHistory
+import com.medtroniclabs.spice.data.model.TbMedicalReviewCreateRequest
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseSignatureUpload
@@ -600,9 +602,21 @@ interface ApiService {
     @POST("/spice-service/static-data/meta-data/tb")
     suspend fun getTbStaticData(): Response<APIResponse<TbMetaResponse>>
 
-    @POST("/spice-service//medical-review/height/create")
+    @POST("/spice-service/medical-review/height/create")
     suspend fun createHeight(@Body request: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/medical-review/height")
     suspend fun fetchHeight(@Body motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>>
+
+    @POST("/spice-service/medical-review/bmi")
+    suspend fun fetchBmi(@Body motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>>
+
+    @POST("/spice-service/medical-review/bmi-history")
+    suspend fun fetchList(@Body motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<List<BpAndWeightResponse>>>
+
+    @POST("/spice-service/medical-review/tb/details")
+    suspend fun fetchTbAssessmentDetails(@Body request: MotherNeonateAncRequest): Response<APIResponse<TbHistory>>
+
+    @POST("/spice-service/medical-review/tb/create")
+    suspend fun saveTbMedicalReview(@Body request: TbMedicalReviewCreateRequest): Response<APIResponse<PatientEncounterResponse>>
 }
