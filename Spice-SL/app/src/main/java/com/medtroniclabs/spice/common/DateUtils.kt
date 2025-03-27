@@ -895,4 +895,16 @@ object DateUtils {
 
         return selectedZonedDateTime >= dobZonedDateTime
     }
+
+    fun getFormattedDate(daysToAdd: Int): String? {
+        return try {
+            val calendar = Calendar.getInstance().apply {
+                if (daysToAdd > 0) add(Calendar.DAY_OF_YEAR, daysToAdd)
+            }
+            val dateFormat = SimpleDateFormat(DATE_ddMMyyyy, Locale.getDefault())
+            dateFormat.format(calendar.time)
+        } catch (e: Exception) {
+            null // Return null in case of an error
+        }
+    }
 }

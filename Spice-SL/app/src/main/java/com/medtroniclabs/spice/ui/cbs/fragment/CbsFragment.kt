@@ -367,9 +367,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                             viewModel.saveAssessmentCbs(data, resultValue, birth)
                             return
                         }
-                        memberIdOfMotherForResetPNCANC = viewModel.motherID.takeIf {
-                            it != null && it != -1L && viewModel.workflowName.equals(PNCNeonatal, ignoreCase = true)
-                        } ?: data.householdMemberLocalId.takeIf {
+                        memberIdOfMotherForResetPNCANC = data.householdMemberLocalId.takeIf {
                             memberIdOfMotherForResetPNCANC == null && !birth.isNullOrBlank() && birth.equals(DefinedParams.still_birth, ignoreCase = true)
                         }
                     }

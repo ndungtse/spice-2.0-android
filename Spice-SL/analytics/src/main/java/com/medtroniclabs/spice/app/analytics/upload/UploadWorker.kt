@@ -52,7 +52,7 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
                 val sessionTracking =
                     analyticsList.filter { it.eventType == AnalyticsDefinedParams.SessionTracking }
                         .map { JsonParser.parseString(it.parameter) }.toMutableList()
-                analyticsMap.remove(AnalyticsDefinedParams.SessionTracking)
+//                analyticsMap.remove(AnalyticsDefinedParams.SessionTracking)
                 Triple(analyticsMap, lastSyncDate, sessionTracking to role)
             }
         val userAnalyticsList = userAnalyticsMap.map { (userId, analyticsTriple) ->

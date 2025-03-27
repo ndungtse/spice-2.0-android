@@ -323,4 +323,24 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
             setCurrentLocation(it)
         }
     }
+
+    fun updateOtherAssessmentDetailsForPNCNeonateDeathCase(
+        pncAssessmentDetails: Pair<AssessmentEntity, AssessmentEntity?>?,
+        otherAssessmentDetails: HashMap<String, Any>,
+        lastLocation: Location?
+    ) {
+        viewModelScope.launch(dispatcherIO) {
+            if (otherAssessmentDetails.containsKey(AssessmentDefinedParams.IsClinicTaken)) {
+                val isTakenToClinical =
+                    otherAssessmentDetails[AssessmentDefinedParams.IsClinicTaken] as String
+                otherAssessmentDetails[AssessmentDefinedParams.IsClinicTaken] =
+                    (isTakenToClinical.equals(DefinedParams.Yes, true))
+            }
+            assessmentRepository.updateOtherAssessmentDetails(
+                pncAssessmentDetails,
+                otherAssessmentDetails,
+                lastLocation
+            )
+        }
+    }
 }

@@ -45,7 +45,8 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                 handleBack()
             },
             callbackHome = {
-                if (intent.getBooleanExtra(DeathOfMother, false)) {
+                if (intent.getBooleanExtra(DeathOfMother, false)
+                    || intent.getBooleanExtra(deathOfNewborn,false)) {
                     navigateAncCbs()
                 } else {
                     navigateHome(true)
@@ -57,7 +58,9 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
     }
 
     fun handleBack() {
-        if (intent.getBooleanExtra(DeathOfMother, false)) {
+        if (intent.getBooleanExtra(DeathOfMother, false)
+            || intent.getBooleanExtra(deathOfNewborn,false)
+        ) {
             navigateAncCbs()
         } else {
             navigateHome()

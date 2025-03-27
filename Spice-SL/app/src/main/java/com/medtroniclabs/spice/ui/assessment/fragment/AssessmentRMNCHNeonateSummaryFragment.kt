@@ -30,7 +30,6 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
@@ -67,6 +66,23 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         initView()
         setListener()
         viewModel.setUserJourney(AnalyticsDefinedParams.RMNCHNeonateSummaryAssessment)
+    }
+
+    private fun setNextVisitDateAndDefaultHealthFacilityWhileClickHomeInSummary() {
+        val followUpDate = binding.etNextFollowUpDate.takeIf {
+            it.visibility == View.VISIBLE && it.text.isNotEmpty()
+        }?.text?.trim()?.toString() ?: DateUtils.getFormattedDate(1)
+        followUpDate?.let { updateFollowUpDate(it) }
+        val pncDetails = if (binding.resultNeonateCardView.isVisible()) {
+            assessmentRMNCHNeonateViewModel.assessmentSaveLiveData.value?.data
+        } else {
+            viewModel.pncAssessmentSaveLiveData.value?.data
+        }
+        assessmentRMNCHNeonateViewModel.updateOtherAssessmentDetailsForPNCNeonateDeathCase(
+            pncDetails,
+            viewModel.otherAssessmentDetails,
+            viewModel.getCurrentLocation()
+        )
     }
 
     private fun initView() {

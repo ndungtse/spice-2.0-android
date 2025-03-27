@@ -932,8 +932,11 @@ class AssessmentViewModel @Inject constructor(
     }
 
     private fun getNumberOfNeonates(existingCount: Int?, noOfNeonate: Any?): Int? {
-        existingCount?.let { return it }
-            ?: return noOfNeonate?.let { (it as String).toIntOrNull() }
+        return existingCount ?: when (noOfNeonate) {
+            is Int -> noOfNeonate
+            is String -> noOfNeonate.toIntOrNull()
+            else -> null
+        }
     }
 
 
