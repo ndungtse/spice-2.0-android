@@ -34,6 +34,9 @@ data class HouseholdEntity(
     @ColumnInfo("is_owned_an_improved_latrine")
     var isOwnedAnImprovedLatrine: Boolean = false,
 
+    @ColumnInfo("has_improved_water_source")
+    var hasImprovedWaterSource: Boolean = false,
+
     @ColumnInfo("is_owned_hand_washing_facility_with_soap")
     var isOwnedHandWashingFacilityWithSoap: Boolean = false,
 

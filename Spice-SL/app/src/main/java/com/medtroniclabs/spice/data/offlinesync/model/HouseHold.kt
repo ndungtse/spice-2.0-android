@@ -48,6 +48,9 @@ data class HouseHold(
     @ColumnInfo(name = "is_owned_an_improved_latrine")
     val ownedAnImprovedLatrine: Boolean,
 
+    @ColumnInfo(name = "has_improved_water_source")
+    val hasImprovedWaterSource: Boolean,
+
     @ColumnInfo(name = "bed_net_count")
     val bedNetCount: Int? = null,
 
@@ -84,6 +87,7 @@ data class HouseHold(
             headPhoneNumberCategory = toRegularCase(this.headPhoneNumberCategory),
             noOfPeople = this.noOfPeople,
             isOwnedAnImprovedLatrine = this.ownedAnImprovedLatrine,
+            hasImprovedWaterSource = this.hasImprovedWaterSource,
             isOwnedHandWashingFacilityWithSoap = this.ownedHandWashingFacilityWithSoap,
             isOwnedATreatedBedNet = this.ownedTreatedBedNet,
             bedNetCount = this.bedNetCount,

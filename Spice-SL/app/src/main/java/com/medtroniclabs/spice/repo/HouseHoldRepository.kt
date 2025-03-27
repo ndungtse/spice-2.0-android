@@ -3,17 +3,12 @@ package com.medtroniclabs.spice.repo
 import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.ConsentFormType
-import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
-import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
-import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.entity.ConsentForm
-import com.medtroniclabs.spice.db.entity.EntitiesName.HOUSEHOLD
-import com.medtroniclabs.spice.db.entity.EntitiesName.HOUSEHOLD_MEMBER
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -25,7 +20,6 @@ import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
-import retrofit2.Response
 import javax.inject.Inject
 
 class HouseHoldRepository @Inject constructor(
@@ -88,6 +82,9 @@ class HouseHoldRepository @Inject constructor(
 
         val isOwnedAnImprovedLatrine = map[HouseHoldRegistration.isOwnedAnImprovedLatrine]
         householdEntity.isOwnedAnImprovedLatrine = CommonUtils.getIsBooleanFromString(isOwnedAnImprovedLatrine)
+
+        val hasWaterSource = map[HouseHoldRegistration.hasImprovedWaterSource]
+        householdEntity.hasImprovedWaterSource = CommonUtils.getIsBooleanFromString(hasWaterSource)
 
         val isOwnedHandWashingFacilityWithSoap =
             map[HouseHoldRegistration.isOwnedHandWashingFacilityWithSoap]

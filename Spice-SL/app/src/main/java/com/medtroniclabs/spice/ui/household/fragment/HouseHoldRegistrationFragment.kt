@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.bedNetCount
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.hasImprovedWaterSource
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumberCategory
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.householdName
@@ -172,6 +173,27 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                 else -> {}
             }
         }
+
+        details.hasImprovedWaterSource.let {
+            when (getBooleanAsString(it)) {
+                yes -> {
+                    singleSelectValueOption(
+                        yes,
+                        hasImprovedWaterSource
+                    )
+                }
+
+                no -> {
+                    singleSelectValueOption(
+                        no,
+                        hasImprovedWaterSource
+                    )
+                }
+
+                else -> {}
+            }
+        }
+
         details.isOwnedHandWashingFacilityWithSoap.let {
             when (getBooleanAsString(it)) {
                 yes -> {
