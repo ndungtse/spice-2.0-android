@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.repo
 
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.MedicationGroupSearchRequest
 import com.medtroniclabs.spice.data.MedicationResponse
 import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.Prescription
@@ -69,12 +71,47 @@ class MedicationRepository @Inject constructor(
         }
     }
 
+    suspend fun removeCommunityPrescription(request: List<RemovePrescriptionRequest>): Resource<Map<String, Any>> {
+        return try {
+            val response = apiHelper.removeCommunityPrescription(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
     suspend fun getFrequencyList(): Resource<List<FrequencyEntity>> {
         return try {
             val response = roomHelper.getFrequencyList()
             Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getInstructionList(): Resource<List<MedicalReviewMetaItems>> {
+        return try {
+            val response = roomHelper.getInstructionList()
+            Resource(state = ResourceState.SUCCESS, data = response)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun searchMedicationGroupByName(request: MedicationGroupSearchRequest): Resource<ArrayList<MedicationResponse>> {
+        return try {
+            val response = apiHelper.searchMedicationGroupByName(request)
+            if (response.isSuccessful) {
+                Resource(ResourceState.SUCCESS, response.body()?.entityList)
+            } else {
+                Resource(ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            Resource(ResourceState.ERROR)
         }
     }
 

@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.HealthFacility
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.Menu
 import com.medtroniclabs.spice.data.MenuDetail
 import com.medtroniclabs.spice.data.ModelQuestion
@@ -169,6 +170,10 @@ class MetaRepository @Inject constructor(
                                     remAttempts
                                 )
                             }
+                            medicationInstructions?.let { items ->
+                                deleteExaminationsComplaints(MedicalReviewTypeEnums.PRESCRIPTION_INSTRUCTION.name)
+                                insertExaminationsComplaint(insertPrescriptionInstruction(items))
+                            }
                         }
 
                         val formsResponse = async {
@@ -314,6 +319,27 @@ class MetaRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
+    }
+
+    private fun insertPrescriptionInstruction(items: List<String>): List<MedicalReviewMetaItems> {
+        var itemId = 1L
+        val resultList = ArrayList<MedicalReviewMetaItems>()
+        items.forEach { value ->
+            resultList.add(
+                MedicalReviewMetaItems(
+                    itemId = itemId,
+                    id = itemId,
+                    name = value,
+                    category = MedicalReviewTypeEnums.PRESCRIPTION_INSTRUCTION.name,
+                    type = MedicalReviewTypeEnums.PRESCRIPTION_INSTRUCTION.name,
+                    displayOrder = itemId.toInt(),
+                    value = value
+                )
+            )
+            itemId++
+        }
+
+        return resultList
     }
 
     private fun updateCulturesMeta(cultureList: ArrayList<CulturesEntity>) {

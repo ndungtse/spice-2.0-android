@@ -274,6 +274,8 @@ interface RoomHelper {
 
     suspend fun getFrequencyList(): List<FrequencyEntity>
 
+    suspend fun getInstructionList(): List<MedicalReviewMetaItems>
+
     suspend fun getDosageFrequencyList(): List<DosageFrequency>
 
     suspend fun insertOrUpdateFollowUp(entity: FollowUp)

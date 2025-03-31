@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardPrescriptionGroupContainer"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_32sdp"
+        android:layout_marginVertical="@dimen/_16sdp"
+        android:minHeight="@dimen/_192sdp"
+        app:cardCornerRadius="@dimen/_8sdp"
+        app:strokeWidth="@dimen/_1sdp"
+        app:cardElevation="@dimen/_4sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:strokeColor="@color/light_gray">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1.4">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/prescriptionGroupName"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.2"
+                    android:fontFamily="@font/inter_bold"
+                    android:gravity="center"
+                    android:padding="@dimen/_12sdp"
+                    android:text="@string/medication_name"
+                    android:textColor="@color/table_title"
+                    android:textSize="@dimen/_14ssp" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_24sdp"
+                    android:layout_weight="0.2"
+                    android:fontFamily="@font/inter_regular"
+                    android:gravity="center"
+                    android:padding="@dimen/_12sdp"
+                    android:text="@string/frequency"
+                    android:textColor="@color/table_title"
+                    android:textSize="@dimen/_14ssp" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_24sdp"
+                    android:layout_weight="0.2"
+                    android:fontFamily="@font/inter_regular"
+                    android:gravity="center"
+                    android:padding="@dimen/_12sdp"
+                    android:text="@string/instructions"
+                    android:textColor="@color/table_title"
+                    android:textSize="@dimen/_14ssp" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_24sdp"
+                    android:layout_weight="0.2"
+                    android:fontFamily="@font/inter_regular"
+                    android:gravity="center"
+                    android:padding="@dimen/_12sdp"
+                    android:text="@string/prescribed_days"
+                    android:textColor="@color/table_title"
+                    android:textSize="@dimen/_14ssp" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_24sdp"
+                    android:layout_weight="0.2"
+                    android:fontFamily="@font/inter_regular"
+                    android:gravity="center"
+                    android:padding="@dimen/_12sdp"
+                    android:text="@string/quantity"
+                    android:textColor="@color/table_title"
+                    android:textSize="@dimen/_14ssp" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_24sdp"
+                    android:layout_weight="0.2"
+                    android:fontFamily="@font/inter_regular"
+                    android:gravity="center"
+                    android:padding="@dimen/_12sdp"
+                    android:text="@string/prescribed_since"
+                    android:textColor="@color/table_title"
+                    android:textSize="@dimen/_14ssp" />
+
+                <LinearLayout
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.2"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/ivGroupRemove"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:contentDescription="@string/remove_medication"
+                        android:src="@drawable/icon_remove_blue" />
+
+                    <ImageView
+                        android:id="@+id/ivGroupEdit"
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:contentDescription="@string/edit"
+                        android:src="@drawable/icon_edit_blue" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:background="@color/edittext_stroke_50t" />
+
+
+            <LinearLayout
+                android:id="@+id/llPrescriptionGroupHolder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <TextView
+                android:id="@+id/tvNoMedicationDataFound"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="@dimen/_32sdp"
+                android:fontFamily="@font/inter_regular"
+                android:gravity="center"
+                android:visibility="gone"
+                android:text="@string/no_medication_prescribed"
+                android:textColor="@color/cobalt_blue"
+                android:textSize="@dimen/_14ssp" />
+
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

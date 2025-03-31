@@ -36,7 +36,10 @@ data class  Prescription(
     val prescriptionFilledDays: Any? = null,
     val discontinuedOn : String? =null,
     val reason: String? = null,
-    val instructionUpdated : String? = null
+    val instructionUpdated : String? = null,
+    val groupName: String? = null,
+    val isGroup : Boolean? = null,
+    val groupId: String? = null
 )
 
 

@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.LabourDeliveryMetaResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
+import com.medtroniclabs.spice.data.MedicationGroupSearchRequest
 import com.medtroniclabs.spice.data.MedicationResponse
 import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
@@ -179,6 +180,7 @@ interface ApiHelper {
     suspend fun getLabourDeliverySummaryDetails(request: LabourDeliverySummaryDetails): Response<APIResponse<CreateLabourDeliveryRequest>>
     suspend fun getPatientStatus(request: PatientStatusRequest): Response<APIResponse<PatientStatusResponse>>
     suspend fun searchMedicationByName(request: MedicationSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>>
+    suspend fun searchMedicationGroupByName(request: MedicationGroupSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>>
     suspend fun createMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>>
     suspend fun getMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsResponse): Response<APIResponse<SummaryDetails>>
     suspend fun saveMotherNeonateAnc(motherNeonateAncRequest: MotherNeonateAncRequest):Response<APIResponse<PatientEncounterResponse>>
@@ -198,7 +200,8 @@ interface ApiHelper {
     suspend fun getUnderFiveYearsSummaryDetails(request: CreateUnderTwoMonthsResponse): Response<APIResponse<SummaryDetails>>
     suspend fun createPrescriptionRequest(request: RequestBody): Response<APIResponse<Map<String, Any>>>
     suspend fun getPrescriptionList(request: PrescriptionListRequest): Response<APIResponse<ArrayList<Prescription>>>
-    suspend fun removePrescription(request: RemovePrescriptionRequest): Response<APIResponse<Map<String, Any>>>
+    suspend fun removePrescription(request:  RemovePrescriptionRequest): Response<APIResponse<Map<String, Any>>>
+    suspend fun removeCommunityPrescription(request:  List<RemovePrescriptionRequest>): Response<APIResponse<Map<String, Any>>>
     suspend fun getPrescription(request: ReferralDetailRequest): Response<APIResponse<HistoryEntity>>
     suspend fun getMedicalReviewHistory(request: ReferralDetailRequest): Response<APIResponse<MedicalReviewHistory>>
     suspend fun getPncSummaryDetails(request: MotherNeonatePncSummaryRequest): Response<APIResponse<MotherNeonatePncSummaryResponse>>

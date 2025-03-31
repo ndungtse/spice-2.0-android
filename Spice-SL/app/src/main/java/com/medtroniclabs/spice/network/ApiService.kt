@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.LabourDeliveryMetaResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
+import com.medtroniclabs.spice.data.MedicationGroupSearchRequest
 import com.medtroniclabs.spice.data.MedicationResponse
 import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
@@ -232,6 +233,9 @@ interface ApiService {
     @POST("/admin-service/medication/search")
     suspend fun searchMedicationByName(@Body request: MedicationSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>>
 
+    @POST("/admin-service/medication/list-by-group")
+    suspend fun searchMedicationGroupByName(@Body request: MedicationGroupSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>>
+
     @POST("/spice-service/medical-review/iccm-under-2months/create")
     suspend fun createMedicalReviewForUnderTwoMonths(@Body request: CreateUnderTwoMonthsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>>
 
@@ -285,6 +289,9 @@ interface ApiService {
 
     @POST("spice-service/prescription-request/remove")
     suspend fun removePrescription(@Body request: RemovePrescriptionRequest): Response<APIResponse<Map<String, Any>>>
+
+    @POST("spice-service/prescription-request/remove")
+    suspend fun removeCommunityPrescription(@Body request: List<RemovePrescriptionRequest>): Response<APIResponse<Map<String, Any>>>
 
     @POST("/spice-service/medical-review/iccm-under-5years/details")
     suspend fun getUnderFiveYearsSummaryDetails(@Body request: CreateUnderTwoMonthsResponse): Response<APIResponse<SummaryDetails>>

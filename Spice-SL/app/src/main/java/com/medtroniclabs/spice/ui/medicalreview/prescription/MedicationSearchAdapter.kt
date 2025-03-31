@@ -37,9 +37,15 @@ class MedicationSearchAdapter(context: Context) :
 
     class ViewHolder(val binding: MedicationSerachAdapterLayoutBinding) {
         fun bind(item: MedicationResponse) {
-            val name = "${item.name}, ${item.brandName}, ${item.dosageFormName}"
-            binding.tvMedicationName.text = name
-            binding.tvClassification.text = item.classificationName
+            if (item.isGroup){
+                val name = "${item.groupName}"
+                binding.tvMedicationName.text = name
+                binding.tvClassification.text = item.classificationName
+            } else {
+                val name = "${item.name}, ${item.brandName}, ${item.dosageFormName}"
+                binding.tvMedicationName.text = name
+                binding.tvClassification.text = item.classificationName
+            }
         }
     }
 

@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "MetaItemByTypeAndCategoryEntity")
 data class MedicalReviewMetaItems(
     @PrimaryKey(autoGenerate = true)
-    val itemId: Long,
+    val itemId: Long= 0,
     val id: Long,
     var name: String,
     var category: String? = null,

@@ -12,6 +12,8 @@ import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.EncounterDetails
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.MedicationGroupSearchRequest
 import com.medtroniclabs.spice.data.MedicationRequestObject
 import com.medtroniclabs.spice.data.MedicationResponse
 import com.medtroniclabs.spice.data.MedicationSearchRequest
@@ -46,6 +48,8 @@ class PrescriptionViewModel @Inject constructor(
 
     val selectedMedicationLiveData = MutableLiveData<ArrayList<MedicationRequestObject>>()
 
+    val selectedMedicationGroupLiveData = MutableLiveData<ArrayList<MedicationRequestObject>>()
+
     val createPrescriptionLiveData = MutableLiveData<Resource<Map<String, Any>>>()
 
     val prescriptionListLiveData = MutableLiveData<Resource<ArrayList<Prescription>>>()
@@ -57,6 +61,9 @@ class PrescriptionViewModel @Inject constructor(
     var patientId: String? = null
 
     val frequencyListLiveDate = MutableLiveData<Resource<List<FrequencyEntity>>>()
+    val instructionListLiveDate = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
+
+    val medicationGroupListLiveData = MutableLiveData<Resource<ArrayList<MedicationResponse>>>()
 
     fun searchMedicationByName(name: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -88,9 +95,34 @@ class PrescriptionViewModel @Inject constructor(
         selectedMedicationLiveData.value = medicationList
     }
 
+    fun updateMedicationGroupList(
+        medicationResponse: ArrayList<MedicationRequestObject>,
+        reset: Boolean,
+    ) {
+        if (reset) {
+            selectedMedicationGroupLiveData.value?.clear()
+        }
+        val medicationList: ArrayList<MedicationRequestObject> =
+            selectedMedicationGroupLiveData.value ?: ArrayList()
+        val existingGroupNames = selectedMedicationGroupLiveData.value?.mapNotNull { it.medicationResponse.groupName }?.toHashSet()
+
+        val filteredListItems = existingGroupNames?.let {existingGroups ->
+            medicationResponse.filter { it.medicationResponse.groupName !in existingGroups }
+        } ?: medicationResponse
+
+        medicationList.addAll(filteredListItems)
+        selectedMedicationGroupLiveData.value = medicationList
+    }
+
     fun getFrequencyList() {
         viewModelScope.launch(dispatcherIO) {
             frequencyListLiveDate.postValue(medicationRepository.getFrequencyList())
+        }
+    }
+
+    fun getInstructionList() {
+        viewModelScope.launch(dispatcherIO) {
+            instructionListLiveDate.postValue(medicationRepository.getInstructionList())
         }
     }
 
@@ -106,6 +138,21 @@ class PrescriptionViewModel @Inject constructor(
             mapList.add(map)
         }
 
+        return mapList
+    }
+
+    fun getInstructionMap(): ArrayList<Map<String, Any>> {
+        val mapList = ArrayList<Map<String, Any>>()
+        instructionListLiveDate.value?.data?.forEach { data ->
+            data.value?.let { fhirValue ->
+                val map = HashMap<String, Any>()
+                map[DefinedParams.NAME] = data.name
+                map[DefinedParams.ID] = data.id
+                map[DefinedParams.Value] = fhirValue
+                map[DefinedParams.DisplayOrder] = data.displayOrder
+                mapList.add(map)
+            }
+        }
         return mapList
     }
 
@@ -146,7 +193,9 @@ class PrescriptionViewModel @Inject constructor(
                                 prescribedSince = System.currentTimeMillis().convertToUtcDateTime(),
                                 prescriptionId = it.medicationResponse.prescriptionId,
                                 codeDetails = it.medicationResponse.codeDetails,
-                                frequencyName = getMedicationFrequencyName(it)
+                                frequencyName = getMedicationFrequencyName(it),
+                                groupName = it.medicationResponse.groupName,
+                                groupId = it.medicationResponse.groupId
                             )
                         }?.let { it2 ->
                             prescriptionList.add(
@@ -179,11 +228,6 @@ class PrescriptionViewModel @Inject constructor(
         }
     }
 
-
-
-
-
-
     fun constructMedicationRequestObjectList(
         list: java.util.ArrayList<Prescription>
     ): ArrayList<MedicationRequestObject> {
@@ -206,6 +250,8 @@ class PrescriptionViewModel @Inject constructor(
             prescribedDays = prescription.prescribedDays,
             prescriptionId = prescription.prescriptionId,
             prescribedSince = prescription.prescribedSince,
+            groupName = prescription.groupName,
+            groupId = prescription.groupId
         )
     }
 
@@ -262,6 +308,14 @@ class PrescriptionViewModel @Inject constructor(
         }
     }
 
+    fun removeCommunityPrescription(request: List<RemovePrescriptionRequest>) {
+        viewModelScope.launch(dispatcherIO) {
+            removePrescriptionLiveData.postLoading()
+            val response = medicationRepository.removeCommunityPrescription(request)
+            removePrescriptionLiveData.postSuccess(response.data)
+        }
+    }
+
     fun getPrescriptionList(data: PatientListRespModel, isDeleted: Boolean = true) {
         getPrescriptionList(
             if (CommonUtils.isNonCommunity()) {
@@ -279,5 +333,22 @@ class PrescriptionViewModel @Inject constructor(
         )
     }
 
+    fun getMedicationGroupByName(name: String) {
+        viewModelScope.launch(dispatcherIO) {
+            try {
+                medicationGroupListLiveData.postLoading()
+                val response = medicationRepository.searchMedicationGroupByName(
+                    MedicationGroupSearchRequest(name)
+                )
+                response.data?.let {
+                    medicationGroupListLiveData.postSuccess(it)
+                } ?: kotlin.run {
+                    medicationGroupListLiveData.postError()
+                }
+            } catch (e: Exception) {
+                medicationGroupListLiveData.postError()
+            }
+        }
+    }
 
 }

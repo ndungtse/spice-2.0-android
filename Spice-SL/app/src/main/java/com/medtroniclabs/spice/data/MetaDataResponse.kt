@@ -27,8 +27,8 @@ data class MetaDataResponse(
     val cultures: ArrayList<CulturesEntity>? = null,
     val appTypes: ArrayList<String>? = null,
     val remainingAttemptsCount: Int? = null,
-    val consentForm: ConsentFormResponse ? = null
-
+    val consentForm: ConsentFormResponse ? = null,
+    val medicationInstructions: List<String>? = null
 )
 
 data class Designation(

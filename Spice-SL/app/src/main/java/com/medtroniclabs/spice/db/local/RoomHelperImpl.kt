@@ -97,6 +97,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.boarding.MenuTypeEnums
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import javax.inject.Inject
 
 class RoomHelperImpl @Inject constructor(
@@ -695,6 +696,10 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getFrequencyList(): List<FrequencyEntity> {
         return frequencyDAO.getFrequencyList()
+    }
+
+    override suspend fun getInstructionList(): List<MedicalReviewMetaItems> {
+        return aboveFiveYearsDAO.getSummaryDetailMetaItems(MedicalReviewTypeEnums.PRESCRIPTION_INSTRUCTION.name)
     }
 
     override fun getExaminationsComplaintsForPnc(

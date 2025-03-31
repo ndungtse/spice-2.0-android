@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingVertical="@dimen/_8sdp"
-        android:weightSum="1.2">
+        android:weightSum="1.4">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/medicationName"
@@ -32,6 +32,19 @@
             android:fontFamily="@font/inter_regular"
             android:gravity="start"
             android:text="@string/frequency"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/instruction"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="@dimen/_24sdp"
+            android:layout_weight="0.2"
+            android:background="@null"
+            android:fontFamily="@font/inter_regular"
+            android:gravity="start"
+            android:text="@string/instructions"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp" />
 
