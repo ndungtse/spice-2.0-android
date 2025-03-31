@@ -1171,6 +1171,8 @@ class AssessmentViewModel @Inject constructor(
     var assessmentMap: HashMap<String, Any> = hashMapOf()
     var referralResult: Pair<String?, ArrayList<String>>? = Pair(null, ArrayList<String>())
     val birthLiveData = MutableLiveData<Resource<Triple<String,Boolean,Boolean>>>()
+    var cbsMemberIDAndPregnancyDetail :Pair<Long?,PregnancyDetail?> = Pair(null,null)
+
      fun setBirth(
          resultValue: HashMap<String, Any>,
          referralResult: Pair<String?, ArrayList<String>>,
@@ -1181,7 +1183,7 @@ class AssessmentViewModel @Inject constructor(
         this.assessmentMap = resultValue
         this.referralResult = referralResult
          memberId?.let {
-             savePatientClinicalInformation(getUpdatedPregnancyDetail(memberId, pregnancyDetail,true))
+             cbsMemberIDAndPregnancyDetail = Pair(memberId, pregnancyDetail)
          }
          birthLiveData.postValue(Resource(ResourceState.SUCCESS, Triple(birth,isDelete,true)))
     }

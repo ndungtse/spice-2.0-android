@@ -244,6 +244,12 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                         }
                         val finalText = rmnchText.joinToString(", ")
 
+                        /*
+                        In direct CBS member death cases, we should handle it separately. However,
+                         in RMNCH cases, CBS navigation occurs only in the event of a mother's death.
+                         Since the assessment flow already manages death cases,
+                         we only need to handle it specifically for CBS.
+                         */
                         val isAncOrNormal = viewModel.birthLiveData.value?.data?.third ?: false
                         if (isAncOrNormal) {
                             val isDelete = viewModel.birthLiveData.value?.data?.second ?: false
@@ -251,6 +257,15 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                                 viewModel.updateMemberDeceasedStatus(
                                     viewModel.memberDetailsLiveData.value?.data?.id ?: -1L, false,
                                     finalText
+                                )
+                            }
+                            viewModel.cbsMemberIDAndPregnancyDetail.first?.let {
+                                viewModel.savePatientClinicalInformation(
+                                    viewModel.getUpdatedPregnancyDetail(
+                                        it,
+                                        viewModel.cbsMemberIDAndPregnancyDetail.second,
+                                        true
+                                    )
                                 )
                             }
                             viewModel.saveAssessment(

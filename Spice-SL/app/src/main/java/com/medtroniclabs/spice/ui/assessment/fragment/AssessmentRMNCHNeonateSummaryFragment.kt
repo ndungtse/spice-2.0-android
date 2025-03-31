@@ -158,6 +158,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         return isChildDeath
     }
 
+    private var isFirstSelection = true
     private fun loadPhuSitesList(siteList: ArrayList<Map<String, Any>>) {
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(siteList)
@@ -178,6 +179,11 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                             selectedSiteName ?: ""
                         viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
                             selectedId?.toLong() ?: -1L
+                    }
+                    if (isFirstSelection) {
+                        isFirstSelection = false // Ignore the first selection
+                        setNextVisitDateAndDefaultHealthFacilityWhileClickHomeInSummary()
+                        return
                     }
                 }
 
@@ -222,6 +228,9 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
             binding.riskResultLayout.backgroundTintList =
                 ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
             binding.riskResultLayout.text = getString(R.string.urgent_referral)
+        }
+        if (binding.etNextFollowUpDate.visibility == View.VISIBLE) {
+            setNextVisitDateAndDefaultHealthFacilityWhileClickHomeInSummary()
         }
     }
 
