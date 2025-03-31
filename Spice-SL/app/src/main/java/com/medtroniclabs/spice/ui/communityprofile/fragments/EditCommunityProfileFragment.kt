@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_ID
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_NAME
+import com.medtroniclabs.spice.common.DefinedParams.Value
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
@@ -315,6 +316,13 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
             title = getString(R.string.market_days),
             autoPopulate = communityProfileViewModel.marketDays
         ) { resultMap ->
+            communityProfileViewModel.marketDays.apply {
+                clear()
+                (resultMap as? List<Map<String, String>>)
+                    ?.mapNotNull { it[Value]?.let { value -> value to true } }
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { addAll(it) }
+            }
             formGenerator.validateCheckboxDialogue(id, serverViewModel, resultMap)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
