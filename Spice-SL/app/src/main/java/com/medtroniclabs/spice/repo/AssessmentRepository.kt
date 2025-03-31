@@ -4,6 +4,7 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -23,6 +24,13 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.NeonateOutcome
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfNewborn
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.visitNo
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.LiveBirth
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.StillBirth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Locale
@@ -44,9 +52,21 @@ class AssessmentRepository @Inject constructor(
         childReferralResult: Pair<String?, ArrayList<String>>
     ): Resource<Pair<AssessmentEntity, AssessmentEntity?>> {
         return try {
+
+            val motherAsstDetail = JsonParser.parseString(second)
+            val pncMother = motherAsstDetail.asJsonObject.get(PNC).asJsonObject
+            if (pncMother.get(visitNo).asLong == 1L) {
+                third?.let {
+                    val pncNeonate = JsonParser.parseString(it).asJsonObject.get(PNCNeonatal).asJsonObject
+                    val isNeonateDeath = pncNeonate.get(deathOfNewborn).asBoolean
+                    val neonateOutcome = if (isNeonateDeath) StillBirth else LiveBirth
+                    pncMother.addProperty(NeonateOutcome, neonateOutcome)
+                }
+            }
+
             val motherAssessmentEntity = getAssessmentEntity(
                 memberDetail,
-                second,
+                motherAsstDetail.toString(),
                 otherDetails,
                 referralResult,
                 lastLocation,
