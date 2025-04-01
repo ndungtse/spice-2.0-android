@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.NeonateOutcome
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC_MENU
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfNewborn
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.visitNo
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.LiveBirth
@@ -82,7 +83,7 @@ class AssessmentRepository @Inject constructor(
                 val childAssessmentEntity = getAssessmentEntity(
                     childMemberDetail,
                     third,
-                    if (childReferralResult.first.equals(ReferralStatus.Referred.name)) otherDetails else null,
+                    otherDetails,
                     childReferralResult,
                     lastLocation,
                     RMNCH.pnc_neonate_key,
@@ -92,7 +93,7 @@ class AssessmentRepository @Inject constructor(
 
                 childMemberIdFollowupIDAndDeathOfNewBorn.third?.let { deathOfNewborn ->
                     if (deathOfNewborn){
-                        roomHelper.updateMemberDeceasedStatus(childMemberDetail.id, false)
+                        roomHelper.updateMemberDeceasedReason(childMemberDetail.id, false, PNC_MENU.uppercase())
                     }
                 }
 
@@ -267,7 +268,7 @@ class AssessmentRepository @Inject constructor(
                     roomHelper.updateOtherAssessmentDetails(motherAssessmentEntity)
                 }
                 val childAssessmentEntity = pair?.second
-                if (childAssessmentEntity != null && childAssessmentEntity.isReferred) {
+                if (childAssessmentEntity != null) {
                     childAssessmentEntity.otherDetails =
                         StringConverter.convertGivenMapToString(otherAssessmentDetails)
                     lastLocation?.let {

@@ -23,6 +23,8 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC_MENU
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deceasedReason
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.isDeceased
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -101,6 +103,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
             if (memberMap != null) {
                 if (deathOfNewBorn) {
                     memberMap!![isDeceased] = deathOfNewBorn
+                    memberMap!![deceasedReason] = PNC_MENU.uppercase()
                 }
                 val childMemberId = householdMemberRepository.registerMember(
                     memberMap!!,

@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration.otherFamilyMember
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deceasedReason
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.isDeceased
 import javax.inject.Inject
 
@@ -126,6 +127,11 @@ class HouseholdMemberRepository @Inject constructor(
         val isDeceased = map[isDeceased]
         if (isDeceased != null && isDeceased is Boolean && isDeceased){
              householdMemberEntity.isActive = false
+        }
+
+        val deceasedReason = map[deceasedReason]
+        if (deceasedReason != null && deceasedReason is String){
+            householdMemberEntity.deceasedReason = deceasedReason
         }
 
         householdMemberEntity.householdId = householdId

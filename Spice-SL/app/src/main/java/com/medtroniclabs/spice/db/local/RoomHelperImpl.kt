@@ -438,7 +438,7 @@ class RoomHelperImpl @Inject constructor(
         visitCount: Long,
         clinicalDate: String?
     ) {
-        pregnancyDetailDao.updatePregnancyAnc(visitCount, clinicalDate, hhmLocalId)
+        pregnancyDetailDao.updatePregnancyAnc(hhmLocalId)
     }
 
     override suspend fun getSummaryDetailMetaItems(type: String): List<MedicalReviewMetaItems> {

@@ -67,6 +67,7 @@ object RMNCH {
     const val lowBirthWeight = "lowBirthWeight"
     const val deathOfBaby = "deathOfBaby"
     const val isDeceased = "isDeceased"
+    const val deceasedReason = "deceasedReason"
 
     const val otherPlaceOfDelivery="otherPlaceOfDelivery"
 

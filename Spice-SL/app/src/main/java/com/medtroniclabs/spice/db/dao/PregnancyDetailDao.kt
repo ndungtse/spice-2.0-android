@@ -17,8 +17,8 @@ interface PregnancyDetailDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPregnancyDetails(list: List<PregnancyDetail>)
 
-    @Query("UPDATE PregnancyDetail SET ancVisitNo = :visitCount, lastMenstrualPeriod = :clinicalDate WHERE householdMemberLocalId = :hhmLocalId")
-    suspend fun updatePregnancyAnc(visitCount: Long, clinicalDate: String?, hhmLocalId: Long )
+    @Query("DELETE FROM PregnancyDetail WHERE householdMemberLocalId = :hhmLocalId")
+    suspend fun updatePregnancyAnc(hhmLocalId: Long )
 
     @Query("SELECT patientId, ancVisitNo as visitCount, lastMenstrualPeriod as clinicalDate FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
     suspend fun getAncDetail(hhmLocalId: Long): MemberClinicalEntity?
