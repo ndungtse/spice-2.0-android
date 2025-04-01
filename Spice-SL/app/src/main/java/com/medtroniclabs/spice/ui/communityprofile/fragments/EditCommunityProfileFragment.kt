@@ -31,6 +31,7 @@ import com.medtroniclabs.spice.db.entity.CommunityProfile
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_DIALOG_CHECKBOX
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_SPINNER
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -60,10 +61,8 @@ import com.medtroniclabs.spice.mappingkey.CommunityDetails.WaterAndSanitationFac
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.market
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.communityprofile.adapter.CommunityPopulationAdapter
 import com.medtroniclabs.spice.ui.communityprofile.viewmodel.CommunityProfileViewModel
-import timber.log.Timber
 
 class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
@@ -248,12 +247,20 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
 
     private fun prepopulateNearestPhu() {
         formGenerator.getViewByTag(NearestPhu)?.let { view ->
-            formGenerator.setValueForView(communityProfileViewModel.nearestPhu, view)
+            val nearestPhuName = communityProfileViewModel.nearestPhu.takeIf { it.isNotBlank() }
+                ?: communityProfileViewModel.nearestHealthFacilityLiveData.value?.data
+                    ?.firstOrNull { (it[DefinedParams.isDefault] as? Boolean) == true }
+                    ?.get(DefinedParams.NAME) ?: ""
+
+            formGenerator.setValueForView(nearestPhuName, view)
         }
     }
 
     private fun initViews() {
         hideHomeIcon()
+        binding.tvNameOfCommunity.markMandatory()
+        binding.tvCommunityBoundaryDesc.markMandatory()
+        binding.tvRegisteredDate.markMandatory()
         communityProfileViewModel.reinitSaveLiveData()
         arguments?.getLong(DefinedParams.COMMUNITY_ID)?.let { villageId ->
             communityProfileViewModel.getPopulationStatistics(villageId = villageId)
@@ -491,6 +498,8 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
     }
 
     override fun onRenderingComplete() {
+        communityProfileViewModel.marketDays.clear()
+        communityProfileViewModel.nearestPhu = ""
         communityProfileViewModel.getNearestHealthFacility()
         arguments?.getLong(DefinedParams.COMMUNITY_ID)?.let { villageId ->
             communityProfileViewModel.getCommunityDetailsLocal(villageId)
