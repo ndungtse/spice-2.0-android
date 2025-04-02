@@ -622,9 +622,9 @@ class RoomHelperImpl @Inject constructor(
         } else {
             val types = listOf(FollowUpDefinedParams.FU_TYPE_REFERRED, FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW)
             if (followUp.encounterType == FollowUpDefinedParams.FU_ENCOUNTER_TYPE_RMNCH) {
-                followUpDao.closeTicketsForRMNCH(id, followUp.memberId, types)
+                followUpDao.closeTicketsForRMNCH(id, followUp.memberId, types, followUp.encounterType)
             } else {
-                followUpDao.closeTicketsForNonRMNCH(id,followUp.memberId, followUp.type, types)
+                followUpDao.closeTicketsForNonRMNCH(id,followUp.memberId, followUp.type, types, followUp.encounterType)
             }
         }
     }
