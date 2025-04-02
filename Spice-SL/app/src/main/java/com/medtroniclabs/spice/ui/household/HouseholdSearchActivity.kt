@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HOUSEHOLDLISTSEARCHTRIGGERED
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HOUSEHOLDS
 import com.medtroniclabs.spice.appextensions.gone
@@ -158,7 +159,10 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
     override fun onClick(view: View) {
         when (view.id) {
             R.id.btnAddHousehold -> {
-                withLocationCheck(::launchHouseholdActivity)
+                withLocationCheck({
+                    householdListViewModel.setUserJourney(AnalyticsDefinedParams.ADDHOUSEHOLDBUTTONTRIGGERED)
+                    launchHouseholdActivity()
+                })
             }
 
             R.id.btnSearch -> {

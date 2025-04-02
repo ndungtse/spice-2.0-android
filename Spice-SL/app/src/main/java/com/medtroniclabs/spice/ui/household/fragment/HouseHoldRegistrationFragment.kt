@@ -252,9 +252,6 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
             householdRegistrationViewModel.eventName = HouseholdEdit
             householdRegistrationViewModel.setUserJourney(HouseholdEdit)
         } else {
-            householdRegistrationViewModel.setUserJourney(
-                getString(R.string.household_registration)
-            )
             householdRegistrationViewModel.eventName = HouseholdCreation
             householdRegistrationViewModel.setUserJourney(HouseholdCreation)
         }
@@ -320,15 +317,16 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { map ->
-            householdRegistrationViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
             if (householdRegistrationViewModel.householdId != -1L) {
                 householdRegistrationViewModel.setAnalyticsData(
                     UserDetail.startDateTime,
                     eventName = HouseholdEdit,
                     isCompleted = true
                 )
+                householdRegistrationViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                 householdRegistrationViewModel.updateHousehold(map)
             } else {
+                householdRegistrationViewModel.setUserJourney(AnalyticsDefinedParams.NEXTBUTTONTRIGGERED)
                 householdRegistrationViewModel.registerHousehold(map)
             }
         }

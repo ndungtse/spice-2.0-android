@@ -271,6 +271,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     }
 
     private fun finishRegistrationFlow() {
+        householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.FINISHBUTTONTRIGGERED)
         householdSummaryViewModel.householdCardDetailLiveData.value?.let {
             val existingFragment =
                 supportFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
