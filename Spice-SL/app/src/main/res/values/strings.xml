@@ -1428,6 +1428,8 @@
     <string name="quantity_microlut" translatable="false">Quantity (Microlut)</string>
     <string name="methods" translatable="false">Methods</string>
     <string name="methods_selected" translatable="false">Methods Selected</string>
+    <string name="networks_selected" translatable="false">Networks Selected</string>
+    <string name="network_selected" translatable="false">Network Selected</string>
     <string name="referred_for_ncd_assessment" translatable="false">Referred for NCD Assessment</string>
     <string name="was_the_member_taken_to_clinic" translatable="false">Was the member taken to the Clinic</string>
     <string name="ncd_risk_factor" translatable="false">NCD Risk Factors</string>
@@ -1441,4 +1443,6 @@
     <string name="visited" translatable="false">Visited</string>
     <string name="not_visited" translatable="false">Not Visited</string>
     <string name="default_user_input_error_date" translatable="false">Please enter a valid date</string>
+    <string name="networks" translatable="false">Networks</string>
+    <string name="community_boundary_desc_required" translatable="false">Community boundary description is required</string>
 </resources>

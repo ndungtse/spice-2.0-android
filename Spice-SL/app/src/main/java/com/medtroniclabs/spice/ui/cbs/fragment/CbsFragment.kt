@@ -239,11 +239,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
     private fun cbsIsPatientAgeAboveFiveYear(dob: String?): Boolean {
         if (dob.isNullOrBlank()) return false
         val age = DateUtils.getV2YearMonthAndWeek(dob)
-        return when {
-            age.years > 5 -> false
-            age.years == 5 && (age.months > 0 || age.weeks > 0 || age.days > 0) -> false
-            else -> true
-        }
+        return age.years < 5
     }
 
     private fun getFormDataForWorkflow() {

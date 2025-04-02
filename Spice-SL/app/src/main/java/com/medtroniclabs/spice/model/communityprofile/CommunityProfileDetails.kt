@@ -27,7 +27,7 @@ data class CommunityProfileDetails(
     val numberOfNonImprovedWaterSources: Int?,
     val primarySchool: Boolean?,
     val registerCompleted: String?,
-    val selectedNetwork: String?,
+    val selectedNetworks: List<String>?,
     val seniorSecondarySchool: Boolean?,
     val villageId: String?
 )

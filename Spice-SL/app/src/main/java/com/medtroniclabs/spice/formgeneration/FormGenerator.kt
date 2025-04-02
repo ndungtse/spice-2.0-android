@@ -133,6 +133,7 @@ import com.medtroniclabs.spice.formgeneration.utility.DecimalInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.FormFieldValidator
 import com.medtroniclabs.spice.mappingkey.CommunityDetails
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.SelectedNetwork
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
@@ -3254,6 +3255,15 @@ class FormGenerator(
                     "${mapList.size} ${getString(R.string.market_day_selected)}"
                 }else{
                     "${mapList.size} ${getString(R.string.market_days_selected)}"
+                }
+            }
+        } else if(id.equals(SelectedNetwork,true)){
+            val mapList = resultHashMap[id]
+            if(mapList is ArrayList<*>){
+                text = if(mapList.size == 1){
+                    "${mapList.size} ${getString(R.string.network_selected)}"
+                }else{
+                    "${mapList.size} ${getString(R.string.networks_selected)}"
                 }
             }
         }else {

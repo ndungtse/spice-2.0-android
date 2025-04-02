@@ -15,11 +15,13 @@ import com.google.gson.internal.LinkedTreeMap
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_ID
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_NAME
+import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.DefinedParams.Value
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
@@ -48,6 +50,7 @@ import com.medtroniclabs.spice.mappingkey.CommunityDetails.False
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.Infrastructure
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.Market
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.MarketDays
+import com.medtroniclabs.spice.mappingkey.CommunityDetails.MobileNetworkCoverage
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.NearestPhu
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfHandPumpsNotFunctional
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.NumberOfImprovedToilets
@@ -61,6 +64,7 @@ import com.medtroniclabs.spice.mappingkey.CommunityDetails.WaterAndSanitationFac
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.market
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.communityprofile.adapter.CommunityPopulationAdapter
 import com.medtroniclabs.spice.ui.communityprofile.viewmodel.CommunityProfileViewModel
 
@@ -254,6 +258,11 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
 
             formGenerator.setValueForView(nearestPhuName, view)
         }
+        formGenerator.getViewByTag(NearestPhu).let {
+            if (it is AppCompatSpinner) {
+                it.isEnabled = false
+            }
+        }
     }
 
     private fun initViews() {
@@ -262,7 +271,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         binding.tvCommunityBoundaryDesc.markMandatory()
         binding.tvRegisteredDate.markMandatory()
         communityProfileViewModel.reinitSaveLiveData()
-        arguments?.getLong(DefinedParams.COMMUNITY_ID)?.let { villageId ->
+        arguments?.getLong(COMMUNITY_ID)?.let { villageId ->
             communityProfileViewModel.getPopulationStatistics(villageId = villageId)
         }
         arguments?.getString(DefinedParams.COMMUNITY_NAME).let { villageName ->
@@ -279,6 +288,12 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                         val isMarket = (map[Market] as? Boolean) ?: false
                         if(!isMarket){
                             communityProfileViewModel.marketDays.clear()
+                        }
+                    }
+                    MobileNetworkCoverage -> {
+                        val isMobileNetwork = (map[MobileNetworkCoverage] as? Boolean) ?: false
+                        if(!isMobileNetwork){
+                            communityProfileViewModel.selectedNetworks.clear()
                         }
                     }
                 }
@@ -326,18 +341,75 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         CheckBoxDialog.newInstance(
             id,
             resultMap,
-            title = getString(R.string.market_days),
-            autoPopulate = communityProfileViewModel.marketDays
+            title = getDialogTitle(id),
+            autoPopulate = getData(id)
         ) { resultMap ->
-            communityProfileViewModel.marketDays.apply {
-                clear()
-                (resultMap as? List<Map<String, String>>)
-                    ?.mapNotNull { it[Value]?.let { value -> value to true } }
-                    ?.takeIf { it.isNotEmpty() }
-                    ?.let { addAll(it) }
+            when (id) {
+                MarketDays -> {
+                    communityProfileViewModel.marketDays.apply {
+                        clear()
+                        (resultMap as? List<Map<String, String>>)
+                            ?.mapNotNull { it[Value]?.let { value -> value to true } }
+                            ?.takeIf { it.isNotEmpty() }
+                            ?.let { addAll(it) }
+                    }
+                }
+
+                SelectedNetwork -> {
+                    communityProfileViewModel.selectedNetworks.apply {
+                        clear()
+                        (resultMap as? List<Map<String, String>>)
+                            ?.mapNotNull { it[Value]?.let { value -> value to true } }
+                            ?.takeIf { it.isNotEmpty() }
+                            ?.let { addAll(it) }
+                    }
+                }
             }
+
             formGenerator.validateCheckboxDialogue(id, serverViewModel, resultMap)
+            updateValue(id, resultMap)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
+    }
+
+    private fun getDialogTitle(id: String): String? {
+        return when (id) {
+            MarketDays -> getString(R.string.market_days)
+            SelectedNetwork -> getString(R.string.networks)
+            else -> null
+        }
+    }
+
+    private fun updateValue(id: String, resultMap: ArrayList<HashMap<String, Any>>) {
+        when(id){
+            MarketDays -> {
+                val marketDaysList = mutableListOf<Pair<String,Boolean>>()
+                val list = resultMap as List<*>
+                list.forEach { it ->
+                    if (it is HashMap<*, *>) {
+                        marketDaysList.add(Pair(it[DefinedParams.Value] as String, true))
+                    }
+                }
+                communityProfileViewModel.marketDays = marketDaysList
+            }
+            SelectedNetwork -> {
+                val networkList = mutableListOf<Pair<String,Boolean>>()
+                val list = resultMap as List<*>
+                list.forEach { it ->
+                    if (it is HashMap<*, *>) {
+                        networkList.add(Pair(it[DefinedParams.Value] as String, true))
+                    }
+                }
+                communityProfileViewModel.selectedNetworks = networkList
+            }
+        }
+    }
+
+    private fun getData(id: String): List<Pair<String, Boolean>> {
+        return when(id) {
+            MarketDays ->  communityProfileViewModel.marketDays
+            SelectedNetwork ->  communityProfileViewModel.selectedNetworks
+            else -> emptyList()
+        }
     }
 
     override fun onInstructionClicked(
@@ -359,6 +431,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         )?.let { regDate ->
             convertDateToStringWithUTC(regDate, DateUtils.DATE_ddMMyyyy)
         }
+
         val payload = StringConverter.convertGivenMapToString(getCommunityProfilePayload(resultMap, serverData))
         val villageId = arguments?.getLong(COMMUNITY_ID)
         if (regDateUtc != null && payload != null && villageId != null) {
@@ -440,21 +513,22 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                         infrastructure[MarketDays] = signsList
                     }
 
-                    if(infrastructure.containsKey(SelectedNetwork)){
-                       serverData.forEach {  serverData ->
-                           when(serverData?.viewType){
-                                VIEW_TYPE_FORM_SPINNER -> {
-                                    val network = infrastructure[SelectedNetwork].toString()
-                                    val view = formGenerator.getViewByTag(SelectedNetwork) as? Spinner
-                                    val adapter = view?.adapter as? CustomSpinnerAdapter
-                                    val index = adapter?.getIndexOfItemByName(network)
-                                    if(index != -1) {
-                                        val name = adapter?.getItem(index ?: 0) as String
-                                        infrastructure[SelectedNetwork] = name
-                                    }
+                    if (infrastructure.containsKey(MobileNetworkCoverage)){
+                        val isMobileNetwork = infrastructure[MobileNetworkCoverage] as Boolean
+                        val networkList = mutableListOf<String>()
+                        if(isMobileNetwork && infrastructure.containsKey(SelectedNetwork)) {
+                            val list = infrastructure[SelectedNetwork] as List<HashMap<*, *>>
+                            list.forEach {
+                                (it[DefinedParams.name] as? String)?.let { day ->
+                                    networkList.add(
+                                        day
+                                    )
                                 }
-                           }
-                       }
+                            }
+                        } else {
+                            communityProfileViewModel.selectedNetworks.clear()
+                        }
+                        infrastructure[SelectedNetwork] = networkList
                     }
                 }
 
@@ -499,9 +573,11 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
 
     override fun onRenderingComplete() {
         communityProfileViewModel.marketDays.clear()
+        communityProfileViewModel.selectedNetworks.clear()
         communityProfileViewModel.nearestPhu = ""
+        communityProfileViewModel.otherNetwork = ""
         communityProfileViewModel.getNearestHealthFacility()
-        arguments?.getLong(DefinedParams.COMMUNITY_ID)?.let { villageId ->
+        arguments?.getLong(COMMUNITY_ID)?.let { villageId ->
             communityProfileViewModel.getCommunityDetailsLocal(villageId)
         }
     }
@@ -618,6 +694,9 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
             val infrastructure = dataMap[Infrastructure] as LinkedTreeMap<*, *>
             infrastructure.forEach { (key, value) ->
                 if (key.toString() == DescribeLocation || key.toString() == OtherNetwork) {
+                    if (key.toString() == OtherNetwork){
+                        communityProfileViewModel.otherNetwork = value.toString()
+                    }
                     formGenerator.getViewByTag(key)?.let { view ->
                         formGenerator.setValueForView(value, view)
                     }
@@ -648,7 +727,23 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
 
                 if( key.toString() == SelectedNetwork){
                     formGenerator.getViewByTag(key)?.let { view ->
-                        formGenerator.setValueForView(value, view)
+                        if (view is TextView) {
+                            formGenerator.getServerData()?.forEach { serverData ->
+                                when (serverData.viewType) {
+                                    VIEW_TYPE_DIALOG_CHECKBOX -> {
+                                        val list = infrastructure[SelectedNetwork] as List<String>
+                                        communityProfileViewModel.selectedNetworks = list.map { data -> Pair(data,true) }.toMutableList()
+                                        val daysMap = ArrayList<HashMap<String,Any>>()
+                                        list.forEach {
+                                            daysMap.add(hashMapOf(DefinedParams.name to it))
+                                        }
+                                        formGenerator.validateCheckboxDialogue(
+                                            SelectedNetwork,
+                                            serverData, daysMap)
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -676,6 +771,14 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                         }
                     }
                 }
+            }
+        }
+
+        if (communityProfileViewModel.selectedNetworks.any { it.first.equals(
+                Other, true) }){
+            formGenerator.getViewByTag(OtherNetwork + rootSuffix)?.visible()
+            formGenerator.getViewByTag(OtherNetwork)?.let { view ->
+                formGenerator.setValueForView(communityProfileViewModel.otherNetwork, view)
             }
         }
     }
@@ -710,5 +813,4 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                 }
             }
     }
-
 }

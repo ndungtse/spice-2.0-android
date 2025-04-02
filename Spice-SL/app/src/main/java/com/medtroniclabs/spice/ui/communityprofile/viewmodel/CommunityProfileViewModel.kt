@@ -40,6 +40,7 @@ class CommunityProfileViewModel @Inject constructor(
     val formLayoutLiveData = MutableLiveData<Resource<FormResponse>>()
     val nearestHealthFacilityLiveData = MutableLiveData<Resource<ArrayList<Map<String, Any>>>>()
     var marketDays = mutableListOf<Pair<String,Boolean>>()
+    var selectedNetworks = mutableListOf<Pair<String,Boolean>>()
     val getCommunityDetailsLiveDataLocal = MutableLiveData<Resource<CommunityProfile>>()
     var saveCommunityDetailsLiveDataLocal = MutableLiveData<Resource<Long>>()
     val combinedLiveData = MediatorLiveData<Pair<

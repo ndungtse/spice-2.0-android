@@ -151,18 +151,11 @@ class AssessmentFamilyPlanningSummaryFragment : BaseFragment(), View.OnClickList
     }
 
     private fun composeSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        getStatus(viewModel.referralStatus)?.let {
-            bindSummaryView(
-                getString(R.string.patient_status),
-                it
-            )
-        }
-
         listSummaryData.forEach { item ->
             item.value?.let {
                 when (item.id) {
                     AssessmentDefinedParams.FamilyPlanningMethods -> renderDangerSigns(item.title, listSummaryData)
-                    AssessmentDefinedParams.SpecifySideEffects, AssessmentDefinedParams.CondomsStatus, AssessmentDefinedParams.Contraceptive -> bindSummaryView(item.title, it)
+                    AssessmentDefinedParams.SpecifySideEffects, AssessmentDefinedParams.CondomsStatus, AssessmentDefinedParams.Contraceptive, AssessmentDefinedParams.MemberUsingAnyFamilyPlanning, AssessmentDefinedParams.NeedOfOtherFamilyPlanning, AssessmentDefinedParams.IsAnySideEffects -> bindSummaryView(item.title, it)
                 }
             }
         }

@@ -8,6 +8,7 @@ import androidx.fragment.app.activityViewModels
 import com.google.gson.internal.LinkedTreeMap
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_ddMMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
@@ -17,7 +18,6 @@ import com.medtroniclabs.spice.data.community.CommunitySummaryListItem
 import com.medtroniclabs.spice.databinding.FragmentCommunityProfileSummaryBinding
 import com.medtroniclabs.spice.db.entity.CommunityProfile
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.AccessRoadToPhu
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.ChwHouseInCommunity
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.DescribeLocation
@@ -31,7 +31,6 @@ import com.medtroniclabs.spice.mappingkey.CommunityDetails.OtherNetwork
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.SelectedNetwork
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.True
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.WaterAndSanitationFacilities
-import com.medtroniclabs.spice.mappingkey.CommunityDetails.market
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.communityprofile.adapter.CommunitySummaryAdapter
 import com.medtroniclabs.spice.ui.communityprofile.viewmodel.CommunityProfileViewModel
@@ -214,44 +213,33 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
                             }
                         }
                     }
-                    OtherNetwork -> {
-                        val value = infrastructure[form.id]
-                        if(value == null && viewModel.isOtherNetwork){
-                            communityList.add(
-                                CommunitySummaryListItem.OtherItemText(
-                                    viewModel.networkName,
-                                    viewModel.otherNetwork
-                                )
-                            )
-                            viewModel.isOtherNetwork = false
-                            viewModel.otherNetwork = ""
-                        }
-                        if(value != null  && viewModel.isOtherNetwork) {
-                            communityList.add(
-                                CommunitySummaryListItem.OtherItemText(
-                                    viewModel.networkName,
-                                    value.toString()
-                                )
-                            )
-                            viewModel.isOtherNetwork = false
-                            viewModel.otherNetwork = ""
-                        }
-                    }
+
                     SelectedNetwork -> {
-                        val value = infrastructure[form.id]
-                        if(viewModel.isNetworkCoverage) {
-                            if(!value.toString().equals(getString(R.string.other),true)){
-                                communityList.add(
-                                    CommunitySummaryListItem.OtherItemText(
-                                        viewModel.networkName,
-                                        value.toString()
+                        val value = infrastructure[form.id] as? ArrayList<String>
+                        val size = value?.size ?: 0
+                        if (viewModel.isNetworkCoverage && size > 0) {
+                            if (!value.isNullOrEmpty()) {
+                                val valueList = value.let { CommonUtils.convertListToString(it) }
+                                if (value.contains(getString(R.string.other)) && infrastructure.containsKey(
+                                        OtherNetwork
                                     )
-                                )
-                                viewModel.isNetworkCoverage = false
-                                viewModel.networkName = ""
-                            }else{
-                                viewModel.otherNetwork = value.toString()
-                                viewModel.isOtherNetwork = true
+                                ) {
+                                    viewModel.otherNetwork =
+                                        infrastructure[OtherNetwork] as? String ?: ""
+                                    communityList.add(
+                                        CommunitySummaryListItem.OtherItemText(
+                                            viewModel.networkName,
+                                            "$valueList - ${viewModel.otherNetwork}"
+                                        )
+                                    )
+                                } else {
+                                    communityList.add(
+                                        CommunitySummaryListItem.OtherItemText(
+                                            viewModel.networkName,
+                                            valueList
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
