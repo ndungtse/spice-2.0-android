@@ -484,4 +484,6 @@ interface RoomHelper {
     suspend fun updateTBContactTraceStatus(hhmId: Long, tbContactTracingStatus: Int)
 
     suspend fun updatePregnantStatus(memberId: Long, isPregnant: Boolean)
+
+    suspend fun getSymptomListByTypes(types: List<String>): List<SignsAndSymptomsEntity>
 }

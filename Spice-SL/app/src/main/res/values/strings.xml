@@ -1440,4 +1440,5 @@
     <string name="three_zero" translatable="false">000</string>
     <string name="visited" translatable="false">Visited</string>
     <string name="not_visited" translatable="false">Not Visited</string>
+    <string name="default_user_input_error_date" translatable="false">Please enter a valid date</string>
 </resources>

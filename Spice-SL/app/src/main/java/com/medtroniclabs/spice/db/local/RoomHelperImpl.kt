@@ -1265,4 +1265,8 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun updatePregnantStatus(memberId: Long, isPregnant: Boolean) {
         return memberDAO.updatePregnantStatus(memberId, isPregnant, syncStatus = OfflineSyncStatus.NotSynced.name)
     }
+
+    override suspend fun getSymptomListByTypes(types: List<String>): List<SignsAndSymptomsEntity> {
+        return assessmentDAO.getSymptomListByTypes(types)
+    }
 }

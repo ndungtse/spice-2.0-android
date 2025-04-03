@@ -242,7 +242,8 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             showLoading()
             viewModel.patientReference=details.id
             viewModel.getMedicalReviewHistoryPNC(patientId = details.id)
-            val referralTicketFragment = ReferralTicketFragment.newInstance(details.id)
+            val referralTicketFragment =
+                ReferralTicketFragment.newInstance(details.id, details.memberId)
             addFragmentIfAbsent(
                 R.id.cardReferralTicket,
                 ReferralTicketFragment.TAG,

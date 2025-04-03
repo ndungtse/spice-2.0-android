@@ -157,7 +157,7 @@
                         style="@style/TextStyle_Error_14"
                         android:paddingHorizontal="@dimen/_16sdp"
                         android:paddingVertical="@dimen/_8sdp"
-                        android:text="@string/default_user_input_error"
+                        android:text="@string/default_user_input_error_date"
                         android:visibility="gone"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/etRegisteredDate" />

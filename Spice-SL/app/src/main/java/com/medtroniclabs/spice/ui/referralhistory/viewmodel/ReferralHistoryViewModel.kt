@@ -42,7 +42,7 @@ class ReferralHistoryViewModel @Inject constructor(
     var investigationTicketId: String? = null
     var medicalTicketId: String? = null
     var patientReference:String?=null
-
+    var memberId:String?=null
 
     fun getReferralTicket(patientId: String? = null, ticketId: String? = null) {
         viewModelScope.launch(dispatcherIO) {
@@ -52,7 +52,8 @@ class ReferralHistoryViewModel @Inject constructor(
                     ReferralDetailRequest(
                         patientId = patientId,
                         ticketId = ticketId,
-                        type = MedicalReviewTypeEnums.medicalReview.name
+                        type = MedicalReviewTypeEnums.medicalReview.name,
+                        memberId = memberId
                     )
                 )
             )
@@ -85,7 +86,8 @@ class ReferralHistoryViewModel @Inject constructor(
                 )
             )
         }
-    }fun getMedicalReviewHistoryPNC(patientId: String? = null, medicalTicketId: String? = null) {
+    }
+    fun getMedicalReviewHistoryPNC(patientId: String? = null, medicalTicketId: String? = null) {
         viewModelScope.launch(dispatcherIO) {
             medicalReviewTicketLiveDataPNC.postLoading()
             medicalReviewTicketLiveDataPNC.postValue(

@@ -54,10 +54,11 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
             return ReferralTicketFragment()
         }
 
-        fun newInstance(patientId: String?): ReferralTicketFragment {
+        fun newInstance(patientId: String?, memberId: String?): ReferralTicketFragment {
             val fragment = ReferralTicketFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.FhirId, patientId)
+            bundle.putString(DefinedParams.MemberID, memberId)
             fragment.arguments = bundle
             return fragment
         }
@@ -73,25 +74,24 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
         return arguments?.getString(DefinedParams.FhirId, "")
     }
 
+    private fun getMemberId(): String? {
+        return arguments?.getString(DefinedParams.MemberID, "")
+    }
     private fun getInitialReferralTickets() {
-        getPatientId()?.takeIf { it.isNotBlank() }
-            ?.let { viewModel.getReferralTicket(patientId = it) }
+        viewModel.getReferralTicket(patientId = getPatientId())
     }
     private fun initView() {
-        if (getPatientId().isNullOrBlank()) {
-            binding.tvNoHistory.visible()
-            binding.llHistoryAction.ivNext.gone()
-            binding.llHistoryAction.ivPrevious.gone()
-            binding.llHistoryAction.ivReload.gone()
-        } else {
-            binding.tvNoHistory.gone()
-            adapters = ReferralHistoryAdapter()
-            viewModel.ticketId = null
-            getInitialReferralTickets()
-            setupClickListeners()
-            binding.retryButtonBp.safeClickListener(this)
-            setupPopupWindow()
-        }
+        viewModel.memberId = getMemberId()
+        binding.tvNoHistory.visible()
+        binding.llHistoryAction.ivNext.gone()
+        binding.llHistoryAction.ivPrevious.gone()
+        binding.llHistoryAction.ivReload.gone()
+        adapters = ReferralHistoryAdapter()
+        viewModel.ticketId = null
+        getInitialReferralTickets()
+        setupClickListeners()
+        binding.retryButtonBp.safeClickListener(this)
+        setupPopupWindow()
     }
 
     private fun setupPopupWindow() {
@@ -330,13 +330,10 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
     private fun handleRetry() {
         if (connectivityManager.isNetworkAvailable()) {
             if (!viewModel.ticketId.isNullOrBlank()) {
-                getPatientId()?.takeIf { it.isNotBlank() }
-                    ?.let {
-                        viewModel.getReferralTicket(
-                            patientId = it,
-                            ticketId = viewModel.ticketId
-                        )
-                    }
+                viewModel.getReferralTicket(
+                    patientId = getPatientId(),
+                    ticketId = viewModel.ticketId
+                )
             } else {
                 getInitialReferralTickets()
             }

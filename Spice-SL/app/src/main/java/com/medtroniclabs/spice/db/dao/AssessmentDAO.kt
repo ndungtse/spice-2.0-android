@@ -81,4 +81,7 @@ interface AssessmentDAO {
     @Query("SELECT * FROM ASSESSMENT WHERE id = :assessmentId")
     suspend fun getAssessment(assessmentId: Long): AssessmentEntity
 
+    @Query("SELECT * FROM SymptomEntity WHERE LOWER(type) IN (:types) GROUP BY value ORDER BY CASE WHEN value = 'other' THEN 1 ELSE 0 END, display_order")
+    suspend fun getSymptomListByTypes(types: List<String>): List<SignsAndSymptomsEntity>
+
 }

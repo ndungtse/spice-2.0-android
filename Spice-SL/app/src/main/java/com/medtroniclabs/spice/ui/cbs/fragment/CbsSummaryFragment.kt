@@ -273,7 +273,7 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
                 isCallShown = true,
                 countryCode = phoneCode
             )
-            val organizations = viewModel.userProfileLiveData.value?.data?.organizations
+            val organizations = viewModel.patientHealthFacility.value?.data
             val linkedPHU = organizations?.takeIf { it.isNotEmpty() }
                 ?.joinToString(", ") { it.name }
                 ?: getString(R.string.hyphen_symbol)

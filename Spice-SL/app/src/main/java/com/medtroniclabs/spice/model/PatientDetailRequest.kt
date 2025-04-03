@@ -18,5 +18,6 @@ data class ReferralDetailRequest(
     val ticketId:String? = null,
     val encounterId:String? = null,
     val type:String? = null,
-    val requestFrom: String? = CommonUtils.requestFrom()
+    val requestFrom: String? = CommonUtils.requestFrom(),
+    val memberId: String? = null,
 )

@@ -126,6 +126,10 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                         viewModel.assessmentStringLiveData.value?.let { result ->
                             createSummaryViewCbs(createListSummaryData(result))
                         }
+                        viewModel.memberDetailsLiveData.value?.data?.villageId
+                            ?.takeIf { it.isNotBlank() }
+                            ?.toLongOrNull()
+                            ?.let(viewModel::getHealthFacilityBasedOnVillageId)
                     }
                 }
 
@@ -154,6 +158,13 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun setEmergencyPHUPhoneNumber() {
+        val organizations = viewModel.patientHealthFacility.value?.data
+        val linkedPHU = organizations?.takeIf { it.isNotEmpty() }
+            ?.joinToString(", ") { it.name }
+            ?: getString(R.string.hyphen_symbol)
+        bindSummaryView(getString(R.string.linked_phu), linkedPHU, forCbs = true)
+
+
         val phoneCode =
             SecuredPreference.getPhoneNumberCode()?.let { if (it.startsWith("+")) it else "+$it" }
         val phoneNumber = viewModel.patientHealthFacility.value?.data
@@ -249,11 +260,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             forCbs = true,
             countryCode = phoneCode
         )
-        val organizations = viewModel.userProfileLiveData.value?.data?.organizations
-        val linkedPHU = organizations?.takeIf { it.isNotEmpty() }
-            ?.joinToString(", ") { it.name }
-            ?: getString(R.string.hyphen_symbol)
-        bindSummaryView(getString(R.string.linked_phu), linkedPHU,forCbs = true)
     }
 
 
@@ -353,10 +359,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 if (hasCbsCondition) {
                     isCbs = true
                     viewModel.getUserProfile()
-                    viewModel.memberDetailsLiveData.value?.data?.villageId
-                        ?.takeIf { it.isNotBlank() }
-                        ?.toLongOrNull()
-                        ?.let(viewModel::getHealthFacilityBasedOnVillageId)
                     binding.cbsResultCardView.visible()
                 }
                 updateStatusBar(isCbs)

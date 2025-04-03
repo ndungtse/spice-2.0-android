@@ -1318,4 +1318,10 @@ class AssessmentViewModel @Inject constructor(
             memberRegistrationRepository.updatePregnantStatus(memberId, isPregnant)
         }
     }
+
+    fun getSymptomListByTypes(types: List<String>) {
+        viewModelScope.launch(dispatcherIO) {
+            symptomTypeListResponse.postValue(assessmentRepository.getSymptomListByTypes(types))
+        }
+    }
 }

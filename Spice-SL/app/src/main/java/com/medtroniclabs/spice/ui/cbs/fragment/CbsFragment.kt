@@ -10,6 +10,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ANC_CBS
 import com.medtroniclabs.spice.common.DefinedParams.AssessmentId
@@ -235,6 +236,16 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         }
     }
 
+    private fun cbsIsPatientAgeAboveFiveYear(dob: String?): Boolean {
+        if (dob.isNullOrBlank()) return false
+        val age = DateUtils.getV2YearMonthAndWeek(dob)
+        return when {
+            age.years > 5 -> false
+            age.years == 5 && (age.months > 0 || age.weeks > 0 || age.days > 0) -> false
+            else -> true
+        }
+    }
+
     private fun getFormDataForWorkflow() {
         val workflowName = requireArguments().getString(MenuConstants.WorkFlowName)
         val memberData = viewModel.memberDetailsLiveData.value?.data
@@ -291,9 +302,25 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         } else {
             listOf()
         }
-        CheckBoxDialog.newInstance(id, resultMap, autoPopulate = value, title = getString(R.string.notifiable_conditions)) { map ->
-            formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
-        }.show(childFragmentManager, CheckBoxDialog.TAG)
+        if (cbsIsPatientAgeAboveFiveYear(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth)) {
+            CbsCheckBoxDialog.newInstance(
+                id,
+                resultMap,
+                autoPopulate = value,
+                title = getString(R.string.notifiable_conditions)
+            ) { map ->
+                formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
+            }.show(childFragmentManager, CheckBoxDialog.TAG)
+        } else {
+            CheckBoxDialog.newInstance(
+                id,
+                resultMap,
+                autoPopulate = value,
+                title = getString(R.string.notifiable_conditions)
+            ) { map ->
+                formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
+            }.show(childFragmentManager, CheckBoxDialog.TAG)
+        }
     }
 
     override fun onInstructionClicked(

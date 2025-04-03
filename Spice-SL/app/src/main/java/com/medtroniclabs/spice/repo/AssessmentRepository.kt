@@ -390,4 +390,14 @@ class AssessmentRepository @Inject constructor(
     suspend fun createAssessmentNCD(request: JsonObject) = apiHelper.createAssessmentNCD(request)
     suspend fun getMentalQuestion(type: String): MentalHealthEntity =
         roomHelper.getModelQuestions(type)
+
+    suspend fun getSymptomListByTypes(
+        types: List<String>,
+    ): List<SignsAndSymptomsEntity> {
+        return try {
+            roomHelper.getSymptomListByTypes(types)
+        } catch (_: Exception) {
+            listOf()
+        }
+    }
 }
