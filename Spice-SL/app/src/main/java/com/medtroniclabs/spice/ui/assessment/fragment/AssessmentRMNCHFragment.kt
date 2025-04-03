@@ -147,7 +147,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         }
 
         viewModel.memberDetailsLiveData.observe(viewLifecycleOwner) { resource ->
-            when(resource.state) {
+            when (resource.state) {
                 ResourceState.LOADING -> {}
                 ResourceState.SUCCESS -> {
                     if (viewModel.workflowName == RMNCH.PNC) {
@@ -156,6 +156,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                         }
                     }
                 }
+
                 ResourceState.ERROR -> {}
             }
         }
@@ -196,16 +197,19 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 }
             }
         }
-        viewModel.isAssessmentCancelLiveData.observe(viewLifecycleOwner){
-            if (it){
+        viewModel.isAssessmentCancelLiveData.observe(viewLifecycleOwner) {
+            if (it) {
                 formGenerator.getViewByTag(MUAC)?.apply {
                     val background = background as? GradientDrawable
-                    background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), context.getColor( R.color.edittext_stroke))
+                    background?.setStroke(
+                        resources.getDimensionPixelSize(R.dimen._1sdp),
+                        context.getColor(R.color.edittext_stroke)
+                    )
                 }
             }
         }
     }
-    
+
     private fun initView() {
         replaceFragmentInId<BioDataFragment>(
             binding.bioDataFragmentContainer.id,
@@ -231,7 +235,8 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                                                 isMandatory = (visible == VISIBLE)
                                                 isSummary = (visible == VISIBLE)
                                                 if ((visible == VISIBLE)) {
-                                                    formGenerator.getViewByTag(MUAC + rootSuffix)?.visible()
+                                                    formGenerator.getViewByTag(MUAC + rootSuffix)
+                                                        ?.visible()
                                                     (formGenerator.getViewByTag(MUAC + formGenerator.titleSuffix) as? TextView)?.let { textView ->
                                                         val text = textView.text.toString()
                                                         if (!text.endsWith("*")) {
@@ -282,7 +287,8 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
             binding.btnSubmit.id -> {
                 withLocationCheck({
                     viewModel.fetchCurrentLocation(requireContext())
-                    formGenerator.formSubmitAction(v) })
+                    formGenerator.formSubmitAction(v)
+                })
             }
         }
     }
@@ -323,7 +329,11 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { details ->
-            viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
+            if (viewModel.workflowName == RMNCH.PNC) {
+                viewModel.setUserJourney(AnalyticsDefinedParams.NEXTBUTTONTRIGGERED)
+            } else {
+                viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
+            }
             val result = serverData?.let {
                 FormResultComposer().groupValues(
                     context = requireContext(),
@@ -361,7 +371,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 RMNCH.PNC -> {
                     if (shouldHideNeonateFlow()) {
                         proceedChildDeadFlow(second)
-                    }  else {
+                    } else {
                         viewModel.pncMotherDetailMap = second
                         (requireActivity() as AssessmentActivity).replaceAssessmentRMNCHNeonateFragment()
                     }
@@ -409,7 +419,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 null
             )
             viewModel.savePNCDetails(
-                motherDetailMap =  second,
+                motherDetailMap = second,
                 memberDetail = memberDetail,
                 childMemberId = childDetails?.id ?: 0,
                 childFhirId = childDetails?.fhirId,
@@ -577,11 +587,11 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         }
 
         if (shouldHideNeonateFlow()) {
-            viewModel.isDeathOfNewborn=true
+            viewModel.isDeathOfNewborn = true
             if (viewModel.workflowName == RMNCH.PNC) {
-            formGenerator.getViewByTag(ExclusivelyBreastfeeding + rootSuffix)?.apply {
-                visibility = View.GONE
-            }
+                formGenerator.getViewByTag(ExclusivelyBreastfeeding + rootSuffix)?.apply {
+                    visibility = View.GONE
+                }
             }
             binding.btnSubmit.text = getString(R.string.submit)
         } else {
@@ -612,7 +622,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                         val background = background as? GradientDrawable
                         background?.setStroke(
                             resources.getDimensionPixelSize(R.dimen._4sdp),
-                            getMuacColorCode(selectedId as String, requireContext())
+                            getMuacColorCode(selectedId, requireContext())
                         )
                     }
                 } else {
@@ -630,7 +640,8 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
             DeathOfMother -> {
                 val visitCount = viewModel.memberClinicalLiveData.value?.visitCount ?: 0
                 val lmb = viewModel.memberClinicalLiveData.value?.clinicalDate
-                val lmpView = formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
+                val lmpView =
+                    formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
                 if (visitCount >= 1 && selectedId == false) {
                     lmpView?.gone()
                 } else if (visitCount <= 1 && selectedId == false && lmb.isNullOrBlank()) {
@@ -703,22 +714,23 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 }
             }
         }
+    }
+
+    private fun hideUnder5Months() {
+        formGenerator.getViewByTag(TakingMinimumMealsPerDay + rootSuffix)?.apply {
+            visibility = View.GONE
         }
-        private fun hideUnder5Months() {
-            formGenerator.getViewByTag(TakingMinimumMealsPerDay + rootSuffix)?.apply {
-                visibility = View.GONE
-            }
-            formGenerator.getViewByTag(FedFrom4FoodGroups + rootSuffix)?.apply {
-                visibility = View.GONE
-            }
-            formGenerator.getViewByTag(Measles1Given + rootSuffix)?.apply {
-                visibility = View.GONE
-            }
-            formGenerator.getViewByTag(YellowFeverVacineGiven + rootSuffix)?.apply {
-                visibility = View.GONE
-            }
-            formGenerator.getViewByTag(Measles2Given + rootSuffix)?.apply {
-                visibility = View.GONE
-            }
+        formGenerator.getViewByTag(FedFrom4FoodGroups + rootSuffix)?.apply {
+            visibility = View.GONE
         }
+        formGenerator.getViewByTag(Measles1Given + rootSuffix)?.apply {
+            visibility = View.GONE
+        }
+        formGenerator.getViewByTag(YellowFeverVacineGiven + rootSuffix)?.apply {
+            visibility = View.GONE
+        }
+        formGenerator.getViewByTag(Measles2Given + rootSuffix)?.apply {
+            visibility = View.GONE
+        }
+    }
 }

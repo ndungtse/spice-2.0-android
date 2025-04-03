@@ -21,7 +21,11 @@ import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_ID
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_NAME
+<<<<<<< HEAD
 import com.medtroniclabs.spice.common.DefinedParams.Other
+=======
+import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_REGISTERED
+>>>>>>> 389a2cfef (Feature: Improvements for Follow-up User Journey.)
 import com.medtroniclabs.spice.common.DefinedParams.Value
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
@@ -308,7 +312,11 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
 
     override fun onResume() {
         super.onResume()
-        communityProfileViewModel.setUserJourney(AnalyticsDefinedParams.COMMUNITYPROFILEEDITSCREEN)
+        if (arguments?.getBoolean(COMMUNITY_REGISTERED,false) == true) {
+            communityProfileViewModel.setUserJourney(AnalyticsDefinedParams.COMMUNITYPROFILEEDITSCREEN)
+        }else{
+            communityProfileViewModel.setUserJourney(AnalyticsDefinedParams.COMMUNITYPROFILEREGISTERSCREEN)
+        }
     }
 
     override fun onClick(view: View?) {

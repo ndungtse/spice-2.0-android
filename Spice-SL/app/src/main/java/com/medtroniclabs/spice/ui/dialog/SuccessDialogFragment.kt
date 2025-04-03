@@ -109,7 +109,7 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
     override fun onClick(view: View) {
         when(view.id){
             binding.btnDone.id -> {
-                viewModel.setUserJourney(AnalyticsDefinedParams.DONEBUTTONTRIGGERED)
+                viewModel.setUserJourney(AnalyticsDefinedParams.OKAYBUTTONTRIGGERED)
                 if (arguments?.getBoolean(isPhuWalkInsFlow)==true) {
                     val intent= Intent(requireContext(),PhuWalkInsActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK

@@ -421,6 +421,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                         ?.get(birth) as? String
                     if (!birth.isNullOrBlank() && !birth.equals(DefinedParams.still_birth,true)) {
                         viewModel.setBirth(resultValue, referralResult, birth, isDelete,viewModel.memberDetailsLiveData.value?.data?.id)
+                        viewModel.setUserJourney(AnalyticsDefinedParams.NEXTBUTTONTRIGGERED)
                         return
                     }
                     if (!birth.isNullOrBlank() && birth.equals(DefinedParams.still_birth, true)) {

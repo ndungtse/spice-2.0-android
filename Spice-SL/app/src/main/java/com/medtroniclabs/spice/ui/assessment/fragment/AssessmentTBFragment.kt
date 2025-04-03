@@ -191,6 +191,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                                 tbContactTracingStatus = Contact_Trace_Updated
                             )
                         }
+                        viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                         viewModel.saveAssessment(it, referralResult, viewModel.menuId)
                     }
                 }

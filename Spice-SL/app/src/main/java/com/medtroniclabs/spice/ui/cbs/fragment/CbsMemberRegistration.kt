@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -53,6 +54,7 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
     }
 
     private fun initView() {
+        viewModel.setUserJourney("${AnalyticsDefinedParams.CBS} ${AnalyticsDefinedParams.MemberRegistration}")
         binding.btnSubmit.gone()
         binding.btnStartAssessment.safeClickListener(this)
         binding.btnStartAssessment.text = getString(R.string.submit)

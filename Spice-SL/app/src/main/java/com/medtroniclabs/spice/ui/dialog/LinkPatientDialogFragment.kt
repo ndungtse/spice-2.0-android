@@ -82,6 +82,7 @@ class LinkPatientDialogFragment : DialogFragment(), View.OnClickListener {
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnLink.id -> {
+                householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.LINKPATIENT)
                 val intent = Intent(requireActivity(), HouseholdActivity::class.java)
                 intent.putExtra(
                     HouseholdDefinedParams.isPhuWalkInsFlow,

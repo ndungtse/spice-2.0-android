@@ -314,6 +314,7 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
             DefinedParams.phu
         }
         value?.let {
+            viewModel.setUserJourney("$type  ${AnalyticsDefinedParams.CALLBUTTONTRIGGERED}")
             navToDial(it)
         }
     }

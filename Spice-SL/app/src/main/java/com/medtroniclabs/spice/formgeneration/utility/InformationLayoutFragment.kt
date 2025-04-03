@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.databinding.FragmentInformationLayoutBinding
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
@@ -24,9 +26,13 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSl
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rdtTest
+import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
     lateinit var binding : FragmentInformationLayoutBinding
+
+    private val viewModel: AssessmentViewModel by activityViewModels()
+
 
     companion object {
         const val TAG = "InformationLayoutFragment"
@@ -60,14 +66,22 @@ class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
 
     private fun initializeViews() {
         binding.tvTitle.text = arguments?.getString(DefinedParams.Title) ?: getString(R.string.instructions)
-        val informationListByType: ArrayList<InformationModel>? = when(arguments?.getString(ID)){
+        arguments?.getString(ID)?.let { informationType ->
+            viewModel.setUserJourney("$informationType  ${AnalyticsDefinedParams.INSTRUCTIONDIALOGUE}")
+        }
+        val informationListByType: ArrayList<InformationModel>? = when(arguments?.getString(ID)) {
             muacCode, MUAC-> InformationUtils().getMuacInformationListItem(requireContext())
             hasOedemaOfBothFeet -> InformationUtils().getOedemaInformationList(requireContext())
             chestInDrawing -> InformationUtils().getChestIndrawingInformation(requireContext())
-            isUnusualSleepy,isVomiting,isConvulsionPastFewDays,isBreastfeed->{InformationUtils().getDangerSignsInstructions(requireContext(),arguments?.getString(ID))
+            isUnusualSleepy,isVomiting,isConvulsionPastFewDays,isBreastfeed->{
+                InformationUtils().getDangerSignsInstructions(requireContext(),arguments?.getString(ID))
             }
-            rdtTest -> { InformationUtils().getRdtTest(requireContext()) }
-            Contraceptive -> { InformationUtils().getContraceptiveInformation(requireContext()) }
+            rdtTest -> {
+                InformationUtils().getRdtTest(requireContext())
+            }
+            Contraceptive -> {
+                InformationUtils().getContraceptiveInformation(requireContext())
+            }
             else -> null
         }
         binding.rvInfoList.apply {

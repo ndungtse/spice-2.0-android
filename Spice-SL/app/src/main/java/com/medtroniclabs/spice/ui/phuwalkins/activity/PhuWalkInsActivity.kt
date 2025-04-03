@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.LINKPATIENT
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREEN
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREENCALLBUTTON
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREENHOUSEHOLDLISTLINK
@@ -127,6 +128,7 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
 
     override fun onLinkClicked(patientLinkedDetails: Any) {
         if (patientLinkedDetails is UnAssignedHouseholdMemberDetail) {
+            viewModel.setUserJourney(LINKPATIENT)
             setTitle(getString(R.string.link_patient))
             viewModel.memberID = patientLinkedDetails.lMemberId.toLong()
             viewModel.fhirMemberID = patientLinkedDetails.memberId.toLong()

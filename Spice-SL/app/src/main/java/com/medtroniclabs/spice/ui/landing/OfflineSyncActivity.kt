@@ -11,6 +11,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.appextensions.workerUniqueName
@@ -60,6 +61,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
         binding.rvUnSyncedDetail.adapter = unSyncedCountAdapter
 
         binding.btnStart.setOnClickListener {
+            viewModel.setUserJourney(AnalyticsDefinedParams.STARTBUTTONTRIGGERED)
             if (isBackgroundSyncRunning) {
                 showErrorDialogue(
                     getString(R.string.alert),
@@ -74,18 +76,22 @@ class OfflineSyncActivity : SpiceRootActivity() {
         }
 
         binding.btnCancel.setOnClickListener {
+            viewModel.setUserJourney(AnalyticsDefinedParams.CANCELBUTTONTRIGGERED)
             finish()
         }
 
         binding.btnOkay.setOnClickListener {
             if (binding.btnOkay.text.toString() == getString(R.string.retry)) {
+                viewModel.setUserJourney(AnalyticsDefinedParams.RETRYBUTTONTRIGGERED)
                 val requestIds =
                     SecuredPreference.getStringArray(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
                 requestIds?.let {
                     initiateGetStatus(it)
                 }
-            } else
+            } else  {
+                viewModel.setUserJourney(AnalyticsDefinedParams.OKAYBUTTONTRIGGERED)
                 finish()
+            }
         }
     }
 

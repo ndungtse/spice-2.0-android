@@ -39,6 +39,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentRMNCHNeonateViewModel
@@ -510,7 +511,18 @@ class AssessmentActivity : BaseActivity() {
             viewModel.followUpId = null
 
         viewModel.workflowName?.let {
-            viewModel.setUserJourney(it.plus(getString(R.string.assessment)))
+            viewModel.setUserJourney(getUserJourneyName(it))
+        }
+    }
+
+    private fun getUserJourneyName(it: String): String {
+
+        return if (it == PNC) {
+            AnalyticsDefinedParams.PNCMOTHERASSESSMENT
+        }else if (it == ChildHoodVisit){
+            AnalyticsDefinedParams.RMNCHCHILDASSESSMENT
+        } else {
+            it.plus(getString(R.string.assessment))
         }
     }
 
