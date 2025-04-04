@@ -586,16 +586,20 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
             }
         }
 
-        if (shouldHideNeonateFlow()) {
-            viewModel.isDeathOfNewborn = true
-            if (viewModel.workflowName == RMNCH.PNC) {
-                formGenerator.getViewByTag(ExclusivelyBreastfeeding + rootSuffix)?.apply {
-                    visibility = View.GONE
+        if (viewModel.workflowName == RMNCH.PNC) {
+            if (shouldHideNeonateFlow()) {
+                viewModel.isDeathOfNewborn = true
+                if (viewModel.workflowName == RMNCH.PNC) {
+                    formGenerator.getViewByTag(ExclusivelyBreastfeeding + rootSuffix)?.apply {
+                        visibility = View.GONE
+                    }
                 }
+                binding.btnSubmit.text = getString(R.string.submit)
+            } else {
+                binding.btnSubmit.text = getString(R.string.next)
             }
-            binding.btnSubmit.text = getString(R.string.submit)
         } else {
-            binding.btnSubmit.text = getString(R.string.next)
+            binding.btnSubmit.text = getString(R.string.submit)
         }
     }
 
