@@ -48,15 +48,22 @@ class CommunityProfileRepository @Inject constructor(
         }
     }
 
-    suspend fun getNearestHealthFacility(): Resource<ArrayList<Map<String,Any>>> {
+    suspend fun getNearestHealthFacility(villageId: Long? = null): Resource<ArrayList<Map<String, Any>>> {
+        val villageEntity = villageId?.let {
+            roomHelper.getVillageByID(villageId)
+        }
         val healthFacilityList = roomHelper.getNearestHealthFacility()
+
         val dropDownList = ArrayList<Map<String, Any>>()
+
+
         for ((_, healthFacilityEntity) in healthFacilityList.withIndex()) {
             dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to healthFacilityEntity.name,
                     DefinedParams.id to healthFacilityEntity.fhirId.toString(),
-                    DefinedParams.isDefault to healthFacilityEntity.isDefault
+                    DefinedParams.isDefault to (villageEntity?.healthFacilityId?.let { it == healthFacilityEntity.id }
+                        ?: healthFacilityEntity.isDefault)
                 )
             )
         }

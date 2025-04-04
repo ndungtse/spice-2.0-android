@@ -95,10 +95,10 @@ class CommunityProfileViewModel @Inject constructor(
         }
     }
 
-    fun getNearestHealthFacility() {
+    fun getNearestHealthFacility(villageId: Long? = null) {
         viewModelScope.launch(dispatcherIO) {
             nearestHealthFacilityLiveData.postValue(
-                repository.getNearestHealthFacility()
+                repository.getNearestHealthFacility(villageId)
             )
         }
     }

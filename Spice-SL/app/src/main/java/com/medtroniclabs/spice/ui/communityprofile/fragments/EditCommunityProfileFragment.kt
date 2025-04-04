@@ -21,11 +21,8 @@ import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_ID
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_NAME
-<<<<<<< HEAD
 import com.medtroniclabs.spice.common.DefinedParams.Other
-=======
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_REGISTERED
->>>>>>> 389a2cfef (Feature: Improvements for Follow-up User Journey.)
 import com.medtroniclabs.spice.common.DefinedParams.Value
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
@@ -584,7 +581,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         communityProfileViewModel.selectedNetworks.clear()
         communityProfileViewModel.nearestPhu = ""
         communityProfileViewModel.otherNetwork = ""
-        communityProfileViewModel.getNearestHealthFacility()
+        communityProfileViewModel.getNearestHealthFacility(arguments?.getLong(COMMUNITY_ID))
         arguments?.getLong(COMMUNITY_ID)?.let { villageId ->
             communityProfileViewModel.getCommunityDetailsLocal(villageId)
         }
