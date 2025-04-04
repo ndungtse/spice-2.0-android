@@ -183,4 +183,12 @@ object AssessmentDefinedParams {
     const val CondomsStatus = "condomsStatus"
     const val Not_Available = "Not Available"
 
+    const val TBContactTracing = "contactTracing"
+    const val TBScreening = "tbScreening"
+    const val TBRxBuddyRegister = "rxBuddy"
+    const val TBRxBuddyFollowUp = "rxBuddyFollowUp"
+
+
+
+
 }

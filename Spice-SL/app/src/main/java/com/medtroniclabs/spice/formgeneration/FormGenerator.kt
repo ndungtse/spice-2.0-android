@@ -81,7 +81,6 @@ import com.medtroniclabs.spice.databinding.RadioGroupLayoutBinding
 import com.medtroniclabs.spice.databinding.TextLabelLayoutBinding
 import com.medtroniclabs.spice.databinding.TimeViewLayoutBinding
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
-import com.medtroniclabs.spice.db.entity.RxBuddyDetails
 import com.medtroniclabs.spice.formgeneration.FormSupport.getSpannableString
 import com.medtroniclabs.spice.formgeneration.FormSupport.isTranslatedOrNot
 import com.medtroniclabs.spice.formgeneration.FormSupport.translateTitle
@@ -228,36 +227,22 @@ class FormGenerator(
             binding.tvTitle.tag = id + titleSuffix
 
             binding.etUserInputHolder.safeClickListener {
-                val inputText = binding.etUserInput.text.toString()
-
-                // Extract previously selected dates
-                val initialSelectedDates = inputText.split(", ")
-                    .mapNotNull { dateString ->
-                        try {
-                            DateUtils.getDatePatternddMMyyyy().parse(dateString)?.time
-                        } catch (e: java.text.ParseException) {
-                            null
-                        }
-                    }
+                val dates = if (resultHashMap.containsKey(id)) resultHashMap[id] as List<Long> else listOf()
 
                 // Open MultiSelectDatePickerDialog with previously selected dates
                 MultiSelectDatePickerDialog(
                     context = context,
-                    initialSelectedDates = initialSelectedDates,
+                    initialSelectedDates = dates,
                     onDateSelected = { selectedDates ->
-                        val dateStrings = selectedDates.map { date ->
+                       /* val dateStrings = selectedDates.map { date ->
                             DateUtils.getDateDDMMYYYY().format(Date(date))
-                        }
-                        binding.etUserInput.text = dateStrings.joinToString(", ")
+                        }*/
+
+                        val displayString = if (selectedDates.size > 1) "Days selected" else "Day selected"
+                        binding.etUserInput.text = "${selectedDates.size} $displayString"
 
                         // Update resultHashMap
-                        resultHashMap[id] = selectedDates.joinToString(",") { date ->
-                            DateUtils.getDateString(
-                                date,
-                                inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
-                                outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                            )
-                        }
+                        resultHashMap[id] = selectedDates
 
                         // Trigger callback
                         callback?.invoke(resultHashMap, id)

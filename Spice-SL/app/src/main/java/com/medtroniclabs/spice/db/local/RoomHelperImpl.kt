@@ -22,6 +22,8 @@ import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberCallRegisterDto
+import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyFollowUpDetails
+import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyRegisterDetail
 import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
@@ -58,6 +60,7 @@ import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.DosageDurationEntity
+import com.medtroniclabs.spice.db.entity.EntitiesName
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
 import com.medtroniclabs.spice.db.entity.FormEntity
@@ -340,10 +343,26 @@ class RoomHelperImpl @Inject constructor(
         fhirId: String?,
         status: String
     ) {
-        val updatedAt = System.currentTimeMillis()
-        val query =
-            "UPDATE $tableName SET fhir_id = ?, updated_at = ?, sync_status = CASE WHEN sync_status = 'InProgress' THEN ? WHEN sync_status = 'NetworkError' THEN ? ELSE sync_status END WHERE id = ?"
-        householdDAO.updateFhirId(SimpleSQLiteQuery(query, arrayOf(fhirId, updatedAt, status, status, id)))
+        when (tableName) {
+            EntitiesName.RX_BUDDY -> {
+                fhirId?.let {
+                    rxBuddyDetailsDAO.updateRxBuddyId(id = id.toLong(), rxBuddyId = it.toLong())
+                    rxBuddyFollowUpDAO.updateRxBuddyId(id = id.toLong(), rxBuddyId = it.toLong())
+                }
+            }
+
+            else -> {
+                val updatedAt = System.currentTimeMillis()
+                val query =
+                    "UPDATE $tableName SET fhir_id = ?, updated_at = ?, sync_status = CASE WHEN sync_status = 'InProgress' THEN ? WHEN sync_status = 'NetworkError' THEN ? ELSE sync_status END WHERE id = ?"
+                householdDAO.updateFhirId(
+                    SimpleSQLiteQuery(
+                        query,
+                        arrayOf(fhirId, updatedAt, status, status, id)
+                    )
+                )
+            }
+        }
     }
 
     override fun getFilteredHouseholdsLiveData(
@@ -727,6 +746,7 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun updateMemberDeceasedStatus(id: Long, status: Boolean) {
         memberDAO.updateMemberDeceasedStatus(id, status, OfflineSyncStatus.NotSynced)
+        rxBuddyDetailsDAO.updateRxBuddyStatus(id, status)
     }
 
     override suspend fun saveForm(forms: FormEntity) {
@@ -1218,6 +1238,7 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun updateMemberDeceasedReason(id: Long, status: Boolean,deceasedReason: String?) {
         memberDAO.updateMemberDeceasedReason(id, status, OfflineSyncStatus.NotSynced,deceasedReason)
+        rxBuddyDetailsDAO.updateRxBuddyStatus(id, status)
     }
 
     override suspend fun getHouseholdHeadDob(householdId: Long): String {
@@ -1307,7 +1328,7 @@ class RoomHelperImpl @Inject constructor(
         return treatmentDetailsDAO.updateTreatmentDetails(treatmentDetails)
     }
 
-    override suspend fun getTreatmentDetails(memberId: Long): TreatmentDetailsEntity? {
+    override suspend fun getTreatmentDetails(memberId: String): TreatmentDetailsEntity? {
         return treatmentDetailsDAO.getTreatmentDetailsByMemberId(memberId)
     }
 
@@ -1316,4 +1337,60 @@ class RoomHelperImpl @Inject constructor(
     }
 
 
+
+    override suspend fun getAllUnSyncedRxBuddyRegister(): List<RxBuddyRegisterDetail> {
+        return rxBuddyDetailsDAO.getAllUnSyncedRxBuddyRegister()
+    }
+
+    override suspend fun getHouseholdMemberForRxBuddy(hhmId: Long): HouseHoldMember {
+        return memberDAO.getHouseholdMemberForRxBuddy(hhmId)
+    }
+
+    override suspend fun getUnSyncedRxBuddyFollowUpWithoutRxBuddyId(rxBuddyLocalId: Long): List<RxBuddyFollowUpEntity> {
+        return rxBuddyFollowUpDAO.getUnSyncedRxBuddyFollowUpWithoutRxBuddyId(rxBuddyLocalId)
+    }
+
+    override suspend fun getUnSyncedRxBuddyFollowUpWithRxBuddyId(): List<RxBuddyFollowUpDetails> {
+        return rxBuddyFollowUpDAO.getUnSyncedRxBuddyFollowUpWithRxBuddyId()
+    }
+
+    override suspend fun updateNextVisitDateRxBuddyRegister(nextVisitDate: String, id: Long) {
+        rxBuddyDetailsDAO.updateNextVisitDate(id, nextVisitDate)
+    }
+
+    override suspend fun updateNextVisitDateRxBuddyFollowUp(nextVisitDate: String, id: Long) {
+        rxBuddyFollowUpDAO.updateNextVisitDate(id, nextVisitDate)
+    }
+
+    override suspend fun insertOrUpdateRxBuddyFromBE(entity: RxBuddyDetails): Long {
+        return rxBuddyDetailsDAO.insertOrUpdateFromBE(entity)
+    }
+
+    override suspend fun deleteAllTreatmentDetails() {
+        treatmentDetailsDAO.deleteAllTreatmentDetails()
+    }
+
+    override suspend fun deleteAllRxBuddyDetails() {
+        rxBuddyDetailsDAO.deleteAllRxBuddyDetails()
+    }
+
+    override suspend fun deleteAllRxBuddyFollowUp() {
+        rxBuddyFollowUpDAO.deleteAllRxBuddyFollowUp()
+    }
+
+    override suspend fun getUnSyncedRxBuddyRegisterCount(): Int {
+        return rxBuddyDetailsDAO.getUnSyncedCount()
+    }
+
+    override suspend fun getUnSyncedRxBuddyFollowUpCount(): Int {
+        return rxBuddyFollowUpDAO.getUnSyncedCount()
+    }
+
+    override suspend fun updateRxBuddyRegisterSyncStatus(idList: List<Long>, syncStatus: String) {
+        rxBuddyDetailsDAO.updateSyncStatus(idList, syncStatus)
+    }
+
+    override suspend fun updateRxBuddyFollowUpSyncStatus(idList: List<Long>, syncStatus: String) {
+        rxBuddyFollowUpDAO.updateSyncStatus(idList, syncStatus)
+    }
 }

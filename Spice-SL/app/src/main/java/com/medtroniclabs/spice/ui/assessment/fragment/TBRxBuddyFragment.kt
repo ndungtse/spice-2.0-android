@@ -6,12 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.FragmentTBTreatmentBinding
 import com.medtroniclabs.spice.db.entity.RxBuddyDetails
-import com.medtroniclabs.spice.db.entity.TreatmentDetailsEntity
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
-import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -39,28 +37,43 @@ class TBRxBuddyFragment : BaseFragment() {
 
     private fun initView() {
         binding.treatmentCardTitle.text = getString(R.string.rx_buddy_details)
-        createSummaryView(createTreatmentSummaryData())
+        viewModel.rxBuddyDetailsLiveData.observe(viewLifecycleOwner) {
+            createSummaryView(createTreatmentSummaryData(it))
+        }
     }
 
-    private fun createTreatmentSummaryData(): List<AssessmentSummaryModel>? {
-        return mutableListOf(
-            AssessmentSummaryModel(
-                title = getString(R.string.rx_buddy_name),
-                value = checkNullValue(arguments?.getString(DefinedParams.RxBuddyName))
-            ),
-            AssessmentSummaryModel(
-                title = getString(R.string.relation_ship_with_patient),
-                value = checkNullValue(arguments?.getString(DefinedParams.RxRelationShip))
-            ),
-            AssessmentSummaryModel(
-                title = getString(R.string.contact_no),
-                value = checkNullValue(arguments?.getString(DefinedParams.RxPhoneNo))
-            ),
+    private fun createTreatmentSummaryData(rxBuddyDetails: RxBuddyDetails): List<AssessmentSummaryModel>? {
+        val list = mutableListOf<AssessmentSummaryModel>()
+        list.add(AssessmentSummaryModel(
+            title = getString(R.string.rx_buddy_name),
+            value = checkNullValue(rxBuddyDetails.name)
+        ))
+
+        list.add(AssessmentSummaryModel(
+            title = getString(R.string.relation_ship_with_patient),
+            value = checkNullValue(rxBuddyDetails.relationship)
+        ))
+
+        rxBuddyDetails.otherRelationship?.let {
+            list.add(AssessmentSummaryModel(
+                title = getString(R.string.other_relationship),
+                value = checkNullValue(it)
+            ))
+        }
+
+        list.add(AssessmentSummaryModel(
+            title = getString(R.string.contact_no),
+            value = checkNullValue("+${SecuredPreference.getPhoneNumberCode()} ${rxBuddyDetails.phoneNumber}")
+        ))
+
+        list.add(
             AssessmentSummaryModel(
                 title = getString(R.string.rx_buddy_monitoring_sheet_provided),
-                value = capitalizeYesNo(arguments?.getBoolean(DefinedParams.RxMonitoringSheetProvided).toString())
+                value = capitalizeYesNo(rxBuddyDetails.isMonitorSheetProvider)
             )
         )
+
+        return list
     }
 
     private fun createSummaryView(
@@ -102,8 +115,8 @@ class TBRxBuddyFragment : BaseFragment() {
         return input ?: "-"
     }
 
-    private fun capitalizeYesNo(value: String): String {
-        return value.lowercase().replaceFirstChar { it.uppercase() }
+    private fun capitalizeYesNo(value: Boolean): String {
+        return if (value) getString(R.string.yes) else getString(R.string.no)
     }
 
     companion object{

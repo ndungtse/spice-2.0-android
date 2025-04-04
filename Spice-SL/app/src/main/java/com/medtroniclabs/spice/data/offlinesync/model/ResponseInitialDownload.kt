@@ -13,5 +13,7 @@ data class ResponseInitialDownload(
     val followUpCriteria: FollowUpCriteria?,
     val householdMemberLinks: List<LinkHouseholdMember>?,
     val communityProfiles: List<JsonObject>?,
+    val treatmentDetails: List<TreatmentDetails>?,
+    val rxBuddies: List<ResponseRxBuddy>?,
     val lastSyncTime: String,
 )

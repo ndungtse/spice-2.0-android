@@ -9,8 +9,11 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.getLocalDate
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -19,14 +22,20 @@ import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentAssessmentTBSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.mappingkey.RxBuddy
+import com.medtroniclabs.spice.mappingkey.RxBuddy.rxBuddyMonitoringDates
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.MenuConstants.TB_MENU_ID
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getValueOfKeyFromMap
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NextFollowupDate
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBRxBuddyFollowUp
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
+
     private val viewModel: AssessmentViewModel by activityViewModels()
     lateinit var binding: FragmentAssessmentTBSummaryBinding
     private var datePickerDialog: DatePickerDialog? = null
@@ -68,7 +77,9 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
             binding.emptyErrorMessage.visibility = View.GONE
             binding.parentLayout.visibility = View.VISIBLE
             binding.parentLayout.removeAllViews()
-            createSummaryViewForFollowUp(viewModel.rxBuddyFollowUpResultHashMap)
+            viewModel.assessmentStringLiveData.value?.let {
+                createSummaryView(createTBListSummaryData(it))
+            }
         }else {
             viewModel.assessmentStringLiveData.value?.let {
                 createSummaryView(createTBListSummaryData(it))
@@ -76,29 +87,11 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun createSummaryViewForFollowUp(rxBuddyFollowUpResult: HashMap<String, Any>) {
-        rxBuddyFollowUpResult.forEach{(key,value) ->
-            when(key) {
-                DefinedParams.MonitoringSheetDate -> bindTbSummaryView(
-                    getString(R.string.rx_buddy_monitoring_sheet),
-                    value.toString()
-                )
-                DefinedParams.SymptomsFollowUp -> bindTbSummaryView(
-                    getString(R.string.any_of_your_symptoms_getting_worse),
-                    value.toString()
-                )
-                DefinedParams.MedicationFollowUp -> bindTbSummaryView(
-                    getString(R.string.have_you_had_a_reaction_to_any_of_your_medications),
-                    value.toString()
-                )
-
-            }
-        }
-    }
-
     private fun initView() {
-        binding.btnStartContactTracing.visible()
+        binding.btnStartContactTracing.gone()
         binding.riskResultLayout.text = getString(R.string.update_contact_tracing_for_other)
+        binding.etNextFollowUpDate.text =
+            LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy))
         if(isRxBuddyFollowUp == true){
             binding.tvTitle.text = getString(R.string.follow_up_details)
         } else {
@@ -109,7 +102,15 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when(v?.id){
             R.id.btnDone -> {
-
+               if (isRxBuddyFollowUp == true) {
+                   viewModel.saveRxBuddyFollowUpLiveData.value?.data?.let { id ->
+                        viewModel.updateNextVisitDateForRxBuddyFollowUp(getNextVisitDate(), id)
+                   }
+               } else {
+                   viewModel.saveRxBuddyDetails.value?.data?.let { id ->
+                       viewModel.updateNextVisitDateForRxBuddyRegister(getNextVisitDate(), id)
+                   }
+               }
             }
             R.id.btnStartContactTracing -> {
 
@@ -120,17 +121,42 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
+    private fun getFormattedDates(map:  Map<String, Any>): String {
+        val displayFormatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)
+        val tb = map[TB_MENU_ID.lowercase()] as Map<*, *>
+        if (tb.containsKey(TBRxBuddyFollowUp)) {
+            val rxBuddyFollowUp = tb[TBRxBuddyFollowUp] as Map<*, *>
+            if (rxBuddyFollowUp.containsKey(rxBuddyMonitoringDates)) {
+                val dates = rxBuddyFollowUp[rxBuddyMonitoringDates] as List<String>
+
+                val stringDates = dates.map { date ->
+                    date.getLocalDate().format(displayFormatter)
+                }
+                return stringDates.joinToString(", ")
+            }
+        }
+
+        return ""
+    }
+
     private fun createTBListSummaryData(data: String): MutableList<AssessmentSummaryModel>? {
+        val dataMap = StringConverter.stringToMap(data)
         return viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }?.map { formLayout ->
+            val value = if (formLayout.id == rxBuddyMonitoringDates) {
+                getFormattedDates(dataMap)
+            } else {
+               getValueOfKeyFromMap(
+                   dataMap,
+                   formLayout.id,
+                   TB
+               )
+           }
+
             AssessmentSummaryModel(
                 title = formLayout.titleSummary ?: formLayout.title,
                 id = formLayout.id,
                 cultureValue = formLayout.titleCulture,
-                value = getValueOfKeyFromMap(
-                    StringConverter.stringToMap(data),
-                    formLayout.id,
-                    TB
-                )
+                value = value
             )
         }?.toMutableList()
     }
@@ -157,6 +183,11 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
                     RxBuddy.rxBuddyPhoneNumber -> bindTbSummaryView(item.title,
                         "+${SecuredPreference.getPhoneNumberCode()} "+it)
                     RxBuddy.hasProvidedMonitoringSheet -> bindTbSummaryView(item.title,it)
+                    RxBuddy.otherRelationShip -> bindTbSummaryView(getString(R.string.other_relationship),it)
+
+                    RxBuddy.rxBuddyMonitoringDates -> bindTbSummaryView(item.title, it)
+                    RxBuddy.isSymptomsGettingWorse -> bindTbSummaryView(item.title, it)
+                    RxBuddy.hadReactionToYourMedications -> bindTbSummaryView(item.title, it)
                 }
             }
         }
@@ -221,5 +252,15 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
             return RxBuddySummaryFragment()
         }
 
+    }
+
+    private fun getNextVisitDate(): String {
+        val tomorrowDate = binding.etNextFollowUpDate.text.toString()
+        return DateUtils.convertDateTimeToDate(
+            tomorrowDate,
+            DateUtils.DATE_ddMMyyyy,
+            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+            inUTC = true
+        )
     }
 }

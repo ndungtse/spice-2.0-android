@@ -1,12 +1,18 @@
 package com.medtroniclabs.spice.repo
 
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.RxBuddyId
+import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.RxBuddyDetails
 import com.medtroniclabs.spice.db.entity.RxBuddyFollowUpEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class RxBuddyRepository @Inject constructor(
@@ -15,21 +21,29 @@ class RxBuddyRepository @Inject constructor(
     suspend fun insertRxBuddyDetails(
         rxBuddyId:Long?,
         patientMemberId:String,
-        memberId:String?,
+        memberId:Long?,
         name:String?,
         phoneNumber:String?,
         relationship:String,
-        isMonitorSheetProvider:Boolean
+        otherRelationship: String?,
+        isMonitorSheetProvider:Boolean,
+        followUpId: Long? = null
     ):Resource<Long>{
+        val latLng = getLatLng()
       return try {
           val rxBuddy = RxBuddyDetails(
               rxBuddyId = rxBuddyId,
               patientMemberId = patientMemberId,
-              memberId = memberId,
+              householdMemberId = memberId,
               name = name,
               phoneNumber = phoneNumber,
               relationship = relationship,
-              isMonitorSheetProvider = isMonitorSheetProvider
+              isMonitorSheetProvider = isMonitorSheetProvider,
+              otherRelationship = otherRelationship,
+              followUpId = followUpId,
+              nextVisitDate = getDefaultNextVisitDateForRxBuddy(),
+              latitude = latLng.first,
+              longitude = latLng.second
           )
           val response = roomHelper.insertRxBuddyDetails(rxBuddy)
           Resource(state = ResourceState.SUCCESS, data = response)
@@ -63,38 +77,70 @@ class RxBuddyRepository @Inject constructor(
         )
     }
 
-    suspend fun getRxBuddyDetails(patientMemberId:String):Resource<RxBuddyDetails?>{
-        return try{
-            val response = roomHelper.getRxBuddyDetails(patientMemberId)
-            if(response != null) {
-                Resource(state = ResourceState.SUCCESS, data = response)
-            }else{
-                Resource(state = ResourceState.ERROR, data = null)
-            }
-        }catch (e:Exception){
-            Resource(state = ResourceState.ERROR, data = null)
-        }
+    suspend fun getRxBuddyDetails(patientMemberId:String):RxBuddyDetails?{
+        return roomHelper.getRxBuddyDetails(patientMemberId)
     }
 
     suspend fun insertRxBuddyFollowUp(
-        rxBuddyId:Long?,
+        rxBuddyLocalId: Long,
+        rxBuddyId: Long? = null,
         patientMemberId:String,
-        rxBuddyMonitoringSheetDate:String,
-        isAnyOfSymptomsWorse:Boolean,
-        isAnyOfMedicationNeeded:Boolean
+        map: HashMap<String, Any>,
+        followUpId: Long? = null
     ):Resource<Long>{
+        val latLng = getLatLng()
         return try {
             val rxBuddyFollowUp = RxBuddyFollowUpEntity(
+                rxBuddyLocalId = rxBuddyLocalId,
                 rxBuddyId = rxBuddyId,
                 patientMemberId = patientMemberId,
-                rxBuddyMonitoringSheetDate = rxBuddyMonitoringSheetDate,
-                isAnyOfSymptomsWorse = isAnyOfSymptomsWorse,
-                isAnyOfMedicationNeeded = isAnyOfMedicationNeeded
+                followUp = StringConverter.convertGivenMapToString(map),
+                nextVisitDate = getDefaultNextVisitDateForRxBuddy(),
+                followUpId = followUpId,
+                latitude = latLng.first,
+                longitude = latLng.second
             )
             val response = roomHelper.insertRxBuddyFollowUp(rxBuddyFollowUp)
             Resource(state = ResourceState.SUCCESS, data = response)
         }catch (e:Exception){
             Resource(state = ResourceState.ERROR, data = null)
         }
+    }
+
+
+    suspend fun updateNextVisitDateRxBuddyRegister(nextVisitDate: String, id: Long): Resource<String> {
+        roomHelper.updateNextVisitDateRxBuddyRegister(nextVisitDate, id)
+        return Resource(state = ResourceState.SUCCESS)
+    }
+
+    suspend fun updateNextVisitDateRxBuddyFollowUp(nextVisitDate: String, id: Long): Resource<String> {
+        roomHelper.updateNextVisitDateRxBuddyFollowUp(nextVisitDate, id)
+        return Resource(state = ResourceState.SUCCESS)
+    }
+
+    private fun getDefaultNextVisitDateForRxBuddy(): String {
+        val tomorrowDate =
+            LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy))
+        return DateUtils.convertDateTimeToDate(
+            tomorrowDate,
+            DateUtils.DATE_ddMMyyyy,
+            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+            inUTC = true
+        )
+    }
+
+    private fun getLatLng(): Pair<Double, Double> {
+        return Pair(
+            SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name),
+            SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name)
+        )
+    }
+
+    suspend fun getUnSyncedRxBuddyRegisterCount(): Int {
+        return roomHelper.getUnSyncedRxBuddyRegisterCount()
+    }
+
+    suspend fun getUnSyncedRxBuddyFollowUpCount(): Int {
+        return roomHelper.getUnSyncedRxBuddyFollowUpCount()
     }
 }

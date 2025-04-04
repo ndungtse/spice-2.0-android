@@ -45,6 +45,7 @@ interface CommunityDetailsDAO {
         val existingEntity = getCommunityDetailsById(entity.villageId)
         if (existingEntity?.sync_status != OfflineSyncStatus.NotSynced) {
             val entityToInsert = existingEntity?.let { entity.copy(id = it.id) } ?: entity
+            entityToInsert.fhirId = entity.fhirId
             entityToInsert.sync_status = existingEntity?.sync_status ?: OfflineSyncStatus.Success
             return insertCommunity(entityToInsert)
         } else {

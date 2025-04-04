@@ -303,7 +303,7 @@ class AssessmentActivity : BaseActivity() {
             MenuConstants.TB_MENU_ID -> {
                 bundle.putBoolean(DefinedParams.CONTACT_TRACING,intent.getBooleanExtra(DefinedParams.CONTACT_TRACING,false))
                 bundle.putLong(DefinedParams.HouseholdId,viewModel.selectedHouseholdId)
-                bundle.putBoolean(DefinedParams.isTbPatient,false)
+                bundle.putBoolean(DefinedParams.isTbPatient, true)
                 setTitle(MenuConstants.TB_MENU_ID.uppercase())
                 replaceFragmentInId<AssessmentTBFragment>(
                     binding.formsFragmentContainer.id,
@@ -564,6 +564,7 @@ class AssessmentActivity : BaseActivity() {
         viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MemberID, -1L)
         viewModel.menuId = intent.getStringExtra(DefinedParams.MenuId)
         viewModel.workflowName = intent.getStringExtra(MenuConstants.WorkFlowName)
+        viewModel.memberFhirId = intent.getStringExtra(DefinedParams.FhirId)
         viewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
         viewModel.selectedHouseholdId = intent.getLongExtra(DefinedParams.HouseholdId, -1L)
         val followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1L)

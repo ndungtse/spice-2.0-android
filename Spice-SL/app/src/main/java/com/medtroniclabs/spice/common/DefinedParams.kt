@@ -321,6 +321,8 @@ object DefinedParams {
     const val isTbPatient = "isTbPatient"
     const val HouseholdId = "HouseholdId"
 
+    const val TbType = "TbType"
+    const val RxBuddyId = "rxBuddyId"
     const val RxBuddyName = "rxBuddyName"
     const val RxRelationShip = "rxRelationShip"
     const val RxPhoneNo = "rxPhoneNo"

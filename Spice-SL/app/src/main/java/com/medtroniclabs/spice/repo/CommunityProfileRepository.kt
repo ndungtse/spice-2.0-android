@@ -132,7 +132,10 @@ class CommunityProfileRepository @Inject constructor(
         communityProfileDetailLiveData: MutableLiveData<Resource<CommunityProfile>>
     ) : Resource<Long> {
         return try {
-            val communityProfileId = roomHelper.getCommunityProfileId(villageId) ?: 0
+            val communityProfile = roomHelper.getCommunityDetails(villageId)
+            val communityProfileId = communityProfile?.id ?: 0
+            val communityFhirId = communityProfile?.fhirId
+
             val latitude = SecuredPreference.getDouble(
                 SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name,
                 0.0
@@ -149,6 +152,7 @@ class CommunityProfileRepository @Inject constructor(
                 latitude = latitude,
                 longitude = longitude
             )
+            updateCommunityProfile.fhirId = communityFhirId
             communityProfileDetailLiveData.postValue(Resource(state = ResourceState.SUCCESS, data = updateCommunityProfile))
             val response = roomHelper.insertCommunityDetails(updateCommunityProfile)
             Resource(state = ResourceState.SUCCESS, data = response)

@@ -1,8 +1,6 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,15 +12,10 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.Contact_Trace_Updated
-import com.medtroniclabs.spice.common.DefinedParams.MedicationFollowUp
-import com.medtroniclabs.spice.common.DefinedParams.SymptomsFollowUp
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentTBBinding
-import com.medtroniclabs.spice.db.entity.RxBuddyDetails
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
@@ -35,6 +28,7 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DateOfOnset
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SleepLocation
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBScreening
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
@@ -48,8 +42,8 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        isContactTrace = arguments?.getBoolean(DefinedParams.CONTACT_TRACING,false)
-        isTBPatient =  arguments?.getBoolean(DefinedParams.isTbPatient,false)
+        isContactTrace = arguments?.getBoolean(DefinedParams.CONTACT_TRACING, false)
+        isTBPatient = arguments?.getBoolean(DefinedParams.isTbPatient, false)
     }
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,22 +56,61 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if(isTBPatient == true) {
-            viewModel.getRxBuddyDetails(viewModel.selectedHouseholdMemberId.toString())
-            viewModel.insertTreatmentDetails()
-        }else{
-            loadFragments()
-        }
-        viewModel.getMemberDetailsById()
+        viewModel.getTbType(viewModel.selectedHouseholdMemberId)
+        showBioDataFragment()
         attachObservers()
         setListeners()
         viewModel.getNearestHealthFacility()
         viewModel.setUserJourney(AnalyticsDefinedParams.TBAssessement)
     }
 
-    private fun loadFragments(rxBuddyDetails: RxBuddyDetails?=null){
-        initView(rxBuddyDetails)
-        viewModel.getFormData(DefinedParams.TB.lowercase(), isContactTrace, isTBPatient,rxBuddyDetails != null)
+    private fun showBioDataFragment() {
+        replaceFragmentInId<BioDataFragment>(
+            binding.bioDataFragmentContainer.id,
+            tag = BioDataFragment.TAG
+        )
+
+        formGenerator = FormGenerator(
+            requireContext(), binding.llForm, null, this, binding.scrollView,
+            translate = SecuredPreference.getIsTranslationEnabled()
+        ) { map, id ->
+            when (id) {
+                DateOfOnset -> {
+                    formGenerator.getViewByTag(id)?.let {
+                        val dob = viewModel.memberDetailsLiveData.value?.data?.dateOfBirth
+                        if (!dob.isNullOrEmpty() && map.containsKey(id)) {
+                            val selectedDate = map[id].toString()
+                            val isValid = DateUtils.compareDates(dob, selectedDate)
+                            formGenerator.getViewByTag(id + AssessmentDefinedParams.errorSuffix)?.apply {
+                                visibility = if (isValid) View.GONE else View.VISIBLE
+                            }.takeIf { it is TextView }?.let { textView->(textView as TextView).text=
+                                getString(R.string.the_day_s_should_be_less_than_age)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showRxBuddyCard() {
+        binding.scrollView.viewTreeObserver.addOnGlobalLayoutListener {
+            binding.scrollView.requestLayout()
+        }
+        replaceFragmentInId<TBRxBuddyFragment>(
+            binding.rxBuddyDetailsFragmentContainer.id,
+            tag = TBRxBuddyFragment.TAG
+        )
+    }
+
+    private fun showTreatmentDetailsCard() {
+        binding.scrollView.viewTreeObserver.addOnGlobalLayoutListener {
+            binding.scrollView.requestLayout()
+        }
+        replaceFragmentInId<TBTreatmentFragment>(
+            binding.treatmentDetailsFragmentContainer.id,
+            tag = TBTreatmentFragment.TAG
+        )
     }
 
     private fun setListeners() {
@@ -85,6 +118,9 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
     }
 
     private fun attachObservers() {
+        viewModel.assessmentTBType.observe(viewLifecycleOwner) {
+            viewModel.getFormData(TB.lowercase(), it)
+        }
 
         viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
@@ -130,81 +166,15 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
             }
         }
 
-        viewModel.rxBuddyDetailsLiveData.observe(viewLifecycleOwner){ resourceState ->
-            when(resourceState.state){
-                ResourceState.LOADING -> {
-                    showProgress()
-                }
-                ResourceState.ERROR -> {
-                    hideProgress()
-                    loadFragments()
-                }
-                ResourceState.SUCCESS -> {
-                    hideProgress()
-                    loadFragments(
-                        resourceState.data
-                    )
-                }
+        viewModel.treatmentDetailsLiveData.observe(viewLifecycleOwner) {
+            it?.let {
+                showTreatmentDetailsCard()
             }
         }
-    }
 
-    private fun initView(rxBuddyDetails: RxBuddyDetails?) {
-        replaceFragmentInId<BioDataFragment>(
-            binding.bioDataFragmentContainer.id,
-            tag = BioDataFragment.TAG
-        )
-        isTBPatient?.let {
-            if(it){
-                replaceFragmentInId<TBTreatmentFragment>(
-                    binding.treatmentDetailsFragmentContainer.id,
-                    tag = TBTreatmentFragment.TAG
-                )
-                rxBuddyDetails?.let {
-                    binding.scrollView.viewTreeObserver.addOnGlobalLayoutListener {
-                        binding.scrollView.requestLayout()
-                    }
-                    val bundle = Bundle().apply {
-                        putString(DefinedParams.RxBuddyName,rxBuddyDetails?.name)
-                        putString(DefinedParams.RxRelationShip,rxBuddyDetails?.relationship)
-                        putString(DefinedParams.RxPhoneNo,rxBuddyDetails?.phoneNumber)
-                        rxBuddyDetails?.isMonitorSheetProvider?.let { it1 ->
-                            putBoolean(DefinedParams.RxMonitoringSheetProvided,
-                                it1
-                            )
-                        }
-                    }
-                    replaceFragmentInId<TBRxBuddyFragment>(
-                        binding.rxBuddyDetailsFragmentContainer.id,
-                        bundle = bundle,
-                        tag = TBRxBuddyFragment.TAG
-                    )
-                    replaceFragmentInId<TBFollowUpFragment>(
-                        binding.rxBuddyFollowUpFragmentContainer.id,
-                        tag = TBFollowUpFragment.TAG
-                    )
-                }
-            }
-        }
-        formGenerator = FormGenerator(
-            requireContext(), binding.llForm, null, this, binding.scrollView,
-            translate = SecuredPreference.getIsTranslationEnabled()
-        ) { map, id ->
-            when (id) {
-                DateOfOnset -> {
-                    formGenerator.getViewByTag(id)?.let {
-                        val dob = viewModel.memberDetailsLiveData.value?.data?.dateOfBirth
-                        if (!dob.isNullOrEmpty() && map.containsKey(id)) {
-                            val selectedDate = map[id].toString()
-                            val isValid = DateUtils.compareDates(dob, selectedDate)
-                            formGenerator.getViewByTag(id + AssessmentDefinedParams.errorSuffix)?.apply {
-                                visibility = if (isValid) View.GONE else View.VISIBLE
-                            }.takeIf { it is TextView }?.let { textView->(textView as TextView).text=
-                                getString(R.string.the_day_s_should_be_less_than_age)
-                            }
-                        }
-                    }
-                }
+        viewModel.rxBuddyDetailsLiveData.observe(viewLifecycleOwner){
+            it?.let {
+                showRxBuddyCard()
             }
         }
     }
@@ -236,41 +206,6 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         val dob = viewModel.memberDetailsLiveData.value?.data?.dateOfBirth
-        if(resultMap?.containsKey(RxBuddy.selectHouseholdMember) == true
-            && resultMap.containsKey(RxBuddy.relationshipToPatient)
-            && resultMap.containsKey(RxBuddy.hasProvidedMonitoringSheet)){
-            val rxBuddyName =  if(resultMap.containsKey(RxBuddy.rxBuddyName)) resultMap[RxBuddy.rxBuddyName] as String else null
-            val countryCode = SecuredPreference.getPhoneNumberCode()
-            val phone = if(resultMap.containsKey(RxBuddy.rxBuddyPhoneNumber)) resultMap[RxBuddy.rxBuddyPhoneNumber] as String else null
-            val rxBuddyPhoneNumber = if(phone.isNullOrEmpty()) null else "+$countryCode $phone"
-            val isMonitorSheetProviderText = resultMap[RxBuddy.hasProvidedMonitoringSheet] as String
-            val isSheetProvider = isMonitorSheetProviderText.equals(getString(R.string.yes),true)
-
-            viewModel.insertRxBuddyDetails(
-                rxBuddyId = null,
-                patientMemberId = viewModel.selectedHouseholdMemberId.toString(),
-                memberId = resultMap[RxBuddy.selectHouseholdMember].toString(),
-                name = rxBuddyName,
-                phoneNumber = rxBuddyPhoneNumber,
-                relationShip = resultMap[RxBuddy.relationshipToPatient] as String,
-                isMonitorSheetProvider = isSheetProvider
-            )
-
-            resultMap.let { details ->
-                val result = serverData?.let {
-                    FormResultComposer().groupValues(
-                        context = requireContext(),
-                        serverData = it,
-                        details,
-                        TB.lowercase()
-                    )
-                }
-                val map =  result?.second as? HashMap<Any,Any>
-                val assessmentDetail = StringConverter.convertGivenMapToString(map) ?: ""
-                viewModel.assessmentStringLiveData.postValue(assessmentDetail)
-            }
-            return
-        }
         serverData?.forEach { view ->
             if (view?.id == SleepLocation) {
                 val option = view.optionsList
@@ -284,6 +219,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                 }
             }
         }
+
         resultMap?.let { details ->
             dob?.let { dobDate ->
                 val isValid = if (details.containsKey(DateOfOnset)) {
@@ -311,14 +247,17 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                         )
                     }
                     result?.second?.let {
-                        viewModel.memberDetailsLiveData.value?.data?.id?.let { hhmId ->
+                      /*  viewModel.memberDetailsLiveData.value?.data?.id?.let { hhmId ->
                             viewModel.updateTBContactTraceStatus(
                                 hhmId = hhmId,
                                 tbContactTracingStatus = Contact_Trace_Updated
                             )
-                        }
+                        }*/
+
+                        val tbType = viewModel.assessmentTBType.value ?: TBScreening
+
                         viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
-                        viewModel.saveAssessment(it, referralResult, viewModel.menuId)
+                        viewModel.saveTbAssessment(it, referralResult, tbType, viewModel.menuId)
                     }
                 }
             }
@@ -362,27 +301,10 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnSubmit.id -> {
-                val fragment = childFragmentManager.findFragmentById(binding.rxBuddyFollowUpFragmentContainer.id)
-                if (fragment is TBFollowUpFragment){
-                    val tbFragmentIsValid = fragment.validInput()
-                    if (tbFragmentIsValid){
-                        val isAnyOfSymptomsWorse = viewModel.rxBuddyFollowUpResultHashMap[SymptomsFollowUp] as String
-                        val isMedication = viewModel.rxBuddyFollowUpResultHashMap[MedicationFollowUp] as String
-                        viewModel.insertRxBuddyFollowUp(
-                            rxBuddyId = null,
-                            patientMemberId = viewModel.selectedHouseholdMemberId.toString(),
-                            monitoringSheetDate = "12/03/2025",
-                            isSymptomsWorse = isAnyOfSymptomsWorse.equals(getString(R.string.yes),true),
-                            isMedication = isMedication.equals(getString(R.string.yes),true)
-                        )
-                        return
-                    }
-                }else {
-                    withLocationCheck({
-                        viewModel.fetchCurrentLocation(requireContext())
-                        formGenerator.formSubmitAction(view)
-                    })
-                }
+                withLocationCheck({
+                    viewModel.fetchCurrentLocation(requireContext())
+                    formGenerator.formSubmitAction(view)
+                })
             }
         }
     }

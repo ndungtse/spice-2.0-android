@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.appextensions.imgFileNameExtension
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.appextensions.signatureFolder
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.CBS
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_REGISTERED_DATE
 import com.medtroniclabs.spice.common.DefinedParams.Description
@@ -21,6 +22,7 @@ import com.medtroniclabs.spice.common.DefinedParams.ReferenceId
 import com.medtroniclabs.spice.common.DefinedParams.UnAssigned
 import com.medtroniclabs.spice.common.DefinedParams.VillageId
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.offlinesync.model.Assessment
 import com.medtroniclabs.spice.data.offlinesync.model.AssessmentEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.CallRegisterDetail
@@ -31,8 +33,14 @@ import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberLinkCallDet
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
+import com.medtroniclabs.spice.data.offlinesync.model.ResponseRxBuddy
+import com.medtroniclabs.spice.data.offlinesync.model.RxBuddy
+import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyFollowUp
+import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyMember
+import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyRegister
 import com.medtroniclabs.spice.data.offlinesync.model.SyncEntityList
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
+import com.medtroniclabs.spice.data.offlinesync.model.TreatmentDetails
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineUtils
@@ -41,11 +49,18 @@ import com.medtroniclabs.spice.db.entity.CommunityProfile
 import com.medtroniclabs.spice.db.entity.EntitiesName
 import com.medtroniclabs.spice.db.entity.EntitiesName.COMMUNITY_PROFILE
 import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
+import com.medtroniclabs.spice.db.entity.RxBuddyDetails
+import com.medtroniclabs.spice.db.entity.TreatmentDetailsEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.mappingkey.RxBuddy.RX_BUDDY_TYPE_HOUSEHOLD_MEMBER
+import com.medtroniclabs.spice.mappingkey.RxBuddy.hadReactionToYourMedications
+import com.medtroniclabs.spice.mappingkey.RxBuddy.isSymptomsGettingWorse
+import com.medtroniclabs.spice.mappingkey.RxBuddy.rxBuddyMonitoringDates
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
+import com.medtroniclabs.spice.ui.MenuConstants.TB_MENU_ID
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
@@ -212,6 +227,8 @@ class OfflineSyncRepository @Inject constructor(
             roomHelper.deleteAllUnAssignedMember()
             roomHelper.deleteAllCallHistory()
             roomHelper.deleteAllCommunityProfiles()
+            roomHelper.deleteAllRxBuddyDetails()
+            roomHelper.deleteAllRxBuddyFollowUp()
 
             val villageIds = roomHelper.getAllVillageIds()
             // Fetch Synced Data
@@ -299,15 +316,29 @@ class OfflineSyncRepository @Inject constructor(
 
         // Save Community profiles
         requestInitialDownload.communityProfiles?.forEach { item ->
+            val id = item.get(DefinedParams.ID).asString
             val villageId = item.get(VillageId).asLong
             val description = item.get(Description).asString
             val date = item.get(COMMUNITY_REGISTERED_DATE).asString
+            item.remove(DefinedParams.ID)
             item.remove(VillageId)
             item.remove(Description)
             item.remove(COMMUNITY_REGISTERED_DATE)
-            roomHelper.insertOrUpdateFromBE(CommunityProfile(id = 0, villageId, description, date, payload = item.toString()).apply { sync_status = OfflineSyncStatus.Success })
+            val communityProfileEntity = CommunityProfile(id = 0, villageId, description, date, payload = item.toString())
+            communityProfileEntity.fhirId = id
+            communityProfileEntity.sync_status = OfflineSyncStatus.Success
+            roomHelper.insertOrUpdateFromBE(communityProfileEntity)
         }
 
+        /*Save Treatment details*/
+        requestInitialDownload.treatmentDetails?.let {
+            insertOrUpdateTreatmentDetails(it)
+        }
+
+        /*Save Rx Buddy Register Details*/
+        requestInitialDownload.rxBuddies?.let {
+            insertOrUpdateRxBuddyData(it)
+        }
 
         // Set FollowUpCriteria in Preference
         requestInitialDownload.followUpCriteria?.let {
@@ -319,6 +350,51 @@ class OfflineSyncRepository @Inject constructor(
 
         SecuredPreference.putString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name,
             requestInitialDownload.lastSyncTime)
+    }
+
+    private suspend fun insertOrUpdateTreatmentDetails(treatmentDetails: List<TreatmentDetails>) {
+        val gson = Gson()
+        roomHelper.deleteAllTreatmentDetails()
+        treatmentDetails.forEach { treatmentDetail ->
+            if (treatmentDetail.isTbConfirmed == true) {
+                val prescriptionList = gson.toJson(treatmentDetail.prescriptions)
+                val entity = TreatmentDetailsEntity(
+                    memberId = treatmentDetail.memberId,
+                    type = TB_MENU_ID.lowercase(),
+                    treatmentStartDate = treatmentDetail.treatmentStartDate,
+                    diagnoses = treatmentDetail.diagnosis,
+                    diagnosedDate = treatmentDetail.dateDiagnosed ?: "",
+                    prescriptions = prescriptionList
+                )
+
+                roomHelper.insertTreatmentDetails(entity)
+            }
+        }
+    }
+
+    private suspend fun insertOrUpdateRxBuddyData(rxBuddies: List<ResponseRxBuddy>) {
+        rxBuddies.forEach { item ->
+            val registry = item.registry
+            val rxBuddy = RxBuddyDetails(
+                id = 0,
+                rxBuddyId = item.id,
+                patientMemberId = item.patientMemberId,
+                relationship = registry.relationShip,
+                isMonitorSheetProvider = registry.isMonitorSheetProvided,
+                nextVisitDate = "",
+                otherRelationship = registry.otherRelationship
+            )
+
+            if (item.type == RX_BUDDY_TYPE_HOUSEHOLD_MEMBER && registry.householdMemberId != null) {
+                rxBuddy.householdMemberId =
+                    roomHelper.getHouseholdMemberIdByFhirId(registry.householdMemberId)
+            } else {
+                rxBuddy.name = registry.rxBuddyDetails?.name
+                rxBuddy.phoneNumber = registry.rxBuddyDetails?.phoneNumber
+            }
+
+            roomHelper.insertOrUpdateRxBuddyFromBE(rxBuddy)
+        }
     }
 
     private suspend fun fetchUnSyncedData(): Boolean {
@@ -613,6 +689,110 @@ class OfflineSyncRepository @Inject constructor(
         return input.filter { !childIds.contains(it.referenceId) }
     }
 
+
+    private suspend fun getRxBuddiesRequest(hhmIds: MutableList<String>,
+                                            rxBuddyRegisterIds: MutableList<Long>,
+                                            rxBuddyFollowUpIds: MutableList<Long>): List<RxBuddy> {
+        /*Construct Rx Buddy details*/
+        /*
+        * 1. Get Un Synced Rx Buddy Register
+        * 2. Construct Register object with member id / new rx buddy details
+        * 3. Get Un Synced Rx Buddy Followup with Rx Buddy Id
+        * */
+        val rxBuddies = mutableListOf<RxBuddy>()
+        val rxBuddyRegisters = roomHelper.getAllUnSyncedRxBuddyRegister()
+        rxBuddyRegisters.forEach { rx ->
+            rxBuddyRegisterIds.add(rx.id)
+            val register = RxBuddyRegister(
+                referenceId = rx.id,
+                relationShip = rx.relationship,
+                otherRelationship = rx.otherRelationship,
+                isMonitorSheetProvided = rx.isMonitorSheetProvider,
+                nextVisitDate = rx.nextVisitDate,
+                followUpId = rx.followUpId,
+                provenance = ProvanceDto(rx.updatedAt.convertToUtcDateTime())
+            )
+
+            rx.householdMemberId?.let { hhmId ->
+                val member = roomHelper.getHouseholdMemberForRxBuddy(hhmId)
+                if (member.id != null)
+                    register.householdMemberId = member.id
+                else {
+                    hhmIds.add(member.referenceId!!)
+                    val assessments = getUnSyncedAssessmentByPatientId(member.referenceId.toLong())
+                    member.assessments = assessments
+                    register.householdMember = member
+                }
+            } ?: run {
+                register.rxBuddyDetails = RxBuddyMember(rx.name, rx.phoneNumber)
+            }
+
+            val followUpList = mutableListOf<RxBuddyFollowUp>()
+            val followUps = roomHelper.getUnSyncedRxBuddyFollowUpWithoutRxBuddyId(rx.id)
+            followUps.forEach { item ->
+                rxBuddyFollowUpIds.add(item.rxBuddyLocalId)
+                item.followUp?.let { strFollowUp ->
+                    followUpList.add(
+                        getRxBuddyFollowUp(
+                            item.id,
+                            item.rxBuddyId,
+                            strFollowUp,
+                            item.nextVisitDate,
+                            item.updatedAt,
+                            item.followUpId
+                        )
+                    )
+                }
+            }
+            rxBuddies.add(RxBuddy(rx.patientMemberId, rx.patientId, rx.villageId, rx.householdId, null, rx.id, register, followUpList))
+        }
+
+        val rxBuddyFollowUps = roomHelper.getUnSyncedRxBuddyFollowUpWithRxBuddyId().groupBy { it.patientMemberId }
+        val followUpList = mutableListOf<RxBuddyFollowUp>()
+        rxBuddyFollowUps.forEach { (patientMemberId, followUps) ->
+            followUps.forEach { item ->
+                rxBuddyFollowUpIds.add(item.rxBuddyLocalId)
+                item.followUp?.let { strFollowUp ->
+                    followUpList.add(
+                        getRxBuddyFollowUp(
+                            item.id,
+                            item.rxBuddyId,
+                            strFollowUp,
+                            item.nextVisitDate,
+                            item.updatedAt,
+                            item.followUpId
+                        )
+                    )
+                }
+            }
+            val rx = followUps.first()
+            rxBuddies.add(RxBuddy(patientMemberId, rx.patientId, rx.villageId, rx.householdId, followUps[0].rxBuddyId, rx.rxBuddyLocalId, null, followUpList))
+        }
+
+        return rxBuddies
+    }
+
+    private fun getRxBuddyFollowUp(
+        id: Long,
+        rxBuddyId: Long?,
+        strFollowUp: String,
+        nextVisitDate: String,
+        updatedAt: Long,
+        followUpId: Long? = null
+    ): RxBuddyFollowUp {
+        val map = StringConverter.stringToMap(strFollowUp)
+        return RxBuddyFollowUp(
+            id = id,
+            rxBuddyId = rxBuddyId,
+            monitoringSheet = map[rxBuddyMonitoringDates] as List<String>,
+            isSymptomsGettingWorse = map[isSymptomsGettingWorse] as Boolean,
+            hadReactionToYourMedications = map[hadReactionToYourMedications] as Boolean,
+            nextVisitDate = nextVisitDate,
+            followUpId = followUpId,
+            provenance = ProvanceDto(updatedAt.convertToUtcDateTime())
+        )
+    }
+
     /*
     * It will post all un-synced changes from local database and returns List<String>?
     * 1. list size > 0 -> Posted un-synced local changes and API is success
@@ -627,8 +807,11 @@ class OfflineSyncRepository @Inject constructor(
         val followUpCallIds = mutableListOf<Long>()
         val householdLinkCallsMemberIds = mutableListOf<String>()
         val communityProfileIds = mutableListOf<Long>()
+        val rxBuddyRegisterIds = mutableListOf<Long>()
+        val rxBuddyFollowUpIds = mutableListOf<Long>()
 
         //uploadAllSignatures()
+        val rxBuddies = getRxBuddiesRequest(householdMemberIds, rxBuddyRegisterIds, rxBuddyFollowUpIds)
 
         val houseHoldList = roomHelper.getAllUnSyncedHouseHolds() /*Hot Fix change - Done*/
         householdIds.addAll(houseHoldList.map { it.referenceId!! })
@@ -667,6 +850,9 @@ class OfflineSyncRepository @Inject constructor(
         communityProfiles.forEach { community ->
             val provenance = ProvanceDto(modifiedDate = community.updatedAt.convertToUtcDateTime())
             val json =  JsonParser.parseString(community.payload).asJsonObject
+            community.fhirId?.let {
+                json.addProperty(DefinedParams.ID, it)
+            }
             json.addProperty(Description, community.communityDescription)
             json.addProperty(COMMUNITY_REGISTERED_DATE, community.registeredDate)
             json.addProperty(VillageId, community.villageId)
@@ -684,6 +870,7 @@ class OfflineSyncRepository @Inject constructor(
             && allFollowUps.isEmpty()
             && householdMemberLink.isEmpty()
             && communityProfilesRequests.isEmpty()
+            && rxBuddies.isEmpty()
         ) {
             return listOf()
         }
@@ -696,6 +883,7 @@ class OfflineSyncRepository @Inject constructor(
         request[OfflineConstant.FOLLOWUPS] = allFollowUps
         request[OfflineConstant.HOUSEHOLD_MEMBER_LINK] = householdMemberLink
         request[OfflineConstant.COMMUNITY_PROFILES] = communityProfilesRequests
+        request[OfflineConstant.RX_BUDDIES] = rxBuddies
 
         try {
             val apiResponse = apiHelper.postOfflineSync(request)
@@ -708,6 +896,8 @@ class OfflineSyncRepository @Inject constructor(
                 roomHelper.changeAssignHHMStatus(assignedMemberIds, OfflineSyncStatus.InProgress.name)
                 roomHelper.changeHHMLinkCallStatus(householdLinkCallsMemberIds, OfflineSyncStatus.InProgress.name)
                 roomHelper.changeCommunityProfileStatus(communityProfileIds, OfflineSyncStatus.InProgress.name)
+                roomHelper.updateRxBuddyRegisterSyncStatus(rxBuddyRegisterIds, OfflineSyncStatus.InProgress.name)
+                roomHelper.updateRxBuddyFollowUpSyncStatus(rxBuddyFollowUpIds, OfflineSyncStatus.InProgress.name)
                 return listOf(request[OfflineConstant.REQUEST_ID] as String)
             }
         } catch (e: Exception) {
@@ -718,6 +908,8 @@ class OfflineSyncRepository @Inject constructor(
             roomHelper.changeAssignHHMStatus(assignedMemberIds, OfflineSyncStatus.NetworkError.name)
             roomHelper.changeHHMLinkCallStatus(householdLinkCallsMemberIds, OfflineSyncStatus.NetworkError.name)
             roomHelper.changeCommunityProfileStatus(communityProfileIds, OfflineSyncStatus.NetworkError.name)
+            roomHelper.updateRxBuddyRegisterSyncStatus(rxBuddyRegisterIds, OfflineSyncStatus.NetworkError.name)
+            roomHelper.updateRxBuddyFollowUpSyncStatus(rxBuddyFollowUpIds, OfflineSyncStatus.NetworkError.name)
             return listOf(request[OfflineConstant.REQUEST_ID] as String)
         }
 

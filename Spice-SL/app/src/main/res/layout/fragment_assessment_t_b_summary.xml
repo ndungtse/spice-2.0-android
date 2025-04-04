@@ -98,9 +98,9 @@
                 style="@style/Form_Label_Style"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
                 android:paddingHorizontal="@dimen/_16sdp"
                 android:paddingEnd="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_16sdp"
                 android:text="@string/next_follow_up_date"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -110,50 +110,50 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/etNextFollowUpDate"
+                style="@style/Form_Input_Style"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:inputType="date"
-                style="@style/Form_Input_Style"
+                android:layout_marginHorizontal="@dimen/_16sdp"
+                android:layout_marginVertical="@dimen/_8sdp"
                 android:drawableEnd="@drawable/referral_calendar_icon"
                 android:gravity="start|center"
-                android:layout_marginVertical="@dimen/_8sdp"
-                android:layout_marginHorizontal="@dimen/_16sdp"
-                android:textColor="@color/black"
                 android:hint="@string/dd_mm_yyyy"
-                android:textSize="@dimen/_16ssp"
+                android:inputType="date"
                 android:paddingStart="@dimen/_4sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_16ssp"
                 android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvNextFollowupDateTitle"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvNextFollowupDateTitle" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/labelPhuReferred"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/phu_referred_to"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:layout_marginTop="@dimen/_16sdp"
                 android:fontFamily="@font/inter_regular"
+                android:text="@string/phu_referred_to"
                 android:textColor="@color/charcoal_grey"
                 android:textSize="@dimen/_14ssp"
                 android:visibility="gone"
-                android:layout_marginStart="@dimen/_16sdp"
-                android:layout_marginTop="@dimen/_16sdp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/resultCardView"/>
+                app:layout_constraintTop_toBottomOf="@id/resultCardView" />
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/etPhuChange"
-                android:visibility="gone"
                 style="@style/Form_Spinner_Style"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="@dimen/_8sdp"
                 android:layout_marginTop="@dimen/_8sdp"
-                android:minHeight="@dimen/_40sdp"
                 android:layout_marginEnd="@dimen/_16sdp"
-                app:layout_constraintTop_toBottomOf="@id/labelPhuReferred"
+                android:minHeight="@dimen/_40sdp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/labelPhuReferred"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/labelPhuReferred" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
@@ -173,8 +173,8 @@
             style="@style/Button_Style_Border"
             android:layout_width="0dp"
             android:layout_gravity="center"
-            android:layout_weight="2.5"
             android:layout_margin="@dimen/_8sdp"
+            android:layout_weight="2.5"
             android:text="@string/start_contact_tracing"
             android:textAllCaps="true"
             android:textStyle="bold"
@@ -185,9 +185,9 @@
             android:id="@+id/btnDone"
             style="@style/Button_Style"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_gravity="center"
             android:layout_margin="@dimen/_8sdp"
+            android:layout_weight="1"
             android:text="@string/done"
             android:textAllCaps="true"
             android:textStyle="bold"

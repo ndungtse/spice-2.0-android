@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.assessment.viewmodel
 
 import android.content.Context
 import android.location.Location
-import android.view.View
 import android.text.SpannableStringBuilder
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.text.color
@@ -18,21 +17,21 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.CBS
 import com.medtroniclabs.spice.common.DefinedParams.CONTACT_TRACING
-import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.DefinedParams.CbsNotifiableCondition
 import com.medtroniclabs.spice.common.DefinedParams.IccmDiarrheaNotifiableCondition
 import com.medtroniclabs.spice.common.DefinedParams.IccmFeverNotifiableCondition
-import com.medtroniclabs.spice.common.DefinedParams.MonitoringSheetDate
 import com.medtroniclabs.spice.common.DefinedParams.NotifiableConditions
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditions
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditionsForDiarrhoea
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotifiableConditionsForFever
 import com.medtroniclabs.spice.common.DefinedParams.RmnchNotifiableCondition
-import com.medtroniclabs.spice.common.DefinedParams.SymptomsFollowUp
+import com.medtroniclabs.spice.common.DefinedParams.RxBuddyId
+import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.DefinedParams.familyPlanning
 import com.medtroniclabs.spice.common.DefinedParams.surveillanceDetails
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -58,8 +57,10 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.mappingkey.RxBuddy.hasCough
 import com.medtroniclabs.spice.mappingkey.RxBuddy.hasProvidedMonitoringSheet
+import com.medtroniclabs.spice.mappingkey.RxBuddy.otherRelationShip
 import com.medtroniclabs.spice.mappingkey.RxBuddy.relationshipToPatient
 import com.medtroniclabs.spice.mappingkey.RxBuddy.rxBuddy
+import com.medtroniclabs.spice.mappingkey.RxBuddy.rxBuddyMonitoringDates
 import com.medtroniclabs.spice.mappingkey.RxBuddy.rxBuddyName
 import com.medtroniclabs.spice.mappingkey.RxBuddy.rxBuddyPhoneNumber
 import com.medtroniclabs.spice.mappingkey.RxBuddy.selectHouseholdMember
@@ -78,11 +79,16 @@ import com.medtroniclabs.spice.repo.TreatmentDetailsRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
+import com.medtroniclabs.spice.ui.MenuConstants.TB_MENU_ID
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanning
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanningDetails
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanningMethods
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsClinicTaken
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBContactTracing
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBRxBuddyFollowUp
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBRxBuddyRegister
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBScreening
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ncd
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.signsAndSymptoms
@@ -130,12 +136,14 @@ class AssessmentViewModel @Inject constructor(
 ) : BaseViewModel(dispatcherIO) {
 
     var selectedHouseholdMemberId = -1L
+    var memberFhirId : String? = null
     var selectedHouseholdId = -1L
     var followUpId: Long? = null
     val assessmentSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
     val assessmentStringLiveData = MutableLiveData<String?>()
     val assessmentUpdateLiveData = MutableLiveData<Resource<String>>()
     val memberDetailsLiveData = MutableLiveData<Resource<AssessmentMemberDetails>>()
+    val assessmentTBType = MutableLiveData<String>()
     var menuId: String? = null
     var workflowName: String? = null
     var formLayout: List<FormLayout>? = null
@@ -185,8 +193,8 @@ class AssessmentViewModel @Inject constructor(
     var motherID: Long? = null
     val otherHouseholdMemberLiveData = MutableLiveData<Resource<ArrayList<Map<String, Any>>>>()
     val saveRxBuddyDetails = MutableLiveData<Resource<Long>>()
-    val treatmentDetailsLiveData = MutableLiveData<Resource<TreatmentDetailsEntity>>()
-    val rxBuddyDetailsLiveData = MutableLiveData<Resource<RxBuddyDetails?>>()
+    val treatmentDetailsLiveData = MutableLiveData<TreatmentDetailsEntity>()
+    val rxBuddyDetailsLiveData = MutableLiveData<RxBuddyDetails>()
     val saveRxBuddyFollowUpLiveData = MutableLiveData<Resource<Long>>()
     val rxBuddyFollowUpResultHashMap = HashMap<String, Any>()
     val childhoodVisitConditionLiveData = MediatorLiveData<String>().apply {
@@ -250,6 +258,70 @@ class AssessmentViewModel @Inject constructor(
             )
         }
     }
+
+
+    fun saveTbAssessment(
+        assessmentMap: HashMap<String, Any>,
+        referralResult: Pair<String?, ArrayList<String>>?,
+        tbType: String,
+        menuId: String?
+    ) {
+        when(tbType) {
+            TBScreening -> {
+                saveAssessment(assessmentMap, referralResult, menuId)
+            }
+
+            TBContactTracing -> {
+                saveAssessment(assessmentMap, referralResult, menuId)
+            }
+
+            TBRxBuddyRegister -> {
+                saveRxBuddyRegister(assessmentMap)
+            }
+
+            TBRxBuddyFollowUp -> {
+                insertRxBuddyFollowUp(assessmentMap)
+            }
+        }
+    }
+
+    private fun saveRxBuddyRegister(resultMap: HashMap<String, Any>) {
+        viewModelScope.launch(dispatcherIO) {
+            val tb = resultMap[TB_MENU_ID.lowercase()] as HashMap<String, Any>
+            if (tb.containsKey(TBRxBuddyRegister)) {
+                val rxBuddy = tb[TBRxBuddyRegister] as HashMap<String, Any>
+
+                val rxBuddyName =  if(rxBuddy.containsKey(rxBuddyName)) rxBuddy[rxBuddyName] as String else null
+               // val countryCode = SecuredPreference.getPhoneNumberCode()
+                val phone = if(rxBuddy.containsKey(rxBuddyPhoneNumber)) rxBuddy[rxBuddyPhoneNumber] as String else null
+                val rxBuddyPhoneNumber = if(phone.isNullOrEmpty()) null else phone
+                val isMonitorSheetProviderText = rxBuddy[hasProvidedMonitoringSheet] as String
+                val isSheetProvider = isMonitorSheetProviderText.equals( "yes",true)
+                val relationShip = rxBuddy[relationshipToPatient] as String
+                val otherRelationShip =  if(rxBuddy.containsKey(otherRelationShip)) rxBuddy[otherRelationShip] as String else null
+
+                val patientMemberId = memberDetailsLiveData.value?.data?.memberId!!
+                val memberId = rxBuddy[selectHouseholdMember] as Long
+
+               val rxBuddyId = rxBuddyRepository.insertRxBuddyDetails(
+                    0L,
+                    patientMemberId,
+                    if (memberId == 0L) null else memberId,
+                    rxBuddyName,
+                    rxBuddyPhoneNumber,
+                    relationShip,
+                    otherRelationShip,
+                    isSheetProvider,
+                   followUpId = followUpId
+                )
+
+                val assessmentDetail = StringConverter.convertGivenMapToString(resultMap) ?: ""
+                assessmentStringLiveData.postValue(assessmentDetail)
+                saveRxBuddyDetails.postValue(rxBuddyId)
+            }
+        }
+    }
+
 
     fun saveAssessment(
         assessmentMap: HashMap<String, Any>,
@@ -743,10 +815,10 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun getFormData(formType: String) {
+    fun getFormData(formType: String, tbType: String? = null) {
         viewModelScope.launch(dispatcherIO) {
             formLayoutsLiveData.postLoading()
-            formLayoutsLiveData.postValue(assessmentRepository.getFormData(formType))
+            formLayoutsLiveData.postValue(assessmentRepository.getFormData(formType, tbType))
         }
     }
 
@@ -1389,76 +1461,102 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun insertRxBuddyDetails(rxBuddyId:Long?,
-                             patientMemberId:String,
-                             memberId:String?,
-                             name:String?,
-                             phoneNumber:String?,
-                             relationShip:String,
-                             isMonitorSheetProvider:Boolean){
+    fun getTbType(memberId: Long) {
+        viewModelScope.launch(dispatcherIO) {
+            formLayoutsLiveData.postLoading()
+            memberDetailsLiveData.postLoading()
+            val assessmentMemberDetails = memberRegistrationRepository.getAssessmentMemberDetails(memberId)
+            memberDetailsLiveData.postValue(assessmentMemberDetails)
+
+            assessmentMemberDetails.data?.memberId?.let { memberId ->
+                //1. Get Treatment details
+                treatmentDetailsRepository.getTreatmentDetails(memberId)?.let { treatmentDetail ->
+                    // 1.1. Treatment details not null. Proceed with Rx Buddy
+                    treatmentDetailsLiveData.postValue(treatmentDetail)
+
+                    // 2. Get RX Buddy Details
+                    rxBuddyRepository.getRxBuddyDetails(memberId)?.let { rxBuddy ->
+                        // 2.1.Rx Buddy Details not null. Proceed with Rx Buddy Followup
+                        if (rxBuddy.householdMemberId != null) {
+                            val member = memberRegistrationRepository.getMemberDetails(rxBuddy.householdMemberId!!)
+                            rxBuddy.name = member.name
+                            rxBuddy.phoneNumber = member.phoneNumber
+                        }
+                        rxBuddyDetailsLiveData.postValue(rxBuddy)
+                        assessmentTBType.postValue(TBRxBuddyFollowUp)
+                    } ?: run {
+                        // 2.2.Rx Buddy Details null. Proceed with Rx Buddy Register
+                        assessmentTBType.postValue(TBRxBuddyRegister)
+                    }
+                } ?: run {
+                    // 1.2. Treatment details null. Proceed with TB Screening
+                    assessmentTBType.postValue(TBScreening)
+                }
+            } ?: run { // If Fhir id not available for member proceed with TB Screening
+                assessmentTBType.postValue(TBScreening)
+            }
+        }
+    }
+
+    private fun insertRxBuddyFollowUp(map: HashMap<String, Any>){
         viewModelScope.launch {
-            saveRxBuddyDetails.postLoading()
-            saveRxBuddyDetails.postValue(
-                rxBuddyRepository.insertRxBuddyDetails(
-                    rxBuddyId,
-                    patientMemberId,
-                    if(memberId?.equals("0") == true) null else memberId,
-                    name,
-                    phoneNumber,
-                    relationShip,
-                    isMonitorSheetProvider
+            saveRxBuddyFollowUpLiveData.postLoading()
+            val tb = map[TB_MENU_ID.lowercase()] as HashMap<String, Any>
+            if (tb.containsKey(TBRxBuddyFollowUp)) {
+                val rxBuddyFollowUp = tb[TBRxBuddyFollowUp] as HashMap<String, Any>
+                val rxBuddyLocalId = rxBuddyDetailsLiveData.value?.id ?: 0
+                val rxBuddyId = rxBuddyDetailsLiveData.value?.rxBuddyId
+
+                if (rxBuddyFollowUp.containsKey(rxBuddyMonitoringDates)) {
+                    val dates = rxBuddyFollowUp[rxBuddyMonitoringDates] as List<Long>
+                    val updatedDates = dates.map { date ->
+                        DateUtils.getDateString(
+                            date,
+                            inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
+                            outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                        )
+                    }
+
+                    rxBuddyFollowUp[rxBuddyMonitoringDates] = updatedDates
+                }
+
+                rxBuddyId?.let {
+                    rxBuddyFollowUp[RxBuddyId] = it
+                }
+
+                val patientMemberId = memberDetailsLiveData.value?.data?.memberId!!
+                saveRxBuddyFollowUpLiveData.postValue(
+                    rxBuddyRepository.insertRxBuddyFollowUp(
+                        rxBuddyLocalId = rxBuddyLocalId,
+                        rxBuddyId = rxBuddyId,
+                        patientMemberId = patientMemberId,
+                        map = rxBuddyFollowUp,
+                        followUpId = followUpId
+                    )
+                )
+            }
+            val assessmentDetail = StringConverter.convertGivenMapToString(map) ?: ""
+            assessmentStringLiveData.postValue(assessmentDetail)
+        }
+    }
+
+    fun updateNextVisitDateForRxBuddyRegister(nextVisitDate: String, id: Long) {
+        viewModelScope.launch(dispatcherIO) {
+            assessmentUpdateLiveData.postValue(
+                rxBuddyRepository.updateNextVisitDateRxBuddyRegister(
+                    nextVisitDate,
+                    id
                 )
             )
         }
     }
 
-    fun getRxBuddyDetails(patientMemberId: String) {
-        viewModelScope.launch {
-            rxBuddyDetailsLiveData.postLoading()
-            rxBuddyDetailsLiveData.postValue(
-                rxBuddyRepository.getRxBuddyDetails(patientMemberId)
-            )
-        }
-    }
-
-    fun insertTreatmentDetails(){
-        viewModelScope.launch {
-            val treatmentDetails = TreatmentDetailsEntity(
-                memberId = selectedHouseholdMemberId.toString(),
-                type = "TB",
-                diagnoses = "Drug Sensitive TB",
-                diagnosedDate = "23/02/2025",
-                treatmentStartDate = "23/02/2025",
-                healthUnitNo = 156L,
-                icDistrictTBNo = 1019283L,
-                typeOfDrug = "Bedaquiline  - 400mg/15 Tablets" +
-                        "Pretomanid - 200mg/15 Tablets",
-                noOfTabletsGivenForTB = 50L
-            )
-            treatmentDetailsRepository.insertOrUpdateTreatmentDetails(treatmentDetails)
-        }
-    }
-
-    fun getTreatmentDetails(hhmId:Long){
-        viewModelScope.launch {
-            treatmentDetailsLiveData.postLoading()
-            treatmentDetailsLiveData.postValue(
-                treatmentDetailsRepository.getTreatmentDetails(hhmId)
-            )
-        }
-    }
-
-    fun insertRxBuddyFollowUp(rxBuddyId: Long?,patientMemberId: String,monitoringSheetDate:String,
-                              isSymptomsWorse:Boolean,isMedication:Boolean){
-        viewModelScope.launch {
-            saveRxBuddyFollowUpLiveData.postLoading()
-            saveRxBuddyFollowUpLiveData.postValue(
-                rxBuddyRepository.insertRxBuddyFollowUp(
-                    rxBuddyId = null,
-                    patientMemberId = patientMemberId,
-                    rxBuddyMonitoringSheetDate = monitoringSheetDate,
-                    isAnyOfSymptomsWorse = isSymptomsWorse,
-                    isAnyOfMedicationNeeded = isMedication
+    fun updateNextVisitDateForRxBuddyFollowUp(nextVisitDate: String, id: Long) {
+        viewModelScope.launch(dispatcherIO) {
+            assessmentUpdateLiveData.postValue(
+                rxBuddyRepository.updateNextVisitDateRxBuddyFollowUp(
+                    nextVisitDate,
+                    id
                 )
             )
         }

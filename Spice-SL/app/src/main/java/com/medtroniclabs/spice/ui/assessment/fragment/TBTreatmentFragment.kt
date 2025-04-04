@@ -1,25 +1,25 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.DefinedParams.TB
-import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.appextensions.getLocalDate
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.data.offlinesync.model.Prescription
 import com.medtroniclabs.spice.databinding.FragmentTBTreatmentBinding
 import com.medtroniclabs.spice.db.entity.TreatmentDetailsEntity
-import com.medtroniclabs.spice.mappingkey.RxBuddy
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
-import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getValueOfKeyFromMap
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class TBTreatmentFragment : BaseFragment() {
@@ -38,71 +38,79 @@ class TBTreatmentFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
         addObserver()
     }
 
     private fun addObserver() {
-        viewModel.treatmentDetailsLiveData.observe(viewLifecycleOwner){ resourceState ->
-            when(resourceState.state){
-                ResourceState.LOADING -> {
-                    showProgress()
-                }
-                ResourceState.ERROR -> {
-                    hideProgress()
-                }
-                ResourceState.SUCCESS -> {
-                    hideProgress()
-                    bindData(resourceState.data)
-                }
-            }
+        viewModel.treatmentDetailsLiveData.observe(viewLifecycleOwner){ treatmentDetail ->
+            bindData(treatmentDetail)
         }
-    }
-
-    private fun initView() {
-        viewModel.getTreatmentDetails(viewModel.selectedHouseholdMemberId)
     }
 
     private fun bindData(treatmentDetails: TreatmentDetailsEntity?) {
         treatmentDetails?.let {
-            createSummaryView(createTreatmentSummaryData(treatmentDetails))
+            createTreatmentDetailsCardView(createTreatmentDetailsData(treatmentDetails))
         }
     }
 
-    private fun createTreatmentSummaryData(td: TreatmentDetailsEntity): List<AssessmentSummaryModel>? {
-       return mutableListOf(
-           AssessmentSummaryModel(
-               title = getString(R.string.diagnoses),
-               value = td.diagnoses
-           ),
-           AssessmentSummaryModel(
-               title = getString(R.string.date_diagnosed),
-               value = td.diagnosedDate
-           ),
-           AssessmentSummaryModel(
-               title = getString(R.string.treatment_start_date),
-               value = td.treatmentStartDate
-           ),
-           AssessmentSummaryModel(
-               title = getString(R.string.health_unit_no),
-               value = td.healthUnitNo.toString()
-           ),
-           AssessmentSummaryModel(
-               title = getString(R.string.ic_district_tb_no),
-               value = td.icDistrictTBNo.toString()
-           ),
-           AssessmentSummaryModel(
-               title = getString(R.string.type_of_drug),
-               value = td.typeOfDrug
-           ),
-           AssessmentSummaryModel(
-               title = getString(R.string.no_of_tablets_given_for_tb),
-               value = td.noOfTabletsGivenForTB.toString()
-           )
-       )
+    private fun createTreatmentDetailsData(td: TreatmentDetailsEntity): List<AssessmentSummaryModel>? {
+        val dateTimeFormatter = DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy)
+        val drugsAndQuantity = getDrugAndQuantityDetails(td.prescriptions)
+        return mutableListOf(
+            AssessmentSummaryModel(
+                title = getString(R.string.diagnoses),
+                value = td.diagnoses ?: getString(R.string.hyphen_symbol)
+            ),
+            AssessmentSummaryModel(
+                title = getString(R.string.date_diagnosed),
+                value = td.diagnosedDate?.getLocalDate()?.format(dateTimeFormatter) ?: getString(R.string.hyphen_symbol)
+            ),
+            AssessmentSummaryModel(
+                title = getString(R.string.treatment_start_date),
+                value = td.treatmentStartDate?.getLocalDate()?.format(dateTimeFormatter) ?: getString(R.string.hyphen_symbol)
+            ),
+            AssessmentSummaryModel(
+                title = getString(R.string.health_unit_no),
+                value = td.healthUnitNo?.toString() ?: getString(R.string.hyphen_symbol)
+            ),
+            AssessmentSummaryModel(
+                title = getString(R.string.ic_district_tb_no),
+                value = td.icDistrictTBNo?.toString() ?: getString(R.string.hyphen_symbol)
+            ),
+
+            AssessmentSummaryModel(
+                title = getString(R.string.type_of_drug),
+                value = drugsAndQuantity.first ?: getString(R.string.hyphen_symbol)
+            ),
+            AssessmentSummaryModel(
+                title = getString(R.string.no_of_tablets_given_for_tb),
+                value = drugsAndQuantity.second ?: getString(R.string.hyphen_symbol)
+            )
+        )
     }
 
-    private fun createSummaryView(
+    private fun getDrugAndQuantityDetails(json: String?): Pair<String?, String?> {
+        val gson = Gson()
+        val listType = object : TypeToken<List<Prescription>>() {}.type
+        val prescriptionList: List<Prescription> = gson.fromJson(json, listType)
+
+        val filteredList = prescriptionList.filter { it.isActive }
+        if (filteredList.isNotEmpty()) {
+            var totalTablets = 0L
+            val tablets = getString(R.string.tablets)
+            val drugsList = filteredList.map { prescription ->
+                val tabletCount = prescription.prescribedDays * prescription.frequency
+                totalTablets += tabletCount
+                "${prescription.medicationName} / $tabletCount $tablets"
+            }
+
+            return Pair(drugsList.joinToString("\n"), totalTablets.toString())
+        } else {
+            return Pair(null, null)
+        }
+    }
+
+    private fun createTreatmentDetailsCardView(
         listSummaryData: List<AssessmentSummaryModel>?
     ) {
         listSummaryData?.let {summaryData ->

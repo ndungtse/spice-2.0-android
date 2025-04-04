@@ -15,6 +15,9 @@ interface TreatmentDetailsDAO {
     @Update
     suspend fun updateTreatmentDetails(treatmentDetails: TreatmentDetailsEntity): Int
 
-    @Query("SELECT * FROM treatmentdetailsentity WHERE memberId = :memberId")
-    suspend fun getTreatmentDetailsByMemberId(memberId: Long): TreatmentDetailsEntity?
+    @Query("SELECT * FROM TreatmentDetailsEntity WHERE memberId = :memberId")
+    suspend fun getTreatmentDetailsByMemberId(memberId: String): TreatmentDetailsEntity?
+
+    @Query("DELETE FROM TreatmentDetailsEntity")
+    suspend fun deleteAllTreatmentDetails()
 }

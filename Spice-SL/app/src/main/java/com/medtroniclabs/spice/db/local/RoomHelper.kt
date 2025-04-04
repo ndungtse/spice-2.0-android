@@ -18,6 +18,8 @@ import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberCallRegisterDto
+import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyFollowUpDetails
+import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyRegisterDetail
 import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.CallHistory
@@ -502,7 +504,35 @@ interface RoomHelper {
 
     suspend fun updateTreatmentDetails(treatmentDetails: TreatmentDetailsEntity):Int
 
-    suspend fun getTreatmentDetails(memberId: Long):TreatmentDetailsEntity?
+    suspend fun getTreatmentDetails(memberId: String):TreatmentDetailsEntity?
 
     suspend fun insertRxBuddyFollowUp(rxBuddyFollowUp: RxBuddyFollowUpEntity):Long
+
+    suspend fun getAllUnSyncedRxBuddyRegister(): List<RxBuddyRegisterDetail>
+
+    suspend fun getHouseholdMemberForRxBuddy(hhmId: Long): HouseHoldMember
+
+    suspend fun getUnSyncedRxBuddyFollowUpWithoutRxBuddyId(rxBuddyLocalId: Long): List<RxBuddyFollowUpEntity>
+
+    suspend fun getUnSyncedRxBuddyFollowUpWithRxBuddyId(): List<RxBuddyFollowUpDetails>
+
+    suspend fun updateNextVisitDateRxBuddyRegister(nextVisitDate: String, id: Long)
+
+    suspend fun updateNextVisitDateRxBuddyFollowUp(nextVisitDate: String, id: Long)
+
+    suspend fun insertOrUpdateRxBuddyFromBE(entity: RxBuddyDetails): Long
+
+    suspend fun deleteAllTreatmentDetails()
+
+    suspend fun deleteAllRxBuddyDetails()
+
+    suspend fun deleteAllRxBuddyFollowUp()
+
+    suspend fun getUnSyncedRxBuddyRegisterCount(): Int
+
+    suspend fun getUnSyncedRxBuddyFollowUpCount(): Int
+
+    suspend fun updateRxBuddyRegisterSyncStatus(idList: List<Long>, syncStatus: String)
+
+    suspend fun updateRxBuddyFollowUpSyncStatus(idList: List<Long>, syncStatus: String)
 }

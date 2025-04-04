@@ -141,4 +141,7 @@ interface MemberDAO {
     @Query("SELECT * FROM HouseholdMember WHERE household_id = :householdId AND id != :patientId AND isActive=1 AND substr(date_of_birth, 1, 10) < date('now','-10 years') ")
     suspend fun getOtherHouseholdExcludeTBPatient(householdId: Long,patientId:Long):List<HouseholdMemberEntity>
 
+    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id Where hhm.id = :hhmId")
+    suspend fun getHouseholdMemberForRxBuddy(hhmId: Long): HouseHoldMember
+
 }

@@ -21,6 +21,8 @@ import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBContactTracing
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBScreening
 import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
@@ -294,14 +296,25 @@ class AssessmentRepository @Inject constructor(
         }
     }
 
-    suspend fun getFormData(
-        formType: String
-    ): Resource<FormResponse> {
+    suspend fun getFormData(formType: String, tbType: String? = null): Resource<FormResponse> {
         return try {
             val response = roomHelper.getFormData(formType)
             val formFieldsType = object : TypeToken<FormResponse>() {}.type
             val formFields: FormResponse = Gson().fromJson(response, formFieldsType)
-            Resource(state = ResourceState.SUCCESS, data = formFields)
+            if (tbType != null) {
+                if (tbType == TBContactTracing) {
+                    val filteredList =
+                        formFields.formLayout.filter { it.id == TBContactTracing || it.family == TBContactTracing || it.id == TBScreening || it.family == TBScreening }
+                    formFields.formLayout = filteredList
+                } else {
+                    val filteredList =
+                        formFields.formLayout.filter { it.id == tbType || it.family == tbType }
+                    formFields.formLayout = filteredList
+                }
+                Resource(state = ResourceState.SUCCESS, data = formFields)
+            } else {
+                Resource(state = ResourceState.SUCCESS, data = formFields)
+            }
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
@@ -400,4 +413,6 @@ class AssessmentRepository @Inject constructor(
             listOf()
         }
     }
+
+
 }

@@ -158,8 +158,7 @@ object AppModule {
     @Provides
     fun provideBaseUrl(): String {
         //return BaseUrlProvider.dynamicURL()
-       return BuildConfig.API_BASE_URL
-       // return "https://factually-meet-sole.ngrok-free.app/"
+      return BuildConfig.API_BASE_URL
     }
 
     @Singleton

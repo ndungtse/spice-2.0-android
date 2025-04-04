@@ -1449,6 +1449,7 @@
     <string name="update_contact_tracing_for_other" translatable="false">Update Contact Tracing for other household members!</string>
     <string name="rx_buddy_details" translatable="false">Rx Buddy Details</string>
     <string name="relation_ship_with_patient" translatable="false">Relationship with Patient</string>
+    <string name="other_relationship" translatable="false">Other Relationship</string>
     <string name="date_diagnosed" translatable="false">Date Diagnosed</string>
     <string name="health_unit_no" translatable="false">Health Unit No</string>
     <string name="ic_district_tb_no" translatable="false">IC District TB No</string>

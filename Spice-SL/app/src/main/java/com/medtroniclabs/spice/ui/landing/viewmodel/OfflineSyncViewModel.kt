@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.repo.FollowUpRepository
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
 import com.medtroniclabs.spice.repo.OfflineSyncRepository
+import com.medtroniclabs.spice.repo.RxBuddyRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -35,6 +36,7 @@ class OfflineSyncViewModel @Inject constructor(
     private val householdMemberRepository: HouseholdMemberRepository,
     private val communityProfileRepository: CommunityProfileRepository,
     private val offlineSyncRepository: OfflineSyncRepository,
+    private val rxBuddyRepository: RxBuddyRepository,
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher
 ) :  BaseViewModel(dispatcherIO) {
 
@@ -43,7 +45,9 @@ class OfflineSyncViewModel @Inject constructor(
         OfflineSyncEntityDetail("Household Member", 0),
         OfflineSyncEntityDetail("Assessments", 0),
         OfflineSyncEntityDetail("Follow-Up", 0),
-        OfflineSyncEntityDetail("Community Profile", 0)
+        OfflineSyncEntityDetail("Community Profile", 0),
+        OfflineSyncEntityDetail("RxBuddy Register", 0),
+        OfflineSyncEntityDetail("RxBuddy FollowUp", 0)
     )
 
     @Inject
@@ -104,6 +108,8 @@ class OfflineSyncViewModel @Inject constructor(
             updateSyncedCount(2, assessmentRepository.getUnSyncedAssessmentCount())
             updateSyncedCount(3, followUpRepository.getUnSyncedFollowUpCount())
             updateSyncedCount(4, communityProfileRepository.getUnSyncedCommunityProfileCount())
+            updateSyncedCount(5, rxBuddyRepository.getUnSyncedRxBuddyRegisterCount())
+            updateSyncedCount(6, rxBuddyRepository.getUnSyncedRxBuddyFollowUpCount())
         }
     }
 

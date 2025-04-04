@@ -1,26 +1,25 @@
-package com.medtroniclabs.spice.db.entity
+package com.medtroniclabs.spice.data.offlinesync.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 
-@Entity(tableName = EntitiesName.RX_BUDDY_FOLLOW_UP_ENTITY)
-data class RxBuddyFollowUpEntity(
-    @PrimaryKey(autoGenerate = true)
+data class RxBuddyFollowUpDetails(
     var id: Long = 0,
     val rxBuddyLocalId: Long,
-    val rxBuddyId: Long? = null,
+    val rxBuddyId: Long?,
     var patientMemberId: String,
-
 
     var followUp: String? = "",
     var nextVisitDate: String = "",
+    var followUpId: Long? = null,
 
-    val followUpId: Long? = null,
     var syncStatus: OfflineSyncStatus = OfflineSyncStatus.NotSynced,
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
     val createdBy: Long = SecuredPreference.getUserId(),
-    var updatedAt: Long = System.currentTimeMillis()
+    var updatedAt: Long = System.currentTimeMillis(),
+
+    val patientId: String?,
+    val villageId: String?,
+    val householdId: String? = null,
 )
