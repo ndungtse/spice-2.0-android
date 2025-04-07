@@ -75,11 +75,11 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             binding.btnRenewAll.gone()
                         }
                         prescriptionViewModel.updateMedicationList(
-                            prescriptionViewModel.constructMedicationRequestObjectList(ArrayList(data.filter { it.groupName.isNullOrEmpty() })),
+                            prescriptionViewModel.constructMedicationRequestObjectList(ArrayList(data.filter { it.groupName.isNullOrEmpty() || it.groupUniqueId == null })),
                             true
                         )
                         prescriptionViewModel.updateMedicationGroupList(
-                            prescriptionViewModel.constructMedicationRequestObjectList(ArrayList(data.filter { it.groupName!=null })),
+                            prescriptionViewModel.constructMedicationRequestObjectList(ArrayList(data.filter { it.groupName!=null && it.groupUniqueId != null })),
                             true
                         )
                     }
@@ -137,7 +137,8 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
         prescriptionViewModel.selectedMedicationLiveData.observe(this) { list ->
             list?.let {
-                binding.btnPrescribe.isEnabled = list.size > 0
+                val selectedGroupMeds = prescriptionViewModel.selectedMedicationGroupLiveData.value ?: emptyList()
+                binding.btnPrescribe.isEnabled = list.size > 0 || selectedGroupMeds.isNotEmpty()
                 if (list.size > 0) {
                     binding.tvNoMedicationDataFound.gone()
                 } else {
@@ -149,7 +150,8 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
         prescriptionViewModel.selectedMedicationGroupLiveData.observe(this) { list ->
             list?.let {
-                binding.btnPrescribe.isEnabled = list.size > 0
+                val selectedMeds = prescriptionViewModel.selectedMedicationLiveData.value ?: emptyList()
+                binding.btnPrescribe.isEnabled = list.isNotEmpty() || selectedMeds.isNotEmpty()
                 showMedicationGroupList(list)
             }
         }
@@ -284,6 +286,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                     R.string.hyphen_symbol
                 )
             )
+            discontinuedMedicationBinding.tvInstructions.text = data.instruction ?: getString(R.string.hyphen_symbol)
             discontinuedMedicationBinding.tvQuantity.text =
                 ((data.prescribedDays ?: 0) * data.frequency).toString()
             discontinuedMedicationBinding.tvPrescribedDays.text = data.prescribedDays.toString()
@@ -367,7 +370,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                         if (selectedMap.isNotEmpty()) {
                             prescriptionBinding.frequency.setSelection(
                                 getFrequencyPosition(
-                                    prescriptionViewModel.getInstructionMap(),
+                                    prescriptionViewModel.getFrequencyMap(),
                                     selectedMap
                                 )
                             )
@@ -421,7 +424,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                 position: Int,
                                 id: Long
                             ) {
-                                val selectedItem = adapter.getData(position = position)
+                                val selectedItem = instructionAdapter.getData(position = position)
                                 selectedItem?.let { map ->
                                     if (data.medicationResponse.instruction.isNullOrEmpty()) {
                                         data.medicationResponse.instruction = null
@@ -437,9 +440,11 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                     if (data.medicationResponse.prescriptionId != null && !data.medicationResponse.isEditable) {
                         prescriptionBinding.etPrescribedDays.isEnabled = false
                         prescriptionBinding.frequency.isEnabled = false
+                        prescriptionBinding.instruction.isEnabled = false
                     } else {
                         prescriptionBinding.etPrescribedDays.isEnabled = true
                         prescriptionBinding.frequency.isEnabled = true
+                        prescriptionBinding.instruction.isEnabled = true
                         prescriptionBinding.ivEditMedication.gone()
                     }
 
@@ -603,12 +608,12 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                         position: Int,
                         id: Long
                     ) {
-                        val selectedItem = adapter.getData(position = position)
+                        val selectedItem = instructionAdapter.getData(position = position)
                         selectedItem?.let { map ->
                             if (data.medicationResponse.instruction.isNullOrEmpty()) {
                                 data.medicationResponse.instruction = null
                             }
-                            data.medicationResponse.instruction = map.get(DefinedParams.Value) as? String
+                            data.medicationResponse.instruction = map[DefinedParams.Value] as? String
                         }
                     }
 
@@ -619,11 +624,13 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             if (data.medicationResponse.prescriptionId != null && !data.medicationResponse.isEditable) {
                 prescriptionBinding.etPrescribedDays.isEnabled = false
                 prescriptionBinding.frequency.isEnabled = false
+                prescriptionBinding.instruction.isEnabled = false
                 prescriptionBinding.ivEditMedication.visible()
                 prescriptionBinding.ivRemoveMedication.setImageResource(R.drawable.icon_delete_red)
             } else {
                 prescriptionBinding.etPrescribedDays.isEnabled = true
                 prescriptionBinding.frequency.isEnabled = true
+                prescriptionBinding.instruction.isEnabled = true
                 prescriptionBinding.ivEditMedication.gone()
                 if (data.medicationResponse.isEditable) {
                     prescriptionBinding.ivRemoveMedication.setImageResource(R.drawable.icon_reset_grey)
@@ -869,7 +876,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
         val invalidList = ArrayList<MedicationRequestObject>()
 
         prescriptionViewModel.selectedMedicationLiveData.value?.forEach { data ->
-            if (data.medicationResponse.prescribedDays == null || data.medicationResponse.prescribedDays == 0L) {
+            if (data.medicationResponse.prescribedDays == null || data.medicationResponse.prescribedDays == 0L || (data.medicationResponse.instruction == DefinedParams.DefaultIDLabel && !(data.medicationResponse.prescriptionId != null && !data.medicationResponse.isEditable))) {
                 data.medicationResponse.showErrorMessage = true
                 invalidList.add(data)
             } else {
@@ -882,7 +889,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             prescriptionViewModel.selectedMedicationLiveData.value
 
         prescriptionViewModel.selectedMedicationGroupLiveData.value?.forEach { data ->
-            if (data.medicationResponse.prescribedDays == null || data.medicationResponse.prescribedDays == 0L) {
+            if (data.medicationResponse.prescribedDays == null || data.medicationResponse.prescribedDays == 0L || (data.medicationResponse.instruction == DefinedParams.DefaultIDLabel && !(data.medicationResponse.prescriptionId != null && !data.medicationResponse.isEditable))) {
                 data.medicationResponse.showErrorMessage = true
                 invalidList.add(data)
             } else {

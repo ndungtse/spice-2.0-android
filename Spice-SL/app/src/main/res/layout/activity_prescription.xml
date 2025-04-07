@@ -231,7 +231,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:weightSum="1">
+                        android:weightSum="1.2">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="@dimen/_0dp"
@@ -252,6 +252,17 @@
                             android:gravity="center"
                             android:padding="@dimen/_12sdp"
                             android:text="@string/frequency"
+                            android:textColor="@color/table_title"
+                            android:textSize="@dimen/_14ssp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="@dimen/_0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.2"
+                            android:fontFamily="@font/inter_regular"
+                            android:gravity="center"
+                            android:padding="@dimen/_12sdp"
+                            android:text="@string/Instructions"
                             android:textColor="@color/table_title"
                             android:textSize="@dimen/_14ssp" />
 

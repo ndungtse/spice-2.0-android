@@ -33,7 +33,6 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -143,6 +142,13 @@ class PrescriptionViewModel @Inject constructor(
 
     fun getInstructionMap(): ArrayList<Map<String, Any>> {
         val mapList = ArrayList<Map<String, Any>>()
+        val defaultMap = hashMapOf<String, Any>(
+            DefinedParams.ID to DefinedParams.DefaultSelectID,
+            DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+            DefinedParams.Value to DefinedParams.DefaultIDLabel,
+            DefinedParams.DisplayOrder to 0
+        )
+        mapList.add(defaultMap)
         instructionListLiveDate.value?.data?.forEach { data ->
             data.value?.let { fhirValue ->
                 val map = HashMap<String, Any>()
@@ -195,7 +201,8 @@ class PrescriptionViewModel @Inject constructor(
                                 codeDetails = it.medicationResponse.codeDetails,
                                 frequencyName = getMedicationFrequencyName(it),
                                 groupName = it.medicationResponse.groupName,
-                                groupId = it.medicationResponse.groupId
+                                groupUniqueId = it.medicationResponse.groupUniqueId,
+                                instruction = it.medicationResponse.instruction ?: ""
                             )
                         }?.let { it2 ->
                             prescriptionList.add(
@@ -251,7 +258,8 @@ class PrescriptionViewModel @Inject constructor(
             prescriptionId = prescription.prescriptionId,
             prescribedSince = prescription.prescribedSince,
             groupName = prescription.groupName,
-            groupId = prescription.groupId
+            groupUniqueId = prescription.groupUniqueId,
+            instruction = prescription.instruction
         )
     }
 

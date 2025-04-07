@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingVertical="@dimen/_8sdp"
-        android:weightSum="1">
+        android:weightSum="1.2">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvMedicationName"
@@ -24,6 +24,17 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvFrequency"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:fontFamily="@font/inter_regular"
+            android:gravity="center"
+            android:padding="@dimen/_12sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvInstructions"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.2"

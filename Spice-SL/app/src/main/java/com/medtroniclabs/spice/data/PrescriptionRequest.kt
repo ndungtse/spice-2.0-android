@@ -1,8 +1,5 @@
 package com.medtroniclabs.spice.data
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
 
 data class PrescriptionRequest(
     val encounter: EncounterDetails,
@@ -39,7 +36,8 @@ data class  Prescription(
     val instructionUpdated : String? = null,
     val groupName: String? = null,
     val isGroup : Boolean? = null,
-    val groupId: String? = null
+    val groupUniqueId: String? = null,
+    val instruction: String ? = null
 )
 
 

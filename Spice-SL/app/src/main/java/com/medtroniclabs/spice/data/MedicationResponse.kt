@@ -31,7 +31,7 @@ data class MedicationResponse(
     var prescriptionRemainingDays: Int? = null,
     val groupName: String? = null,
     val isGroup: Boolean = false,
-    val groupId: String? = null,
+    val groupUniqueId: String? = null,
     var instruction: String? = null
 ) : Parcelable {
     var datetime :Long ?= null
