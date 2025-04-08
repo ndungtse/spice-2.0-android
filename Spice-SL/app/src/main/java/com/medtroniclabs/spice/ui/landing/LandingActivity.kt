@@ -371,7 +371,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         }
     }
     private fun onClickUploadLog(){
-        if (BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "staging") {
+        if (BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "staging" || BuildConfig.BUILD_TYPE == "training") {
             binding.uploadLog.setOnClickListener {
                 val uploadWorkRequest = OneTimeWorkRequest.Builder(UploadWorker::class.java)
                     .setInputData(periodicUploaderInputData())
@@ -806,7 +806,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
     private fun schedulePeriodicUploadWork(context: Context) {
         val periodicRequest =
-            PeriodicWorkRequestBuilder<UploadWorker>(1, TimeUnit.DAYS)
+            PeriodicWorkRequestBuilder<UploadWorker>(30, TimeUnit.MINUTES)
                 .setInitialDelay(0, TimeUnit.SECONDS)
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
                 .build()

@@ -71,10 +71,28 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         setListener()
         initSummaryViewByWorkFlowName()
-        viewModel.setUserJourney("${viewModel.workflowName}${AnalyticsDefinedParams.RMNCHSummaryAssessment}")
+        viewModel.setUserJourney(getUserJourneyName())
         binding.etNextFollowUpDate.background= ContextCompat.getDrawable(requireContext(),R.drawable.edittext_background)
         val background = binding.etNextFollowUpDate.background as? GradientDrawable
         background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), ContextCompat.getColor(requireContext(), R.color.edittext_stroke))
+    }
+
+    private fun getUserJourneyName(): String {
+
+         when(viewModel.workflowName) {
+
+             ChildHoodVisit -> {
+                 return "${viewModel.workflowName}${AnalyticsDefinedParams.RMNCHCHILDASSESSMENTSUMMARY}"
+             }
+             else -> {
+               return  "${viewModel.workflowName}${AnalyticsDefinedParams.RMNCHSummaryAssessment}"
+
+             }
+
+
+         }
+
+
     }
 
     private fun setListener() {

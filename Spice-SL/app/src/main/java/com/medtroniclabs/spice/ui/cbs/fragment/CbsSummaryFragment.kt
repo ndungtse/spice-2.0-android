@@ -73,9 +73,9 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
                 val existingFragment =
                     childFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
                 if (existingFragment == null) {
-                    viewModel.setUserJourney(AnalyticsDefinedParams.CBSFRAGMENTSUMMARYSUCCESS)
                     SuccessDialogFragment.newInstance(descText = getString(R.string.cbs_register_updated))
                         .show(childFragmentManager, SuccessDialogFragment.TAG)
+                    viewModel.setUserJourney(AnalyticsDefinedParams.CBSFRAGMENTSUMMARYSUCCESS)
                 }
             }
 

@@ -149,6 +149,7 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
             }
 
             viewModel.memberDetailsLiveData.value?.data?.let {
+                viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                 viewModel.saveMember(
                     resultMap,
                     householdId = it.householdLocalId,
