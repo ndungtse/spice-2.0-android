@@ -8,11 +8,13 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
+import com.medtroniclabs.spice.data.model.ChipResponse
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.model.TbMedicalReviewCreateRequest
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
@@ -21,6 +23,8 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
+import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
 import com.medtroniclabs.spice.ui.medicalreview.SystemicExaminationsFragment
@@ -32,18 +36,22 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBa
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.ComorbiditiesFragment
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.PresumptiveTreatmentAndHistoryFragment
+import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.TbSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.ComorbiditiesViewModel
+import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.TbSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.TbViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.respiratory
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCallBack {
+class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCallBack,
+    OnDialogDismissListener {
 
     private lateinit var binding: ActivityTbMedicalReviewBinding
     private val patientViewModel: PatientDetailViewModel by viewModels()
@@ -52,6 +60,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     private val presentingComplaintsViewModel: PresentingComplaintsViewModel by viewModels()
     private val systemicExaminationViewModel: SystemicExaminationViewModel by viewModels()
     private val comorbiditiesViewModel: ComorbiditiesViewModel by viewModels()
+    private val summaryViewModel: TbSummaryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,10 +72,10 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
             getString(R.string.patient_medical_review),
             homeAndBackVisibility = Pair(true, true),
             callback = {
-                finish()
+                showErrorDialog()
             },
             callbackHome = {
-                startActivityWithoutSplashScreen()
+                showErrorDialog(true)
             }
         )
         binding.refreshLayout.setOnRefreshListener {
@@ -86,6 +95,32 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     }
 
     private fun attachObserver() {
+        viewModel.summaryCreateResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+
+                    }
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    MedicalReviewSuccessDialogFragment.newInstance().show(
+                        supportFragmentManager,
+                        MedicalReviewSuccessDialogFragment.TAG
+                    )
+                }
+            }
+        }
         viewModel.tbMetaResponse.observe(this) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
@@ -145,7 +180,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resource.data?.let {
-
+                        showSummary()
                     }
                 }
 
@@ -153,6 +188,31 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
                     hideLoading()
                 }
             }
+        }
+    }
+
+    override fun onDialogDismissListener(isFinish: Boolean) {
+        startActivityWithoutSplashScreen()
+    }
+
+    private fun showSummary() {
+        with(binding) {
+            patientSummaryContainer.gone()
+            comorbiditiesContainer.gone()
+            presentingComplaintsContainer.gone()
+            comorbiditiesContainer.gone()
+            systemicExaminationsContainer.gone()
+            clinicalNotesContainer.gone()
+            patientMedicalReviewDiagnosis.gone()
+            clinicalNotesContainer.visible()
+            binding.bottomNavigationView.gone()
+            binding.referralBottomView.visible()
+            binding.btnDone.isEnabled = true
+            replaceFragment(
+                R.id.clinicalNotesContainer,
+                TbSummaryFragment.TAG,
+                TbSummaryFragment.newInstance(encounterId = viewModel.tbCreateResponse.value?.data?.encounterId, fhirId = patientViewModel.getPatientFHIRId())
+            )
         }
     }
 
@@ -204,9 +264,25 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     private val onBackPressedCallback: OnBackPressedCallback =
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                finish()
+                showErrorDialog()
             }
         }
+
+    private fun showErrorDialog(isHome: Boolean = false) {
+        showErrorDialogue(
+            getString(R.string.alert),
+            getString(R.string.exit_reason),
+            isNegativeButtonNeed = true
+        ) { isPositive ->
+            if (isPositive) {
+                if (isHome) {
+                    startActivityWithoutSplashScreen()
+                } else {
+                    onBackPressPopStack()
+                }
+            }
+        }
+    }
 
     override fun onClick(v: View?) {
         when (v?.id) {
@@ -214,15 +290,61 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
             binding.ivInvestigation.id -> openInvestigationActivity()
             binding.loadingProgress.id -> {}
             binding.btnSubmit.id -> withLocationCheck(::clickSubmit)
+            binding.btnDone.id ->withLocationCheck(::createSummary)
+            binding.btnRefer.id -> showReferPatientDialog()
         }
     }
+
+    private fun createSummary() {
+        val fragment = supportFragmentManager.findFragmentById(R.id.clinicalNotesContainer)
+        if (fragment is TbSummaryFragment) {
+            val isValid = (fragment as? TbSummaryFragment)?.validateInput()
+            if (isValid == true) {
+                val submitCreateId = viewModel.getSubmitCreateId()
+                val nextVisitDate = DateUtils.convertDateTimeToDate(
+                    summaryViewModel.nextFollowupDate,
+                    DateUtils.DATE_ddMMyyyy,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    inUTC = true
+                )
+                if (connectivityManager.isNetworkAvailable()) {
+                    viewModel.createTbSummary(
+                        MedicalReviewTypeEnums.TB.name,
+                        patientViewModel.getPatientMemberId(),
+                        submitCreateId,
+                        patientViewModel.getPatientHouseholdId(),
+                        viewModel.getPatientReference(),
+                        nextVisitDate,
+                        summaryViewModel.patientStatus,
+                        patientViewModel.getVillageId(),
+                        patientViewModel.getPatientId(),
+                        MedicalReviewTypeEnums.TB.name
+                    )
+                } else {
+                    showErrorDialogue(
+                        getString(R.string.error), getString(R.string.no_internet_error),
+                        isNegativeButtonNeed = false,
+                    ) {}
+                }
+            }
+        }
+    }
+
     private fun clickSubmit() {
         val request = createMedicalReviewRequest()
         withNetworkAvailability(online = {
-            viewModel.createMotherNeonate(request)
+            viewModel.TbCreate(request)
         })
     }
-
+    private fun showReferPatientDialog() {
+        viewModel.tbCreateResponse.value?.data?.let {
+            ReferPatientFragment.newInstance(
+                MedicalReviewTypeEnums.TB.name,
+                it.patientReference,
+                it.encounterId
+            ).show(supportFragmentManager, ReferPatientFragment.TAG)
+        }
+    }
     /**
      * Creates a `TbMedicalReviewCreateRequest` with safe handling.
      */
@@ -230,9 +352,15 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
         return TbMedicalReviewCreateRequest(
             presentingComplaints = presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value },
             presentingComplaintsNotes = presentingComplaintsViewModel.enteredComplaintNotes,
-            systemicExaminations = systemicExaminationViewModel.selectedSystemicExaminations.map { it.value },
+            systemicExaminations = systemicExaminationViewModel.selectedSystemicExaminations.map {
+                ChipResponse(
+                    name = it.value,
+                    value = if (it.value == respiratory) systemicExaminationViewModel.respiratoryNotes else null
+                )
+            },
             clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
             comorbidities = comorbiditiesViewModel.chips.map { it.value },
+            comorbiditiesNotes = comorbiditiesViewModel.comments.ifBlank { null },
             encounter = createMedicalReviewEncounter(
                 encounterId = patientViewModel.encounterId,
                 patientHouseholdId = patientViewModel.getPatientHouseholdId(),
@@ -292,7 +420,8 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
 
     override fun onDataLoaded(details: PatientListRespModel) {
         viewModel.memberId = details.memberId
-        replaceWithDiagnosisFragment()
+        (supportFragmentManager.findFragmentById(R.id.clinicalNotesContainer) as? TbSummaryFragment)
+            ?.let { showSummary() } ?: replaceWithDiagnosisFragment()
     }
 
     private fun setButtonClickListener() {
@@ -304,7 +433,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     }
 
     private fun replaceWithDiagnosisFragment() {
-        addOrReuseFragment(
+        replaceFragment(
             R.id.patientSummaryContainer,
             MedicalReviewPatientDiagnosisFragment.TAG,
             MedicalReviewPatientDiagnosisFragment.newInstance(

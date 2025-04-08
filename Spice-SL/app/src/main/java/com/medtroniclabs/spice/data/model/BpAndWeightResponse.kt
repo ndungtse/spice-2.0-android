@@ -1,5 +1,11 @@
 package com.medtroniclabs.spice.data.model
 
+import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.Prescription
+import com.medtroniclabs.spice.data.history.Investigation
+import com.medtroniclabs.spice.data.history.PatientStatus
+
 data class BpAndWeightResponse(
     val systolic: Double? = null,
     val diastolic: Double? = null,
@@ -12,20 +18,27 @@ data class BpAndWeightResponse(
 
 data class TbHistory(
     val id: String? = null,
+    val diagnosis: ArrayList<DiagnosisDiseaseModel>? = null,
     val presentingComplaints: List<String>? = null,
     val tbSummary: TbSummary? = null,
     val presentingComplaintsNotes: String? = null,
-    val systemicExaminations: List<String>? = null,
+    val systemicExaminations: List<MedicalReviewMetaItems>? = null,
     val systemicExaminationNotes: String? = null,
+    val comorbiditiesNotes: String? = null,
     val comorbidities: List<String>? = null,
     val memberId: String? = null,
     val clinicalNotes: String? = null,
     val lastReviewDate: String? = null,
-    val prescriptions: List<String>? = null,
-    val investigations: List<String>? = null
+    val prescriptions: List<Prescription>? = null,
+    val investigations: List<Investigation>? = null,
+    val summaryStatus:List<PatientStatus>?=null
 )
 
 data class TbSummary(
+    val tbScreening : TbScreening? = null
+)
+
+data class TbScreening(
     val id: String? = null,
     val householdNo: String? = null,
     val patientId: String? = null,

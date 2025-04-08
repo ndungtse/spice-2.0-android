@@ -83,7 +83,7 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
 
     private fun enableBtn() {
         binding.btnOkay.isEnabled = siteDiseaseCategoryTagView.getSelectedTags()
-            .isNotEmpty() || diseaseConfirmCategoryTagView.getSelectedTags().isNotEmpty()
+            .isNotEmpty() && diseaseConfirmCategoryTagView.getSelectedTags().isNotEmpty()
     }
 
     private fun getDiagnosisDetails(id: String) {

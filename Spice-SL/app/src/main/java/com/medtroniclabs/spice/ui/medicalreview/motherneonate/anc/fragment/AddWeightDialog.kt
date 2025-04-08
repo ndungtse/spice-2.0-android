@@ -47,12 +47,13 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
             return AddWeightDialog()
         }
 
-        fun newInstance(patientId: String?,villageId:String?, householdId:String?): AddWeightDialog {
+        fun newInstance(patientId: String?,villageId:String?, householdId:String?, memberId:String?): AddWeightDialog {
             val fragment = AddWeightDialog()
             fragment.arguments = Bundle().apply {
                 putString(DefinedParams.PatientId, patientId)
                 putString(DefinedParams.villageId, villageId)
                 putString(DefinedParams.householdId, householdId)
+                putString(DefinedParams.MemberID, memberId)
             }
             return fragment
         }
@@ -178,7 +179,8 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
                 startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
                 endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
                 villageId = arguments?.getString(DefinedParams.villageId),
-                householdId = arguments?.getString(DefinedParams.householdId)
+                householdId = arguments?.getString(DefinedParams.householdId),
+                memberId = arguments?.getString(DefinedParams.MemberID, "")
             )
         )
     }

@@ -90,6 +90,7 @@
                         android:paddingEnd="@dimen/_16ssp"
                         android:paddingBottom="@dimen/_8sdp"
                         android:paddingTop="@dimen/_8sdp"
+                        app:singleSelection="true"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvDiagnosisLbl" />
@@ -143,6 +144,7 @@
                         android:paddingBottom="@dimen/_8sdp"
                         android:paddingTop="@dimen/_8sdp"
                         android:visibility="gone"
+                        app:singleSelection="true"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvSiteLbl" />

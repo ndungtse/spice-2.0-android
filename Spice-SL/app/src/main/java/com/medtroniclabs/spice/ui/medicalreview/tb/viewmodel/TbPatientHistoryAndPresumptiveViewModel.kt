@@ -20,7 +20,7 @@ class TbPatientHistoryAndPresumptiveViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
     val getHistory = MutableLiveData<Resource<TbHistory>>()
-    fun fetchBmiList(motherNeonateAncRequest: MotherNeonateAncRequest) {
+    fun fetchPatientHistory(motherNeonateAncRequest: MotherNeonateAncRequest) {
         viewModelScope.launch(dispatcherIO) {
             getHistory.postLoading()
             getHistory.postValue(

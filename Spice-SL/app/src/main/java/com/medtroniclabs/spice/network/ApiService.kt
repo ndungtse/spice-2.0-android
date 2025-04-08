@@ -60,6 +60,7 @@ import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
+import com.medtroniclabs.spice.data.model.PatientTypeCreateRequest
 import com.medtroniclabs.spice.data.model.PncSubmitResponse
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.data.model.RequestChangePassword
@@ -619,4 +620,10 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/tb/create")
     suspend fun saveTbMedicalReview(@Body request: TbMedicalReviewCreateRequest): Response<APIResponse<PatientEncounterResponse>>
+
+    @POST("/spice-service/medical-review/patient-type/create")
+    suspend fun createPatientType(@Body request: PatientTypeCreateRequest): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("/spice-service/medical-review/patient-type")
+    suspend fun getPatientType(@Body request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, Any>>>
 }

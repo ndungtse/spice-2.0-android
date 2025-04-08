@@ -38,11 +38,13 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissL
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.calculateBp
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListenerForTb
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddBpDialog
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddWeightDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.AddHeightDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.BMIListDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.PatientStatusDialog
+import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.PatientTypeFragment
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.TbConfirmDiagnosisAndSiteOfDiseaseDialog
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
@@ -53,7 +55,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListener,
-    DialogDismissListener {
+    DialogDismissListener,DialogDismissListenerForTb {
 
     private lateinit var binding: FragmentMedicalReviewPatientDiagnosisBinding
     private val viewModel: MotherNeonateBpWeightViewModel by activityViewModels()
@@ -361,11 +363,13 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 tvTbAddBp.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
                 tvTbAddWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
                 tvAddSiteDisease.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+                tvAddPatientType.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
                 commonLl.setVisible(patientViewModel.getTbMedicalReviewStatus())
                 viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
                 viewModel.fetchBloodPressure(MotherNeonateAncRequest(memberId = getMemberId()))
                 viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
                 viewModel.fetchBmi(MotherNeonateAncRequest(memberId = getMemberId()))
+                fetchPatientType()
                 retryButtonTbBp.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
                 retryButtonTbWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
                 retryButtonTbHeightConfirm.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
@@ -402,7 +406,18 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             binding.retryButtonTbHeightConfirm.id -> retryFetchingDataForHeight()
             binding.tvBmiHistory.id -> showBmiDialog()
             binding.retryButtonTbBMI.id -> retryFetchingDataForBMI()
+            binding.tvAddPatientType.id -> showPatientType()
         }
+    }
+
+    private fun fetchPatientType() {
+        viewModel.getPatientType(MotherNeonateAncRequest(memberId = patientViewModel.getPatientMemberId()))
+    }
+
+    private fun showPatientType() {
+        PatientTypeFragment.newInstance().apply {
+            listener = this@MedicalReviewPatientDiagnosisFragment
+        }.show(childFragmentManager, PatientTypeFragment.TAG)
     }
 
     private fun retryFetchingDataForHeight() {
@@ -443,7 +458,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 listener = this@MedicalReviewPatientDiagnosisFragment
             }
         } else {
-            AddWeightDialog.newInstance(getPatientId(),villageId = patientViewModel.getVillageId(),householdId = patientViewModel.getPatientHouseholdId()).apply {
+            AddWeightDialog.newInstance(getPatientId(),villageId = patientViewModel.getVillageId(),householdId = patientViewModel.getPatientHouseholdId(),memberId = patientViewModel.getPatientMemberId()).apply {
                 listener = this@MedicalReviewPatientDiagnosisFragment
             }
         }
@@ -504,6 +519,17 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     }
 
     private fun attachObserver() {
+        viewModel.getPatientType.observe(viewLifecycleOwner) {
+            if (it.state == ResourceState.SUCCESS) {
+                viewModel.getPatientType.value?.data?.get("patient-type")?.let { type ->
+                    if (type is String && type.isNotBlank()) {
+                        binding.tvPatientType.text = type.capitalizeFirstChar()
+                    }
+                }
+            } else {
+                binding.tvPatientType.text = getString(R.string.hyphen_symbol)
+            }
+        }
         statusViewModel.patientStatusLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -708,4 +734,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         dialog.dismiss()
     }
 
+
+    override fun onDialogDismissedForTb() {
+        fetchPatientType()
+    }
 }

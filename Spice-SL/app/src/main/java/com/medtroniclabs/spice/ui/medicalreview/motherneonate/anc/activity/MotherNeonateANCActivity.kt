@@ -638,7 +638,8 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
             endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
             villageId = villageId,
-            householdId = householdId
+            householdId = householdId,
+            memberId = patientViewModel.getPatientMemberId()
         )
     }
 

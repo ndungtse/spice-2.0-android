@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.tb.repo
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
@@ -10,6 +11,7 @@ import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
+import com.medtroniclabs.spice.data.model.PatientTypeCreateRequest
 import com.medtroniclabs.spice.data.model.TbHistory
 import com.medtroniclabs.spice.data.model.TbMedicalReviewCreateRequest
 import com.medtroniclabs.spice.db.local.RoomHelper
@@ -212,5 +214,48 @@ class TbMedicalReviewRepo @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
+    }
+
+    suspend fun createPatientType(request: PatientTypeCreateRequest): Resource<HashMap<String, Any>> {
+        return try {
+            val response = apiHelper.createPatientType(request)
+            if (response.isSuccessful) {
+                val res = response.body()
+                if (res?.status == true) {
+                    Resource(state = ResourceState.SUCCESS, data = res.entity)
+                } else {
+                    Resource(state = ResourceState.ERROR)
+                }
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getPatientType(request: MotherNeonateAncRequest): Resource<HashMap<String, Any>> {
+        return try {
+            val response = apiHelper.getPatientType(request)
+            if (response.isSuccessful) {
+                val res = response.body()
+                if (res?.status == true) {
+                    Resource(state = ResourceState.SUCCESS, data = res.entity)
+                } else {
+                    Resource(state = ResourceState.ERROR)
+                }
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    fun getExaminationsComplaints(
+        category: String,
+        type: String
+    ): LiveData<List<MedicalReviewMetaItems>> {
+        return roomHelper.getExaminationsComplaintsForAnc(category, type)
     }
 }

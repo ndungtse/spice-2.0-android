@@ -79,46 +79,53 @@ class PresumptiveTreatmentAndHistoryFragment : BaseFragment() {
                 getString(R.string.hyphen_symbol)
             )
             tvSystemicText.text = CommonUtils.combineText(
-                history.systemicExaminations.orEmpty(),
+                history.systemicExaminations?.map { it.value }.orEmpty(),
                 history.systemicExaminationNotes.orEmpty(),
                 getString(R.string.hyphen_symbol)
             )
             tvClinicalNotesText.text = history.clinicalNotes?.takeIf { it.isNotBlank() }
                 ?: getString(R.string.hyphen_symbol)
-            tvInvestigationsText.text = CommonUtils.combineText(
-                history.investigations.orEmpty(),
-                "",
-                getString(R.string.hyphen_symbol)
-            )
-            tvPrescriptionsText.text = CommonUtils.combineText(
-                history.prescriptions.orEmpty(),
-                "",
-                getString(R.string.hyphen_symbol)
-            )
+            tvPrescriptionsText.text =
+                history.prescriptions?.let { CommonUtils.createPrescription(it, requireContext()) }
+                    ?.takeIf { it.isNotEmpty() }
+                    ?: requireContext().getString(R.string.hyphen_symbol)
+            tvInvestigationsText.text = history.investigations?.let {
+                CommonUtils.createInvestigation(
+                    it,
+                    requireContext()
+                )
+            }?.takeIf { it.isNotEmpty() }
+                ?: requireContext().getString(R.string.hyphen_symbol)
         }
     }
 
     private fun updateUiWithTbSummary(history: TbHistory) {
-        val presentingText = buildString {
-            history.tbSummary?.let { summary ->
-                if (summary.hasCough == true) {
-                    if (summary.hasCoughLastedLonger == true) append(getString(R.string.cough_2weeks))
-                    if (summary.hasNightSweats == true) appendIfNotEmpty(
-                        ", ",
-                        getString(R.string.drenching_night_sweats)
-                    )
-                    if (summary.hasFever == true) appendIfNotEmpty(", ", getString(R.string.fever))
-                    if (summary.hasWeightLoss == true) appendIfNotEmpty(", ", getString(R.string.weight_loss))
+        val builder = StringBuilder()
+
+        history.tbSummary?.tbScreening?.let { summary ->
+            if (summary.hasCough == true) {
+                if (summary.hasCoughLastedLonger == true) {
+                    builder.append(getString(R.string.cough_2weeks))
+                }
+                if (summary.hasNightSweats == true) {
+                    appendIfNotEmpty(builder, ", ", getString(R.string.drenching_night_sweats))
+                }
+                if (summary.hasFever == true) {
+                    appendIfNotEmpty(builder, ", ", getString(R.string.fever))
+                }
+                if (summary.hasWeightLoss == true) {
+                    appendIfNotEmpty(builder, ", ", getString(R.string.weight_loss))
                 }
             }
-        }.ifEmpty { getString(R.string.hyphen_symbol) }
+        }
 
+        val presentingText = if (builder.isEmpty()) getString(R.string.hyphen_symbol) else builder.toString()
         binding.tvPresentingText.text = presentingText
     }
 
-    private fun StringBuilder.appendIfNotEmpty(prefix: String, text: String) {
-        if (this.isNotEmpty()) append(prefix)
-        append(text)
+    private fun appendIfNotEmpty(builder: StringBuilder, delimiter: String, text: String) {
+        if (builder.isNotEmpty()) builder.append(delimiter)
+        builder.append(text)
     }
 
     fun initView() {
@@ -130,14 +137,14 @@ class PresumptiveTreatmentAndHistoryFragment : BaseFragment() {
                 getString(if (isTbReview) R.string.presumptive_treatment_summary else R.string.patient_history)
             groupCMRTb.setVisible(isTbReview)
             if (isTbReview) {
-                viewModel.fetchBmiList(
+                viewModel.fetchPatientHistory(
                     MotherNeonateAncRequest(
                         patientReference = patientDetailsViewModel.getPatientFHIRId(),
                         tbIMRCompleted = true
                     )
                 )
             } else {
-                viewModel.fetchBmiList(
+                viewModel.fetchPatientHistory(
                     MotherNeonateAncRequest(
                         patientReference = patientDetailsViewModel.getPatientFHIRId(),
                         tbIMRCompleted = false
