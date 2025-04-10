@@ -147,6 +147,8 @@ import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
+import com.medtroniclabs.spice.ncd.data.PeerSupervisorNotificationRequest
+import com.medtroniclabs.spice.ncd.data.PeerSupervisorNotificationResponse
 import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
 import com.medtroniclabs.spice.ncd.data.RegionSiteResponse
@@ -334,4 +336,7 @@ interface ApiHelper {
     suspend fun getPatientType(request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, Any>>>
 
     suspend fun getBirthDetails(request: RequestBirthDetails): Response<APIResponse<BirthDetails>>
+
+    suspend fun getCBSNotificationDetails(request: PeerSupervisorNotificationRequest): Response<APIResponse<ArrayList<PeerSupervisorNotificationResponse>>>
+    suspend fun updateCBSNotification(request: PeerSupervisorNotificationRequest): Response<APIResponse<Unit>>
 }

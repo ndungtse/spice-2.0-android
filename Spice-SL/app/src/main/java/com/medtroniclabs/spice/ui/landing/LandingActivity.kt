@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -55,6 +57,8 @@ import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountReque
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
 import com.medtroniclabs.spice.ncd.data.PatientTransfer
 import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
+import com.medtroniclabs.spice.ncd.data.PeerSupervisorNotificationRequest
+import com.medtroniclabs.spice.ncd.data.PeerSupervisorNotificationResponse
 import com.medtroniclabs.spice.ncd.landing.dialog.LanguagePreferenceDialog
 import com.medtroniclabs.spice.ncd.landing.dialog.NCDOfflineDataDialog
 import com.medtroniclabs.spice.ncd.landing.ui.UserTermsConditionsActivity
@@ -67,6 +71,7 @@ import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.PrivacyPolicyFragment
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
 import com.medtroniclabs.spice.ui.home.HomeScreenFragment
+import com.medtroniclabs.spice.ui.landing.adapter.PeerSupervisorNotificationAdapter
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 import com.medtroniclabs.spice.ui.landing.viewmodel.LanguagePreferenceViewModel
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientSearchFragment
@@ -278,10 +283,88 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                                 messageBtnData = Pair(it, true)
                             )
                         val errorFragment = supportFragmentManager.findFragmentByTag(
-                            GeneralErrorDialog.TAG)
+                            GeneralErrorDialog.TAG
+                        )
                         if (errorFragment == null) {
                             generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
                         }
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let {
+                        val generalErrorDialog =
+                            GeneralErrorDialog.newInstance(
+                                getString(R.string.alert),
+                                callback = {},
+                                this,
+                                false,
+                                okayButton = getString(R.string.ok),
+                                messageBtnData = Pair(it, true)
+                            )
+                        val errorFragment = supportFragmentManager.findFragmentByTag(
+                            GeneralErrorDialog.TAG
+                        )
+                        if (errorFragment == null) {
+                            generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
+                        }
+                    }
+                }
+            }
+
+        }
+        viewModel.cbsNotificationListResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resourceState.data?.let { notifications ->
+                        if (!notifications.isNullOrEmpty()) storeNotificationIds(notifications)
+                        else {
+                            binding.CenterProgress.gone()
+                            binding.tvNoNotificationsFound.visible()
+                        }
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let {
+                        val generalErrorDialog =
+                            GeneralErrorDialog.newInstance(
+                                getString(R.string.alert),
+                                callback = {},
+                                this,
+                                false,
+                                okayButton = getString(R.string.ok),
+                                messageBtnData = Pair(it, true)
+                            )
+                        val errorFragment = supportFragmentManager.findFragmentByTag(
+                            GeneralErrorDialog.TAG
+                        )
+                        if (errorFragment == null) {
+                            generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
+                        }
+                    }
+                }
+            }
+        }
+        viewModel.cbsNotificationUpdateListResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resourceState.data?.let { notifications ->
+                        if (!notifications.isNullOrEmpty())
+                            showNotificationView(notifications)
+                        else binding.tvNoNotificationsFound.visible()
                     }
                 }
 
@@ -305,7 +388,41 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     }
                 }
             }
+        }
 
+        viewModel.cbsNotificationUpdateResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    SecuredPreference.removePeerSupervisorToken()
+                    finishLogout()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let {
+                        val generalErrorDialog =
+                            GeneralErrorDialog.newInstance(
+                                getString(R.string.alert),
+                                callback = {},
+                                this,
+                                false,
+                                okayButton = getString(R.string.ok),
+                                messageBtnData = Pair(it, true)
+                            )
+                        val errorFragment = supportFragmentManager.findFragmentByTag(
+                            GeneralErrorDialog.TAG
+                        )
+                        if (errorFragment == null) {
+                            generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -427,11 +544,18 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         if (CommonUtils.isNonCommunity() ) {
             binding.navNotificationView.visible()
             binding.appBarMain.clNotification.visible()
+        } else {
+            if (CommonUtils.isPeerSuperVisor()) {
+                binding.uploadLog.gone()
+                binding.appBarMain.clNotification.visible()
+                binding.tvDialogTitle.text = getString(R.string.notifications)
+            }
         }
         binding.appBarMain.ivNotification.safeClickListener(this)
         binding.appBarMain.tvNotificationCount.safeClickListener(this)
+
         val isNotificationVisible =
-            CommonUtils.isNCDProvider() || CommonUtils.isPhysicianPrescriber()
+            CommonUtils.isNCDProvider() || CommonUtils.isPhysicianPrescriber() || CommonUtils.isPeerSuperVisor()
         if (isNotificationVisible) {
             binding.appBarMain.ivNotification.visible()
         } else {
@@ -526,25 +650,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 if (binding.appBarMain.includeMainContent.syncingHolder.isVisible()) {
                     showSyncInProgressWarning()
                     return true
-                } else {
-                    showErrorDialogue(
-                        getString(R.string.alert),
-                        getString(R.string.logout_alert),
-                        positiveButtonName = getString(R.string.yes),
-                        cancelBtnName = getString(R.string.no),
-                        isNegativeButtonNeed = true
-                    ) { isPositive ->
-                        if (isPositive && SecuredPreference.logout()) {
-                            viewModel.setUserJourney(AnalyticsDefinedParams.LOGOUT)
-                            cancelAllWorker()
-                            startActivity(Intent(this, LoginActivity::class.java))
-                            finish()
-                        } else {
-                            val homeMenuItem = binding.navView.menu.findItem(R.id.home)
-                            selectNavigationMenu(homeMenuItem)
-                        }
-                    }
-                }
+                } else showLogoutDialogFlow()
             }
 
             R.id.profile -> {
@@ -719,7 +825,17 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onDrawerOpened(drawerView: View) {
         when (drawerView.id) {
             R.id.nav_notification_view -> {
+                if (CommonUtils.isNonCommunity()) {
                     viewModel.getPatientListTransfer(NCDPatientTransferNotificationCountRequest(SecuredPreference.getOrganizationId().toString()))
+                } else {
+                    if (CommonUtils.isCommunity() && CommonUtils.isPeerSuperVisor()) {
+                        viewModel.notificationIsViewed = true
+                        val request = PeerSupervisorNotificationRequest(
+                            userId = SecuredPreference.getUserId().toString()
+                        )
+                        viewModel.getCBSUpdatedNotificationList(request)
+                    } else viewModel.notificationIsViewed = false
+                }
             }
         }
     }
@@ -936,4 +1052,80 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
          }
      }
 
+    private fun showNotificationView(notificationResponses: ArrayList<PeerSupervisorNotificationResponse>) {
+        binding.tvNoNotificationsFound.gone()
+        val newIds = notificationResponses.map { it.id }
+        val oldIds = SecuredPreference.notificationIds
+        if (oldIds != newIds) {
+            SecuredPreference.notificationIds = newIds
+            binding.appBarMain.notificationDot.visible()
+        } else binding.appBarMain.notificationDot.gone()
+        val adapter = PeerSupervisorNotificationAdapter()
+        adapter.setData(notificationResponses)
+        binding.rvNotifications.layoutManager = LinearLayoutManager(this)
+        binding.rvNotifications.adapter = adapter
+    }
+
+    private fun storeNotificationIds(notificationResponses: ArrayList<PeerSupervisorNotificationResponse>) {
+        SecuredPreference.notificationIds = notificationResponses.map { it.id }
+        if (!SecuredPreference.notificationIds.isNullOrEmpty())
+            binding.appBarMain.notificationDot.visible()
+        else binding.appBarMain.notificationDot.gone()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val request = PeerSupervisorNotificationRequest(
+            userId = SecuredPreference.getUserId().toString()
+        )
+        viewModel.getCBSNotificationList(request)
+    }
+
+    private fun showLogoutDialogFlow() {
+        showErrorDialogue(
+            getString(R.string.alert),
+            getString(R.string.logout_alert),
+            positiveButtonName = getString(R.string.yes),
+            cancelBtnName = getString(R.string.no),
+            isNegativeButtonNeed = true
+        ) { isPositive ->
+            if (CommonUtils.isCommunity() && CommonUtils.isPeerSuperVisor()) {
+                SecuredPreference.putString(
+                    SecuredPreference.EnvironmentKey.PEER_SUPERVISOR_NOTIFICATION_TOKEN.name,
+                    SecuredPreference.getString(SecuredPreference.EnvironmentKey.TOKEN.toString()))
+            }
+
+            if (isPositive && SecuredPreference.logout()) {
+                if (CommonUtils.isPeerSuperVisor()) {
+                    if (!connectivityManager.isNetworkAvailable()) {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            showErrorDialogue(
+                                getString(R.string.error),
+                                getString(R.string.no_internet_error),
+                                isNegativeButtonNeed = false
+                            ) {}
+                        }, 600)
+                    } else {
+                        if (SecuredPreference.notificationIds != null && viewModel.notificationIsViewed) viewModel.updateCBSNotification()
+                        else{
+                            SecuredPreference.removePeerSupervisorToken()
+                            finishLogout()
+                        }
+                    }
+                } else {
+                    finishLogout()
+                }
+            } else {
+                val homeMenuItem = binding.navView.menu.findItem(R.id.home)
+                selectNavigationMenu(homeMenuItem)
+            }
+        }
+    }
+
+    private fun finishLogout() {
+        viewModel.setUserJourney(AnalyticsDefinedParams.LOGOUT)
+        cancelAllWorker()
+        startActivity(Intent(this, LoginActivity::class.java))
+        finish()
+    }
 }

@@ -147,6 +147,8 @@ import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
+import com.medtroniclabs.spice.ncd.data.PeerSupervisorNotificationRequest
+import com.medtroniclabs.spice.ncd.data.PeerSupervisorNotificationResponse
 import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
 import com.medtroniclabs.spice.ncd.data.RegionSiteResponse
@@ -631,4 +633,10 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/birth-details")
     suspend fun getBirthDetails(@Body request: RequestBirthDetails): Response<APIResponse<BirthDetails>>
+
+    @POST("/notification-service/inapp-notification/list")
+    suspend fun getCBSNotificationDetails(@Body PeerSupervisorNotificationRequest: PeerSupervisorNotificationRequest) : Response<APIResponse<ArrayList<PeerSupervisorNotificationResponse>>>
+
+    @POST(" /notification-service/inapp-notification/clear")
+    suspend fun updateCBSNotification(@Body PeerSupervisorNotificationRequest: PeerSupervisorNotificationRequest) :  Response<APIResponse<Unit>>
 }

@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.common.RoleConstant.HEALTH_SCREENER
 import com.medtroniclabs.spice.common.RoleConstant.LAB_ASSISTANT
 import com.medtroniclabs.spice.common.RoleConstant.MCHA
 import com.medtroniclabs.spice.common.RoleConstant.MID_WIFE
+import com.medtroniclabs.spice.common.RoleConstant.PEER_SUPERVISOR
 import com.medtroniclabs.spice.common.RoleConstant.PHARMACIST
 import com.medtroniclabs.spice.common.RoleConstant.PHYSICIAN_PRESCRIBER
 import com.medtroniclabs.spice.common.RoleConstant.PROVIDER
@@ -2025,4 +2026,11 @@ object CommonUtils {
         }
     }
 
+    fun isPeerSuperVisor(): Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null){
+            return userRole.contains(PEER_SUPERVISOR)
+        }
+        return false
+    }
 }

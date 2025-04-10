@@ -1469,4 +1469,11 @@
     <string name="drenching_night_sweats" translatable="false">Drenching night sweats</string>
     <string name="weight_loss" translatable="false">Weight loss</string>
     <string name="organ_affected" translatable="false">Organ Affected</string>
+    <string name="notifications" translatable="false">NOTIFICATIONS</string>
+    <string name="alert_type" translatable="false">CBS Alert</string>
+    <string name="condition" translatable="false">Condition</string>
+    <string name="member_name" translatable="false">Member Name</string>
+    <string name="member_number" translatable="false">Member Number</string>
+    <string name="CHW_name" translatable="false">CHW Name</string>
+    <string name="chw_number" translatable="false">CHW Number</string>
 </resources>

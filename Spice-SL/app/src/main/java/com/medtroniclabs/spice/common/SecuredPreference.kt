@@ -76,13 +76,16 @@ object SecuredPreference {
         OLD_USER_ID,
         IS_TB_LOADED,
         PEER_SUPERVISOR_ID,
-        BACKGROUNDTIMESTAMP
+        BACKGROUNDTIMESTAMP,
+        PEER_SUPERVISOR_NOTIFICATION_TOKEN
     }
 
 
     private const val DEFAULT_SUFFIX = "_preferences"
 
     private var mPrefs: SharedPreferences? = null
+
+    var notificationIds: List<Int>? = null
 
     fun build(
         mKey: String,
@@ -628,4 +631,8 @@ object SecuredPreference {
     }
 
     fun getCultureId() = getCulturePreference()?.cultureId ?: 0
+
+    fun removePeerSupervisorToken() {
+        remove(EnvironmentKey.PEER_SUPERVISOR_NOTIFICATION_TOKEN.name)
+    }
 }

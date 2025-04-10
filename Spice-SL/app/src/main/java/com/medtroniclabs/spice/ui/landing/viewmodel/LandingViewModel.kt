@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
@@ -13,6 +14,8 @@ import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRespo
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
 import com.medtroniclabs.spice.ncd.data.NCDSupportRequest
 import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
+import com.medtroniclabs.spice.ncd.data.PeerSupervisorNotificationRequest
+import com.medtroniclabs.spice.ncd.data.PeerSupervisorNotificationResponse
 import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.BaseViewModel
@@ -44,6 +47,11 @@ class LandingViewModel @Inject constructor(
         get() = supportResponseMutableLiveData
 
     var isSupport = false
+    val cbsNotificationListResponse = MutableLiveData<Resource<ArrayList<PeerSupervisorNotificationResponse>>>()
+    val cbsNotificationUpdateListResponse = MutableLiveData<Resource<ArrayList<PeerSupervisorNotificationResponse>>>()
+    val cbsNotificationUpdateResponse = MutableLiveData<Resource<Unit>>()
+    var notificationIsViewed = false
+
     fun getMenus() {
         viewModelScope.launch(dispatcherIO) {
             menuListLiveData.postLoading()
@@ -93,4 +101,25 @@ class LandingViewModel @Inject constructor(
         }
     }
 
+    fun getCBSNotificationList(request: PeerSupervisorNotificationRequest) {
+        viewModelScope.launch(dispatcherIO) {
+            supportResponseMutableLiveData.postLoading()
+            cbsNotificationListResponse.postValue(metaRepository.getCBSNotificationDetails(request))
+        }
+    }
+
+    fun getCBSUpdatedNotificationList(request: PeerSupervisorNotificationRequest) {
+        viewModelScope.launch(dispatcherIO) {
+            supportResponseMutableLiveData.postLoading()
+            cbsNotificationUpdateListResponse.postValue(metaRepository.getCBSNotificationDetails(request))
+        }
+    }
+
+    fun updateCBSNotification() {
+        viewModelScope.launch(dispatcherIO) {
+            supportResponseMutableLiveData.postLoading()
+            val result = metaRepository.updateCBSNotification(PeerSupervisorNotificationRequest(ids = SecuredPreference.notificationIds))
+            cbsNotificationUpdateResponse.postValue(result)
+        }
+    }
 }

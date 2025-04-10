@@ -102,11 +102,15 @@ object AppModule {
     class AppInterceptor(val context: Context) : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
 
+            val token  = if (SecuredPreference.getString(SecuredPreference.EnvironmentKey.TOKEN.toString())?.isNotEmpty() == true) {
+                SecuredPreference.getString(SecuredPreference.EnvironmentKey.TOKEN.toString())
+            } else
+                SecuredPreference.getString(SecuredPreference.EnvironmentKey.PEER_SUPERVISOR_NOTIFICATION_TOKEN.toString())
             var request: Request = chain.request()
             val requestBuilder = request.newBuilder()
                 .header(
                     "Authorization",
-                    SecuredPreference.getString(SecuredPreference.EnvironmentKey.TOKEN.toString())
+                    token
                         ?: ""
                 )
                 .header("client", AppConstants.CLIENT_CONSTANT)

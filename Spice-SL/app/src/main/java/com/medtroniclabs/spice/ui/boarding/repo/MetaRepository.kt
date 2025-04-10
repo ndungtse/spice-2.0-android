@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.RoleConstant.PROVIDER
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.ClinicalWorkflow
 import com.medtroniclabs.spice.data.ConsentFormResponse
 import com.medtroniclabs.spice.data.CulturesEntity
@@ -46,6 +47,8 @@ import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRespo
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
 import com.medtroniclabs.spice.ncd.data.NCDSupportRequest
 import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
+import com.medtroniclabs.spice.ncd.data.PeerSupervisorNotificationRequest
+import com.medtroniclabs.spice.ncd.data.PeerSupervisorNotificationResponse
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
@@ -980,6 +983,41 @@ class MetaRepository @Inject constructor(
             )
         }
         return resultList
+    }
+
+    suspend fun getCBSNotificationDetails(
+        request: PeerSupervisorNotificationRequest
+    ): Resource<ArrayList<PeerSupervisorNotificationResponse>> {
+        return try {
+            val response = apiHelper.getCBSNotificationDetails(request)
+            if (response.isSuccessful) {
+                val res = response.body()
+                if (res?.status == true && res.entityList != null) {
+                    Resource(state = ResourceState.SUCCESS, data = res.entityList)
+                } else {
+                    Resource(state = ResourceState.ERROR)
+                }
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun updateCBSNotification(
+        request: PeerSupervisorNotificationRequest
+    ): Resource<Unit> {
+        return try {
+            val response = apiHelper.updateCBSNotification(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, message = response.message())
+            } else {
+                Resource(state = ResourceState.ERROR, message = response.message())
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
     }
 }
 

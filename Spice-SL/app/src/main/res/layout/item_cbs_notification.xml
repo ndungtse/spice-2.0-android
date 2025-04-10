@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_20sdp">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/startGuideline"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="135dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvAlertType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/alert_type"
+                android:textColor="@color/house_hold_title"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvDate"
+                style="@style/notification_table_row_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="18/08/2000" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCondition"
+                style="@style/notification_table_row_item"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:gravity="start"
+                android:text="@string/condition"
+                android:textColor="@color/red_risk"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvAlertType" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvVillageLabel"
+                style="@style/notification_table_row_item"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="@string/village"
+                app:layout_constraintEnd_toStartOf="@+id/startGuideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvCondition" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRowSeparator"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/separator_colon"
+                android:textColor="@color/grey_black"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toTopOf="@id/tvVillageLabel" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvVillage"
+                style="@style/notification_table_row_item"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_16sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toTopOf="@id/tvVillageLabel"
+                tools:text="Gibinti" />
+
+            <!-- Member Name -->
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvMemberNameLabel"
+                style="@style/notification_table_row_item"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="@string/member_name"
+                app:layout_constraintEnd_toStartOf="@id/startGuideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvVillage" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRowSeparator1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/separator_colon"
+                android:textColor="@color/grey_black"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toTopOf="@id/tvMemberNameLabel" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvMemberName"
+                style="@style/notification_table_row_item"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_16sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toTopOf="@id/tvMemberNameLabel"
+                tools:text="George Kamara" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvMemberNumberLabel"
+                style="@style/notification_table_row_item"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="@string/member_number"
+                app:layout_constraintEnd_toStartOf="@id/startGuideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvMemberName" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRowSeparator2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/separator_colon"
+                android:textColor="@color/grey_black"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toTopOf="@id/tvMemberNumberLabel" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvMemberNumber"
+                style="@style/notification_table_row_item"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_16sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toTopOf="@id/tvMemberNumberLabel"
+                tools:text="+232 738368292" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvChwNameLabel"
+                style="@style/notification_table_row_item"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="@string/CHW_name"
+                app:layout_constraintEnd_toStartOf="@id/startGuideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvMemberNumber" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRowSeparator3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/separator_colon"
+                android:textColor="@color/grey_black"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toTopOf="@id/tvChwNameLabel" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvChwName"
+                style="@style/notification_table_row_item"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_16sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toTopOf="@id/tvChwNameLabel"
+                tools:text="Mark Jacob" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvChwNumberLabel"
+                style="@style/notification_table_row_item"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="@string/chw_number"
+                app:layout_constraintEnd_toStartOf="@id/startGuideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvChwName" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRowSeparator4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/separator_colon"
+                android:textColor="@color/grey_black"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toTopOf="@id/tvChwNumberLabel" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvChwNumber"
+                style="@style/notification_table_row_item"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_16sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toTopOf="@id/tvChwNumberLabel"
+                tools:text="+232 738368292" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="@dimen/_20sdp"
+        android:background="@color/btn_disable_grey"
+        app:layout_constraintTop_toBottomOf="@+id/cardView" />
+</androidx.constraintlayout.widget.ConstraintLayout>
