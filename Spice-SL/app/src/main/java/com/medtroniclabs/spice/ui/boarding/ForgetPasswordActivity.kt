@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.appextensions.cancelAllWorker
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityForgetPasswordBinding
@@ -17,6 +18,7 @@ import com.medtroniclabs.spice.ui.boarding.fragment.ResetPasswordFragment
 import com.medtroniclabs.spice.ui.boarding.viewmodel.ForgotPasswordViewModel
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.UUID
 
 @AndroidEntryPoint
 class ForgetPasswordActivity : BaseActivity() {
@@ -154,6 +156,7 @@ class ForgetPasswordActivity : BaseActivity() {
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
+            UserDetail.referenceId = UUID.randomUUID().toString()
         }
     }
 }

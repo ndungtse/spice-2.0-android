@@ -10,11 +10,14 @@ data class UserJourneyAnalytics(
     val userId:String,
     val sessionId: String,
     val userJourney: String,
-    val startTime: String? = null
+    val startTime: String? = null,
+    val userRole: String? = null // 👈 nullable field
 )
 
 
 data class ScreenDetails(
     val userJourney: String,
-    val startTime: String
+    val startTime: String,
+    val userID: String,
+    val userRole: String? = null
 )

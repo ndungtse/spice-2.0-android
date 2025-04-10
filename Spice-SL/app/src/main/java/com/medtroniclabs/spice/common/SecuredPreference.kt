@@ -6,12 +6,14 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.data.IdentityType
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCriteria
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.CulturePreference
 import java.lang.reflect.Type
+import java.util.UUID
 
 
 object SecuredPreference {
@@ -73,7 +75,8 @@ object SecuredPreference {
         USER_CULTURE,
         OLD_USER_ID,
         IS_TB_LOADED,
-        PEER_SUPERVISOR_ID
+        PEER_SUPERVISOR_ID,
+        BACKGROUNDTIMESTAMP
     }
 
 

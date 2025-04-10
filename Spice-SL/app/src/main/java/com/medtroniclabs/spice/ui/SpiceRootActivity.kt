@@ -15,6 +15,7 @@ import com.google.android.play.core.install.model.ActivityResult
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.appextensions.cancelAllWorker
 import com.medtroniclabs.spice.common.AppConstants
 import com.medtroniclabs.spice.common.DefinedParams
@@ -23,6 +24,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
 import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
+import java.util.UUID
 import javax.inject.Inject
 import kotlin.system.exitProcess
 
@@ -94,6 +96,7 @@ open class SpiceRootActivity : AppCompatActivity() {
                         val i = Intent(context, LoginActivity::class.java)
                         i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         context.startActivity(i)
+                        UserDetail.referenceId = UUID.randomUUID().toString()
                     }
                 }
             }

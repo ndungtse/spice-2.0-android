@@ -78,6 +78,7 @@ import com.medtroniclabs.spice.ui.patientTransfer.dialog.NCDPatientDetailDialogu
 import com.medtroniclabs.spice.ncd.data.NCDSupportRequest
 import com.medtroniclabs.spice.ncd.landing.dialog.NCDSupportDialogFragment
 import com.medtroniclabs.spice.ncd.landing.dialog.NCDSupportDialogListener
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 
@@ -645,6 +646,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     cancelAllWorker()
                     startActivity(Intent(this@LandingActivity, LoginActivity::class.java))
                     finish()
+                    UserDetail.referenceId = UUID.randomUUID().toString()
                 }
             }
         }

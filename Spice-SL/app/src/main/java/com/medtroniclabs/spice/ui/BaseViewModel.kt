@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.UUID
 import javax.inject.Inject
 
 
@@ -31,6 +32,9 @@ open class BaseViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             setUserDetails()
             analyticsRepository.insertUserJourney(userJourney)
+            if(userJourney == AnalyticsDefinedParams.LOGOUT) {
+                UserDetail.referenceId = UUID.randomUUID().toString()
+            }
         }
 
     fun setAnalyticsData(
@@ -76,7 +80,7 @@ open class BaseViewModel @Inject constructor(
 
     private fun setUserDetails() {
         UserDetail.userId = SecuredPreference.getUserId().toString()
-        UserDetail.role = SecuredPreference.getRole().toString()
+        UserDetail.role = SecuredPreference.getRole()
         UserDetail.startDateTime = CommonUtils.getCurrentDateTimeInLocalTime()
     }
     private fun lastSyncDate(): String {

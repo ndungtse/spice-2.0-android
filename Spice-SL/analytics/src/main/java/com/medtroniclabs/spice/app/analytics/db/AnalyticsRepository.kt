@@ -24,6 +24,21 @@ class AnalyticsRepository(private val ctx: Context) {
         )
     )
 
+    suspend fun logEvent(
+        userId: String,
+        userRole: String,
+        eventType: String,
+        parameter: Map<String, Any?>,
+        lastSyncDate:String?): Long = dao.insertAnalytics(
+        Analytics(
+            userId = userId,
+            role = userRole,
+            eventType = eventType,
+            parameter = CommonUtils.mapToString(parameter),
+            lastSyncDate = lastSyncDate
+        )
+    )
+
     suspend fun getAllAnalytics(): List<Analytics> = dao.getAllAnalytics()
 
     suspend fun insertUserJourney(userJourney: String) = dao.insertUserJourneyAnalytics(
@@ -31,11 +46,12 @@ class AnalyticsRepository(private val ctx: Context) {
             userId= UserDetail.userId,
             sessionId = UserDetail.referenceId,
             userJourney = userJourney,
-            startTime = UserDetail.startDateTime
+            startTime = UserDetail.startDateTime,
+            userRole = UserDetail.role
         )
     )
     suspend fun getUserJourneyAnalytics(): List<UserJourneyAnalytics> = dao.getUserJourney()
 
-    suspend fun deleteAllUserJourneys()=dao.deleteAllUserJourneys()
+    suspend fun deleteAllUserJourneys(referenceId: String) =dao.deleteAllUserJourneys(referenceId)
 
 }

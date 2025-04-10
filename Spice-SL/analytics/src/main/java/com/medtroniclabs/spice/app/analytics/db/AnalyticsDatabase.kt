@@ -4,10 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.medtroniclabs.spice.app.analytics.model.Analytics
 import com.medtroniclabs.spice.app.analytics.model.UserJourneyAnalytics
 
-@Database(entities = [Analytics::class, UserJourneyAnalytics::class], version = 1)
+@Database(entities = [Analytics::class, UserJourneyAnalytics::class], version = 2)
 abstract class AnalyticsDatabase: RoomDatabase() {
 
     abstract fun analyticsDao(): AnalyticsDao
@@ -30,8 +32,19 @@ abstract class AnalyticsDatabase: RoomDatabase() {
                 AnalyticsDatabase::class.java,
                 DB_NAME
             )
+
+            db.addMigrations(MIGRATION_1_2)
+
             return db.build()
         }
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
+
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE userJourneyAnalytics ADD COLUMN userRole TEXT")
+            }
+        }
     }
+
+
 
 }

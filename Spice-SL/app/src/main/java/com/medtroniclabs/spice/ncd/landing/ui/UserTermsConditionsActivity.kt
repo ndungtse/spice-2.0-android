@@ -13,6 +13,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.appextensions.cancelAllWorker
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -23,6 +24,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
 import com.medtroniclabs.spice.ui.landing.LandingActivity
+import java.util.UUID
 
 class UserTermsConditionsActivity : BaseActivity(), View.OnClickListener {
     private lateinit var binding: ActivityUserTermsConditionsBinding
@@ -150,6 +152,7 @@ class UserTermsConditionsActivity : BaseActivity(), View.OnClickListener {
                     cancelAllWorker()
                     startActivity(Intent(this, LoginActivity::class.java))
                     finish()
+                    UserDetail.referenceId = UUID.randomUUID().toString()
                 }
             }
 

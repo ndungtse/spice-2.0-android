@@ -33,7 +33,8 @@ object CommonUtils {
 
     fun getCurrentDateTimeInUTC(): String {
         val currentTime = System.currentTimeMillis()
-        val dateFormat = SimpleDateFormat(AnalyticsDefinedParams.YYYYMMDDHHMMSS, Locale.getDefault())
+        val dateFormat =
+            SimpleDateFormat(AnalyticsDefinedParams.YYYYMMDDHHMMSS, Locale.getDefault())
         dateFormat.timeZone = TimeZone.getTimeZone("UTC")
         return dateFormat.format(currentTime)
     }
@@ -84,6 +85,7 @@ object CommonUtils {
         AnalyticsDefinedParams.ReferenceId to referenceId,
         AnalyticsDefinedParams.UserJourney to userJourney
     )
+
     fun createFollowUpEventParameter(
         id: Long,
         patientId: String?,
@@ -98,7 +100,7 @@ object CommonUtils {
         AnalyticsDefinedParams.PatientStatus to patientStatus,
         AnalyticsDefinedParams.UnSuccessFullReason to unSuccessfulReason,
         AnalyticsDefinedParams.StartTime to startTiming,
-        AnalyticsDefinedParams.EndTime  to getCurrentDateTimeInLocalTime()
+        AnalyticsDefinedParams.EndTime to getCurrentDateTimeInLocalTime()
     )
 
 
@@ -111,7 +113,8 @@ object CommonUtils {
 
     fun getCurrentDateTimeInLocalTime(): String {
         val currentTime = System.currentTimeMillis()
-        val dateFormat = SimpleDateFormat(AnalyticsDefinedParams.YYYYMMDDHHMMSS, Locale.getDefault())
+        val dateFormat =
+            SimpleDateFormat(AnalyticsDefinedParams.YYYYMMDDHHMMSS, Locale.getDefault())
         return dateFormat.format(currentTime)
     }
 
@@ -134,8 +137,12 @@ object CommonUtils {
             referenceId = referenceId,
             userJourney = userJourney
         )
-        UserDetail.userId=userId
-        analyticsRepository.logEvent(eventName, parameter,null)
+        val role: String = if (!userJourney.isNullOrEmpty()) {
+            userJourney[0].userRole ?: UserDetail.role
+        } else {
+            UserDetail.role
+        }
+        analyticsRepository.logEvent(userId, userRole = role, eventName, parameter, null)
     }
 
 }

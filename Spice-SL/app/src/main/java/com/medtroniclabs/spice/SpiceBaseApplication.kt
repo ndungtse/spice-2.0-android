@@ -1,6 +1,9 @@
 package com.medtroniclabs.spice
 
+import android.app.Activity
 import android.app.Application
+import android.os.Bundle
+import android.util.Log
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
@@ -32,12 +35,52 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
     lateinit var analyticsRepository: AnalyticsRepository
 
 
+    private var activityCount = 0
+
+
     override fun onCreate() {
         super.onCreate()
         initTimber()
         initPreference()
-        getUserJourneyAnalytics()
         saveApplicationType()
+        getUserJourneyAnalytics()
+        handleAppForeground()
+    }
+
+    private fun handleAppForeground() {
+        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+            override fun onActivityStarted(activity: Activity) {
+                activityCount++
+                if (activityCount == 1) {
+                    val backgroundTime = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.BACKGROUNDTIMESTAMP.name, 0L)
+                    val currentTime = System.currentTimeMillis()
+                    if (backgroundTime != 0L) {
+                        val diffInMinutes = (currentTime - backgroundTime) / (1000 * 60)
+                        if (diffInMinutes >= 2) {
+                            SecuredPreference.putLong(SecuredPreference.EnvironmentKey.BACKGROUNDTIMESTAMP.name,0L)
+                            getUserJourneyAnalytics()
+                        }
+                    }
+                }
+            }
+
+            override fun onActivityStopped(activity: Activity) {
+                activityCount--
+                if (activityCount == 0) {
+                    // App has gone to background
+                    Log.d("SpiceApp", "🌙 App in BACKGROUND")
+                    SecuredPreference.putLong(SecuredPreference.EnvironmentKey.BACKGROUNDTIMESTAMP.name,System.currentTimeMillis())
+                    // End session tracking, etc.
+                }
+            }
+
+            // Other lifecycle methods — no-op
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+            override fun onActivityResumed(activity: Activity) {}
+            override fun onActivityPaused(activity: Activity) {}
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+            override fun onActivityDestroyed(activity: Activity) {}
+        })
     }
 
     private fun saveApplicationType() {
@@ -93,15 +136,16 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
                 AnalyticsDefinedParams.SessionId,
                 UserDetail.referenceId
             )
+
             userAnalytics?.second?.forEach {
                 CommonUtils.setUserJourneyData(
-                        userId=userAnalytics.first,
+                        userId= it.value[0].userID,
                         eventName = AnalyticsDefinedParams.SessionTracking,
                         referenceId = it.key,
                         userJourney = it.value, analyticsRepository = analyticsRepository
                     )
             }
-            analyticsRepository.deleteAllUserJourneys()
+           analyticsRepository.deleteAllUserJourneys(UserDetail.referenceId)
         }
     }
 
@@ -110,7 +154,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
             list.isNotEmpty() -> {
                 Pair(list[0].userId, list.groupBy(UserJourneyAnalytics::sessionId)
                     .mapValues { (_, analyticsList) ->
-                        analyticsList.map { ScreenDetails(it.userJourney, it.startTime ?: "") }
+                        analyticsList.map { ScreenDetails(it.userJourney, it.startTime ?: "",it.userId,it.userRole) }
                     }.toMutableMap()
                 )
             }
