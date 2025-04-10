@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.internal.LinkedTreeMap
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.changePatientStatus
 import com.medtroniclabs.spice.appextensions.gone
@@ -28,11 +29,13 @@ import com.medtroniclabs.spice.common.DefinedParams.Neonate_Birth_Review
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.common.DefinedParams.PregnancyAncMedicalReview
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
+import com.medtroniclabs.spice.data.model.ChipResponse
 import com.medtroniclabs.spice.databinding.FragmentReferralTicketBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.ReferredDate
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.mypatients.adapter.DateListAdapter
 import com.medtroniclabs.spice.ui.referralhistory.adapter.ReferralHistoryAdapter
 import com.medtroniclabs.spice.ui.referralhistory.viewmodel.ReferralHistoryViewModel
@@ -364,6 +367,84 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
 
     private fun createMedicalReview(medicalReviewHistory: MedicalReviewHistory): List<Map<String, String?>> {
+
+        if (medicalReviewHistory.type == DefinedParams.TB_REVIEW) {
+            val chipList = (medicalReviewHistory.reviewDetails?.systemicExaminations as? List<*>)?.mapNotNull { item ->
+                (item as? LinkedTreeMap<*, *>)?.let { map ->
+                    ChipResponse(
+                        name = map["name"] as? String,
+                        value = map["value"] as? String
+                    )
+                }
+            }.orEmpty()
+
+            val respiratoryTextList = chipList.mapNotNull { chip ->
+                chip.name?.let { name ->
+                    if (name.equals(MedicalReviewDefinedParams.respiratory, ignoreCase = true)) {
+                        if (!chip.value.isNullOrBlank()) "$name : ${chip.value}" else name
+                    } else {
+                        name
+                    }
+                }
+            }
+
+            return listOf(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.diagnosis_tb),
+                    DefinedParams.Value to combineText(
+                        medicalReviewHistory.reviewDetails?.diagnosis?.filter { it.diseaseCategory?.lowercase() != OtherNotes.lowercase() && (it.type.equals("TB",true) || it.type.isNullOrBlank()) }
+                            ?.map { it.diseaseCategory }?.distinct(),
+                        "",
+                        getString(R.string.separator_double_hyphen)
+                    )
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.patient_status),
+                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                        ?.let { requireContext().changePatientStatus(it) }
+                        ?: getString(R.string.separator_double_hyphen))
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.date_of_review),
+                    DefinedParams.Value to medicalReviewHistory.dateOfReview?.let {
+                        DateUtils.convertDateFormat(
+                            it,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            DateUtils.DATE_ddMMyyyy
+                        )
+                    }
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.presenting_complaints),
+                    DefinedParams.Value to combineText(
+                        CommonUtils.convertAnyToListOfString(medicalReviewHistory.reviewDetails?.presentingComplaints),
+                        medicalReviewHistory.reviewDetails?.presentingComplaintsNotes,
+                        getString(R.string.separator_double_hyphen)
+                    )
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.comorbidities),
+                    DefinedParams.Value to combineText(
+                        medicalReviewHistory.reviewDetails?.comorbidities,
+                        medicalReviewHistory.reviewDetails?.comorbiditiesNotes,
+                        getString(R.string.separator_double_hyphen)
+                    )
+                ), mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.general_systemic_examinations),
+                    DefinedParams.Value to combineText(
+                        respiratoryTextList,
+                        medicalReviewHistory.reviewDetails?.systemicExaminationsNotes,
+                        getString(R.string.separator_double_hyphen)
+                    )
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.clinical_notes),
+                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.clinicalNotes?.takeIf { it.isNotBlank() }
+                        ?: getString(R.string.separator_double_hyphen))
+                )
+            )
+        }
+
         if (medicalReviewHistory.type == DefinedParams.Immunization) {
             val epiFields = listOf(
                 mapOf(
@@ -565,7 +646,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 Above5MedicalReview.lowercase() -> mapOf(
                     DefinedParams.label to requireContext().getString(R.string.systemic_examinations),
                     DefinedParams.Value to combineText(
-                        medicalReviewHistory.reviewDetails?.systemicExaminations,
+                        (medicalReviewHistory.reviewDetails?.systemicExaminations as? List<*>)?.filterIsInstance<String?>(),
                         medicalReviewHistory.reviewDetails?.systemicExaminationsNotes,
                         getString(R.string.separator_double_hyphen)
                     )

@@ -25,6 +25,7 @@ class TbSummaryViewModel @Inject constructor(
 ) : ViewModel() {
     var nextFollowupDate: String? = null
     var patientStatus: String? = null
+    var treatmentOutCome: String? = null
     val tbSummary = MutableLiveData<Resource<TbHistory>>()
 
     private val getPatientStatusMeta = MutableLiveData<String>()
@@ -33,9 +34,20 @@ class TbSummaryViewModel @Inject constructor(
             tbMedicalReviewRepo.getExaminationsComplaints(it, MedicalReviewTypeEnums.TB.name)
         }
 
-    fun setPatientType(category: String) {
+    fun getPatientStatus(category: String) {
         getPatientStatusMeta.value = category
     }
+
+    private val getTreatmentOutComeMeta = MutableLiveData<String>()
+
+    val getTreatmentOutComeLiveData: LiveData<List<MedicalReviewMetaItems>> =
+        getTreatmentOutComeMeta.switchMap {
+            tbMedicalReviewRepo.getExaminationsComplaints(it, MedicalReviewTypeEnums.TB.name)
+        }
+    fun getTreatmentOutCome(category: String) {
+        getTreatmentOutComeMeta.value = category
+    }
+
     fun fetchTbAssessmentDetails(encounterId: String?, fhirId: String?) {
         viewModelScope.launch(dispatcherIO) {
             tbSummary.postLoading()

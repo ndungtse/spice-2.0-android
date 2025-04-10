@@ -454,7 +454,9 @@ object CommonUtils {
             MedicalReviewTypeEnums.ANC_REVIEW.name, MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name, MedicalReviewTypeEnums.MOTHER_DELIVERY_REVIEW.name -> {
                 MedicalReviewTypeEnums.RMNCH.name
             }
-
+            MedicalReviewTypeEnums.TB.name -> {
+                MedicalReviewTypeEnums.TB.name
+            }
             else -> {
                 null
             }

@@ -110,6 +110,7 @@ object DefinedParams {
     const val ICCMUNDER2MONTHS = "iccm-under-2M"
     const val ICCM_ABOVE_2M_5Y = "iccm-2M-5Y"
     const val PregnancyAncMedicalReview = "pregnancyAncMedicalReview"
+    const val TB_REVIEW = "TB_REVIEW"
 
     const val Anaemia = "anaemia"
     const val Hiv = "hivRDT"

@@ -193,7 +193,6 @@ class SystemicExaminationsFragment : BaseFragment() {
     private fun showRespiratory() {
         viewModel.selectedSystemicExaminations.find { it.value == respiratory }?.let {
             if (viewModel.systemicExaminationsType == MedicalReviewTypeEnums.TB.name) {
-                binding.tvRespiratoryText.setText("")
                 binding.tbGroup.visible()
                 binding.tvErrorMessage.invisible()
             }

@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -23,6 +24,7 @@ import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.toggle.OnToggledListener
 import com.medtroniclabs.spice.toggle.ToggleableView
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.initTextWatcherForString
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class PatientInfoAdapter(
@@ -144,6 +146,19 @@ class PatientInfoAdapter(
                     tvSeparator.visible()
                     spinnerMaritalStatus.gone()
                     tvLabel.text = context.getString(R.string.marital_status)
+                }
+                if (label[DefinedParams.label]?.equals(context.getString(R.string.presumptive_tb_no)) == true) {
+                    tvValue.gone()
+                    tvSeparator.gone()
+                    etOccupation.visible()
+                    initTextWatcherForString(etOccupation) {
+                        occupation.invoke(it)
+                    }
+                    (label[DefinedParams.Value] as? String).takeIfNotNull(empty)?.let {
+                        if (it.isNotBlank()) {
+                            etOccupation.setText(it)
+                        }
+                    }
                 }
                 root.background = ContextCompat.getDrawable(context, fragmentBg)
             }

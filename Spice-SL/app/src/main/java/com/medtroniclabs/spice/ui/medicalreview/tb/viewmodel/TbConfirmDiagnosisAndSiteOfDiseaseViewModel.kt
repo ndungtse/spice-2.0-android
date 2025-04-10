@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel
+package com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DiagnosisViewModel @Inject constructor(
+class TbConfirmDiagnosisAndSiteOfDiseaseViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
     private var repository: DiagnosisRepository
 ) : ViewModel() {
@@ -28,9 +28,9 @@ class DiagnosisViewModel @Inject constructor(
 
     val diagnosisMetaList = MutableLiveData<Resource<List<DiseaseCategoryItems>>>()
     val siteOfDiseaseMetaList = MutableLiveData<Resource<List<DiseaseCategoryItems>>>()
+    val organAffectedMetaList = MutableLiveData<Resource<List<DiseaseCategoryItems>>>()
     val diagnosisDetailsList = MutableLiveData<Resource<ArrayList<DiagnosisDiseaseModel>>>()
     val diagnosisSaveUpdateResponse = MutableLiveData<Resource<ArrayList<DiagnosisDiseaseModel>>>()
-    var viewDiagnosis: Boolean = true
     var diagnosisType:String = ""
 
     fun getDiagnosisMetaList(diagnosisType: String) {
@@ -46,10 +46,10 @@ class DiagnosisViewModel @Inject constructor(
     }
 
     fun diagnosisCreate(request: DiagnosisSaveUpdateRequest) {
-            viewModelScope.launch(dispatcherIO) {
-                diagnosisSaveUpdateResponse.postLoading()
-                diagnosisSaveUpdateResponse.postValue(repository.saveUpdateDiagnosis(request))
-            }
+        viewModelScope.launch(dispatcherIO) {
+            diagnosisSaveUpdateResponse.postLoading()
+            diagnosisSaveUpdateResponse.postValue(repository.saveUpdateDiagnosis(request))
+        }
     }
 
     fun getDiagnosisDetails(request: CreateUnderTwoMonthsResponse) {
@@ -58,6 +58,12 @@ class DiagnosisViewModel @Inject constructor(
                 diagnosisDetailsList.postLoading()
                 diagnosisDetailsList.postValue(repository.getDiagnosisDetails(request))
             }
+        }
+    }
+
+    fun getOrganAffectedMetaList(organAffected: String) {
+        viewModelScope.launch(dispatcherIO) {
+            repository.getDiagnosisList(organAffectedMetaList, organAffected)
         }
     }
 }

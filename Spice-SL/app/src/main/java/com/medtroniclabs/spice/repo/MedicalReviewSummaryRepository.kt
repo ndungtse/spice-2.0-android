@@ -23,7 +23,9 @@ class MedicalReviewSummaryRepository @Inject constructor(
         referralTicketType: String,
         assessmentName: String,
         householdId: String?,
-        villageId: String
+        villageId: String,
+        treatmentOutComes: String? = null,
+        tbIMRCompleted:Boolean? = null
     ): Resource<HashMap<String, Any>> {
         return try {
             val request = MedicalReviewSummarySubmitRequest(
@@ -39,7 +41,9 @@ class MedicalReviewSummaryRepository @Inject constructor(
                 provenance = ProvanceDto(),
                 cost = cost,
                 medicalSupplies = medicalSupplies,
-                patientReference = patientReference
+                patientReference = patientReference,
+                treatmentOutcome = treatmentOutComes,
+                tbIMRCompleted = tbIMRCompleted
             )
             val response = request.let { apiHelper.createSummarySubmit(it) }
             if (response.isSuccessful) {

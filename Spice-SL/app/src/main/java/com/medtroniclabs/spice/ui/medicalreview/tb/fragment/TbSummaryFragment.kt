@@ -28,7 +28,10 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.PATIENT_STATUS_HYPHEN
+import com.medtroniclabs.spice.ui.medicalreview.tb.activity.TBMedicalReviewActivity
 import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.TbSummaryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.respiratory
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,6 +41,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentTbSummaryBinding
     val adapter: CustomSpinnerAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
+    val adapterForTreatmentOutCome : CustomSpinnerAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
     private var datePickerDialog: DatePickerDialog? = null
     val viewModel: TbSummaryViewModel by activityViewModels()
     val patientViewModel: PatientDetailViewModel by activityViewModels()
@@ -52,7 +56,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentTbSummaryBinding.inflate(inflater, container, false)
         return binding.root
@@ -104,7 +108,35 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                     DefinedParams.Value to (item.value ?: item.name)
                 )
             }?.let { statusList -> setSpinner(ArrayList(statusList)) }
+
+            if (patientViewModel.getTbMedicalReviewStatus()) {
+                viewModel.getTreatmentOutCome(MedicalReviewTypeEnums.treatment_outcome.name)
+            }
         }
+        viewModel.getTreatmentOutComeLiveData.observe(viewLifecycleOwner) { items ->
+            val list = arrayListOf<Map<String, Any>>().apply {
+                add(
+                    mapOf(
+                        DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                        DefinedParams.ID to -1L
+                    )
+                )
+
+                items?.forEach { item ->
+                    if (!item.value.equals(ReferralStatus.Died.name , true)) {
+                        add(
+                            mapOf(
+                                DefinedParams.id to item.id,
+                                DefinedParams.NAME to item.name,
+                                DefinedParams.Value to (item.value ?: item.name)
+                            )
+                        )
+                    }
+                }
+            }
+            setTreatmentOutCome(list)
+        }
+
         viewModel.tbSummary.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -128,11 +160,14 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun populate(data: TbHistory) {
         with(binding) {
             val views = listOf(
+                tvDiagnosesLabel, tvDiagnosesText, tvDiagnosesSeparator,
                 tvSiteLabel, tvSiteSeparator, tvSiteText,
-                tvTreatmentText, tvTreatmentError,
+                tvTreatmentText,
                 tvTreatmentLabel, tvTreatmentSeparator
             )
+            tvDiagnosesLabel.text = getText(R.string.diagnosis_tb)
             views.forEach { it.setVisible(patientViewModel.getTbMedicalReviewStatus()) }
+
             // Diagnosis Text
             val diagnosisList = data.diagnosis ?: emptyList()
             if (diagnosisList.isNotEmpty()) {
@@ -146,7 +181,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
             tvDiagnosesText.text = diagnosisList
                 .filter {
                     it.diseaseCategory.equals(DefinedParams.OtherNotes, ignoreCase = true)
-                        .not() && !it.siteOfDisease
+                        .not() && (it.type.equals("TB",true) || it.type.isNullOrBlank() )
                 }
                 .map { it.diseaseCategory }
                 .distinct()
@@ -158,7 +193,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
             tvSiteText.text = diagnosisList
                 .filter {
                     it.diseaseCategory.equals(DefinedParams.OtherNotes, ignoreCase = true)
-                        .not() && it.siteOfDisease
+                        .not() && it.type.equals("siteOfDisease",true)
                 }
                 .map { it.diseaseCategory }
                 .distinct()
@@ -202,7 +237,13 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
             // Systematic Examination
             tvGeneralText.setExpandableText(
                 fullText = CommonUtils.combineText(
-                    data.systemicExaminations?.map { it.value } ?: emptyList(),
+                    data.systemicExaminations?.map {
+                        if (it.name.equals(respiratory, ignoreCase = true) && !it.value.isNullOrBlank()) {
+                            "${it.name} : ${it.value}"
+                        } else {
+                            it.name
+                        }
+                    } ?: emptyList(),
                     "",
                     getString(R.string.hyphen_symbol)
                 ),
@@ -223,7 +264,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                 ?.takeIf { it.isNotEmpty() }
                 ?: getString(R.string.hyphen_symbol)
         }
-        viewModel.setPatientType(PATIENT_STATUS_HYPHEN)
+        viewModel.getPatientStatus(PATIENT_STATUS_HYPHEN)
     }
 
     private fun setSpinner(statusList: ArrayList<Map<String, Any>>) {
@@ -272,13 +313,126 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
             }
     }
 
-    private fun showHideNextVisit() {
-        binding.tvNextMedicalReviewLabelText.isEnabled =
-            viewModel.patientStatus?.equals(ReferralStatus.Recovered.name, true) != true
-        if (viewModel.patientStatus?.equals(ReferralStatus.Recovered.name, true) == true) {
-            binding.tvNextMedicalReviewLabelText.text = ""
+    private fun setTreatmentOutCome(treatmentOutCome: ArrayList<Map<String, Any>>) {
+        adapterForTreatmentOutCome.setData(treatmentOutCome)
+        binding.tvTreatmentText.post {
+            binding.tvTreatmentText.setSelection(0, false)
         }
+        binding.tvTreatmentText.adapter = adapterForTreatmentOutCome
+        binding.tvTreatmentText.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long
+                ) {
+                    val selectedItem = adapterForTreatmentOutCome.getData(position = pos)
+                    selectedItem?.let {
+                        val selectedId = (it[DefinedParams.id] as? Long) ?: -1L
+                        val selectedTreatmentOutCome = it[DefinedParams.Value] as String?
+                        if (selectedId != -1L) {
+                            viewModel.treatmentOutCome = selectedTreatmentOutCome
+                            // handleRecoveredState()
+                        } else {
+                            viewModel.treatmentOutCome = null
+                        }
+                        showHideNextVisit()
+                    }
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    /**
+                     * this method is not used
+                     */
+                }
+            }
     }
+
+    private fun showHideNextVisit() {
+        // Enable next medical review label unless patient is Recovered or Died
+        binding.tvNextMedicalReviewLabelText.isEnabled =
+            !(viewModel.patientStatus.equals(ReferralStatus.Recovered.name, true) ||
+                    viewModel.patientStatus.equals(ReferralStatus.Died.name, true))
+
+        // Clear label text if patient is Recovered or Died
+        if (viewModel.patientStatus.equals(ReferralStatus.Recovered.name, true) ||
+            viewModel.patientStatus.equals(ReferralStatus.Died.name, true)
+        ) {
+            binding.tvNextMedicalReviewLabelText.text = ""
+            binding.tvNextMedicalReviewError.invisible()
+        }
+
+        // Special case: Patient status is Recovered but treatment outcome is Died
+        if (viewModel.patientStatus.equals(ReferralStatus.Recovered.name, true) &&
+            viewModel.treatmentOutCome.equals(ReferralStatus.Died.name, true)
+        ) {
+            val treatmentList = arrayListOf<Map<String, Any>>().apply {
+                add(
+                    mapOf(
+                        DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                        DefinedParams.ID to -1L
+                    )
+                )
+
+                viewModel.getTreatmentOutComeLiveData.value?.forEach { item ->
+                    if (!item.value.equals(ReferralStatus.Died.name, true)) {
+                        add(
+                            mapOf(
+                                DefinedParams.id to item.id,
+                                DefinedParams.NAME to item.name,
+                                DefinedParams.Value to (item.value ?: item.name)
+                            )
+                        )
+                    }
+                }
+            }
+            adapterForTreatmentOutCome.setData(treatmentList)
+            binding.tvTreatmentText.post {
+                binding.tvTreatmentText.isEnabled = true
+                binding.tvTreatmentText.setSelection(0, false)
+                viewModel.treatmentOutCome = ""
+            }
+        }
+
+        // If patient is Died, auto-select the "Died" outcome and disable the field
+        if (viewModel.patientStatus.equals(ReferralStatus.Died.name, true)) {
+            val treatmentList = arrayListOf<Map<String, Any>>().apply {
+                add(
+                    mapOf(
+                        DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                        DefinedParams.ID to -1L
+                    )
+                )
+                viewModel.getTreatmentOutComeLiveData.value?.forEach { item ->
+                    add(
+                        mapOf(
+                            DefinedParams.id to item.id,
+                            DefinedParams.NAME to item.name,
+                            DefinedParams.Value to (item.value ?: item.name)
+                        )
+                    )
+                }
+            }
+
+            adapterForTreatmentOutCome.setData(treatmentList)
+
+            val outcomeId = viewModel.getTreatmentOutComeLiveData.value
+                ?.firstOrNull { it.value.equals(ReferralStatus.Died.name, true) }
+                ?.id ?: -1L
+
+            val index = adapterForTreatmentOutCome.getIndexOfItem(outcomeId)
+
+            binding.tvTreatmentText.apply {
+                post { setSelection(index, false) }
+                isEnabled = false
+            }
+        }
+        (requireActivity() as? TBMedicalReviewActivity)?.enableRefer(
+            !viewModel.patientStatus.equals(ReferralStatus.Died.name, true)
+        )
+    }
+
     override fun onClick(view: View) {
         when (view.id) {
             binding.tvNextMedicalReviewLabelText.id -> {
@@ -315,7 +469,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
     fun validateInput(): Boolean {
         val value = binding.tvNextMedicalReviewLabelText.text?.trim().toString()
         if (value.isBlank()) {
-            if (viewModel.patientStatus?.equals(ReferralStatus.Recovered.name, true) == true) {
+            if (viewModel.patientStatus?.equals(ReferralStatus.Recovered.name, true) == true || viewModel.patientStatus?.equals(ReferralStatus.Died.name, true) == true) {
                 binding.tvNextMedicalReviewError.invisible()
                 return true
             }

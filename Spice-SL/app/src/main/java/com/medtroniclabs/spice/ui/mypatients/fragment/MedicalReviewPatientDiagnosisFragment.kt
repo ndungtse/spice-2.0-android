@@ -43,7 +43,6 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddBp
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddWeightDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.AddHeightDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.BMIListDialog
-import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.PatientStatusDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.PatientTypeFragment
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.TbConfirmDiagnosisAndSiteOfDiseaseDialog
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
@@ -375,8 +374,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 retryButtonTbHeightConfirm.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
                 retryButtonTbBMI.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
                 tvAddHeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
-                tvAddPatientStatus.visible()
-                tvAddPatientStatus.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+                tvAddPatientStatus.gone()
                 tvBmiHistory.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
             }
             tbLl.setVisible(isTb)
@@ -402,7 +400,6 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             binding.retryButtonBp.id, binding.retryButtonTbBp.id -> retryFetchingData(true)
             binding.retryButtonWeight.id, binding.retryButtonTbWeight.id -> retryFetchingData(false)
             binding.tvAddHeight.id -> showAddHeightDialog()
-            binding.tvAddPatientStatus.id -> showPatientStatusDialog()
             binding.retryButtonTbHeightConfirm.id -> retryFetchingDataForHeight()
             binding.tvBmiHistory.id -> showBmiDialog()
             binding.retryButtonTbBMI.id -> retryFetchingDataForBMI()
@@ -415,9 +412,11 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     }
 
     private fun showPatientType() {
-        PatientTypeFragment.newInstance().apply {
-            listener = this@MedicalReviewPatientDiagnosisFragment
-        }.show(childFragmentManager, PatientTypeFragment.TAG)
+        withNetworkAvailability(online = {
+            PatientTypeFragment.newInstance().apply {
+                listener = this@MedicalReviewPatientDiagnosisFragment
+            }.show(childFragmentManager, PatientTypeFragment.TAG)
+        })
     }
 
     private fun retryFetchingDataForHeight() {
@@ -432,24 +431,24 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         }
     }
 
-    private fun showPatientStatusDialog() {
-        PatientStatusDialog.newInstance().apply {
-            listener = this@MedicalReviewPatientDiagnosisFragment
-        }.show(childFragmentManager, AddHeightDialog.TAG)
-    }
-
     private fun showAddWeightDialog() {
-        showAddBpOrWeightDialog(isBp = false)
+        withNetworkAvailability(online = {
+            showAddBpOrWeightDialog(isBp = false)
+        })
     }
 
     private fun showAddBpDialog() {
-        showAddBpOrWeightDialog(isBp = true)
+        withNetworkAvailability(online = {
+            showAddBpOrWeightDialog(isBp = true)
+        })
     }
 
     private fun showAddHeightDialog() {
-        AddHeightDialog.newInstance(getPatientId(),getMemberId(),villageId = patientViewModel.getVillageId(),householdId = patientViewModel.getPatientHouseholdId()).apply {
-            listener = this@MedicalReviewPatientDiagnosisFragment
-        }.show(childFragmentManager, AddHeightDialog.TAG)
+        withNetworkAvailability(online = {
+            AddHeightDialog.newInstance(getPatientId(),getMemberId(),villageId = patientViewModel.getVillageId(),householdId = patientViewModel.getPatientHouseholdId()).apply {
+                listener = this@MedicalReviewPatientDiagnosisFragment
+            }.show(childFragmentManager, AddHeightDialog.TAG)
+        })
     }
 
     private fun showAddBpOrWeightDialog(isBp: Boolean) {
@@ -485,7 +484,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     private fun showDiagnosisDialog() {
         if (connectivityManager.isNetworkAvailable()){
             if (isTb()) {
-                TbConfirmDiagnosisAndSiteOfDiseaseDialog().show(childFragmentManager, TbConfirmDiagnosisAndSiteOfDiseaseDialog.TAG)
+                TbConfirmDiagnosisAndSiteOfDiseaseDialog().apply {
+                    this.listener = this@MedicalReviewPatientDiagnosisFragment
+                }.show(childFragmentManager, TbConfirmDiagnosisAndSiteOfDiseaseDialog.TAG)
             } else {
                 DiagnosisDialogFragment().show(childFragmentManager, DiagnosisDialogFragment.TAG)
             }
@@ -577,14 +578,14 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                         if (isTb()) {
                             updateDiagnosisUI(
                                 diagnosisItems,
-                                list.any { !it.siteOfDisease },
+                                list.any { (it.type.equals("TB",true) || it.type.isNullOrBlank() ) },
                                 binding.tvDiagnosis,
                                 binding.tvDiagnosisConfirm,
                                 diagnosisViewModel.diagnosisMetaList
                             )
                             updateDiagnosisUI(
                                 diagnosisItems,
-                                list.any { it.siteOfDisease },
+                                list.any { it.type.equals("siteOfDisease",true) },
                                 binding.tvSiteDisease,
                                 binding.tvAddSiteDisease,
                                 diagnosisViewModel.siteOfDiseaseMetaList,
@@ -724,7 +725,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
             }
         }
-        if (isTb() && !isHeight) {
+        if (isTb() && !isBp) {
             viewModel.fetchBmi(MotherNeonateAncRequest(memberId = getMemberId()))
         }
         val dialog =
@@ -735,7 +736,20 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     }
 
 
-    override fun onDialogDismissedForTb() {
-        fetchPatientType()
+    override fun onDialogDismissedForTb(isPatientType:Boolean) {
+        if (isPatientType) {
+            fetchPatientType()
+        } else {
+            patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                details.id?.let { id ->
+                    diagnosisViewModel.getDiagnosisDetails(
+                        CreateUnderTwoMonthsResponse(
+                            patientReference = id,
+                            type = diagnosisViewModel.diagnosisType
+                        )
+                    )
+                }
+            }
+        }
     }
 }

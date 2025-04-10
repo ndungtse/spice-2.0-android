@@ -298,6 +298,9 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
         val referralTicketType: String = when (assessmentName) {
             MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name, MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name, MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name -> DefinedParams.ICCM
             MedicalReviewTypeEnums.ANC_REVIEW.name, MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name, MedicalReviewTypeEnums.MOTHER_DELIVERY_REVIEW.name -> DefinedParams.RMNCH
+            MedicalReviewTypeEnums.TB.name -> {
+                MedicalReviewTypeEnums.TB.name
+            }
             else -> {
                 ""
             }

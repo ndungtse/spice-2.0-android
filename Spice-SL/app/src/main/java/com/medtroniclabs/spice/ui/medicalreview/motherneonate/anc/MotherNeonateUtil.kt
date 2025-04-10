@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 
 object MotherNeonateUtil {
     const val TB_SITE_OF_DISEASE = "TB_SITE_OF_DISEASE"
+    const val TB_ORGAN_AFFECTED = "TB_ORGAN_AFFECTED"
     const val PATIENT_TYPE = "patient_type"
     const val PATIENT_TYPE_HYPHEN = "patient-type"
     const val PATIENT_STATUS_HYPHEN ="patient_status"

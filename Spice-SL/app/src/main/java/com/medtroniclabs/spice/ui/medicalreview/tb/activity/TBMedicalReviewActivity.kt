@@ -47,6 +47,7 @@ import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagno
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -61,7 +62,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     private val systemicExaminationViewModel: SystemicExaminationViewModel by viewModels()
     private val comorbiditiesViewModel: ComorbiditiesViewModel by viewModels()
     private val summaryViewModel: TbSummaryViewModel by viewModels()
-
+    private val referPatientViewModel: ReferPatientViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -95,6 +96,28 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     }
 
     private fun attachObserver() {
+        referPatientViewModel.referPatientResultLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    val fragment =
+                        supportFragmentManager.findFragmentByTag(ReferPatientFragment.TAG) as? ReferPatientFragment
+                    fragment?.dismiss()
+                    MedicalReviewSuccessDialogFragment.newInstance().show(
+                        supportFragmentManager,
+                        MedicalReviewSuccessDialogFragment.TAG
+                    )
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
         viewModel.summaryCreateResponse.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -318,7 +341,9 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
                         summaryViewModel.patientStatus,
                         patientViewModel.getVillageId(),
                         patientViewModel.getPatientId(),
-                        MedicalReviewTypeEnums.TB.name
+                        MedicalReviewTypeEnums.TB.name,
+                        summaryViewModel.treatmentOutCome,
+                        patientViewModel.getTbMedicalReviewStatus()
                     )
                 } else {
                     showErrorDialogue(
@@ -333,29 +358,32 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     private fun clickSubmit() {
         val request = createMedicalReviewRequest()
         withNetworkAvailability(online = {
-            viewModel.TbCreate(request)
+            viewModel.tbCreate(request)
         })
     }
     private fun showReferPatientDialog() {
-        viewModel.tbCreateResponse.value?.data?.let {
-            ReferPatientFragment.newInstance(
-                MedicalReviewTypeEnums.TB.name,
-                it.patientReference,
-                it.encounterId
-            ).show(supportFragmentManager, ReferPatientFragment.TAG)
-        }
+        withNetworkAvailability(online = {
+            viewModel.tbCreateResponse.value?.data?.let {
+                ReferPatientFragment.newInstance(
+                    MedicalReviewTypeEnums.TB.name,
+                    it.patientReference,
+                    it.encounterId
+                ).show(supportFragmentManager, ReferPatientFragment.TAG)
+            }
+        })
     }
     /**
      * Creates a `TbMedicalReviewCreateRequest` with safe handling.
      */
     private fun createMedicalReviewRequest(): TbMedicalReviewCreateRequest {
+        // TODO value should null in selectedSystemicExaminations
         return TbMedicalReviewCreateRequest(
             presentingComplaints = presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value },
             presentingComplaintsNotes = presentingComplaintsViewModel.enteredComplaintNotes,
             systemicExaminations = systemicExaminationViewModel.selectedSystemicExaminations.map {
                 ChipResponse(
                     name = it.value,
-                    value = if (it.value == respiratory) systemicExaminationViewModel.respiratoryNotes else null
+                    value = if (it.value == respiratory) systemicExaminationViewModel.respiratoryNotes else ""
                 )
             },
             clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
@@ -365,7 +393,9 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
                 encounterId = patientViewModel.encounterId,
                 patientHouseholdId = patientViewModel.getPatientHouseholdId(),
                 memberId = patientViewModel.getPatientMemberId()
-            )
+            ),
+            presumptiveTbNo = patientViewModel.occupation,
+            id = patientViewModel.encounterId
         )
     }
 
@@ -473,6 +503,10 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
                 MedicalReviewTypeEnums.SystemicExaminations.name,
                 MedicalReviewTypeEnums.TB.name
             )
+            putString(
+                MedicalReviewTypeEnums.ClinicalNotes.name,
+                MedicalReviewTypeEnums.TB.name
+            )
         }
         replaceFragmentOrCreateNewFragment<PresentingComplaintsFragment>(
             binding.presentingComplaintsContainer.id,
@@ -552,5 +586,9 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     override fun onResume() {
         super.onResume()
         getCurrentLocation()
+    }
+
+    fun enableRefer(isEnable: Boolean) {
+        binding.btnRefer.isEnabled = isEnable
     }
 }

@@ -2,22 +2,30 @@ package com.medtroniclabs.spice.ui.medicalreview.tb.fragment
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.isGone
+import com.medtroniclabs.spice.appextensions.isVisible
+import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.appextensions.setError
-import com.medtroniclabs.spice.appextensions.setWidth
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
 import com.medtroniclabs.spice.data.DiagnosisSaveUpdateRequest
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentPatientStatusDialogBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -25,9 +33,11 @@ import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.TagListCustomView
-import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListener
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListenerForTb
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.TB_ORGAN_AFFECTED
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.TB_SITE_OF_DISEASE
+import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.TbConfirmDiagnosisAndSiteOfDiseaseViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -35,12 +45,13 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickListener {
 
-    var listener: DialogDismissListener? = null
+    var listener: DialogDismissListenerForTb? = null
     private lateinit var binding: FragmentPatientStatusDialogBinding
-    private val diagnosisViewModel: DiagnosisViewModel by activityViewModels()
+    private val diagnosisViewModel: TbConfirmDiagnosisAndSiteOfDiseaseViewModel by viewModels()
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
     private lateinit var diseaseConfirmCategoryTagView: TagListCustomView
     private lateinit var siteDiseaseCategoryTagView: TagListCustomView
+    private lateinit var organAffectedTagView: TagListCustomView
 
 
     override fun onCreateView(
@@ -70,51 +81,107 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
     private fun initTag() {
         diseaseConfirmCategoryTagView = TagListCustomView(
             binding.root.context, binding.diagnosisChip
-        ) { name, _, isChecked ->
+        ) { _, _, _ ->
             enableBtn()
         }
 
         siteDiseaseCategoryTagView = TagListCustomView(
             binding.root.context, binding.siteChip
-        ) { name, _, isChecked ->
+        ) { _, _, _ ->
             enableBtn()
+        }
+        organAffectedTagView = TagListCustomView(
+            binding.root.context,
+            binding.organChip
+        ) { _, _, _ ->
+            val selectedTags = organAffectedTagView.getSelectedTags()
+            val hasOther = selectedTags.any { it.value.equals(DefinedParams.Other, ignoreCase = true) }
+
+            enableBtn()
+            showOtherNotes(hasOther)
+            if (!hasOther && binding.etOtherDiagnosisNotes.isGone()) {
+                setOtherDiagnosisTextSafely("")
+            }
         }
     }
 
-    private fun enableBtn() {
-        binding.btnOkay.isEnabled = siteDiseaseCategoryTagView.getSelectedTags()
-            .isNotEmpty() && diseaseConfirmCategoryTagView.getSelectedTags().isNotEmpty()
+    private fun showOtherNotes(isShow: Boolean) {
+        binding.etOtherDiagnosisNotes.setVisible(isShow)
     }
 
-    private fun getDiagnosisDetails(id: String) {
-        diagnosisViewModel.getDiagnosisDetails(
-            CreateUnderTwoMonthsResponse(
-                patientReference = id,
-                type = MenuConstants.TB_MENU_ID
-            )
-        )
+    private fun enableBtn() {
+        val siteTags = siteDiseaseCategoryTagView.getSelectedTags()
+        val confirmTags = diseaseConfirmCategoryTagView.getSelectedTags()
+        val organTags = organAffectedTagView.getSelectedTags()
+
+        val hasSiteTags = siteTags.isNotEmpty()
+        val hasConfirmTags = confirmTags.isNotEmpty()
+        val hasOrganTags = organTags.isNotEmpty()
+        val hasDrugSensitiveTB = confirmTags.any { it.value == "drugSensitiveTB" }
+        val hasExtraPulmonary = siteTags.any { it.value == "extraPulmonary" }
+        val hasOtherOrgan = organTags.any { it.value == "other" }
+        val otherNotesFilled = binding.etOtherDiagnosisNotes.text?.toString()?.trim()?.isNotBlank() == true
+
+        val validOrganSelection = hasOrganTags &&
+                (!hasOtherOrgan || (hasOtherOrgan && otherNotesFilled))
+
+        val validDrugSensitiveTB = !hasDrugSensitiveTB ||
+                (!hasExtraPulmonary || (hasExtraPulmonary && validOrganSelection))
+
+        if (hasSiteTags && hasConfirmTags && hasDrugSensitiveTB && hasExtraPulmonary) {
+            if (binding.organChip.isGone()) {
+                binding.organChip.visible()
+                binding.tvOrganLbl.visible()
+                binding.tvOrganError.gone()
+            }
+        } else {
+            if (binding.organChip.isVisible()) {
+                binding.organChip.gone()
+                binding.tvOrganLbl.gone()
+                binding.tvOrganError.gone()
+                setOtherDiagnosisTextSafely("")
+
+                binding.etOtherDiagnosisNotes.gone()
+                organAffectedTagView.clearOtherChip()
+                organAffectedTagView.clearSelection()
+            }
+        }
+        binding.btnOkay.isEnabled = hasSiteTags && hasConfirmTags && validDrugSensitiveTB
+    }
+
+    private fun setOtherDiagnosisTextSafely(text: String) {
+        with(binding.etOtherDiagnosisNotes) {
+            removeTextChangedListener(defaultOtherDiagnosisWatcher)
+            setText(text)
+            addTextChangedListener(defaultOtherDiagnosisWatcher)
+        }
+    }
+
+    private val defaultOtherDiagnosisWatcher = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            enableBtn()
+        }
+
+        override fun afterTextChanged(s: Editable?) {}
     }
 
     private fun attachObservers() {
         diagnosisViewModel.diagnosisSaveUpdateResponse.observe(viewLifecycleOwner) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
+                    binding.loader.visible()
                 }
 
                 ResourceState.SUCCESS -> {
-                    diagnosisViewModel.viewDiagnosis = true
-                    patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                        details.id?.let { id ->
-                            getDiagnosisDetails(id)
-                        } ?: kotlin.run {
-                            details.patientId?.let { patientViewModel.getPatients(it) }
-                        }
-                    }
+                    binding.loader.gone()
                     diagnosisViewModel.diagnosisSaveUpdateResponse.setError()
+                    listener?.onDialogDismissedForTb(isPatientType = false)
                     dismiss()
                 }
 
                 ResourceState.ERROR -> {
+                    binding.loader.gone()
                 }
             }
         }
@@ -123,11 +190,9 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
                 diagnosisViewModel.getSiteOfDiseaseMetaList(TB_SITE_OF_DISEASE)
             }
         }
-
-        diagnosisViewModel.siteOfDiseaseMetaList.observe(viewLifecycleOwner) { resource ->
+        diagnosisViewModel.organAffectedMetaList.observe(viewLifecycleOwner) {resource ->
             if (resource.state == ResourceState.SUCCESS) {
                 val listItems = resource.data ?: return@observe
-
                 val patientId = patientViewModel.patientDetailsLiveData.value?.data?.id
                 if (patientId != null) {
                     diagnosisViewModel.getDiagnosisDetails(
@@ -137,7 +202,7 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
                         )
                     )
                 } else {
-                    val siteMetaChipItems = listItems.map {
+                    val organMetaChipItems = listItems.map {
                         ChipViewItemModel(it.id, it.name, value = it.value)
                     }
 
@@ -145,15 +210,27 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
                         diagnosisViewModel.diagnosisMetaList.value?.data?.map {
                             ChipViewItemModel(it.id, it.name, value = it.value)
                         } ?: emptyList()
-
+                    val siteMetaChipItems =
+                        diagnosisViewModel.siteOfDiseaseMetaList.value?.data?.map {
+                            ChipViewItemModel(it.id, it.name, value = it.value)
+                        } ?: emptyList()
                     siteDiseaseCategoryTagView.addChipItemList(siteMetaChipItems, null)
+                    organAffectedTagView.addChipItemList(organMetaChipItems, null)
                     diseaseConfirmCategoryTagView.addChipItemList(diagnosisMetaChipItems, null)
                 }
             }
         }
 
-        diagnosisViewModel.diagnosisDetailsList.observe(viewLifecycleOwner) { resource ->
+        diagnosisViewModel.siteOfDiseaseMetaList.observe(viewLifecycleOwner) { resource ->
             if (resource.state == ResourceState.SUCCESS) {
+                diagnosisViewModel.getOrganAffectedMetaList(TB_ORGAN_AFFECTED)
+            }
+        }
+
+        diagnosisViewModel.diagnosisDetailsList.observe(viewLifecycleOwner) { resource ->
+            binding.loader.visible()
+            if (resource.state == ResourceState.SUCCESS) {
+                binding.loader.gone()
                 val listItems = resource.data ?: return@observe
 
                 val confirmMetaList = diagnosisViewModel.diagnosisMetaList.value?.data?.map {
@@ -164,7 +241,13 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
                     ChipViewItemModel(it.id, it.name, value = it.value)
                 } ?: emptyList()
 
-                val (siteGetItem, confirmGetItem) = listItems.partition { it.siteOfDisease }
+                val organMetaList = diagnosisViewModel.organAffectedMetaList.value?.data?.map {
+                    ChipViewItemModel(it.id, it.name, value = it.value)
+                } ?: emptyList()
+
+                val siteGetItem = listItems.filter { it.type == "siteOfDisease" }
+                val confirmGetItem = listItems.filter {  it.type.isNullOrBlank() || it.type == "TB" }
+                val organGetItem = listItems.filter { it.type == "organAffected" }
 
                 val filteredConfirmList = confirmMetaList.filter { diagnosis ->
                     confirmGetItem.any { it.diseaseCategory == diagnosis.value }
@@ -174,9 +257,41 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
                     siteGetItem.any { it.diseaseCategory == diagnosis.value }
                 }
 
+                val filteredOrganList = organMetaList.filter { diagnosis ->
+                    organGetItem.any { it.diseaseCategory == diagnosis.value }
+                }
                 siteDiseaseCategoryTagView.addChipItemList(siteMetaList, filteredSiteList)
+                organAffectedTagView.addChipItemList(organMetaList, filteredOrganList)
                 diseaseConfirmCategoryTagView.addChipItemList(confirmMetaList, filteredConfirmList)
+
+                if (filteredOrganList.isNotEmpty()) {
+                    if (binding.organChip.isGone()) {
+                        binding.apply {
+                            organChip.visible()
+                            tvOrganLbl.visible()
+                            tvOrganError.gone()
+                        }
+                    }
+                    val hasOther = filteredOrganList.any { it.value.equals("other", ignoreCase = true) }
+                    val otherNotesItem = listItems.firstOrNull { it.diseaseCategory.equals("otherNotes", ignoreCase = true) }
+
+                    if (hasOther && otherNotesItem?.diseaseCondition?.isNotBlank() == true) {
+                        binding.etOtherDiagnosisNotes.setText(otherNotesItem.diseaseCondition)
+                    }
+
+                } else {
+                    if (binding.organChip.isVisible()) {
+                        binding.apply {
+                            organChip.gone()
+                            tvOrganLbl.gone()
+                            tvOrganError.gone()
+                            etOtherDiagnosisNotes.setText("")
+                            etOtherDiagnosisNotes.gone()
+                        }
+                    }
+                }
             } else {
+                binding.loader.gone()
                 val siteMetaChipItems = diagnosisViewModel.siteOfDiseaseMetaList.value?.data?.map {
                     ChipViewItemModel(it.id, it.name, value = it.value)
                 } ?: emptyList()
@@ -185,23 +300,31 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
                     ChipViewItemModel(it.id, it.name, value =  it.value)
                 } ?: emptyList()
 
+                val organMetaChipItems = diagnosisViewModel.organAffectedMetaList.value?.data?.map {
+                    ChipViewItemModel(it.id, it.name, value = it.value)
+                } ?: emptyList()
+
                 siteDiseaseCategoryTagView.addChipItemList(siteMetaChipItems, null)
+                organAffectedTagView.addChipItemList(organMetaChipItems, null)
                 diseaseConfirmCategoryTagView.addChipItemList(diagnosisMetaChipItems, null)
             }
         }
     }
 
     private fun initView() {
-        diagnosisViewModel.getDiagnosisMetaList(diagnosisViewModel.diagnosisType)
+        diagnosisViewModel.getDiagnosisMetaList(MedicalReviewTypeEnums.TB.name)
         with(binding) {
             tvDiagnosisLbl.visible()
             tvSiteError.gone()
             tvSiteLbl.text = getString(R.string.site_of_disease)
+            tvSiteLbl.markMandatory()
+            tvOrganLbl.markMandatory()
             tvSiteLbl.visible()
             siteChip.visible()
             tvDiagnosisError.gone()
             tvTitle.text = getString(R.string.confirm_diagnoses)
-            tvDiagnosisLbl.text = getString(R.string.diagnosis)
+            tvDiagnosisLbl.text = getString(R.string.diagnosis_tb)
+            tvDiagnosisLbl.markMandatory()
             btnOkay.text = getString(R.string.save).uppercase()
             btnCancel.safeClickListener(this@TbConfirmDiagnosisAndSiteOfDiseaseDialog)
             btnOkay.safeClickListener(this@TbConfirmDiagnosisAndSiteOfDiseaseDialog)
@@ -228,7 +351,8 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
                         patientReference = details.id,
                         diseases = getDiagnosisDiseaseList().toCollection(arrayListOf()),
                         provenance = ProvanceDto(),
-                        type = MenuConstants.TB_MENU_ID.uppercase()
+                        type = MenuConstants.TB_MENU_ID.uppercase(),
+                        otherNotes = binding.etOtherDiagnosisNotes.text.toString().ifBlank { null }
                     )
                     diagnosisViewModel.diagnosisCreate(request)
                 }
@@ -251,7 +375,7 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
                 diseaseCategory = it.value ?: "",
                 diseaseConditionId = null,
                 diseaseCondition = null,
-                siteOfDisease = true // Set true for siteDiseaseCategoryTagView
+                type = "siteOfDisease" // Set true for siteDiseaseCategoryTagView
             )
         } + diseaseConfirmCategoryTagView.getSelectedTags().map {
             DiagnosisDiseaseModel(
@@ -259,7 +383,15 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
                 diseaseCategory = it.value ?: "",
                 diseaseConditionId = null,
                 diseaseCondition = null,
-                siteOfDisease = false // Set false for diseaseConfirmCategoryTagView
+                type = null // Set false for diseaseConfirmCategoryTagView
+            )
+        } + organAffectedTagView.getSelectedTags().map {
+            DiagnosisDiseaseModel(
+                diseaseCategoryId = it.id ?: -1L,
+                diseaseCategory = it.value ?: "",
+                diseaseConditionId = null,
+                diseaseCondition = null,
+                type = "organAffected" // Set false for diseaseConfirmCategoryTagView
             )
         })
     }
@@ -271,7 +403,7 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
         } else {
             if (isLandscape) 65 else 90
         }
-        setWidth(width)
+        setDialogPercent(width)
     }
 
     override fun onStart() {

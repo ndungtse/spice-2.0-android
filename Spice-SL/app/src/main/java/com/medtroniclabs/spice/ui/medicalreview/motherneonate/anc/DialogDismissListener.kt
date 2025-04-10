@@ -5,5 +5,5 @@ interface DialogDismissListener {
 }
 
 interface DialogDismissListenerForTb {
-    fun onDialogDismissedForTb()
+    fun onDialogDismissedForTb(isPatientType:Boolean)
 }

@@ -1468,4 +1468,5 @@
     <string name="cough_2weeks" translatable="false">Cough (>2 weeks)</string>
     <string name="drenching_night_sweats" translatable="false">Drenching night sweats</string>
     <string name="weight_loss" translatable="false">Weight loss</string>
+    <string name="organ_affected" translatable="false">Organ Affected</string>
 </resources>

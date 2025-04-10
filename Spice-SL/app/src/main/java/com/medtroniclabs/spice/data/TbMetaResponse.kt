@@ -6,5 +6,6 @@ data class TbMetaResponse(
     val comorbidities: List<MedicalReviewMetaItems>,
     val diseaseCategories : ArrayList<DiseaseCategoryItems>,
     val patientType : List<MedicalReviewMetaItems>,
-    val patientStatus : List<MedicalReviewMetaItems>
+    val patientStatus : List<MedicalReviewMetaItems>,
+    val treatmentOutcome : List<MedicalReviewMetaItems>,
 )

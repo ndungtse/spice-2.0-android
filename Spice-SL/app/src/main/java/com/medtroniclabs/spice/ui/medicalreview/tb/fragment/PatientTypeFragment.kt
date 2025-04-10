@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
@@ -86,7 +87,7 @@ class PatientTypeFragment : DialogFragment(), View.OnClickListener {
 
         viewModel.createPatientType.observe(viewLifecycleOwner) {
             if (it.state == ResourceState.SUCCESS) {
-                listener?.onDialogDismissedForTb()
+                listener?.onDialogDismissedForTb(isPatientType = true)
                 dismiss()
             }
             if (it.state == ResourceState.ERROR) {
@@ -116,6 +117,7 @@ class PatientTypeFragment : DialogFragment(), View.OnClickListener {
             viewModel.patientTypeChip = ArrayList(chipTag.getSelectedTags())
             validateInput()
         }
+        chipTag.setIsOtherNotStartWith(true)
         chipTag.addChipItemList(chipList, viewModel.patientTypeChip)
     }
 
@@ -170,7 +172,7 @@ class PatientTypeFragment : DialogFragment(), View.OnClickListener {
 
     private fun handleDialogSize() {
         val width = if (CommonUtils.checkIsTablet(requireContext())) 90 else 90
-        setWidth(if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 65 else width)
+        setDialogPercent(if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 65 else width,50)
     }
 
     override fun onStart() {

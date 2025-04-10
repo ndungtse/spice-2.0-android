@@ -44,7 +44,7 @@ class TbViewModel @Inject constructor(
 
 
 
-    fun TbCreate(request: TbMedicalReviewCreateRequest) {
+    fun tbCreate(request: TbMedicalReviewCreateRequest) {
         viewModelScope.launch(dispatcherIO) {
             try {
                 tbCreateResponse.postLoading()
@@ -65,7 +65,9 @@ class TbViewModel @Inject constructor(
         patientStatus: String?,
         villageId: String?,
         patientId: String?,
-        assessmentName: String
+        assessmentName: String,
+        treatmentOutComes: String?,
+        tbIMRCompleted:Boolean
     ) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
@@ -80,7 +82,9 @@ class TbViewModel @Inject constructor(
                     referralTicketType = referralTicketType,
                     assessmentName = assessmentName,
                     householdId = householdId,
-                    villageId = villageId
+                    villageId = villageId,
+                    treatmentOutComes = treatmentOutComes,
+                    tbIMRCompleted = tbIMRCompleted
                 )
                 summaryCreateResponse.postValue(response)
             }

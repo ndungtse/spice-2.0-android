@@ -8,7 +8,9 @@ data class TbMedicalReviewCreateRequest(
     val systemicExaminationsNotes: String? = null,
     val comorbidities: List<String?>? = null,
     val comorbiditiesNotes: String? = null,
-    val clinicalNotes: String? = null
+    val clinicalNotes: String? = null,
+    val presumptiveTbNo:String? = null,
+    var id: String? = null
 )
 
 data class ChipResponse(

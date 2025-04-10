@@ -308,7 +308,7 @@ class PatientInfoFragment : BaseFragment() {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.presumptive_tb_no),
-                        DefinedParams.Value to "364548"
+                        DefinedParams.Value to (patientListRespModel.presumptiveTbNo?.takeIf { it.isNotBlank() } ?: "")
                     )
                 )
             }

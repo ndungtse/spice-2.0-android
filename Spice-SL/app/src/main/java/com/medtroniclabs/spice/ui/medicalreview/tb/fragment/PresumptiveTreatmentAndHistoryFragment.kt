@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.databinding.FragmentPresumptiveTreatmentAndHistor
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.TbPatientHistoryAndPresumptiveViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -79,7 +80,17 @@ class PresumptiveTreatmentAndHistoryFragment : BaseFragment() {
                 getString(R.string.hyphen_symbol)
             )
             tvSystemicText.text = CommonUtils.combineText(
-                history.systemicExaminations?.map { it.value }.orEmpty(),
+                history.systemicExaminations?.map {
+                    if (it.name.equals(
+                            MedicalReviewDefinedParams.respiratory,
+                            ignoreCase = true
+                        ) && !it.value.isNullOrBlank()
+                    ) {
+                        "${it.name} : ${it.value}"
+                    } else {
+                        it.name
+                    }
+                }.orEmpty(),
                 history.systemicExaminationNotes.orEmpty(),
                 getString(R.string.hyphen_symbol)
             )

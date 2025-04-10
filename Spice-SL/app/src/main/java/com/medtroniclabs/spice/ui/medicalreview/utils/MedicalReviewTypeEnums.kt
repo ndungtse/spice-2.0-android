@@ -37,6 +37,8 @@ enum class MedicalReviewTypeEnums{
     PNCNeonateOutcome,
     TB,
     patient_type,
+    treatment_outcome,
     comorbidities,
-    PRESCRIPTION_INSTRUCTION
+    PRESCRIPTION_INSTRUCTION,
+    ClinicalNotes
 }

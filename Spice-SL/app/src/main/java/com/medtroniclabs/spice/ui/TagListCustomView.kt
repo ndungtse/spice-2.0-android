@@ -28,6 +28,11 @@ class TagListCustomView(
     val otherCallBack: ((name: String, isChecked: Boolean) -> Unit)? = null,
     val callBack: ((name: String?, isEmpty: Boolean, isChecked: Boolean) -> Unit)? = null
 ) {
+    private var isOtherNotStartWith: Boolean = false
+
+    fun setIsOtherNotStartWith(isOtherNotStartWith:Boolean) {
+        this.isOtherNotStartWith = isOtherNotStartWith
+    }
     fun addChipItemList(
         chipItemList: List<ChipViewItemModel>,
         selectedChipItemList: List<ChipViewItemModel>? = null,
@@ -36,7 +41,7 @@ class TagListCustomView(
         chipGroup.removeAllViews()
         chipItemList.forEach { data ->
             getChipText(data)?.let { chipData ->
-                if (chipData.second.startsWith(Other, ignoreCase = true))
+                if (!isOtherNotStartWith && chipData.second.startsWith(Other, ignoreCase = true))
                     otherChipBinding(data, chipData, selectedChipItemList)
                 else
                     chipBinding(data, chipData, selectedChipItemList, singleSelectionTypeMap)
@@ -269,7 +274,7 @@ class TagListCustomView(
         selectedChipItemList?.let { chipItemList ->
             val dataValue = getChipText(data)
             dataValue?.second?.let { chipItem ->
-                if (chipItem.startsWith(Other)){
+                if (!isOtherNotStartWith && chipItem.startsWith(Other)){
                     val isAlreadySelected = chipItemList.any { it.name == chipItem }
                     if (isAlreadySelected) {
                         binding.tvOther.performClick()

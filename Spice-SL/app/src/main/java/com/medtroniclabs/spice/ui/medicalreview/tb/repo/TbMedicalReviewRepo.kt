@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.TB_ORGAN_AFFECTED
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.TB_SITE_OF_DISEASE
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import javax.inject.Inject
@@ -41,11 +42,13 @@ class TbMedicalReviewRepo @Inject constructor(
                                 data.systemicExaminations,
                                 data.comorbidities,
                                 data.patientStatus,
-                                data.patientType
+                                data.patientType,
+                                data.treatmentOutcome
                             )
                         )
                         roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.TB.name)
                         roomHelper.deleteDiagnosisList(TB_SITE_OF_DISEASE)
+                        roomHelper.deleteDiagnosisList(TB_ORGAN_AFFECTED)
                         roomHelper.saveDiagnosisList(data.diseaseCategories)
                         SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.IS_TB_LOADED.name, true)
                     }
@@ -67,7 +70,8 @@ class TbMedicalReviewRepo @Inject constructor(
         systemicExaminations: List<MedicalReviewMetaItems>,
         comorbidities: List<MedicalReviewMetaItems>,
         patientStatus: List<MedicalReviewMetaItems>,
-        patientType: List<MedicalReviewMetaItems>
+        patientType: List<MedicalReviewMetaItems>,
+        treatmentOutcome: List<MedicalReviewMetaItems>
     ): List<MedicalReviewMetaItems> {
         val chipItemList = mutableListOf<MedicalReviewMetaItems>()
         chipItemList.addAll(presentingComplaints.map {
@@ -91,6 +95,7 @@ class TbMedicalReviewRepo @Inject constructor(
         chipItemList.addAll(
             patientStatus.map {
                 it.apply {
+                    type = MedicalReviewTypeEnums.TB.name
                     category = MedicalReviewTypeEnums.patient_status.name
                 }
             }
@@ -99,6 +104,13 @@ class TbMedicalReviewRepo @Inject constructor(
             patientType.map {
                 it.apply {
                     category = MedicalReviewTypeEnums.patient_type.name
+                }
+            }
+        )
+        chipItemList.addAll(
+            treatmentOutcome.map {
+                it.apply {
+                    category = MedicalReviewTypeEnums.treatment_outcome.name
                 }
             }
         )
