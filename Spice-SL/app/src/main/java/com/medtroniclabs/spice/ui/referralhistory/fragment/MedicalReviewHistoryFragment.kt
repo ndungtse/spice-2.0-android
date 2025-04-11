@@ -25,9 +25,12 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Above5MedicalReview
 import com.medtroniclabs.spice.common.DefinedParams.ICCM_ABOVE_2M_5Y
 import com.medtroniclabs.spice.common.DefinedParams.MotherDeliveryReview
+import com.medtroniclabs.spice.common.DefinedParams.NAME
 import com.medtroniclabs.spice.common.DefinedParams.Neonate_Birth_Review
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.common.DefinedParams.PregnancyAncMedicalReview
+import com.medtroniclabs.spice.common.DefinedParams.TB
+import com.medtroniclabs.spice.common.DefinedParams.Value
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.data.model.ChipResponse
 import com.medtroniclabs.spice.databinding.FragmentReferralTicketBinding
@@ -372,8 +375,8 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             val chipList = (medicalReviewHistory.reviewDetails?.systemicExaminations as? List<*>)?.mapNotNull { item ->
                 (item as? LinkedTreeMap<*, *>)?.let { map ->
                     ChipResponse(
-                        name = map["name"] as? String,
-                        value = map["value"] as? String
+                        name = map[NAME] as? String,
+                        value = map[Value] as? String
                     )
                 }
             }.orEmpty()
@@ -391,8 +394,8 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             return listOf(
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.diagnosis_tb),
-                    DefinedParams.Value to combineText(
-                        medicalReviewHistory.reviewDetails?.diagnosis?.filter { it.diseaseCategory?.lowercase() != OtherNotes.lowercase() && (it.type.equals("TB",true) || it.type.isNullOrBlank()) }
+                    Value to combineText(
+                        medicalReviewHistory.reviewDetails?.diagnosis?.filter { it.diseaseCategory?.lowercase() != OtherNotes.lowercase() && (it.type.equals(TB,true) || it.type.isNullOrBlank()) }
                             ?.map { it.diseaseCategory }?.distinct(),
                         "",
                         getString(R.string.separator_double_hyphen)
@@ -400,13 +403,13 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.patient_status),
-                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                    Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
                         ?.let { requireContext().changePatientStatus(it) }
                         ?: getString(R.string.separator_double_hyphen))
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.date_of_review),
-                    DefinedParams.Value to medicalReviewHistory.dateOfReview?.let {
+                    Value to medicalReviewHistory.dateOfReview?.let {
                         DateUtils.convertDateFormat(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -416,7 +419,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.presenting_complaints),
-                    DefinedParams.Value to combineText(
+                    Value to combineText(
                         CommonUtils.convertAnyToListOfString(medicalReviewHistory.reviewDetails?.presentingComplaints),
                         medicalReviewHistory.reviewDetails?.presentingComplaintsNotes,
                         getString(R.string.separator_double_hyphen)
@@ -424,14 +427,14 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.comorbidities),
-                    DefinedParams.Value to combineText(
+                    Value to combineText(
                         medicalReviewHistory.reviewDetails?.comorbidities,
                         medicalReviewHistory.reviewDetails?.comorbiditiesNotes,
                         getString(R.string.separator_double_hyphen)
                     )
                 ), mapOf(
                     DefinedParams.label to requireContext().getString(R.string.general_systemic_examinations),
-                    DefinedParams.Value to combineText(
+                    Value to combineText(
                         respiratoryTextList,
                         medicalReviewHistory.reviewDetails?.systemicExaminationsNotes,
                         getString(R.string.separator_double_hyphen)
@@ -439,7 +442,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.clinical_notes),
-                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.clinicalNotes?.takeIf { it.isNotBlank() }
+                    Value to (medicalReviewHistory.reviewDetails?.clinicalNotes?.takeIf { it.isNotBlank() }
                         ?: getString(R.string.separator_double_hyphen))
                 )
             )
@@ -449,7 +452,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             val epiFields = listOf(
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.date_of_review),
-                    DefinedParams.Value to medicalReviewHistory.dateOfReview?.let {
+                    Value to medicalReviewHistory.dateOfReview?.let {
                         DateUtils.convertDateFormat(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -460,13 +463,13 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.vaccination_taken),
-                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.vaccinated?.joinToString(separator = ", ")
+                    Value to (medicalReviewHistory.reviewDetails?.vaccinated?.joinToString(separator = ", ")
                         ?: getString(R.string.separator_double_hyphen))
                 ),
 
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.scheduled_date),
-                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.lastScheduledDate?.let {
+                    Value to (medicalReviewHistory.reviewDetails?.lastScheduledDate?.let {
                         DateUtils.convertDateFormat(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -477,19 +480,19 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.next_vaccination_duration),
-                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.nextVaccinationDuration
+                    Value to (medicalReviewHistory.reviewDetails?.nextVaccinationDuration
                         ?: getString(R.string.separator_double_hyphen))
                 ),
 
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.next_vaccination_dose),
-                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.nextVaccinationDose?.joinToString(separator = ", ")
+                    Value to (medicalReviewHistory.reviewDetails?.nextVaccinationDose?.joinToString(separator = ", ")
                         ?: getString(R.string.separator_double_hyphen))
                 ),
 
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.next_vaccination_date),
-                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.nextVaccinationDate?.let {
+                    Value to (medicalReviewHistory.reviewDetails?.nextVaccinationDate?.let {
                         DateUtils.convertDateFormat(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -503,7 +506,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             val commonFields = listOf(
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.diagnosis),
-                    DefinedParams.Value to combineText(
+                    Value to combineText(
                         medicalReviewHistory.reviewDetails?.diagnosis?.filter { it.diseaseCategory?.lowercase() != OtherNotes.lowercase() }
                             ?.map { it.diseaseCategory }?.distinct(),
                         "",
@@ -512,13 +515,13 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.patient_status),
-                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                    Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
                         ?.let { requireContext().changePatientStatus(it) }
                         ?: getString(R.string.separator_double_hyphen))
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.date_of_review),
-                    DefinedParams.Value to medicalReviewHistory.dateOfReview?.let {
+                    Value to medicalReviewHistory.dateOfReview?.let {
                         DateUtils.convertDateFormat(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -528,7 +531,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.presenting_complaints),
-                    DefinedParams.Value to combineText(
+                    Value to combineText(
                         CommonUtils.convertAnyToListOfString(medicalReviewHistory.reviewDetails?.presentingComplaints),
                         medicalReviewHistory.reviewDetails?.presentingComplaintsNotes,
                         getString(R.string.separator_double_hyphen)
@@ -536,7 +539,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.clinical_notes),
-                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.clinicalNotes?.takeIf { it.isNotBlank() }
+                    Value to (medicalReviewHistory.reviewDetails?.clinicalNotes?.takeIf { it.isNotBlank() }
                         ?: getString(R.string.separator_double_hyphen))
                 )
             )
@@ -545,13 +548,13 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                     listOf(
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.patient_status),
-                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                            Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
                                 ?.let { requireContext().changePatientStatus(it) }
                                 ?: getString(R.string.separator_double_hyphen))
                         ),
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.date_of_review),
-                            DefinedParams.Value to medicalReviewHistory.dateOfReview?.let {
+                            Value to medicalReviewHistory.dateOfReview?.let {
                                 DateUtils.convertDateFormat(
                                     it,
                                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -561,7 +564,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                         ),
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.date_of_delivery),
-                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.dateAndTimeOfDelivery?.let {
+                            Value to (medicalReviewHistory.reviewDetails?.labourDTO?.dateAndTimeOfDelivery?.let {
                                 calculateDateTime(
                                     it,
                                     true
@@ -569,7 +572,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
                         ), mapOf(
                             DefinedParams.label to requireContext().getString(R.string.date_of_labour_onset),
-                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.dateAndTimeOfLabourOnset?.let {
+                            Value to (medicalReviewHistory.reviewDetails?.labourDTO?.dateAndTimeOfLabourOnset?.let {
                                 calculateDateTime(
                                     it,
                                     true
@@ -577,22 +580,22 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                         ),
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.delivery_by),
-                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryBy
+                            Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryBy
                                 ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
                         ),
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.delivery_type),
-                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryType
+                            Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryType
                                 ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
                         ),
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.delivery_at),
-                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryAt
+                            Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryAt
                                 ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
                         ),
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.delivery_status),
-                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryStatus
+                            Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryStatus
                                 ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
                         )
                     )
@@ -601,13 +604,13 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                     listOf(
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.patient_status),
-                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                            Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
                                 ?.let { requireContext().changePatientStatus(it) }
                                 ?: getString(R.string.separator_double_hyphen))
                         ),
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.date_of_review),
-                            DefinedParams.Value to medicalReviewHistory.dateOfReview?.let {
+                            Value to medicalReviewHistory.dateOfReview?.let {
                                 DateUtils.convertDateFormat(
                                     it,
                                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -616,17 +619,17 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                             }
                         ),mapOf(
                             DefinedParams.label to requireContext().getString(R.string.neonateOutcome),
-                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.neonateOutcome
+                            Value to (medicalReviewHistory.reviewDetails?.neonateOutcome
                                 ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
                         )
                         ,mapOf(
                             DefinedParams.label to requireContext().getString(R.string.stateOfBaby),
-                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.stateOfBaby  ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
+                            Value to (medicalReviewHistory.reviewDetails?.stateOfBaby  ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
 
                         )
                         ,mapOf(
                             DefinedParams.label to requireContext().getString(R.string.signs_Symptoms_observed),
-                            DefinedParams.Value to combineText(medicalReviewHistory.reviewDetails?.signs,
+                            Value to combineText(medicalReviewHistory.reviewDetails?.signs,
                                 null,getString(R.string.separator_double_hyphen))
                         )
                     )
@@ -645,7 +648,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             val additionalFields = when (medicalReviewHistory.type?.lowercase()) {
                 Above5MedicalReview.lowercase() -> mapOf(
                     DefinedParams.label to requireContext().getString(R.string.systemic_examinations),
-                    DefinedParams.Value to combineText(
+                    Value to combineText(
                         (medicalReviewHistory.reviewDetails?.systemicExaminations as? List<*>)?.filterIsInstance<String?>(),
                         medicalReviewHistory.reviewDetails?.systemicExaminationsNotes,
                         getString(R.string.separator_double_hyphen)
@@ -654,7 +657,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
                 ICCM_ABOVE_2M_5Y.lowercase() -> mapOf(
                     DefinedParams.label to requireContext().getString(R.string.systemic_examinations),
-                    DefinedParams.Value to combineText(
+                    Value to combineText(
                         medicalReviewHistory.reviewDetails?.systemicExamination,
                         medicalReviewHistory.reviewDetails?.systemicExaminationNotes,
                         getString(R.string.separator_double_hyphen)
@@ -663,7 +666,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
                 PregnancyAncMedicalReview.lowercase() -> mapOf(
                     DefinedParams.label to requireContext().getString(R.string.obstetric_examination),
-                    DefinedParams.Value to combineText(
+                    Value to combineText(
                         medicalReviewHistory.reviewDetails?.obstetricExaminations,
                         medicalReviewHistory.reviewDetails?.obstetricExaminationNotes,
                         getString(R.string.separator_double_hyphen)

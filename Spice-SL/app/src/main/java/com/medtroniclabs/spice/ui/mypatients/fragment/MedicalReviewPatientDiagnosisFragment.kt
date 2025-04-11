@@ -413,9 +413,11 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
     private fun showPatientType() {
         withNetworkAvailability(online = {
-            PatientTypeFragment.newInstance().apply {
-                listener = this@MedicalReviewPatientDiagnosisFragment
-            }.show(childFragmentManager, PatientTypeFragment.TAG)
+            showDialogIfNotPresent(PatientTypeFragment.TAG) {
+                PatientTypeFragment.newInstance().apply {
+                    listener = this@MedicalReviewPatientDiagnosisFragment
+                }
+            }
         })
     }
 
@@ -445,31 +447,48 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
     private fun showAddHeightDialog() {
         withNetworkAvailability(online = {
-            AddHeightDialog.newInstance(getPatientId(),getMemberId(),villageId = patientViewModel.getVillageId(),householdId = patientViewModel.getPatientHouseholdId()).apply {
-                listener = this@MedicalReviewPatientDiagnosisFragment
-            }.show(childFragmentManager, AddHeightDialog.TAG)
+            showDialogIfNotPresent(AddHeightDialog.TAG) {
+                AddHeightDialog.newInstance(
+                    getPatientId(),
+                    getMemberId(),
+                    villageId = patientViewModel.getVillageId(),
+                    householdId = patientViewModel.getPatientHouseholdId()
+                ).apply {
+                    listener = this@MedicalReviewPatientDiagnosisFragment
+                }
+            }
         })
     }
 
     private fun showAddBpOrWeightDialog(isBp: Boolean) {
         val dialog = if (isBp) {
-            AddBpDialog.newInstance(getPatientId(),villageId = patientViewModel.getVillageId(),householdId = patientViewModel.getPatientHouseholdId()).apply {
+            AddBpDialog.newInstance(
+                getPatientId(),
+                villageId = patientViewModel.getVillageId(),
+                householdId = patientViewModel.getPatientHouseholdId()
+            ).apply {
                 listener = this@MedicalReviewPatientDiagnosisFragment
             }
         } else {
-            AddWeightDialog.newInstance(getPatientId(),villageId = patientViewModel.getVillageId(),householdId = patientViewModel.getPatientHouseholdId(),memberId = patientViewModel.getPatientMemberId()).apply {
+            AddWeightDialog.newInstance(
+                getPatientId(),
+                villageId = patientViewModel.getVillageId(),
+                householdId = patientViewModel.getPatientHouseholdId(),
+                memberId = patientViewModel.getPatientMemberId()
+            ).apply {
                 listener = this@MedicalReviewPatientDiagnosisFragment
             }
         }
-        dialog.show(childFragmentManager, if (isBp) AddBpDialog.TAG else AddWeightDialog.TAG)
+        showDialogIfNotPresent(if (isBp) AddBpDialog.TAG else AddWeightDialog.TAG) {
+            dialog
+        }
     }
 
     private fun showBmiDialog() {
         if (connectivityManager.isNetworkAvailable()) {
-            BMIListDialog.newInstance(getMemberId()).show(
-                childFragmentManager,
-                BMIListDialog.TAG
-            )
+            showDialogIfNotPresent(BMIListDialog.TAG) {
+                BMIListDialog.newInstance(getMemberId())
+            }
         } else {
             (activity as BaseActivity?)?.showErrorDialogue(
                 getString(R.string.error),

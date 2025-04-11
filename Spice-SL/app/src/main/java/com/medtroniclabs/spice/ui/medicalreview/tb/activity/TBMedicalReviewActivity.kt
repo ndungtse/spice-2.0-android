@@ -63,6 +63,8 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     private val comorbiditiesViewModel: ComorbiditiesViewModel by viewModels()
     private val summaryViewModel: TbSummaryViewModel by viewModels()
     private val referPatientViewModel: ReferPatientViewModel by viewModels()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -107,10 +109,11 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
                     val fragment =
                         supportFragmentManager.findFragmentByTag(ReferPatientFragment.TAG) as? ReferPatientFragment
                     fragment?.dismiss()
-                    MedicalReviewSuccessDialogFragment.newInstance().show(
-                        supportFragmentManager,
+                    showDialogIfNotPresent(
                         MedicalReviewSuccessDialogFragment.TAG
-                    )
+                    ) {
+                        MedicalReviewSuccessDialogFragment.newInstance()
+                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -137,10 +140,11 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    MedicalReviewSuccessDialogFragment.newInstance().show(
-                        supportFragmentManager,
+                    showDialogIfNotPresent(
                         MedicalReviewSuccessDialogFragment.TAG
-                    )
+                    ) {
+                        MedicalReviewSuccessDialogFragment.newInstance()
+                    }
                 }
             }
         }
@@ -309,8 +313,12 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            binding.ivPrescription.id -> openPrescriptionActivity()
-            binding.ivInvestigation.id -> openInvestigationActivity()
+            binding.ivPrescription.id -> withNetworkAvailability(online = {
+                openPrescriptionActivity()
+            })
+            binding.ivInvestigation.id -> withNetworkAvailability(online = {
+                openInvestigationActivity()
+            })
             binding.loadingProgress.id -> {}
             binding.btnSubmit.id -> withLocationCheck(::clickSubmit)
             binding.btnDone.id ->withLocationCheck(::createSummary)
@@ -361,14 +369,19 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
             viewModel.tbCreate(request)
         })
     }
+
     private fun showReferPatientDialog() {
         withNetworkAvailability(online = {
             viewModel.tbCreateResponse.value?.data?.let {
-                ReferPatientFragment.newInstance(
-                    MedicalReviewTypeEnums.TB.name,
-                    it.patientReference,
-                    it.encounterId
-                ).show(supportFragmentManager, ReferPatientFragment.TAG)
+                showDialogIfNotPresent(
+                    ReferPatientFragment.TAG
+                ) {
+                    ReferPatientFragment.newInstance(
+                        MedicalReviewTypeEnums.TB.name,
+                        it.patientReference,
+                        it.encounterId
+                    )
+                }
             }
         })
     }

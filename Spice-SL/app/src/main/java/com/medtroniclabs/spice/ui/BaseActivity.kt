@@ -21,7 +21,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
@@ -623,5 +625,14 @@ open class BaseActivity : SpiceRootActivity() {
             locationPermissionResultCallback?.invoke(finePermission && coarsePermission)
         }
 
+    inline fun <reified T : DialogFragment> FragmentActivity.showDialogIfNotPresent(
+        tag: String,
+        dialogProvider: () -> T
+    ) {
+        val existingFragment = supportFragmentManager.findFragmentByTag(tag)
+        if (existingFragment == null) {
+            dialogProvider().show(supportFragmentManager, tag)
+        }
+    }
 
 }

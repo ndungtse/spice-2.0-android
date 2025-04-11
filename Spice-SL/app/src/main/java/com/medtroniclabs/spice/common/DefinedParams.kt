@@ -332,4 +332,8 @@ object DefinedParams {
     const val SymptomsFollowUp = "SymptomsFollowUp"
     const val MedicationFollowUp = "MedicationFollowUp"
     const val isRxBuddyFollowUp = "isRxBuddyFollowUp"
+    const val DrugSensitiveTB =  "drugSensitiveTB"
+    const val ExtraPulmonary =  "extraPulmonary"
+    const val SiteOfDisease = "siteOfDisease"
+    const val OrganAffected = "organAffected"
 }

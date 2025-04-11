@@ -10,6 +10,7 @@ import android.provider.Settings
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -281,4 +282,15 @@ open class BaseFragment : Fragment(){
         val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
+
+    inline fun <reified T : DialogFragment> Fragment.showDialogIfNotPresent(
+        tag: String,
+        dialogProvider: () -> T
+    ) {
+        val existingFragment = childFragmentManager.findFragmentByTag(tag)
+        if (existingFragment == null) {
+            dialogProvider().show(childFragmentManager, tag)
+        }
+    }
+
 }

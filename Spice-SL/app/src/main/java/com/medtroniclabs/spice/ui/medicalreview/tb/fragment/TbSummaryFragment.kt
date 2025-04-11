@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.SiteOfDisease
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.model.TbHistory
@@ -181,7 +182,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
             tvDiagnosesText.text = diagnosisList
                 .filter {
                     it.diseaseCategory.equals(DefinedParams.OtherNotes, ignoreCase = true)
-                        .not() && (it.type.equals("TB",true) || it.type.isNullOrBlank() )
+                        .not() && (it.type.equals(DefinedParams.TB,true) || it.type.isNullOrBlank() )
                 }
                 .map { it.diseaseCategory }
                 .distinct()
@@ -193,7 +194,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
             tvSiteText.text = diagnosisList
                 .filter {
                     it.diseaseCategory.equals(DefinedParams.OtherNotes, ignoreCase = true)
-                        .not() && it.type.equals("siteOfDisease",true)
+                        .not() && it.type.equals(SiteOfDisease,true)
                 }
                 .map { it.diseaseCategory }
                 .distinct()
