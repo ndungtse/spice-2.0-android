@@ -52,10 +52,25 @@
         android:textColor="@color/grey_black"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@id/tvLabel"
-        app:layout_constraintEnd_toStartOf="@id/smHighRisk"
+        app:layout_constraintEnd_toStartOf="@id/etValue"
         app:layout_constraintStart_toStartOf="@id/centreTwoGuideline"
         app:layout_constraintTop_toTopOf="@id/tvLabel" />
 
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/etValue"
+        style="@style/Form_Input_Style_BG"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_8sdp"
+        android:gravity="start|top"
+        android:hint="@string/enter"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:padding="@dimen/_8sdp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/smHighRisk"
+        app:layout_constraintStart_toEndOf="@id/tvValue"
+        app:layout_constraintTop_toTopOf="@id/tvLabel" />
 
     <com.medtroniclabs.spice.toggle.LabeledSwitch
         android:id="@+id/smHighRisk"
@@ -67,7 +82,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/tvSeparator"
         app:layout_constraintEnd_toStartOf="@id/tvHighRiskPregnancyCriteria"
-        app:layout_constraintStart_toEndOf="@id/tvValue"
+        app:layout_constraintStart_toEndOf="@id/etValue"
         app:layout_constraintTop_toTopOf="@id/tvSeparator" />
 
     <View

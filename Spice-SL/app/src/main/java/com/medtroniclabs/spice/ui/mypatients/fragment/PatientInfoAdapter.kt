@@ -8,8 +8,8 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
-import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -36,6 +36,7 @@ class PatientInfoAdapter(
     private val onItemToggle: (isChecked: Boolean) -> Unit,
     private val occupation: (String?) -> Unit,
     private val maritalStatus: (String?) -> Unit,
+    private val presumptiveTbNo: (String?) -> Unit,
 ) :
     RecyclerView.Adapter<PatientInfoAdapter.ViewHolder>() {
 
@@ -147,22 +148,44 @@ class PatientInfoAdapter(
                     spinnerMaritalStatus.gone()
                     tvLabel.text = context.getString(R.string.marital_status)
                 }
-                if (label[DefinedParams.label]?.equals(context.getString(R.string.presumptive_tb_no)) == true) {
-                    tvValue.gone()
-                    tvSeparator.gone()
-                    etOccupation.visible()
-                    initTextWatcherForString(etOccupation) {
-                        occupation.invoke(it)
-                    }
-                    (label[DefinedParams.Value] as? String).takeIfNotNull(empty)?.let {
-                        if (it.isNotBlank()) {
-                            etOccupation.setText(it)
-                        }
-                    }
+                handlePresumptiveTbField(label, etValue, tvValue, context) {
+                    presumptiveTbNo.invoke(it)
                 }
                 root.background = ContextCompat.getDrawable(context, fragmentBg)
             }
         }
+
+        private fun handlePresumptiveTbField(
+            label: Map<String, Any?>,
+            etValue: AppCompatEditText,
+            tvValue: AppCompatTextView,
+            context: Context,
+            onTextChanged: (String) -> Unit
+        ) {
+            val labelText = label[DefinedParams.label] as? String
+            val isSummary = label[DefinedParams.IsSummary] == "true"
+            val value = label[DefinedParams.Value] as? String
+            val presumptiveTbNoLabel = context.getString(R.string.presumptive_tb_no)
+
+            if (labelText == presumptiveTbNoLabel) {
+                if (!isSummary) {
+                    etValue.visible()
+                    tvValue.gone()
+                    value?.takeIf { it.isNotBlank() }?.let { etValue.setText(it) }
+                    initTextWatcherForString(etValue) {
+                        onTextChanged.invoke(it)
+                    }
+                } else {
+                    etValue.gone()
+                    tvValue.visible()
+                    tvValue.text = context.getString(R.string.hyphen_symbol) // Default hyphen
+                    value?.takeIf { it.isNotBlank() && it != context.getString(R.string.hyphen_symbol) }?.let {
+                        tvValue.text = it
+                    }
+                }
+            }
+        }
+
 
         private fun userConfirms() {
             (activity as? BaseActivity?)?.showErrorDialogue(

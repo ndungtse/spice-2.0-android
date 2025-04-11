@@ -53,6 +53,7 @@ class PatientDetailViewModel @Inject constructor(
 
     var chwName:String?=null
     var occupation:String?=null
+    var presumptiveTbNo: String? = null
     var maritalStatus:String?=null
     val clinicalWorkflowsMenusLiveData = MutableLiveData<List<ClinicalWorkflowEntity>>()
 

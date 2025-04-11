@@ -308,7 +308,8 @@ class PatientInfoFragment : BaseFragment() {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.presumptive_tb_no),
-                        DefinedParams.Value to (patientListRespModel.presumptiveTbNo?.takeIf { it.isNotBlank() } ?: "")
+                        DefinedParams.Value to (patientListRespModel.presumptiveTbNo?.takeIf { it.isNotBlank() } ?: ""),
+                        DefinedParams.IsSummary to viewModel.isSummary.toString()
                     )
                 )
             }
@@ -419,6 +420,9 @@ class PatientInfoFragment : BaseFragment() {
                 },
                 maritalStatus = {
                     viewModel.maritalStatus = it
+                },
+                presumptiveTbNo = {
+                    viewModel.presumptiveTbNo = it
                 })
         val isLandscape =
             resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE

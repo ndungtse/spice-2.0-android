@@ -205,9 +205,10 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
                 }
 
                 ResourceState.SUCCESS -> {
-                    hideLoading()
                     resource.data?.let {
-                        showSummary()
+                        showSummary {
+                            swipeRefresh()
+                        }
                     }
                 }
 
@@ -222,7 +223,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
         startActivityWithoutSplashScreen()
     }
 
-    private fun showSummary() {
+    private fun showSummary(callBack: () -> Unit) {
         with(binding) {
             patientSummaryContainer.gone()
             comorbiditiesContainer.gone()
@@ -235,12 +236,17 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
             binding.bottomNavigationView.gone()
             binding.referralBottomView.visible()
             binding.btnDone.isEnabled = true
+            patientViewModel.isSummary = true
             replaceFragment(
                 R.id.clinicalNotesContainer,
                 TbSummaryFragment.TAG,
-                TbSummaryFragment.newInstance(encounterId = viewModel.tbCreateResponse.value?.data?.encounterId, fhirId = patientViewModel.getPatientFHIRId())
+                TbSummaryFragment.newInstance(
+                    encounterId = viewModel.tbCreateResponse.value?.data?.encounterId,
+                    fhirId = patientViewModel.getPatientFHIRId()
+                )
             )
         }
+        callBack.invoke()
     }
 
     private fun onBackPressPopStack() {
@@ -407,7 +413,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
                 patientHouseholdId = patientViewModel.getPatientHouseholdId(),
                 memberId = patientViewModel.getPatientMemberId()
             ),
-            presumptiveTbNo = patientViewModel.occupation,
+            presumptiveTbNo = patientViewModel.presumptiveTbNo,
             id = patientViewModel.encounterId
         )
     }
@@ -464,7 +470,11 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     override fun onDataLoaded(details: PatientListRespModel) {
         viewModel.memberId = details.memberId
         (supportFragmentManager.findFragmentById(R.id.clinicalNotesContainer) as? TbSummaryFragment)
-            ?.let { showSummary() } ?: replaceWithDiagnosisFragment()
+            ?.let {
+                showSummary {
+                    // Do nothing
+                }
+            } ?: replaceWithDiagnosisFragment()
     }
 
     private fun setButtonClickListener() {
