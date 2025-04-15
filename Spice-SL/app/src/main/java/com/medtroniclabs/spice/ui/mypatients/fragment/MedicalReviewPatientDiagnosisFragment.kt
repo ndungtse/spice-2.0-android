@@ -39,6 +39,7 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateU
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.calculateBp
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListenerForTb
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.PATIENT_TYPE_HYPHEN
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddBpDialog
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddWeightDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.AddHeightDialog
@@ -541,13 +542,15 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     private fun attachObserver() {
         viewModel.getPatientType.observe(viewLifecycleOwner) {
             if (it.state == ResourceState.SUCCESS) {
-                viewModel.getPatientType.value?.data?.get("patient-type")?.let { type ->
+                viewModel.getPatientType.value?.data?.get(PATIENT_TYPE_HYPHEN)?.let { type ->
                     if (type is String && type.isNotBlank()) {
                         binding.tvPatientType.text = type.capitalizeFirstChar()
+                        binding.tvAddPatientType.text = getString(R.string.edit_type)
                     }
                 }
             } else {
                 binding.tvPatientType.text = getString(R.string.hyphen_symbol)
+                binding.tvAddPatientType.text = getString(R.string.add_type)
             }
         }
         statusViewModel.patientStatusLiveData.observe(viewLifecycleOwner) { resourceState ->

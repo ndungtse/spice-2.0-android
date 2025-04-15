@@ -127,6 +127,7 @@ class PatientTypeFragment : DialogFragment(), View.OnClickListener {
 
     private fun setupUI() {
         binding.tvTitle.text = getString(R.string.patient_type)
+        binding.btnOkay.text = getString(R.string.save).uppercase()
         with(binding) {
             listOf(tvDiagnosisLbl, tvSiteError, tvSiteLbl, siteChip).forEach { it.gone() }
             listOf(

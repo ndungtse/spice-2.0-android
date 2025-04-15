@@ -76,7 +76,7 @@ class PresumptiveTreatmentAndHistoryFragment : BaseFragment() {
             )
             tvComorbiditiesText.text = CommonUtils.combineText(
                 history.comorbidities.orEmpty(),
-                "",
+                history.comorbiditiesNotes.orEmpty(),
                 getString(R.string.hyphen_symbol)
             )
             tvSystemicText.text = CommonUtils.combineText(

@@ -35,7 +35,7 @@
                 android:background="@color/grey_bg"
                 android:gravity="center"
                 android:padding="@dimen/_10sdp"
-                android:text="Presumptive Treatment Summary"
+                android:text="@string/presumptive_treatment_summary"
                 android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -85,6 +85,7 @@
                 android:text="@string/separator_double_hyphen"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintBottom_toTopOf="@id/barrierOne"
                 app:layout_constraintStart_toEndOf="@id/tvPresentingSeparator"
                 app:layout_constraintTop_toTopOf="@id/tvPresentingLabel" />
 
@@ -123,9 +124,9 @@
                 style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
                 android:text="@string/separator_double_hyphen"
-                app:layout_constraintBottom_toBottomOf="@id/tvComorbiditiesLabel"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintBottom_toTopOf="@id/barrierTwo"
                 app:layout_constraintStart_toEndOf="@id/tvComorbiditiesSeparator"
                 app:layout_constraintTop_toTopOf="@id/tvComorbiditiesLabel" />
 
@@ -134,7 +135,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="tvComorbiditiesLabel" />
+                app:constraint_referenced_ids="tvComorbiditiesText" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvSystemicLabel"
@@ -164,6 +165,7 @@
                 style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
                 android:text="@string/separator_double_hyphen"
+                app:layout_constraintBottom_toTopOf="@id/barrierThree"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
                 app:layout_constraintStart_toEndOf="@id/tvSystemicSeparator"
@@ -216,7 +218,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="tvClinicalNotesLabel, tvClinicalNotesText" />
+                app:constraint_referenced_ids="tvClinicalNotesText" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvInvestigationsLabel"
@@ -246,6 +248,7 @@
                 style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
                 android:text="@string/separator_double_hyphen"
+                app:layout_constraintBottom_toTopOf="@id/barrierFive"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
                 app:layout_constraintStart_toEndOf="@id/tvInvestigationsSeparator"
@@ -256,7 +259,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="tvInvestigationsLabel, tvInvestigationsText" />
+                app:constraint_referenced_ids="tvInvestigationsText" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPrescriptionsLabel"
@@ -286,6 +289,7 @@
                 style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
                 android:text="@string/separator_double_hyphen"
+                app:layout_constraintBottom_toTopOf="@id/barrierSix"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
                 app:layout_constraintStart_toEndOf="@id/tvPrescriptionsSeparator"
@@ -296,7 +300,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="tvPrescriptionsLabel, tvPrescriptionsText" />
+                app:constraint_referenced_ids="tvPrescriptionsText" />
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/groupCMRTb"

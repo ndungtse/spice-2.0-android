@@ -1476,4 +1476,5 @@
     <string name="member_number" translatable="false">Member Number</string>
     <string name="CHW_name" translatable="false">CHW Name</string>
     <string name="chw_number" translatable="false">CHW Number</string>
+    <string name="add_type" translatable="false">Add Patient Type</string>
 </resources>

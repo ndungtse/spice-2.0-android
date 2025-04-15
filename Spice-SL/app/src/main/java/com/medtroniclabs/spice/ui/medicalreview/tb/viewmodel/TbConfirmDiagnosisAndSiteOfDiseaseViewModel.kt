@@ -31,7 +31,7 @@ class TbConfirmDiagnosisAndSiteOfDiseaseViewModel @Inject constructor(
     val organAffectedMetaList = MutableLiveData<Resource<List<DiseaseCategoryItems>>>()
     val diagnosisDetailsList = MutableLiveData<Resource<ArrayList<DiagnosisDiseaseModel>>>()
     val diagnosisSaveUpdateResponse = MutableLiveData<Resource<ArrayList<DiagnosisDiseaseModel>>>()
-    var diagnosisType:String = ""
+
 
     fun getDiagnosisMetaList(diagnosisType: String) {
         viewModelScope.launch(dispatcherIO) {

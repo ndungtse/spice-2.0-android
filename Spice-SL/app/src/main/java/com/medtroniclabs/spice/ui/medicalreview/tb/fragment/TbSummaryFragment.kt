@@ -365,7 +365,9 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
         }
 
         // Special case: Patient status is Recovered but treatment outcome is Died
-        if (viewModel.patientStatus.equals(ReferralStatus.Recovered.name, true) &&
+        if ((viewModel.patientStatus.equals(ReferralStatus.Recovered.name, true)
+                    || viewModel.patientStatus.equals(ReferralStatus.OnTreatment.name, true))
+            &&
             viewModel.treatmentOutCome.equals(ReferralStatus.Died.name, true)
         ) {
             val treatmentList = arrayListOf<Map<String, Any>>().apply {
