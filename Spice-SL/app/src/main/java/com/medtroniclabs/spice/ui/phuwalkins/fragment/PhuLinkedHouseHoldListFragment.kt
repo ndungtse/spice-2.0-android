@@ -18,11 +18,17 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWAL
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setTextChangeListener
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
+import com.medtroniclabs.spice.common.DefinedParams.MemberID
+import com.medtroniclabs.spice.common.DefinedParams.isHouseHold
+import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
 import com.medtroniclabs.spice.databinding.FragmentPhuLinkedHosueHoldListBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.household.ConsentFormActivity
 import com.medtroniclabs.spice.ui.phuwalkins.adapter.PhuHouseHoldListAdapter
 import com.medtroniclabs.spice.ui.phuwalkins.listener.PhuLinkCallback
 import com.medtroniclabs.spice.ui.phuwalkins.viewmodel.PhuWalkInsViewModel
@@ -99,6 +105,7 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
             val input = it?.trim().toString()
             searchHouseHoldList(input,patientLinkedDetails.villageId)
         }
+        binding.includedHousehold.btnAddHousehold.safeClickListener(this)
     }
 
     private val dialerLauncher =
@@ -114,6 +121,10 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
             linkPatientBtn.gone()
             callPatientBtn.gone()
             linkCallDetailsBtn.visible()
+            val age = context?.let { CommonUtils.getAgeFromDOB(patientLinkedDetails.dateOfBirth, it) }
+            age?.toIntOrNull()?.let {
+                if (it >= 10) btnAddHousehold.visible()
+            }
             patientNameAgeGender.text =
                 formatPatientDemographics(requireContext(), patientLinkedDetails)
             patientVillage.text = patientLinkedDetails.villageName
@@ -136,6 +147,17 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
                     binding.searchView.text.trim().toString(),
                     patientLinkedDetails.villageId
                 )
+            }
+
+            R.id.btnAddHousehold -> {
+                withLocationCheck({
+                    val intent = Intent(requireContext(), ConsentFormActivity::class.java)
+                    intent.putExtra(isMemberRegistration, false)
+                    intent.putExtra(isHouseHold,true)
+                    intent.putExtra(MemberID, patientLinkedDetails.lMemberId.toLongOrNull())
+                    intent.putExtra(FhirMemberID, patientLinkedDetails.memberId.toLongOrNull())
+                    startActivity(intent)
+                })
             }
         }
     }

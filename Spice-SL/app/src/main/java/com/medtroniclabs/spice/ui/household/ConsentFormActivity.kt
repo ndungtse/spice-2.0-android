@@ -12,6 +12,10 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
+import com.medtroniclabs.spice.common.DefinedParams.MemberID
+import com.medtroniclabs.spice.common.DefinedParams.isHouseHold
+import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.databinding.ActivityConsentFormBinding
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.fragment.ConsentSignatureDialogFragment
@@ -43,10 +47,18 @@ class ConsentFormActivity : BaseActivity() {
         viewModel.setUserJourney(getString(R.string.terms_and_condition))
 
         binding.btnSignature.setOnClickListener {
-            ConsentSignatureDialogFragment().show(
-                supportFragmentManager,
-                ConsentSignatureDialogFragment.TAG
-            )
+            val dialog = ConsentSignatureDialogFragment().apply {
+                arguments = Bundle().apply {
+                    putBoolean(isHouseHold, intent.getBooleanExtra(isHouseHold, false))
+                    putLong(MemberID, intent.getLongExtra(MemberID, -1L))
+                    putLong(FhirMemberID, intent.getLongExtra(FhirMemberID, -1L))
+                    putBoolean(
+                        isMemberRegistration,
+                        intent.getBooleanExtra(isMemberRegistration, false)
+                    )
+                }
+            }
+            dialog.show(supportFragmentManager, ConsentSignatureDialogFragment.TAG)
         }
 
         binding.wvTermAndCondition.webViewClient = webViewClientCallBack

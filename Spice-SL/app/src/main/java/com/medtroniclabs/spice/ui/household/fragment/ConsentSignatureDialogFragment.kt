@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.household.fragment
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +17,10 @@ import com.medtroniclabs.spice.appextensions.saveBitmapAsJpeg
 import com.medtroniclabs.spice.appextensions.setTextChangeListener
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
+import com.medtroniclabs.spice.common.DefinedParams.MemberID
+import com.medtroniclabs.spice.common.DefinedParams.isHouseHold
+import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.databinding.DialogConsentSignatureBinding
 import com.medtroniclabs.spice.signature.view.SignatureView
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
@@ -122,6 +125,10 @@ class ConsentSignatureDialogFragment : DialogFragment() {
         dismiss()
         requireActivity().finish()
         val intent = Intent(requireContext(), HouseholdActivity::class.java)
+        intent.putExtra(MemberID, arguments?.getLong(MemberID, -1L))
+        intent.putExtra(FhirMemberID, arguments?.getLong(FhirMemberID, -1L))
+        intent.putExtra(isMemberRegistration, arguments?.getBoolean(isMemberRegistration,false))
+        intent.putExtra(isHouseHold,arguments?.getBoolean(isHouseHold,false))
         intent.putExtra(DefinedParams.KeySignature, fileName)
         intent.putExtra(DefinedParams.KeyInitial, initial)
         startActivity(intent)

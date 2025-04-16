@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
+import com.medtroniclabs.spice.common.DefinedParams.isHouseHold
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityHouseholdRegistrationBinding
@@ -113,7 +114,9 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
             intent.getLongExtra(HouseholdDefinedParams.ID, -1L)
         Timber.d("Member id is not showing 4 ${intent.getLongExtra(MemberID, -1L)}")
         householdRegistrationViewModel.memberID = intent.getLongExtra(MemberID, -1L)
-        loadFragment(if (householdRegistrationViewModel.isMemberRegistration || (householdRegistrationViewModel.memberID != -1L)) 2 else 1)
+        if (intent.getBooleanExtra(isHouseHold, false)) {
+            loadFragment(if (!householdRegistrationViewModel.isMemberRegistration) 1 else 2)
+        } else loadFragment(if (householdRegistrationViewModel.isMemberRegistration || (householdRegistrationViewModel.memberID != -1L)) 2 else 1)
     }
 
 
