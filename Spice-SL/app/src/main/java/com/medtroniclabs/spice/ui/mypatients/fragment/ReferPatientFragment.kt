@@ -314,7 +314,8 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
                     patientDetails.patientId,
                     patientDetails.houseHoldId,
                     patientDetails.villageId,
-                    patientDetails.memberId
+                    patientDetails.memberId,
+                    tbIMRCompleted = patientViewModel.getTbMedicalReviewStatus()
                 )
             }
         } else {

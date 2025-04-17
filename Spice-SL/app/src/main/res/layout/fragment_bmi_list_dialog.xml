@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/_18sdp"
-                android:text="@string/bmi"
+                android:text="@string/bmi_history"
                 android:textColor="@color/house_hold_title"
                 android:textSize="@dimen/_16ssp"
                 android:textStyle="bold"

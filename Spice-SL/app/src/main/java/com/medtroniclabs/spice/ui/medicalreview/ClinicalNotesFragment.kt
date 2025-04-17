@@ -15,7 +15,6 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,12 +38,10 @@ class ClinicalNotesFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeViews()
-        if (arguments?.getString(MedicalReviewTypeEnums.ClinicalNotes.name).isNullOrBlank()) {
-            binding.tvClinicalNotesTitle.markMandatory()
-        }
     }
 
     private fun initializeViews() {
+        binding.tvClinicalNotesTitle.markMandatory()
         binding.etClinicalNotes.addTextChangedListener {
             it?.let {
                 viewModel.enteredClinicalNotes = it.toString()

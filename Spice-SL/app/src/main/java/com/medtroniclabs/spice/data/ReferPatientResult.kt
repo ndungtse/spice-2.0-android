@@ -18,5 +18,6 @@ data class ReferPatientResult(
     val householdId: String?,
     val villageId: String?,
     val memberId: String?,
-    val category:String? = null
+    val category:String? = null,
+    val tbIMRCompleted: Boolean? = null
 )

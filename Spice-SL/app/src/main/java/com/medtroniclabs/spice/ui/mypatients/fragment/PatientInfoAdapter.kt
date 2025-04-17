@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
+import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -148,7 +150,7 @@ class PatientInfoAdapter(
                     spinnerMaritalStatus.gone()
                     tvLabel.text = context.getString(R.string.marital_status)
                 }
-                handlePresumptiveTbField(label, etValue, tvValue, context) {
+                handlePresumptiveTbField(label, etValue, tvValue, ivEdit, context) {
                     presumptiveTbNo.invoke(it)
                 }
                 root.background = ContextCompat.getDrawable(context, fragmentBg)
@@ -159,6 +161,7 @@ class PatientInfoAdapter(
             label: Map<String, Any?>,
             etValue: AppCompatEditText,
             tvValue: AppCompatTextView,
+            ivEdit: AppCompatImageView,
             context: Context,
             onTextChanged: (String) -> Unit
         ) {
@@ -166,22 +169,26 @@ class PatientInfoAdapter(
             val isSummary = label[DefinedParams.IsSummary] == "true"
             val value = label[DefinedParams.Value] as? String
             val presumptiveTbNoLabel = context.getString(R.string.presumptive_tb_no)
+            etValue.isEnabled = false
 
             if (labelText == presumptiveTbNoLabel) {
                 if (!isSummary) {
                     etValue.visible()
+                    ivEdit.visible()
                     tvValue.gone()
                     value?.takeIf { it.isNotBlank() }?.let { etValue.setText(it) }
-                    initTextWatcherForString(etValue) {
-                        onTextChanged.invoke(it)
+                    ivEdit.safeClickListener{
+                        onTextChanged.invoke(value?.takeIf { it.isNotBlank() } ?: "")
                     }
                 } else {
                     etValue.gone()
+                    ivEdit.gone()
                     tvValue.visible()
                     tvValue.text = context.getString(R.string.hyphen_symbol) // Default hyphen
-                    value?.takeIf { it.isNotBlank() && it != context.getString(R.string.hyphen_symbol) }?.let {
-                        tvValue.text = it
-                    }
+                    value?.takeIf { it.isNotBlank() && it != context.getString(R.string.hyphen_symbol) }
+                        ?.let {
+                            tvValue.text = it
+                        }
                 }
             }
         }

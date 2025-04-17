@@ -498,7 +498,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
                 id = intent.getStringExtra(DefinedParams.ID)
             )
         )
-        replaceFragment(
+        addOrReuseFragment(
             R.id.comorbiditiesContainer,
             ComorbiditiesFragment.TAG,
             ComorbiditiesFragment.newInstance()
@@ -587,8 +587,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
         // If "Ear" is selected, respiratoryNotes must not be blank
         val isSystemicExaminationValid = !isRespiratorySelected || hasValidRespiratoryNotes
 
-        binding.btnSubmit.isEnabled = (hasClinicalNotes ||
-                hasSelectedPresentingComplaints ||
+        binding.btnSubmit.isEnabled = (hasSelectedPresentingComplaints ||
                 hasEnteredComplaintNotes ||
                 hasEnteredExaminationNotes ||
                 hasSelectedPresentingComplaints ||
@@ -604,6 +603,8 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
             binding.btnSubmit.isEnabled = isValidFragment
             return
         }
+
+        binding.btnSubmit.isEnabled = hasClinicalNotes
     }
 
     override fun onResume() {

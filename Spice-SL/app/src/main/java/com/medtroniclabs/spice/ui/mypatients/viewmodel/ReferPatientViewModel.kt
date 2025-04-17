@@ -53,7 +53,8 @@ class ReferPatientViewModel @Inject constructor(
         patientId: String?,
         houseHoldId: String?,
         villageId: String?,
-        memberId: String?
+        memberId: String?,
+        tbIMRCompleted: Boolean? = null
     ) {
         viewModelScope.launch(dispatcherIO) {
             referPatientResultLiveData.postLoading()
@@ -66,7 +67,8 @@ class ReferPatientViewModel @Inject constructor(
                     patientId,
                     houseHoldId,
                     villageId,
-                    memberId
+                    memberId,
+                    tbIMRCompleted = tbIMRCompleted
                 )
             )
         }

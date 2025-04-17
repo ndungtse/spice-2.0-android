@@ -60,7 +60,8 @@ class ReferPatientRepository @Inject constructor(
         patientId: String?,
         houseHoldId: String?,
         villageId: String?,
-        memberId: String?
+        memberId: String?,
+        tbIMRCompleted: Boolean? = null
     ): Resource<HashMap<String,Any>> {
         try {
             val request = createReferPatientRequest(
@@ -71,7 +72,8 @@ class ReferPatientRepository @Inject constructor(
                 patientId,
                 houseHoldId,
                 villageId,
-                memberId
+                memberId,
+                tbIMRCompleted = tbIMRCompleted
             )
             val response = request?.let { apiHelper.createReferPatientResult(it) }
             if (response != null && response.isSuccessful) {
@@ -92,7 +94,8 @@ class ReferPatientRepository @Inject constructor(
         patientId: String?,
         houseHoldId: String?,
         villageId: String?,
-        memberId: String?
+        memberId: String?,
+        tbIMRCompleted: Boolean? = null
     ): ReferPatientResult {
         return ReferPatientResult(
             encounterId = encounterId,
@@ -110,7 +113,8 @@ class ReferPatientRepository @Inject constructor(
             householdId = houseHoldId,
             villageId = villageId,
             memberId = memberId,
-            category = assessmentName.second
+            category = assessmentName.second,
+            tbIMRCompleted = tbIMRCompleted
         )
     }
     suspend fun getDefaultHealthFacilityDistrictId(): Resource<HealthFacilityEntity?>? {

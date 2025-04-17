@@ -79,7 +79,7 @@ data class PatientListRespModel(
     val phq4score: String? = null,
     val gad7Score: String? = null,
     val phq9Score: String? = null,
-    val presumptiveTbNo: String? = null,
+    var presumptiveTbNo: String? = null,
     val tbIMRCompleted:Boolean = true,
     var systolic: Double? = null,
     var diastolic: Double? = null

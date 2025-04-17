@@ -237,7 +237,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                         binding.tvAddHeight
                     )
                     resourceState.data?.let {
-                        binding.tvHeightLbl.text = getString(R.string.height_hint)
+                        binding.tvHeightLbl.text = getString(R.string.height)
                         binding.tvHeight.text =
                             MotherNeonateUtil.convertHeight(
                                 it.height,
@@ -359,7 +359,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             cardSiteDisease.setVisible(isTb && patientViewModel.getTbMedicalReviewStatus())
             cardPatientType.setVisible(isTb && patientViewModel.getTbMedicalReviewStatus())
             if (isTb) {
-                binding.tvHeightLbl.text = getString(R.string.height_hint)
+                binding.tvHeightLbl.text = getString(R.string.height)
                 tvTbAddBp.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
                 tvTbAddWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
                 tvAddSiteDisease.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)

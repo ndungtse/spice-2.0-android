@@ -422,7 +422,7 @@ class PatientInfoFragment : BaseFragment() {
                     viewModel.maritalStatus = it
                 },
                 presumptiveTbNo = {
-                    viewModel.presumptiveTbNo = it
+                    showPresumptiveTbNo(it)
                 })
         val isLandscape =
             resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -435,6 +435,25 @@ class PatientInfoFragment : BaseFragment() {
         }
         binding.rvPatientInfo.adapter = adapter
         hideProgress()
+    }
+    private fun showPresumptiveTbNo(text: String?) {
+        showDialogIfNotPresent(
+            AddPresumptiveTBNoDialog.TAG
+        ) {
+            AddPresumptiveTBNoDialog.newInstance(text).apply {
+                this.listener = object : OnPresumptiveTBEnteredListener {
+                    override fun onPresumptiveTBEntered(tbNumber: String) {
+                        // Use the tbNumber string here
+                        viewModel.presumptiveTbNo = tbNumber
+                        viewModel.patientDetailsLiveData.value?.data?.apply {
+                            presumptiveTbNo = tbNumber
+                        }?.let {
+                            setDataInInfo(it)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun showMentalHealthDialog(type: String, isEditAssessment: Boolean) {

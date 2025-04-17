@@ -61,15 +61,31 @@
         style="@style/Form_Input_Style_BG"
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/_8sdp"
         android:gravity="start|top"
         android:hint="@string/enter"
         android:imeOptions="actionDone"
         android:inputType="text"
         android:padding="@dimen/_8sdp"
         android:visibility="gone"
-        app:layout_constraintEnd_toStartOf="@id/smHighRisk"
+        app:layout_constraintEnd_toStartOf="@id/ivEdit"
         app:layout_constraintStart_toEndOf="@id/tvValue"
+        app:layout_constraintTop_toTopOf="@id/tvLabel" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/_8sdp"
+        android:paddingStart="@dimen/_10sdp"
+        android:paddingTop="@dimen/_8sdp"
+        android:paddingEnd="@dimen/_8sdp"
+        android:paddingBottom="@dimen/_8sdp"
+        android:visibility="gone"
+        android:src="@drawable/ic_edit_icon"
+        app:layout_constraintBottom_toBottomOf="@id/etValue"
+        app:layout_constraintEnd_toStartOf="@id/smHighRisk"
+        app:layout_constraintStart_toEndOf="@id/etValue"
         app:layout_constraintTop_toTopOf="@id/tvLabel" />
 
     <com.medtroniclabs.spice.toggle.LabeledSwitch
@@ -82,7 +98,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/tvSeparator"
         app:layout_constraintEnd_toStartOf="@id/tvHighRiskPregnancyCriteria"
-        app:layout_constraintStart_toEndOf="@id/etValue"
+        app:layout_constraintStart_toEndOf="@id/ivEdit"
         app:layout_constraintTop_toTopOf="@id/tvSeparator" />
 
     <View
