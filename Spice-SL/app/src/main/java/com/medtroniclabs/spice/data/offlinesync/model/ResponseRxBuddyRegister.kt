@@ -6,5 +6,6 @@ data class ResponseRxBuddyRegister(
     val isMonitorSheetProvided: Boolean,
     var householdMemberId: String? = null,
     var rxBuddyDetails: RxBuddyMember? = null,
-    val nextVisitDate: String = ""
+    val nextVisitDate: String = "",
+    val isActive: Boolean? = null
 )

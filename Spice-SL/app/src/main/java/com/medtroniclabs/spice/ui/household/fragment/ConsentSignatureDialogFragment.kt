@@ -9,7 +9,6 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.EnterSignatureorInitial
 import com.medtroniclabs.spice.appextensions.gone
@@ -19,11 +18,13 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
-import com.medtroniclabs.spice.common.DefinedParams.isHouseHold
+import com.medtroniclabs.spice.common.DefinedParams.VillageId
+import com.medtroniclabs.spice.common.DefinedParams.isCreateHouseholdForPhu
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.databinding.DialogConsentSignatureBinding
 import com.medtroniclabs.spice.signature.view.SignatureView
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isPhuWalkInsFlow
 import com.medtroniclabs.spice.ui.household.viewmodel.ConsentFormViewModel
 
 class ConsentSignatureDialogFragment : DialogFragment() {
@@ -125,10 +126,11 @@ class ConsentSignatureDialogFragment : DialogFragment() {
         dismiss()
         requireActivity().finish()
         val intent = Intent(requireContext(), HouseholdActivity::class.java)
+        intent.putExtra(VillageId, arguments?.getLong(VillageId, -1L))
         intent.putExtra(MemberID, arguments?.getLong(MemberID, -1L))
         intent.putExtra(FhirMemberID, arguments?.getLong(FhirMemberID, -1L))
-        intent.putExtra(isMemberRegistration, arguments?.getBoolean(isMemberRegistration,false))
-        intent.putExtra(isHouseHold,arguments?.getBoolean(isHouseHold,false))
+        intent.putExtra(isPhuWalkInsFlow, arguments?.getBoolean(isPhuWalkInsFlow,false))
+        intent.putExtra(isCreateHouseholdForPhu, arguments?.getBoolean(isCreateHouseholdForPhu,false))
         intent.putExtra(DefinedParams.KeySignature, fileName)
         intent.putExtra(DefinedParams.KeyInitial, initial)
         startActivity(intent)

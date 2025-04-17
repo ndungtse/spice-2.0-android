@@ -25,6 +25,7 @@ import java.time.format.DateTimeFormatter
 class TBTreatmentFragment : BaseFragment() {
     private lateinit var binding: FragmentTBTreatmentBinding
     private val viewModel: AssessmentViewModel by activityViewModels()
+    private val dateTimeFormatter = DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,8 +43,8 @@ class TBTreatmentFragment : BaseFragment() {
     }
 
     private fun addObserver() {
-        viewModel.treatmentDetailsLiveData.observe(viewLifecycleOwner){ treatmentDetail ->
-            bindData(treatmentDetail)
+        viewModel.treatmentDetailsLiveData.observe(viewLifecycleOwner){ td ->
+            bindData(td)
         }
     }
 
@@ -53,8 +54,16 @@ class TBTreatmentFragment : BaseFragment() {
         }
     }
 
+    private fun getFormattedDateString(date: String?): String {
+        return if (date != null && date.trim().isNotEmpty()) {
+            date.getLocalDate().format(dateTimeFormatter)
+        } else {
+            getString(R.string.hyphen_symbol)
+        }
+    }
+
     private fun createTreatmentDetailsData(td: TreatmentDetailsEntity): List<AssessmentSummaryModel>? {
-        val dateTimeFormatter = DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy)
+
         val drugsAndQuantity = getDrugAndQuantityDetails(td.prescriptions)
         return mutableListOf(
             AssessmentSummaryModel(
@@ -63,11 +72,11 @@ class TBTreatmentFragment : BaseFragment() {
             ),
             AssessmentSummaryModel(
                 title = getString(R.string.date_diagnosed),
-                value = td.diagnosedDate?.getLocalDate()?.format(dateTimeFormatter) ?: getString(R.string.hyphen_symbol)
+                value = getFormattedDateString(td.diagnosedDate)
             ),
             AssessmentSummaryModel(
                 title = getString(R.string.treatment_start_date),
-                value = td.treatmentStartDate?.getLocalDate()?.format(dateTimeFormatter) ?: getString(R.string.hyphen_symbol)
+                value = getFormattedDateString(td.treatmentStartDate)
             ),
             AssessmentSummaryModel(
                 title = getString(R.string.health_unit_no),

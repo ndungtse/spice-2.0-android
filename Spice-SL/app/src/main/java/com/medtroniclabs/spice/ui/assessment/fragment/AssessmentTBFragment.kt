@@ -119,7 +119,9 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
     private fun attachObservers() {
         viewModel.assessmentTBType.observe(viewLifecycleOwner) {
-            viewModel.getFormData(TB.lowercase(), it)
+            it?.let {
+                viewModel.getFormData(TB.lowercase(), it)
+            }
         }
 
         viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resourceState ->

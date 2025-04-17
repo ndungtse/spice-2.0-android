@@ -30,6 +30,8 @@ class HouseRegistrationViewModel @Inject constructor(
     var houseHoldRegistrationLiveData = MutableLiveData<Resource<Long>>()
     var isMemberRegistration: Boolean = false
     var householdEntityDetail: HouseholdEntity? = null
+    var isCreateHouseholdForPhu: Boolean = false
+    var isPhuWalkInsFlow: Boolean = false
     val formLayoutsLiveData = MutableLiveData<Resource<String>>()
     var houseHoldUpdateLiveData = MutableLiveData<Resource<Long>>()
     val houseHoldDetailLiveData = MutableLiveData<Resource<HouseholdEntity>>()

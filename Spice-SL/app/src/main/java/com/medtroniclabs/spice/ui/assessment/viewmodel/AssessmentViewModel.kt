@@ -12,6 +12,7 @@ import com.google.gson.Gson
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.appextensions.getLocalDate
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
@@ -121,6 +122,7 @@ import com.medtroniclabs.spice.ui.boarding.repo.MetaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.util.Locale
 import javax.inject.Inject
 
@@ -291,28 +293,42 @@ class AssessmentViewModel @Inject constructor(
             if (tb.containsKey(TBRxBuddyRegister)) {
                 val rxBuddy = tb[TBRxBuddyRegister] as HashMap<String, Any>
 
-                val rxBuddyName =  if(rxBuddy.containsKey(rxBuddyName)) rxBuddy[rxBuddyName] as String else null
-               // val countryCode = SecuredPreference.getPhoneNumberCode()
-                val phone = if(rxBuddy.containsKey(rxBuddyPhoneNumber)) rxBuddy[rxBuddyPhoneNumber] as String else null
-                val rxBuddyPhoneNumber = if(phone.isNullOrEmpty()) null else phone
                 val isMonitorSheetProviderText = rxBuddy[hasProvidedMonitoringSheet] as String
-                val isSheetProvider = isMonitorSheetProviderText.equals( "yes",true)
+                val isSheetProvider = isMonitorSheetProviderText.equals("yes", true)
                 val relationShip = rxBuddy[relationshipToPatient] as String
-                val otherRelationShip =  if(rxBuddy.containsKey(otherRelationShip)) rxBuddy[otherRelationShip] as String else null
-
-                val patientMemberId = memberDetailsLiveData.value?.data?.memberId!!
+                val otherRelationShip =
+                    if (rxBuddy.containsKey(otherRelationShip)) rxBuddy[otherRelationShip] as String else null
                 val memberId = rxBuddy[selectHouseholdMember] as Long
 
-               val rxBuddyId = rxBuddyRepository.insertRxBuddyDetails(
+                var name: String? = null
+                var phoneNumber: String? = null
+                if (memberId != 0L) {
+                    val hhm = memberRegistrationRepository.getMemberDetails(memberId)
+                    rxBuddy[rxBuddyName] = hhm.name
+                    rxBuddy[rxBuddyPhoneNumber] = hhm.phoneNumber
+                } else {
+                    name =
+                        if (rxBuddy.containsKey(rxBuddyName)) rxBuddy[rxBuddyName] as String else null
+                    val phone =
+                        if (rxBuddy.containsKey(rxBuddyPhoneNumber)) rxBuddy[rxBuddyPhoneNumber] as String else null
+                    phoneNumber = if (phone.isNullOrEmpty()) null else phone
+                }
+
+                val patientMemberId = memberDetailsLiveData.value?.data?.memberId!!
+                val nextVisitDate = getNextVisitForConfirmedTbPatient()
+                nextVisitDateForTBPatientLiveData.postValue(nextVisitDate)
+
+                val rxBuddyId = rxBuddyRepository.insertRxBuddyDetails(
                     0L,
                     patientMemberId,
                     if (memberId == 0L) null else memberId,
-                    rxBuddyName,
-                    rxBuddyPhoneNumber,
+                    name,
+                    phoneNumber,
                     relationShip,
                     otherRelationShip,
                     isSheetProvider,
-                   followUpId = followUpId
+                    nextVisitDate,
+                    followUpId = followUpId
                 )
 
                 val assessmentDetail = StringConverter.convertGivenMapToString(resultMap) ?: ""
@@ -1525,12 +1541,16 @@ class AssessmentViewModel @Inject constructor(
                 }
 
                 val patientMemberId = memberDetailsLiveData.value?.data?.memberId!!
+                val nextVisitDate = getNextVisitForConfirmedTbPatient()
+                nextVisitDateForTBPatientLiveData.postValue(nextVisitDate)
+
                 saveRxBuddyFollowUpLiveData.postValue(
                     rxBuddyRepository.insertRxBuddyFollowUp(
                         rxBuddyLocalId = rxBuddyLocalId,
                         rxBuddyId = rxBuddyId,
                         patientMemberId = patientMemberId,
                         map = rxBuddyFollowUp,
+                        nextVisitDate = nextVisitDate,
                         followUpId = followUpId
                     )
                 )
@@ -1560,5 +1580,36 @@ class AssessmentViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    val nextVisitDateForTBPatientLiveData = MutableLiveData<LocalDate>()
+
+    private fun getNextVisitForConfirmedTbPatient(): LocalDate {
+        val startDate = treatmentDetailsLiveData.value?.treatmentStartDate
+        val visitList = getTBNextVisitSchedule()
+        if (startDate != null && startDate.trim().isNotEmpty()) {
+            val today = LocalDate.now()
+            val dStartDate = startDate.getLocalDate()
+            visitList.forEach { visit ->
+               val nextVisit = dStartDate.plusMonths(visit.first).plusWeeks(visit.second)
+                if (nextVisit.isAfter(today)) {
+                    return nextVisit
+                }
+            }
+        }
+        return LocalDate.now().plusDays(1)
+    }
+
+    private fun getTBNextVisitSchedule(): List<Pair<Long, Long>> {
+        return listOf(
+            Pair(0,1), // 1st Month, 1st Week
+            Pair(0,3), // 1st Month, 3rd Week
+            Pair(1,1), // 2nd Month, 1st Week
+            Pair(1,3), // 2nd Month, 3rd Week
+            Pair(2,2), // 3rd Month, 2nd Week
+            Pair(3,3), // 4th Month, 3rd Week
+            Pair(4,4), // 5th Month, 4th Week
+            Pair(5,1), // 6th Month, 1st Week
+        )
     }
 }

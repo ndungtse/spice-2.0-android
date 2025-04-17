@@ -8,5 +8,7 @@ data class RxBuddyFollowUp(
     val hadReactionToYourMedications: Boolean,
     val nextVisitDate: String = "",
     val followUpId: Long? = null,
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
     val provenance: ProvanceDto = ProvanceDto()
 )

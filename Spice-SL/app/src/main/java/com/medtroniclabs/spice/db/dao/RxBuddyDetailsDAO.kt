@@ -59,4 +59,7 @@ interface RxBuddyDetailsDAO {
 
     @Query("UPDATE RxBuddyDetails SET syncStatus =:syncStatus WHERE id IN (:ids)")
     suspend fun updateSyncStatus(ids: List<Long>, syncStatus: String)
+
+    @Query("DELETE FROM RxBuddyDetails WHERE rxBuddyId IN (:ids) OR isActive = 0")
+    suspend fun deleteAllDisabledRxBuddies(ids: List<Long>)
 }

@@ -14,10 +14,12 @@ import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
-import com.medtroniclabs.spice.common.DefinedParams.isHouseHold
+import com.medtroniclabs.spice.common.DefinedParams.VillageId
+import com.medtroniclabs.spice.common.DefinedParams.isCreateHouseholdForPhu
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.databinding.ActivityConsentFormBinding
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isPhuWalkInsFlow
 import com.medtroniclabs.spice.ui.household.fragment.ConsentSignatureDialogFragment
 import com.medtroniclabs.spice.ui.household.viewmodel.ConsentFormViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,13 +51,11 @@ class ConsentFormActivity : BaseActivity() {
         binding.btnSignature.setOnClickListener {
             val dialog = ConsentSignatureDialogFragment().apply {
                 arguments = Bundle().apply {
-                    putBoolean(isHouseHold, intent.getBooleanExtra(isHouseHold, false))
+                    putLong(VillageId, intent.getLongExtra(VillageId, -1L))
+                    putBoolean(isPhuWalkInsFlow, intent.getBooleanExtra(isPhuWalkInsFlow, false))
+                    putBoolean(isCreateHouseholdForPhu, intent.getBooleanExtra(isCreateHouseholdForPhu, false))
                     putLong(MemberID, intent.getLongExtra(MemberID, -1L))
                     putLong(FhirMemberID, intent.getLongExtra(FhirMemberID, -1L))
-                    putBoolean(
-                        isMemberRegistration,
-                        intent.getBooleanExtra(isMemberRegistration, false)
-                    )
                 }
             }
             dialog.show(supportFragmentManager, ConsentSignatureDialogFragment.TAG)

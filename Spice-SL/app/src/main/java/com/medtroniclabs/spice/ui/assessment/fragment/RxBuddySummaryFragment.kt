@@ -63,6 +63,7 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun setListener() {
+        binding.etNextFollowUpDate.visible()
         binding.btnDone.safeClickListener(this)
         binding.btnStartContactTracing.safeClickListener(this)
         binding.etNextFollowUpDate.safeClickListener(this)
@@ -73,6 +74,10 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun attachObservers() {
+        viewModel.nextVisitDateForTBPatientLiveData.observe(viewLifecycleOwner) {
+            binding.etNextFollowUpDate.text = it.format(DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy))
+        }
+
         if(isRxBuddyFollowUp == true){
             binding.emptyErrorMessage.visibility = View.GONE
             binding.parentLayout.visibility = View.VISIBLE
@@ -80,7 +85,7 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
             viewModel.assessmentStringLiveData.value?.let {
                 createSummaryView(createTBListSummaryData(it))
             }
-        }else {
+        } else {
             viewModel.assessmentStringLiveData.value?.let {
                 createSummaryView(createTBListSummaryData(it))
             }

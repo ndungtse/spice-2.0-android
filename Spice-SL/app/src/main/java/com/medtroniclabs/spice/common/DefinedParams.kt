@@ -339,8 +339,11 @@ object DefinedParams {
     const val SiteOfDisease = "siteOfDisease"
     const val OrganAffected = "organAffected"
     const val IsSummary = "isSummary"
+
     const val isHouseHold = "houseHold"
     const val RIF_Resistance = "rif resistance"
     const val MTB_Detected = "mtb detected"
     const val Gene_Expert = "gene expert"
+
+    const val isCreateHouseholdForPhu = "isCreateHouseholdForPhu"
 }

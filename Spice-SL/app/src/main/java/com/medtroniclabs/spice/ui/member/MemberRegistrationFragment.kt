@@ -570,7 +570,8 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
 
             // Household Member Create or Edit
             val dob = map[dateOfBirth] as String
-            if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L) {
+            if (!householdRegistrationViewModel.isCreateHouseholdForPhu &&
+                (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L)) {
                 val relation = map[householdHeadRelationship] as String
 
                 // Showing warning for only new member
@@ -612,6 +613,14 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             }
 
             householdRegistrationViewModel.householdEntityDetail?.let { householdEntity ->
+                if (memberRegistrationViewModel.isPhuWalkInsFlow == true) {
+                    householdRegistrationViewModel.updateMemberAsAssigned(
+                        arguments?.getLong(
+                            com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
+                        )
+                    )
+                }
+
                 // For Household head
                 memberRegistrationViewModel.registerHouseThenMember(
                     householdEntity,

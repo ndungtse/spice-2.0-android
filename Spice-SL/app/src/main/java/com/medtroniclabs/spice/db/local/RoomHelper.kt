@@ -535,4 +535,6 @@ interface RoomHelper {
     suspend fun updateRxBuddyRegisterSyncStatus(idList: List<Long>, syncStatus: String)
 
     suspend fun updateRxBuddyFollowUpSyncStatus(idList: List<Long>, syncStatus: String)
+
+    suspend fun deleteDisableRxBuddies(ids: List<Long>)
 }

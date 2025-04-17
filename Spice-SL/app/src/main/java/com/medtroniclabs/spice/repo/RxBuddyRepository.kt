@@ -27,6 +27,7 @@ class RxBuddyRepository @Inject constructor(
         relationship:String,
         otherRelationship: String?,
         isMonitorSheetProvider:Boolean,
+        nextVisitDate: LocalDate,
         followUpId: Long? = null
     ):Resource<Long>{
         val latLng = getLatLng()
@@ -41,7 +42,7 @@ class RxBuddyRepository @Inject constructor(
               isMonitorSheetProvider = isMonitorSheetProvider,
               otherRelationship = otherRelationship,
               followUpId = followUpId,
-              nextVisitDate = getDefaultNextVisitDateForRxBuddy(),
+              nextVisitDate = getNextVisitDate(nextVisitDate),
               latitude = latLng.first,
               longitude = latLng.second
           )
@@ -86,6 +87,7 @@ class RxBuddyRepository @Inject constructor(
         rxBuddyId: Long? = null,
         patientMemberId:String,
         map: HashMap<String, Any>,
+        nextVisitDate: LocalDate,
         followUpId: Long? = null
     ):Resource<Long>{
         val latLng = getLatLng()
@@ -95,7 +97,7 @@ class RxBuddyRepository @Inject constructor(
                 rxBuddyId = rxBuddyId,
                 patientMemberId = patientMemberId,
                 followUp = StringConverter.convertGivenMapToString(map),
-                nextVisitDate = getDefaultNextVisitDateForRxBuddy(),
+                nextVisitDate = getNextVisitDate(nextVisitDate),
                 followUpId = followUpId,
                 latitude = latLng.first,
                 longitude = latLng.second
@@ -118,9 +120,8 @@ class RxBuddyRepository @Inject constructor(
         return Resource(state = ResourceState.SUCCESS)
     }
 
-    private fun getDefaultNextVisitDateForRxBuddy(): String {
-        val tomorrowDate =
-            LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy))
+    private fun getNextVisitDate(date: LocalDate): String {
+        val tomorrowDate = date.format(DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy))
         return DateUtils.convertDateTimeToDate(
             tomorrowDate,
             DateUtils.DATE_ddMMyyyy,

@@ -122,7 +122,7 @@ class MemberRegistrationViewModel @Inject constructor(
                     initial = initial,
                     signature = signature,
                     isPhuWalkInFlow = isPhuWalkInsFlow,
-                    location=location
+                    location = location
                 )
                 memberRegistrationRepository.updateHeadPhoneNumber(householdId, map)
                 if (memberId == null) {

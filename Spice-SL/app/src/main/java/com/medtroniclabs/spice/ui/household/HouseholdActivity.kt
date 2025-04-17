@@ -4,9 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
@@ -14,19 +11,20 @@ import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
-import com.medtroniclabs.spice.common.DefinedParams.isHouseHold
+import com.medtroniclabs.spice.common.DefinedParams.VillageId
+import com.medtroniclabs.spice.common.DefinedParams.isCreateHouseholdForPhu
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityHouseholdRegistrationBinding
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isPhuWalkInsFlow
 import com.medtroniclabs.spice.ui.household.fragment.HouseHoldRegistrationFragment
 import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.member.MemberRegistrationFragment
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
@@ -63,7 +61,7 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
         UserDetail.eventName=AnalyticsDefinedParams.HouseholdCreation
         initializeView()
         attachObserver()
-        phuMemberRegistration()
+       // phuMemberRegistration()
     }
 
     private fun validateFormInputs(): Boolean {
@@ -108,73 +106,75 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
     }
 
     private fun initializeView() {
-        householdRegistrationViewModel.isMemberRegistration =
-            intent.getBooleanExtra(isMemberRegistration, false)
-        householdRegistrationViewModel.householdId =
-            intent.getLongExtra(HouseholdDefinedParams.ID, -1L)
-        Timber.d("Member id is not showing 4 ${intent.getLongExtra(MemberID, -1L)}")
-        householdRegistrationViewModel.memberID = intent.getLongExtra(MemberID, -1L)
-        if (intent.getBooleanExtra(isHouseHold, false)) {
+        val householdId = intent.getLongExtra(HouseholdDefinedParams.ID, -1L)
+        val isMemberRegistration = intent.getBooleanExtra(isMemberRegistration, false)
+        val memberId = intent.getLongExtra(MemberID, -1L)
+        val memberFhirId = intent.getLongExtra(FhirMemberID,-1L)
+        val isCreateHouseholdForPhu = intent.getBooleanExtra(isCreateHouseholdForPhu, false)
+        val isPhuWalkInsFlow = intent.getBooleanExtra(isPhuWalkInsFlow, false)
+
+        householdRegistrationViewModel.isMemberRegistration = isMemberRegistration
+        householdRegistrationViewModel.householdId = householdId
+        householdRegistrationViewModel.memberID = memberId
+        householdRegistrationViewModel.isCreateHouseholdForPhu = isCreateHouseholdForPhu
+        householdRegistrationViewModel.isPhuWalkInsFlow = isPhuWalkInsFlow
+
+        if (isCreateHouseholdForPhu) {
+            val arguments = Bundle()
+            val vId = intent.getLongExtra(VillageId, -1L)
+            if (vId != -1L)
+                arguments.putLong(VillageId, vId)
+            launchHouseholdRegistration(arguments)
+        } else if (isMemberRegistration || memberId != -1L) {
+            val arguments = Bundle().apply {
+                putBoolean(AnalyticsDefinedParams.AddNewMember, true)
+                putBoolean(HouseholdDefinedParams.isPhuWalkInsFlow, isPhuWalkInsFlow)
+                putLong(MemberID, memberId)
+                putLong(FhirMemberID, memberFhirId)
+                putString(
+                    AnalyticsDefinedParams.StartDate,
+                    UserDetail.startDateTime
+                )
+            }
+            launchMemberRegistrationFragment(arguments)
+        } else {
+            launchHouseholdRegistration(Bundle())
+        }
+
+
+        /*if (isCreateHouseholdForPhu) {
             loadFragment(if (!householdRegistrationViewModel.isMemberRegistration) 1 else 2)
-        } else loadFragment(if (householdRegistrationViewModel.isMemberRegistration || (householdRegistrationViewModel.memberID != -1L)) 2 else 1)
+        } else loadFragment(if (householdRegistrationViewModel.isMemberRegistration || (householdRegistrationViewModel.memberID != -1L)) 2 else 1)*/
     }
 
-
-    private fun loadFragment(status: Int) {
-        when (status) {
-            1 -> {
-                setTitle(getString(R.string.household_registration))
-                replaceFragmentInId<HouseHoldRegistrationFragment>(
-                    binding.fragmentContainer.id,
-                    tag = HouseHoldRegistrationFragment::class.simpleName
-                )
-            }
-
-            2 -> {
-                val arguments = Bundle().apply {
-                    putBoolean(AnalyticsDefinedParams.AddNewMember, true)
-                    putString(
-                        AnalyticsDefinedParams.StartDate,
-                        UserDetail.startDateTime
-                    )
-                }
-                setTitle(getString(R.string.member_registration))
-                replaceFragmentInId<MemberRegistrationFragment>(
-                    binding.fragmentContainer.id,
-                    bundle = arguments,
-                    tag = MemberRegistrationFragment::class.simpleName
-                )
-            }
-
-            3 -> {
-                val intent = Intent(this, HouseholdSummaryActivity::class.java)
-                intent.putExtra(
-                    HouseholdDefinedParams.ID,
-                    householdRegistrationViewModel.householdId
-                )
-                intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, false)
-                startActivity(intent)
-                finish()
-            }
-        }
+    private fun launchHouseholdRegistration(args: Bundle) {
+        setTitle(getString(R.string.household_registration))
+        replaceFragmentInId<HouseHoldRegistrationFragment>(
+            binding.fragmentContainer.id,
+            bundle = args,
+            tag = HouseHoldRegistrationFragment::class.simpleName
+        )
     }
 
-
-    private inline fun <reified fragment : Fragment> replaceFragmentInId(
-        id: Int? = null,
-        bundle: Bundle? = null,
-        tag: String? = null
-    ) {
-        supportFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<fragment>(
-                id ?: binding.fragmentContainer.id,
-                args = bundle,
-                tag = tag
-            )
-        }
+    private fun launchMemberRegistrationFragment(arg: Bundle) {
+        setTitle(getString(R.string.member_registration))
+        replaceFragmentInId<MemberRegistrationFragment>(
+            binding.fragmentContainer.id,
+            bundle = arg,
+            tag = MemberRegistrationFragment::class.simpleName
+        )
     }
 
+    private fun launchHouseholdSummaryPage() {
+        val intent = Intent(this, HouseholdSummaryActivity::class.java)
+        intent.putExtra(
+            HouseholdDefinedParams.ID,
+            householdRegistrationViewModel.householdId
+        )
+        intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, false)
+        startActivity(intent)
+        finish()
+    }
 
     private fun attachObserver() {
         householdRegistrationViewModel.houseHoldRegistrationLiveData.observe(this@HouseholdActivity) { resource ->
@@ -186,9 +186,23 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     if (householdRegistrationViewModel.householdId != -1L)
-                        loadFragment(3)
-                    else
-                        loadFragment(2)
+                        launchHouseholdSummaryPage()
+                    else {
+                        val memberId = intent.getLongExtra(MemberID, -1L)
+                        val memberFhirId = intent.getLongExtra(FhirMemberID,-1L)
+                        val isPhuWalkInsFlow = intent.getBooleanExtra(isPhuWalkInsFlow, false)
+                        val arguments = Bundle().apply {
+                            putBoolean(AnalyticsDefinedParams.AddNewMember, true)
+                            putBoolean(HouseholdDefinedParams.isPhuWalkInsFlow, isPhuWalkInsFlow)
+                            putLong(MemberID, memberId)
+                            putLong(FhirMemberID, memberFhirId)
+                            putString(
+                                AnalyticsDefinedParams.StartDate,
+                                UserDetail.startDateTime
+                            )
+                        }
+                        launchMemberRegistrationFragment(arguments)
+                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -206,7 +220,7 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     startBackgroundOfflineSync()
-                    loadFragment(3)
+                    launchHouseholdSummaryPage()
                 }
 
                 ResourceState.ERROR -> {

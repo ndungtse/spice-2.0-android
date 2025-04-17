@@ -14,5 +14,7 @@ data class RxBuddyRegister(
     var rxBuddyDetails: RxBuddyMember? = null, // New Rx Buddy member
     val nextVisitDate: String = "",
     val followUpId: Long? = null,
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
     val provenance: ProvanceDto = ProvanceDto()
 )

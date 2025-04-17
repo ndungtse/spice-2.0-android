@@ -1393,4 +1393,8 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun updateRxBuddyFollowUpSyncStatus(idList: List<Long>, syncStatus: String) {
         rxBuddyFollowUpDAO.updateSyncStatus(idList, syncStatus)
     }
+
+    override suspend fun deleteDisableRxBuddies(ids: List<Long>) {
+        rxBuddyDetailsDAO.deleteAllDisabledRxBuddies(ids)
+    }
 }

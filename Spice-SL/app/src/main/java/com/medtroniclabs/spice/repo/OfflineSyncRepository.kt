@@ -373,28 +373,34 @@ class OfflineSyncRepository @Inject constructor(
     }
 
     private suspend fun insertOrUpdateRxBuddyData(rxBuddies: List<ResponseRxBuddy>) {
+        val disableIds = mutableListOf<Long>()
         rxBuddies.forEach { item ->
-            val registry = item.registry
-            val rxBuddy = RxBuddyDetails(
-                id = 0,
-                rxBuddyId = item.id,
-                patientMemberId = item.patientMemberId,
-                relationship = registry.relationShip,
-                isMonitorSheetProvider = registry.isMonitorSheetProvided,
-                nextVisitDate = "",
-                otherRelationship = registry.otherRelationship
-            )
+            if (item.isActive) {
+                val registry = item.registry
+                val rxBuddy = RxBuddyDetails(
+                    id = 0,
+                    rxBuddyId = item.id,
+                    patientMemberId = item.patientMemberId,
+                    relationship = registry.relationShip,
+                    isMonitorSheetProvider = registry.isMonitorSheetProvided,
+                    nextVisitDate = "",
+                    otherRelationship = registry.otherRelationship
+                )
 
-            if (item.type == RX_BUDDY_TYPE_HOUSEHOLD_MEMBER && registry.householdMemberId != null) {
-                rxBuddy.householdMemberId =
-                    roomHelper.getHouseholdMemberIdByFhirId(registry.householdMemberId)
+                if (item.type == RX_BUDDY_TYPE_HOUSEHOLD_MEMBER && registry.householdMemberId != null) {
+                    rxBuddy.householdMemberId =
+                        roomHelper.getHouseholdMemberIdByFhirId(registry.householdMemberId)
+                } else {
+                    rxBuddy.name = registry.rxBuddyDetails?.name
+                    rxBuddy.phoneNumber = registry.rxBuddyDetails?.phoneNumber
+                }
+
+                roomHelper.insertOrUpdateRxBuddyFromBE(rxBuddy)
             } else {
-                rxBuddy.name = registry.rxBuddyDetails?.name
-                rxBuddy.phoneNumber = registry.rxBuddyDetails?.phoneNumber
+                disableIds.add(item.id)
             }
-
-            roomHelper.insertOrUpdateRxBuddyFromBE(rxBuddy)
         }
+        roomHelper.deleteDisableRxBuddies(disableIds)
     }
 
     private suspend fun fetchUnSyncedData(): Boolean {
@@ -710,7 +716,9 @@ class OfflineSyncRepository @Inject constructor(
                 isMonitorSheetProvided = rx.isMonitorSheetProvider,
                 nextVisitDate = rx.nextVisitDate,
                 followUpId = rx.followUpId,
-                provenance = ProvanceDto(rx.updatedAt.convertToUtcDateTime())
+                latitude = rx.latitude,
+                longitude = rx.longitude,
+                provenance = ProvanceDto(modifiedDate = rx.updatedAt.convertToUtcDateTime())
             )
 
             rx.householdMemberId?.let { hhmId ->
@@ -739,7 +747,9 @@ class OfflineSyncRepository @Inject constructor(
                             strFollowUp,
                             item.nextVisitDate,
                             item.updatedAt,
-                            item.followUpId
+                            item.followUpId,
+                            item.latitude,
+                            item.longitude
                         )
                     )
                 }
@@ -760,7 +770,9 @@ class OfflineSyncRepository @Inject constructor(
                             strFollowUp,
                             item.nextVisitDate,
                             item.updatedAt,
-                            item.followUpId
+                            item.followUpId,
+                            item.latitude,
+                            item.longitude
                         )
                     )
                 }
@@ -778,7 +790,9 @@ class OfflineSyncRepository @Inject constructor(
         strFollowUp: String,
         nextVisitDate: String,
         updatedAt: Long,
-        followUpId: Long? = null
+        followUpId: Long? = null,
+        latitude: Double,
+        longitude: Double
     ): RxBuddyFollowUp {
         val map = StringConverter.stringToMap(strFollowUp)
         return RxBuddyFollowUp(
@@ -789,7 +803,9 @@ class OfflineSyncRepository @Inject constructor(
             hadReactionToYourMedications = map[hadReactionToYourMedications] as Boolean,
             nextVisitDate = nextVisitDate,
             followUpId = followUpId,
-            provenance = ProvanceDto(updatedAt.convertToUtcDateTime())
+            latitude = latitude,
+            longitude = longitude,
+            provenance = ProvanceDto(modifiedDate = updatedAt.convertToUtcDateTime())
         )
     }
 

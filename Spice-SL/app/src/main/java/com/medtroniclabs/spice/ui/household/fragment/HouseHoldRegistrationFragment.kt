@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HouseholdCreation
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HouseholdEdit
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
+import com.medtroniclabs.spice.common.DefinedParams.VillageId
 import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
@@ -102,6 +103,13 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                 ResourceState.SUCCESS -> {
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
+
+                        arguments?.getLong(VillageId)?.let {
+                            formGenerator.getViewByTag(villageId)?.let { view ->
+                                view.isEnabled = false
+                                formGenerator.setValueForView(it, view)
+                            }
+                        }
                     }
                 }
                 else -> {
