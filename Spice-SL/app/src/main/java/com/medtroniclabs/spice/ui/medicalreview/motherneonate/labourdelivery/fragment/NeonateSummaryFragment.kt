@@ -83,7 +83,7 @@ class NeonateSummaryFragment : BaseFragment() {
                     requireContext()
                 )})")
             } else{
-                weight.plus(" ").plus(getString(R.string.kgs)).plus(" ").plus("(${CommonUtils.birthWeight(
+                weight.plus(" ").plus(getString(R.string.kg)).plus(" ").plus("(${CommonUtils.birthWeight(
                     weight.toDouble(),
                     requireContext()
                 )})")

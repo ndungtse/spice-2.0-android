@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentAddWeightDialogBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
@@ -106,6 +107,7 @@ class AddHeightDialog : DialogFragment(), View.OnClickListener {
         with(binding) {
             tvTitle.text = getString(R.string.add_height)
             tvWeightLabel.text = getString(R.string.height)
+            tvWeightLabel.markMandatory()
             etWeight.hint = getString(R.string.enter_the_height)
             btnCancel.safeClickListener(this@AddHeightDialog)
             etWeight.addTextChangedListener(textWatcher)

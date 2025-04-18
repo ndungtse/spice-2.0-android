@@ -305,7 +305,7 @@
     <string name="birth_history">Birth History</string>
     <string name="breathing_problem_at_birth">Breathing problems at birth</string>
     <string name="clinical_summary"><![CDATA[Clinical Summary & Vital Signs]]></string>
-    <string name="weight_in_kgs">Weight (in kgs)</string>
+    <string name="weight_in_kg">Weight (in kg)</string>
     <string name="waz">WAZ</string>
     <string name="temperature_in_c">Temperature (in &#176;C)</string>
     <string name="temperature">Temperature</string>
@@ -354,7 +354,7 @@
     <string name="pregnancy_details">Pregnancy Details</string>
     <string name="gravida">Gravida</string>
     <string name="height_hint">Height</string>
-    <string name="weight">Weight (in kgs)</string>
+    <string name="weight">Weight (in kg)</string>
     <string name="weight_hint">Weight</string>
     <string name="bmi">BMI</string>
     <string name="semicolon" translatable="false">:</string>
@@ -468,7 +468,7 @@
     <string name="nutrition_summary_without_signs" translatable="false">%1$s</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="title_pregnancy_summary">Pregnancy Summary</string>
-    <string name="fundal_height">Fundal Height (in cms)</string>
+    <string name="fundal_height">Fundal Height (in cm)</string>
     <string name="fetal_heart_rate_bpm">Fetal Heart Rate(BPM)</string>
     <string name="obstetric_examination">Obstetric Examination</string>
     <string name="contact_number">Contact Number</string>
@@ -526,7 +526,7 @@
     <string name="zinc_or_ors_status" translatable="false">(%1$s - %2$s)</string>
     <string name="remove_medication">Remove Medication</string>
     <string name="medical_review_history">Medical Review History</string>
-    <string name="cms">cms</string>
+    <string name="cm">cm</string>
     <string name="beats_per_minute">Beats Per Minute</string>
     <string name="does_mother_have_a_delivery_kit">Does mother have a delivery kit?</string>
     <string name="pregnancy_history_past_obstetric_history">Pregnancy History (Past Obstetric History)</string>
@@ -609,8 +609,7 @@
     <string name="breast_condition">Breast Condition</string>
     <string name="five_minutes">" (Five minutes)"</string>
     <string name="tested_on">Tested On</string>
-    <string name="birth_weight_in_kgs">Birth Weight (in kgs)</string>
-    <string name="kgs">kgs</string>
+    <string name="birth_weight_in_kg">Birth Weight (in kg)</string>
     <string name="performance_monitoring">Performance Monitoring</string>
     <string name="year_colon">Year :</string>
     <string name="month_colon">Month :</string>
@@ -1346,7 +1345,7 @@
     <string name="cbs" translatable="false">CBS</string>
     <string name="respiratory" translatable="false">Respiratory</string>
     <string name="enter_the_height" translatable="false">Enter the Height</string>
-    <string name="height" translatable="false">Height (in cms)</string>
+    <string name="height" translatable="false">Height (in cm)</string>
     <string name="tb_sign_symptoms" translatable="false">TB Signs &amp; Symptoms</string>
     <string name="presumptive_treatment_summary" translatable="false">Presumptive Treatment Summary</string>
     <string name="add_disease" translatable="false">Add Disease </string>

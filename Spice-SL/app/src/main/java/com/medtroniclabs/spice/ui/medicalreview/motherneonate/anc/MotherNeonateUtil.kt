@@ -214,7 +214,7 @@ object MotherNeonateUtil {
             } else {
                 String.format("%.2f", value).trimEnd('0').trimEnd('.')
             }
-            "$formattedValue ${context.getString(R.string.cms)}"
+            "$formattedValue ${context.getString(R.string.cm)}"
         } else {
             context.getString(R.string.hyphen_symbol)
         }
@@ -234,7 +234,7 @@ object MotherNeonateUtil {
 
     fun convertCMS(value: Double?, context: Context): String {
         return if (value != null) {
-            "${value.toInt()} ${context.getString(R.string.cms)}"
+            "${value.toInt()} ${context.getString(R.string.cm)}"
         } else {
             context.getString(R.string.hyphen_symbol)
         }

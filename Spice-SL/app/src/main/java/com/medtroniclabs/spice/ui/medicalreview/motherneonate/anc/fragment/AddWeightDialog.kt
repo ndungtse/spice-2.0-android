@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentAddWeightDialogBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
@@ -108,6 +109,7 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
     private fun initView() {
         with(binding) {
             btnCancel.safeClickListener(this@AddWeightDialog)
+            tvWeightLabel.markMandatory()
             etWeight.addTextChangedListener(textWatcher)
             btnOkay.safeClickListener(this@AddWeightDialog)
             ivClose.safeClickListener(this@AddWeightDialog)

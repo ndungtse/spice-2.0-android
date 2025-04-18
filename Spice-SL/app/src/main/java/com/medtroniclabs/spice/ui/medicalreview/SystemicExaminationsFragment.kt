@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentSystemicExaminationsBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
@@ -173,6 +174,7 @@ class SystemicExaminationsFragment : BaseFragment() {
         if (viewModel.enteredExaminationNotes.isNotBlank()) {
             binding.etPhysicalExaminationComments.setText(viewModel.enteredExaminationNotes)
         }
+        binding.tvRespiratoryLabel.markMandatory()
     }
 
     private fun initTag() {

@@ -72,11 +72,8 @@ class BirthHistoryFragment : BaseFragment() {
                 birthHistoryDetails.birthWeightCategory?.let { category ->
                     when {
                         decimalBirthWeight.toDouble() == 0.0 -> getString(R.string.na)
-                        decimalBirthWeight.toDouble() < DefinedParams.LowBirthWeight -> {
-                            decimalBirthWeight.plus(" ").plus(getString(R.string.kg)).plus(" ($category)")
-                        }
                         else -> {
-                            decimalBirthWeight.plus(" ").plus(getString(R.string.kgs)).plus(" ($category)")
+                            decimalBirthWeight.plus(" ").plus(getString(R.string.kg)).plus(" ($category)")
                         }
                     }
                 } ?: getString(R.string.separator_double_hyphen)

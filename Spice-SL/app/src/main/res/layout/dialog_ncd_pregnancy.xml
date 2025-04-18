@@ -385,7 +385,7 @@
                         android:layout_marginTop="@dimen/_12sdp"
                         android:fontFamily="@font/inter_regular"
                         android:paddingVertical="@dimen/_10sdp"
-                        android:text="@string/weight_in_kgs"
+                        android:text="@string/weight_in_kg"
                         android:textColor="@color/b_w_black"
                         android:textSize="@dimen/_15ssp"
                         app:layout_constraintEnd_toEndOf="@id/tvGravida"

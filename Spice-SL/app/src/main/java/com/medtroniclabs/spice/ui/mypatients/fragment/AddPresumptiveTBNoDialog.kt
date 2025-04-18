@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentAddWeightDialogBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class AddPresumptiveTBNoDialog : DialogFragment(), View.OnClickListener {
@@ -53,19 +54,25 @@ class AddPresumptiveTBNoDialog : DialogFragment(), View.OnClickListener {
         with(binding) {
             tvTitle.text = getString(R.string.presumptive_tb_no)
             tvWeightLabel.text = getString(R.string.presumptive_tb_no)
-            etWeight.hint = getString(R.string.enter)
+            tvWeightLabel.markMandatory()
+            etWeight.hint = getString(R.string.enter_number)
             binding.etWeight.apply {
-                inputType = InputType.TYPE_CLASS_TEXT
-                filters = arrayOf(InputFilter.LengthFilter(15))
+                inputType = InputType.TYPE_CLASS_NUMBER
+                filters = arrayOf(InputFilter.LengthFilter(20))
             }
             btnCancel.safeClickListener(this@AddPresumptiveTBNoDialog)
             etWeight.addTextChangedListener(textWatcher)
             btnOkay.safeClickListener(this@AddPresumptiveTBNoDialog)
             ivClose.safeClickListener(this@AddPresumptiveTBNoDialog)
-            arguments?.getString(Data)?.let { text ->
-                if (text.isNotBlank()) {
-                    etWeight.setText(text)
+            try {
+                arguments?.getString(Data)?.let { text ->
+                    if (text.isNotBlank()) {
+                        etWeight.setText(text)
+                    }
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // Optionally show a toast or log the error
             }
         }
     }

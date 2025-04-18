@@ -316,7 +316,9 @@ class PatientInfoFragment : BaseFragment() {
             if (isReferredScreen() == true) {
                 dataList.add(
                     mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.diagnosis),
+                        DefinedParams.label to if (CommonUtils.isCommunity()) requireContext().getString(
+                            R.string.diagnosis_tb
+                        ) else requireContext().getString(R.string.diagnosis),
                         DefinedParams.Value to combineText(
                             patientListRespModel.diagnosis?.filter { it.diseaseCategory?.lowercase() != OtherNotes.lowercase() }
                                 ?.map { it.diseaseCategory }?.distinct(),

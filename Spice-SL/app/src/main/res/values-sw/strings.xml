@@ -290,7 +290,7 @@
     <string name="birth_history">Historia ya kuzaliwa</string>
     <string name="breathing_problem_at_birth">Matatizo ya kupumua wakati wa kuzaliwa</string>
     <string name="clinical_summary"><![CDATA[Muhtasari wa Kliniki na Ishara muhimu]]></string>
-    <string name="weight_in_kgs">Uzito (katika Kgs)</string>
+    <string name="weight_in_kg">Uzito (katika Kg)</string>
     <string name="waz">Uzito kwa Umri</string>
     <string name="temperature_in_c">Joto (katika &#176;C)</string>
     <string name="temperature">Joto</string>
@@ -431,7 +431,7 @@
     <string name="please_select_a_site">Tafadhali chagua eneo sahihi</string>
     <string name="tomorrow">Kesho</string>
     <string name="title_pregnancy_summary">Muhtasari wa Mimba</string>
-    <string name="fundal_height">Kimo cha mimba(in cms)</string>
+    <string name="fundal_height">Kimo cha mimba(in cm)</string>
     <string name="fetal_heart_rate_bpm">Mapigo  moyo ya kijusi(BPM)</string>
     <string name="obstetric_examination">Uchunguzi wa uzazi</string>
     <string name="contact_number">Nambari ya Mawasiliano</string>
@@ -481,7 +481,7 @@
     <string name="sss">SSS</string>
     <string name="remove_medication">Ondoa Dawa</string>
     <string name="medical_review_history">Historia ya Matibabu</string>
-    <string name="cms">Cms</string>
+    <string name="cm">Cm</string>
     <string name="beats_per_minute">Mapigo kwa Dakika</string>
     <string name="pregnancy_history_past_obstetric_history">Historia ya Mimba (Historia ya Uzazi uliopita)</string>
     <string name="no_referral_history">Hakuna Historia ya Rufaa Iliyopatikana</string>
@@ -547,8 +547,7 @@
     <string name="involutions_of_the_nuterus_summary">Mji wa mimba kurudi katika hali yake</string>
     <string name="breast_condition">Hali ya titi</string>
     <string name="tested_on">Amechunguzwa</string>
-    <string name="birth_weight_in_kgs">Uzito wa kuzaliwa (kwa kgs)</string>
-    <string name="kgs">kg</string>
+    <string name="birth_weight_in_kg">Uzito wa kuzaliwa (kwa kg)</string>
     <string name="performance_monitoring">Ufuatiliaji wa utendaji</string>
     <string name="year_colon">Mwaka</string>
     <string name="month_colon">Mwezi</string>
@@ -981,7 +980,7 @@
     <string name="and">Na</string>
     <string name="screened">Waliochunguzwa</string>
     <string name="birth_weight">Uzito wa Kuzaliwa</string>
-    <string name="weight">Uzito (katika Kgs)</string>
+    <string name="weight">Uzito (katika Kg)</string>
     <string name="weight_error">"Tafadhali ingiza uzito kati ya 10 hadi 400"</string>
     <string name="weight_error_0_400">"Tafadhali ingiza uzito kati ya 0.1 hadi 400"</string>
     <string name="height_error_0_300">"Tafadhali ingiza urefu kati ya 10 hadi 300"</string>

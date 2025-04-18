@@ -907,4 +907,14 @@ object DateUtils {
             null // Return null in case of an error
         }
     }
+
+    fun getFormattedDateAfterMonths(
+        monthsToAdd: Long = 1,
+        fromDate: LocalDate = LocalDate.now(),
+        format: String = DATE_ddMMyyyy
+    ): String {
+        val formatter = DateTimeFormatter.ofPattern(format)
+        val newDate = fromDate.plusMonths(monthsToAdd)
+        return newDate.format(formatter)
+    }
 }

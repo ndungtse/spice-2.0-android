@@ -110,7 +110,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="@dimen/_12sdp"
                     android:paddingHorizontal="@dimen/_24sdp"
-                    android:text="@string/weight_in_kgs"
+                    android:text="@string/weight_in_kg"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvHeightErrorMessage" />
 

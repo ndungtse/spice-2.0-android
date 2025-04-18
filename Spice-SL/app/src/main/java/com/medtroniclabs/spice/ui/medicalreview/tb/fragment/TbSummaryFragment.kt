@@ -356,6 +356,10 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
             !(viewModel.patientStatus.equals(ReferralStatus.Recovered.name, true) ||
                     viewModel.patientStatus.equals(ReferralStatus.Died.name, true))
 
+        if (viewModel.patientStatus.equals(ReferralStatus.OnTreatment.name, true)) {
+            binding.tvNextMedicalReviewLabelText.text = DateUtils.getFormattedDateAfterMonths(1)
+        }
+
         // Clear label text if patient is Recovered or Died
         if (viewModel.patientStatus.equals(ReferralStatus.Recovered.name, true) ||
             viewModel.patientStatus.equals(ReferralStatus.Died.name, true)

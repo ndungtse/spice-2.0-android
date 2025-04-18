@@ -168,7 +168,7 @@ class BirthDetailsFragment: BaseFragment(), View.OnClickListener  {
 
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.birth_weight),
-                DefinedParams.Value to (birthDetails.birthWeight?.let { "$it "+requireContext().getString(R.string.kgs) }
+                DefinedParams.Value to (birthDetails.birthWeight?.let { "$it "+requireContext().getString(R.string.kg) }
                     ?: getString(R.string.separator_double_hyphen))
             ),
 

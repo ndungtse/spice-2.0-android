@@ -56,7 +56,7 @@
             android:layout_marginStart="@dimen/_24sdp"
             android:layout_marginTop="@dimen/_16sdp"
             android:fontFamily="@font/inter_regular"
-            android:text="@string/weight_in_kgs"
+            android:text="@string/weight_in_kg"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="parent"
