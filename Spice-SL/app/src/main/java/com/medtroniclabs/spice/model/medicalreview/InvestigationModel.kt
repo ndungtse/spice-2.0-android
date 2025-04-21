@@ -19,6 +19,6 @@ data class InvestigationModel(
     val isReview: Boolean? = null,
     val components:ArrayList<Map<String,Any?>>? = null,
     val comments:String? = null,
-    val descriptiveResult:String? =null
-
+    val descriptiveResult:String? =null,
+    val labTestId: Long? = null
 )

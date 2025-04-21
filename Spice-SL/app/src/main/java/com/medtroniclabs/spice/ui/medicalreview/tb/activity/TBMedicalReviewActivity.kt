@@ -85,7 +85,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
             swipeRefresh()
         }
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
-        initStaticDataCall()
+        initView()
         setButtonClickListener()
         attachObserver()
     }
@@ -446,7 +446,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
         }
     }
 
-    private fun openInvestigationActivity() {
+    fun openInvestigationActivity() {
         patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
             val intent = Intent(this, InvestigationActivity::class.java)
             intent.putExtra(DefinedParams.PatientId, data.patientId)
@@ -610,6 +610,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     override fun onResume() {
         super.onResume()
         getCurrentLocation()
+        swipeRefresh()
     }
 
     fun enableRefer(isEnable: Boolean) {

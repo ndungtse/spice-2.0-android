@@ -10,6 +10,7 @@ import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -44,6 +45,7 @@ import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.appextensions.workerUniqueName
 import com.medtroniclabs.spice.appextensions.workerUniqueNameForNCD
+import com.medtroniclabs.spice.common.ApiManager
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
@@ -647,10 +649,20 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.logout -> {
-                if (binding.appBarMain.includeMainContent.syncingHolder.isVisible()) {
-                    showSyncInProgressWarning()
-                    return true
+                if (ApiManager.isLoading.value) {
+                    Toast.makeText(this, getString(R.string.please_wait_until_current_operation_completes), Toast.LENGTH_SHORT).show()
+
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val homeMenuItem = binding.navView.menu.findItem(R.id.home)
+                        selectNavigationMenu(homeMenuItem)
+                    }, 200)
+
+                } else {
+                    if (binding.appBarMain.includeMainContent.syncingHolder.isVisible()) {
+                        showSyncInProgressWarning()
+                        return true
                 } else showLogoutDialogFlow()
+                }
             }
 
             R.id.profile -> {
@@ -1075,10 +1087,12 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
     override fun onStart() {
         super.onStart()
-        val request = PeerSupervisorNotificationRequest(
-            userId = SecuredPreference.getUserId().toString()
-        )
-        viewModel.getCBSNotificationList(request)
+        if (CommonUtils.isCommunity() && CommonUtils.isPeerSuperVisor()){
+            val request = PeerSupervisorNotificationRequest(
+                userId = SecuredPreference.getUserId().toString()
+            )
+            viewModel.getCBSNotificationList(request)
+        }
     }
 
     private fun showLogoutDialogFlow() {

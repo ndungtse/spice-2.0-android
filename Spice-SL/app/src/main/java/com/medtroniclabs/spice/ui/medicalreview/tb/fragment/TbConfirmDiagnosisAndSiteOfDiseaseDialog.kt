@@ -52,7 +52,7 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
 
     var listener: DialogDismissListenerForTb? = null
     private lateinit var binding: FragmentPatientStatusDialogBinding
-    private val diagnosisViewModel: TbConfirmDiagnosisAndSiteOfDiseaseViewModel by viewModels()
+    private val diagnosisViewModel: TbConfirmDiagnosisAndSiteOfDiseaseViewModel by activityViewModels()
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
     private lateinit var diseaseConfirmCategoryTagView: TagListCustomView
     private lateinit var siteDiseaseCategoryTagView: TagListCustomView

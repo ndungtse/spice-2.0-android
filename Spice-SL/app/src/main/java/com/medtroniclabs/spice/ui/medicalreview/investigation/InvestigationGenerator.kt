@@ -30,6 +30,7 @@ import com.medtroniclabs.spice.common.CommonUtils.getMaxDateLimit
 import com.medtroniclabs.spice.common.CommonUtils.isTiberbuUser
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+import com.medtroniclabs.spice.common.DateUtils.DATE_TIME_EEEMMMddHHmmsszyyyy
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.convertDateFormat
 import com.medtroniclabs.spice.common.DefinedParams.TestedOn
@@ -315,7 +316,15 @@ class InvestigationGenerator(
         if (getDecimalFormatted(value).isNotEmpty()) {
             displayValue = getDecimalFormatted(value)
         } else if (value is String) {
-            displayValue = value
+            if (DateUtils.isDateFormat(DATE_TIME_EEEMMMddHHmmsszyyyy, value)){
+                displayValue = convertDateFormat(
+                    value,
+                    DATE_TIME_EEEMMMddHHmmsszyyyy,
+                    DATE_ddMMyyyy
+                )
+            } else {
+                displayValue = value
+            }
         } else {
             displayValue = value.toString()
         }

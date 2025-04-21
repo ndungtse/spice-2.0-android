@@ -8,7 +8,6 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.RoleConstant.PROVIDER
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.ClinicalWorkflow
 import com.medtroniclabs.spice.data.ConsentFormResponse
 import com.medtroniclabs.spice.data.CulturesEntity
@@ -56,6 +55,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanningMethods
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -212,6 +212,42 @@ class MetaRepository @Inject constructor(
                             }
                         } else {
                             return@with Resource(state = ResourceState.ERROR)
+                        }
+                        if (!SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_TB_LOADED.name)) {
+                            val tbResponse = async {
+                                apiHelper.getTbStaticData()
+                            }.await()
+                            if (tbResponse.isSuccessful && tbResponse.body()?.status == true) {
+                                if (tbResponse.body()?.entity == null) {
+                                    return@with Resource(state = ResourceState.ERROR)
+                                }
+                                tbResponse.body()?.entity?.let { data ->
+                                    roomHelper.apply {
+                                        deleteExaminationsComplaintsForAnc(MedicalReviewTypeEnums.TB.name)
+                                        insertExaminationsComplaint(
+                                            generateChipItemByType(
+                                                data.presentingComplaints,
+                                                data.systemicExaminations,
+                                                data.comorbidities,
+                                                data.patientStatus,
+                                                data.patientType
+                                            )
+                                        )
+                                        roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.TB.name)
+                                        roomHelper.deleteDiagnosisList(MotherNeonateUtil.TB_SITE_OF_DISEASE)
+                                        roomHelper.deleteDiagnosisList(MotherNeonateUtil.TB_ORGAN_AFFECTED)
+                                        roomHelper.saveDiagnosisList(data.diseaseCategories)
+                                        SecuredPreference.putBoolean(
+                                            SecuredPreference.EnvironmentKey.IS_TB_LOADED.name,
+                                            true
+                                        )
+                                    }
+                                } ?: run {
+                                    return@with Resource(state = ResourceState.ERROR)
+                                }
+                            } else {
+                                return@with Resource(state = ResourceState.ERROR)
+                            }
                         }
                         if (meta.isNotEmpty()) {
                             val metadataResponse =
@@ -1018,6 +1054,50 @@ class MetaRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
+    }
+
+    private fun generateChipItemByType(
+        presentingComplaints: List<MedicalReviewMetaItems>,
+        systemicExaminations: List<MedicalReviewMetaItems>,
+        comorbidities: List<MedicalReviewMetaItems>,
+        patientStatus: List<MedicalReviewMetaItems>,
+        patientType: List<MedicalReviewMetaItems>
+    ): List<MedicalReviewMetaItems> {
+        val chipItemList = mutableListOf<MedicalReviewMetaItems>()
+        chipItemList.addAll(presentingComplaints.map {
+            it.apply {
+                category = MedicalReviewTypeEnums.PresentingComplaints.name
+            }
+        })
+        chipItemList.addAll(systemicExaminations.map {
+            it.apply {
+                category = MedicalReviewTypeEnums.SystemicExaminations.name
+            }
+        })
+        chipItemList.addAll(
+            comorbidities.map {
+                it.apply {
+                    type = MedicalReviewTypeEnums.TB.name
+                    category = MedicalReviewTypeEnums.comorbidities.name
+                }
+            }
+        )
+        chipItemList.addAll(
+            patientStatus.map {
+                it.apply {
+                    type = MedicalReviewTypeEnums.TB.name
+                    category = MedicalReviewTypeEnums.patient_status.name
+                }
+            }
+        )
+        chipItemList.addAll(
+            patientType.map {
+                it.apply {
+                    category = MedicalReviewTypeEnums.patient_type.name
+                }
+            }
+        )
+        return chipItemList
     }
 }
 

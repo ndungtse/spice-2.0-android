@@ -44,6 +44,7 @@ object DateUtils {
     const val GESTATIONALAGE_CALENDAR = "yyyy-MM-dd"
     const val DATE_FORMAT_ddMMyy_GRAPH = "dd-MM-yyyy"
     const val DATE_TIME_yyyyMMddTHHmmssSSSXXX = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+    const val DATE_TIME_EEEMMMddHHmmsszyyyy = "EEE MMM dd HH:mm:ss z yyyy"
 
 
     fun getYearMonthAndWeek(
@@ -916,5 +917,16 @@ object DateUtils {
         val formatter = DateTimeFormatter.ofPattern(format)
         val newDate = fromDate.plusMonths(monthsToAdd)
         return newDate.format(formatter)
+    }
+
+    fun isDateFormat(inputFormat: String, value: String): Boolean {
+        val dateFormat = SimpleDateFormat(inputFormat, Locale.ENGLISH)
+        dateFormat.isLenient = false
+        return try {
+            dateFormat.parse(value)
+            true
+        } catch (e: ParseException) {
+            false
+        }
     }
 }

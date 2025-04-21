@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.mypatients
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.medtroniclabs.spice.common.ApiManager
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams.LIST_LIMIT
 import com.medtroniclabs.spice.common.DefinedParams.PAGE_INDEX
@@ -42,6 +43,7 @@ class PatientsDataSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PatientListRespModel> {
         val pageIndex = params.key ?: PAGE_INDEX
+        ApiManager.startLoading()
         return try {
             if (villages.isNullOrEmpty()) {
                 val userVillages = patientRepository.getUserVillages()
@@ -103,6 +105,8 @@ class PatientsDataSource(
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
+        } finally {
+            ApiManager.stopLoading()
         }
     }
 }

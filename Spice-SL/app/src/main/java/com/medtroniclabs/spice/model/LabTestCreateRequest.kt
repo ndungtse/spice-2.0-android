@@ -14,6 +14,7 @@ data class LabTestCreateRequest(
 
 data class LabTestDetails(
     val testName: String,
+    val labTestId: Long? = null,
     val recommendedBy: String,
     val recommendedName: String? = null,
     val recommendedOn: String,

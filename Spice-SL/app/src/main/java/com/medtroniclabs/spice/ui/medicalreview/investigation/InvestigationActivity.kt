@@ -10,7 +10,11 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.Gene_Expert
+import com.medtroniclabs.spice.common.DefinedParams.MTB_Detected
+import com.medtroniclabs.spice.common.DefinedParams.RIF_Resistance
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityInvestigationBinding
@@ -23,6 +27,8 @@ import com.medtroniclabs.spice.ui.DeleteReasonDialog
 import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.HBA1CNudgesDialog
 import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.LipidsNudgesDialog
 import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.MarkAsReviewedConfirmationDialog
+import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.TbConfirmDiagnosisAndSiteOfDiseaseDialog
+import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.TbConfirmDiagnosisAndSiteOfDiseaseViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
@@ -33,6 +39,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
     private val investigationViewModel: InvestigationViewModel by viewModels()
 
     private val patientViewModel: PatientDetailViewModel by viewModels()
+    private val diagnosisViewModel : TbConfirmDiagnosisAndSiteOfDiseaseViewModel by viewModels()
 
     private lateinit var investigationGenerator: InvestigationGenerator
 
@@ -50,7 +57,9 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
         initView()
         setListeners()
         attachObserver()
-        showLabTestNudge()
+        if (CommonUtils.isNonCommunity()){
+            showLabTestNudge()
+        }
     }
 
     private fun attachObserver() {
@@ -212,6 +221,29 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                 }
             }
         }
+
+        diagnosisViewModel.diagnosisSaveUpdateResponse.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
+                        investigationViewModel.createLabTest(
+                            geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation()),
+                            data
+                        )
+                        patientViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
+                    }
+                }
+            }
+        }
     }
 
     private fun showLabTestNudge() {
@@ -358,12 +390,31 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
         when (v?.id) {
             binding.btnSubmit.id -> {
                 if (investigationGenerator.onValidateInput(false)) {
-                    patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
-                        investigationViewModel.createLabTest(
-                            geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation()),
-                            data
-                        )
-                        patientViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
+                    val labTestPayload = geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation())
+                    val isGeneExpertDetected = labTestPayload?.any { payload ->
+                        val resultMapKeys = payload.resultHashMap?.keys?.map { it.lowercase() }
+                        resultMapKeys?.contains(MTB_Detected) == true && resultMapKeys.contains(RIF_Resistance) && payload.testName.contains(Gene_Expert, true)
+                    } == true
+                    if (isGeneExpertDetected){
+                        showErrorDialogue(
+                            getString(R.string.confirm_diagnoses),
+                            getString(R.string.tb_diagnosis_reason),
+                            isNegativeButtonNeed = true,
+                            positiveButtonName = getString(R.string.yes),
+                            cancelBtnName = getString(R.string.no)
+                        ) { isPositive ->
+                            if (isPositive) {
+                                TbConfirmDiagnosisAndSiteOfDiseaseDialog().show(supportFragmentManager, TbConfirmDiagnosisAndSiteOfDiseaseDialog.TAG)
+                            }
+                        }
+                    } else {
+                        patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
+                            investigationViewModel.createLabTest(
+                                geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation()),
+                                data
+                            )
+                            patientViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
+                        }
                     }
                 } else {
                     investigationGenerator.getResultFromInvestigation()?.let {

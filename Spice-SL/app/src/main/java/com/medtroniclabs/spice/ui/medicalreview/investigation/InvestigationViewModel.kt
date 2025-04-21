@@ -101,7 +101,8 @@ class InvestigationViewModel @Inject constructor(
                             DateUtils.getTodayDateDDMMYYYY(),
                             null,
                             investigationResponse.codeDetails,
-                            dropdownState = true
+                            dropdownState = true,
+                            labTestId = investigationResponse.id,
                         )
                     )
 
@@ -185,7 +186,8 @@ class InvestigationViewModel @Inject constructor(
                         recommendedName = data.recommendedByName,
                         codeDetails = data.codeDetails,
                         labTestResults = getResultListObject(data),
-                        id = data.id
+                        id = data.id,
+                        labTestId = data.labTestId
                     )
                     labTestList.add(detail)
                 }
@@ -318,7 +320,8 @@ class InvestigationViewModel @Inject constructor(
                         isReview = investigationExisting.isReview,
                         components = investigationExisting.components,
                         comments = investigationExisting.comments,
-                        descriptiveResult = investigationExisting.descriptiveResult
+                        descriptiveResult = investigationExisting.descriptiveResult,
+                        labTestId = investigationExisting.labTestCustomization.id
                     )
                 )
             }

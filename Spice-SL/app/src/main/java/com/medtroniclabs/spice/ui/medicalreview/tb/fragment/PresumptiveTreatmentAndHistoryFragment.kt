@@ -6,20 +6,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.TbHistory
 import com.medtroniclabs.spice.databinding.FragmentPresumptiveTreatmentAndHistoryBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.medicalreview.tb.activity.TBMedicalReviewActivity
 import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.TbPatientHistoryAndPresumptiveViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PresumptiveTreatmentAndHistoryFragment : BaseFragment() {
+class PresumptiveTreatmentAndHistoryFragment : BaseFragment(), View.OnClickListener {
 
     private val patientDetailsViewModel: PatientDetailViewModel by activityViewModels()
     private lateinit var binding: FragmentPresumptiveTreatmentAndHistoryBinding
@@ -42,7 +48,12 @@ class PresumptiveTreatmentAndHistoryFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        initListeners()
         attachObserver()
+    }
+
+    private fun initListeners() {
+        binding.tvUpdateInv.safeClickListener(this)
     }
 
     private fun attachObserver() {
@@ -107,6 +118,15 @@ class PresumptiveTreatmentAndHistoryFragment : BaseFragment() {
                 )
             }?.takeIf { it.isNotEmpty() }
                 ?: requireContext().getString(R.string.hyphen_symbol)
+            if (history.tbInvestigationStatus.equals(AssessmentDefinedParams.NA, true)) {
+                binding.tvUpdateInv.visible()
+                binding.tvUpdateInv.text = getString(R.string.add_inv_result)
+            } else if (history.tbInvestigationStatus.equals(DefinedParams.No, true)) {
+                binding.tvUpdateInv.visible()
+                binding.tvUpdateInv.text = getString(R.string.update_inv_result)
+            } else {
+                binding.tvUpdateInv.gone()
+            }
         }
     }
 
@@ -161,6 +181,14 @@ class PresumptiveTreatmentAndHistoryFragment : BaseFragment() {
                         tbIMRCompleted = false
                     )
                 )
+            }
+        }
+    }
+
+    override fun onClick(v: View?) {
+        when(v?.id) {
+            R.id.tvUpdateInv -> {
+                (activity as TBMedicalReviewActivity).openInvestigationActivity()
             }
         }
     }
