@@ -539,14 +539,23 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     }
 
     private fun attachObserver() {
-        viewModel.getPatientType.observe(viewLifecycleOwner) {
-            if (it.state == ResourceState.SUCCESS) {
-                viewModel.getPatientType.value?.data?.get(PATIENT_TYPE_HYPHEN)?.let { type ->
-                    if (type is String && type.isNotBlank()) {
-                        binding.tvPatientType.text = type.capitalizeFirstChar()
-                        binding.tvAddPatientType.text = getString(R.string.edit_type)
-                    }
-                }
+        viewModel.getPatientTypeLiveData.observe(viewLifecycleOwner) {
+            val type = viewModel.getPatientType.value?.data?.get(PATIENT_TYPE_HYPHEN) as? String
+            if (!type.isNullOrBlank()) {
+                val patientType = viewModel.getPatientTypeLiveData.value
+                    ?.find { it.value == type }
+                    ?.name
+                    ?.capitalizeFirstChar()
+                    ?: getString(R.string.hyphen_symbol)
+                binding.tvPatientType.text = patientType
+                binding.tvAddPatientType.text = getString(R.string.edit_type)
+            }
+        }
+        viewModel.getPatientType.observe(viewLifecycleOwner) { result ->
+            val type = result.data?.get(PATIENT_TYPE_HYPHEN) as? String
+            if (result.state == ResourceState.SUCCESS && !type.isNullOrBlank()) {
+                binding.tvAddPatientType.text = getString(R.string.edit_type)
+                viewModel.setPatientType(MotherNeonateUtil.PATIENT_TYPE)
             } else {
                 binding.tvPatientType.text = getString(R.string.hyphen_symbol)
                 binding.tvAddPatientType.text = getString(R.string.add_type)

@@ -1,15 +1,19 @@
 package com.medtroniclabs.spice.ui.mypatients.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.repo.MotherNeonateANCRepo
 import com.medtroniclabs.spice.ui.medicalreview.tb.repo.TbMedicalReviewRepo
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -64,6 +68,16 @@ class MotherNeonateBpWeightViewModel @Inject constructor(
             getBmi.postLoading()
             getBmi.postValue(tbMedicalReviewRepo.fetchBmi(motherNeonateAncRequest))
         }
+    }
+
+    private val getPatientTypeMeta = MutableLiveData<String>()
+    val getPatientTypeLiveData: LiveData<List<MedicalReviewMetaItems>> =
+        getPatientTypeMeta.switchMap {
+            tbMedicalReviewRepo.getExaminationsComplaints(it, MedicalReviewTypeEnums.TB.name)
+        }
+
+    fun setPatientType(category: String) {
+        getPatientTypeMeta.value = category
     }
 
     fun getPatientType(request: MotherNeonateAncRequest) {

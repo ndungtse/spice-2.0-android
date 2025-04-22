@@ -601,7 +601,9 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
         }
         if (hasComorbidities) {
             binding.btnSubmit.isEnabled = isValidFragment
-            return
+            if (!isValidFragment) {
+                return
+            }
         }
 
         binding.btnSubmit.isEnabled = hasClinicalNotes
