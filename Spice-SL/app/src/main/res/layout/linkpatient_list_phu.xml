@@ -30,27 +30,14 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/patientNameAgeGender"
                 style="@style/TextStyle_Bold_16_NoBG"
-                android:layout_width="@dimen/_0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:text="Serena Kamara - 38 - F"
                 android:textColor="@color/secondary_black"
-                app:layout_constraintEnd_toStartOf="@+id/addHouseholdBtnGuideline"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnAddHousehold"
-                style="@style/Add_Household_Button_Style"
-                android:layout_width="wrap_content"
-                android:paddingHorizontal="@dimen/_8sdp"
-                android:text="@string/add_household"
-                android:visibility="gone"
-                android:layout_marginEnd="@dimen/_12sdp"
-                app:layout_constraintBottom_toBottomOf="@+id/patientNameAgeGender"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/patientNameAgeGender"
-                app:layout_constraintVertical_bias="0.0" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/startGuideline"
@@ -72,13 +59,6 @@
                 android:layout_height="0dp"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.44" />
-
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/addHouseholdBtnGuideline"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.6" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvLabelReason"

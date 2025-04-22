@@ -105,7 +105,7 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
             val input = it?.trim().toString()
             searchHouseHoldList(input,patientLinkedDetails.villageId)
         }
-        binding.includedHousehold.btnAddHousehold.safeClickListener(this)
+        binding.btnAddHousehold.safeClickListener(this)
     }
 
     private val dialerLauncher =
@@ -121,10 +121,11 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
             linkPatientBtn.gone()
             callPatientBtn.gone()
             linkCallDetailsBtn.visible()
-           /* val age = context?.let { CommonUtils.getAgeFromDOB(patientLinkedDetails.dateOfBirth, it) }
+            val age =
+                context?.let { CommonUtils.getAgeFromDOB(patientLinkedDetails.dateOfBirth, it) }
             age?.toIntOrNull()?.let {
-                if (it >= 10) btnAddHousehold.visible()
-            }*/
+//                if (it >= 10) binding.bottomNavigation.visible()
+            }
             patientNameAgeGender.text =
                 formatPatientDemographics(requireContext(), patientLinkedDetails)
             patientVillage.text = patientLinkedDetails.villageName
@@ -148,7 +149,6 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
                     patientLinkedDetails.villageId
                 )
             }
-
             R.id.btnAddHousehold -> {
                 withLocationCheck({
                     val intent = Intent(requireContext(), ConsentFormActivity::class.java)

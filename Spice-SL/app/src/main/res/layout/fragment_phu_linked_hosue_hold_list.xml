@@ -102,5 +102,29 @@
         app:layout_constraintStart_toStartOf="@+id/cardPatient"
         app:layout_constraintTop_toBottomOf="@+id/cardPatient" />
 
+    <LinearLayout
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingHorizontal="@dimen/_15sdp"
+        android:paddingTop="@dimen/_20sdp"
+        android:paddingBottom="@dimen/_12sdp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnAddHousehold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_cobalt_bg"
+            android:fontFamily="@font/inter_bold"
+            android:text="@string/add_household"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14ssp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
