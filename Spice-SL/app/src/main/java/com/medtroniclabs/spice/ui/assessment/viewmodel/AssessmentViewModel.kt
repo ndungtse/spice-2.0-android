@@ -293,8 +293,7 @@ class AssessmentViewModel @Inject constructor(
             if (tb.containsKey(TBRxBuddyRegister)) {
                 val rxBuddy = tb[TBRxBuddyRegister] as HashMap<String, Any>
 
-                val isMonitorSheetProviderText = rxBuddy[hasProvidedMonitoringSheet] as String
-                val isSheetProvider = isMonitorSheetProviderText.equals("yes", true)
+                val isSheetProvider = rxBuddy[hasProvidedMonitoringSheet] as Boolean
                 val relationShip = rxBuddy[relationshipToPatient] as String
                 val otherRelationShip =
                     if (rxBuddy.containsKey(otherRelationShip)) rxBuddy[otherRelationShip] as String else null
@@ -1465,15 +1464,16 @@ class AssessmentViewModel @Inject constructor(
     }
 
     fun getOtherHouseholdMemberExcludeTBPatient(){
-        if (selectedHouseholdMemberId == -1L || selectedHouseholdId == -1L) {
-            return
-        }
+        val memberId = memberDetailsLiveData.value?.data?.id
+        val householdId = memberDetailsLiveData.value?.data?.householdLocalId
         viewModelScope.launch(dispatcherIO) {
-            otherHouseholdMemberLiveData.postValue(
-                rxBuddyRepository.getOtherHouseholdMembersExcludeTBPatient(
-                    selectedHouseholdId, selectedHouseholdMemberId
+            if (memberId != null && householdId != null) {
+                otherHouseholdMemberLiveData.postValue(
+                    rxBuddyRepository.getOtherHouseholdMembersExcludeTBPatient(
+                        householdId, memberId
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -1585,7 +1585,7 @@ class AssessmentViewModel @Inject constructor(
     val nextVisitDateForTBPatientLiveData = MutableLiveData<LocalDate>()
 
     private fun getNextVisitForConfirmedTbPatient(): LocalDate {
-        val startDate = treatmentDetailsLiveData.value?.treatmentStartDate
+        val startDate = treatmentDetailsLiveData.value?.tbConfirmationDate
         val visitList = getTBNextVisitSchedule()
         if (startDate != null && startDate.trim().isNotEmpty()) {
             val today = LocalDate.now()

@@ -70,6 +70,7 @@ class ImmunisationSummaryFragment :  BaseFragment() {
     }
 
     private fun initView() {
+        viewModel.getLastVaccineScheduleDateAndVaccinationDate()
         arguments?.getString(DefinedParams.EncounterId)?.let { encounterId ->
             viewModel.getImmunisationSummaryDetails(encounterId)
         }
@@ -79,7 +80,8 @@ class ImmunisationSummaryFragment :  BaseFragment() {
         }
 
         binding.lblCatchUpPolicy.safeClickListener {
-            val dialog = EpiCatchUpPolicyDialogFragment()
+            val missedVaccineCount = viewModel.immunisationSummaryLiveData.value?.data?.missedVaccine?.size ?: 0
+            val dialog = EpiCatchUpPolicyDialogFragment(missedVaccineCount)
             dialog.show(childFragmentManager, "EpiCatchPolicy")
         }
 
@@ -114,7 +116,7 @@ class ImmunisationSummaryFragment :  BaseFragment() {
                 val outputFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
                 val localDate = LocalDate.parse(stringDate, inputFormatter)
                 val formattedDate = localDate.atStartOfDay(ZoneOffset.UTC).format(outputFormatter)
-                viewModel.nextVaccinationDetails?.nextVisitDate = formattedDate
+                viewModel.nextVisitDate = formattedDate
             }
         }
     }
@@ -135,18 +137,13 @@ class ImmunisationSummaryFragment :  BaseFragment() {
             }
         }
 
-        viewModel.lastVaccineScheduleDate?.let {
+        viewModel.updateScheduleDateAndVaccinationDate.observe(viewLifecycleOwner) {
             binding.tvScheduledDate.text = getColoredSpannableString(it)
         }
 
         viewModel.nextVaccinationDetails?.let {
             binding.tvNextDuration.text = it.nextVaccinationDuration
             binding.tvNextDose.text = it.nextVaccinationDose.joinToString(separator = ", ")
-            binding.tvNextVaccinationDate.text = DateUtils.convertDateTimeToDate(
-                it.nextVisitDate,
-                DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                DATE_ddMMyyyy
-            )
         } ?: run {
             binding.lblNextDuration.gone()
             binding.tvNextDuration.gone()
@@ -155,7 +152,15 @@ class ImmunisationSummaryFragment :  BaseFragment() {
             binding.lblNextDose.gone()
             binding.tvNextDose.gone()
             binding.tvNextDoseSeparator.gone()
+        }
 
+        viewModel.nextVisitDate?.let {
+            binding.tvNextVaccinationDate.text = DateUtils.convertDateTimeToDate(
+                it,
+                DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                DATE_ddMMyyyy
+            )
+        } ?: kotlin.run {
             binding.lblNextVaccinationDate.gone()
             binding.tvNextVaccinationDate.gone()
             binding.tvNextVaccinationDateSeparator.gone()
@@ -183,15 +188,14 @@ class ImmunisationSummaryFragment :  BaseFragment() {
         }
     }
 
-    private  fun getColoredSpannableString(scheduleDate: LocalDate): Spannable {
-        val today = LocalDate.now()
-        val dayDiff = ChronoUnit.DAYS.between(scheduleDate, today)
-        val date = scheduleDate.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
+    private  fun getColoredSpannableString(pair: Pair<LocalDate, LocalDate>): Spannable {
+        val dayDiff = ChronoUnit.DAYS.between(pair.first, pair.second)
+        val date = pair.first.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
 
-        val status = if (dayDiff > 0) {
-            getString(R.string.days_delay, dayDiff.toInt())
-        } else {
-            getString(R.string.on_time)
+        val status = when {
+            dayDiff > 1L -> getString(R.string.days_delay, dayDiff.toInt())
+            dayDiff == 1L -> getString(R.string.day_delay, dayDiff.toInt())
+            else -> getString(R.string.on_time)
         }
 
         val fullText = "$date, ($status)"
@@ -211,5 +215,4 @@ class ImmunisationSummaryFragment :  BaseFragment() {
 
         return spannable
     }
-
 }

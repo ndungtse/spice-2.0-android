@@ -63,6 +63,13 @@ class UpdateVaccinationStatusFragment(
             binding.tvScheduledDate.text = it.format(displayFormatter)
         }
 
+        if (vaccinationItem.reason != null) {
+            binding.llMissedReason.visible()
+            binding.tvMissedReason.text = vaccinationItem.reason
+        } else {
+            binding.llMissedReason.gone()
+        }
+
         if (vaccinationItem.vaccinatedDate != null) {
             shouldEnableUpdate(false)
             binding.tvVaccinationDate.text = vaccinationItem.vaccinatedDate!!.getLocalDate().format(displayFormatter)

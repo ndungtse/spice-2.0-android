@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.referralhistory.adapter
 
+import android.text.Spannable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -27,10 +28,14 @@ class ReferralHistoryAdapter :RecyclerView.Adapter<ReferralHistoryAdapter.ViewHo
                     ?: binding.root.context.getString(R.string.hyphen_symbol)
                 val value = data[DefinedParams.Value]
 
-                tvValue.text = processMapValue(value,data[DefinedParams.label] as? String)
-                val color = data[DefinedParams.valueColor] as? Int
-                color?.let {
-                    tvValue.setTextColor(ContextCompat.getColor(context, color))
+                if (value != null && value is Spannable) {
+                    tvValue.text = value
+                } else {
+                    tvValue.text = processMapValue(value,data[DefinedParams.label] as? String)
+                    val color = data[DefinedParams.valueColor] as? Int
+                    color?.let {
+                        tvValue.setTextColor(ContextCompat.getColor(context, color))
+                    }
                 }
             }
         }

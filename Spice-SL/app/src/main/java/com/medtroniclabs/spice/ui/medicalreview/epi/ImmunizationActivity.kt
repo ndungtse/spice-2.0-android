@@ -84,7 +84,8 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
         }
 
         binding.btnViewCatchUpPolicy.safeClickListener {
-            val dialog = EpiCatchUpPolicyDialogFragment()
+            val missedCount = viewModel.getMissedVaccineCount()
+            val dialog = EpiCatchUpPolicyDialogFragment(missedCount)
             dialog.show(supportFragmentManager, "EpiCatchPolicy")
         }
     }

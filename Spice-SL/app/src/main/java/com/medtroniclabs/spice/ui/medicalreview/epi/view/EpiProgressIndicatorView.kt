@@ -58,7 +58,7 @@ class EpiProgressIndicatorView @JvmOverloads constructor(
             val anyUpdatedScheduleDate =
                 item.vaccinationItems.filter { it.updatedScheduleDate != null }.minOfOrNull { it.updatedScheduleDate!! }
 
-            if (anyUpdatedScheduleDate != null) { // There is some vaccination case
+            if (anyUpdatedScheduleDate != null && !anyUpdatedScheduleDate.isAfter(ldToday)) { // There is some vaccination case
 
                 if (anyUpdatedScheduleDate.isBefore(ldToday)) {
                     val anyMissed = item.vaccinationItems.any { it.vaccinatedDate == null }

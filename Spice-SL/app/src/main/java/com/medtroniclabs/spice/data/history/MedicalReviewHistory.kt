@@ -62,6 +62,7 @@ data class ReviewDetails(
 
     val vaccinated: List<String>? = null,
     val lastScheduledDate: String? = null,
+    val lastScheduledDateReason: String? = null,
     val nextVaccinationDuration: String? = null,
     val nextVaccinationDose: List<String>? = null,
     val nextVaccinationDate: String? = null

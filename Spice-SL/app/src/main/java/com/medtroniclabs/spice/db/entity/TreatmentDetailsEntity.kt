@@ -14,5 +14,6 @@ data class TreatmentDetailsEntity(
     var diagnosedDate: String?,
     var prescriptions: String? = null,
     var healthUnitNo: Long? = null,
-    var icDistrictTBNo: Long? = null
+    var icDistrictTBNo: Long? = null,
+    var tbConfirmationDate: String? = null
 )

@@ -364,7 +364,8 @@ class OfflineSyncRepository @Inject constructor(
                     treatmentStartDate = treatmentDetail.treatmentStartDate,
                     diagnoses = treatmentDetail.diagnosis,
                     diagnosedDate = treatmentDetail.dateDiagnosed ?: "",
-                    prescriptions = prescriptionList
+                    prescriptions = prescriptionList,
+                    tbConfirmationDate = treatmentDetail.tbConfirmationDate
                 )
 
                 roomHelper.insertTreatmentDetails(entity)

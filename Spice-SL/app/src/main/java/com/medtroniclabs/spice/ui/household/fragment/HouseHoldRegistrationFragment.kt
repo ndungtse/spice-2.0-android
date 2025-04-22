@@ -103,11 +103,12 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                 ResourceState.SUCCESS -> {
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
-                        arguments?.getLong(VillageId)?.let { villageId ->
-                            if (villageId != 0L) {
+
+                        arguments?.getLong(VillageId)?.let {
+                            if (it != 0L) {
                                 formGenerator.getViewByTag(villageId)?.let { view ->
                                     view.isEnabled = false
-                                    formGenerator.setValueForView(villageId, view)
+                                    formGenerator.setValueForView(it, view)
                                 }
                             }
                         }

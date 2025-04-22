@@ -12,6 +12,9 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.DefaultID
+import com.medtroniclabs.spice.common.DefinedParams.ID
+import com.medtroniclabs.spice.common.DefinedParams.NAME
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
@@ -154,12 +157,19 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
                 }
                 ResourceState.SUCCESS -> {
-                    resourceState.data?.let { data ->
-                        val view =
-                            formGenerator.getViewByTag(RxBuddy.selectHouseholdMember) as? AppCompatSpinner
-                        if (view != null) {
-                            (view.adapter as CustomSpinnerAdapter).setData(data)
-                        }
+                    val members = resourceState.data ?: arrayListOf()
+                    members.add(
+                        0,
+                        hashMapOf<String, Any>(
+                            NAME to getString(R.string.please_select),
+                            ID to DefaultID
+                        )
+                    )
+
+                    val view =
+                        formGenerator.getViewByTag(RxBuddy.selectHouseholdMember) as? AppCompatSpinner
+                    if (view != null) {
+                        (view.adapter as CustomSpinnerAdapter).setData(members)
                     }
                 }
                 ResourceState.ERROR -> {

@@ -126,18 +126,42 @@
             app:layout_constraintTop_toTopOf="@+id/tvVaccinationDate"
             app:srcCompat="@drawable/ic_followup_date" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/etFromDateError"
-            style="@style/TextStyle_Error_14"
-            android:layout_width="@dimen/_0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/_8sdp"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="@+id/tvVaccinationDate"
-            app:layout_constraintStart_toStartOf="@+id/tvVaccinationDate"
-            app:layout_constraintTop_toBottomOf="@+id/tvVaccinationDate" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/llMissedReason"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="wrap_content"
+        android:paddingVertical="@dimen/_8sdp"
+        android:visibility="gone"
+        android:paddingHorizontal="@dimen/_16sdp"
+        app:layout_constraintTop_toBottomOf="@+id/clDateRange"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/lblMissedReason"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/missed_reason"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_14ssp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvMissedReason"
+            style="@style/Form_Input_Style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:textColor="@color/grey_black"
+            android:textColorHint="@color/grey_black"
+            android:textSize="@dimen/_15ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/labelVaccinationDate"
+            app:layout_constraintTop_toBottomOf="@+id/labelVaccinationDate" />
+
+    </LinearLayout>
 
     <View
         android:layout_width="@dimen/_0dp"
@@ -145,7 +169,7 @@
         android:background="@color/btn_disable_grey"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clDateRange" />
+        app:layout_constraintTop_toBottomOf="@+id/llMissedReason" />
 
 
     <androidx.appcompat.widget.AppCompatButton
@@ -159,7 +183,7 @@
         android:textAllCaps="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clDateRange" />
+        app:layout_constraintTop_toBottomOf="@+id/llMissedReason" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

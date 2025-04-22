@@ -4,10 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.getLocalDate
-import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.EpiGroupName
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.data.EncounterDetails
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -24,11 +24,12 @@ import com.medtroniclabs.spice.model.medicalreview.VaccinationDetail
 import com.medtroniclabs.spice.model.medicalreview.VaccinationGroupItem
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.ImmunisationRepository
-import com.medtroniclabs.spice.ui.medicalreview.epi.view.VaccinationStatusNudge
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,11 +49,15 @@ class ImmunisationViewModel @Inject constructor(
     val saveImmunisationListLiveData = MutableLiveData<Resource<ResponseCreateImmunisation>>()
     val immunisationSummaryLiveData = MutableLiveData<Resource<ResponseImmunisationSummaryDetails>>()
     var nextVaccinationDetails :EpiNextVaccinationDetails? = null
-    var lastVaccineScheduleDate: LocalDate? = null
+    var nextVisitDate: String? = null
+    val updateScheduleDateAndVaccinationDate = MutableLiveData<Pair<LocalDate, LocalDate>>()
     val saveImmunisationSummaryLiveData = MutableLiveData<Resource<ResponseImmunisationSummaryCreate>>()
     val shouldRefreshListLiveData = MutableLiveData<Boolean>()
 
     val epiCatchUpPolicyItems = MutableLiveData<Resource<List<EpiCatchUpPolicyItem>>>()
+    private val dayDelay = "Day Delay"
+    private val daysDelay = "Days Delay"
+    private val onTime = "On-Time"
 
     fun getImmunisationDetails(id: String?, memberId: String?, patientId: String?, dob: String?) {
         viewModelScope.launch(dispatcherIO) {
@@ -102,6 +107,66 @@ class ImmunisationViewModel @Inject constructor(
         addedVaccinationItemLiveData.postValue(vaccinationItem)
     }
 
+    fun getMissedVaccineCount(): Int {
+        var missedCount = 0
+        val vaccinationList = immunisationDetailListLiveData.value?.data ?: listOf()
+        val ldToday = LocalDate.now()
+        for (item in vaccinationList) {
+            val scheduleDate = item.scheduleDate.getLocalDate()
+            if (scheduleDate.isAfter(ldToday)) {
+                break
+            } else {
+                item.vaccinationItems.forEach { vaccine ->
+                    if (vaccine.updatedScheduleDate != null && vaccine.vaccinatedDate == null) {
+                        missedCount += 1
+                    }
+                }
+            }
+        }
+
+        return missedCount
+    }
+
+    private fun hasAnyPendingVaccine(): Boolean {
+        val vaccinationList = immunisationDetailListLiveData.value?.data ?: listOf()
+        val allVaccine = vaccinationList.flatMap { it.vaccinationItems }
+        return allVaccine.any { it.vaccinatedDate == null }
+    }
+
+    fun getLastVaccineScheduleDateAndVaccinationDate() {
+        val vaccinationList = immunisationDetailListLiveData.value?.data ?: listOf()
+        var lastScheduleDate: LocalDate? = null
+        var lastVaccinatedDate: LocalDate? = null
+        var maxDelay = 0L
+        for (item in vaccinationList) {
+            val vaccinatedItems = item.vaccinationItems.filter { it.vaccinatedDate != null }
+            if (vaccinatedItems.isEmpty()) {
+                break
+            }
+
+            vaccinatedItems.forEach { vaccine ->
+                if (vaccine.vaccinatedDate != null) {
+                    val vaccinatedDate = vaccine.vaccinatedDate!!.getLocalDate()
+                    val scheduledDate = vaccine.scheduledDate.getLocalDate()
+                    val delay =  ChronoUnit.DAYS.between(scheduledDate, vaccinatedDate)
+                    if (delay > maxDelay) {
+                        lastScheduleDate = scheduledDate
+                        lastVaccinatedDate = vaccinatedDate
+                        maxDelay = delay
+                    }
+                }
+            }
+            maxDelay = 0L //Reset for Next Group
+        }
+
+
+        lastScheduleDate?.let { sDate ->
+            lastVaccinatedDate?.let { vDate ->
+                updateScheduleDateAndVaccinationDate.postValue(Pair(sDate, vDate))
+            }
+        }
+    }
+
     fun computeAnyMissedSummary() {
         var containsAnyMissedVaccine = false
         changesList.clear()
@@ -120,7 +185,6 @@ class ImmunisationViewModel @Inject constructor(
                 nextVaccinationDetails = nextEpi
                 break
             } else {
-                lastVaccineScheduleDate = scheduleDate
                 item.vaccinationItems.forEach { vaccine ->
                     if (vaccine.updatedScheduleDate != null) {
                         if (vaccine.isEdited == true) {
@@ -131,6 +195,22 @@ class ImmunisationViewModel @Inject constructor(
                         }
                     }
                 }
+            }
+        }
+
+        if (nextVaccinationDetails != null) {
+            nextVisitDate = nextVaccinationDetails!!.nextVisitDate
+        } else {
+            if (hasAnyPendingVaccine()) {
+                val tomorrowDate = LocalDate.now().plusDays(1)
+                    .format(DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy))
+                val stringTomorrowDate = DateUtils.convertDateTimeToDate(
+                    tomorrowDate,
+                    DateUtils.DATE_ddMMyyyy,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    inUTC = true
+                )
+                nextVisitDate = stringTomorrowDate
             }
         }
 
@@ -173,23 +253,48 @@ class ImmunisationViewModel @Inject constructor(
         villageId: String?) {
         viewModelScope.launch(dispatcherIO) {
             immunisationSummaryLiveData.value?.data?.let { summaryDetails ->
+                val lastScheduleDetail = getLastScheduleReason()
                 val request = RequestImmunisationSummaryCreate(
                     vaccinated = summaryDetails.vaccinated,
                     missedVaccine = summaryDetails.missedVaccine,
                     missedReason = summaryDetails.missedReason,
-                    lastScheduledDate = summaryDetails.lastScheduledDate,
-                    lastScheduledDateReason = "",
+                    lastScheduledDate = lastScheduleDetail.first ?: "",
+                    lastScheduledDateReason = lastScheduleDetail.second ?: "",
                     encounterId = encounterId,
                     memberId = memberId,
                     patientId = patientId,
                     nextVaccinationDuration = nextVaccinationDetails?.nextVaccinationDuration,
                     nextVaccinationDose = nextVaccinationDetails?.nextVaccinationDose,
-                    nextVaccinationDate = nextVaccinationDetails?.nextVisitDate,
+                    nextVaccinationDate = nextVisitDate,
                     provenance = ProvanceDto(),
                     villageId = villageId,
                     patientReference = id)
                 immunisationRepository.saveImmunisationSummaryDetails(request, saveImmunisationSummaryLiveData)
             }
         }
+    }
+
+    private fun getLastScheduleReason(): Pair<String?, String?> {
+        updateScheduleDateAndVaccinationDate.value?.let { pair ->
+            val dayDiff = ChronoUnit.DAYS.between(pair.first, pair.second)
+            val scheduleDate = pair.first.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
+
+            val status = when {
+                dayDiff > 1L -> "$dayDiff $daysDelay"
+                dayDiff == 1L -> "$dayDiff $dayDelay"
+                else -> onTime
+            }
+
+            val lasScheduleDate = DateUtils.convertDateTimeToDate(
+                scheduleDate,
+                DateUtils.DATE_ddMMyyyy,
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                inUTC = true
+            )
+
+            return Pair(lasScheduleDate, status)
+        }
+
+        return Pair(null, null)
     }
 }

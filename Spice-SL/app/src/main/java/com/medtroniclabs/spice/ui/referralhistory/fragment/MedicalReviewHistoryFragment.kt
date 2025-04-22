@@ -3,12 +3,16 @@ package com.medtroniclabs.spice.ui.referralhistory.fragment
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -369,7 +373,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
     }
 
 
-    private fun createMedicalReview(medicalReviewHistory: MedicalReviewHistory): List<Map<String, String?>> {
+    private fun createMedicalReview(medicalReviewHistory: MedicalReviewHistory): List<Map<String, Any?>> {
 
         if (medicalReviewHistory.type == DefinedParams.TB_REVIEW) {
             val chipList = (medicalReviewHistory.reviewDetails?.systemicExaminations as? List<*>)?.mapNotNull { item ->
@@ -469,13 +473,8 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.scheduled_date),
-                    Value to (medicalReviewHistory.reviewDetails?.lastScheduledDate?.let {
-                        DateUtils.convertDateFormat(
-                            it,
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DateUtils.DATE_ddMMyyyy
-                        )
-                    } ?: getString(R.string.separator_double_hyphen))
+                    Value to getVaccineScheduledDateValues(medicalReviewHistory.reviewDetails?.lastScheduledDate,
+                        medicalReviewHistory.reviewDetails?.lastScheduledDateReason)
                 ),
 
                 mapOf(
@@ -676,5 +675,39 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             }
             return labourDeliveryNeonate + listOfNotNull(additionalFields)
         }
+    }
+
+    private fun getVaccineScheduledDateValues(lastScheduledDate: String?, statusReason: String?): Spannable {
+        val onTime = "On Time"
+        lastScheduledDate?.let { dateNotNull ->
+           val date = DateUtils.convertDateFormat(
+               dateNotNull,
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                DateUtils.DATE_ddMMyyyy
+            )
+
+            statusReason?.let { status ->
+                val fullText = "$date, ($status)"
+                val spannable = SpannableString(fullText)
+
+                val color = if (status.equals(onTime, true))
+                    ContextCompat.getColor(requireContext(), R.color.green_attention_color)
+                else
+                    ContextCompat.getColor(requireContext(), R.color.epi_missed_primary)
+
+                val startIndex = fullText.indexOf("($status)")
+                val endIndex = startIndex + status.length + 2 // +2 for parentheses
+
+                if (startIndex != -1) {
+                    spannable.setSpan(ForegroundColorSpan(color), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                }
+
+                return spannable
+            } ?: kotlin.run {
+                return SpannableString(date)
+            }
+        }
+
+        return SpannableString(getString(R.string.separator_double_hyphen))
     }
 }

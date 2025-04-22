@@ -49,7 +49,7 @@ class VaccinationStatusNudge @JvmOverloads constructor(
     private fun getVaccinationStatus(vaccinationDetail: VaccinationDetail): Pair<Int, Long?> {
         if (vaccinationDetail.vaccinatedDate != null) { // Vaccination Completed
             val daysDiff =
-                getDaysBetween(vaccinationDetail.vaccinatedDate!!, vaccinationDetail.scheduledDate)
+                getDaysBetween(vaccinationDetail.vaccinatedDate!!, vaccinationDetail.updatedScheduleDate)
             return if (daysDiff > 0)
                 Pair(VaccinatedWithDelay, daysDiff)
             else
@@ -64,9 +64,8 @@ class VaccinationStatusNudge @JvmOverloads constructor(
         }
     }
 
-    private fun getDaysBetween(vaccinatedDateStr: String, scheduledDateStr: String): Long {
+    private fun getDaysBetween(vaccinatedDateStr: String, scheduledDate: LocalDate?): Long {
         val vaccinatedDate = vaccinatedDateStr.getLocalDate()
-        val scheduledDate = scheduledDateStr.getLocalDate()
         return ChronoUnit.DAYS.between(scheduledDate, vaccinatedDate)
     }
 

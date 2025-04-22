@@ -1,7 +1,9 @@
 package com.medtroniclabs.spice.repo
 
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.RxBuddyId
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
@@ -53,7 +55,7 @@ class RxBuddyRepository @Inject constructor(
       }
     }
 
-    suspend fun getOtherHouseholdMembersExcludeTBPatient(householdId:Long,patientId:Long):Resource<ArrayList<Map<String,Any>>>{
+    suspend fun getOtherHouseholdMembersExcludeTBPatient(householdId:Long, patientId:Long):Resource<ArrayList<Map<String,Any>>>{
        val otherHouseholdMembers = roomHelper.getOtherHouseholdExcludeTBPatient(
             householdId,
             patientId
@@ -68,6 +70,7 @@ class RxBuddyRepository @Inject constructor(
                 )
             )
         }
+
         dropDownList.add(hashMapOf<String,Any>(
             DefinedParams.NAME to DefinedParams.Other,
             DefinedParams.id to 0L
