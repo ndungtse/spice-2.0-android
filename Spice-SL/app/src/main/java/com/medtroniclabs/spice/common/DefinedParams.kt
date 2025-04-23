@@ -341,8 +341,8 @@ object DefinedParams {
     const val IsSummary = "isSummary"
 
     const val isHouseHold = "houseHold"
-    const val RIF_Resistance = "rif resistance"
-    const val MTB_Detected = "mtb detected"
+    const val RIF_Resistance = "RIF Resistance"
+    const val MTB_Detected = "MTB Detected"
     const val Gene_Expert = "gene expert"
 
     const val isCreateHouseholdForPhu = "isCreateHouseholdForPhu"

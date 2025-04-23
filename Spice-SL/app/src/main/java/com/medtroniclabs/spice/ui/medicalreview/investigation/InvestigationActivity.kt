@@ -24,6 +24,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.DeleteReasonDialog
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtPositive
 import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.HBA1CNudgesDialog
 import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.LipidsNudgesDialog
 import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.MarkAsReviewedConfirmationDialog
@@ -392,9 +393,14 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                 if (investigationGenerator.onValidateInput(false)) {
                     val labTestPayload = geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation())
                     val isGeneExpertDetected = labTestPayload?.any { payload ->
-                        val resultMapKeys = payload.resultHashMap?.keys?.map { it.lowercase() }
-                        resultMapKeys?.contains(MTB_Detected) == true && resultMapKeys.contains(RIF_Resistance) && payload.testName.contains(Gene_Expert, true)
+                        val resultMap = payload.resultHashMap
+
+                        resultMap?.containsKey(MTB_Detected) == true &&
+                                resultMap.containsKey(RIF_Resistance) &&
+                                payload.testName.contains(Gene_Expert, true) &&
+                                (payload.resultHashMap?.get(MTB_Detected)?.equals(RdtPositive) == true)
                     } == true
+
                     if (isGeneExpertDetected){
                         showErrorDialogue(
                             getString(R.string.confirm_diagnoses),

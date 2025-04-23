@@ -75,6 +75,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
             attachObserversForNcd()
             showHideVerticalIcon(false)
         }
+        setOrientation()
     }
 
     private fun setOrientation() {

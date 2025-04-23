@@ -230,7 +230,8 @@ class MetaRepository @Inject constructor(
                                                 data.systemicExaminations,
                                                 data.comorbidities,
                                                 data.patientStatus,
-                                                data.patientType
+                                                data.patientType,
+                                                data.treatmentOutcome
                                             )
                                         )
                                         roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.TB.name)
@@ -1061,7 +1062,8 @@ class MetaRepository @Inject constructor(
         systemicExaminations: List<MedicalReviewMetaItems>,
         comorbidities: List<MedicalReviewMetaItems>,
         patientStatus: List<MedicalReviewMetaItems>,
-        patientType: List<MedicalReviewMetaItems>
+        patientType: List<MedicalReviewMetaItems>,
+        treatmentOutcome: List<MedicalReviewMetaItems>
     ): List<MedicalReviewMetaItems> {
         val chipItemList = mutableListOf<MedicalReviewMetaItems>()
         chipItemList.addAll(presentingComplaints.map {
@@ -1094,6 +1096,13 @@ class MetaRepository @Inject constructor(
             patientType.map {
                 it.apply {
                     category = MedicalReviewTypeEnums.patient_type.name
+                }
+            }
+        )
+        chipItemList.addAll(
+            treatmentOutcome.map {
+                it.apply {
+                    category = MedicalReviewTypeEnums.treatment_outcome.name
                 }
             }
         )

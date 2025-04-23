@@ -305,10 +305,11 @@ class PatientInfoFragment : BaseFragment() {
                 )
             }
             if (isTB() == true) {
+                val tbNo = viewModel.presumptiveTbNo ?: ""
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.presumptive_tb_no),
-                        DefinedParams.Value to (patientListRespModel.presumptiveTbNo?.takeIf { it.isNotBlank() } ?: ""),
+                        DefinedParams.Value to (patientListRespModel.presumptiveTbNo?.takeIf { it.isNotBlank() } ?: tbNo),
                         DefinedParams.IsSummary to viewModel.isSummary.toString()
                     )
                 )
