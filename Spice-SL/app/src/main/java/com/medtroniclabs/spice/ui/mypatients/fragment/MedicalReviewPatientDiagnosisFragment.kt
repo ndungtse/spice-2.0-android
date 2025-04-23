@@ -41,8 +41,7 @@ import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisVie
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListenerForTb
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.PATIENT_TYPE_HYPHEN
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddBpDialog
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddWeightDialog
-import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.AddHeightDialog
+import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.AddBMIDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.BMIListDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.PatientTypeFragment
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.TbConfirmDiagnosisAndSiteOfDiseaseDialog
@@ -448,12 +447,12 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
     private fun showAddHeightDialog() {
         withNetworkAvailability(online = {
-            showDialogIfNotPresent(AddHeightDialog.TAG) {
-                AddHeightDialog.newInstance(
-                    getPatientId(),
-                    getMemberId(),
+            showDialogIfNotPresent(AddBMIDialog.TAG) {
+                AddBMIDialog.newInstance(
+                    patientId = getPatientId(),
                     villageId = patientViewModel.getVillageId(),
-                    householdId = patientViewModel.getPatientHouseholdId()
+                    householdId = patientViewModel.getPatientHouseholdId(),
+                    memberId = getMemberId()
                 ).apply {
                     listener = this@MedicalReviewPatientDiagnosisFragment
                 }
@@ -471,8 +470,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 listener = this@MedicalReviewPatientDiagnosisFragment
             }
         } else {
-            AddWeightDialog.newInstance(
-                getPatientId(),
+            AddBMIDialog.newInstance(
+                patientId = getPatientId(),
                 villageId = patientViewModel.getVillageId(),
                 householdId = patientViewModel.getPatientHouseholdId(),
                 memberId = patientViewModel.getPatientMemberId()
@@ -480,7 +479,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 listener = this@MedicalReviewPatientDiagnosisFragment
             }
         }
-        showDialogIfNotPresent(if (isBp) AddBpDialog.TAG else AddWeightDialog.TAG) {
+        showDialogIfNotPresent(if (isBp) AddBpDialog.TAG else AddBMIDialog.TAG) {
             dialog
         }
     }
@@ -740,21 +739,36 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         if (connectivityManager.isNetworkAvailable()) {
             if (isBp && !isHeight) {
                 viewModel.fetchBloodPressure(MotherNeonateAncRequest(memberId = getMemberId()))
-            } else {
+            }
+            if ((!isBp && !isHeight) && isTb()) {
+                viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
+                viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
+                viewModel.fetchBmi(MotherNeonateAncRequest(memberId = getMemberId()))
+            }
+            val isAnc = arguments?.getBoolean(DefinedParams.PregnancyANC, false) ?: false
+            if (isAnc && (!isBp && !isHeight)) {
                 viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
             }
-            if (isHeight) {
-                viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
-            }
-        }
-        if (isTb() && !isBp) {
-            viewModel.fetchBmi(MotherNeonateAncRequest(memberId = getMemberId()))
         }
         val dialog =
-            childFragmentManager.findFragmentByTag(if (isBp) AddBpDialog.TAG else AddWeightDialog.TAG) as? AddBpDialog
+            childFragmentManager.findFragmentByTag(if (isBp) AddBpDialog.TAG else AddBMIDialog.TAG)
                 ?: return
-        dialog.listener = null
-        dialog.dismiss()
+
+        when (dialog) {
+            is AddBpDialog -> {
+                dialog.listener = null
+                dialog.dismiss()
+            }
+
+            is AddBMIDialog -> {
+                dialog.listener = null
+                dialog.dismiss()
+            }
+
+            else -> {
+                return
+            }
+        }
     }
 
 

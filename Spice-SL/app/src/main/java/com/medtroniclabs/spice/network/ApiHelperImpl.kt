@@ -789,4 +789,8 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun updateCBSNotification(request: PeerSupervisorNotificationRequest): Response<APIResponse<Unit>> {
         return apiService.updateCBSNotification(request)
     }
+
+    override suspend fun createBMI(bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.createBMI(bpAndWeightRequestModel)
+    }
 }

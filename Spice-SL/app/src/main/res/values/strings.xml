@@ -1482,4 +1482,5 @@
     <string name="tb_diagnosis_reason" translatable="false">Would you like to confirm TB diagnosis based on the lab results?</string>
     <string name="update_inv_result" translatable="false">Update Investigation Result</string>
     <string name="add_inv_result" translatable="false">Add Investigation Result</string>
+    <string name="add_height_weight" translatable="false">Add Height/Weight</string>
 </resources>

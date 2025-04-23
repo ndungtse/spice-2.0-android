@@ -27,21 +27,11 @@ class TbSummaryViewModel @Inject constructor(
     var patientStatus: String? = null
     var treatmentOutCome: String? = null
     val tbSummary = MutableLiveData<Resource<TbHistory>>()
-    private val getPatientStatusMeta = MutableLiveData<String>()
     private val getTreatmentOutComeMeta = MutableLiveData<String>()
-
-    fun getPatientStatus(category: String) {
-        getPatientStatusMeta.value = category
-    }
 
     fun getTreatmentOutCome(category: String) {
         getTreatmentOutComeMeta.value = category
     }
-
-    val getPatientStatusLiveData: LiveData<List<MedicalReviewMetaItems>> =
-        getPatientStatusMeta.switchMap {
-            tbMedicalReviewRepo.getExaminationsComplaints(it, MedicalReviewTypeEnums.TB.name)
-        }
 
     val getTreatmentOutComeLiveData: LiveData<List<MedicalReviewMetaItems>> =
         getTreatmentOutComeMeta.switchMap {

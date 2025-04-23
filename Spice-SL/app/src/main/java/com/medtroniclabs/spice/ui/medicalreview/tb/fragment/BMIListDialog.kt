@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
+import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -126,7 +127,7 @@ class BMIListDialog : DialogFragment(), View.OnClickListener {
         } else {
             if (isLandscape) 65 else 90
         }
-        setWidth(width)
+        setDialogPercent(width)
     }
 
 

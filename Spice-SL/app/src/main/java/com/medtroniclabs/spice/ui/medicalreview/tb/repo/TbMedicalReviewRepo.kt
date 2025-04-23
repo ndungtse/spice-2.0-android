@@ -270,4 +270,22 @@ class TbMedicalReviewRepo @Inject constructor(
     ): LiveData<List<MedicalReviewMetaItems>> {
         return roomHelper.getExaminationsComplaintsForAnc(category, type)
     }
+
+    suspend fun createBMI(bpAndWeightRequestModel: BpAndWeightRequestModel): Resource<HashMap<String, Any>> {
+        return try {
+            val response = apiHelper.createBMI(bpAndWeightRequestModel)
+            if (response.isSuccessful) {
+                val res = response.body()
+                if (res?.status == true) {
+                    Resource(state = ResourceState.SUCCESS, data = res.entity)
+                } else {
+                    Resource(state = ResourceState.ERROR)
+                }
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
 }

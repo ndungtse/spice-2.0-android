@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -26,6 +27,19 @@ class BmiViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             getBmiList.postLoading()
             getBmiList.postValue(tbMedicalReviewRepo.fetchBmiList(motherNeonateAncRequest))
+        }
+    }
+
+    val saveBMI = MutableLiveData<Resource<HashMap<String, Any>>>()
+
+    fun saveBMI(bpAndWeightRequestModel: BpAndWeightRequestModel) {
+        viewModelScope.launch(dispatcherIO) {
+            saveBMI.postLoading()
+            saveBMI.postValue(
+                tbMedicalReviewRepo.createBMI(
+                    bpAndWeightRequestModel
+                )
+            )
         }
     }
 }

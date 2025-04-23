@@ -639,4 +639,8 @@ interface ApiService {
 
     @POST(" /notification-service/inapp-notification/clear")
     suspend fun updateCBSNotification(@Body PeerSupervisorNotificationRequest: PeerSupervisorNotificationRequest) :  Response<APIResponse<Unit>>
+
+    @POST("/spice-service/medical-review/bmi/create")
+    suspend fun createBMI(@Body bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>>
+
 }

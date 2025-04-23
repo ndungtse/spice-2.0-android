@@ -101,19 +101,6 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun attachObserver() {
-        viewModel.getPatientStatusLiveData.observe(viewLifecycleOwner) {
-            it?.map { item ->
-                mapOf(
-                    DefinedParams.id to item.id,
-                    DefinedParams.NAME to item.name,
-                    DefinedParams.Value to (item.value ?: item.name)
-                )
-            }?.let { statusList -> setSpinner(ArrayList(statusList)) }
-
-            if (patientViewModel.getTbMedicalReviewStatus()) {
-                viewModel.getTreatmentOutCome(MedicalReviewTypeEnums.treatment_outcome.name)
-            }
-        }
         viewModel.getTreatmentOutComeLiveData.observe(viewLifecycleOwner) { items ->
             val list = arrayListOf<Map<String, Any>>().apply {
                 add(
@@ -265,7 +252,22 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                 ?.takeIf { it.isNotEmpty() }
                 ?: getString(R.string.hyphen_symbol)
         }
-        viewModel.getPatientStatus(PATIENT_STATUS_HYPHEN)
+
+        val dropDownList = ArrayList<Map<String, Any>>()
+        if (!data.summaryStatus.isNullOrEmpty()) {
+            for (item in data.summaryStatus) {
+                dropDownList.add(
+                    hashMapOf<String, Any>(
+                        DefinedParams.NAME to item.name,
+                        DefinedParams.Value to item.value
+                    )
+                )
+            }
+            setSpinner(dropDownList)
+            if (patientViewModel.getTbMedicalReviewStatus()) {
+                viewModel.getTreatmentOutCome(MedicalReviewTypeEnums.treatment_outcome.name)
+            }
+        }
     }
 
     private fun setSpinner(statusList: ArrayList<Map<String, Any>>) {
@@ -294,12 +296,10 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
-                        val selectedId = (it[DefinedParams.id] as? Long) ?: -1L
                         val selectedPatientStatus = it[DefinedParams.Value] as String?
-                        if (selectedId != -1L) {
+                        selectedPatientStatus?.let {
                             viewModel.patientStatus = selectedPatientStatus
-                            // handleRecoveredState()
-                        } else {
+                        } ?: kotlin.run {
                             viewModel.patientStatus = null
                         }
                         showHideNextVisit()
@@ -358,6 +358,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
 
         if (viewModel.patientStatus.equals(ReferralStatus.OnTreatment.name, true)) {
             binding.tvNextMedicalReviewLabelText.text = DateUtils.getFormattedDateAfterMonths(1)
+            viewModel.nextFollowupDate = binding.tvNextMedicalReviewLabelText.text.toString()
         }
 
         // Clear label text if patient is Recovered or Died
@@ -365,6 +366,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
             viewModel.patientStatus.equals(ReferralStatus.Died.name, true)
         ) {
             binding.tvNextMedicalReviewLabelText.text = ""
+            viewModel.nextFollowupDate = null
             binding.tvNextMedicalReviewError.invisible()
         }
 
