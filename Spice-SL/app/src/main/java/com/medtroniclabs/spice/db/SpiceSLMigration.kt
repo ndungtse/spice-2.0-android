@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.db
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import androidx.work.impl.Migration_3_4
 
 object SpiceSLMigration {
 
@@ -456,11 +455,11 @@ object SpiceSLMigration {
             db.execSQL("ALTER TABLE HouseHoldMember ADD COLUMN longitude REAL NOT NULL DEFAULT 0.0")     }
     }
 
-    val MIGRATION_3_4 = object : Migration(3, 4){
+    val MIGRATION_3_4 = object : Migration(3, 4) {
         override fun migrate(database: SupportSQLiteDatabase) {
-            // Create newly added table CommunityProfileEntity
-            database.execSQL(
-                """CREATE TABLE IF NOT EXISTS CommunityProfile (
+            // Create CommunityProfileEntity
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS CommunityProfile (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 villageId INTEGER NOT NULL,
                 communityDescription TEXT,
@@ -469,64 +468,266 @@ object SpiceSLMigration {
                 latitude REAL NOT NULL DEFAULT 0.0,
                 longitude REAL NOT NULL DEFAULT 0.0,
                 fhir_id TEXT,
-                sync_status INTEGER NOT NULL DEFAULT 0,
+                sync_status TEXT NOT NULL DEFAULT 'NotSynced',
                 created_by INTEGER NOT NULL DEFAULT 0,
                 updated_at INTEGER NOT NULL DEFAULT 0,
                 created_at INTEGER NOT NULL DEFAULT 0
-                )
-                """.trimIndent()
-             )
-            //Create newly added table RXBuddy Details
-            database.execSQL(
-                """CREATE TABLE IF NOT EXIST RxBuddyDetails(
-                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                    rxBuddyId INTEGER,
-                    patientMemberId TEXT NOT NULL,
-                    memberId TEXT,
-                    name TEXT,
-                    phoneNumber TEXT,
-                    relationship TEXT NOT NULL,
-                    isMonitorSheetProvider INTEGER NOT NULL
-                )
-                """.trimMargin()
             )
-            //Create newly added table Treatment Details
-            database.execSQL(
-                """CREATE TABLE IF NOT EXISTS TreatmentDetailsEntity(
-                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                    memberId TEXT NOT NULL,
-                    type TEXT NOT NULL,
-                    diagnoses TEXT NOT NULL,
-                    diagnosedDate TEXT NOT NULL,
-                    treatmentStartDate TEXT NOT NULL,
-                    healthUnitNo INTEGER NOT NULL,
-                    icDistrictTBNo INTEGER NOT NULL,
-                    typeOfDrug TEXT NOT NULL,
-                    noOfTabletsGivenForTB TEXT NOT NULL
-                    )
-                    """.trimMargin()
+        """.trimIndent())
+
+            // RxBuddyDetails
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS RxBuddyDetails (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                rxBuddyId INTEGER,
+                patientMemberId TEXT NOT NULL,
+                householdMemberId INTEGER,
+                name TEXT,
+                phoneNumber TEXT,
+                relationship TEXT NOT NULL,
+                isMonitorSheetProvider INTEGER NOT NULL,
+                nextVisitDate TEXT NOT NULL,
+                otherRelationship TEXT,
+                followUpId INTEGER,
+                isActive INTEGER NOT NULL DEFAULT 1,
+                syncStatus TEXT NOT NULL DEFAULT 'NotSynced',
+                latitude REAL NOT NULL DEFAULT 0.0,
+                longitude REAL NOT NULL DEFAULT 0.0,
+                createdBy INTEGER NOT NULL DEFAULT 0,
+                updatedAt INTEGER NOT NULL DEFAULT 0
             )
-            //Create newly added table TBRxBuddyFollowUp
-            database.execSQL(
-                """CREATE TABLE IF NOT EXISTS RxBuddyFollowUpEntity(
-                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                    rxBuddyId INTEGER,
-                    patientMemberId TEXT NOT NULL,
-                    rxBuddyMonitoringSheetDate TEXT NOT NULL,
-                    isAnyOfSymptomsWorse INTEGER NOT NULL,
-                    isAnyOfMedicationNeeded INTEGER NOT NULL
-                    )
-                    """.trimMargin()
+        """.trimIndent())
+
+            // TreatmentDetailsEntity
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS TreatmentDetailsEntity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                memberId TEXT NOT NULL,
+                type TEXT NOT NULL,
+                treatmentStartDate TEXT,
+                diagnoses TEXT,
+                diagnosedDate TEXT,
+                prescriptions TEXT,
+                healthUnitNo INTEGER,
+                icDistrictTBNo INTEGER,
+                tbConfirmationDate TEXT
+                )""".trimIndent())
+
+            // RxBuddyFollowUpEntity
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS RxBuddyFollowUpEntity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                rxBuddyLocalId INTEGER NOT NULL,
+                rxBuddyId INTEGER,
+                patientMemberId TEXT NOT NULL,
+                followUp TEXT,
+                nextVisitDate TEXT NOT NULL,
+                followUpId INTEGER,
+                syncStatus TEXT NOT NULL DEFAULT 'NotSynced',
+                latitude REAL NOT NULL,
+                longitude REAL NOT NULL,
+                createdBy INTEGER NOT NULL,
+                updatedAt INTEGER NOT NULL
             )
+        """.trimIndent())
+
+            // Alter existing tables
             database.execSQL("ALTER TABLE HealthFacilityEntity ADD COLUMN phoneNumber TEXT DEFAULT NULL")
             database.execSQL("ALTER TABLE VillageEntity ADD COLUMN healthFacilityId INTEGER DEFAULT NULL")
-            database.execSQL("ALTER TABLE AssessmentEntity ADD COLUMN callResult TEXT DEFAULT NULL")
-            database.execSQL("ALTER TABLE PregnancyDetail ADD COLUMN tBContactTraceStatus INTEGER DEFAULT NULL")
+            database.execSQL("ALTER TABLE Assessment ADD COLUMN callResult TEXT DEFAULT NULL")
+            database.execSQL("ALTER TABLE PregnancyDetail ADD COLUMN tbContactTraceStatus INTEGER DEFAULT NULL")
+            database.execSQL("ALTER TABLE HouseholdMember ADD COLUMN tBContactTraceStatus INTEGER DEFAULT NULL")
             database.execSQL("ALTER TABLE SymptomEntity ADD COLUMN category TEXT DEFAULT NULL")
             database.execSQL("ALTER TABLE SymptomEntity ADD COLUMN isTitle INTEGER NOT NULL DEFAULT 0")
-
+            database.execSQL("ALTER TABLE MetaItemByTypeAndCategoryEntity ADD COLUMN culture_value TEXT DEFAULT NULL")
             database.execSQL("ALTER TABLE Household ADD COLUMN has_improved_water_source INTEGER NOT NULL DEFAULT 0")
+            database.execSQL("ALTER TABLE ClinicalWorkflowConditionEntity ADD COLUMN cultureGroupName TEXT DEFAULT NULL")
+            database.execSQL("ALTER TABLE MenuEntity ADD COLUMN culture_value TEXT")
+            database.execSQL("ALTER TABLE CulturesEntity ADD COLUMN code TEXT NOT NULL DEFAULT ''")
+            database.execSQL("ALTER TABLE NCDDiagnosisEntity ADD COLUMN culture_value TEXT")
+            database.execSQL("ALTER TABLE shortageReason ADD COLUMN value TEXT")
 
+            // DosageDurationEntity
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS DosageDurationEntity (
+                id INTEGER PRIMARY KEY NOT NULL,
+                name TEXT NOT NULL,
+                displayOrder INTEGER NOT NULL,
+                displayValue TEXT,
+                quantity INTEGER NOT NULL
+            )
+        """.trimIndent())
+
+            // FollowUp table update
+            database.execSQL("""
+            CREATE TABLE FollowUp_new (
+                referenceId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                id INTEGER,
+                householdId TEXT,
+                memberId TEXT NOT NULL,
+                patientId TEXT NOT NULL,
+                encounterId TEXT,
+                patientStatus TEXT,
+                currentPatientStatus TEXT,
+                reason TEXT,
+                attempts INTEGER NOT NULL,
+                successfulAttempts INTEGER NOT NULL,
+                unsuccessfulAttempts INTEGER NOT NULL,
+                type TEXT NOT NULL,
+                encounterType TEXT,
+                encounterDate TEXT,
+                nextVisitDate TEXT,
+                referredSiteId TEXT,
+                villageId TEXT NOT NULL,
+                isCompleted INTEGER NOT NULL,
+                isWrongNumber INTEGER NOT NULL,
+                calledAt INTEGER,
+                syncStatus TEXT NOT NULL,
+                updatedAt INTEGER NOT NULL
+            )
+        """.trimIndent())
+
+            database.execSQL("""
+            INSERT INTO FollowUp_new (
+                referenceId, id, householdId, memberId, patientId, encounterId,
+                patientStatus, currentPatientStatus, reason, attempts,
+                successfulAttempts, unsuccessfulAttempts, type, encounterType,
+                encounterDate, nextVisitDate, referredSiteId, villageId,
+                isCompleted, isWrongNumber, calledAt, syncStatus, updatedAt
+            )
+            SELECT 
+                referenceId, id, householdId, memberId, patientId, encounterId,
+                patientStatus, currentPatientStatus, reason, attempts,
+                successfulAttempts, unsuccessfulAttempts, type, encounterType,
+                encounterDate, nextVisitDate, referredSiteId, villageId,
+                isCompleted, isWrongNumber, calledAt, syncStatus, updatedAt
+            FROM FollowUp
+        """.trimIndent())
+
+            database.execSQL("DROP TABLE FollowUp")
+            database.execSQL("ALTER TABLE FollowUp_new RENAME TO FollowUp")
+
+            // MedicalComplianceEntity migration
+            database.execSQL("""
+            CREATE TABLE MedicalComplianceEntity_new (
+                id INTEGER NOT NULL PRIMARY KEY,
+                name TEXT NOT NULL,
+                display_order INTEGER,
+                culture_value TEXT,
+                parent_compliance_id INTEGER,
+                child_exists INTEGER NOT NULL,
+                value TEXT
+            )
+        """.trimIndent())
+
+            database.execSQL("""
+            INSERT INTO MedicalComplianceEntity_new 
+            (id, name, display_order, culture_value, parent_compliance_id, child_exists)
+            SELECT id, name, display_order, display_value, parent_compliance_id, child_exists
+            FROM MedicalComplianceEntity
+        """.trimIndent())
+
+            database.execSQL("DROP TABLE MedicalComplianceEntity")
+            database.execSQL("ALTER TABLE MedicalComplianceEntity_new RENAME TO MedicalComplianceEntity")
+
+            // NCDMedicalReviewMetaEntity migration
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS NCDMedicalReviewMetaEntity_new (
+                primaryId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                id INTEGER NOT NULL,
+                name TEXT NOT NULL,
+                displayValue TEXT NOT NULL,
+                displayOrder INTEGER NOT NULL,
+                type TEXT,
+                category TEXT,
+                value TEXT
+            )
+        """.trimIndent())
+
+            database.execSQL("""
+            INSERT INTO NCDMedicalReviewMetaEntity_new 
+                (id, name, displayValue, displayOrder, type, category, value)
+            SELECT id, name, displayValue, displayOrder, type, category, value
+            FROM NCDMedicalReviewMetaEntity
+        """.trimIndent())
+
+            database.execSQL("DROP TABLE NCDMedicalReviewMetaEntity")
+            database.execSQL("ALTER TABLE NCDMedicalReviewMetaEntity_new RENAME TO NCDMedicalReviewMetaEntity")
+
+            // New NCDPatientDetailsEntity table
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS NCDPatientDetailsEntity (
+                id TEXT NOT NULL PRIMARY KEY,
+                patientDetails TEXT
+            )
+        """.trimIndent())
+
+            // New NCDFollowUp table
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS NCDFollowUp (
+                id INTEGER NOT NULL PRIMARY KEY,
+                deleted INTEGER,
+                isCompleted INTEGER,
+                isWrongNumber INTEGER,
+                isInitiated INTEGER,
+                patientId TEXT,
+                memberId TEXT,
+                type TEXT,
+                referredSiteId TEXT,
+                identityType TEXT,
+                identityValue TEXT,
+                name TEXT,
+                gender TEXT,
+                dateOfBirth TEXT,
+                phoneNumber TEXT,
+                countyName TEXT,
+                subCountyName TEXT,
+                communityHealthUnitName TEXT,
+                villageId TEXT,
+                villageName TEXT,
+                landmark TEXT,
+                retryAttempts INTEGER,
+                overDueCategories TEXT,
+                dueDate INTEGER,
+                referredReasons TEXT,
+                createdBy INTEGER,
+                updatedBy INTEGER,
+                createdAt INTEGER,
+                updatedAt INTEGER
+            )
+        """.trimIndent())
+
+            // NCDCallDetails table
+            database.execSQL("DROP TABLE IF EXISTS NCDCallDetails")
+
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS NCDCallDetails (
+                localId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                id INTEGER NOT NULL,
+                villageId TEXT,
+                patientId TEXT,
+                memberId TEXT,
+                appType TEXT NOT NULL DEFAULT 'NON_COMMUNITY',
+                referredSiteId TEXT,
+                callDate TEXT,
+                duration REAL,
+                status TEXT,
+                reason TEXT,
+                otherReason TEXT,
+                patientStatus TEXT,
+                type TEXT,
+                attempts INTEGER,
+                latitude TEXT,
+                longitude TEXT,
+                visitedFacilityId INTEGER,
+                otherVisitedFacilityName TEXT,
+                isSynced INTEGER NOT NULL DEFAULT 0,
+                createdBy INTEGER,
+                updatedBy INTEGER,
+                createdAt INTEGER,
+                updatedAt INTEGER
+            )
+        """.trimIndent())
         }
     }
 }

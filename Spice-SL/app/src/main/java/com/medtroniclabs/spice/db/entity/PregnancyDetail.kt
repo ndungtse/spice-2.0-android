@@ -26,5 +26,5 @@ data class PregnancyDetail(
     var isNeonateDeathRecordedByPHU: Boolean? = null,
     //Childhood Visit Detail
     var childVisitNo: Long? = null,
-    var tbContactTraceStatus: Int? = null,
+    var tbContactTraceStatus: Int? = null
 )

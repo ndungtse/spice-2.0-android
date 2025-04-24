@@ -135,7 +135,7 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
             if (rxBuddyFollowUp.containsKey(rxBuddyMonitoringDates)) {
                 val dates = rxBuddyFollowUp[rxBuddyMonitoringDates] as List<String>
 
-                val stringDates = dates.map { date ->
+                val stringDates = dates.sortedBy { it }.map { date ->
                     date.getLocalDate().format(displayFormatter)
                 }
                 return stringDates.joinToString(", ")

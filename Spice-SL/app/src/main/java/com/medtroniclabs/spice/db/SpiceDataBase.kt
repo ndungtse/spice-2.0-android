@@ -92,7 +92,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         RiskFactorEntity::class, LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, UnitMetricEntity::class,
         DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class, DosageDurationEntity::class, NCDFollowUp::class,
         LinkedVillageEntity::class, NCDCallDetails::class, NCDPatientDetailsEntity::class,CommunityProfile::class,RxBuddyDetails::class,TreatmentDetailsEntity::class,RxBuddyFollowUpEntity::class],
-    version = 5
+    version = 4
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
 abstract class SpiceDataBase : RoomDatabase() {
