@@ -235,10 +235,6 @@ class FormGenerator(
                     context = context,
                     initialSelectedDates = dates,
                     onDateSelected = { selectedDates ->
-                       /* val dateStrings = selectedDates.map { date ->
-                            DateUtils.getDateDDMMYYYY().format(Date(date))
-                        }*/
-
                         val displayString = if (selectedDates.size > 1) "Days selected" else "Day selected"
                         binding.etUserInput.text = "${selectedDates.size} $displayString"
 

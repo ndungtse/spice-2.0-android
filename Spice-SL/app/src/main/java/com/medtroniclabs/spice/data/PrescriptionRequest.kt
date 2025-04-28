@@ -35,6 +35,8 @@ data class  Prescription(
     val reason: String? = null,
     val instructionUpdated : String? = null,
     val groupName: String? = null,
+    var category: Category? = null,
+    val categoryName: String? = null,
     val isGroup : Boolean? = null,
     val groupUniqueId: String? = null,
     val instruction: String ? = null

@@ -63,6 +63,7 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun setListener() {
+        binding.tvNextFollowupDateTitle.visible()
         binding.etNextFollowUpDate.visible()
         binding.btnDone.safeClickListener(this)
         binding.btnStartContactTracing.safeClickListener(this)

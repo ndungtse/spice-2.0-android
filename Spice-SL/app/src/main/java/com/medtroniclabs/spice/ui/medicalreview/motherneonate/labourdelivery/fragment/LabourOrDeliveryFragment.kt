@@ -668,7 +668,9 @@ class LabourOrDeliveryFragment : BaseFragment() {
             (deliveryOthers == DefinedParams.Others_Specify && deliveryByOthers?.isNotEmpty() == true || deliveryOthers != DefinedParams.Others_Specify)
         val otherDeliveryPlace = viewModel.deliveryPlaceOthers
         val otherDeliveryAt =
-            (viewModel.deliveryAt?.contains(DefinedParams.Other,true) == true && otherDeliveryPlace?.isNotEmpty() == true || viewModel.deliveryAt?.contains(DefinedParams.Other,true) != true)
+            (viewModel.deliveryAt?.contains(DefinedParams.Other,true) == true
+                    && otherDeliveryPlace?.isNotEmpty() == true || (viewModel.deliveryAt!=null &&
+                    viewModel.deliveryAt?.contains(DefinedParams.Other,true) != true))
         var isValidDeliveryBy = viewModel.deliveryBy != null &&
                 viewModel.deliveryAt != null &&
                 viewModel.deliveryStatus != null

@@ -201,6 +201,7 @@ class PrescriptionViewModel @Inject constructor(
                                 codeDetails = it.medicationResponse.codeDetails,
                                 frequencyName = getMedicationFrequencyName(it),
                                 groupName = it.medicationResponse.groupName,
+                                categoryName = it.medicationResponse.category?.name,
                                 groupUniqueId = it.medicationResponse.groupUniqueId,
                                 instruction = it.medicationResponse.instruction ?: ""
                             )
@@ -258,6 +259,7 @@ class PrescriptionViewModel @Inject constructor(
             prescriptionId = prescription.prescriptionId,
             prescribedSince = prescription.prescribedSince,
             groupName = prescription.groupName,
+            category = prescription.category,
             groupUniqueId = prescription.groupUniqueId,
             instruction = prescription.instruction
         )
