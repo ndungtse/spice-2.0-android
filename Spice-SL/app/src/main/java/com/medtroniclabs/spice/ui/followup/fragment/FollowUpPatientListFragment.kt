@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.callButtonClicked
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
@@ -109,12 +110,20 @@ class FollowUpPatientListFragment: BaseFragment(), FollowUpDialogFragment.Follow
 
     override fun onLaunchAssessment() {
         viewModel.selectedFollowUpDetail?.let { data ->
-            val intent = Intent(requireContext(), AssessmentToolsActivity::class.java)
-            intent.putExtra(DefinedParams.MemberID, data.localPatientId)
-            intent.putExtra(DefinedParams.FollowUpId, data.id)
-            intent.putExtra(DefinedParams.DOB, data.dateOfBirth)
-            startActivity(intent)
-            viewModel.setUserJourney(AnalyticsDefinedParams.STARTASSESSMENTTRIGGERED)
+            if (data.householdId != null && data.householdId != 0L) {
+                val intent = Intent(requireContext(), AssessmentToolsActivity::class.java)
+                intent.putExtra(DefinedParams.MemberID, data.localPatientId)
+                intent.putExtra(DefinedParams.FollowUpId, data.id)
+                intent.putExtra(DefinedParams.DOB, data.dateOfBirth)
+                startActivity(intent)
+                viewModel.setUserJourney(AnalyticsDefinedParams.STARTASSESSMENTTRIGGERED)
+            } else {
+                showErrorDialogue(
+                    getString(R.string.alert),
+                    getString(R.string.warning_link_to_household),
+                    isNegativeButtonNeed = false
+                ) { _ -> }
+            }
         }
     }
 

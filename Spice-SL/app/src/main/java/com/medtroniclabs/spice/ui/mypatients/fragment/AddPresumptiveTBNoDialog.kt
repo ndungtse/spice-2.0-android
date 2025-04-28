@@ -54,7 +54,6 @@ class AddPresumptiveTBNoDialog : DialogFragment(), View.OnClickListener {
         with(binding) {
             tvTitle.text = getString(R.string.presumptive_tb_no)
             tvWeightLabel.text = getString(R.string.presumptive_tb_no)
-            tvWeightLabel.markMandatory()
             etWeight.hint = getString(R.string.enter_number)
             binding.etWeight.apply {
                 inputType = InputType.TYPE_CLASS_NUMBER

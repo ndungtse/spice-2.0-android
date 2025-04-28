@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.getLocalDate
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.offlinesync.model.Prescription
 import com.medtroniclabs.spice.databinding.FragmentTBTreatmentBinding
 import com.medtroniclabs.spice.db.entity.TreatmentDetailsEntity
@@ -76,7 +77,7 @@ class TBTreatmentFragment : BaseFragment() {
             ),
             AssessmentSummaryModel(
                 title = getString(R.string.treatment_start_date),
-                value = getFormattedDateString(td.treatmentStartDate)
+                value = getFormattedDateString(td.tbConfirmationDate)
             ),
             AssessmentSummaryModel(
                 title = getString(R.string.health_unit_no),
@@ -103,7 +104,10 @@ class TBTreatmentFragment : BaseFragment() {
         val listType = object : TypeToken<List<Prescription>>() {}.type
         val prescriptionList: List<Prescription> = gson.fromJson(json, listType)
 
-        val filteredList = prescriptionList.filter { it.isActive }
+        val filteredList = prescriptionList.filter { it.isActive
+                && it.categoryName != null
+                && it.categoryName.equals(DefinedParams.TB, true)}
+
         if (filteredList.isNotEmpty()) {
             var totalTablets = 0L
             val tablets = getString(R.string.tablets)

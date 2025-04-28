@@ -229,7 +229,7 @@ object MotherNeonateUtil {
 
         return CommonUtils.getBMIInformation(context, value)?.first
             ?.takeIf { it.isNotBlank() }
-            ?.let { "$formattedValue( ${it.capitalizeFirstChar()} )" } ?: formattedValue
+            ?.let { "$formattedValue (${it.capitalizeFirstChar()})" } ?: formattedValue
     }
 
     fun convertCMS(value: Double?, context: Context): String {

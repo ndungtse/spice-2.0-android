@@ -1374,8 +1374,10 @@
     <string name="notifiable_conditions" translatable="false">Notifiable Conditions</string>
     <string name="upcoming" translatable="false">UPCOMING</string>
     <string name="vaccinated_on_time" translatable="false">VACCINATED\n(On Time)</string>
-    <string name="vaccinated_with_delay" translatable="false">VACCINATED\n(%d days delay)</string>
-    <string name="missed_vaccination" translatable="false">MISSED\n(By %d Days)</string>
+    <string name="vaccinated_with_day_delay" translatable="false">VACCINATED\n(%d day delay)</string>
+    <string name="vaccinated_with_days_delay" translatable="false">VACCINATED\n(%d days delay)</string>
+    <string name="missed_vaccination_by_day" translatable="false">MISSED\n(By %d Day)</string>
+    <string name="missed_vaccination_by_days" translatable="false">MISSED\n(By %d Days)</string>
     <string name="days_delay" translatable="false">%d Days Delay</string>
     <string name="day_delay" translatable="false">%d Day Delay</string>
     <string name="on_time" translatable="false">On Time</string>
@@ -1480,6 +1482,7 @@
     <string name="chw_number" translatable="false">CHW Number</string>
     <string name="add_type" translatable="false">Add Patient Type</string>
     <string name="bmi_history" translatable="false">BMI History</string>
+    <string name="warning_link_to_household" translatable="false">Please assign this member to a household via the PHU Walk-ins page to continue the workflow.</string>
     <string name="please_wait_until_current_operation_completes" translatable="false">Please wait until current operation completes.</string>
     <string name="tb_diagnosis_reason" translatable="false">Would you like to confirm TB diagnosis based on the lab results?</string>
     <string name="update_inv_result" translatable="false">Update Investigation Result</string>

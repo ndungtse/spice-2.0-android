@@ -186,7 +186,7 @@ class BirthDetailsFragment: BaseFragment(), View.OnClickListener  {
 
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.apgar_score),
-                DefinedParams.Value to (birthDetails.total?.let { "$it" }
+                DefinedParams.Value to (birthDetails.apgarScoreFiveMinuteDTO?.fiveMinuteTotalScore?.let { "$it" +requireContext().getString(R.string.five_minutes)  }
                     ?: getString(R.string.separator_double_hyphen))
             ),
 

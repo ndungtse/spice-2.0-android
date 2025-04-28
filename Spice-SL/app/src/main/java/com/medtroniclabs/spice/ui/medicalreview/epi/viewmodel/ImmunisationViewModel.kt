@@ -137,13 +137,15 @@ class ImmunisationViewModel @Inject constructor(
         val vaccinationList = immunisationDetailListLiveData.value?.data ?: listOf()
         var lastScheduleDate: LocalDate? = null
         var lastVaccinatedDate: LocalDate? = null
-        var maxDelay = 0L
+        var maxDelay = -1L
         for (item in vaccinationList) {
             val vaccinatedItems = item.vaccinationItems.filter { it.vaccinatedDate != null }
             if (vaccinatedItems.isEmpty()) {
                 break
             }
 
+            lastScheduleDate = null
+            lastVaccinatedDate = null
             vaccinatedItems.forEach { vaccine ->
                 if (vaccine.vaccinatedDate != null) {
                     val vaccinatedDate = vaccine.vaccinatedDate!!.getLocalDate()
@@ -156,7 +158,7 @@ class ImmunisationViewModel @Inject constructor(
                     }
                 }
             }
-            maxDelay = 0L //Reset for Next Group
+            maxDelay = -1L //Reset for Next Group
         }
 
 

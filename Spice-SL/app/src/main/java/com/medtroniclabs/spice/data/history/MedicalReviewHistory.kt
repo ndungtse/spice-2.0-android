@@ -94,6 +94,16 @@ data class BirthDetails(
     val stateOfBaby: String?,
     val signs: List<String>?,
     val gestationalAge: String?,
-    val total: Int?
+    val total: Int?,
+    val apgarScoreFiveMinuteDTO: APGARScoreFiveMin?
+)
+
+data class APGARScoreFiveMin(
+    val activity: Int,
+    val pulse: Int,
+    val grimace: Int,
+    val appearance: Int,
+    val respiration: Int,
+    val fiveMinuteTotalScore: Int,
 )
 

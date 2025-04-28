@@ -11,6 +11,7 @@ data class FollowUpPatientModel(
     val reason: String?,
     val patientStatus: String?,
     val village: String?,
+    val householdId: Long?,
     val householdName: String?,
     val landmark: String?,
     val type: String?,

@@ -94,7 +94,13 @@ class VaccinationStatusNudge @JvmOverloads constructor(
                 flIconEpiStatus.background = ContextCompat.getDrawable(context, R.drawable.bg_ic_epi_delay_vaccinated)
                 ivIconEpiStatus.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_epi_vaccinated))
                 tvEpiStatus.setTextColor(context.getColor(R.color.epi_vaccinated_delay_primary))
-                tvEpiStatus.text = context.getString(R.string.vaccinated_with_delay, status.second?.toInt())
+                status.second?.toInt()?.let {
+                    if (it > 1) {
+                        tvEpiStatus.text = context.getString(R.string.vaccinated_with_days_delay, it)
+                    } else {
+                        tvEpiStatus.text = context.getString(R.string.vaccinated_with_day_delay, it)
+                    }
+                }
             }
 
             else -> {
@@ -102,7 +108,13 @@ class VaccinationStatusNudge @JvmOverloads constructor(
                 flIconEpiStatus.background = ContextCompat.getDrawable(context, R.drawable.bg_ic_epi_missed)
                 ivIconEpiStatus.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_epi_missed))
                 tvEpiStatus.setTextColor(context.getColor(R.color.epi_missed_primary))
-                tvEpiStatus.text = context.getString(R.string.missed_vaccination, status.second?.toInt())
+                status.second?.toInt()?.let {
+                    if (it > 1) {
+                        tvEpiStatus.text = context.getString(R.string.missed_vaccination_by_days, it)
+                    } else {
+                        tvEpiStatus.text = context.getString(R.string.missed_vaccination_by_day, it)
+                    }
+                }
             }
         }
     }
