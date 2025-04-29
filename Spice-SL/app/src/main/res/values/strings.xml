@@ -1365,7 +1365,7 @@
     <string name="alcohol_consumption" translatable="false">Alcohol Consumption</string>
 
 
-    <string name="diagnosis_tb" translatable="false">Diagnosis</string>
+    <string name="diagnosis_tb" translatable="false">Diagnoses</string>
     <string name="trug_sensitive_tb" translatable="false">Trug sensitive TB</string>
     <string name="contact_tracing_updated" translatable="false">Contact Tracing Updated</string>
     <string name="update_contact_tracing" translatable="false">Update contact tracing</string>

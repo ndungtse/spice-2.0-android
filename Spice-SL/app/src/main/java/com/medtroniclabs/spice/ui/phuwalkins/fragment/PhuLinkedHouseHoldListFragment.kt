@@ -76,14 +76,16 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
     private fun initObserver() {
         viewModel.getFilteredHouseholdsLiveData(patientLinkedDetails.villageId)
             .observe(viewLifecycleOwner) {
-                listVisibility(it.isNullOrEmpty() || it.size == 0)
+                val householdList = it.filter { household -> household.householdNo != null && household.householdNo > 0L }
+
+                listVisibility(householdList.isEmpty())
                 binding.tvHPatientCount.text =
-                    it.size.toString().plus(getString(R.string.households_in))
+                    householdList.size.toString().plus(getString(R.string.households_in))
                         .plus(patientLinkedDetails.villageName)
                 // Set adapter
                 binding.rcLinkPatientList.layoutManager = LinearLayoutManager(requireContext())
                 binding.rcLinkPatientList.adapter =
-                    PhuHouseHoldListAdapter(it, activity as PhuLinkCallback)
+                    PhuHouseHoldListAdapter(householdList, activity as PhuLinkCallback)
             }
     }
 

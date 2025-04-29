@@ -147,9 +147,9 @@ class ImmunisationViewModel @Inject constructor(
             lastScheduleDate = null
             lastVaccinatedDate = null
             vaccinatedItems.forEach { vaccine ->
-                if (vaccine.vaccinatedDate != null) {
+                if (vaccine.vaccinatedDate != null && vaccine.updatedScheduleDate != null) {
                     val vaccinatedDate = vaccine.vaccinatedDate!!.getLocalDate()
-                    val scheduledDate = vaccine.scheduledDate.getLocalDate()
+                    val scheduledDate = vaccine.updatedScheduleDate
                     val delay =  ChronoUnit.DAYS.between(scheduledDate, vaccinatedDate)
                     if (delay > maxDelay) {
                         lastScheduleDate = scheduledDate
@@ -191,7 +191,8 @@ class ImmunisationViewModel @Inject constructor(
                     if (vaccine.updatedScheduleDate != null) {
                         if (vaccine.isEdited == true) {
                             changesList.add(vaccine.copy())
-                        } else if (vaccine.vaccinatedDate == null) {
+                        } else if (!vaccine.updatedScheduleDate!!.isAfter(ldToday)
+                            && vaccine.vaccinatedDate == null) {
                             containsAnyMissedVaccine = true
                             changesList.add(vaccine.copy(status = "Missed"))
                         }
