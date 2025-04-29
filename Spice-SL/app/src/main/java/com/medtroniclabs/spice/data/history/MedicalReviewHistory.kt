@@ -92,6 +92,7 @@ data class BirthDetails(
     val gender: String?,
     val birthWeight: Double?,
     val stateOfBaby: String?,
+    val patientStatus: String?,
     val signs: List<String>?,
     val gestationalAge: String?,
     val total: Int?,

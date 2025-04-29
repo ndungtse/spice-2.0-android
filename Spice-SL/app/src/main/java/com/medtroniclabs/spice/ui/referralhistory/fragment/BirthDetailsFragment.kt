@@ -198,7 +198,7 @@ class BirthDetailsFragment: BaseFragment(), View.OnClickListener  {
 
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.patient_status),
-                DefinedParams.Value to (birthDetails.stateOfBaby?.takeIf { it.isNotBlank() }
+                DefinedParams.Value to (birthDetails.patientStatus?.takeIf { it.isNotBlank() }
                     ?: getString(R.string.separator_double_hyphen))
             )
         )

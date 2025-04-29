@@ -11,6 +11,7 @@ import androidx.core.widget.addTextChangedListener
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
@@ -112,6 +113,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
+                    hideKeyboard(binding.root)
                     resourceState.data?.let { groupList ->
                         val list = ArrayList<MedicationRequestObject>()
                         groupList.forEach {
@@ -137,6 +139,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
         prescriptionViewModel.selectedMedicationLiveData.observe(this) { list ->
             list?.let {
+                hideKeyboard(binding.root)
                 val selectedGroupMeds = prescriptionViewModel.selectedMedicationGroupLiveData.value ?: emptyList()
                 binding.btnPrescribe.isEnabled = list.size > 0 || selectedGroupMeds.isNotEmpty()
                 if (list.size > 0) {
@@ -150,6 +153,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
         prescriptionViewModel.selectedMedicationGroupLiveData.observe(this) { list ->
             list?.let {
+                hideKeyboard(binding.root)
                 val selectedMeds = prescriptionViewModel.selectedMedicationLiveData.value ?: emptyList()
                 binding.btnPrescribe.isEnabled = list.isNotEmpty() || selectedMeds.isNotEmpty()
                 showMedicationGroupList(list)

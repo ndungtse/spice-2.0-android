@@ -132,10 +132,9 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
         val validOrganSelection = hasOrganTags &&
                 (!hasOtherOrgan || (hasOtherOrgan && otherNotesFilled))
 
-        val validDrugSensitiveTB = !hasDrugSensitiveTB ||
-                (!hasExtraPulmonary || (hasExtraPulmonary && validOrganSelection))
+        val validDrugSensitiveTB = (!hasExtraPulmonary || (hasExtraPulmonary && validOrganSelection))
 
-        if (hasSiteTags && hasConfirmTags && hasDrugSensitiveTB && hasExtraPulmonary) {
+        if (hasSiteTags && hasExtraPulmonary) {
             if (binding.organChip.isGone()) {
                 binding.organChip.visible()
                 binding.tvOrganLbl.visible()
