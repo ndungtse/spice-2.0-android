@@ -117,7 +117,7 @@ class ImmunisationViewModel @Inject constructor(
                 break
             } else {
                 item.vaccinationItems.forEach { vaccine ->
-                    if (vaccine.updatedScheduleDate != null && vaccine.vaccinatedDate == null) {
+                    if (vaccine.updatedScheduleDate != null && !vaccine.updatedScheduleDate!!.isAfter(ldToday) && vaccine.vaccinatedDate == null) {
                         missedCount += 1
                     }
                 }
