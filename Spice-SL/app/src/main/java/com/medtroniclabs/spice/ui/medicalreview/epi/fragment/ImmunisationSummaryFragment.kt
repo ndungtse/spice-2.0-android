@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -67,6 +68,7 @@ class ImmunisationSummaryFragment :  BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
+        viewModel.setUserJourney(AnalyticsDefinedParams.ImmunisationSummary)
     }
 
     private fun initView() {

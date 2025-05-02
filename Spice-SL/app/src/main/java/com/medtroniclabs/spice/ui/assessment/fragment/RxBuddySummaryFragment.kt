@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.getLocalDate
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
@@ -60,6 +61,7 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
         initView()
         setListener()
         attachObservers()
+        viewModel.setUserJourney(AnalyticsDefinedParams.RXBUDDYSummaryAssessement)
     }
 
     private fun setListener() {
@@ -108,7 +110,8 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when(v?.id){
             R.id.btnDone -> {
-               if (isRxBuddyFollowUp == true) {
+                viewModel.setUserJourney(AnalyticsDefinedParams.DONEBUTTONTRIGGERED)
+                if (isRxBuddyFollowUp == true) {
                    viewModel.saveRxBuddyFollowUpLiveData.value?.data?.let { id ->
                         viewModel.updateNextVisitDateForRxBuddyFollowUp(getNextVisitDate(), id)
                    }

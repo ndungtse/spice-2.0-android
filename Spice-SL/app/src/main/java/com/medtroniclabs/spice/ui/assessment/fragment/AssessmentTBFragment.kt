@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.TBTYPE
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
@@ -267,9 +268,9 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                         }*/
 
                         val tbType = viewModel.assessmentTBType.value ?: TBScreening
-
-                        viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
+                        viewModel.setUserJourney("$TBTYPE - ${viewModel.assessmentTBType.value ?: TBScreening}")
                         viewModel.saveTbAssessment(it, referralResult, tbType, viewModel.menuId)
+                        viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                     }
                 }
             }

@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.repo.MotherNeonateANCRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,8 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AddBpViewModel @Inject constructor(
     private val motherNeonateANCRepo: MotherNeonateANCRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
-) : ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
+) : BaseViewModel(dispatcherIO) {
     val saveBloodPressure = MutableLiveData<Resource<HashMap<String, Any>>>()
     var lastLocation: Location? = null
 

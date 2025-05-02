@@ -24,6 +24,7 @@ import com.medtroniclabs.spice.model.medicalreview.VaccinationDetail
 import com.medtroniclabs.spice.model.medicalreview.VaccinationGroupItem
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.ImmunisationRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -34,9 +35,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ImmunisationViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val immunisationRepository: ImmunisationRepository
-) : ViewModel() {
+) : BaseViewModel(dispatcherIO) {
 
     var encounterId: String = ""
     var patientReferenceId: String = ""

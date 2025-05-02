@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.getLocalDate
 import com.medtroniclabs.spice.appextensions.getLongDate
 import com.medtroniclabs.spice.appextensions.gone
@@ -53,6 +54,7 @@ class UpdateVaccinationStatusFragment(
         super.onViewCreated(view, savedInstanceState)
         initView()
         clickListener()
+        viewModel.setUserJourney(AnalyticsDefinedParams.UpdateVaccinationStatus)
     }
 
     private fun initView() {
@@ -91,6 +93,7 @@ class UpdateVaccinationStatusFragment(
 
     private fun clickListener() {
         binding.ivClose.setOnClickListener {
+            viewModel.setUserJourney(AnalyticsDefinedParams.CLOSEICONTRIGGERED)
             dismiss()
         }
 
@@ -113,6 +116,7 @@ class UpdateVaccinationStatusFragment(
         vaccinationItem.status = "Vaccinated"
         vaccinationItem.vaccinatedDate = formattedDate
         vaccinationItem.isEdited = true
+        viewModel.setUserJourney(AnalyticsDefinedParams.btnVaccinationDone)
         viewModel.addVaccinationDetail(vaccinationItem)
     }
 

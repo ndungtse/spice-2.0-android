@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.getDisplayDimensions
 import com.medtroniclabs.spice.databinding.DialogMissedVaccinationBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -41,6 +42,7 @@ class MissedImmunisationDialogFragment : BaseDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         clickListener()
+        viewModel.setUserJourney(AnalyticsDefinedParams.MissedVaccination)
     }
 
     private fun initView() {
@@ -65,16 +67,19 @@ class MissedImmunisationDialogFragment : BaseDialogFragment() {
         binding.btnNext.isEnabled = false
         binding.btnBack.setOnClickListener {
             dismiss()
+            viewModel.setUserJourney(AnalyticsDefinedParams.BackButtonClicked)
         }
 
         binding.ivClose.setOnClickListener {
             dismiss()
+            viewModel.setUserJourney(AnalyticsDefinedParams.CLOSEICONTRIGGERED)
         }
 
         binding.btnNext.setOnClickListener {
             dismiss()
             val reason = binding.etMissedReason.text?.trim().toString()
             viewModel.shouldShowMissedVaccinationDialog(false, reason)
+            viewModel.setUserJourney(AnalyticsDefinedParams.NEXTBUTTONTRIGGERED)
         }
     }
 

@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isGone
 import com.medtroniclabs.spice.appextensions.isVisible
@@ -83,6 +84,12 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
         initView()
         attachObservers()
         initTag()
+        if (diagnosisViewModel.diagnosisDetailsList.value?.data?.isNotEmpty() == true) {
+            patientViewModel.setUserJourney(AnalyticsDefinedParams.EDITDIAGNOSISDIALOGUEFRAGMENT)
+        }else{
+            patientViewModel.setUserJourney(AnalyticsDefinedParams.ADDDIAGNOSISDIALOGUEFRAGMENT)
+
+        }
     }
 
     private fun initTag() {
@@ -341,7 +348,10 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnOkay.id -> handleOkayClick()
-            binding.btnCancel.id, binding.ivClose.id -> dismiss()
+            binding.btnCancel.id, binding.ivClose.id -> {
+                patientViewModel.setUserJourney(AnalyticsDefinedParams.CANCELBUTTONTRIGGERED)
+                dismiss()
+            }
         }
     }
 
@@ -358,6 +368,7 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
                         type = MenuConstants.TB_MENU_ID.uppercase(),
                         otherNotes = binding.etOtherDiagnosisNotes.text.toString().ifBlank { null }
                     )
+                    patientViewModel.setUserJourney(AnalyticsDefinedParams.SAVEBUTTONTRIGGERED)
                     diagnosisViewModel.diagnosisCreate(request)
                 }
             }

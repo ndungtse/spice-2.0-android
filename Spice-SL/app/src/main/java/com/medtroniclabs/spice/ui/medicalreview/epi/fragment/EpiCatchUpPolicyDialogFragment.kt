@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.getDisplayDimensions
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
@@ -41,6 +42,7 @@ class EpiCatchUpPolicyDialogFragment(private val missedVaccineCount: Int)  : Bas
         super.onViewCreated(view, savedInstanceState)
         initView()
         clickListener()
+        viewModel.setUserJourney(AnalyticsDefinedParams.EpiCatchUpPolicyDialog)
     }
 
     private fun initView() {
@@ -69,10 +71,12 @@ class EpiCatchUpPolicyDialogFragment(private val missedVaccineCount: Int)  : Bas
     private fun clickListener() {
         binding.btnDone.safeClickListener {
             dismiss()
+            viewModel.setUserJourney(AnalyticsDefinedParams.OKAYBUTTONTRIGGERED)
         }
 
         binding.ivClose.safeClickListener {
             dismiss()
+            viewModel.setUserJourney(AnalyticsDefinedParams.CLOSEICONTRIGGERED)
         }
     }
 }

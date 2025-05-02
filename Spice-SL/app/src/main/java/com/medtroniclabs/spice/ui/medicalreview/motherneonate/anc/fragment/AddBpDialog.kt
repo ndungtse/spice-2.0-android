@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.setWidth
@@ -86,6 +87,7 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
         initView()
         attachObservers()
         getCurrentLocation()
+        viewModel.setUserJourney(AnalyticsDefinedParams.AddBPDialogue)
     }
 
     private fun getCurrentLocation() {
@@ -243,13 +245,17 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnOkay.id -> handleOkayClick()
-            binding.btnCancel.id, binding.ivClose.id -> dismiss()
+            binding.btnCancel.id, binding.ivClose.id ->  {
+                viewModel.setUserJourney(AnalyticsDefinedParams.CANCELBUTTONTRIGGERED)
+                dismiss()
+            }
         }
     }
 
     private fun handleOkayClick() {
         if (connectivityManager.isNetworkAvailable()) {
             if (inputValidate()) {
+                viewModel.setUserJourney(AnalyticsDefinedParams.OKAYBUTTONTRIGGERED)
                 viewModel.saveBloodPressure(createBpAndWeightRequestModel())
             }
         } else {

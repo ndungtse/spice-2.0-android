@@ -9,6 +9,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.appextensions.setWidth
@@ -61,6 +62,7 @@ class PatientTypeFragment : DialogFragment(), View.OnClickListener {
         setupUI()
         attachObservers()
         getCurrentLocation()
+        patientViewModel.setUserJourney(AnalyticsDefinedParams.PATIENTTYPEDIALOUGE)
     }
 
     private fun getCurrentLocation() {
@@ -143,11 +145,14 @@ class PatientTypeFragment : DialogFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnOkay.id -> submitPatientType()
-            else -> dismiss()
+            else ->  {
+                patientViewModel.setUserJourney(AnalyticsDefinedParams.CANCELBUTTONTRIGGERED)
+                dismiss() }
         }
     }
 
     private fun submitPatientType() {
+        patientViewModel.setUserJourney(AnalyticsDefinedParams.SAVEBUTTONTRIGGERED)
         viewModel.createPatientType(
             PatientTypeCreateRequest(
                 encounter = createEncounter(),

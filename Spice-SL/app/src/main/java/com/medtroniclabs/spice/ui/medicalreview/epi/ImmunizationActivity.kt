@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.medicalreview.epi
 import android.os.Bundle
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
@@ -51,6 +52,7 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
         attachObserver()
         initializePatientDetailFragment()
         initImmunisationDetailFragment()
+        patientViewModel.setUserJourney(AnalyticsDefinedParams.IMMUNIZATION)
     }
 
     private fun swipeRefresh() {
@@ -232,6 +234,7 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
 
     private fun saveSummaryDetails() {
         patientViewModel.patientDetailsLiveData.value?.data?.let { patientDetails ->
+            patientViewModel.setUserJourney(AnalyticsDefinedParams.DONEBUTTONTRIGGERED)
             viewModel.saveImmunisationSummaryDetails(
                 viewModel.encounterId,
                 viewModel.patientReferenceId,

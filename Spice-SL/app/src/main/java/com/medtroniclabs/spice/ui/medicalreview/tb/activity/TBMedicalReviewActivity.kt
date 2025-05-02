@@ -8,6 +8,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
@@ -88,6 +89,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
         initView()
         setButtonClickListener()
         attachObserver()
+        patientViewModel.setUserJourney(AnalyticsDefinedParams.TBMEDICALREVIEW)
     }
 
     private fun getCurrentLocation() {
@@ -225,6 +227,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
 
     private fun showSummary(callBack: () -> Unit) {
         with(binding) {
+            patientViewModel.setUserJourney(AnalyticsDefinedParams.TBMEDICALREVIEWSUMMARY)
             patientSummaryContainer.gone()
             comorbiditiesContainer.gone()
             presentingComplaintsContainer.gone()
@@ -333,6 +336,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     }
 
     private fun createSummary() {
+        patientViewModel.setUserJourney(AnalyticsDefinedParams.DONEBUTTONTRIGGERED)
         val fragment = supportFragmentManager.findFragmentById(R.id.clinicalNotesContainer)
         if (fragment is TbSummaryFragment) {
             val isValid = (fragment as? TbSummaryFragment)?.validateInput()
@@ -372,11 +376,13 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
     private fun clickSubmit() {
         val request = createMedicalReviewRequest()
         withNetworkAvailability(online = {
+            patientViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
             viewModel.tbCreate(request)
         })
     }
 
     private fun showReferPatientDialog() {
+        patientViewModel.setUserJourney(AnalyticsDefinedParams.REFERBUTTONTRIGGERED)
         withNetworkAvailability(online = {
             viewModel.tbCreateResponse.value?.data?.let {
                 showDialogIfNotPresent(

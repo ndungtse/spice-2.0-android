@@ -9,6 +9,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
@@ -62,6 +63,7 @@ class BMIListDialog : DialogFragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
+        viewModel.setUserJourney(AnalyticsDefinedParams.BMIHistoryDialogue)
     }
 
     fun initView() {
@@ -145,10 +147,12 @@ class BMIListDialog : DialogFragment(), View.OnClickListener {
         when (v?.id) {
             R.id.btnClose -> {
                 dismiss()
+                viewModel.setUserJourney(AnalyticsDefinedParams.CLOSEICONTRIGGERED)
             }
 
             R.id.ivClose -> {
                 dismiss()
+                viewModel.setUserJourney(AnalyticsDefinedParams.CLOSEICONTRIGGERED)
             }
         }
     }

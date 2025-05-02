@@ -15,6 +15,7 @@ object AnalyticsDefinedParams {
     const val RMNCHNeonateSummaryAssessment = "pnc-rmnchSummaryAssessment"
     const val TBAssessement = "TB Assessment"
     const val TBSummaryAssessement = "TB Summary Assessment"
+    const val RXBUDDYSummaryAssessement = "RX Buddy Summary Assessment"
     const val AssessmentCreation = "assessmentCreation"
     const val HouseholdCreation = "Household Registration"
     const val HouseholdEdit = "householdEdit"
@@ -108,6 +109,7 @@ object AnalyticsDefinedParams {
     const val STARTBUTTONTRIGGERED = "Start Button Triggered"
     const val RETRYBUTTONTRIGGERED = "Retry Button Triggered"
     const val OKAYBUTTONTRIGGERED = "OKAY Button Triggered"
+    const val SAVEBUTTONTRIGGERED = "SAVE Button Triggered"
     const val DONEBUTTONTRIGGERED = "Done Button Triggered"
     const val NEXTBUTTONTRIGGERED = "Next Button Triggered"
     const val CONFIRMBUTTONTRIGGERED = "Confirm Button Triggered"
@@ -199,4 +201,32 @@ object AnalyticsDefinedParams {
     const val CALLBUTTONTRIGGERED = "Call Button Triggered"
     const val CBS = "CBS"
     const val LINKPATIENT =  "Link Patient Button Triggered"
+    const val TBTYPE = "TB Type"
+
+    const val TBMEDICALREVIEW = "TB Medical Review"
+    const val TBMEDICALREVIEWSUMMARY = "TB Medical Review Summary"
+    const val REFERBUTTONTRIGGERED = "Refer Button Triggered"
+
+    const val PATIENTTYPEDIALOUGE = "Patient Type Dialogue"
+
+    const val FamilyPlanningMedicalReview = "Family Planning Medical Review"
+    const val FamilyPlanningSummary = "Family Planning Medical Review Summary"
+
+
+    const val AddBPDialogue = "AddBPDialogue"
+    const val AddHeightWeightDialogue = "Add Height or Weight Dialogue"
+
+    const val BMIHistoryDialogue = "BMI History Dialogue"
+
+    const val IMMUNIZATION = "Immunization Screen"
+
+    const val UpdateVaccinationStatus = "Update Vaccination Status Dialogue"
+
+    const val btnVaccinationDone = "VaccinationDone Button Triggered"
+
+   const val MissedVaccination: String = "Missed Vaccination Dialogue"
+
+    const val ImmunisationSummary = "Immunisation Summary"
+
+    const val EpiCatchUpPolicyDialog = "Epi Catch Up Policy Dialog"
 }

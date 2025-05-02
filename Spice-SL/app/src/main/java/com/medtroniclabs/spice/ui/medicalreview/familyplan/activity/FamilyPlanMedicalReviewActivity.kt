@@ -67,6 +67,7 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         initStaticDataCall()
         setButtonClickListener()
+        patientViewModel.setUserJourney(AnalyticsDefinedParams.FamilyPlanningMedicalReview)
     }
 
     private fun setButtonClickListener() {
@@ -200,6 +201,7 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
 
         conFragment?.let {
             if(it.validInputs()){
+                patientViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                 initializeSummaryFragment()
             }
         }
@@ -207,6 +209,7 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
 
     private fun initializeSummaryFragment() {
         binding.apply {
+            patientViewModel.setUserJourney(AnalyticsDefinedParams.FamilyPlanningSummary)
             binding.patientBMIContainer.gone()
             binding.contraceptivesContainer.gone()
             familyPlanClinicalNotesContainer.gone()
