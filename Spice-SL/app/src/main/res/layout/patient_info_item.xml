@@ -62,7 +62,7 @@
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
         android:gravity="start|top"
-        android:hint="@string/enter"
+        android:hint="@string/enter_number"
         android:imeOptions="actionDone"
         android:inputType="text"
         android:padding="@dimen/_8sdp"

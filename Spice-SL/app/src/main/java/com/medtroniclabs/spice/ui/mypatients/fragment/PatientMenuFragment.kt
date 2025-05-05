@@ -129,7 +129,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                     MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID -> menuItem.isDisabled =isUnderFiveToTwoMonthsDisabled(dob)
                     MenuConstants.UNDER_AGE_ABOVE_FIVE_YEAR_ID ->menuItem.isDisabled = isUnderAgeAboveFiveYearsDisabled(dob)
                     MenuConstants.EPI_ID -> menuItem.isDisabled = !isUnderSixtyMonths(dob)
-                    MenuConstants.TB_MENU_ID -> menuItem.isDisabled = isGeneralDisabledForTB(dob)
+                    MenuConstants.TB_MENU_ID -> menuItem.isDisabled = false
                     else -> {}
 
             }
