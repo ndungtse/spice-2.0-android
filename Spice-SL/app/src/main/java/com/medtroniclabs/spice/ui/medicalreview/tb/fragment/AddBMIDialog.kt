@@ -62,7 +62,8 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
             patientId: String?,
             villageId: String?,
             householdId: String?,
-            memberId:String?
+            memberId:String?,
+            isTb: Boolean = false
         ): AddBMIDialog {
             val fragment = AddBMIDialog()
             fragment.arguments = Bundle().apply {
@@ -70,6 +71,7 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
                 putString(DefinedParams.villageId, villageId)
                 putString(DefinedParams.householdId, householdId)
                 putString(DefinedParams.MemberID, memberId)
+                putBoolean(DefinedParams.TB, isTb)
             }
             return fragment
         }
@@ -121,6 +123,9 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
         }
     }
 
+    private fun isTb():Boolean {
+        return arguments?.getBoolean(DefinedParams.TB, false) ?: false
+    }
 
     private fun initView() {
         with(binding) {
@@ -189,24 +194,44 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun isHeightValid(): Boolean {
+        val range = if (isTb()) {
+            45.0..300.0
+        } else {
+            50.0..300.0
+        }
+        val errorMessage = if (isTb()) {
+            R.string.height_error_45_300
+        } else {
+            R.string.height_error
+        }
         return MotherNeonateUtil.isValidInput(
             binding.etSystolic.text.toString(),
             binding.etSystolic,
             binding.tvSystolicError,
-            10.0..500.0,
-            R.string.height_error,
+            range,
+            errorMessage,
             false,
             requireContext()
         )
     }
 
     private fun isWeightValid(): Boolean {
+        val range = if (isTb()) {
+            0.1..400.0
+        } else {
+            10.0..400.0
+        }
+        val errorMessage = if (isTb()) {
+            R.string.weight_error_0_400
+        } else {
+            R.string.weight_error
+        }
         return MotherNeonateUtil.isValidInput(
             binding.etDiastolic.text.toString(),
             binding.etDiastolic,
             binding.tvDiastolicError,
-            10.0..400.0,
-            R.string.weight_error,
+            range,
+            errorMessage,
             false,
             requireContext()
         )

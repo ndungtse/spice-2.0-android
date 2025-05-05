@@ -1488,4 +1488,5 @@
     <string name="update_inv_result" translatable="false">Update Investigation Result</string>
     <string name="add_inv_result" translatable="false">Add Investigation Result</string>
     <string name="add_height_weight" translatable="false">Add Height/Weight</string>
+    <string name="height_error_45_300" translatable="false">"Please enter height between 45 to 300"</string>
 </resources>

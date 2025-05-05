@@ -452,7 +452,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                     patientId = getPatientId(),
                     villageId = patientViewModel.getVillageId(),
                     householdId = patientViewModel.getPatientHouseholdId(),
-                    memberId = getMemberId()
+                    memberId = getMemberId(),
+                    isTb = isTb()
                 ).apply {
                     listener = this@MedicalReviewPatientDiagnosisFragment
                 }
@@ -474,7 +475,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 patientId = getPatientId(),
                 villageId = patientViewModel.getVillageId(),
                 householdId = patientViewModel.getPatientHouseholdId(),
-                memberId = patientViewModel.getPatientMemberId()
+                memberId = patientViewModel.getPatientMemberId(),
+                isTb = isTb()
             ).apply {
                 listener = this@MedicalReviewPatientDiagnosisFragment
             }
