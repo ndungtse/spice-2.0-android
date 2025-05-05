@@ -347,6 +347,7 @@ object DefinedParams {
     const val Gene_Expert = "gene expert"
 
     const val isCreateHouseholdForPhu = "isCreateHouseholdForPhu"
+    const val FP = "FP"
     const val HIV = "HIV"
     const val HIV_SUMMARY = "HIV_SUMMARY"
     const val A1TestResult = "A1TestResult"
@@ -355,5 +356,9 @@ object DefinedParams {
     const val entryPoint = "EntryPoint"
     const val Symptoms = "Symptoms"
     const val HIV_MEDICAL_REVIEW = "HIV_MEDICAL_REVIEW"
+    const val Occupation = "occupation"
+    const val MaritalStatus = "maritalStatus"
+    const val Married = "Married"
+    const val Single = "Single"
 
 }

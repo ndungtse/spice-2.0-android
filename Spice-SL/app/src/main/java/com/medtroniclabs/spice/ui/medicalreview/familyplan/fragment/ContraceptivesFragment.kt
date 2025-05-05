@@ -4,35 +4,47 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentContraceptivesBinding
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.medicalreview.familyplan.viewmodel.ContraceptivesViewModel
-import com.medtroniclabs.spice.ui.medicalreview.familyplan.viewmodel.FamilyPlanViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.ClientType
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.CombineOralContraceptive
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.CombinedOralContraceptiveComments
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.Condoms
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.EmergencyContraceptive
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.Implants
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.Injectables
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.Microlut
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.MicrolutQuantity
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherFPMethod
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherImplantComments
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherImplantSpecify
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherInjectableComments
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherInjectablesSpecify
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherOralSpecify
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherPermanentMethodComments
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherProgestinOnlyOralsComments
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherSpecify
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.PermanentMethod
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.PostPartum
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.ProgestinOnlyOrals
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.math.truncate
 
 @AndroidEntryPoint
 class ContraceptivesFragment : BaseFragment() {
@@ -53,11 +65,34 @@ class ContraceptivesFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
+        initializeListener()
+        attachObserver()
     }
 
-    private fun initViews() {
+    private fun attachObserver() {
+        viewModel.contraceptiveMetaList.observe(viewLifecycleOwner) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resource.data?.let {
+                        initializeMetaItems(it)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+    }
+
+    private fun initializeMetaItems(metaList: List<MedicalReviewMetaItems>) {
         addCustomView(
-            getContraceptivesFlowData(),
+            getSingleSelectionViewData(metaList.filter { it.category.equals(MedicalReviewTypeEnums.client_type.name, true) }.sortedBy { it.displayOrder }),
             ClientType,
             viewModel.resultHashMap,
             clientTypeSelectionCallBack,
@@ -65,15 +100,14 @@ class ContraceptivesFragment : BaseFragment() {
         )
 
         addCustomView(
-            getCombinedOralContraceptiveData(),
+            getSingleSelectionViewData(metaList.filter { it.category.equals(MedicalReviewTypeEnums.combined_oral_contraceptive.name, true) }.sortedBy { it.displayOrder }),
             CombineOralContraceptive,
             viewModel.resultHashMap,
             combinedOralSelectionCallBack,
             binding.CombinedOralContraceptiveRoot
         )
-
         addCustomView(
-            getProgestinOralData(),
+            getSingleSelectionViewData(metaList.filter { it.category.equals(MedicalReviewTypeEnums.progestin.name, true) }.sortedBy { it.displayOrder }),
             ProgestinOnlyOrals,
             viewModel.resultHashMap,
             progestinSelectionCallBack,
@@ -81,7 +115,7 @@ class ContraceptivesFragment : BaseFragment() {
         )
 
         addCustomView(
-            getInjectables(),
+            getSingleSelectionViewData(metaList.filter { it.category.equals(MedicalReviewTypeEnums.injectables.name, true) }.sortedBy { it.displayOrder }),
             Injectables,
             viewModel.resultHashMap,
             injectableSelectionCallBack,
@@ -89,7 +123,7 @@ class ContraceptivesFragment : BaseFragment() {
         )
 
         addCustomView(
-            getImplant(),
+            getSingleSelectionViewData(metaList.filter { it.category.equals(MedicalReviewTypeEnums.implants.name, true) }.sortedBy { it.displayOrder }),
             Implants,
             viewModel.resultHashMap,
             implantsSelectionCallBack,
@@ -97,7 +131,7 @@ class ContraceptivesFragment : BaseFragment() {
         )
 
         addCustomView(
-            getCondoms(),
+            getSingleSelectionViewData(metaList.filter { it.category.equals(MedicalReviewTypeEnums.condoms.name, true) }.sortedBy { it.displayOrder }),
             Condoms,
             viewModel.resultHashMap,
             condomsSelectionCallBack,
@@ -105,7 +139,7 @@ class ContraceptivesFragment : BaseFragment() {
         )
 
         addCustomView(
-            getEmergencyContraceptiveData(),
+            getSingleSelectionViewData(metaList.filter { it.category.equals(MedicalReviewTypeEnums.emergency_contraceptive.name, true) }.sortedBy { it.displayOrder }),
             EmergencyContraceptive,
             viewModel.resultHashMap,
             emergencyContraSelectionCallBack,
@@ -113,187 +147,76 @@ class ContraceptivesFragment : BaseFragment() {
         )
 
         addCustomView(
-            getPermanentMethods(),
+            getSingleSelectionViewData(metaList.filter { it.category.equals(MedicalReviewTypeEnums.permanent_method.name, true) }.sortedBy { it.displayOrder }),
             PermanentMethod,
             viewModel.resultHashMap,
             permanentMethodSelectionCallBack,
             binding.PermanentMethodRoot
         )
 
+        val iucdListItem =
+            metaList.filter { it.category.equals(MedicalReviewTypeEnums.iucd.name, true) }
+        val chipItemList = mutableListOf<ChipViewItemModel>()
+        iucdListItem.forEach {
+            chipItemList.add(
+                ChipViewItemModel(
+                    id = it.id,
+                    name = it.name,
+                    value = it.value
+                )
+            )
+            iucdTagView.addChipItemList(chipItemList, viewModel.selectedIUCD)
+        }
+    }
+
+    private fun initializeListener() {
+        binding.etOtherInjectableComments.addTextChangedListener { notes ->
+            viewModel.otherInjectableComments = if (notes.isNullOrBlank()) null else notes.toString()
+        }
+        binding.etOtherImplantsComments.addTextChangedListener { notes ->
+            viewModel.otherImplantComments = if (notes.isNullOrBlank()) null else notes.toString()
+        }
+        binding.etOtherPermanentMethodComments.addTextChangedListener { notes ->
+            viewModel.otherPermanentMethodComments = if (notes.isNullOrBlank()) null else notes.toString()
+        }
+        binding.etProgestinOnlyOralsComments.addTextChangedListener { notes ->
+            viewModel.otherProgestinOnlyOralsComments = if (notes.isNullOrBlank()) null else notes.toString()
+        }
+        binding.etCombinedOralContraceptiveComments.addTextChangedListener { notes ->
+            viewModel.combinedOralContraceptiveComments = if (notes.isNullOrBlank()) null else notes.toString()
+        }
+    }
+
+    private fun initViews() {
+        viewModel.getMetaList(MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name)
+
         iucdTagView = TagListCustomView(
             binding.root.context,
             binding.tagViewIUCD
         ) { _, _, _ ->
             viewModel.selectedIUCD = ArrayList(iucdTagView.getSelectedTags())
-
         }
 
-        addChipItem()
-        binding.etQuantity.setOnEditorActionListener{
-            _, actionId, _ ->
-            if(actionId == EditorInfo.IME_ACTION_DONE){
-                viewModel.quantity = binding.etQuantity.text.toString()
-                hideKeyboard(binding.etQuantity)
-                resultMapChanged()
-                return@setOnEditorActionListener true
-            }else{
-                return@setOnEditorActionListener false
+        binding.etQuantity.addTextChangedListener { editable ->
+            val quantityString = editable.toString()
+            viewModel.quantity = if (quantityString.isBlank()) null else try {
+                quantityString.toLong()
+            } catch (e: Exception) {
+                null
             }
         }
     }
 
-    private fun addChipItem() {
-        val chipItemList = mutableListOf<ChipViewItemModel>()
-        chipItemList.add(
-            ChipViewItemModel(
-                id = 1,
-                name = getString(R.string.copper_t),
-                value = getString(R.string.copper_t)
-            )
-        )
-        iucdTagView.addChipItemList(chipItemList, viewModel.selectedIUCD)
-    }
-
-    private fun getContraceptivesFlowData(): ArrayList<Map<String, Any>> {
+    private fun getSingleSelectionViewData(metaList: List<MedicalReviewMetaItems>): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(
-            getOptionMap(
-                getString(R.string.new_family_planning_method),
-                getString(R.string.new_family_planning_method)
+        metaList.forEach {
+            flowList.add(
+                getOptionMap(
+                    it.value ?: it.name,
+                    it.name
+                )
             )
-        )
-        flowList.add(
-            getOptionMap(
-                getString(R.string.continuing_family_planning_method),
-                getString(R.string.continuing_family_planning_method)
-            )
-        )
-        flowList.add(getOptionMap(getString(R.string.post_partum), getString(R.string.post_partum)))
-        return flowList
-    }
-
-    private fun getPostPartumData(): ArrayList<Map<String, Any>> {
-        val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(
-            getOptionMap(
-                getString(R.string.after_delivery),
-                getString(R.string.after_delivery)
-            )
-        )
-        flowList.add(
-            getOptionMap(
-                getString(R.string.forty_nine_hrs_siz_weeks),
-                getString(R.string.forty_nine_hrs_siz_weeks)
-            )
-        )
-        flowList.add(
-            getOptionMap(
-                getString(R.string.seven_week_one_year),
-                getString(R.string.seven_week_one_year)
-            )
-        )
-        return flowList
-    }
-
-    private fun getCombinedOralContraceptiveData(): ArrayList<Map<String, Any>> {
-        val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(getString(R.string.microgynon), getString(R.string.microgynon)))
-        flowList.add(
-            getOptionMap(
-                getString(R.string.other_oral_specify),
-                getString(R.string.other_oral_specify)
-            )
-        )
-        return flowList
-    }
-
-    private fun getProgestinOralData(): ArrayList<Map<String, Any>> {
-        val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(getString(R.string.microlut), getString(R.string.microlut)))
-        flowList.add(
-            getOptionMap(
-                getString(R.string.other_specify),
-                getString(R.string.other_specify)
-            )
-        )
-        return flowList
-    }
-
-    private fun getInjectables(): ArrayList<Map<String, Any>> {
-        val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(
-            getOptionMap(
-                getString(R.string.depo_provera),
-                getString(R.string.depo_provera)
-            )
-        )
-        flowList.add(
-            getOptionMap(
-                getString(R.string.sayana_press),
-                getString(R.string.sayana_press)
-            )
-        )
-        flowList.add(
-            getOptionMap(
-                getString(R.string.other_injectables_specify),
-                getString(R.string.other_injectables_specify)
-            )
-        )
-        return flowList
-    }
-
-    private fun getImplant(): ArrayList<Map<String, Any>> {
-        val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(
-            getOptionMap(
-                getString(R.string.five_year_implant),
-                getString(R.string.five_year_implant)
-            )
-        )
-        flowList.add(
-            getOptionMap(
-                getString(R.string.three_year_implant),
-                getString(R.string.three_year_implant)
-            )
-        )
-        flowList.add(
-            getOptionMap(
-                getString(R.string.other_implant),
-                getString(R.string.other_implant)
-            )
-        )
-        return flowList
-    }
-
-    private fun getCondoms(): ArrayList<Map<String, Any>> {
-        val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(getString(R.string.male), getString(R.string.male)))
-        flowList.add(getOptionMap(getString(R.string.female), getString(R.string.female)))
-        return flowList
-    }
-
-    private fun getEmergencyContraceptiveData(): ArrayList<Map<String, Any>> {
-        val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(getString(R.string.yes), getString(R.string.yes)))
-        flowList.add(getOptionMap(getString(R.string.no), getString(R.string.no)))
-        return flowList
-    }
-
-    private fun getPermanentMethods(): ArrayList<Map<String, Any>> {
-        val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(
-            getOptionMap(
-                getString(R.string.tubal_ligation),
-                getString(R.string.tubal_ligation)
-            )
-        )
-        flowList.add(getOptionMap(getString(R.string.vasectomy), getString(R.string.vasectomy)))
-        flowList.add(
-            getOptionMap(
-                getString(R.string.other_fp_method),
-                getString(R.string.other_fp_method)
-            )
-        )
+        }
         return flowList
     }
 
@@ -321,21 +244,30 @@ class ContraceptivesFragment : BaseFragment() {
     private var clientTypeSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[ClientType] = selectedID as String
-            if(selectedID == getString(R.string.post_partum)){
+            if(selectedID.equals(PostPartum, true)){
                 binding.tvPostPartum.visible()
-                addCustomView(
-                    getPostPartumData(),
-                    PostPartum,
-                    viewModel.resultHashMap,
-                    postPartumSelectionCallBack,
-                    binding.PostPartumRoot
-                )
+                viewModel.contraceptiveMetaList.value?.data?.let { metaList ->
+                    addCustomView(
+                        getSingleSelectionViewData(metaList.filter {
+                            it.category.equals(
+                                MedicalReviewTypeEnums.post_partum.name,
+                                true
+                            )
+                        }.sortedBy { it.displayOrder }),
+                        PostPartum,
+                        viewModel.resultHashMap,
+                        postPartumSelectionCallBack,
+                        binding.PostPartumRoot
+                    )
+                }
                 binding.PostPartumRoot.visible()
             }else{
+                viewModel.resultHashMap.remove(PostPartum)
                 binding.tvPostPartum.gone()
                 binding.PostPartumRoot.removeAllViews()
                 binding.PostPartumRoot.gone()
             }
+            resultMapChanged()
         }
 
     private var postPartumSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
@@ -347,10 +279,12 @@ class ContraceptivesFragment : BaseFragment() {
     private var combinedOralSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[CombineOralContraceptive] = selectedID as String
-            if(selectedID == getString(R.string.other_oral_specify)){
+            if(selectedID.equals(OtherOralSpecify, true)){
                 binding.etCombinedOralContraceptiveComments.visible()
             }else{
                 binding.etCombinedOralContraceptiveComments.gone()
+                binding.etCombinedOralContraceptiveComments.text?.clear()
+                viewModel.resultHashMap.remove(CombinedOralContraceptiveComments)
             }
             resultMapChanged()
         }
@@ -358,14 +292,18 @@ class ContraceptivesFragment : BaseFragment() {
     private var progestinSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[ProgestinOnlyOrals] = selectedID as String
-            when(selectedID){
-                getString(R.string.microlut) -> {
+            when(selectedID.lowercase()){
+                Microlut.lowercase() -> {
                     binding.tvQuantityLabel.visible()
                     binding.etQuantity.visible()
+                    binding.etProgestinOnlyOralsComments.text?.clear()
                     binding.etProgestinOnlyOralsComments.gone()
+                    viewModel.resultHashMap.remove(OtherProgestinOnlyOralsComments)
                 }
-                getString(R.string.other_specify) -> {
+                OtherSpecify.lowercase() -> {
                     binding.etProgestinOnlyOralsComments.visible()
+                    binding.etQuantity.text?.clear()
+                    viewModel.resultHashMap.remove(MicrolutQuantity)
                     binding.tvQuantityLabel.gone()
                     binding.etQuantity.gone()
                 }
@@ -376,10 +314,12 @@ class ContraceptivesFragment : BaseFragment() {
     private var injectableSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[Injectables] = selectedID as String
-            if(selectedID == getString(R.string.other_injectables_specify)){
+            if(selectedID .equals(OtherInjectablesSpecify, true)){
                 binding.etOtherInjectableComments.visible()
             }else{
                 binding.etOtherInjectableComments.gone()
+                binding.etOtherInjectableComments.text?.clear()
+                viewModel.resultHashMap.remove(OtherInjectableComments)
             }
             resultMapChanged()
         }
@@ -387,10 +327,12 @@ class ContraceptivesFragment : BaseFragment() {
     private var implantsSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[Implants] = selectedID as String
-            if(selectedID == getString(R.string.other_implant)){
+            if(selectedID.equals(OtherImplantSpecify, true)){
                 binding.etOtherImplantsComments.visible()
             }else{
                 binding.etOtherImplantsComments.gone()
+                binding.etOtherImplantsComments.text?.clear()
+                viewModel.resultHashMap.remove(OtherImplantComments)
             }
             resultMapChanged()
         }
@@ -410,10 +352,12 @@ class ContraceptivesFragment : BaseFragment() {
     private var permanentMethodSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[PermanentMethod] = selectedID as String
-            if (selectedID == getString(R.string.other_fp_method)) {
+            if (selectedID.equals(OtherFPMethod, true)) {
                 binding.etOtherPermanentMethodComments.visible()
             } else {
                 binding.etOtherPermanentMethodComments.gone()
+                binding.etOtherPermanentMethodComments.text?.clear()
+                viewModel.resultHashMap.remove(OtherPermanentMethodComments)
             }
             resultMapChanged()
         }
@@ -429,7 +373,7 @@ class ContraceptivesFragment : BaseFragment() {
         var isValid = true
 
         isValid = checkAndToggleError(ClientType, binding.tvClientTypeErrorMessage)
-        if (viewModel.resultHashMap[ClientType] == getString(R.string.post_partum)) {
+        if ((viewModel.resultHashMap[ClientType] as? String)?.equals(PostPartum, true) == true) {
             checkAndToggleError(PostPartum, binding.tvPostPartumErrorMessage)
         } else {
             binding.tvPostPartumErrorMessage.gone()
@@ -473,8 +417,8 @@ class ContraceptivesFragment : BaseFragment() {
     }
 
     private fun checkMicrolut():Boolean{
-       if (viewModel.resultHashMap[ProgestinOnlyOrals] == Microlut) {
-            if (viewModel.quantity.isEmpty()) {
+       if ((viewModel.resultHashMap[ProgestinOnlyOrals] as? String)?.equals(Microlut, true) == true) {
+            if (viewModel.quantity == null) {
                 binding.tvQuantityErrorMessage.visible()
                 return false
             } else {

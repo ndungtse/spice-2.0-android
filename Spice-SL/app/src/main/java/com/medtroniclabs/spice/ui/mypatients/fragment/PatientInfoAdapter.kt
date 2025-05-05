@@ -1,6 +1,8 @@
 package com.medtroniclabs.spice.ui.mypatients.fragment
 
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -19,6 +22,8 @@ import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.takeIfNotNull
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.Married
+import com.medtroniclabs.spice.common.DefinedParams.Single
 import com.medtroniclabs.spice.databinding.PatientInfoItemBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
@@ -26,6 +31,7 @@ import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.toggle.OnToggledListener
 import com.medtroniclabs.spice.toggle.ToggleableView
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.initTextWatcherForString
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
@@ -38,6 +44,7 @@ class PatientInfoAdapter(
     private val onItemToggle: (isChecked: Boolean) -> Unit,
     private val occupation: (String?) -> Unit,
     private val maritalStatus: (String?) -> Unit,
+    private val resultValues: HashMap<String, Any>,
     private val presumptiveTbNo: (String?) -> Unit,
 ) :
     RecyclerView.Adapter<PatientInfoAdapter.ViewHolder>() {
@@ -119,6 +126,25 @@ class PatientInfoAdapter(
                     spinnerMaritalStatus.visible()
                     val spinnerFormAdapter = CustomSpinnerAdapter(context)
                     spinnerFormAdapter.setData(getMaterialStatusData())
+                    var defaultPosition = 0
+                    val selectedMaritalStatus= resultValues[DefinedParams.MaritalStatus] as String?
+                    selectedMaritalStatus?.let{status ->
+                        for ((index, patientStatus) in getMaterialStatusData().withIndex()) {
+                            if ((patientStatus[DefinedParams.ID] as? String).equals(
+                                    status,
+                                    true
+                                )
+                            ) {
+                                defaultPosition = index
+                            }
+                        }
+                        binding.spinnerMaritalStatus.post {
+                            binding.spinnerMaritalStatus.setSelection(defaultPosition, false)
+                            if (defaultPosition != 0) {
+                                binding.spinnerMaritalStatus.isEnabled = false
+                            }
+                        }
+                    }
                     binding.spinnerMaritalStatus.adapter = spinnerFormAdapter
                     binding.spinnerMaritalStatus.onItemSelectedListener =
                         object : AdapterView.OnItemSelectedListener {
@@ -238,14 +264,20 @@ class PatientInfoAdapter(
         val dropDownList = ArrayList<Map<String, Any>>()
         dropDownList.add(
             hashMapOf<String, Any>(
-                DefinedParams.NAME to "Married",
-                DefinedParams.ID to "Married",
+                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                DefinedParams.ID to DefinedParams.DefaultID,
             )
         )
         dropDownList.add(
             hashMapOf<String, Any>(
-                DefinedParams.NAME to "Single",
-                DefinedParams.ID to "Single",
+                DefinedParams.NAME to Married,
+                DefinedParams.ID to Married,
+            )
+        )
+        dropDownList.add(
+            hashMapOf<String, Any>(
+                DefinedParams.NAME to Single,
+                DefinedParams.ID to Single,
             )
         )
 
@@ -253,16 +285,22 @@ class PatientInfoAdapter(
     }
 
     fun setupEditText(editText: AppCompatEditText, callback: (String) -> Unit) {
-        editText.setOnEditorActionListener { v, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                callback(v.text.toString().trim())
-                hideKeyboard(editText)
-                true
-            } else {
-                false
+        val occupationValue = resultValues[DefinedParams.Occupation]
+        val watcher = object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                callback.invoke(s?.toString().orEmpty())
             }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }
+        if (occupationValue is String && occupationValue.isNotBlank()) {
+            editText.setText(occupationValue)
+            editText.isEnabled = false
+            editText.isFocusable = false
+        }
+        editText.addTextChangedListener(watcher)
     }
+
 
     fun hideKeyboard(view: View) {
         val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

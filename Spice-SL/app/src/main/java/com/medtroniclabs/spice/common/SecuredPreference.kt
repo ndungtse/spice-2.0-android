@@ -77,8 +77,9 @@ object SecuredPreference {
         IS_TB_LOADED,
         PEER_SUPERVISOR_ID,
         BACKGROUNDTIMESTAMP,
-        IS_HIV_DATA_LOADED,
-        PEER_SUPERVISOR_NOTIFICATION_TOKEN
+        PEER_SUPERVISOR_NOTIFICATION_TOKEN,
+        IS_FAMILY_PLANNING_LOADED,
+        IS_HIV_DATA_LOADED
     }
 
 
@@ -545,6 +546,7 @@ object SecuredPreference {
         remove(EnvironmentKey.IS_LABOUR_DELIVERY_LOADED.name)
         remove(EnvironmentKey.IS_UNDER_FIVE_YEARS_LOADED.name)
         remove(EnvironmentKey.IS_NCD_MEDICAL_REVIEW_LOADED.name)
+        remove(EnvironmentKey.IS_FAMILY_PLANNING_LOADED.name)
         return true
     }
 

@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.data.DispensePrescriptionRequest
 import com.medtroniclabs.spice.data.DispensePrescriptionResponse
 import com.medtroniclabs.spice.data.DispenseUpdateRequest
 import com.medtroniclabs.spice.data.DispenseUpdateResponse
+import com.medtroniclabs.spice.data.FamilyPlanningMetaResponse
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
@@ -63,6 +64,9 @@ import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryResponse
 import com.medtroniclabs.spice.data.model.HivMetaResponse
 import com.medtroniclabs.spice.data.model.HivScreeningRequest
 import com.medtroniclabs.spice.data.model.HivScreeningResponse
+import com.medtroniclabs.spice.data.model.FamilyPlanningContraceptivesRequest
+import com.medtroniclabs.spice.data.model.FamilyPlanningCreateResponse
+import com.medtroniclabs.spice.data.model.FamilyPlanningSummaryResponse
 import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
@@ -351,8 +355,7 @@ interface ApiHelper {
     suspend fun createHivScreening(request:HivScreeningRequest) : Response<APIResponse<HivScreeningResponse>>
     suspend fun getHivScreeningDetails(request: HivScreeningResponse) : Response<APIResponse<HivCreateScreeningSummaryResponse>>
     suspend fun createHivSummary(request: HivMedicalReviewSummaryRequest) : Response<APIResponse<HivMedicalReviewSummaryResponse>>
-
-
-
-
+    suspend fun createFamilyPlanningMR(request: FamilyPlanningContraceptivesRequest): Response<APIResponse<FamilyPlanningCreateResponse>>
+    suspend fun getFamilyPlanningStaticData(): Response<APIResponse<FamilyPlanningMetaResponse>>
+    suspend fun getFamilyPlanningMRSummaryDetails(request: AboveFiveYearsSummaryRequest): Response<APIResponse<FamilyPlanningSummaryResponse>>
 }

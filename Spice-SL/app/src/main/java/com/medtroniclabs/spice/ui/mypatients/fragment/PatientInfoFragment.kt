@@ -18,7 +18,10 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_ddMMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.IsReferredScreen
+import com.medtroniclabs.spice.common.DefinedParams.MaritalStatus
+import com.medtroniclabs.spice.common.DefinedParams.Occupation
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.DefinedParams.familyPlanning
@@ -396,6 +399,9 @@ class PatientInfoFragment : BaseFragment() {
     }
 
     private fun commonAdapter(dataList: MutableList<Map<String, Any>>) {
+        val enteredAdapterValues = HashMap<String, Any>()
+        enteredAdapterValues[Occupation] = viewModel.occupation ?: ""
+        enteredAdapterValues[MaritalStatus] = viewModel.maritalStatus ?: ""
         val adapter =
             PatientInfoAdapter(
                 dataList,
@@ -436,8 +442,11 @@ class PatientInfoFragment : BaseFragment() {
                     viewModel.occupation = it
                 },
                 maritalStatus = {
-                    viewModel.maritalStatus = it
+                    if (!it.equals(DefaultID)){
+                        viewModel.maritalStatus = it
+                    }
                 },
+                resultValues = enteredAdapterValues,
                 presumptiveTbNo = {
                     showPresumptiveTbNo(it)
                 })

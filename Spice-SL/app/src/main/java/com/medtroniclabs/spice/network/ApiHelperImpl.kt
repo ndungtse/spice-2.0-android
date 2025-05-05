@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.data.DispensePrescriptionRequest
 import com.medtroniclabs.spice.data.DispensePrescriptionResponse
 import com.medtroniclabs.spice.data.DispenseUpdateRequest
 import com.medtroniclabs.spice.data.DispenseUpdateResponse
+import com.medtroniclabs.spice.data.FamilyPlanningMetaResponse
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
@@ -57,6 +58,9 @@ import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
+import com.medtroniclabs.spice.data.model.FamilyPlanningContraceptivesRequest
+import com.medtroniclabs.spice.data.model.FamilyPlanningCreateResponse
+import com.medtroniclabs.spice.data.model.FamilyPlanningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
 import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryResponse
@@ -816,5 +820,17 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun createBMI(bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.createBMI(bpAndWeightRequestModel)
+    }
+
+    override suspend fun createFamilyPlanningMR(request: FamilyPlanningContraceptivesRequest): Response<APIResponse<FamilyPlanningCreateResponse>> {
+        return apiService.createFamilyPlanningMR(request)
+    }
+
+    override suspend fun getFamilyPlanningStaticData(): Response<APIResponse<FamilyPlanningMetaResponse>> {
+        return apiService.getFamilyPlanningStaticData()
+    }
+
+    override suspend fun getFamilyPlanningMRSummaryDetails(request: AboveFiveYearsSummaryRequest): Response<APIResponse<FamilyPlanningSummaryResponse>> {
+        return apiService.getFamilyPlanningMRSummaryDetails(request)
     }
 }

@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.data.DispensePrescriptionRequest
 import com.medtroniclabs.spice.data.DispensePrescriptionResponse
 import com.medtroniclabs.spice.data.DispenseUpdateRequest
 import com.medtroniclabs.spice.data.DispenseUpdateResponse
+import com.medtroniclabs.spice.data.FamilyPlanningMetaResponse
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
@@ -57,6 +58,9 @@ import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
+import com.medtroniclabs.spice.data.model.FamilyPlanningContraceptivesRequest
+import com.medtroniclabs.spice.data.model.FamilyPlanningCreateResponse
+import com.medtroniclabs.spice.data.model.FamilyPlanningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
 import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryResponse
@@ -662,4 +666,12 @@ interface ApiService {
     @POST("/spice-service/medical-review/bmi/create")
     suspend fun createBMI(@Body bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>>
 
+    @POST("/spice-service/medical-review/family-planning/create")
+    suspend fun createFamilyPlanningMR(@Body request: FamilyPlanningContraceptivesRequest): Response<APIResponse<FamilyPlanningCreateResponse>>
+
+    @POST("/spice-service/static-data/meta-data/family-planning")
+    suspend fun getFamilyPlanningStaticData(): Response<APIResponse<FamilyPlanningMetaResponse>>
+
+    @POST("/spice-service/medical-review/family-planning/details")
+    suspend fun getFamilyPlanningMRSummaryDetails(@Body id: AboveFiveYearsSummaryRequest): Response<APIResponse<FamilyPlanningSummaryResponse>>
 }

@@ -3,42 +3,48 @@ package com.medtroniclabs.spice.ui.medicalreview.familyplan.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
+import android.widget.ScrollView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.SpiceLocationManager
+import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.databinding.ActivityFamilyPlanMedicalReviewBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
+import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
-import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsTreatmentSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.familyplan.fragment.ContraceptivesFragment
-import com.medtroniclabs.spice.ui.medicalreview.familyplan.fragment.FamilyPlanTreatmentFragment
+import com.medtroniclabs.spice.ui.medicalreview.familyplan.fragment.FamilyPlanningMRSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.familyplan.viewmodel.ContraceptivesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.familyplan.viewmodel.FamilyPlanViewModel
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.CLINICAL_NOTES
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.CONTRACEPTIVES_ITEMS
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.ClientType
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.OnClickListener {
+class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.OnClickListener,
+    OnDialogDismissListener {
     private lateinit var binding: ActivityFamilyPlanMedicalReviewBinding
     private val patientViewModel: PatientDetailViewModel by viewModels()
     private val chipItemViewModel: ClinicalNotesViewModel by viewModels()
@@ -66,8 +72,101 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
         }
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         initStaticDataCall()
+        attachObserver()
         setButtonClickListener()
         patientViewModel.setUserJourney(AnalyticsDefinedParams.FamilyPlanningMedicalReview)
+    }
+
+    private fun attachObserver() {
+        patientViewModel.patientDetailsLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+                        if (it) {
+                            onBackPressPopStack()
+                        }
+                    }
+                }
+            }
+            if (binding.refreshLayout.isRefreshing) {
+                binding.refreshLayout.isRefreshing = false
+            }
+        }
+
+        viewModel.familyPlanningCreateLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    if (connectivityManager.isNetworkAvailable()) {
+                        patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                            details.patientId?.let { id ->
+                                patientViewModel.getPatients(id)
+                            }
+                        }
+                    } else {
+                        showErrorDialogue(
+                            getString(R.string.error), getString(R.string.no_internet_error),
+                            isNegativeButtonNeed = false,
+                        ) {}
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+
+                    }
+                }
+            }
+        }
+
+        viewModel.summaryCreateResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+
+                    }
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    MedicalReviewSuccessDialogFragment.newInstance().show(
+                        supportFragmentManager,
+                        MedicalReviewSuccessDialogFragment.TAG
+                    )
+                }
+            }
+        }
     }
 
     private fun setButtonClickListener() {
@@ -79,11 +178,17 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
     }
 
     private fun initStaticDataCall() {
-        if (false) {
-            viewModel.getFamilyPlanStaticData()
-        } else {
-            initView()
+        if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_FAMILY_PLANNING_LOADED.name))) {
+            if (connectivityManager.isNetworkAvailable()) {
+                viewModel.getFamilyPlanStaticData(MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name)
+            } else {
+                showErrorDialogue(
+                    getString(R.string.error), getString(R.string.no_internet_error),
+                    isNegativeButtonNeed = false,
+                ) {}
+            }
         }
+        initView()
     }
 
     private fun initView() {
@@ -96,6 +201,10 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
         supportFragmentManager
             .setFragmentResultListener(CONTRACEPTIVES_ITEMS, this) { _, _ ->
                 enableSubmitBtn()
+            }
+        supportFragmentManager
+            .setFragmentResultListener(MedicalReviewDefinedParams.SUMMARY_ITEM, this) { _, _ ->
+                enableReferralDoneBtn()
             }
     }
 
@@ -143,7 +252,19 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
 
     override fun onDataLoaded(details: PatientListRespModel) {
         viewModel.memberId = details.memberId
-        initializeFragments()
+        viewModel.familyPlanningCreateLiveData.value?.data?.let {
+            viewModel.getFamilyPlanningSummaryDetails(
+                AboveFiveYearsSummaryRequest(
+                    id = it.encounterId,
+                    patientReference = it.patientReference,
+                    type = MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name
+                )
+            )
+            initializeSummaryFragment()
+            binding.nestedScrollViewID.fullScroll(ScrollView.FOCUS_UP)
+        } ?: kotlin.run {
+            initializeFragments()
+        }
     }
 
     private fun initializeFragments() {
@@ -160,10 +281,11 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
             MedicalReviewPatientDiagnosisFragment.newInstance(
                 isAnc = false,
                 isPnc = false,
-                isTB = true,
+                isTB = false,
                 patientId = intent.getStringExtra(DefinedParams.PatientId),
                 memberID = viewModel.memberId,
-                id = intent.getStringExtra(DefinedParams.ID)
+                id = intent.getStringExtra(DefinedParams.ID),
+                isFp = true
             )
         )
 
@@ -183,12 +305,50 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
     }
 
     override fun onClick(view: View?) {
-        when(view?.id){
-           binding.ivPrescription.id -> openPrescriptionActivity()
-           binding.ivInvestigation.id-> openInvestigationActivity()
+        when (view?.id) {
+            binding.ivPrescription.id -> openPrescriptionActivity()
+            binding.ivInvestigation.id -> openInvestigationActivity()
             binding.btnSubmit.id -> {
-                viewModel.isFamilyPlanSummary = true
                 validateInputRequest()
+            }
+
+            binding.btnRefer.id -> viewModel.familyPlanningCreateLiveData.value?.data?.let {
+                ReferPatientFragment.newInstance(
+                    MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name,
+                    it.patientReference,
+                    it.encounterId
+                )
+                    .show(
+                        supportFragmentManager,
+                        ReferPatientFragment.TAG
+                    )
+            }
+
+            binding.btnDone.id -> {
+                withLocationCheck({
+                    patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                        viewModel.familyPlanningCreateLiveData.value?.data
+                            ?.let { response ->
+                                if (connectivityManager.isNetworkAvailable()) {
+                                    response.encounterId?.let { submitEncounterId ->
+                                        response.patientReference?.let { submitPatientReferenceId ->
+                                            viewModel.familyPlanningSummaryCreate(
+                                                details,
+                                                submitEncounterId,
+                                                submitPatientReferenceId
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    showErrorDialogue(
+                                        getString(R.string.error),
+                                        getString(R.string.no_internet_error),
+                                        isNegativeButtonNeed = false,
+                                    ) {}
+                                }
+                            }
+                    }
+                })
             }
         }
     }
@@ -199,10 +359,25 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
             (R.id.contraceptivesContainer)
         ) as? ContraceptivesFragment
 
+        val clinicalNotesFragment = getFragmentById(
+            supportFragmentManager,
+            (R.id.familyPlanClinicalNotesContainer)
+        ) as? ClinicalNotesFragment
+
         conFragment?.let {
-            if(it.validInputs()){
-                patientViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
-                initializeSummaryFragment()
+            if (clinicalNotesFragment?.validateInput() == true) {
+                patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                    patientViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
+                    details.patientId?.let { id ->
+                        viewModel.createFamilyPlanningMR(
+                            details,
+                            contraceptivesViewModel.getContraceptivesResult(),
+                            patientViewModel.occupation,
+                            patientViewModel.maritalStatus,
+                            patientViewModel.encounterId
+                        )
+                    }
+                }
             }
         }
     }
@@ -227,13 +402,15 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
             )
         )
 
-        replaceFragmentInId<FamilyPlanTreatmentFragment>(
-           binding.familyPlanSummaryContainer.id,
-            tag = FamilyPlanTreatmentFragment::class.simpleName
+        replaceFragmentInId<FamilyPlanningMRSummaryFragment>(
+            binding.familyPlanSummaryContainer.id,
+            tag = FamilyPlanningMRSummaryFragment::class.simpleName
         )
         val bmiFragment = supportFragmentManager.findFragmentById(R.id.patientBMIContainer)
-        val contraceptivesFragment = supportFragmentManager.findFragmentById(R.id.contraceptivesContainer)
-        val clinicalNotesFragment = supportFragmentManager.findFragmentById(R.id.familyPlanClinicalNotesContainer)
+        val contraceptivesFragment =
+            supportFragmentManager.findFragmentById(R.id.contraceptivesContainer)
+        val clinicalNotesFragment =
+            supportFragmentManager.findFragmentById(R.id.familyPlanClinicalNotesContainer)
         bmiFragment?.let {
             supportFragmentManager.beginTransaction().remove(bmiFragment).commit()
         }
@@ -311,4 +488,27 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
         this@FamilyPlanMedicalReviewActivity.finish()
     }
 
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation()
+    }
+
+    private fun getCurrentLocation() {
+        val locationManager = SpiceLocationManager(this)
+        locationManager.getCurrentLocation {
+            viewModel.lastLocation = it
+        }
+    }
+
+    private fun enableReferralDoneBtn() {
+        binding.btnDone.isEnabled = getSummaryStatus()
+    }
+
+    private fun getSummaryStatus(): Boolean {
+        return viewModel.nextFollowupDate != null
+    }
+
+    override fun onDialogDismissListener(isFinish: Boolean) {
+        startActivityWithoutSplashScreen()
+    }
 }

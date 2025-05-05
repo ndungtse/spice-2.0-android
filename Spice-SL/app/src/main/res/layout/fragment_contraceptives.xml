@@ -57,8 +57,8 @@
                         android:id="@+id/llContraceptiveRoot"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="@dimen/_8ssp"
                         android:layout_marginStart="@dimen/_16ssp"
+                        android:layout_marginTop="@dimen/_8ssp"
                         android:layout_marginEnd="@dimen/_16ssp"
                         android:layout_marginBottom="@dimen/_8sdp"
                         android:orientation="vertical">
@@ -97,8 +97,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="@dimen/_4sdp"
-                            android:visibility="gone"
-                            android:text="@string/post_partum" />
+                            android:text="@string/post_partum"
+                            android:visibility="gone" />
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/PostPartumRoot"
@@ -138,6 +138,7 @@
                             android:orientation="horizontal">
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
+
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/etCombinedOralContraceptiveComments"
                             style="@style/Form_Input_Style_BG"
@@ -148,9 +149,10 @@
                             android:layout_marginBottom="@dimen/_8sdp"
                             android:gravity="start|top"
                             android:hint="@string/type_notes"
-                            android:visibility="gone"
                             android:inputType="textCapWords|textMultiLine"
-                            android:padding="@dimen/_8sdp" />
+                            android:padding="@dimen/_8sdp"
+                            android:visibility="gone" />
+
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvContraceptivesErrorMessage"
                             style="@style/TextStyle_Error_14"
@@ -178,6 +180,7 @@
                             android:orientation="horizontal">
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
+
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/etProgestinOnlyOralsComments"
                             style="@style/Form_Input_Style_BG"
@@ -188,9 +191,10 @@
                             android:layout_marginBottom="@dimen/_8sdp"
                             android:gravity="start|top"
                             android:hint="@string/type_notes"
-                            android:visibility="gone"
                             android:inputType="textCapWords|textMultiLine"
-                            android:padding="@dimen/_8sdp" />
+                            android:padding="@dimen/_8sdp"
+                            android:visibility="gone" />
+
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvProgestinErrorMessage"
                             style="@style/TextStyle_Error_14"
@@ -206,25 +210,25 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="@dimen/_4sdp"
-                            android:visibility="gone"
-                            android:text="@string/enter_quantity" />
+                            android:text="@string/enter_quantity"
+                            android:visibility="gone" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/etQuantity"
+                            style="@style/Form_Input_Style_BG"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_4sdp"
-                            style="@style/Form_Input_Style_BG"
-                            android:inputType="numberDecimal"
-                            android:imeOptions="actionDone"
-                            android:maxLength="4"
-                            android:focusable="true"
-                            android:focusableInTouchMode="true"
-                            android:visibility="gone"
                             android:layout_marginStart="@dimen/_4sdp"
+                            android:layout_marginTop="@dimen/_4sdp"
                             android:layout_marginEnd="@dimen/_4sdp"
                             android:layout_marginBottom="@dimen/_8sdp"
-                            android:padding="@dimen/_8sdp" />
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:imeOptions="actionDone"
+                            android:inputType="numberDecimal"
+                            android:maxLength="4"
+                            android:padding="@dimen/_8sdp"
+                            android:visibility="gone" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvQuantityErrorMessage"
@@ -241,8 +245,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="@dimen/_4sdp"
-                            android:textSize="@dimen/_15ssp"
-                            android:text="@string/injectables" />
+                            android:text="@string/injectables"
+                            android:textSize="@dimen/_15ssp" />
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/InjectableRoot"
@@ -253,6 +257,7 @@
                             android:orientation="horizontal">
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
+
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/etOtherInjectableComments"
                             style="@style/Form_Input_Style_BG"
@@ -263,9 +268,10 @@
                             android:layout_marginBottom="@dimen/_8sdp"
                             android:gravity="start|top"
                             android:hint="@string/type_notes"
-                            android:visibility="gone"
                             android:inputType="textCapWords|textMultiLine"
-                            android:padding="@dimen/_8sdp" />
+                            android:padding="@dimen/_8sdp"
+                            android:visibility="gone" />
+
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvInjectablesErrorMessage"
                             style="@style/TextStyle_Error_14"
@@ -278,8 +284,8 @@
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
                             android:layout_marginStart="@dimen/_4sdp"
+                            android:gravity="center_vertical"
                             android:orientation="horizontal">
 
                             <androidx.appcompat.widget.AppCompatTextView
@@ -287,8 +293,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:text="@string/iucd"
-                                android:layout_marginEnd="@dimen/_16ssp"/>
+                                android:layout_marginEnd="@dimen/_16ssp"
+                                android:text="@string/iucd" />
 
                             <com.google.android.material.chip.ChipGroup
                                 android:id="@+id/tagViewIUCD"
@@ -314,11 +320,11 @@
                             style="@style/TextStyle_Regular_14_Size_Title_color"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="@dimen/_15ssp"
                             android:layout_marginStart="@dimen/_4sdp"
-                            android:layout_marginBottom="@dimen/_4sdp"
                             android:layout_marginEnd="@dimen/_4sdp"
-                            android:text="@string/implants" />
+                            android:layout_marginBottom="@dimen/_4sdp"
+                            android:text="@string/implants"
+                            android:textSize="@dimen/_15ssp" />
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/ImplantsRoot"
@@ -330,6 +336,7 @@
                             android:orientation="horizontal">
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
+
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/etOtherImplantsComments"
                             style="@style/Form_Input_Style_BG"
@@ -340,9 +347,10 @@
                             android:layout_marginBottom="@dimen/_8sdp"
                             android:gravity="start|top"
                             android:hint="@string/type_notes"
-                            android:visibility="gone"
                             android:inputType="textCapWords|textMultiLine"
-                            android:padding="@dimen/_8sdp" />
+                            android:padding="@dimen/_8sdp"
+                            android:visibility="gone" />
+
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvImplantErrorMessage"
                             style="@style/TextStyle_Error_14"
@@ -426,6 +434,7 @@
                             android:orientation="horizontal">
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
+
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/etOtherPermanentMethodComments"
                             style="@style/Form_Input_Style_BG"
@@ -436,9 +445,10 @@
                             android:layout_marginBottom="@dimen/_8sdp"
                             android:gravity="start|top"
                             android:hint="@string/type_notes"
-                            android:visibility="gone"
                             android:inputType="textCapWords|textMultiLine"
-                            android:padding="@dimen/_8sdp" />
+                            android:padding="@dimen/_8sdp"
+                            android:visibility="gone" />
+
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvPermanentMethodErrorMessage"
                             style="@style/TextStyle_Error_14"

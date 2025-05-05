@@ -70,7 +70,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             return MedicalReviewPatientDiagnosisFragment()
         }
 
-        fun newInstance(isAnc: Boolean,isPnc:Boolean=false, patientId: String?,memberID: String?, id: String?,isTB:Boolean = false): MedicalReviewPatientDiagnosisFragment {
+        fun newInstance(isAnc: Boolean,isPnc:Boolean=false, patientId: String?,memberID: String?, id: String?,isTB:Boolean = false, isFp:Boolean = false): MedicalReviewPatientDiagnosisFragment {
             val fragment = MedicalReviewPatientDiagnosisFragment()
             fragment.arguments = Bundle().apply {
                 putBoolean(DefinedParams.PregnancyANC, isAnc)
@@ -79,6 +79,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 putString(DefinedParams.PatientId, patientId)
                 putString(DefinedParams.MemberID, memberID)
                 putString(DefinedParams.ID, id)
+                putBoolean(DefinedParams.FP, isFp)
             }
             return fragment
         }
@@ -103,7 +104,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name
             } else if (isTb()) {
                 MedicalReviewTypeEnums.TB.name
-            } else {
+            } else if (isFp()){
+                MedicalReviewTypeEnums.FP.name
+            }else {
                 it.getString(MedicalReviewTypeEnums.DiagnosisType.name)
             }
         } ?: ""
@@ -134,12 +137,13 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
     private fun attachListeners() {
         val isTb = isTb()
-        val progressBar = if (isTb) binding.tbWeightPageProgress else binding.pageProgress
-        val addWeightText = if (isTb) binding.tvTbAddWeight else binding.tvAddWeight
-        val weightContainer = if (isTb) binding.clTbWeight else binding.clWeight
+        val isFp = isFp()
+        val progressBar = if (isTb) binding.tbWeightPageProgress else if(isFp) binding.fpWeightPageProgress else binding.pageProgress
+        val addWeightText = if (isTb) binding.tvTbAddWeight else if(isFp) binding.tvFpAddWeight else binding.tvAddWeight
+        val weightContainer = if (isTb) binding.clTbWeight else if(isFp) binding.clFpWeight else binding.clWeight
         val retryButton =
-            if (isTb) binding.retryButtonTbWeight else binding.retryButtonWeight
-        val weightTextView = if (isTb) binding.tvTbWeight else binding.tvWeightValue
+            if (isTb) binding.retryButtonTbWeight else if(isFp) binding.retryButtonFpWeight else binding.retryButtonWeight
+        val weightTextView = if (isTb) binding.tvTbWeight else if(isFp) binding.tvFpWeight else binding.tvWeightValue
 
         viewModel.getWeight.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
@@ -181,12 +185,13 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
         viewModel.getBloodPressure.observe(viewLifecycleOwner) { resourceState ->
             val isTb = isTb()
-            val progressBar = if (isTb) binding.tbBpPageProgress else binding.pageProgressBp
-            val addBPText = if (isTb) binding.tvTbAddBp else binding.tvAddBp
-            val bpContainer = if (isTb) binding.clTbBp else binding.clBp
+            val isFp = isFp()
+            val progressBar = if (isTb) binding.tbBpPageProgress else if(isFp) binding.fpBpPageProgress else binding.pageProgressBp
+            val addBPText = if (isTb) binding.tvTbAddBp else if(isFp) binding.tvFpAddBp else binding.tvAddBp
+            val bpContainer = if (isTb) binding.clTbBp else if(isFp) binding.clFpBp else binding.clBp
             val retryButton =
-                if (isTb) binding.retryButtonTbBp else binding.retryButtonBp
-            val bpTextView = if (isTb) binding.tvTbBp else binding.tvBpValue
+                if (isTb) binding.retryButtonTbBp else if(isFp) binding.retryButtonFpBp else binding.retryButtonBp
+            val bpTextView = if (isTb) binding.tvTbBp else if(isFp) binding.tvFpBp else binding.tvBpValue
 
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -221,38 +226,73 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         viewModel.getHeight.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
-                    handleLoading(
-                        binding.tbHeightPageProgress,
-                        binding.tvAddHeight,
-                        binding.clHeight
-                    )
+                    if (isFp()) {
+                        handleLoading(
+                            binding.fpHeightPageProgress,
+                            binding.tvAddHeightFP,
+                            binding.clHeightFP
+                        )
+                    } else {
+                        handleLoading(
+                            binding.tbHeightPageProgress,
+                            binding.tvAddHeight,
+                            binding.clHeight
+                        )
+                    }
                 }
 
                 ResourceState.SUCCESS -> {
-                    handleSuccess(
-                        binding.tbHeightPageProgress,
-                        binding.retryButtonTbHeightConfirm,
-                        binding.clHeight,
-                        binding.tvAddHeight
-                    )
-                    resourceState.data?.let {
-                        binding.tvHeightLbl.text = getString(R.string.height)
-                        binding.tvHeight.text =
-                            MotherNeonateUtil.convertHeight(
-                                it.height,
-                                requireContext()
-                            )
+                    if (isFp()){
+                        handleSuccess(
+                            binding.fpHeightPageProgress,
+                            binding.retryButtonFPHeightConfirm,
+                            binding.clHeightFP,
+                            binding.tvAddHeightFP
+                        )
+                        resourceState.data?.let {
+                            binding.tvHeightLblFP.text = getString(R.string.height)
+                            binding.tvHeightFP.text =
+                                MotherNeonateUtil.convertHeight(
+                                    it.height,
+                                    requireContext()
+                                )
+                        }
+                    } else {
+                        handleSuccess(
+                            binding.tbHeightPageProgress,
+                            binding.retryButtonTbHeightConfirm,
+                            binding.clHeight,
+                            binding.tvAddHeight
+                        )
+                        resourceState.data?.let {
+                            binding.tvHeightLbl.text = getString(R.string.height)
+                            binding.tvHeight.text =
+                                MotherNeonateUtil.convertHeight(
+                                    it.height,
+                                    requireContext()
+                                )
+                        }
                     }
                 }
 
                 ResourceState.ERROR -> {
-                    handleError(
-                        binding.tbHeightPageProgress,
-                        binding.tvAddHeight,
-                        binding.clHeight,
-                        binding.retryButtonTbHeightConfirm,
-                        binding.tvHeight
-                    )
+                    if (isFp()){
+                        handleError(
+                            binding.fpHeightPageProgress,
+                            binding.tvAddHeightFP,
+                            binding.clHeightFP,
+                            binding.retryButtonFPHeightConfirm,
+                            binding.tvHeightFP
+                        )
+                    } else {
+                        handleError(
+                            binding.tbHeightPageProgress,
+                            binding.tvAddHeight,
+                            binding.clHeight,
+                            binding.retryButtonTbHeightConfirm,
+                            binding.tvHeight
+                        )
+                    }
                 }
             }
         }
@@ -260,38 +300,73 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         viewModel.getBmi.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
-                    handleLoading(
-                        binding.tbBMIPageProgress,
-                        binding.tvBmiHistory,
-                        binding.clBmi
-                    )
+                    if (isFp()){
+                        handleLoading(
+                            binding.fpBMIPageProgress,
+                            binding.tvFpBmiHistory,
+                            binding.clFpBmi
+                        )
+                    } else {
+                        handleLoading(
+                            binding.tbBMIPageProgress,
+                            binding.tvBmiHistory,
+                            binding.clBmi
+                        )
+                    }
                 }
 
                 ResourceState.SUCCESS -> {
-                    handleSuccess(
-                        binding.tbBMIPageProgress,
-                        binding.retryButtonTbBMI,
-                        binding.clBmi,
-                        binding.tvBmiHistory
-                    )
-                    resourceState.data?.let {
-                        binding.tvBmiLbl.text = getString(R.string.bmi)
-                        binding.tvBmi.text =
-                            MotherNeonateUtil.convertBmi(
-                                it.bmi,
-                                requireContext()
-                            )
+                    if (isFp()) {
+                        handleSuccess(
+                            binding.fpBMIPageProgress,
+                            binding.retryButtonFpBMI,
+                            binding.clFpBmi,
+                            binding.tvFpBmiHistory
+                        )
+                        resourceState.data?.let {
+                            binding.tvFpBmiLbl.text = getString(R.string.bmi)
+                            binding.tvFpBmi.text =
+                                MotherNeonateUtil.convertBmi(
+                                    it.bmi,
+                                    requireContext()
+                                )
+                        }
+                    } else {
+                        handleSuccess(
+                            binding.tbBMIPageProgress,
+                            binding.retryButtonTbBMI,
+                            binding.clBmi,
+                            binding.tvBmiHistory
+                        )
+                        resourceState.data?.let {
+                            binding.tvBmiLbl.text = getString(R.string.bmi)
+                            binding.tvBmi.text =
+                                MotherNeonateUtil.convertBmi(
+                                    it.bmi,
+                                    requireContext()
+                                )
+                        }
                     }
                 }
 
                 ResourceState.ERROR -> {
-                    handleError(
-                        binding.tbBMIPageProgress,
-                        binding.tvBmiHistory,
-                        binding.clBmi,
-                        binding.retryButtonTbBMI,
-                        binding.tvBmi
-                    )
+                    if (isFp()){
+                        handleError(
+                            binding.fpBMIPageProgress,
+                            binding.tvFpBmiHistory,
+                            binding.clFpBmi,
+                            binding.retryButtonFpBMI,
+                            binding.tvFpBmi
+                        )
+                    } else {
+                        handleError(
+                            binding.tbBMIPageProgress,
+                            binding.tvBmiHistory,
+                            binding.clBmi,
+                            binding.retryButtonTbBMI,
+                            binding.tvBmi
+                        )
+                    }
                 }
             }
         }
@@ -338,6 +413,10 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
        return arguments?.getBoolean(DefinedParams.TB, false) ?: false
     }
 
+    private fun isFp():Boolean {
+        return arguments?.getBoolean(DefinedParams.FP, false) ?: false
+    }
+
     private fun handleFlow() {
         with(binding) {
             val isAnc = arguments?.getBoolean(DefinedParams.PregnancyANC, false)
@@ -349,9 +428,13 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                ancPncFlow(cardAddWeight,cardBloodPressure)
             }
             tvAddWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+            tvFpAddWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
             tvAddBp.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+            tvFpAddBp.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
             retryButtonBp.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+            retryButtonFpBp.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
             retryButtonWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+            retryButtonFpWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
             cardDiagnosis.visible()
             cardPatientStatus.visible()
             val isTb = isTb()
@@ -378,6 +461,24 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 tvBmiHistory.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
             }
             tbLl.setVisible(isTb)
+            if (isFp()){
+                commonLl.gone()
+                tbLl.gone()
+                familyPlanningLl.visible()
+                binding.tvHeightLblFP.text = getString(R.string.height)
+                tvFpAddBp.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+                tvFpAddWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+                viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
+                viewModel.fetchBloodPressure(MotherNeonateAncRequest(memberId = getMemberId()))
+                viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
+                viewModel.fetchBmi(MotherNeonateAncRequest(memberId = getMemberId()))
+                retryButtonFpBp.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+                retryButtonFpWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+                retryButtonFPHeightConfirm.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+                retryButtonFpBMI.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+                tvAddHeightFP.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+                tvFpBmiHistory.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+            }
         }
     }
 
@@ -393,16 +494,16 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     }
     override fun onClick(v: View?) {
         when (v?.id) {
-            binding.tvAddWeight.id, binding.tvTbAddWeight.id -> showAddWeightDialog()
-            binding.tvAddBp.id, binding.tvTbAddBp.id -> showAddBpDialog()
+            binding.tvAddWeight.id, binding.tvTbAddWeight.id, binding.tvFpAddWeight.id -> showAddWeightDialog()
+            binding.tvAddBp.id, binding.tvTbAddBp.id, binding.tvFpAddBp.id -> showAddBpDialog()
             binding.tvDiagnosisConfirm.id -> showDiagnosisDialog()
             binding.tvAddSiteDisease.id -> showDiagnosisDialog()
-            binding.retryButtonBp.id, binding.retryButtonTbBp.id -> retryFetchingData(true)
-            binding.retryButtonWeight.id, binding.retryButtonTbWeight.id -> retryFetchingData(false)
-            binding.tvAddHeight.id -> showAddHeightDialog()
-            binding.retryButtonTbHeightConfirm.id -> retryFetchingDataForHeight()
-            binding.tvBmiHistory.id -> showBmiDialog()
-            binding.retryButtonTbBMI.id -> retryFetchingDataForBMI()
+            binding.retryButtonBp.id, binding.retryButtonTbBp.id, binding.retryButtonFpBp.id -> retryFetchingData(true)
+            binding.retryButtonWeight.id, binding.retryButtonTbWeight.id, binding.retryButtonFpWeight.id -> retryFetchingData(false)
+            binding.tvAddHeight.id, binding.tvAddHeightFP.id -> showAddHeightDialog()
+            binding.retryButtonTbHeightConfirm.id, binding.retryButtonFPHeightConfirm.id -> retryFetchingDataForHeight()
+            binding.tvBmiHistory.id, binding.tvFpBmiHistory.id -> showBmiDialog()
+            binding.retryButtonTbBMI.id, binding.retryButtonFpBMI.id -> retryFetchingDataForBMI()
             binding.tvAddPatientType.id -> showPatientType()
         }
     }

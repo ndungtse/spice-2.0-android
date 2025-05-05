@@ -46,5 +46,18 @@ enum class MedicalReviewTypeEnums{
     population_type,
     hiv_test_durations,
     entry_point,
-    HIV_REVIEW
+    HIV_REVIEW,
+    FP,
+    FAMILY_PLANNING,
+    FAMILY_PLANNING_REVIEW,
+    client_type,
+    post_partum,
+    combined_oral_contraceptive,
+    progestin,
+    injectables,
+    implants,
+    condoms,
+    emergency_contraceptive,
+    permanent_method,
+    iucd
 }
