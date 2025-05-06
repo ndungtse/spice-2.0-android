@@ -92,6 +92,9 @@ data class HouseHoldMember(
     var assessments = listOf<Assessment>()
 
     @Ignore
+    var rxBuddies = listOf<RxBuddy>()
+
+    @Ignore
     var children: List<HouseHoldMember>? = null
 
     fun toHouseholdMemberEntity(hhId: Long?, status: OfflineSyncStatus, id: Long = 0): HouseholdMemberEntity {

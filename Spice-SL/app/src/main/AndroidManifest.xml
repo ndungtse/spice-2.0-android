@@ -26,7 +26,7 @@
         <activity
             android:name=".ui.medicalreview.familyplan.activity.FamilyPlanMedicalReviewActivity"
             android:exported="false"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="adjustPan"/>
 
         <activity

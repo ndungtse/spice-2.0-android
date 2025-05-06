@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
@@ -20,6 +21,7 @@ import com.medtroniclabs.spice.ncd.screening.utils.SignatureRequestBody
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.OfflineSyncRepository
+import com.medtroniclabs.spice.repo.RxBuddyRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.delay
@@ -31,6 +33,7 @@ class GetSyncStatusWorker @AssistedInject constructor(
     @Assisted userParameter: WorkerParameters,
     val roomHelper: RoomHelper,
     val offlineSyncRepository: OfflineSyncRepository,
+    val rxBuddyRepository: RxBuddyRepository,
     private val screeningRepository: ScreeningRepository,
     private val assessmentRepository: AssessmentRepository
 ) : CoroutineWorker(context, userParameter) {
@@ -40,6 +43,7 @@ class GetSyncStatusWorker @AssistedInject constructor(
 
     private val retryCount = 15 // 1 (1*4 - try) initial Call + 3 (3*4 - try) retry
     private val timeDelayForPolling = (45 * 1000L) // 45 seconds once
+    private val syncDelay = 10 * 1000L // 40 Sec
     private val ncdRetry = 3
 
     override suspend fun doWork(): Result {
@@ -59,10 +63,23 @@ class GetSyncStatusWorker @AssistedInject constructor(
                 }
 
                 if (isAllEntitiesSynced) {
+                    SecuredPreference.remove(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
+                    /*
+                    * Rx Buddy Sync for new household
+                    * */
+                    /*val unSyncedRxBuddyRegister = rxBuddyRepository.getUnSyncedRxBuddyRegisterCount()
+                    if (unSyncedRxBuddyRegister > 0) {
+                        val rxBuddyRequestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex(OfflineConstant.SYNC_MODE_AUTOMATIC)
+                        if (!rxBuddyRequestIds.isNullOrEmpty()) {
+                            delay(syncDelay)
+                            offlineSyncRepository.getSyncStatusForOffline(rxBuddyRequestIds[0])
+
+                        }
+                    }*/
+
                     /*Upload images here*/
                     offlineSyncRepository.uploadAllSignatures()
 
-                    SecuredPreference.remove(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
                     val villageIds = roomHelper.getAllVillageIds()
                     val lastSyncedAt =
                         SecuredPreference.getString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)

@@ -67,8 +67,10 @@ interface HouseholdDAO {
 
     @Query("UPDATE HouseHold SET no_of_people =:newNoOfPeople, sync_status =:syncStatus, updated_at =:updatedAt WHERE id =:householdId")
     suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int, syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis())
-    @Query("SELECT hh.*, ve.name as villageName FROM HouseHold as hh INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE hh.sync_status IN (:status)")
-    suspend fun getAllUnSyncedHouseHolds(status: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)): List<HouseHold>
+
+    @Query("SELECT hh.*, ve.name as villageName FROM HouseHold as hh INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE hh.id NOT IN (:hhIds) AND hh.sync_status IN (:status)")
+    suspend fun getAllUnSyncedHouseHolds(hhIds: List<String>, status: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)): List<HouseHold>
+
     @RawQuery
     suspend fun updateFhirId(query: SimpleSQLiteQuery) : Long
 
@@ -91,4 +93,10 @@ interface HouseholdDAO {
 
     @Query("UPDATE Household SET head_phone_number = :phoneNumber, head_phone_number_category = :phoneNumberCategory,  sync_status =:syncStatus, updated_at =:updatedAt WHERE id = :id")
     fun updateHeadPhoneNumber(id: Long, phoneNumber: String, phoneNumberCategory: String, syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis())
-   }
+
+
+    @Query("SELECT hh.*, ve.name as villageName FROM HouseHold as hh INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id INNER JOIN HouseholdMember as hhm ON hh.id = hhm.household_id WHERE hh.fhir_id IS NULL AND hhm.id = :hhmId AND hh.sync_status IN (:status)")
+    suspend fun getUnSyncedHouseHoldByMemberId(hhmId: Long, status: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)): HouseHold?
+
+
+}

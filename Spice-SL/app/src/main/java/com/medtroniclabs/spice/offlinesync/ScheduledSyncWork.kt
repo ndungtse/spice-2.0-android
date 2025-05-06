@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.ncd.followup.repo.NCDFollowUpRepo
 import com.medtroniclabs.spice.repo.OfflineSyncRepository
+import com.medtroniclabs.spice.repo.RxBuddyRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.delay
@@ -22,6 +23,7 @@ class ScheduledSyncWork @AssistedInject constructor(
     @Assisted userParameter: WorkerParameters,
     val roomHelper: RoomHelper,
     val offlineSyncRepository: OfflineSyncRepository,
+    val rxBuddyRepository: RxBuddyRepository,
     private val followUpRepo: NCDFollowUpRepo,
 ) : CoroutineWorker(context, userParameter) {
 
@@ -142,6 +144,26 @@ class ScheduledSyncWork @AssistedInject constructor(
             if (!getSyncStatus()) {
                 return false
             }
+
+            /*
+            * Rx Buddy Sync for new household
+            * */
+            /*val unSyncedRxBuddyRegister = rxBuddyRepository.getUnSyncedRxBuddyRegisterCount()
+            if (unSyncedRxBuddyRegister > 0) {
+                val rxBuddyRequestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex(OfflineConstant.SYNC_MODE_AUTOMATIC)
+                if (!rxBuddyRequestIds.isNullOrEmpty()) {
+                    SecuredPreference.saveStringArray(
+                        SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name,
+                        rxBuddyRequestIds.toTypedArray()
+                    )
+
+                    // Get Status for new request id
+                    delay(syncDelay)
+                    if (!getSyncStatus()) {
+                        return false
+                    }
+                }
+            }*/
 
             /*Upload images here*/
             offlineSyncRepository.uploadAllSignatures()

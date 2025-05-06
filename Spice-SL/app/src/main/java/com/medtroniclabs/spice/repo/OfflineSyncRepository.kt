@@ -38,6 +38,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.RxBuddy
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyFollowUp
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyMember
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyRegister
+import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyRegisterDetail
 import com.medtroniclabs.spice.data.offlinesync.model.SyncEntityList
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.offlinesync.model.TreatmentDetails
@@ -280,6 +281,14 @@ class OfflineSyncRepository @Inject constructor(
         val hhMapping = insertHouseholds(requestInitialDownload.households)
         insertHouseholdMembers(requestInitialDownload.members, hhMapping)
 
+        /*
+        * Query to update household no of people mismatch
+        * */
+        roomHelper.getHouseholdsWithMemberCountsExceeding().forEach { item ->
+            roomHelper.updateHeadCount(item.id, item.hhmCount)
+        }
+
+
         // List of changes for Followup incremental
         // 1. Delete All Followup where Followup id is null and SyncStatus is InProgress -> Because it is created from Mobile
         // 2. Update record when sync status is Not NotSynced
@@ -331,7 +340,7 @@ class OfflineSyncRepository @Inject constructor(
         }
 
         /*Save Treatment details*/
-        requestInitialDownload.treatmentDetails?.let {
+        requestInitialDownload.treatmentDetails.let {
             insertOrUpdateTreatmentDetails(it)
         }
 
@@ -352,10 +361,10 @@ class OfflineSyncRepository @Inject constructor(
             requestInitialDownload.lastSyncTime)
     }
 
-    private suspend fun insertOrUpdateTreatmentDetails(treatmentDetails: List<TreatmentDetails>) {
+    private suspend fun insertOrUpdateTreatmentDetails(treatmentDetails: List<TreatmentDetails>?) {
         val gson = Gson()
         roomHelper.deleteAllTreatmentDetails()
-        treatmentDetails.forEach { treatmentDetail ->
+        treatmentDetails?.forEach { treatmentDetail ->
             if (treatmentDetail.isTbConfirmed == true) {
                 val prescriptionList = gson.toJson(treatmentDetail.prescriptions)
                 val entity = TreatmentDetailsEntity(
@@ -371,36 +380,59 @@ class OfflineSyncRepository @Inject constructor(
                 roomHelper.insertTreatmentDetails(entity)
             }
         }
+
+        /*Only for Testing*/
+        val memberFhirIds = listOf("186564", "186566", "186568", "186570", "186572")
+        memberFhirIds.forEach { memberId ->
+            val prescriptionList = "[{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Moxifloxacin\",\"prescribedDays\":30},{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Linezolid\",\"prescribedDays\":30},{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Pretomanid\",\"prescribedDays\":30},{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Bedaquiline\",\"prescribedDays\":30},{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Dolo\",\"prescribedDays\":15}]"
+            val entity = TreatmentDetailsEntity(
+                memberId = memberId,
+                type = TB_MENU_ID.lowercase(),
+                treatmentStartDate = "2025-04-28T07:41:19+00:00",
+                diagnoses = "Drug Sensitive TB",
+                diagnosedDate = "2025-04-28T07:43:17+00:00",
+                prescriptions = prescriptionList,
+                tbConfirmationDate = "2025-04-28T00:00:00+00:00"
+            )
+
+            roomHelper.insertTreatmentDetails(entity)
+
+        }
+
     }
 
     private suspend fun insertOrUpdateRxBuddyData(rxBuddies: List<ResponseRxBuddy>) {
-        val disableIds = mutableListOf<Long>()
-        rxBuddies.forEach { item ->
-            if (item.isActive) {
-                val registry = item.registry
-                val rxBuddy = RxBuddyDetails(
-                    id = 0,
-                    rxBuddyId = item.id,
-                    patientMemberId = item.patientMemberId,
-                    relationship = registry.relationShip,
-                    isMonitorSheetProvider = registry.isMonitorSheetProvided,
-                    nextVisitDate = "",
-                    otherRelationship = registry.otherRelationship
-                )
+        val disableIds = rxBuddies.mapNotNull { item ->
+            if (!item.isActive) return@mapNotNull item.id
 
+            val registry = item.registry
+            val rxBuddy = RxBuddyDetails(
+                id = 0,
+                rxBuddyId = item.id,
+                patientMemberId = item.patientMemberId,
+                relationship = registry.relationShip,
+                isMonitorSheetProvider = registry.isMonitorSheetProvided,
+                nextVisitDate = "",
+                otherRelationship = registry.otherRelationship
+            ).apply {
                 if (item.type == RX_BUDDY_TYPE_HOUSEHOLD_MEMBER && registry.householdMemberId != null) {
-                    rxBuddy.householdMemberId =
-                        roomHelper.getHouseholdMemberIdByFhirId(registry.householdMemberId)
+                    val hhmWithStatus = roomHelper.getHouseholdMemberIdAndStatusByFhirId(registry.householdMemberId!!)
+                        ?: return@mapNotNull item.id
+                    if (hhmWithStatus.isActive) {
+                        householdMemberId = hhmWithStatus.id
+                    } else {
+                        return@mapNotNull item.id
+                    }
                 } else {
-                    rxBuddy.name = registry.rxBuddyDetails?.name
-                    rxBuddy.phoneNumber = registry.rxBuddyDetails?.phoneNumber
+                    name = registry.rxBuddyDetails?.name
+                    phoneNumber = registry.rxBuddyDetails?.phoneNumber
                 }
-
-                roomHelper.insertOrUpdateRxBuddyFromBE(rxBuddy)
-            } else {
-                disableIds.add(item.id)
             }
+
+            roomHelper.insertOrUpdateRxBuddyFromBE(rxBuddy)
+            null // No need to disable
         }
+
         roomHelper.deleteDisableRxBuddies(disableIds)
     }
 
@@ -662,7 +694,9 @@ class OfflineSyncRepository @Inject constructor(
     private suspend fun formatMemberForPnc(
         input: List<HouseHoldMember>,
         memberIds: MutableList<String>,
-        assessmentIds: MutableList<String>
+        assessmentIds: MutableList<String>,
+        rxBuddyRegisterIds : MutableList<Long>,
+        rxBuddyFollowUpIds: MutableList<Long>
     ): List<HouseHoldMember> {
         val motherIds = mutableSetOf<String>()
 
@@ -672,7 +706,9 @@ class OfflineSyncRepository @Inject constructor(
                 hhm.isChild = true
                 motherIds.add(it)
             }
-            hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.referenceId!!.toLong())
+            hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.referenceId.toLong())
+            // Need to Add Rx Buddy Register
+            hhm.rxBuddies = getRxBuddiesForHHM(hhm.referenceId.toLong(), rxBuddyRegisterIds, rxBuddyFollowUpIds)
             assessmentIds.addAll(hhm.assessments.map { it.referenceId.toString() })
         }
 
@@ -696,6 +732,83 @@ class OfflineSyncRepository @Inject constructor(
         return input.filter { !childIds.contains(it.referenceId) }
     }
 
+    private suspend fun getRxBuddiesForHHM(
+        hhmId: Long,
+        rxBuddyRegisterIds: MutableList<Long>,
+        rxBuddyFollowUpIds: MutableList<Long>,
+    ): List<RxBuddy> {
+        val rxBuddies = mutableListOf<RxBuddy>()
+        val rxBuddyRegisters = roomHelper.getAllUnSyncedRxBuddyDetailWithHHM(hhmId, rxBuddyRegisterIds)
+
+        rxBuddyRegisters.forEach { rx ->
+            rxBuddies.add(getRxBuddy(rxBuddyRegisterIds, rxBuddyFollowUpIds, rx, true, null))
+        }
+
+        return rxBuddies
+    }
+
+    private suspend fun getRxBuddy(
+        rxBuddyRegisterIds: MutableList<Long>,
+        rxBuddyFollowUpIds: MutableList<Long>,
+        rx: RxBuddyRegisterDetail,
+        isForHouseholdMember: Boolean,
+        rxBuddyFhirId: String? = null
+    ): RxBuddy {
+        rxBuddyRegisterIds.add(rx.id)
+
+        val register = RxBuddyRegister(
+            referenceId = rx.id,
+            relationShip = rx.relationship,
+            otherRelationship = rx.otherRelationship,
+            isMonitorSheetProvided = rx.isMonitorSheetProvider,
+            nextVisitDate = rx.nextVisitDate,
+            followUpId = rx.followUpId,
+            latitude = rx.latitude,
+            longitude = rx.longitude,
+            provenance = ProvanceDto(modifiedDate = rx.updatedAt.convertToUtcDateTime())
+        )
+
+        if (!isForHouseholdMember) {
+            rxBuddyFhirId?.let {
+                register.householdMemberId = it
+            } ?: run {
+                register.rxBuddyDetails = RxBuddyMember(rx.name, rx.phoneNumber)
+            }
+        }
+
+        // Follow up along with register
+        val followUpList = mutableListOf<RxBuddyFollowUp>()
+        val followUps = roomHelper.getUnSyncedRxBuddyFollowUpWithoutRxBuddyId(rx.id)
+        followUps.forEach { item ->
+            rxBuddyFollowUpIds.add(item.rxBuddyLocalId)
+            item.followUp?.let { strFollowUp ->
+                followUpList.add(
+                    getRxBuddyFollowUp(
+                        item.id,
+                        item.rxBuddyId,
+                        strFollowUp,
+                        item.nextVisitDate,
+                        item.updatedAt,
+                        item.followUpId,
+                        item.latitude,
+                        item.longitude
+                    )
+                )
+            }
+        }
+
+        return RxBuddy(
+            rx.patientMemberId,
+            rx.patientId,
+            rx.villageId,
+            rx.householdId,
+            null,
+            rx.id,
+            register,
+            followUpList
+        )
+    }
+
 
     private suspend fun getRxBuddiesRequest(hhmIds: MutableList<String>,
                                             rxBuddyRegisterIds: MutableList<Long>,
@@ -708,54 +821,18 @@ class OfflineSyncRepository @Inject constructor(
         * */
         val rxBuddies = mutableListOf<RxBuddy>()
         val rxBuddyRegisters = roomHelper.getAllUnSyncedRxBuddyRegister()
-        rxBuddyRegisters.forEach { rx ->
-            rxBuddyRegisterIds.add(rx.id)
-            val register = RxBuddyRegister(
-                referenceId = rx.id,
-                relationShip = rx.relationship,
-                otherRelationship = rx.otherRelationship,
-                isMonitorSheetProvided = rx.isMonitorSheetProvider,
-                nextVisitDate = rx.nextVisitDate,
-                followUpId = rx.followUpId,
-                latitude = rx.latitude,
-                longitude = rx.longitude,
-                provenance = ProvanceDto(modifiedDate = rx.updatedAt.convertToUtcDateTime())
-            )
+        for (rx in rxBuddyRegisters) {
 
-            rx.householdMemberId?.let { hhmId ->
-                val member = roomHelper.getHouseholdMemberForRxBuddy(hhmId)
-                if (member.id != null)
-                    register.householdMemberId = member.id
-                else {
-                    hhmIds.add(member.referenceId!!)
-                    val assessments = getUnSyncedAssessmentByPatientId(member.referenceId.toLong())
-                    member.assessments = assessments
-                    register.householdMember = member
-                }
-            } ?: run {
-                register.rxBuddyDetails = RxBuddyMember(rx.name, rx.phoneNumber)
-            }
-
-            val followUpList = mutableListOf<RxBuddyFollowUp>()
-            val followUps = roomHelper.getUnSyncedRxBuddyFollowUpWithoutRxBuddyId(rx.id)
-            followUps.forEach { item ->
-                rxBuddyFollowUpIds.add(item.rxBuddyLocalId)
-                item.followUp?.let { strFollowUp ->
-                    followUpList.add(
-                        getRxBuddyFollowUp(
-                            item.id,
-                            item.rxBuddyId,
-                            strFollowUp,
-                            item.nextVisitDate,
-                            item.updatedAt,
-                            item.followUpId,
-                            item.latitude,
-                            item.longitude
-                        )
-                    )
+            // If RxBuddy member doesn't have fhir id skip the item
+            var rxBuddyFhirId: String? = null
+            if (rx.householdMemberId != null) {
+                rxBuddyFhirId = roomHelper.getMemberFhirIdByLocalId(rx.householdMemberId!!)
+                if (rxBuddyFhirId == null) {
+                    continue
                 }
             }
-            rxBuddies.add(RxBuddy(rx.patientMemberId, rx.patientId, rx.villageId, rx.householdId, null, rx.id, register, followUpList))
+
+            rxBuddies.add(getRxBuddy(rxBuddyRegisterIds, rxBuddyFollowUpIds, rx, false, rxBuddyFhirId))
         }
 
         val rxBuddyFollowUps = roomHelper.getUnSyncedRxBuddyFollowUpWithRxBuddyId().groupBy { it.patientMemberId }
@@ -830,17 +907,17 @@ class OfflineSyncRepository @Inject constructor(
         //uploadAllSignatures()
         val rxBuddies = getRxBuddiesRequest(householdMemberIds, rxBuddyRegisterIds, rxBuddyFollowUpIds)
 
-        val houseHoldList = roomHelper.getAllUnSyncedHouseHolds() /*Hot Fix change - Done*/
+        val houseHoldList = roomHelper.getAllUnSyncedHouseHolds(householdIds) /*Hot Fix change - Done*/
         householdIds.addAll(houseHoldList.map { it.referenceId!! })
         houseHoldList.forEach { householdEntity ->
             val memberList =
                 roomHelper.getAllUnSyncedHouseHoldMembers((householdEntity.referenceId!!.toLong())) /*Hot Fix Change - Need to check*/
 
-            householdEntity.householdMembers.addAll(formatMemberForPnc(memberList, householdMemberIds, assessmentIds))
+            householdEntity.householdMembers.addAll(formatMemberForPnc(memberList, householdMemberIds, assessmentIds, rxBuddyRegisterIds, rxBuddyFollowUpIds))
         }
 
         val members = roomHelper.getOtherHouseholdMembers(householdMemberIds) /*Hot Fix Change - Need to check*/
-        val otherMembers = formatMemberForPnc(members, householdMemberIds, assessmentIds)
+        val otherMembers = formatMemberForPnc(members, householdMemberIds, assessmentIds, rxBuddyRegisterIds, rxBuddyFollowUpIds)
 
         val assignedMemberIds = otherMembers.filter { it.assignHousehold == true && it.id != null }.map { it.id!! }
 

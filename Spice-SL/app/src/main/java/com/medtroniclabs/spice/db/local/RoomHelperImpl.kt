@@ -22,6 +22,8 @@ import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberCallRegisterDto
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberStatus
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdWithMemberCount
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyFollowUpDetails
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyRegisterDetail
 import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
@@ -180,12 +182,12 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getLastPatientId(patientIdStarts)
     }
 
-    override suspend fun getAllUnSyncedHouseHolds(): List<HouseHold> {
-        return householdDAO.getAllUnSyncedHouseHolds()
+    override suspend fun getAllUnSyncedHouseHolds(hhIds: List<String>): List<HouseHold> {
+        return householdDAO.getAllUnSyncedHouseHolds(hhIds)
     }
 
-    override suspend fun getAllUnSyncedHouseHoldMembers(houseHoldId: Long): List<HouseHoldMember> {
-        return memberDAO.getAllUnSyncedHouseHoldMembers(houseHoldId)
+    override suspend fun getAllUnSyncedHouseHoldMembers(houseHoldId: Long, memberIds: List<Long>): List<HouseHoldMember> {
+        return memberDAO.getAllUnSyncedHouseHoldMembers(houseHoldId, memberIds)
     }
 
     override suspend fun getOtherHouseholdMembers(memberIds: List<String>): List<HouseHoldMember> {
@@ -1401,5 +1403,28 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun deleteDisableRxBuddies(ids: List<Long>) {
         rxBuddyDetailsDAO.deleteAllDisabledRxBuddies(ids)
+    }
+
+    override suspend fun getHouseholdMemberIdAndStatusByFhirId(fhirId: String): HouseholdMemberStatus? {
+        return memberDAO.getHouseholdMemberIdAndStatusByFhirId(fhirId)
+    }
+
+    override suspend fun getUnSyncedHouseHoldByMemberId(hhmId: Long): HouseHold? {
+        return householdDAO.getUnSyncedHouseHoldByMemberId(hhmId)
+    }
+
+    override suspend fun getHouseholdsWithMemberCountsExceeding(): List<HouseholdWithMemberCount> {
+        return memberDAO.getHouseholdsWithMemberCountsExceeding()
+    }
+
+    override suspend fun getMemberFhirIdByLocalId(hhmId: Long): String? {
+        return memberDAO.getMemberFhirIdByLocalId(hhmId)
+    }
+
+    override suspend fun getAllUnSyncedRxBuddyDetailWithHHM(
+        hhmId: Long,
+        rxBuddiesId: List<Long>
+    ): List<RxBuddyRegisterDetail> {
+        return rxBuddyDetailsDAO.getAllUnSyncedRxBuddyDetailWithHHM(hhmId, rxBuddiesId)
     }
 }

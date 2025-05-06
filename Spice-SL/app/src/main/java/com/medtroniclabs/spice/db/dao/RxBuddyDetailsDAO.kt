@@ -22,7 +22,7 @@ interface RxBuddyDetailsDAO {
     @Query("SELECT * FROM RxBuddyDetails WHERE patientMemberId = :patientMemberId")
     suspend fun getRxBuddyDetailsByMemberId(patientMemberId: String): RxBuddyDetails?
 
-    @Query("SELECT rx.*, hhm.patient_id as patientId, hh.village_id as villageId, hh.fhir_id as householdId FROM RxBuddyDetails AS rx JOIN HouseholdMember AS hhm ON hhm.fhir_id = rx.patientMemberId JOIN Household AS hh ON hh.id = hhm.household_id WHERE rx.syncStatus IN (:status)")
+    @Query("SELECT rx.*, hhm.patient_id as patientId, hh.village_id as villageId, hh.fhir_id as householdId FROM RxBuddyDetails AS rx JOIN HouseholdMember AS hhm ON hhm.fhir_id = rx.patientMemberId JOIN Household AS hh ON hh.id = hhm.household_id WHERE hh.fhir_id IS NOT NULL AND rx.syncStatus IN (:status)")
     suspend fun getAllUnSyncedRxBuddyRegister(
         status: List<String> = listOf(OfflineSyncStatus.NotSynced.name,
             OfflineSyncStatus.NetworkError.name)
@@ -62,4 +62,14 @@ interface RxBuddyDetailsDAO {
 
     @Query("DELETE FROM RxBuddyDetails WHERE rxBuddyId IN (:ids) OR isActive = 0")
     suspend fun deleteAllDisabledRxBuddies(ids: List<Long>)
+
+    @Query("SELECT rx.*, hhm.patient_id as patientId, hh.village_id as villageId, hh.fhir_id as householdId FROM RxBuddyDetails AS rx JOIN HouseholdMember AS hhm ON hhm.fhir_id = rx.patientMemberId JOIN Household AS hh ON hh.id = hhm.household_id WHERE rx.householdMemberId =:hhmId AND rx.id NOT IN (:rxBuddyIds) AND rx.syncStatus IN (:status)")
+    suspend fun getAllUnSyncedRxBuddyDetailWithHHM(
+        hhmId: Long,
+        rxBuddyIds: List<Long>,
+        status: List<String> = listOf(
+            OfflineSyncStatus.NotSynced.name,
+            OfflineSyncStatus.NetworkError.name
+        )
+    ): List<RxBuddyRegisterDetail>
 }

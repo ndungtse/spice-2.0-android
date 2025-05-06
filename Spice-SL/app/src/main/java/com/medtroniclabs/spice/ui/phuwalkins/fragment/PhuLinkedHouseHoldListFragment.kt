@@ -76,7 +76,7 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
     private fun initObserver() {
         viewModel.getFilteredHouseholdsLiveData(patientLinkedDetails.villageId)
             .observe(viewLifecycleOwner) {
-                val householdList = it.filter { household -> household.householdNo != null && household.householdNo > 0L }
+                val householdList = it
 
                 listVisibility(householdList.isEmpty())
                 binding.tvHPatientCount.text =

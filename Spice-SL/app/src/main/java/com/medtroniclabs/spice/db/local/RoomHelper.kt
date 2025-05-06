@@ -18,6 +18,8 @@ import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberCallRegisterDto
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberStatus
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdWithMemberCount
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyFollowUpDetails
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyRegisterDetail
 import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
@@ -128,9 +130,9 @@ interface RoomHelper {
     ): List<NCDAssessmentClinicalWorkflow>
 
     suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel
-    suspend fun getAllUnSyncedHouseHolds(): List<HouseHold>
+    suspend fun getAllUnSyncedHouseHolds(hhIds: List<String>): List<HouseHold>
 
-    suspend fun getAllUnSyncedHouseHoldMembers(houseHoldId: Long): List<HouseHoldMember>
+    suspend fun getAllUnSyncedHouseHoldMembers(houseHoldId: Long, memberIds: List<Long> = listOf()): List<HouseHoldMember>
 
     suspend fun getOtherHouseholdMembers(memberIds: List<String>): List<HouseHoldMember>
     suspend fun updateFhirId(tableName: String, id: String, fhirId: String?, status: String)
@@ -539,4 +541,14 @@ interface RoomHelper {
     suspend fun updateRxBuddyFollowUpSyncStatus(idList: List<Long>, syncStatus: String)
 
     suspend fun deleteDisableRxBuddies(ids: List<Long>)
+
+    suspend fun getHouseholdMemberIdAndStatusByFhirId(fhirId: String):  HouseholdMemberStatus?
+
+    suspend fun getUnSyncedHouseHoldByMemberId(hhmId: Long): HouseHold?
+
+    suspend fun getHouseholdsWithMemberCountsExceeding(): List<HouseholdWithMemberCount>
+
+    suspend fun getMemberFhirIdByLocalId(hhmId: Long): String?
+
+    suspend fun getAllUnSyncedRxBuddyDetailWithHHM(hhmId: Long, rxBuddiesId: List<Long>): List<RxBuddyRegisterDetail>
 }

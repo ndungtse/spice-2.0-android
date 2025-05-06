@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.db.dao
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
@@ -9,12 +8,13 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
+import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberStatus
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdWithMemberCount
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
-import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
-import com.medtroniclabs.spice.db.entity.HouseholdEntity
 
 @Dao
 interface MemberDAO {
@@ -28,7 +28,10 @@ interface MemberDAO {
     fun getAllHouseHoldMembersLiveData(houseHoldId: Long): LiveData<List<HouseholdMemberEntity>>
 
     @Query("SELECT * FROM HouseHoldMember WHERE household_id = :houseHoldId AND isActive =:aliveStatus")
-    fun getAliveHouseHoldMembers(houseHoldId: Long,aliveStatus: Boolean): List<HouseholdMemberEntity>
+    fun getAliveHouseHoldMembers(
+        houseHoldId: Long,
+        aliveStatus: Boolean
+    ): List<HouseholdMemberEntity>
 
     @Query("SELECT * FROM HouseHoldMember WHERE id = :memberId")
     suspend fun getMemberDetailsById(memberId: Long): HouseholdMemberEntity
@@ -51,20 +54,32 @@ interface MemberDAO {
     @Query("SELECT date_of_birth,gender FROM HouseHoldMember WHERE id = :memberId")
     suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel
 
-    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name, CASE WHEN lhhm.memberId IS NOT NULL AND lhhm.syncStatus IN (:status) THEN 1 ELSE NULL END AS assignHousehold FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id LEFT JOIN LinkHouseholdMember AS lhhm ON lhhm.memberId = hhm.fhir_id WHERE (hh.fhir_id IS NULL OR hhm.fhir_id IS NULL) AND hhm.household_id = :houseHoldId AND hhm.sync_status IN (:status)")
+    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name, CASE WHEN lhhm.memberId IS NOT NULL AND lhhm.syncStatus IN (:status) THEN 1 ELSE NULL END AS assignHousehold FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id LEFT JOIN LinkHouseholdMember AS lhhm ON lhhm.memberId = hhm.fhir_id WHERE hhm.id NOT IN (:memberIds) AND (hh.fhir_id IS NULL OR hhm.fhir_id IS NULL) AND hhm.household_id = :houseHoldId AND hhm.sync_status IN (:status)")
     suspend fun getAllUnSyncedHouseHoldMembers(
         houseHoldId: Long,
-        status: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)
+        memberIds: List<Long>,
+        status: List<String> = listOf(
+            OfflineSyncStatus.NotSynced.name,
+            OfflineSyncStatus.NetworkError.name
+        )
     ): List<HouseHoldMember>
 
     @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name, CASE WHEN lhhm.memberId IS NOT NULL AND lhhm.syncStatus IN (:status) THEN 1 ELSE NULL END AS assignHousehold FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id LEFT JOIN LinkHouseholdMember AS lhhm ON lhhm.memberId = hhm.fhir_id WHERE hhm.id NOT IN (:memberIds) AND hh.fhir_id IS NOT NULL AND hhm.sync_status IN (:status)")
     suspend fun getOtherHouseholdMembers(
         memberIds: List<String>,
-        status: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)
+        status: List<String> = listOf(
+            OfflineSyncStatus.NotSynced.name,
+            OfflineSyncStatus.NetworkError.name
+        )
     ): List<HouseHoldMember>
 
     @Query("SELECT COUNT(id) FROM HouseholdMember where sync_status IN (:syncStatus)")
-    suspend fun getUnSyncedCount(syncStatus: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)): Int
+    suspend fun getUnSyncedCount(
+        syncStatus: List<String> = listOf(
+            OfflineSyncStatus.NotSynced.name,
+            OfflineSyncStatus.NetworkError.name
+        )
+    ): Int
 
     @Query("SELECT id FROM HouseholdMember WHERE fhir_id =:fhirId")
     suspend fun getHouseholdMemberIdByFhirId(fhirId: String): Long?
@@ -86,6 +101,9 @@ interface MemberDAO {
 
     @Transaction
     suspend fun insertOrUpdateFromBE(entity: HouseholdMemberEntity): Long {
+        if (!entity.isActive && entity.fhirId != null) {
+            deleteRxBuddyOnDeceased(entity.fhirId!!)
+        }
         val existingEntity = entity.fhirId?.let { getByUniqueField(it) }
         if (existingEntity?.sync_status != OfflineSyncStatus.NotSynced) {
             val entityToInsert = existingEntity?.let { entity.copy(id = it.id) } ?: entity
@@ -97,11 +115,21 @@ interface MemberDAO {
         }
     }
 
+    @Query("DELETE FROM RxBuddyDetails WHERE patientMemberId = :memberId")
+    suspend fun deleteRxBuddyOnDeceased(memberId: String)
+
     @Query("UPDATE HouseholdMember SET sync_status =:syncStatus, updated_at =:updatedAt WHERE id IN (:memberIds)")
-    suspend fun updateInProgress(memberIds: List<String>, syncStatus: String, updatedAt: Long = System.currentTimeMillis())
+    suspend fun updateInProgress(
+        memberIds: List<String>,
+        syncStatus: String,
+        updatedAt: Long = System.currentTimeMillis()
+    )
 
     @Query("UPDATE HouseholdMember SET sync_status =:syncStatus WHERE id = :id")
-    suspend fun changeMemberDetailsToNotSynced(id: Long, syncStatus: OfflineSyncStatus = OfflineSyncStatus.NotSynced)
+    suspend fun changeMemberDetailsToNotSynced(
+        id: Long,
+        syncStatus: OfflineSyncStatus = OfflineSyncStatus.NotSynced
+    )
 
     @Query("UPDATE HouseholdMember SET isActive = :status, sync_status =:syncStatus  WHERE id = :id")
     suspend fun updateMemberDeceasedStatus(
@@ -119,15 +147,31 @@ interface MemberDAO {
     )
 
     @Query("UPDATE householdmember SET phone_number = :phoneNumber, phone_number_category = :phoneNumberCategory, sync_status =:syncStatus, updated_at =:updatedAt  WHERE household_id = :householdId AND household_head_relationship = :houseHoldRelationShip")
-    suspend fun updatePhoneNumberForHouseholdHead(householdId: Long,phoneNumber: String?, phoneNumberCategory: String?, syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis(),houseHoldRelationShip:String= DefinedParams.HosueHoldHead)
+    suspend fun updatePhoneNumberForHouseholdHead(
+        householdId: Long,
+        phoneNumber: String?,
+        phoneNumberCategory: String?,
+        syncStatus: String = OfflineSyncStatus.NotSynced.name,
+        updatedAt: Long = System.currentTimeMillis(),
+        houseHoldRelationShip: String = DefinedParams.HosueHoldHead
+    )
 
 
     @Query("UPDATE HouseholdMember SET household_id = :householdId, household_head_relationship = :defaultRelation, sync_status =:syncStatus, updated_at =:updatedAt  WHERE fhir_id IN (:memberIds)")
-    suspend fun updateHouseholdHeadAndRelationShip(memberIds: List<String>, householdId: Long, defaultRelation: String = "",syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis())
+    suspend fun updateHouseholdHeadAndRelationShip(
+        memberIds: List<String>,
+        householdId: Long,
+        defaultRelation: String = "",
+        syncStatus: String = OfflineSyncStatus.NotSynced.name,
+        updatedAt: Long = System.currentTimeMillis()
+    )
 
 
     @Query("SELECT date_of_birth FROM HouseholdMember WHERE household_id = :householdId AND household_head_relationship = :houseHoldRelationShip LIMIT 1")
-    suspend fun getHouseholdHeadDob(householdId: Long, houseHoldRelationShip:String= DefinedParams.HosueHoldHead): String
+    suspend fun getHouseholdHeadDob(
+        householdId: Long,
+        houseHoldRelationShip: String = DefinedParams.HosueHoldHead
+    ): String
 
     @Query("SELECT hm.*, pd.tbContactTraceStatus as tBContactTraceStatus FROM HouseholdMember AS hm LEFT JOIN PregnancyDetail AS pd ON hm.id = pd.householdMemberLocalId WHERE hm.household_id = :hhId")
     fun getHouseholdMemberWithTBContactTraceStatus(hhId: Long): LiveData<List<HouseholdMemberEntity>>
@@ -139,9 +183,21 @@ interface MemberDAO {
     suspend fun updatePregnantStatus(memberId: Long, isPregnant: Boolean, syncStatus: String)
 
     @Query("SELECT * FROM HouseholdMember WHERE household_id = :householdId AND id != :patientId AND isActive=1 AND substr(date_of_birth, 1, 10) < date('now','-10 years') ")
-    suspend fun getOtherHouseholdExcludeTBPatient(householdId: Long,patientId:Long):List<HouseholdMemberEntity>
+    suspend fun getOtherHouseholdExcludeTBPatient(
+        householdId: Long,
+        patientId: Long
+    ): List<HouseholdMemberEntity>
 
     @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id Where hhm.id = :hhmId")
     suspend fun getHouseholdMemberForRxBuddy(hhmId: Long): HouseHoldMember
+
+    @Query("SELECT id, isActive FROM HouseholdMember WHERE fhir_id =:fhirId")
+    suspend fun getHouseholdMemberIdAndStatusByFhirId(fhirId: String): HouseholdMemberStatus?
+
+    @Query("SELECT hh.id AS id, COUNT(hhm.id) AS hhmCount, hh.no_of_people AS noOfPeople FROM Household AS hh LEFT JOIN HouseholdMember AS hhm ON hh.id = hhm.household_id group by hh.id HAVING hhmCount > noOfPeople")
+    suspend fun getHouseholdsWithMemberCountsExceeding(): List<HouseholdWithMemberCount>
+
+    @Query("SELECT fhir_id FROM HouseholdMember WHERE id =:hhmId")
+    suspend fun getMemberFhirIdByLocalId(hhmId: Long): String?
 
 }
