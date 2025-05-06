@@ -1,13 +1,9 @@
 package com.medtroniclabs.spice.repo
 
-import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.DefaultID
-import com.medtroniclabs.spice.common.DefinedParams.RxBuddyId
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
-import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.RxBuddyDetails
 import com.medtroniclabs.spice.db.entity.RxBuddyFollowUpEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
@@ -147,4 +143,5 @@ class RxBuddyRepository @Inject constructor(
     suspend fun getUnSyncedRxBuddyFollowUpCount(): Int {
         return roomHelper.getUnSyncedRxBuddyFollowUpCount()
     }
+
 }
