@@ -39,4 +39,13 @@ object MedicalReviewDefinedParams {
     const val Condoms = "Condoms"
     const val EmergencyContraceptive = "Emergency contraceptive"
     const val PermanentMethod = "Permanent Method"
+
+    const val HIV_ELIGIBILITY_ITEM = "HivEligibility"
+    const val HIV_ELIGIBILITY_VALUES = "HivEligibilityValues"
+    const val HaveYouTakenHivTestBefore = "HaveYouTakenHivTestBefore"
+    const val HIV_TEST_ITEM = "HivTest"
+    const val HIV_TEST_VALUES = "HivTestValues"
+    const val A1_TEST_RESULT = "A1TestResult"
+    const val A2_TEST_RESULT = "A2TestResult"
+    const val A3_TEST_RESULT = "A3TestResult"
 }

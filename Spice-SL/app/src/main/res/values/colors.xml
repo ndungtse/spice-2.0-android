@@ -125,5 +125,6 @@
     <color name="epi_missed_secondary">#FFDDDD</color>
 
     <color name="bg_community_statics">#E1E2FC</color>
+    <color name="background_job_aid_">#1AEB956A</color>
     <color name="bg_peer_notification_card">#EFEDFF</color>
 </resources>

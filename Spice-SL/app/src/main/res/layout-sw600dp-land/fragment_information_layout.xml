@@ -58,8 +58,9 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvInfoList"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="@dimen/_8sdp"
             tools:listitem="@layout/information_item_list"
             app:layout_constraintStart_toStartOf="@id/tvTitle"
             app:layout_constraintEnd_toEndOf="@id/ivClose"

@@ -37,6 +37,7 @@ import com.medtroniclabs.spice.db.dao.ExaminationsDAO
 import com.medtroniclabs.spice.db.dao.FollowUpCallsDao
 import com.medtroniclabs.spice.db.dao.FollowUpDao
 import com.medtroniclabs.spice.db.dao.FrequencyDAO
+import com.medtroniclabs.spice.db.dao.HivMetaDataDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
 import com.medtroniclabs.spice.db.dao.LinkHouseholdMemberDao
@@ -127,7 +128,8 @@ class RoomHelperImpl @Inject constructor(
     private val communityDAO: CommunityDetailsDAO,
     private val rxBuddyDetailsDAO: RxBuddyDetailsDAO,
     private val treatmentDetailsDAO: TreatmentDetailsDAO,
-    private val rxBuddyFollowUpDAO: RxBuddyFollowUpDAO
+    private val rxBuddyFollowUpDAO: RxBuddyFollowUpDAO,
+    private val hivMetaDataDAO: HivMetaDataDAO
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -1336,6 +1338,9 @@ class RoomHelperImpl @Inject constructor(
         return rxBuddyFollowUpDAO.insertRxBuddyFollowUp(rxBuddyFollowUp)
     }
 
+    override suspend fun getHivMetaData(): List<MedicalReviewMetaItems> {
+        return hivMetaDataDAO.getHivMetaItems()
+    }
 
 
     override suspend fun getAllUnSyncedRxBuddyRegister(): List<RxBuddyRegisterDetail> {

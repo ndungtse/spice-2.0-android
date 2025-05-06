@@ -77,6 +77,7 @@ object SecuredPreference {
         IS_TB_LOADED,
         PEER_SUPERVISOR_ID,
         BACKGROUNDTIMESTAMP,
+        IS_HIV_DATA_LOADED,
         PEER_SUPERVISOR_NOTIFICATION_TOKEN
     }
 

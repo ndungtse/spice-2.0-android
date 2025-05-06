@@ -98,6 +98,20 @@ class PatientInfoFragment : BaseFragment() {
             fragment.arguments = bundle
             return fragment
         }
+
+        fun newInstanceForHIV(
+            patientId: String?,
+            isHiv:Boolean = false,
+            isHivSummary:Boolean = false
+        ):PatientInfoFragment{
+            val fragment = PatientInfoFragment()
+            val bundle = Bundle()
+            bundle.putString(DefinedParams.PatientId, patientId)
+            bundle.putBoolean(DefinedParams.HIV,isHiv)
+            bundle.putBoolean(DefinedParams.HIV_SUMMARY,isHivSummary)
+            fragment.arguments = bundle
+            return fragment
+        }
     }
 
     override fun onCreateView(

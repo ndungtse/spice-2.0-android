@@ -57,6 +57,10 @@ import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
+import com.medtroniclabs.spice.data.model.HivMetaResponse
+import com.medtroniclabs.spice.data.model.HivScreeningRequest
+import com.medtroniclabs.spice.data.model.HivScreeningResponse
+import com.medtroniclabs.spice.data.model.HivScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
@@ -633,6 +637,17 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/birth-details")
     suspend fun getBirthDetails(@Body request: RequestBirthDetails): Response<APIResponse<BirthDetails>>
+
+    @POST("spice-service/static-data/meta-data/hiv")
+    suspend fun getHIVStaticData(): Response<APIResponse<HivMetaResponse>>
+
+    @POST("/spice-service/hiv/screening/create")
+    suspend fun createHivScreening(@Body request: HivScreeningRequest) : Response<APIResponse<HivScreeningResponse>>
+
+    @POST("/spice-service/hiv/screening/detail")
+    suspend fun getHivScreeningDetails(@Body request: HivScreeningResponse) : Response<APIResponse<HivScreeningSummaryResponse>>
+
+
 
     @POST("/notification-service/inapp-notification/list")
     suspend fun getCBSNotificationDetails(@Body PeerSupervisorNotificationRequest: PeerSupervisorNotificationRequest) : Response<APIResponse<ArrayList<PeerSupervisorNotificationResponse>>>

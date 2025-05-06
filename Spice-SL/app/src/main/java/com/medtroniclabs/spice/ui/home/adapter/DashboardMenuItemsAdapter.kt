@@ -223,6 +223,11 @@ class DashboardMenuItemsAdapter(
                 R.drawable.ic_family_planning
             )
 
+            MenuConstants.HIV -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_hiv
+            )
+
             else -> null
         }
     }

@@ -57,6 +57,10 @@ import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
+import com.medtroniclabs.spice.data.model.HivMetaResponse
+import com.medtroniclabs.spice.data.model.HivScreeningRequest
+import com.medtroniclabs.spice.data.model.HivScreeningResponse
+import com.medtroniclabs.spice.data.model.HivScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
@@ -781,6 +785,20 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun getBirthDetails(request: RequestBirthDetails): Response<APIResponse<BirthDetails>> {
         return apiService.getBirthDetails(request)
     }
+
+    override suspend fun getHivStaticData(): Response<APIResponse<HivMetaResponse>> {
+        return apiService.getHIVStaticData()
+    }
+
+    override suspend fun createHivScreening(requset: HivScreeningRequest): Response<APIResponse<HivScreeningResponse>> {
+        return apiService.createHivScreening(requset)
+    }
+
+    override suspend fun getHivScreeningDetails(request: HivScreeningResponse): Response<APIResponse<HivScreeningSummaryResponse>> {
+        return apiService.getHivScreeningDetails(request)
+    }
+
+
 
     override suspend fun getCBSNotificationDetails(request: PeerSupervisorNotificationRequest): Response<APIResponse<ArrayList<PeerSupervisorNotificationResponse>>> {
         return apiService.getCBSNotificationDetails(request)

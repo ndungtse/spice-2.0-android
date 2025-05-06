@@ -40,5 +40,10 @@ enum class MedicalReviewTypeEnums{
     treatment_outcome,
     comorbidities,
     PRESCRIPTION_INSTRUCTION,
-    ClinicalNotes
+    ClinicalNotes,
+    HIV,
+    hiv_history,
+    population_type,
+    hiv_test_durations,
+    entry_point
 }

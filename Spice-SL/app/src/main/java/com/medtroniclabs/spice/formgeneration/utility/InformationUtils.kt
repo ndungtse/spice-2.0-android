@@ -4,6 +4,9 @@ import android.content.Context
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.formgeneration.model.InformationModel
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Contraceptive
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.PostTestCounselling
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.PreTestCounselling
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TestForHiv
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isBreastfeed
@@ -258,6 +261,145 @@ class InformationUtils {
                 type = Contraceptive
             )
         )
+        return informationList
+    }
+    fun getHIVTestInformation(context: Context, id: String?): ArrayList<InformationModel> {
+        val informationList = ArrayList<InformationModel>()
+        when (id) {
+            PreTestCounselling -> {
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.basic_information_about_hiv),
+                        type = PreTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.the_benefits_of_hiv_testing),
+                        type = PreTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.understanding_test_results),
+                        type = PreTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.importance_of_hiv_prevention),
+                        type = PreTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.confidentiality_and_rights),
+                        type = PreTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.risk_assessment),
+                        type = PreTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.explain_the_testing_procedure),
+                        type = PreTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.addressing_misconceptions),
+                        type = PreTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.support_services_for_hiv),
+                        type = PreTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.consent_sought_for_the_individual_to_be_tested),
+                        type = PreTestCounselling
+                    )
+                )
+            }
+            PostTestCounselling -> {
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.re_emphasise_hiv_prevention_methods_retesting),
+                        type = PostTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.for_positive_clients),
+                        type = PostTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.offer_prep_for_partners_in_discordant_couples),
+                        type = PostTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.provide_counselling_risk_reduction_condom_use),
+                        type = PostTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.art_and_hiv_care),
+                        type = PostTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.offer_art_preparatory_counselling),
+                        type = PostTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.post_test_doc_and_link),
+                        type = PostTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.link_to_art),
+                        type = PostTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.if_same_day_art),
+                        type = PostTestCounselling
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.provide_ongoing_follow_up),
+                        type = PostTestCounselling
+                    )
+                )
+            }
+            TestForHiv -> {
+                   informationList.add(
+                    InformationModel(
+                        imageId = R.drawable.ic_hiv_test,
+                        inputText = "",
+                        type = TestForHiv
+                    )
+                )
+            }
+        }
         return informationList
     }
 

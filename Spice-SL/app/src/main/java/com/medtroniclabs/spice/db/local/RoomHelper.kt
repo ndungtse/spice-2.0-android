@@ -508,6 +508,8 @@ interface RoomHelper {
 
     suspend fun insertRxBuddyFollowUp(rxBuddyFollowUp: RxBuddyFollowUpEntity):Long
 
+    suspend fun getHivMetaData(): List<MedicalReviewMetaItems>
+
     suspend fun getAllUnSyncedRxBuddyRegister(): List<RxBuddyRegisterDetail>
 
     suspend fun getHouseholdMemberForRxBuddy(hhmId: Long): HouseHoldMember

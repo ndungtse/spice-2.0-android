@@ -188,6 +188,11 @@ object AssessmentDefinedParams {
     const val TBRxBuddyRegister = "rxBuddy"
     const val TBRxBuddyFollowUp = "rxBuddyFollowUp"
 
+    //Medical Review
+    const val PreTestCounselling = "preTestCounselling"
+    const val PostTestCounselling = "postTestCounselling"
+    const val TestForHiv = "testForHiv"
+
 
 
 

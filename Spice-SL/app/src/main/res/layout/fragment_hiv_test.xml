@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.medicalreview.hiv.fragment.HivTestFragment">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardHivTest"
+        style="@style/CardView_Style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardUseCompatPadding="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/_8sdp">
+
+            <View
+                android:id="@+id/viewHivTestCardBG"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_0dp"
+                android:background="@color/card_background"
+                app:layout_constraintBottom_toBottomOf="@id/tvEligibilityTitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvEligibilityTitle"
+                style="@style/Form_Header_Style"
+                android:layout_width="@dimen/_0dp"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_10sdp"
+                android:text="@string/hiv_test"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintEnd_toEndOf="@id/viewHivTestCardBG"
+                app:layout_constraintStart_toStartOf="@id/viewHivTestCardBG"
+                app:layout_constraintTop_toTopOf="@id/viewHivTestCardBG" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvPreTestCounselling"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:background="@color/background_job_aid_"
+                android:drawableEnd="@drawable/ic_epi_job_aid"
+                android:fontFamily="@font/inter_medium"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="@dimen/_16sdp"
+                android:paddingVertical="@dimen/_8sdp"
+                android:text="@string/pre_test_counselling"
+                android:textColor="@color/ncd_accent"
+                android:textSize="@dimen/_16ssp"
+                android:visibility="visible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvEligibilityTitle" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTestForHiv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:background="@color/background_job_aid_"
+                android:drawableEnd="@drawable/ic_epi_job_aid"
+                android:fontFamily="@font/inter_medium"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="@dimen/_16sdp"
+                android:paddingVertical="@dimen/_8sdp"
+                android:text="@string/test_for_hiv"
+                android:textColor="@color/ncd_accent"
+                android:textSize="@dimen/_16ssp"
+                android:visibility="visible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPreTestCounselling" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvPostTestCounselling"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:background="@color/background_job_aid_"
+                android:drawableEnd="@drawable/ic_epi_job_aid"
+                android:fontFamily="@font/inter_medium"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="@dimen/_16sdp"
+                android:paddingVertical="@dimen/_8sdp"
+                android:text="@string/post_test_counselling"
+                android:textColor="@color/ncd_accent"
+                android:textSize="@dimen/_16ssp"
+                android:visibility="visible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTestForHiv" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_16ssp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:layout_marginEnd="@dimen/_16ssp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/tvPostTestCounselling">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvA1TestResult"
+                    style="@style/TextStyle_Regular_16_Gray"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:text="@string/a_test_result"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llA1TestResultRoot"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:layout_marginBottom="@dimen/_8sdp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvA1TestResult"/>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvA1TestResultError"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/default_user_input_error"
+                    android:textColor="@color/a_red_error"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/llA1TestResultRoot" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvA2TestResult"
+                    style="@style/TextStyle_Regular_16_Gray"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:text="@string/a_test_result"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvA1TestResultError" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llA2TestResultRoot"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:layout_marginBottom="@dimen/_8sdp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvA2TestResult"></androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvA2TestResultError"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/default_user_input_error"
+                    android:textColor="@color/a_red_error"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/llA2TestResultRoot" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvA3TestResult"
+                    style="@style/TextStyle_Regular_16_Gray"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:text="@string/a_test_result"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvA2TestResultError" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llA3TestResultRoot"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:layout_marginBottom="@dimen/_8sdp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvA3TestResult"></androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvA3TestResultError"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/default_user_input_error"
+                    android:textColor="@color/a_red_error"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/llA3TestResultRoot" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvEntryPoint"
+                    style="@style/TextStyle_Regular_16_Gray"
+                    android:layout_width="wrap_content"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:text="@string/entry_point"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvA3TestResultError" />
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/tvEntryPointSpinner"
+                    style="@style/Form_Spinner_Style"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_marginBottom="@dimen/_8sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvEntryPoint" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvEntryPointError"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/default_user_input_error"
+                    android:textColor="@color/a_red_error"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvEntryPointSpinner" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout>
+
+

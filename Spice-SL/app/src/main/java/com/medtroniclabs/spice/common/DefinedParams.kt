@@ -346,4 +346,6 @@ object DefinedParams {
     const val Gene_Expert = "gene expert"
 
     const val isCreateHouseholdForPhu = "isCreateHouseholdForPhu"
+    const val HIV = "HIV"
+    const val HIV_SUMMARY = "HIV_SUMMARY"
 }

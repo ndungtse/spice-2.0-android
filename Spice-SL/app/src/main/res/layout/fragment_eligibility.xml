@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.medicalreview.hiv.fragment.EligibilityFragment">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardEligibility"
+        style="@style/CardView_Style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardUseCompatPadding="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/_8sdp">
+
+            <View
+                android:id="@+id/viewEligibilityCardBG"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_0dp"
+                android:background="@color/card_background"
+                app:layout_constraintBottom_toBottomOf="@id/tvEligibilityTitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvEligibilityTitle"
+                style="@style/Form_Header_Style"
+                android:layout_width="@dimen/_0dp"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_10sdp"
+                android:text="@string/eligibility"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintEnd_toEndOf="@id/viewEligibilityCardBG"
+                app:layout_constraintStart_toStartOf="@id/viewEligibilityCardBG"
+                app:layout_constraintTop_toTopOf="@id/viewEligibilityCardBG" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_16ssp"
+                android:layout_marginTop="@dimen/_8ssp"
+                android:layout_marginEnd="@dimen/_16ssp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/tvEligibilityTitle">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvHistoryLabel"
+                    style="@style/TextStyle_Regular_16_Gray"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:text="@string/history"
+                    app:layout_constraintEnd_toStartOf="@id/tvPopulationTypeSpinner"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/tvHistorySpinner"
+                    style="@style/Form_Spinner_Style"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    app:layout_constraintEnd_toStartOf="@id/g_center"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvHistoryLabel" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvHistoryError"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/default_user_input_error"
+                    android:textColor="@color/a_red_error"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvHistorySpinner" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvPopulationTypeLabel"
+                    style="@style/TextStyle_Regular_16_Gray"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:text="@string/population_type"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/g_center"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/tvPopulationTypeSpinner"
+                    style="@style/Form_Spinner_Style"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/g_center"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPopulationTypeLabel" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvPopulationTypeError"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/default_user_input_error"
+                    android:textColor="@color/a_red_error"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tvHistorySpinner"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPopulationTypeSpinner" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvHaveYouTestedHIVBefore"
+                    style="@style/TextStyle_Regular_16_Gray"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:text="@string/have_you_hiv_tested_before"
+                    app:layout_constraintEnd_toStartOf="@+id/g_center"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvHistoryError" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/haveTestedHIVBeforeRoot"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_4sdp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:layout_marginBottom="@dimen/_8sdp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toStartOf="@+id/g_center"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvHaveYouTestedHIVBefore"></androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvHaveTestedHIVBeforeError"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/default_user_input_error"
+                    android:textColor="@color/a_red_error"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/haveTestedHIVBeforeRoot" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvHowLongBeforeYouHaveTested"
+                    style="@style/TextStyle_Regular_16_Gray"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:text="@string/how_long_ago_were_you_tested_for_hiv"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/g_center"
+                    app:layout_constraintTop_toBottomOf="@+id/tvHistoryError" />
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/tvTestingDurationSpinner"
+                    style="@style/Form_Spinner_Style"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/g_center"
+                    app:layout_constraintTop_toBottomOf="@+id/tvHowLongBeforeYouHaveTested" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvTestingDurationError"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/default_user_input_error"
+                    android:textColor="@color/a_red_error"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/g_center"
+                    app:layout_constraintTop_toBottomOf="@+id/tvTestingDurationSpinner" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvLastMenstrualPeriodDate"
+                    style="@style/TextStyle_Regular_16_Gray"
+                    android:layout_width="wrap_content"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:text="@string/last_menstrual_period"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvHaveTestedHIVBeforeError" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvLastMenstrualPeriodDateLabelText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:background="@drawable/edittext_background_selector"
+                    android:drawableEnd="@drawable/ic_date_picker_calendar"
+                    android:gravity="start|center"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:paddingEnd="@dimen/_0dp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_16ssp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvLastMenstrualPeriodDate" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvLastMenstrualPeriodDateError"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/default_user_input_error"
+                    android:textColor="@color/a_red_error"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvLastMenstrualPeriodDateLabelText" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvGestationalInWeekLabel"
+                    style="@style/TextStyle_Regular_16"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:text="@string/gestational_in_weeks"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvLastMenstrualPeriodDateError" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/etGestationalInWeek"
+                    style="@style/Form_Input_Style_BG"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:hint="@string/enter"
+                    android:inputType="numberDecimal"
+                    android:paddingHorizontal="@dimen/_12sdp"
+                    android:paddingVertical="@dimen/_10sdp"
+                    app:layout_constraintEnd_toStartOf="@+id/g_center"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvGestationalInWeekLabel" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvGestationalInWeekError"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/default_user_input_error"
+                    android:textColor="@color/a_red_error"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/etGestationalInWeek" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvExpectedDateOfDeliveryLabel"
+                    style="@style/TextStyle_Regular_16"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:text="@string/expected_date_of_delivery"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/g_center"
+                    app:layout_constraintTop_toBottomOf="@+id/tvLastMenstrualPeriodDateError" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/etExpectedDateOfDelivery"
+                    style="@style/Form_Input_Style_BG"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:hint="@string/enter"
+                    android:inputType="numberDecimal"
+                    android:paddingHorizontal="@dimen/_12sdp"
+                    android:paddingVertical="@dimen/_10sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/g_center"
+                    app:layout_constraintTop_toBottomOf="@id/tvGestationalInWeekLabel" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvExpectedDateOfDeliveryError"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:fontFamily="@font/inter_regular"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/default_user_input_error"
+                    android:textColor="@color/a_red_error"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/g_center"
+                    app:layout_constraintTop_toBottomOf="@+id/etGestationalInWeek" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/g_center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/viewGroupHivTestDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    app:constraint_referenced_ids="tvTestingDurationSpinner,tvHowLongBeforeYouHaveTested" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/hivEMTCTViewGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="tvLastMenstrualPeriodDateLabelText,tvLastMenstrualPeriodDate,tvGestationalInWeekLabel,etGestationalInWeek,tvExpectedDateOfDeliveryLabel,etExpectedDateOfDelivery" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout>

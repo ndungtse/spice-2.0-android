@@ -1489,4 +1489,46 @@
     <string name="add_inv_result" translatable="false">Add Investigation Result</string>
     <string name="add_height_weight" translatable="false">Add Height/Weight</string>
     <string name="height_error_45_300" translatable="false">"Please enter height between 45 to 300"</string>
+
+    <string name="eligibility" translatable="false">Eligibility</string>
+    <string name="history" translatable="false">History</string>
+    <string name="population_type" translatable="false">Population Type</string>
+    <string name="have_you_hiv_tested_before" translatable="false">Have you been tested for HIV before?</string>
+    <string name="how_long_ago_were_you_tested_for_hiv" translatable="false">How long ago were you tested for HIV? (within a week/month/year)</string>
+    <string name="gestational_in_weeks" translatable="false">Gestational In Weeks</string>
+    <string name="expected_date_of_delivery" translatable="false">Expected Date of Delivery</string>
+    <string name="hiv_test" translatable="false">HIV Test</string>
+    <string name="reactive" translatable="false">Reactive</string>
+    <string name="non_reactive" translatable="false">Non Reactive</string>
+    <string name="inconclusive" translatable="false">inconclusive</string>
+    <string name="a_test_result" translatable="false">A%d Test Result</string>
+    <string name="pre_test_counselling" translatable="false">Pre-test counselling (Checklist / Job Aid)</string>
+    <string name="test_for_hiv" translatable="false">Test for HIV (Rapid Test Kit / Job Aid)</string>
+    <string name="post_test_counselling" translatable="false">Post test counselling (Checklist / Job Aid)</string>
+    <string name="basic_information_about_hiv" translatable="false">Basic information about HIV</string>
+    <string name="the_benefits_of_hiv_testing" translatable="false">The benefits of HIV testing</string>
+    <string name="understanding_test_results" translatable="false">Understanding test results</string>
+    <string name="importance_of_hiv_prevention" translatable="false">Importance of HIV prevention</string>
+    <string name="confidentiality_and_rights" translatable="false">Confidentiality and rights</string>
+    <string name="risk_assessment" translatable="false">Risk Assessment</string>
+    <string name="explain_the_testing_procedure" translatable="false">Explain the testing procedure, including self-testing</string>
+    <string name="addressing_misconceptions" translatable="false">Addressing misconceptions</string>
+    <string name="support_services_for_hiv" translatable="false">Support services for HIV positive diagnosis.</string>
+    <string name="consent_sought_for_the_individual_to_be_tested" translatable="false">Consent sought for the individual to be tested</string>
+    <string name="re_emphasise_hiv_prevention_methods_retesting" translatable="false">Re-emphasise HIV prevention methods &amp; Retesting</string>
+    <string name="for_positive_clients" translatable="false">For Positive Clients: Discuss ,disclosure, partner notification, and index-testing service</string>
+    <string name="offer_prep_for_partners_in_discordant_couples" translatable="false">Offer PrEP for partners in discordant couples.</string>
+    <string name="provide_counselling_risk_reduction_condom_use" translatable="false">Provide counselling on risk reduction, condom use, STI prevention, and screening.</string>
+    <string name="art_and_hiv_care" translatable="false">ART and HIV Care:Explain ART benefits and the risks of delaying treatment.</string>
+    <string name="offer_art_preparatory_counselling" translatable="false">Offer ART preparatory counselling.</string>
+    <string name="post_test_doc_and_link" translatable="false">Post-Test Documentation and Linkage:Complete post-test forms, linkage registers, and HTS documentation.</string>
+    <string name="link_to_art" translatable="false">Link to ART and prevention services.</string>
+    <string name="if_same_day_art" translatable="false">If same-day ART initiation is not possible, schedule a follow-up appointment</string>
+    <string name="provide_ongoing_follow_up" translatable="false">Provide ongoing follow-up to ensure clients access services and care.  </string>
+    <string name="entry_point" translatable="false">Entry Point</string>
+    <string name="a1_test_result" translatable="false">A1 Test Results</string>
+    <string name="a2_test_result" translatable="false">A2 Test Results</string>
+    <string name="a3_test_result" translatable="false">A3 Test Results</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.db.dao.ExaminationsDAO
 import com.medtroniclabs.spice.db.dao.FollowUpCallsDao
 import com.medtroniclabs.spice.db.dao.FollowUpDao
 import com.medtroniclabs.spice.db.dao.FrequencyDAO
+import com.medtroniclabs.spice.db.dao.HivMetaDataDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
 import com.medtroniclabs.spice.db.dao.LinkHouseholdMemberDao
@@ -361,6 +362,12 @@ object AppModule {
     @Provides
     fun provideRxBuddyFollowUpDAO(db: SpiceDataBase): RxBuddyFollowUpDAO {
         return db.rxBuddyFollowUpDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideHivMetaDataDAO(db: SpiceDataBase): HivMetaDataDAO {
+        return db.hivMetaDataDAO()
     }
 }
 

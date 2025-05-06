@@ -18,6 +18,9 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.InformationModel
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Contraceptive
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.PostTestCounselling
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.PreTestCounselling
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TestForHiv
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isBreastfeed
@@ -81,6 +84,9 @@ class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
             }
             Contraceptive -> {
                 InformationUtils().getContraceptiveInformation(requireContext())
+            }
+            PreTestCounselling, PostTestCounselling, TestForHiv -> {
+                InformationUtils().getHIVTestInformation(requireContext(), arguments?.getString(ID))
             }
             else -> null
         }

@@ -102,7 +102,7 @@ data class Village(
 data class Menu(
     val id: Long,
     val roleName: String,
-    val menus: ArrayList<MenuDetail>,
+    val menus: ArrayList<MenuDetail>?,
     val active: Boolean? = false,
     val deleted: Boolean? = false,
     val meta: List<String>? = null
@@ -245,7 +245,7 @@ data class LastCreatedAtAndPatientId(
     val lastPatientId: String?
 )
 
-data class ConsentFormResponse(val household: String?, val EPI: String?)
+data class ConsentFormResponse(val household: String?, val EPI: String?, val HIV: String?)
 
 data class RiskFactorResponse(
     @SerializedName("non_lab")

@@ -476,7 +476,9 @@ class MetaRepository @Inject constructor(
     }
 
     private suspend fun handleMeta(menu: Menu, meta: MutableList<String>) {
-        saveMenusInDb(menu.menus, menu.roleName)
+        menu.menus?.let {
+            saveMenusInDb(menu.menus, menu.roleName)
+        }
         menu.meta?.let { meta.addAll(it) }
     }
 
@@ -515,6 +517,15 @@ class MetaRepository @Inject constructor(
                 roomHelper.insertConsentForm(
                     ConsentForm(
                         type = ConsentFormType.EPI,
+                        content = it
+                    )
+                )
+            }
+
+            forms.HIV?.let {
+                roomHelper.insertConsentForm(
+                    ConsentForm(
+                        type = ConsentFormType.HIV,
                         content = it
                     )
                 )

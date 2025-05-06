@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.db.dao.ExaminationsDAO
 import com.medtroniclabs.spice.db.dao.FollowUpCallsDao
 import com.medtroniclabs.spice.db.dao.FollowUpDao
 import com.medtroniclabs.spice.db.dao.FrequencyDAO
+import com.medtroniclabs.spice.db.dao.HivMetaDataDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
 import com.medtroniclabs.spice.db.dao.LinkHouseholdMemberDao
@@ -128,6 +129,7 @@ abstract class SpiceDataBase : RoomDatabase() {
     abstract fun rxBuddyDao(): RxBuddyDetailsDAO
     abstract fun treatmentDetailsDao():TreatmentDetailsDAO
     abstract fun rxBuddyFollowUpDao():RxBuddyFollowUpDAO
+    abstract fun hivMetaDataDAO(): HivMetaDataDAO
     companion object {
         private const val DATABASE_NAME = "SpiceDataBase"
 
