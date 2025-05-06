@@ -126,7 +126,7 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
             val age =
                 context?.let { CommonUtils.getAgeFromDOB(patientLinkedDetails.dateOfBirth, it) }
             age?.toIntOrNull()?.let {
-//                if (it >= 10) binding.bottomNavigation.visible()
+                if (it >= 10) binding.bottomNavigation.visible()
             }
             patientNameAgeGender.text =
                 formatPatientDemographics(requireContext(), patientLinkedDetails)

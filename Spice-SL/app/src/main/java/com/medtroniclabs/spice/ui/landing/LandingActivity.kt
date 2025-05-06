@@ -560,8 +560,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         val isNotificationVisible =
             CommonUtils.isNCDProvider() || CommonUtils.isPhysicianPrescriber() || CommonUtils.isPeerSuperVisor()
         if (isNotificationVisible) {
-//            binding.appBarMain.ivNotification.visible()
-            binding.appBarMain.ivNotification.gone()
+            binding.appBarMain.ivNotification.visible()
         } else {
             binding.drawerLayout.setDrawerLockMode(
                 DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
@@ -847,7 +846,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                         val request = PeerSupervisorNotificationRequest(
                             userId = SecuredPreference.getUserId().toString()
                         )
-//                        viewModel.getCBSUpdatedNotificationList(request)
+                        viewModel.getCBSUpdatedNotificationList(request)
                     } else viewModel.notificationIsViewed = false
                 }
             }
@@ -1093,7 +1092,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             val request = PeerSupervisorNotificationRequest(
                 userId = SecuredPreference.getUserId().toString()
             )
-//            viewModel.getCBSNotificationList(request)
+            viewModel.getCBSNotificationList(request)
         }
     }
 
@@ -1123,7 +1122,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                         }, 600)
                     } else {
                         if (SecuredPreference.notificationIds != null && viewModel.notificationIsViewed) {
-//                            viewModel.updateCBSNotification()
+                            viewModel.updateCBSNotification()
                         }
                         else{
                             SecuredPreference.removePeerSupervisorToken()
