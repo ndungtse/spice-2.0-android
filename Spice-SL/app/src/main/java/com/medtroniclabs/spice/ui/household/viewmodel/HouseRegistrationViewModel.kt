@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
@@ -123,9 +124,29 @@ class HouseRegistrationViewModel @Inject constructor(
     fun getCurrentLocation(): Location? {
         return this.lastLocation
     }
-    fun updateMemberAsAssigned(memberID: Long?) {
+
+    fun updateMemberAsAssigned(memberID: Long?, hhmId: Long? = null, hhId: Long? = null) {
         viewModelScope.launch(dispatcherIO) {
-            houseHoldRepositoryMember.updateMemberAsAssigned(memberId = memberID.toString())
+            if (hhmId != null && hhId != null) {
+                val tbPatientIds = houseHoldRepositoryMember.getTbPatientLocalIdByHouseholdId(hhId)
+                val isTbPatient = houseHoldRepositoryMember.isTbPatient(memberID.toString())
+
+                when {
+                    tbPatientIds.isNotEmpty() && !isTbPatient -> {
+                        // Household has TB patients but this member is not one — update contact tracing status
+                        houseHoldRepositoryMember.updateContactTracingStatus(
+                            hhmId,
+                            OfflineConstant.CONTACT_TRACING_YET_TO_TAKE
+                        )
+                    }
+                    tbPatientIds.isEmpty() && isTbPatient -> {
+                        // No TB patients in household but this member is one — update all household contact tracing statuses
+                        houseHoldRepositoryMember.updateContactTracingForLinkTbPatient(hhmId, hhId)
+                    }
+                }
+            }
+
+            houseHoldRepositoryMember.updateMemberAsAssigned(memberID.toString())
         }
     }
 }

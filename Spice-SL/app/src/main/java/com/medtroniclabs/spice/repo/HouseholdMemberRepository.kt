@@ -92,7 +92,8 @@ class HouseholdMemberRepository @Inject constructor(
         signature: String? = null,
         location: Location?
     ): HouseholdMemberEntity {
-        val householdMemberEntity = entity ?: HouseholdMemberEntity()
+
+        val householdMemberEntity = entity ?: HouseholdMemberEntity(tBContactTraceStatus = if (roomHelper.getTbPatientLocalIdByHouseholdId(householdId).size > 0) 0 else null)
 
         val name = map[MemberRegistration.name]
         householdMemberEntity.name = getStringOrEmptyString(name)
@@ -139,7 +140,6 @@ class HouseholdMemberRepository @Inject constructor(
         if (entity == null) {
             val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
             householdMemberEntity.villageId = householdDetails.villageId
-          //  householdMemberEntity.patientId = getNextPatientId(householdDetails.villageId)
             householdMemberEntity.initial = initial
             householdMemberEntity.localSignatureFile = signature
         } else {
@@ -306,5 +306,21 @@ class HouseholdMemberRepository @Inject constructor(
 
     suspend fun updatePregnantStatus(memberId: Long, isPregnant: Boolean) {
         return roomHelper.updatePregnantStatus(memberId, isPregnant)
+    }
+
+    suspend fun getTbPatientLocalIdByHouseholdId(householdId: Long): MutableList<Long> {
+        return roomHelper.getTbPatientLocalIdByHouseholdId(householdId)
+    }
+
+    suspend fun isTbPatient(memberId: String) : Boolean {
+        return roomHelper.getTreatmentDetails(memberId) != null
+    }
+
+    suspend fun updateContactTracingStatus(memberId: Long, status: Int?) {
+        roomHelper.updateContactTracingStatus(memberId, status)
+    }
+
+    suspend fun updateContactTracingForLinkTbPatient(tbHHMId: Long, householdId: Long) {
+        roomHelper.updateContactTracingForLinkTbPatient(tbHHMId, householdId)
     }
 }

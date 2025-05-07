@@ -76,6 +76,8 @@ data class HouseHoldMember(
 
     val assignHousehold: Boolean? = null,
 
+    val tbcontactTraceStatus: Boolean? = null,
+
     var latitude: Double = 0.0,
 
     var longitude: Double = 0.0
@@ -117,12 +119,19 @@ data class HouseHoldMember(
             version = this.version,
             lastUpdated = this.lastUpdated,
             deceasedReason = this.deceasedReason,
+            tBContactTraceStatus = getTBContactStatus(this.tbcontactTraceStatus),
             latitude = this.latitude,
             longitude = this.longitude,
         ).apply {
             fhirId = this@HouseHoldMember.id.toString()
             sync_status = status
         }
+    }
+
+    private fun getTBContactStatus(flag: Boolean?): Int? = when (flag) {
+        null -> null
+        true -> 0
+        false -> 1
     }
 
     private fun toRegularCase(sentence: String): String {

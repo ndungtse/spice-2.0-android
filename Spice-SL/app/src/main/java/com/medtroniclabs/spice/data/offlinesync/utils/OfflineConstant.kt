@@ -23,4 +23,7 @@ object OfflineConstant {
     const val SYNC_MODE_MANUAL = "ManualSync"
     const val SYNC_MODE_AUTOMATIC = "AutomaticSync"
 
+    const val CONTACT_TRACING_YET_TO_TAKE = 0
+    const val CONTACT_TRACING_DONE = 1
+
 }

@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
@@ -193,7 +194,7 @@ class HouseHoldRepository @Inject constructor(
         return roomHelper.getHouseholdCardDetailLiveData(id)
     }
 
-    fun getAllHouseHoldMembersLiveData(hhId: Long) : LiveData<List<HouseholdMemberEntity>> {
+    fun getAllHouseHoldMembersLiveData(hhId: Long) : LiveData<List<HouseholdMemberWithTb>> {
         return roomHelper.getAllHouseHoldMembersLiveData(hhId)
     }
 

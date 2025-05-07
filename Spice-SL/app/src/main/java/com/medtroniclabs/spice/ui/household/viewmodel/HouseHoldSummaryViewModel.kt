@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.repo.HouseHoldRepository
@@ -38,7 +39,7 @@ class HouseHoldSummaryViewModel @Inject constructor(
             houseHoldRepository.getHouseholdCardDetailLiveData(id)
         }
 
-    val householdMembersLiveData: LiveData<List<HouseholdMemberEntity>> =
+    val householdMembersLiveData: LiveData<List<HouseholdMemberWithTb>> =
         houseHoldNoLiveData.switchMap { id ->
             houseHoldRepository.getAllHouseHoldMembersLiveData(id)
            // houseHoldRepository.getAllHouseHoldMembersWithTbStatusLiveData(id)

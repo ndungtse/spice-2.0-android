@@ -106,9 +106,7 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun composeTbSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        val isContactTrace = listSummaryData.any {
-            it.id == RelationshipToIC && it.value.isNullOrBlank()
-        }
+        val isContactTrace = listSummaryData.any { it.id == RelationshipToIC }
         if(isContactTrace){
             binding.tvTitle.text = binding.root.context.getString(R.string.contact_tracing)
             val stringBuilder = StringBuilder()

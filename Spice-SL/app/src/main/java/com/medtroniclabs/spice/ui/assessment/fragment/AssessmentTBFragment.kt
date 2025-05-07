@@ -41,12 +41,12 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
     private lateinit var binding: FragmentAssessmentTBBinding
     private lateinit var formGenerator: FormGenerator
     private val viewModel: AssessmentViewModel by activityViewModels()
-    private var isContactTrace:Boolean? = null
-    private var isTBPatient:Boolean? = null
+    private var isContactTracing: Boolean? = null
+    private var isTBPatient: Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        isContactTrace = arguments?.getBoolean(DefinedParams.CONTACT_TRACING, false)
+        isContactTracing = arguments?.getBoolean(DefinedParams.CONTACT_TRACING, false)
         isTBPatient = arguments?.getBoolean(DefinedParams.isTbPatient, false)
     }
     override fun onCreateView(
@@ -60,7 +60,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getTbType(viewModel.selectedHouseholdMemberId)
+        viewModel.getTbType(viewModel.selectedHouseholdMemberId, isContactTracing)
         showBioDataFragment()
         attachObservers()
         setListeners()

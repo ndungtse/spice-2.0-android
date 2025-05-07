@@ -23,6 +23,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberCallRegisterDto
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberStatus
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdWithMemberCount
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyFollowUpDetails
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyRegisterDetail
@@ -628,7 +629,7 @@ class RoomHelperImpl @Inject constructor(
         return householdDAO.getHouseholdCardDetailLiveData(id)
     }
 
-    override fun getAllHouseHoldMembersLiveData(hhId: Long): LiveData<List<HouseholdMemberEntity>> {
+    override fun getAllHouseHoldMembersLiveData(hhId: Long): LiveData<List<HouseholdMemberWithTb>> {
         return memberDAO.getAllHouseHoldMembersLiveData(hhId)
     }
 
@@ -1426,5 +1427,17 @@ class RoomHelperImpl @Inject constructor(
         rxBuddiesId: List<Long>
     ): List<RxBuddyRegisterDetail> {
         return rxBuddyDetailsDAO.getAllUnSyncedRxBuddyDetailWithHHM(hhmId, rxBuddiesId)
+    }
+
+    override suspend fun getTbPatientLocalIdByHouseholdId(householdId: Long): MutableList<Long> {
+        return memberDAO.getTbPatientLocalIdByHouseholdId(householdId)
+    }
+
+    override suspend fun updateContactTracingStatus(memberId: Long, status: Int?) {
+        memberDAO.updateContactTracingStatus(memberId, status)
+    }
+
+    override suspend fun updateContactTracingForLinkTbPatient(tbHHMId: Long, householdId: Long) {
+        memberDAO.updateContactTracingForLinkTbPatient(tbHHMId, householdId)
     }
 }

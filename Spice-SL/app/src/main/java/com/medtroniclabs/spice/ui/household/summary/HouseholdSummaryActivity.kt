@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
 import com.medtroniclabs.spice.databinding.ActivityHouseholdSummaryBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
@@ -98,7 +99,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         }
     }
 
-    private fun initializeAdapter(data: List<HouseholdMemberEntity>) {
+    private fun initializeAdapter(data: List<HouseholdMemberWithTb>) {
         val householdListAdapter =
             HouseholdMemberListAdapter(data, this, householdSummaryViewModel.isPhuWalkInsFlow)
         binding.rvHouseholdList.apply {

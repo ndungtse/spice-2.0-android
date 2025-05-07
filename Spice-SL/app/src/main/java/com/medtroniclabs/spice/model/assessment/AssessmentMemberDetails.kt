@@ -11,5 +11,6 @@ data class AssessmentMemberDetails(
     val householdId: String? = null,
     val householdLocalId: Long,
     val id:Long,
-    var isPregnant: Boolean? = null
+    var isPregnant: Boolean? = null,
+    val contactTracingStatus: Int? = null
 )

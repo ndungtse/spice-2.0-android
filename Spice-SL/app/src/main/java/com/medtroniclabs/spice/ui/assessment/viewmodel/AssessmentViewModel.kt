@@ -42,6 +42,7 @@ import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.data.model.SymptomModel
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
@@ -138,7 +139,7 @@ class AssessmentViewModel @Inject constructor(
 ) : BaseViewModel(dispatcherIO) {
 
     var selectedHouseholdMemberId = -1L
-    var memberFhirId : String? = null
+    var memberFhirId: String? = null
     var selectedHouseholdId = -1L
     var followUpId: Long? = null
     val assessmentSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
@@ -184,8 +185,8 @@ class AssessmentViewModel @Inject constructor(
     var isDangerSignFlow: Boolean = false
     var ageInMonth = MutableLiveData<String>()
     var formRenderedLiveData = MutableLiveData<Boolean>()
-    var muacColor:String? = null
-    var hasDiarrhoea:Boolean = false
+    var muacColor: String? = null
+    var hasDiarrhoea: Boolean = false
     val userProfileLiveData = MutableLiveData<Resource<UserProfile>>()
     val callResultHashMap = HashMap<String, Any>()
     val patientHealthFacility = MutableLiveData<Resource<List<HealthFacilityEntity>>>()
@@ -213,15 +214,17 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    var dangerSingsKey:String? = null
+    var dangerSingsKey: String? = null
+
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 
     val pncChildMemberDetailsLiveData = MutableLiveData<HouseholdMemberEntity?>()
     val pncAssessmentStringSaveLiveData = MutableLiveData<String?>()
-    val pncAssessmentSaveLiveData = MutableLiveData<Resource<Pair<AssessmentEntity, AssessmentEntity?>>>()
+    val pncAssessmentSaveLiveData =
+        MutableLiveData<Resource<Pair<AssessmentEntity, AssessmentEntity?>>>()
 
-    var isAssessmentCancelLiveData=MutableLiveData<Boolean>()
+    var isAssessmentCancelLiveData = MutableLiveData<Boolean>()
 
     init {
         SecuredPreference.getFollowUpCriteria()?.let { followUpCriteria ->
@@ -232,9 +235,8 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    var isDeathOfNewborn=false
-    var nameOfDangerSignClicked:String? = null
-
+    var isDeathOfNewborn = false
+    var nameOfDangerSignClicked: String? = null
 
 
     fun getPNCChildInfoByParentId(parentId: Long) {
@@ -268,13 +270,13 @@ class AssessmentViewModel @Inject constructor(
         tbType: String,
         menuId: String?
     ) {
-        when(tbType) {
+        when (tbType) {
             TBScreening -> {
-                saveAssessment(assessmentMap, referralResult, menuId)
+                saveAssessment(assessmentMap, referralResult, menuId, tbType)
             }
 
             TBContactTracing -> {
-                saveAssessment(assessmentMap, referralResult, menuId)
+                saveAssessment(assessmentMap, referralResult, menuId, tbType)
             }
 
             TBRxBuddyRegister -> {
@@ -341,7 +343,8 @@ class AssessmentViewModel @Inject constructor(
     fun saveAssessment(
         assessmentMap: HashMap<String, Any>,
         referralResult: Pair<String?, ArrayList<String>>?,
-        menuId: String?
+        menuId: String?,
+        tbType: String? = null,
     ) {
         viewModelScope.launch(dispatcherIO) {
             memberDetailsLiveData.value?.data?.let { details ->
@@ -351,6 +354,10 @@ class AssessmentViewModel @Inject constructor(
                 assessmentStringLiveData.postValue(assessmentDetail.first)
                 referralReason = referralResult?.second
                 val otherDetails = calculateOtherDetails(assessmentMap, referralStatus, menuId)
+                if (tbType == TBContactTracing) {
+                    memberRegistrationRepository.updateContactTracingStatus(details.id, OfflineConstant.CONTACT_TRACING_DONE)
+                }
+
                 assessmentSaveLiveData.postValue(
                     assessmentRepository.saveAssessment(
                         assessmentDetail.second,
@@ -366,9 +373,9 @@ class AssessmentViewModel @Inject constructor(
     }
 
     fun saveCallResult(
-       assessmentEntity: AssessmentEntity,
-       assessmentMap: HashMap<String, Any>? = null,
-       memberId: Long? = null
+        assessmentEntity: AssessmentEntity,
+        assessmentMap: HashMap<String, Any>? = null,
+        memberId: Long? = null
     ) {
         viewModelScope.launch(dispatcherIO) {
             assessmentMap?.let {
@@ -378,7 +385,13 @@ class AssessmentViewModel @Inject constructor(
             }
             memberId?.let {
                 val pregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(it)
-                savePatientClinicalInformation(getUpdatedPregnancyDetail(memberId, pregnancyDetail,true))
+                savePatientClinicalInformation(
+                    getUpdatedPregnancyDetail(
+                        memberId,
+                        pregnancyDetail,
+                        true
+                    )
+                )
             }
             callResultSaveLiveData.postValue(assessmentRepository.saveCallResult(assessmentEntity))
         }
@@ -596,10 +609,12 @@ class AssessmentViewModel @Inject constructor(
 
                 if (diarrhoea.containsKey(IccmDiarrheaNotifiableCondition)) {
                     val cbsData = hashMapOf<String, Any>()
-                    val conditions = getFormatedNotifiableCondition(diarrhoea, IccmDiarrheaNotifiableCondition)
+                    val conditions =
+                        getFormatedNotifiableCondition(diarrhoea, IccmDiarrheaNotifiableCondition)
                     cbsData[NotifiableConditions] = conditions
                     if (diarrhoea.containsKey(OtherNotifiableConditionsForDiarrhoea)) {
-                        cbsData[OtherNotifiableConditions] = diarrhoea[OtherNotifiableConditionsForDiarrhoea] as String
+                        cbsData[OtherNotifiableConditions] =
+                            diarrhoea[OtherNotifiableConditionsForDiarrhoea] as String
                     }
                     diarrhoea.remove(IccmDiarrheaNotifiableCondition)
                     diarrhoea.remove(OtherNotifiableConditionsForDiarrhoea)
@@ -611,10 +626,12 @@ class AssessmentViewModel @Inject constructor(
                 val fever = iccm[fever.lowercase()] as HashMap<Any, Any>
                 if (fever.containsKey(IccmFeverNotifiableCondition)) {
                     val cbsData = hashMapOf<String, Any>()
-                    val conditions = getFormatedNotifiableCondition(fever, IccmFeverNotifiableCondition)
+                    val conditions =
+                        getFormatedNotifiableCondition(fever, IccmFeverNotifiableCondition)
                     cbsData[NotifiableConditions] = conditions
                     if (fever.containsKey(OtherNotifiableConditionsForFever)) {
-                        cbsData[OtherNotifiableConditions] = fever[OtherNotifiableConditionsForFever] as String
+                        cbsData[OtherNotifiableConditions] =
+                            fever[OtherNotifiableConditionsForFever] as String
                     }
                     fever.remove(IccmFeverNotifiableCondition)
                     fever.remove(OtherNotifiableConditionsForFever)
@@ -737,18 +754,18 @@ class AssessmentViewModel @Inject constructor(
         // Request modification for syncing TB to Backend
         if (map.containsKey(TB.lowercase())) {
             val result = map[TB.lowercase()] as? HashMap<Any, Any>
-            val contactTracing = result?.get(CONTACT_TRACING) as? HashMap<Any,Any>
+            val contactTracing = result?.get(CONTACT_TRACING) as? HashMap<Any, Any>
             if (contactTracing?.size == 0) {
                 result.remove(CONTACT_TRACING)
             }
 
-           /* if ( result != null && result.containsKey(TbScreening) && contactTracing?.size == 0) {
-                val value = result[TbScreening] as? HashMap<Any, Any>
-                if (!value.isNullOrEmpty()) {
-                    map.remove(TB.lowercase())
-                    map[TB.lowercase()] = value
-                }
-            }*/
+            /* if ( result != null && result.containsKey(TbScreening) && contactTracing?.size == 0) {
+                 val value = result[TbScreening] as? HashMap<Any, Any>
+                 if (!value.isNullOrEmpty()) {
+                     map.remove(TB.lowercase())
+                     map[TB.lowercase()] = value
+                 }
+             }*/
         }
 
         // Request modification for CBS Register
@@ -759,11 +776,21 @@ class AssessmentViewModel @Inject constructor(
                 value?.takeIf { it.isNotEmpty() }?.let {
                     val conditions = mutableListOf<String>()
                     if (value.containsKey(CbsNotifiableCondition)) {
-                        conditions.addAll(getFormatedNotifiableCondition(value, CbsNotifiableCondition))
+                        conditions.addAll(
+                            getFormatedNotifiableCondition(
+                                value,
+                                CbsNotifiableCondition
+                            )
+                        )
                     }
 
                     if (value.containsKey(RmnchNotifiableCondition)) {
-                        conditions.addAll(getFormatedNotifiableCondition(value, RmnchNotifiableCondition))
+                        conditions.addAll(
+                            getFormatedNotifiableCondition(
+                                value,
+                                RmnchNotifiableCondition
+                            )
+                        )
                     }
 
                     val cbs = it.toMutableMap()
@@ -782,7 +809,7 @@ class AssessmentViewModel @Inject constructor(
 
         // Request modification for Family Planning
         if (map.containsKey(familyPlanning.lowercase())) {
-           val familyPlanning =  (map[familyPlanning] as? Map<String, Any>)
+            val familyPlanning = (map[familyPlanning] as? Map<String, Any>)
             if (familyPlanning != null && familyPlanning.containsKey(FamilyPlanningDetails)) {
                 val result = familyPlanning[FamilyPlanningDetails] as? HashMap<String, Any>
                 result?.let {
@@ -837,14 +864,19 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun getFormData(formType: String,isContactTracking:Boolean?,isTbPatient:Boolean?,isRxBuddy:Boolean){
+    fun getFormData(
+        formType: String,
+        isContactTracking: Boolean?,
+        isTbPatient: Boolean?,
+        isRxBuddy: Boolean
+    ) {
         viewModelScope.launch(dispatcherIO) {
             formLayoutsLiveData.postLoading()
             val formData = assessmentRepository.getFormData(formType)
-            if(isContactTracking == true)
+            if (isContactTracking == true)
                 updateFieldViewStatus(formData)
-            else if(isTbPatient == true)
-                updateRxBuddyFieldViewStatus(formData,isRxBuddy)
+            else if (isTbPatient == true)
+                updateRxBuddyFieldViewStatus(formData, isRxBuddy)
 
             formLayoutsLiveData.postValue(formData)
         }
@@ -852,26 +884,31 @@ class AssessmentViewModel @Inject constructor(
 
     private fun updateFieldViewStatus(formResponse: Resource<FormResponse>) {
         formResponse.data?.formLayout?.forEach { field ->
-            if(field.id == CONTACT_TRACING || field.family == CONTACT_TRACING){
+            if (field.id == CONTACT_TRACING || field.family == CONTACT_TRACING) {
                 field.visibility = "visible"
                 field.isMandatory = true
-            }else{
+            } else {
                 field.isMandatory = false
             }
         }
     }
 
-    private fun updateRxBuddyFieldViewStatus(formResponse: Resource<FormResponse>,isRxBuddy: Boolean) {
+    private fun updateRxBuddyFieldViewStatus(
+        formResponse: Resource<FormResponse>,
+        isRxBuddy: Boolean
+    ) {
         formResponse.data?.formLayout?.forEach { field ->
             when (field.id) {
                 tbScreening -> {
                     field.visibility = "gone"
                     field.isMandatory = false
                 }
+
                 hasCough -> {
                     field.visibility = "gone"
                     field.isMandatory = false
                 }
+
                 rxBuddyName, rxBuddyPhoneNumber -> {
                     field.visibility = "gone"
                 }
@@ -879,7 +916,7 @@ class AssessmentViewModel @Inject constructor(
                 rxBuddy, selectHouseholdMember,
                 relationshipToPatient,
                 hasProvidedMonitoringSheet -> {
-                    field.visibility = if(isRxBuddy) "gone" else "visible"
+                    field.visibility = if (isRxBuddy) "gone" else "visible"
                 }
             }
         }
@@ -1092,7 +1129,7 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun updateMemberDeceasedStatus(id: Long, status: Boolean,deceasedReason: String? = null) {
+    fun updateMemberDeceasedStatus(id: Long, status: Boolean, deceasedReason: String? = null) {
         viewModelScope.launch(dispatcherIO) {
             memberRegistrationRepository.updateMemberDeceasedReason(
                 id,
@@ -1243,7 +1280,7 @@ class AssessmentViewModel @Inject constructor(
 
         viewModelScope.launch(dispatcherIO) {
             //Update Mother member details to NotSynced for PNC Flow
-            if(childFhirId == null) {
+            if (childFhirId == null) {
                 memberRegistrationRepository.changeMemberDetailsToNotSynced(memberDetail.id)
             }
 
@@ -1266,12 +1303,13 @@ class AssessmentViewModel @Inject constructor(
                     motherReferralResult,
                     getCurrentLocation(),
                     otherDetails,
-                    Triple(childMemberId, followUpId,deathOfNewborn),
+                    Triple(childMemberId, followUpId, deathOfNewborn),
                     childReferralResult
                 )
             )
         }
     }
+
     fun fetchCurrentLocation(context: Context) {
         val locationManager = SpiceLocationManager(context)
         locationManager.getCurrentLocation {
@@ -1295,10 +1333,12 @@ class AssessmentViewModel @Inject constructor(
             )
         }
     }
+
     val triggerGetForm = MutableLiveData<Boolean>()
     fun triggerGetForm() {
         triggerGetForm.value = true
     }
+
     val formLayoutsCbsLiveData = MutableLiveData<Resource<FormResponse>>()
     fun getFormDataCbs(formType: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -1306,24 +1346,25 @@ class AssessmentViewModel @Inject constructor(
             formLayoutsCbsLiveData.postValue(assessmentRepository.getFormData(formType))
         }
     }
+
     var assessmentMap: HashMap<String, Any> = hashMapOf()
     var referralResult: Pair<String?, ArrayList<String>>? = Pair(null, ArrayList<String>())
-    val birthLiveData = MutableLiveData<Resource<Triple<String,Boolean,Boolean>>>()
-    var cbsMemberIDAndPregnancyDetail :Pair<Long?,PregnancyDetail?> = Pair(null,null)
+    val birthLiveData = MutableLiveData<Resource<Triple<String, Boolean, Boolean>>>()
+    var cbsMemberIDAndPregnancyDetail: Pair<Long?, PregnancyDetail?> = Pair(null, null)
 
-     fun setBirth(
-         resultValue: HashMap<String, Any>,
-         referralResult: Pair<String?, ArrayList<String>>,
-         birth: String,
-         isDelete: Boolean,
-         memberId:Long? = null
-     ) {
+    fun setBirth(
+        resultValue: HashMap<String, Any>,
+        referralResult: Pair<String?, ArrayList<String>>,
+        birth: String,
+        isDelete: Boolean,
+        memberId: Long? = null
+    ) {
         this.assessmentMap = resultValue
         this.referralResult = referralResult
-         memberId?.let {
-             cbsMemberIDAndPregnancyDetail = Pair(memberId, pregnancyDetail)
-         }
-         birthLiveData.postValue(Resource(ResourceState.SUCCESS, Triple(birth,isDelete,true)))
+        memberId?.let {
+            cbsMemberIDAndPregnancyDetail = Pair(memberId, pregnancyDetail)
+        }
+        birthLiveData.postValue(Resource(ResourceState.SUCCESS, Triple(birth, isDelete, true)))
     }
 
     fun getUpdatedPregnancyDetail(
@@ -1348,6 +1389,7 @@ class AssessmentViewModel @Inject constructor(
             this.estimatedDeliveryDate = null
         }
     }
+
     val memberCbsDetailsLiveData = MutableLiveData<Resource<AssessmentMemberDetails>>()
     fun saveMember(
         memberMap: HashMap<String, Any>,
@@ -1356,7 +1398,7 @@ class AssessmentViewModel @Inject constructor(
         location: Location?
     ) {
         viewModelScope.launch(dispatcherIO) {
-           val id =  memberRegistrationRepository.registerMember(
+            val id = memberRegistrationRepository.registerMember(
                 memberMap,
                 householdId,
                 null,
@@ -1366,7 +1408,11 @@ class AssessmentViewModel @Inject constructor(
             //Update Mother member details to NotSynced for PNC Flow
             memberRegistrationRepository.changeMemberDetailsToNotSynced(motherID)
             id?.let {
-                memberCbsDetailsLiveData.postValue(memberRegistrationRepository.getAssessmentMemberDetails(id))
+                memberCbsDetailsLiveData.postValue(
+                    memberRegistrationRepository.getAssessmentMemberDetails(
+                        id
+                    )
+                )
             }
         }
     }
@@ -1383,12 +1429,18 @@ class AssessmentViewModel @Inject constructor(
         this.assessment = data
         this.resultValue = resultValue
         memberId?.let {
-            savePatientClinicalInformation(getUpdatedPregnancyDetail(memberId , pregnancyDetail,true))
+            savePatientClinicalInformation(
+                getUpdatedPregnancyDetail(
+                    memberId,
+                    pregnancyDetail,
+                    true
+                )
+            )
         }
-        birthLiveData.postValue(Resource(ResourceState.SUCCESS, Triple(birth, false,false)))
+        birthLiveData.postValue(Resource(ResourceState.SUCCESS, Triple(birth, false, false)))
     }
 
-    fun updateTBContactTraceStatus(hhmId:Long,tbContactTracingStatus:Int){
+    fun updateTBContactTraceStatus(hhmId: Long, tbContactTracingStatus: Int) {
         viewModelScope.launch(dispatcherIO) {
             houseHoldRepository.updateHouseholdMemberTbContactTraceStatus(
                 hhmId,
@@ -1463,7 +1515,7 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun getOtherHouseholdMemberExcludeTBPatient(){
+    fun getOtherHouseholdMemberExcludeTBPatient() {
         val memberId = memberDetailsLiveData.value?.data?.id
         val householdId = memberDetailsLiveData.value?.data?.householdLocalId
         viewModelScope.launch(dispatcherIO) {
@@ -1477,11 +1529,12 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun getTbType(memberId: Long) {
+    fun getTbType(memberId: Long, isContactTracking: Boolean?) {
         viewModelScope.launch(dispatcherIO) {
             formLayoutsLiveData.postLoading()
             memberDetailsLiveData.postLoading()
-            val assessmentMemberDetails = memberRegistrationRepository.getAssessmentMemberDetails(memberId)
+            val assessmentMemberDetails =
+                memberRegistrationRepository.getAssessmentMemberDetails(memberId)
             memberDetailsLiveData.postValue(assessmentMemberDetails)
 
             assessmentMemberDetails.data?.memberId?.let { memberId ->
@@ -1494,7 +1547,8 @@ class AssessmentViewModel @Inject constructor(
                     rxBuddyRepository.getRxBuddyDetails(memberId)?.let { rxBuddy ->
                         // 2.1.Rx Buddy Details not null. Proceed with Rx Buddy Followup
                         if (rxBuddy.householdMemberId != null) {
-                            val member = memberRegistrationRepository.getMemberDetails(rxBuddy.householdMemberId!!)
+                            val member =
+                                memberRegistrationRepository.getMemberDetails(rxBuddy.householdMemberId!!)
                             rxBuddy.name = member.name
                             rxBuddy.phoneNumber = member.phoneNumber
                         }
@@ -1505,16 +1559,23 @@ class AssessmentViewModel @Inject constructor(
                         assessmentTBType.postValue(TBRxBuddyRegister)
                     }
                 } ?: run {
-                    // 1.2. Treatment details null. Proceed with TB Screening
-                    assessmentTBType.postValue(TBScreening)
+                    // 1.2. Treatment details null. Proceed with TB Screening or Contact Tracing
+                    if (isContactTracking == true || assessmentMemberDetails.data.contactTracingStatus == 0)
+                        assessmentTBType.postValue(TBContactTracing)
+                    else
+                        assessmentTBType.postValue(TBScreening)
                 }
-            } ?: run { // If Fhir id not available for member proceed with TB Screening
-                assessmentTBType.postValue(TBScreening)
-            }
+            } ?: run { // If Fhir id not available for member proceed with TB Screening or Contact Tracing
+                    if (isContactTracking == true || assessmentMemberDetails.data?.contactTracingStatus == 0)
+                        assessmentTBType.postValue(TBContactTracing)
+                    else
+                        assessmentTBType.postValue(TBScreening)
+                }
         }
+
     }
 
-    private fun insertRxBuddyFollowUp(map: HashMap<String, Any>){
+    private fun insertRxBuddyFollowUp(map: HashMap<String, Any>) {
         viewModelScope.launch {
             saveRxBuddyFollowUpLiveData.postLoading()
             val tb = map[TB_MENU_ID.lowercase()] as HashMap<String, Any>
@@ -1591,7 +1652,7 @@ class AssessmentViewModel @Inject constructor(
             val today = LocalDate.now()
             val dStartDate = startDate.getLocalDate()
             visitList.forEach { visit ->
-               val nextVisit = dStartDate.plusMonths(visit.first).plusWeeks(visit.second)
+                val nextVisit = dStartDate.plusMonths(visit.first).plusWeeks(visit.second)
                 if (nextVisit.isAfter(today)) {
                     return nextVisit
                 }
@@ -1602,14 +1663,14 @@ class AssessmentViewModel @Inject constructor(
 
     private fun getTBNextVisitSchedule(): List<Pair<Long, Long>> {
         return listOf(
-            Pair(0,1), // 1st Month, 1st Week
-            Pair(0,3), // 1st Month, 3rd Week
-            Pair(1,1), // 2nd Month, 1st Week
-            Pair(1,3), // 2nd Month, 3rd Week
-            Pair(2,2), // 3rd Month, 2nd Week
-            Pair(3,3), // 4th Month, 3rd Week
-            Pair(4,4), // 5th Month, 4th Week
-            Pair(5,1), // 6th Month, 1st Week
+            Pair(0, 1), // 1st Month, 1st Week
+            Pair(0, 3), // 1st Month, 3rd Week
+            Pair(1, 1), // 2nd Month, 1st Week
+            Pair(1, 3), // 2nd Month, 3rd Week
+            Pair(2, 2), // 3rd Month, 2nd Week
+            Pair(3, 3), // 4th Month, 3rd Week
+            Pair(4, 4), // 5th Month, 4th Week
+            Pair(5, 1), // 6th Month, 1st Week
         )
     }
 

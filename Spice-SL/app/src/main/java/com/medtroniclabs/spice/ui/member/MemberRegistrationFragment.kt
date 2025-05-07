@@ -584,11 +584,9 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                 }
 
                 if (memberRegistrationViewModel.isPhuWalkInsFlow == true) {
-                    householdRegistrationViewModel.updateMemberAsAssigned(
-                        arguments?.getLong(
-                            com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
-                        )
-                    )
+                    val memberLocalId = memberRegistrationViewModel.memberDetailsLiveData.value?.data?.id
+                    val fhirMemberId =  arguments?.getLong(com.medtroniclabs.spice.common.DefinedParams.FhirMemberID)
+                    householdRegistrationViewModel.updateMemberAsAssigned(fhirMemberId, memberLocalId, householdRegistrationViewModel.householdId)
                 }
 
                 val location = Location("").apply {

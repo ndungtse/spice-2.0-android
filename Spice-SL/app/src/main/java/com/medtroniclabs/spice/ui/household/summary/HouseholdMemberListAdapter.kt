@@ -15,13 +15,14 @@ import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getAgeFromDOB
 import com.medtroniclabs.spice.common.CommonUtils.getGenderText
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
 import com.medtroniclabs.spice.databinding.MembersSummaryListItemBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.household.MemberSelectionListener
 
 class HouseholdMemberListAdapter(
-    private val houseHoldMembersList: List<HouseholdMemberEntity>,
+    private val houseHoldMembersList: List<HouseholdMemberWithTb>,
     private val listener: MemberSelectionListener,
     private val phuWalkInsFlow: Boolean,
 ) : RecyclerView.Adapter<HouseholdMemberListAdapter.HouseholdListViewHolder>(),
@@ -38,26 +39,31 @@ class HouseholdMemberListAdapter(
     ) {
         val context = holder.context
         val item = houseHoldMembersList[position]
-        val tbStatus = houseHoldMembersList[position].tBContactTraceStatus
+
         holder.binding.clReasonOfDeath.gone()
         holder.binding.forwardIcon.visible()
-        //Null -> TB Negative  1-> TB Positive  2-> contactTrace need to do 3 -> ContactTracing done
-        if (tbStatus != null) {
-            when (tbStatus) {
-                1 -> {
-                    holder.binding.tvDiagnosisStatus.text =
-                        context.resources.getString(R.string.trug_sensitive_tb)
-                    holder.binding.tvContactTracingStatus.gone()
-                    holder.binding.groupViewContactTrace.visible()
-                }
 
-                2 -> {
-                    holder.binding.tvDiagnosisStatus.text =
-                        context.resources.getString(R.string.separator_double_hyphen)
-                    holder.binding.tvDiagnosisStatus.setTextColor(
-                        ColorStateList.valueOf(context.getColor(R.color.grey_black))
-                    )
+        if (item.diagnoses != null && item.diagnoses.trim().isNotEmpty()) {
+            holder.binding.tvDiagnosisStatus.text = item.diagnoses
+            holder.binding.tvDiagnosisStatus.setTextColor(
+                ColorStateList.valueOf(context.getColor(R.color.a_red_error))
+            )
+        } else {
+            holder.binding.tvDiagnosisStatus.text =
+                context.resources.getString(R.string.separator_double_hyphen)
+            holder.binding.tvDiagnosisStatus.setTextColor(
+                ColorStateList.valueOf(context.getColor(R.color.grey_black))
+            )
+        }
 
+        /*
+        * Null -> Contact Tracing Not Required
+        * 0 -> contactTrace need to do
+        * 1 -> ContactTracing done
+        * */
+        item.tBContactTraceStatus?.let {
+            when(it) {
+                0 -> {
                     holder.binding.tvContactTracingStatus.text =
                         context.resources.getString(R.string.update_contact_tracing)
                     holder.binding.tvContactTracingStatus.setTextColor(
@@ -70,18 +76,12 @@ class HouseholdMemberListAdapter(
                         null
                     )
                     holder.binding.tvContactTracingStatus.visible()
-                    holder.binding.groupViewContactTrace.visible()
+
                     holder.binding.tvContactTracingStatus.safeClickListener(this)
                     holder.binding.tvContactTracingStatus.tag = position
                 }
 
-                3 -> {
-                    holder.binding.tvDiagnosisStatus.text =
-                        context.resources.getString(R.string.separator_double_hyphen)
-                    holder.binding.tvDiagnosisStatus.setTextColor(
-                        ColorStateList.valueOf(context.getColor(R.color.grey_black))
-                    )
-
+                1 -> {
                     holder.binding.tvContactTracingStatus.text =
                         context.resources.getString(R.string.contact_tracing_updated)
                     holder.binding.tvContactTracingStatus.setTextColor(
@@ -94,20 +94,9 @@ class HouseholdMemberListAdapter(
                         null
                     )
                     holder.binding.tvContactTracingStatus.visible()
-                    holder.binding.groupViewContactTrace.visible()
-                }
-
-                else -> {
-                    holder.binding.groupViewContactTrace.gone()
-                    holder.binding.tvContactTracingStatus.gone()
                 }
             }
-
         }
-
-        // Need to remove this lines when contact tracing live
-        holder.binding.groupViewContactTrace.gone()
-        holder.binding.tvContactTracingStatus.gone()
 
         if (item.isActive) {
             holder.binding.tvMemberName.text = getMemberInfoText(context, item)
@@ -146,7 +135,7 @@ class HouseholdMemberListAdapter(
         }
     }
 
-    private fun getMemberInfoText(context: Context, item: HouseholdMemberEntity): CharSequence {
+    private fun getMemberInfoText(context: Context, item: HouseholdMemberWithTb): CharSequence {
         return SpannableStringBuilder(
             context.getString(
                 R.string.household_summary_member_info,

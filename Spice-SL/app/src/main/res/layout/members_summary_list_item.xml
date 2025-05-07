@@ -77,14 +77,7 @@
             app:layout_constraintStart_toEndOf="@id/tvDiagnosisSeparator"
             app:layout_constraintTop_toTopOf="@id/tvDiagnosisSeparator" />
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/groupViewContactTrace"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:constraint_referenced_ids="tvDiagnosis,tvDiagnosisSeparator,tvDiagnosisStatus"/>
-
-        <androidx.appcompat.widget.AppCompatTextView
+       <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvPatientIDLabel"
             style="@style/TextStyle_Regular_16"
             android:layout_width="@dimen/_0dp"
@@ -126,7 +119,7 @@
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            style="@style/TextStyle_Medium"
-           android:layout_marginTop="@dimen/_4sdp"
+           android:layout_marginTop="@dimen/_8sdp"
            android:gravity="start"
            android:textSize="@dimen/_14ssp"
            android:visibility="gone"
