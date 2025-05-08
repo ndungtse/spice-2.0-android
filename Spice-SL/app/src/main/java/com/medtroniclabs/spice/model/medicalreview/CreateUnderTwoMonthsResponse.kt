@@ -27,8 +27,8 @@ data class SummaryDetails(
 )
 
 data class ExaminationDetail(
-    val title: String?,
-    val value: Any? = null
+    var title: String?,
+    var value: Any? = null
 )
 
 

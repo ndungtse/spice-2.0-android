@@ -1,37 +1,60 @@
 package com.medtroniclabs.spice.ui.medicalreview.hiv.activity
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.HIV
+import com.medtroniclabs.spice.common.DefinedParams.HIV_MEDICAL_REVIEW
+import com.medtroniclabs.spice.common.DefinedParams.ID
+import com.medtroniclabs.spice.common.DefinedParams.MemberID
+import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
+import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityHivMedicalReviewBaseBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
+import com.medtroniclabs.spice.ui.home.MedicalReviewToolsActivity
+import com.medtroniclabs.spice.ui.household.ConsentFormActivity
+import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.EligibilityFragment
+import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivMedicalReviewDiagnosesFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivTestFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.A1_TEST_RESULT
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.A2_TEST_RESULT
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.A3_TEST_RESULT
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.HIV_ELIGIBILITY_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.HIV_TEST_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.HaveYouTakenHivTestBefore
-import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnClickListener {
+class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnClickListener,
+    OnDialogDismissListener {
     private lateinit var binding: ActivityHivMedicalReviewBaseBinding
     private val patientViewModel: PatientDetailViewModel by viewModels()
     private val hivViewModel: HivViewModel by viewModels()
@@ -95,8 +118,11 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resourceState.data.let { hivScreeningDetails ->
-                        if (hivScreeningDetails != null) {
-                            hivViewModel.getHivScreeningDetails(hivScreeningDetails)
+                        resourceState.data?.let {
+                            hivViewModel.encounterId = it.encounterId.toString()
+                            hivViewModel.patientReference = it.patientReference.toString()
+                            hivViewModel.isSummary = true
+                            showReviewSummary(it.encounterId, it.patientReference)
                         }
                     }
                 }
@@ -112,19 +138,21 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
             }
         }
 
-        hivViewModel.hivScreeningDetailsLiveData.observe(this) { resourceState ->
-            when (resourceState.state) {
+        hivViewModel.createHivMedicalReviewSummaryLiveData.observe(this) { resources ->
+
+            when (resources.state) {
+
                 ResourceState.LOADING -> {
                     showLoading()
                 }
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    replaceFragmentOrCreateNewFragment<HivSummaryFragment>(
-                        binding.hivSummary.id,
-                        bundle = null,
-                        tag = HivSummaryFragment.TAG
+                    MedicalReviewSuccessDialogFragment.newInstance().show(
+                        supportFragmentManager,
+                        MedicalReviewSuccessDialogFragment.TAG
                     )
+
                 }
 
                 ResourceState.ERROR -> {
@@ -138,6 +166,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
             }
         }
     }
+
 
     private fun setButtonClickListener() {
         binding.btnSubmit.safeClickListener(this)
@@ -177,25 +206,34 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         )
     }
 
+    override fun onDialogDismissListener(isFinish: Boolean) {
+        startActivityWithoutSplashScreen()
+    }
+
     private fun swipeRefresh() {
-        if (connectivityManager.isNetworkAvailable()) {
-            supportFragmentManager.findFragmentById(R.id.patientDetailFragment)
-                .let {
-                    patientViewModel.getPatientId()?.let { id ->
-                        patientViewModel.getPatients(id)
-                    }
-                }
-        } else {
+        if (!connectivityManager.isNetworkAvailable()) {
             showErrorDialogue(
-                getString(R.string.error), getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false,
+                getString(R.string.error),
+                getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false
             ) {
-                if (binding.refreshLayout.isRefreshing) {
-                    binding.refreshLayout.isRefreshing = false
-                    startActivityWithoutSplashScreen()
+                binding.refreshLayout.isRefreshing = false
+                startActivityWithoutSplashScreen()
+            }
+            return
+        }
+
+        if (hivViewModel.isSummary) {
+            showReviewSummary(hivViewModel.encounterId, hivViewModel.patientReference)
+            binding.refreshLayout.isRefreshing = false
+        } else {
+            supportFragmentManager.findFragmentById(R.id.patientDetailFragment)?.let {
+                patientViewModel.getPatientId()?.let { id ->
+                    patientViewModel.getPatients(id)
                 }
             }
         }
+        binding.refreshLayout.isRefreshing = false
     }
 
     private val onBackPressedCallback: OnBackPressedCallback =
@@ -232,17 +270,18 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
     }
 
     private fun onBackPressPopStack() {
-        this@HivMedicalReviewBaseActivity.finish()
+        setResult(Activity.RESULT_OK)
+        finish()
     }
+
 
     private fun enableSubmitBtn() {
         binding.btnSubmit.isEnabled = (
                 hivViewModel.selectedHistoryListItem.size > 0 ||
                         hivViewModel.selectedPopulationType.size > 0 ||
-                        hivViewModel.selectedEntryPoint.isNullOrEmpty() ||
-                        hivViewModel.resultHashMap.size > 0 ||
-                        (hivViewModel.resultHashMap[HaveYouTakenHivTestBefore] != null &&
-                                !hivViewModel.selectedLastTestForHIV.isNullOrEmpty()))
+                        hivViewModel.selectedEntryPoint != null ||
+                        hivViewModel.resultHashMap.size > 0 || hivViewModel.resultHashMap[HaveYouTakenHivTestBefore] != null
+                )
     }
 
     override fun onDataLoaded(details: PatientListRespModel) {
@@ -251,28 +290,30 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
     }
 
     private fun initializeFragments() {
-        supportFragmentManager
-            .setFragmentResultListener(HIV_TEST_ITEM, this) { _, _ ->
-                enableSubmitBtn()
-            }
+        supportFragmentManager.setFragmentResultListener(
+            MedicalReviewDefinedParams.SUMMARY_ITEM,
+            this
+        ) { _, _ ->
+            enableReferralDoneBtn()
+        }
+
+        setupResultListeners()
+
         with(binding) {
-            ivPrescription.invisible()
-            ivInvestigation.invisible()
             patientDetailFragment.visible()
             patientBMIContainer.visible()
             patientEligibility.visible()
         }
         addOrReuseFragment(
             R.id.patientBMIContainer,
-            MedicalReviewPatientDiagnosisFragment.TAG,
-            MedicalReviewPatientDiagnosisFragment.newInstance(
-                isAnc = false,
-                isPnc = false,
-                isTB = true,
-                patientId = intent.getStringExtra(DefinedParams.PatientId),
-                memberID = hivViewModel.memberId,
-                id = intent.getStringExtra(DefinedParams.ID)
-            )
+            HivMedicalReviewDiagnosesFragment.TAG,
+            HivMedicalReviewDiagnosesFragment.newInstance(),
+               Bundle().apply {
+                putString(DefinedParams.PatientId, intent.getStringExtra(DefinedParams.PatientId))
+                putString(DefinedParams.ID, intent.getStringExtra(DefinedParams.ID))
+                putString(DefinedParams.MemberID, hivViewModel.memberId)
+                putBoolean(MedicalReviewTypeEnums.HIV.name, true)
+            }
         )
         replaceFragmentOrCreateNewFragment<EligibilityFragment>(
             binding.patientEligibility.id,
@@ -284,6 +325,16 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
             bundle = null,
             tag = HivTestFragment.TAG
         )
+    }
+
+    private fun enableReferralDoneBtn() {
+        binding.btnDone.isEnabled = hivViewModel.selectedPatientStatus != null || hivViewModel.nextVisitDate != null
+    }
+
+    private fun setupResultListeners() {
+        val listener: (String, Bundle) -> Unit = { _, _ -> enableSubmitBtn() }
+        supportFragmentManager.setFragmentResultListener(HIV_TEST_ITEM, this, listener)
+        supportFragmentManager.setFragmentResultListener(HIV_ELIGIBILITY_ITEM, this, listener)
     }
 
     override fun onResume() {
@@ -298,37 +349,37 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         }
     }
 
-    private fun postResultInput() {
+    private fun createHivDetails() {
         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
-            details.patientId?.let { id ->
-                if (connectivityManager.isNetworkAvailable()) {
-                    val haveYouTakenTestBefore =
-                        hivViewModel.resultHashMap[HaveYouTakenHivTestBefore] as? String
-                    if (haveYouTakenTestBefore != null) {
-                        hivViewModel.createHivRequestModel(
-                            patientListRespModel = details,
-                            selectedEligibilityPair = Pair(
-                                hivViewModel.selectedHistoryListItem.map { it.value },
-                                hivViewModel.selectedPopulationType.map { it.value }
-                            ),
-                            haveHivTestTestedBeforePair = Pair(
-                                haveYouTakenTestBefore,
-                                hivViewModel.selectedLastTestForHIV
-                            ),
-                            hivTestResult = Triple(
-                                hivViewModel.resultHashMap[A1_TEST_RESULT] as? String ?: "",
-                                hivViewModel.resultHashMap[A2_TEST_RESULT] as? String ?: "",
-                                hivViewModel.resultHashMap[A3_TEST_RESULT] as? String ?: "",
-                            ),
-                            entryPoint = hivViewModel.selectedEntryPoint
-                        )
-                    }
-                } else {
-                    showErrorDialogue(
-                        getString(R.string.error), getString(R.string.no_internet_error),
-                        isNegativeButtonNeed = false,
-                    ) {}
+            hivViewModel.id = details.id ?: ""
+            hivViewModel.villageId = details.villageId ?: ""
+            if (connectivityManager.isNetworkAvailable()) {
+                val haveYouTakenTestBefore =
+                    hivViewModel.resultHashMap[HaveYouTakenHivTestBefore] as? String
+                haveYouTakenTestBefore.let { isHaveYouTakenTestBefore ->
+                    hivViewModel.createHivRequestModel(
+                        patientListRespModel = details,
+                        selectedEligibilityPair = Pair(
+                            hivViewModel.selectedHistoryListItem.map { it.value },
+                            hivViewModel.selectedPopulationType.map { it.value }
+                        ),
+                        haveHivTestTestedBeforePair = Pair(
+                            isHaveYouTakenTestBefore,
+                            hivViewModel.selectedLastTestForHIV
+                        ),
+                        hivTestResult = Triple(
+                            hivViewModel.resultHashMap[A1_TEST_RESULT] as? String ?: "",
+                            hivViewModel.resultHashMap[A2_TEST_RESULT] as? String ?: "",
+                            hivViewModel.resultHashMap[A3_TEST_RESULT] as? String ?: "",
+                        ),
+                        entryPoint = hivViewModel.selectedEntryPoint
+                    )
                 }
+            } else {
+                showErrorDialogue(
+                    getString(R.string.error), getString(R.string.no_internet_error),
+                    isNegativeButtonNeed = false,
+                ) {}
             }
         }
     }
@@ -337,8 +388,24 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         when (view?.id) {
             R.id.btnSubmit -> {
                 if (validation()) {
-                    postResultInput()
+                    createHivDetails()
                 }
+            }
+
+            R.id.btnDone -> {
+                if (summaryValidation()) {
+                    createHivSummaryDetails()
+                }
+            }
+
+            R.id.btnRefer -> {
+                    ReferPatientFragment.newInstance(
+                        MedicalReviewTypeEnums.HIV.name,
+                        hivViewModel.patientReference,
+                        hivViewModel.encounterId
+                    ).show(
+                        supportFragmentManager, ReferPatientFragment.TAG
+                    )
             }
         }
     }
@@ -352,6 +419,57 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         val isHivTestFragment = hivTestFragment?.validation()
         return (isValidEligibilityFragment == true && isHivTestFragment == true)
     }
+
+    private fun summaryValidation(): Boolean {
+        val summaryFragment =
+            supportFragmentManager.findFragmentById(R.id.hivSummary) as? HivSummaryFragment
+        val isValidSummaryFragment = summaryFragment?.validation()
+        return (isValidSummaryFragment == true)
+    }
+
+    private fun showReviewSummary(encounterId: String?, patientReference: String?) {
+        removeFragment(R.id.patientHIVTest)
+        removeFragment(R.id.patientEligibility)
+        val bundle = Bundle().apply {
+            putString(DefinedParams.EncounterId, encounterId)
+            putString(DefinedParams.PatientReference, patientReference)
+        }
+        replaceFragmentInId<HivSummaryFragment>(
+            binding.hivSummary.id,
+            bundle,
+            tag = HivSummaryFragment.TAG
+        )
+        binding.bottomNavigationView.gone()
+        binding.referralBottomView.visible()
+    }
+
+    private fun removeFragment(hivCreateScreeningSummary: Int) {
+        supportFragmentManager.findFragmentById(hivCreateScreeningSummary)?.let {
+            supportFragmentManager.beginTransaction().remove(it).commit()
+        }
+    }
+
+
+    private fun createHivSummaryDetails() {
+        val request = HivMedicalReviewSummaryRequest(
+            category = HIV,
+            encounterType = HIV_MEDICAL_REVIEW,
+            patientReference = hivViewModel.patientReference,
+            id = hivViewModel.encounterId,
+            villageId = hivViewModel.villageId,
+            memberId = hivViewModel.memberId,
+            provenance = ProvanceDto(),
+            patientId = hivViewModel.patientId,
+            patientStatus = hivViewModel.selectedPatientStatus,
+            nextVisitDate = DateUtils.convertDateTimeToDate(
+                hivViewModel.nextVisitDate,
+                DATE_ddMMyyyy,
+                DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+            ).takeIf { it.isNotEmpty() }
+        )
+        hivViewModel.createHivSummary(request)
+    }
+
 }
 
 

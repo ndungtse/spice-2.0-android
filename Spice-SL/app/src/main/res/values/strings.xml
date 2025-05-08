@@ -1529,6 +1529,7 @@
     <string name="a1_test_result" translatable="false">A1 Test Results</string>
     <string name="a2_test_result" translatable="false">A2 Test Results</string>
     <string name="a3_test_result" translatable="false">A3 Test Results</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hivPopulationType" translatable="false">HivPopulationType</string>
+    <string name="died" translatable="false">Died</string>
+
 </resources>

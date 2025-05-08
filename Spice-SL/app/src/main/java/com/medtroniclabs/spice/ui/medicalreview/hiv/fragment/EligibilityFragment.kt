@@ -34,8 +34,7 @@ class EligibilityFragment : BaseFragment() {
     private lateinit var binding: FragmentEligibilityBinding
     private val hivViewModel: HivViewModel by activityViewModels()
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentEligibilityBinding.inflate(inflater, container, false)
         return binding.root
@@ -65,18 +64,12 @@ class EligibilityFragment : BaseFragment() {
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resourceState.data?.let { list ->
-                        initializeHivHistoryOptions(
-                            list.filter { it.category == MedicalReviewTypeEnums.hiv_history.name }
-                                .sortedBy { it.displayOrder }
-                        )
-                        initializePopulationType(
-                            list.filter { it.category == MedicalReviewTypeEnums.population_type.name }
-                                .sortedBy { it.displayOrder }
-                        )
-                        initializeHivTestDuration(
-                            list.filter { it.category == MedicalReviewTypeEnums.hiv_test_durations.name }
-                                .sortedBy { it.displayOrder }
-                        )
+                        initializeHivHistoryOptions(list.filter { it.category == MedicalReviewTypeEnums.hiv_history.name }
+                            .sortedBy { it.displayOrder })
+                        initializePopulationType(list.filter { it.category == MedicalReviewTypeEnums.population_type.name }
+                            .sortedBy { it.displayOrder })
+                        initializeHivTestDuration(list.filter { it.category == MedicalReviewTypeEnums.hiv_test_durations.name }
+                            .sortedBy { it.displayOrder })
                     }
                 }
             }
@@ -128,12 +121,7 @@ class EligibilityFragment : BaseFragment() {
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
-                        val selectedName = it[DefinedParams.NAME] as String?
-                        if (selectedName != DefinedParams.DefaultIDLabel) {
-                            hivViewModel.selectedLastTestForHIV = it[DefinedParams.Value] as String
-                        } else {
-                            hivViewModel.selectedLastTestForHIV = null
-                        }
+                        handleHivTestDuration(it[DefinedParams.NAME] as String)
                     }
                 }
 
@@ -145,21 +133,41 @@ class EligibilityFragment : BaseFragment() {
             }
     }
 
+    fun handleHivTestDuration(testDuration: String) {
+        val isHaveYouTakenHivTestBefore = hivViewModel.resultHashMap[HaveYouTakenHivTestBefore]
+        if (testDuration != DefinedParams.DefaultIDLabel) {
+
+            when (isHaveYouTakenHivTestBefore) {
+                getString(R.string.yes) -> {
+                    hivViewModel.selectedLastTestForHIV = testDuration
+                    binding.tvTestingDurationSpinner.visible()
+                }
+                getString(R.string.no) -> {
+                    hivViewModel.selectedLastTestForHIV = null
+                    binding.tvTestingDurationSpinner.gone()
+                }
+                else -> {
+                    hivViewModel.selectedLastTestForHIV = null
+                    binding.tvTestingDurationSpinner.gone()
+                }
+            }
+        } else {
+            hivViewModel.selectedLastTestForHIV = null
+        }
+    }
+
+
     private fun initializeHivHistoryOptions(supplyList: List<MedicalReviewMetaItems>) {
         val dropDownList = ArrayList<MultiSelectDropDownModel>()
         for (item in supplyList) {
             dropDownList.add(
                 MultiSelectDropDownModel(
-                    id = item.id,
-                    name = item.name,
-                    value = item.value
+                    id = item.id, name = item.name, value = item.value
                 )
             )
         }
         val adapter = MultiSelectSpinnerAdapter(
-            requireContext(),
-            dropDownList,
-            hivViewModel.selectedHistoryListItem
+            requireContext(), dropDownList, hivViewModel.selectedHistoryListItem
         )
         binding.tvHistorySpinner.adapter = adapter
         adapter.setOnItemSelectedListener(object :
@@ -172,8 +180,7 @@ class EligibilityFragment : BaseFragment() {
                     hivViewModel.selectedHistoryListItem = ArrayList(selectedItems)
                 }
             }
-        }
-        )
+        })
     }
 
     private fun initializePopulationType(supplyList: List<MedicalReviewMetaItems>) {
@@ -181,16 +188,12 @@ class EligibilityFragment : BaseFragment() {
         for (item in supplyList) {
             dropDownList.add(
                 MultiSelectDropDownModel(
-                    id = item.id,
-                    name = item.name,
-                    value = item.value
+                    id = item.id, name = item.name, value = item.value
                 )
             )
         }
         val adapter = MultiSelectSpinnerAdapter(
-            requireContext(),
-            dropDownList,
-            hivViewModel.selectedPopulationType
+            requireContext(), dropDownList, hivViewModel.selectedPopulationType
         )
         binding.tvPopulationTypeSpinner.adapter = adapter
         adapter.setOnItemSelectedListener(object :
@@ -203,8 +206,7 @@ class EligibilityFragment : BaseFragment() {
                     hivViewModel.selectedPopulationType = ArrayList(selectedItems)
                 }
             }
-        }
-        )
+        })
     }
 
     private fun addCustomView(
@@ -240,9 +242,11 @@ class EligibilityFragment : BaseFragment() {
             hivViewModel.resultHashMap[HaveYouTakenHivTestBefore] = selectedID as String
             hivViewModel.resultHashMap[HaveYouTakenHivTestBefore]?.let {
                 if (it == getString(R.string.yes)) {
+                    binding.tvHaveTestedHIVBeforeError.gone()
                     binding.viewGroupHivTestDuration.visible()
                 } else {
                     hivViewModel.selectedLastTestForHIV = null
+                    binding.tvTestingDurationError.gone()
                     binding.viewGroupHivTestDuration.invisible()
                 }
                 resultMapChanged()
@@ -259,25 +263,18 @@ class EligibilityFragment : BaseFragment() {
 
     fun validation(): Boolean {
         var isValid = true
-
-        val isHaveYouTakenHivTestBefore =
-            hivViewModel.resultHashMap[HaveYouTakenHivTestBefore] as? String
+        val isHaveYouTakenHivTestBefore = hivViewModel.resultHashMap[HaveYouTakenHivTestBefore] as? String
         val selectedLastTestForHIV = hivViewModel.selectedLastTestForHIV
 
-        if (!isHaveYouTakenHivTestBefore.isNullOrEmpty()) {
-            binding.tvHistoryError.gone()
-        } else {
-            binding.tvHistoryError.visible()
+        if (isHaveYouTakenHivTestBefore.isNullOrEmpty()) {
+            binding.tvHaveTestedHIVBeforeError.visible()
             isValid = false
-        }
+        } else binding.tvHaveTestedHIVBeforeError.gone()
 
-        if (!selectedLastTestForHIV.isNullOrEmpty()) {
-            binding.tvTestingDurationError.gone()
-        } else {
+        if (isHaveYouTakenHivTestBefore == getString(R.string.yes) && selectedLastTestForHIV.isNullOrEmpty()) {
+            isValid = false
             binding.tvTestingDurationError.visible()
-            isValid = false
-        }
-
+        } else binding.tvTestingDurationError.gone()
         return isValid
     }
 }

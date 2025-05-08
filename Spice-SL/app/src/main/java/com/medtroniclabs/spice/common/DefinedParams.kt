@@ -348,4 +348,11 @@ object DefinedParams {
     const val isCreateHouseholdForPhu = "isCreateHouseholdForPhu"
     const val HIV = "HIV"
     const val HIV_SUMMARY = "HIV_SUMMARY"
+    const val A1TestResult = "A1TestResult"
+    const val A2TestResult = "A2TestResult"
+    const val A3TestResult = "A3TestResult"
+    const val entryPoint = "EntryPoint"
+    const val Symptoms = "Symptoms"
+    const val HIV_MEDICAL_REVIEW = "HIV_MEDICAL_REVIEW"
+
 }

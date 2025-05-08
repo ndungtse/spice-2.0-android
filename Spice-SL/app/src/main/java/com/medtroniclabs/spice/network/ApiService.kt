@@ -57,10 +57,12 @@ import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
+import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
+import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
+import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryResponse
 import com.medtroniclabs.spice.data.model.HivMetaResponse
 import com.medtroniclabs.spice.data.model.HivScreeningRequest
 import com.medtroniclabs.spice.data.model.HivScreeningResponse
-import com.medtroniclabs.spice.data.model.HivScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
@@ -645,8 +647,10 @@ interface ApiService {
     suspend fun createHivScreening(@Body request: HivScreeningRequest) : Response<APIResponse<HivScreeningResponse>>
 
     @POST("/spice-service/hiv/screening/detail")
-    suspend fun getHivScreeningDetails(@Body request: HivScreeningResponse) : Response<APIResponse<HivScreeningSummaryResponse>>
+    suspend fun getHivScreeningDetails(@Body request: HivScreeningResponse) : Response<APIResponse<HivCreateScreeningSummaryResponse>>
 
+    @POST("/spice-service/medical-review/summary-create")
+    suspend fun createHivSummary(@Body request : HivMedicalReviewSummaryRequest) : Response<APIResponse<HivMedicalReviewSummaryResponse>>
 
 
     @POST("/notification-service/inapp-notification/list")

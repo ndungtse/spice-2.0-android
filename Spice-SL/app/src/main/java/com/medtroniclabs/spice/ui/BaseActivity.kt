@@ -380,6 +380,7 @@ open class BaseActivity : SpiceRootActivity() {
             }
         }
     }
+
     fun getFragmentById(fragmentManager: FragmentManager, fragmentId: Int): Fragment? {
         return fragmentManager.findFragmentById(fragmentId)
     }

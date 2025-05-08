@@ -45,5 +45,6 @@ enum class MedicalReviewTypeEnums{
     hiv_history,
     population_type,
     hiv_test_durations,
-    entry_point
+    entry_point,
+    HIV_REVIEW
 }

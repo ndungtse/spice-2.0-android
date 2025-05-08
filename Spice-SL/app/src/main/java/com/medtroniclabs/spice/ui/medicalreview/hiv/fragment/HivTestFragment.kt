@@ -110,6 +110,14 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
 
     private fun initializeEntryPointOptions(entryList: List<MedicalReviewMetaItems>) {
         val entryPoint = ArrayList<Map<String, Any>>()
+        entryPoint.add(
+            hashMapOf<String, Any>(
+                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                DefinedParams.id to DefinedParams.DefaultID,
+                DefinedParams.Value to DefinedParams.DefaultIDLabel
+            )
+        )
+
         entryList.forEach {
             entryPoint.add(
                 hashMapOf<String, Any>(
@@ -137,6 +145,7 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                         val selectedName = it[DefinedParams.NAME] as String?
                         if (selectedName != DefinedParams.DefaultIDLabel) {
                             hivViewModel.selectedEntryPoint = it[DefinedParams.Value] as String
+                            resultMapChanged()
                         } else {
                             hivViewModel.selectedEntryPoint = null
                         }

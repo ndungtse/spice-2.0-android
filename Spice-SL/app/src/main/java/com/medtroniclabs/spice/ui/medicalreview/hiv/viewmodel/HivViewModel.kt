@@ -1,31 +1,39 @@
 package com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel
 
 import android.location.Location
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
+import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
+import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryResponse
 import com.medtroniclabs.spice.data.model.HivScreeningRequest
 import com.medtroniclabs.spice.data.model.HivScreeningResponse
-import com.medtroniclabs.spice.data.model.HivScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.repo.DiagnosisRepository
 import com.medtroniclabs.spice.ui.medicalreview.hiv.repo.HivMedicalReviewRepo
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HivViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var repository: HivMedicalReviewRepo
+    private var repository: HivMedicalReviewRepo,
+    private var repo: DiagnosisRepository
 ) : ViewModel() {
     var patientId: String? = null
     var memberId: String? = null
@@ -40,7 +48,17 @@ class HivViewModel @Inject constructor(
     var selectedLastTestForHIV: String? = null
     var selectedEntryPoint: String? = null
     val createHivScreeningLiveData = MutableLiveData<Resource<HivScreeningResponse>>()
-    val hivScreeningDetailsLiveData = MutableLiveData<Resource<HivScreeningSummaryResponse>>()
+    val hivScreeningDetailsLiveData = MutableLiveData<Resource<HivCreateScreeningSummaryResponse>>()
+    var encounterId : String? = null
+    var patientReference : String? = null
+    var nextVisitDate : String? = null
+    val createHivMedicalReviewSummaryLiveData = MutableLiveData<Resource<HivMedicalReviewSummaryResponse>>()
+    var id : String? = null
+    var villageId : String? = null
+    var selectedPatientStatus: String? = null
+    var isSummary : Boolean = false
+    val getHivPatientStatusMeta = MutableLiveData<String>()
+    val shouldCloseParent = MutableLiveData<Boolean>()
 
     fun getHivMetaData() {
         viewModelScope.launch(dispatcherIO) {
@@ -57,7 +75,6 @@ class HivViewModel @Inject constructor(
             hivMetaListItems.postValue(repository.getHivMetaItems())
         }
     }
-
 
 
     fun createHivRequestModel(
@@ -98,13 +115,28 @@ class HivViewModel @Inject constructor(
         }
     }
 
-    fun getHivScreeningDetails(request : HivScreeningResponse) {
+    fun getHivScreeningDetails(request: HivScreeningResponse) {
         viewModelScope.launch(dispatcherIO) {
             hivScreeningDetailsLiveData.postLoading()
             hivScreeningDetailsLiveData.postValue(repository.getHivScreeningDetails(request))
-
         }
     }
 
+    fun createHivSummary(request: HivMedicalReviewSummaryRequest) {
+        viewModelScope.launch(Dispatchers.IO) {
+            createHivMedicalReviewSummaryLiveData.postLoading()
+            createHivMedicalReviewSummaryLiveData.postValue(repository.createHivSummary(request))
+        }
+
+    }
+
+    fun getHivPatientStatusByCategory(category: String) {
+        getHivPatientStatusMeta.value = category
+    }
+
+    val hivPatientStatusLiveData: LiveData<List<MedicalReviewMetaItems>> =
+        getHivPatientStatusMeta.switchMap {
+            repository.getHivPatientStatus(it, MedicalReviewTypeEnums.HIV.name)
+        }
 
 }

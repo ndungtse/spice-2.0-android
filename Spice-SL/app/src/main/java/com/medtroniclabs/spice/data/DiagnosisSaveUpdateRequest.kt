@@ -17,5 +17,5 @@ data class DiagnosisDiseaseModel(
     val diseaseCategory: String,
     val notes: String? = null,
     val diseaseCondition: String?,
-    val type: String? = null
+    var type: String? = null
 )

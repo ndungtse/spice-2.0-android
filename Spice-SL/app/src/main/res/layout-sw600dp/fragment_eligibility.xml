@@ -13,7 +13,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/_8sdp">
+            android:paddingBottom="@dimen/_15sdp"
+            >
             <View
                 android:id="@+id/viewEligibilityCardBG"
                 android:layout_width="match_parent"

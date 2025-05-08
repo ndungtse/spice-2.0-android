@@ -57,10 +57,12 @@ import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
+import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
+import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
+import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryResponse
 import com.medtroniclabs.spice.data.model.HivMetaResponse
 import com.medtroniclabs.spice.data.model.HivScreeningRequest
 import com.medtroniclabs.spice.data.model.HivScreeningResponse
-import com.medtroniclabs.spice.data.model.HivScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
@@ -347,5 +349,10 @@ interface ApiHelper {
     suspend fun createBMI(bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>>
     suspend fun getHivStaticData(): Response<APIResponse<HivMetaResponse>>
     suspend fun createHivScreening(request:HivScreeningRequest) : Response<APIResponse<HivScreeningResponse>>
-    suspend fun getHivScreeningDetails(request: HivScreeningResponse) : Response<APIResponse<HivScreeningSummaryResponse>>
+    suspend fun getHivScreeningDetails(request: HivScreeningResponse) : Response<APIResponse<HivCreateScreeningSummaryResponse>>
+    suspend fun createHivSummary(request: HivMedicalReviewSummaryRequest) : Response<APIResponse<HivMedicalReviewSummaryResponse>>
+
+
+
+
 }

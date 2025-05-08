@@ -44,7 +44,6 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.ui.household.ConsentFormActivity
 import com.medtroniclabs.spice.ui.medicalreview.epi.ImmunizationActivity
 import com.medtroniclabs.spice.ui.medicalreview.familyplan.activity.FamilyPlanMedicalReviewActivity
-import com.medtroniclabs.spice.ui.medicalreview.hiv.activity.HivMedicalReviewBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.tb.activity.TBMedicalReviewActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -249,14 +248,10 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.HIV -> {
-
                 val intent = Intent(requireContext(), ConsentFormActivity::class.java)
-//                val intent = Intent(requireContext(), HivMedicalReviewBaseActivity::class.java)
                 intent.putExtra(PatientId, arguments?.getString(PatientId))
-//                intent.putExtra(DOB, arguments?.getString(DOB))
                 intent.putExtra(HIV, true)
                 intent.putExtra(ID, arguments?.getString(ID))
-//                intent.putExtra(MemberID, arguments?.getString(MemberID))
                 startActivity(intent)
             }
             else -> {
