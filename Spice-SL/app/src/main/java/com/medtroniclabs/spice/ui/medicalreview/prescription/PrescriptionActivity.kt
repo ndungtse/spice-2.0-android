@@ -16,7 +16,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.SearchLength
+import com.medtroniclabs.spice.common.DefinedParams.SearchLengthPrescription
 import com.medtroniclabs.spice.data.MedicationRequestObject
 import com.medtroniclabs.spice.data.MedicationResponse
 import com.medtroniclabs.spice.data.Prescription
@@ -792,7 +792,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             if (it.isNullOrEmpty()) {
                 // default showing all medicines
             } else {
-                if (it.length > SearchLength) {
+                if (it.length > SearchLengthPrescription) {
                     prescriptionViewModel.searchMedicationByName(it.toString())
                 }
             }

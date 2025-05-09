@@ -128,6 +128,7 @@ object DefinedParams {
     const val FollowUpId = "FollowUpId"
     const val IsReferredScreen = "isReferredScreen"
     const val SearchLength = 2
+    const val SearchLengthPrescription = 1
     const val OtherNotes = "otherNotes"
     const val Postnatal="Postnatal"
 
