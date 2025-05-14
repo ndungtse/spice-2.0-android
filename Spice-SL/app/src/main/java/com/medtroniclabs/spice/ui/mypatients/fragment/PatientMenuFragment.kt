@@ -131,6 +131,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                     MenuConstants.UNDER_AGE_ABOVE_FIVE_YEAR_ID ->menuItem.isDisabled = isUnderAgeAboveFiveYearsDisabled(dob)
                     MenuConstants.EPI_ID -> menuItem.isDisabled = !isUnderSixtyMonths(dob)
                     MenuConstants.TB_MENU_ID -> menuItem.isDisabled = false
+                    MenuConstants.FP_MENU_MR -> menuItem.isDisabled = isUnderAgeFamilyPlanningDisabled(dob)
                     else -> {}
 
             }
@@ -313,6 +314,18 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             age.years == 5 && (age.months == 0 && age.weeks == 0 && age.days == 0) -> false
             // Age is more than 2 months but less than 5 years
             age.years < 5 -> false
+            else -> true
+        }
+    }
+
+    private fun isUnderAgeFamilyPlanningDisabled(dob: String?): Boolean {
+        if (dob.isNullOrBlank()) return false
+        val age = DateUtils.getV2YearMonthAndWeek(dob)
+        return when {
+            // Age is exactly 5 years
+            age.years == 14 && (age.months == 0 && age.weeks == 0 && age.days == 0) -> false
+            // Age is more than 2 months but less than 5 years
+            age.years > 14 -> false
             else -> true
         }
     }

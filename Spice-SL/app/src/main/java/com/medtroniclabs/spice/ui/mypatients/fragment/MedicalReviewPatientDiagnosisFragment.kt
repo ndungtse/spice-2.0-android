@@ -896,7 +896,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             if (isBp && !isHeight) {
                 viewModel.fetchBloodPressure(MotherNeonateAncRequest(memberId = getMemberId()))
             }
-            if ((!isBp && !isHeight) && isTb()) {
+            if ((!isBp && !isHeight) && (isTb() || isFp())) {
                 viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
                 viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
                 viewModel.fetchBmi(MotherNeonateAncRequest(memberId = getMemberId()))

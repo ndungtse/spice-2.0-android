@@ -100,7 +100,8 @@ class FamilyPlanningRepository @Inject constructor(
         occupation: String?,
         maritalStatus: String?,
         encounterId: String?,
-        lastLocation: Location?
+        lastLocation: Location?,
+        notes: String?,
     ): Resource<FamilyPlanningCreateResponse> {
         return try {
             val response = apiHelper.createFamilyPlanningMR(
@@ -110,7 +111,8 @@ class FamilyPlanningRepository @Inject constructor(
                     occupation,
                     maritalStatus,
                     encounterId,
-                    lastLocation
+                    lastLocation,
+                    notes
                 )
             )
             if (response.isSuccessful) {
@@ -135,13 +137,15 @@ class FamilyPlanningRepository @Inject constructor(
         occupation: String?,
         maritalStatus: String?,
         encounterId: String?,
-        lastLocation: Location?
+        lastLocation: Location?,
+        notes: String?,
     ): FamilyPlanningContraceptivesRequest {
         val resultMap = resultPair.first
         return FamilyPlanningContraceptivesRequest(
             id = encounterId,
             patientId = details.id,
             assessmentName = MedicalReviewTypeEnums.FAMILY_PLANNING.name,
+            clinicalNotes = notes,
             encounter = MedicalReviewEncounter(
                 id = encounterId,
                 patientId = details.patientId,

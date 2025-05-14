@@ -6,15 +6,12 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
-import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -23,6 +20,7 @@ import com.medtroniclabs.spice.appextensions.takeIfNotNull
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Married
+import com.medtroniclabs.spice.common.DefinedParams.Occupation
 import com.medtroniclabs.spice.common.DefinedParams.Single
 import com.medtroniclabs.spice.databinding.PatientInfoItemBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -31,9 +29,6 @@ import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.toggle.OnToggledListener
 import com.medtroniclabs.spice.toggle.ToggleableView
 import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.initTextWatcherForString
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class PatientInfoAdapter(
     private val data: List<Map<String, Any?>?> = emptyList(),
@@ -47,7 +42,8 @@ class PatientInfoAdapter(
     private val resultValues: HashMap<String, Any>,
     private val presumptiveTbNo: (String?) -> Unit,
     private val artCode: (String?) -> Unit,
-    private val isHiv: Boolean = false
+    private val isHiv: Boolean = false,
+    private val isFamilyPlanningSummary: Boolean = false
 ) :
     RecyclerView.Adapter<PatientInfoAdapter.ViewHolder>() {
 
@@ -115,58 +111,74 @@ class PatientInfoAdapter(
                     tvHighRiskPregnancyCriteria.gone()
                 }
 
-                if (label[DefinedParams.label]?.equals(context.getString(R.string.occupation)) == true && !isHiv) {
-                    tvValue.gone()
-                    tvSeparator.gone()
-                    etOccupation.visible()
-                    setupEditText(etOccupation,occupation)
-                }
-
-                if (label[DefinedParams.label]?.equals(context.getString(R.string.marital_status)) == true && !isHiv) {
-                    tvValue.gone()
-                    tvSeparator.gone()
-                    spinnerMaritalStatus.visible()
-                    val spinnerFormAdapter = CustomSpinnerAdapter(context)
-                    spinnerFormAdapter.setData(getMaterialStatusData())
-                    var defaultPosition = 0
-                    val selectedMaritalStatus= resultValues[DefinedParams.MaritalStatus] as String?
-                    selectedMaritalStatus?.let{status ->
-                        for ((index, patientStatus) in getMaterialStatusData().withIndex()) {
-                            if ((patientStatus[DefinedParams.ID] as? String).equals(
-                                    status,
-                                    true
-                                )
-                            ) {
-                                defaultPosition = index
-                            }
-                        }
-                        binding.spinnerMaritalStatus.post {
-                            binding.spinnerMaritalStatus.setSelection(defaultPosition, false)
-                            if (defaultPosition != 0) {
-                                binding.spinnerMaritalStatus.isEnabled = false
-                            }
-                        }
+                val isOccupationLabel = label[DefinedParams.label] == context.getString(R.string.occupation)
+                if (isOccupationLabel && !isHiv) {
+                    if (isFamilyPlanningSummary) {
+                        tvValue.visible()
+                        tvSeparator.visible()
+                        etOccupation.gone()
+                        binding.tvValue.text = (resultValues[Occupation] as? String)?.takeIf { it.isNotBlank() } ?: "-"
+                    } else {
+                        tvValue.gone()
+                        tvSeparator.gone()
+                        etOccupation.visible()
+                        setupEditText(etOccupation, occupation)
                     }
-                    binding.spinnerMaritalStatus.adapter = spinnerFormAdapter
-                    binding.spinnerMaritalStatus.onItemSelectedListener =
-                        object : AdapterView.OnItemSelectedListener {
-                            override fun onItemSelected(
-                                p0: AdapterView<*>?,
-                                p1: View?,
-                                p2: Int,
-                                p3: Long
-                            ) {
-                                val selectedItem = spinnerFormAdapter.getData(position = p2)
-                                maritalStatus.invoke(selectedItem?.get(DefinedParams.ID) as String)
-                            }
+                }
 
-                            override fun onNothingSelected(p0: AdapterView<*>?) {
-                                /**
-                                 * this method is not used
-                                 */
+                val isMaritalStatusLabel = label[DefinedParams.label] == context.getString(R.string.marital_status)
+                if (isMaritalStatusLabel && !isHiv) {
+                    if (isFamilyPlanningSummary) {
+                        tvValue.visible()
+                        tvSeparator.visible()
+                        spinnerMaritalStatus.gone()
+                        binding.tvValue.text = (resultValues[DefinedParams.MaritalStatus] as? String)?.takeIf { it.isNotBlank() } ?: "-"
+                    } else {
+                        tvValue.gone()
+                        tvSeparator.gone()
+                        spinnerMaritalStatus.visible()
+
+                        val spinnerFormAdapter = CustomSpinnerAdapter(context)
+                        val materialStatusList = getMaterialStatusData()
+                        spinnerFormAdapter.setData(materialStatusList)
+
+                        var defaultPosition = 0
+                        val selectedMaritalStatus = resultValues[DefinedParams.MaritalStatus] as String?
+
+                        selectedMaritalStatus?.let { status ->
+                            for ((index, patientStatus) in materialStatusList.withIndex()) {
+                                if ((patientStatus[DefinedParams.ID] as? String).equals(status, true)) {
+                                    defaultPosition = index
+                                }
+                            }
+                            binding.spinnerMaritalStatus.post {
+                                binding.spinnerMaritalStatus.setSelection(defaultPosition, false)
+                                if (defaultPosition != 0) {
+                                    binding.spinnerMaritalStatus.isEnabled = false
+                                }
                             }
                         }
+
+                        binding.spinnerMaritalStatus.adapter = spinnerFormAdapter
+                        binding.spinnerMaritalStatus.onItemSelectedListener =
+                            object : AdapterView.OnItemSelectedListener {
+                                override fun onItemSelected(
+                                    parent: AdapterView<*>?,
+                                    view: View?,
+                                    position: Int,
+                                    id: Long
+                                ) {
+                                    val selectedItem = spinnerFormAdapter.getData(position)
+                                    maritalStatus.invoke(selectedItem?.get(DefinedParams.ID) as String)
+                                }
+
+                                override fun onNothingSelected(parent: AdapterView<*>?) {
+                                    // Not used
+                                }
+                            }
+                    }
                 }
+
                 if (label[DefinedParams.label]?.equals(context.getString(R.string.occupation_summary)) == true) {
                     tvSeparator.visible()
                     etOccupation.gone()

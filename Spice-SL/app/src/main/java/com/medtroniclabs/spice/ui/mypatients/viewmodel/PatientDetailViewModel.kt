@@ -36,6 +36,7 @@ class PatientDetailViewModel @Inject constructor(
     val ncdInstructionModelResponse = MutableLiveData<Resource<NCDInstructionModel>>()
     val patientDetailsLiveData = MutableLiveData<Resource<PatientListRespModel>>()
     val patientDetailsNeonateLiveData = MutableLiveData<Resource<PatientListRespModel>>()
+    var isFamilyPlanning: Boolean = false
 
     //the below id is one which get from patient details response
     var patientDetailsId : String? = null

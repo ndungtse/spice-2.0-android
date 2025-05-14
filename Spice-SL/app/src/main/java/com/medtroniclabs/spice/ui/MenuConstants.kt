@@ -36,6 +36,6 @@ object MenuConstants {
 
     const val COMMUNITY_PROFILE = "COMMUNITY PROFILE"
     const val FP_MENU_ID = "family_planning"
-    const val FP_MENU_MR = "family_planning_mr"
+    const val FP_MENU_MR = "FAMILY PLANNING"
     const val HIV ="HIV"
 }

@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.MedicalReviewSummaryRepository
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.medicalreview.familyplan.FamilyPlanningRepository
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,7 +52,8 @@ class FamilyPlanViewModel @Inject constructor(
         resultMap: Pair<HashMap<String, Any>, List<ChipViewItemModel>>,
         occupation: String?,
         maritalStatus: String?,
-        encounterId: String?
+        encounterId: String?,
+        notes: String?
     ) {
         viewModelScope.launch(dispatcherIO) {
             familyPlanningCreateLiveData.postLoading()
@@ -62,7 +64,8 @@ class FamilyPlanViewModel @Inject constructor(
                     occupation,
                     maritalStatus,
                     encounterId,
-                    lastLocation
+                    lastLocation,
+                    notes
                 )
             )
         }
@@ -101,11 +104,11 @@ class FamilyPlanViewModel @Inject constructor(
                     memberId = memberId,
                     id = submitEncounterId,
                     nextVisitDate = nextVisitDate,
-                    referralTicketType = MedicalReviewTypeEnums.ICCM.name,
+                    referralTicketType = MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name,
                     assessmentName = MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name,
                     householdId = houseHoldId,
                     villageId = villageId,
-                    patientStatus = ""
+                    patientStatus = ReferralStatus.Recovered.name
                 )
                 summaryCreateResponse.postValue(response)
             }

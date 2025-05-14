@@ -1232,7 +1232,7 @@
                     android:ellipsize="end"
                     android:gravity="center"
                     android:maxLines="1"
-                    android:text="@string/edit_weight"
+                    android:text="@string/add_weight"
                     android:textColor="@color/medium_blue"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

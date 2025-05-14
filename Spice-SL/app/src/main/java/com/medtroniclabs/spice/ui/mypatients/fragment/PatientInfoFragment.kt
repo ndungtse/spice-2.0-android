@@ -557,7 +557,8 @@ class PatientInfoFragment : BaseFragment() {
                 artCode = {
                     showArtCode(it)
                 },
-                isHiv = isHivImrCmr()
+                isHiv = isHivImrCmr(),
+                isFamilyPlanningSummary = viewModel.isFamilyPlanning
             )
         val isLandscape =
             resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE

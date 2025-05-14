@@ -8,13 +8,14 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
-import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentContraceptivesBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -188,6 +189,9 @@ class ContraceptivesFragment : BaseFragment() {
     }
 
     private fun initViews() {
+        binding.tvPostPartum.markMandatory()
+        binding.tvQuantityLabel.markMandatory()
+
         viewModel.getMetaList(MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name)
 
         iucdTagView = TagListCustomView(
@@ -245,22 +249,24 @@ class ContraceptivesFragment : BaseFragment() {
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[ClientType] = selectedID as String
             if(selectedID.equals(PostPartum, true)){
-                binding.tvPostPartum.visible()
-                viewModel.contraceptiveMetaList.value?.data?.let { metaList ->
-                    addCustomView(
-                        getSingleSelectionViewData(metaList.filter {
-                            it.category.equals(
-                                MedicalReviewTypeEnums.post_partum.name,
-                                true
-                            )
-                        }.sortedBy { it.displayOrder }),
-                        PostPartum,
-                        viewModel.resultHashMap,
-                        postPartumSelectionCallBack,
-                        binding.PostPartumRoot
-                    )
+                if (!(binding.tvPostPartum.isVisible())){
+                    binding.tvPostPartum.visible()
+                    viewModel.contraceptiveMetaList.value?.data?.let { metaList ->
+                        addCustomView(
+                            getSingleSelectionViewData(metaList.filter {
+                                it.category.equals(
+                                    MedicalReviewTypeEnums.post_partum.name,
+                                    true
+                                )
+                            }.sortedBy { it.displayOrder }),
+                            PostPartum,
+                            viewModel.resultHashMap,
+                            postPartumSelectionCallBack,
+                            binding.PostPartumRoot
+                        )
+                    }
+                    binding.PostPartumRoot.visible()
                 }
-                binding.PostPartumRoot.visible()
             }else{
                 viewModel.resultHashMap.remove(PostPartum)
                 binding.tvPostPartum.gone()
@@ -369,42 +375,98 @@ class ContraceptivesFragment : BaseFragment() {
         )
     }
 
-    fun validInputs():Boolean{
-        var isValid = true
+    fun validInputs(): Boolean {
+        var isValid: Boolean
 
-        isValid = checkAndToggleError(ClientType, binding.tvClientTypeErrorMessage)
-        if ((viewModel.resultHashMap[ClientType] as? String)?.equals(PostPartum, true) == true) {
-            checkAndToggleError(PostPartum, binding.tvPostPartumErrorMessage)
+        if (viewModel.resultHashMap.containsKey(ClientType) && (viewModel.resultHashMap[ClientType] as? String)?.equals(
+                PostPartum,
+                true
+            ) == true
+        ) {
+            isValid = checkAndToggleError(PostPartum, binding.tvPostPartumErrorMessage)
+            hideOtherErrorViews(binding.tvPostPartumErrorMessage.id)
         } else {
             binding.tvPostPartumErrorMessage.gone()
+            isValid = true
         }
 
-        checkAndToggleError(ProgestinOnlyOrals, binding.tvProgestinErrorMessage).let {
-            isValid = if(it){
-                checkMicrolut()
-            }else{
-                false
-            }
+        if (isValid) {
+            isValid = checkAndValidateOtherError(
+                CombineOralContraceptive,
+                binding.etCombinedOralContraceptiveComments,
+                binding.tvContraceptivesErrorMessage,
+                viewModel.combinedOralContraceptiveComments
+            )
+            hideOtherErrorViews(binding.tvContraceptivesErrorMessage.id)
         }
 
-        listOf(
-            checkAndToggleError(CombineOralContraceptive, binding.tvContraceptivesErrorMessage),
-            checkAndToggleError(Injectables, binding.tvInjectablesErrorMessage),
-            checkAndToggleError(Implants, binding.tvImplantErrorMessage),
-            checkAndToggleError(Condoms, binding.tvCondomsErrorMessage),
-            checkAndToggleError(
-                EmergencyContraceptive,
-                binding.tvEmergencyContraceptiveErrorMessage
-            ),
-            checkAndToggleError(PermanentMethod, binding.tvPermanentMethodErrorMessage)
-        ).forEach {
-            if (!it) {
-                isValid = false
-            }
+        if (isValid && viewModel.resultHashMap.containsKey(ProgestinOnlyOrals)) {
+            isValid = checkMicrolut()
+            hideOtherErrorViews(binding.tvQuantityErrorMessage.id)
+        }
+
+        if (isValid) {
+            isValid = checkAndValidateOtherError(
+                ProgestinOnlyOrals,
+                binding.etProgestinOnlyOralsComments,
+                binding.tvQuantityErrorMessage,
+                viewModel.otherProgestinOnlyOralsComments
+            )
+            hideOtherErrorViews(binding.tvQuantityErrorMessage.id)
+        }
+
+        if (isValid) {
+            isValid = checkAndValidateOtherError(
+                Injectables,
+                binding.etOtherInjectableComments,
+                binding.tvInjectablesErrorMessage,
+                viewModel.otherInjectableComments
+            )
+            hideOtherErrorViews(binding.tvInjectablesErrorMessage.id)
+        }
+
+        if (isValid) {
+            isValid = checkAndValidateOtherError(
+                Implants,
+                binding.etOtherImplantsComments,
+                binding.tvImplantErrorMessage,
+                viewModel.otherImplantComments
+            )
+            hideOtherErrorViews(binding.tvImplantErrorMessage.id)
+        }
+
+        if (isValid) {
+            isValid = checkAndValidateOtherError(
+                PermanentMethod,
+                binding.etOtherPermanentMethodComments,
+                binding.tvPermanentMethodErrorMessage,
+                viewModel.otherPermanentMethodComments
+            )
+            hideOtherErrorViews(binding.tvPermanentMethodErrorMessage.id)
         }
 
         return isValid
     }
+
+    private fun hideOtherErrorViews(errorView: Int) {
+        val allErrorViews = listOf(
+            binding.tvPostPartumErrorMessage.id,
+            binding.tvQuantityErrorMessage.id,
+            binding.tvContraceptivesErrorMessage.id,
+            binding.tvProgestinErrorMessage.id,
+            binding.tvInjectablesErrorMessage.id,
+            binding.tvImplantErrorMessage.id,
+            binding.tvPermanentMethodErrorMessage.id
+        )
+
+        for (id in allErrorViews) {
+            if (id != errorView) {
+                val view = binding.root.findViewById<View>(id)
+                view?.visibility = View.GONE
+            }
+        }
+    }
+
 
     private fun checkAndToggleError(key: String, errorView: View) :Boolean{
         if (viewModel.resultHashMap.containsKey(key)) {
@@ -413,6 +475,24 @@ class ContraceptivesFragment : BaseFragment() {
         } else {
             errorView.visible()
             return false
+        }
+    }
+
+    private fun checkAndValidateOtherError(
+        key: String,
+        editView: View,
+        errorView: View,
+        comments: String?
+    ): Boolean {
+        if ((viewModel.resultHashMap.containsKey(key) && ((viewModel.resultHashMap[key]) as? String)?.contains(
+                "other"
+            ) == true) && editView.isVisible() && comments.isNullOrEmpty()
+        ) {
+            errorView.visible()
+            return false
+        } else {
+            errorView.gone()
+            return true
         }
     }
 

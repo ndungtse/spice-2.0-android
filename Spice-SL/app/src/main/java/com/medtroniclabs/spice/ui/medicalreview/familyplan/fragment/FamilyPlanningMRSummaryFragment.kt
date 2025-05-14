@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.model.FamilyPlanningSummaryResponse
 import com.medtroniclabs.spice.databinding.FragmentFamilyPlanTreatmentBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -32,6 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class FamilyPlanningMRSummaryFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentFamilyPlanTreatmentBinding
     private val viewModel: FamilyPlanViewModel by activityViewModels()
+    private val contraceptivesViewModel: ContraceptivesViewModel by activityViewModels()
     private var datePickerDialog: DatePickerDialog? = null
 
     override fun onCreateView(
@@ -78,10 +80,17 @@ class FamilyPlanningMRSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun renderSummaryDetails(data: FamilyPlanningSummaryResponse) {
-        binding.tvClientTypeText.text = data.contraceptive?.clientType ?: getString(R.string.separator_double_hyphen)
-        binding.tvPostPartumText.text = data.contraceptive?.postPartum ?: getString(R.string.separator_double_hyphen)
+        binding.tvClientTypeText.text =
+            data.contraceptive?.clientType ?: getString(R.string.separator_double_hyphen)
+        binding.tvPostPartumText.text =
+            data.contraceptive?.postPartum ?: getString(R.string.separator_double_hyphen)
         binding.tvProgestinOnlyOralsText.text =
-            data.contraceptive?.progestinOnlyOrals ?: getString(R.string.separator_double_hyphen)
+            if (contraceptivesViewModel.otherProgestinOnlyOralsComments.isNullOrEmpty()) {
+                data.contraceptive?.progestinOnlyOrals
+                    ?: getString(R.string.separator_double_hyphen)
+            } else {
+                "${data.contraceptive?.progestinOnlyOrals} - ${contraceptivesViewModel.otherProgestinOnlyOralsComments}"
+            }
         binding.tvQuantityText.text = data.contraceptive?.microlutQuantity?.toString()
             ?: getString(R.string.separator_double_hyphen)
     }
@@ -91,6 +100,7 @@ class FamilyPlanningMRSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun initViews() {
+        binding.tvNextMedicalReviewLabel.markMandatory()
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
             SecuredPreference.getUserDetails()?.firstName,

@@ -40,6 +40,7 @@ import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagno
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -50,6 +51,8 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
     private val chipItemViewModel: ClinicalNotesViewModel by viewModels()
     private val contraceptivesViewModel: ContraceptivesViewModel by viewModels()
     private val viewModel: FamilyPlanViewModel by viewModels()
+    private val referPatientViewModel: ReferPatientViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -115,6 +118,7 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     if (connectivityManager.isNetworkAvailable()) {
+                        patientViewModel.isFamilyPlanning = true
                         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
                             details.patientId?.let { id ->
                                 patientViewModel.getPatients(id)
@@ -164,6 +168,29 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
                         supportFragmentManager,
                         MedicalReviewSuccessDialogFragment.TAG
                     )
+                }
+            }
+        }
+
+        referPatientViewModel.referPatientResultLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    val fragment =
+                        supportFragmentManager.findFragmentByTag(ReferPatientFragment.TAG) as? ReferPatientFragment
+                    fragment?.dismiss()
+                    MedicalReviewSuccessDialogFragment.newInstance().show(
+                        supportFragmentManager,
+                        MedicalReviewSuccessDialogFragment.TAG
+                    )
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
                 }
             }
         }
@@ -264,6 +291,19 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
             binding.nestedScrollViewID.fullScroll(ScrollView.FOCUS_UP)
         } ?: kotlin.run {
             initializeFragments()
+            replaceFragment(
+                R.id.patientBMIContainer,
+                MedicalReviewPatientDiagnosisFragment.TAG,
+                MedicalReviewPatientDiagnosisFragment.newInstance(
+                    isAnc = false,
+                    isPnc = false,
+                    isTB = false,
+                    patientId = intent.getStringExtra(DefinedParams.PatientId),
+                    memberID = viewModel.memberId,
+                    id = intent.getStringExtra(DefinedParams.ID),
+                    isFp = true
+                )
+            )
         }
     }
 
@@ -365,17 +405,20 @@ class FamilyPlanMedicalReviewActivity : BaseActivity(), AncVisitCallBack, View.O
         ) as? ClinicalNotesFragment
 
         conFragment?.let {
-            if (clinicalNotesFragment?.validateInput() == true) {
-                patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                    patientViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
-                    details.patientId?.let { id ->
-                        viewModel.createFamilyPlanningMR(
-                            details,
-                            contraceptivesViewModel.getContraceptivesResult(),
-                            patientViewModel.occupation,
-                            patientViewModel.maritalStatus,
-                            patientViewModel.encounterId
-                        )
+            if (conFragment.validInputs()) {
+                if (clinicalNotesFragment?.validateInput() == true) {
+                    patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                        patientViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
+                        details.patientId?.let { id ->
+                            viewModel.createFamilyPlanningMR(
+                                details,
+                                contraceptivesViewModel.getContraceptivesResult(),
+                                patientViewModel.occupation,
+                                patientViewModel.maritalStatus,
+                                patientViewModel.encounterId,
+                                chipItemViewModel.enteredClinicalNotes
+                            )
+                        }
                     }
                 }
             }
