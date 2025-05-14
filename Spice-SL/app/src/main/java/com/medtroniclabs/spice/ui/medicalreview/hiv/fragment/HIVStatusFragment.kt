@@ -1,30 +1,42 @@
 package com.medtroniclabs.spice.ui.medicalreview.hiv.fragment
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.activityViewModels
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentHivStatusBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HIVStatusViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class HIVStatusFragment : BaseFragment() {
 
     val adapter: CustomSpinnerAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
     private val viewModel: HIVStatusViewModel by activityViewModels()
+    private val patientViewModel: PatientDetailViewModel by activityViewModels()
     private lateinit var binding: FragmentHivStatusBinding
+    private var datePickerDialog: DatePickerDialog? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -71,7 +83,7 @@ class HIVStatusFragment : BaseFragment() {
                         val dropDownList = ArrayList<Map<String, Any>>()
                         dropDownList.add(
                             mapOf(
-                                DefinedParams.NAME to "",
+                                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
                                 DefinedParams.Value to DefinedParams.DefaultID
                             )
                         )
@@ -133,8 +145,32 @@ class HIVStatusFragment : BaseFragment() {
         binding.llDSD.addView(view)
     }
 
-    fun initView() {
+    private fun initView() {
         viewModel.getHivStatusMeta(MedicalReviewTypeEnums.HIV.name)
+        binding.pregnancyStatusGroup.setVisible(patientViewModel.getGenderIsFemale())
+        binding.tvLastMenstrualPeriodDate.safeClickListener {
+            showDatePickerDialog(binding.tvLastMenstrualPeriodDate)
+        }
+        autoPopulatePregnantDetails()
+    }
+
+    private fun autoPopulatePregnantDetails() {
+        if (patientViewModel.isPregnant()) {
+            viewModel.resultPregnantStatus[MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name] =
+                DefinedParams.yes
+        }
+        patientViewModel.getPregnantDetails()?.lastMenstrualPeriod?.takeIf { it.isNotBlank() }
+            ?.let { lmp ->
+                binding.apply {
+                    tvLastMenstrualPeriodDate.text = DateUtils.convertDateFormat(
+                        lmp,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        DateUtils.DATE_ddMMyyyy
+                    )
+                    tvLastMenstrualPeriodDate.isEnabled = false
+                }
+                calculateGestationalAgeAndEstimationDeliveryDate()
+            }
     }
 
     private fun initPregnancyStatus(data: ArrayList<Map<String, Any>>?) {
@@ -159,7 +195,61 @@ class HIVStatusFragment : BaseFragment() {
         { selectedID, _, _, _ ->
             viewModel.resultPregnantStatus[MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name] =
                 selectedID as? String ?: ""
+            val isValid = (selectedID as? String).equals(DefinedParams.yes, ignoreCase = true)
+            showPregnantRelatedViews(isValid)
         }
+
+    private fun showPregnantRelatedViews(isValid: Boolean) {
+        binding.lmbGroup.setVisible(isValid)
+        binding.tvLastMenstrualPeriodDate.text = ""
+        binding.gestationalAgeGroup.setVisible(isValid)
+        binding.etGestationalAge.text = ""
+        binding.expectedDateGroup.setVisible(isValid)
+        binding.etExpectedDate.text = ""
+        calculateGestationalAgeAndEstimationDeliveryDate()
+    }
+
+    private fun showDatePickerDialog(textView: AppCompatTextView) {
+        var yearMonthDate: Triple<Int?, Int?, Int?>? = null
+        if (!textView.text.isNullOrBlank())
+            yearMonthDate =
+                DateUtils.convertedMMMToddMM(textView.text.toString())
+        if (datePickerDialog == null) {
+            datePickerDialog = ViewUtils.showDatePicker(
+                context = requireContext(),
+                minDate = null,
+                date = yearMonthDate,
+                isMenstrualPeriod = true,
+                disableFutureDate = true,
+                cancelCallBack = { datePickerDialog = null }
+            ) { _, year, month, dayOfMonth ->
+                val stringDate = "$dayOfMonth-$month-$year"
+                textView.text =
+                    DateUtils.convertDateTimeToDate(
+                        stringDate,
+                        DateUtils.DATE_FORMAT_ddMMyyyy,
+                        DateUtils.DATE_ddMMyyyy
+                    )
+                calculateGestationalAgeAndEstimationDeliveryDate()
+                datePickerDialog = null
+            }
+        }
+    }
+
+    private fun calculateGestationalAgeAndEstimationDeliveryDate() {
+        val lmpText = binding.tvLastMenstrualPeriodDate.text.toString().trim()
+        if (lmpText.isNotEmpty()) {
+            val lmpDate =
+                LocalDate.parse(lmpText, DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy))
+            val estimatedDeliveryDate = lmpDate.plusDays(MotherNeonateUtil.EstimatedDeliveryDate)
+            val formattedEstimatedDeliveryDate =
+                estimatedDeliveryDate.format(DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy))
+            binding.etExpectedDate.text = formattedEstimatedDeliveryDate
+            val gestationalAgeInWeeks = DateUtils.calculateGestationalAge(lmpDate)
+            binding.etGestationalAge.text =
+                DateUtils.formatGestationalAge(gestationalAgeInWeeks, requireContext())
+        }
+    }
 
     private var singleSelectionAHDCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
@@ -206,4 +296,14 @@ class HIVStatusFragment : BaseFragment() {
                 }
             }
     }
+
+    fun validateInput(): Boolean {
+        val isValidPregnantStatus = viewModel.resultPregnantStatus.isNotEmpty()
+        val isValidAHD = viewModel.resultAHD.isNotEmpty()
+        val isValidDSD = viewModel.resultDSD.isNotEmpty()
+        val isLMB = binding.tvLastMenstrualPeriodDate.text.toString().trim().isNotBlank()
+        val isSelectModel = viewModel.selectModel != null
+        return isValidPregnantStatus || isValidAHD || isValidDSD || isLMB || isSelectModel
+    }
+
 }

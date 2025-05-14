@@ -48,7 +48,6 @@ class HivGeneralAndSystemicExaminationFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         initializeViews()
         attachObserver()
-        setListener()
     }
 
     companion object {
@@ -145,7 +144,7 @@ class HivGeneralAndSystemicExaminationFragment : BaseFragment() {
         }
     }
 
-    fun setListener() {
-
+    fun validateInput(): Boolean {
+        return examinationsTagView.getSelectedTags().isNotEmpty()
     }
 }

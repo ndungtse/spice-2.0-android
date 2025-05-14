@@ -14,11 +14,14 @@ import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.ViewUtils
+import com.medtroniclabs.spice.data.model.TreatmentItem
 import com.medtroniclabs.spice.databinding.FragmentOpportunisticInfectionsTreatmentBinding
 import com.medtroniclabs.spice.databinding.OpportunisticItemLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.OpportunisticInfectionViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.end
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.start
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -63,9 +66,9 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
                 tvName.text = trimmedName
 
                 val existing = viewModel.resultHashMap[trimmedName].orEmpty()
-                tvStartDate.text = existing["start"].takeUnless { it.isNullOrBlank() }
+                tvStartDate.text = existing[start].takeUnless { it.isNullOrBlank() }
                     ?: getString(R.string.separator_double_hyphen)
-                tvEndDate.text = existing["end"].takeUnless { it.isNullOrBlank() }
+                tvEndDate.text = existing[end].takeUnless { it.isNullOrBlank() }
                     ?: getString(R.string.separator_double_hyphen)
 
                 tvStartDate.safeClickListener {
@@ -80,7 +83,7 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
                     divider.invisible()
                 }
                 // Enable End Date only if Start Date is set
-                tvEndDate.isEnabled = !existing["start"].isNullOrBlank()
+                tvEndDate.isEnabled = !existing[start].isNullOrBlank()
                 if (!tvEndDate.isEnabled) {
                     tvEndDate.setBackgroundColor(
                         ContextCompat.getColor(
@@ -102,7 +105,7 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
             }
 
         val minDate: Long? = if (!isStart) {
-            viewModel.resultHashMap[key]?.get("start")?.takeIf { it.isNotBlank() }?.let {
+            viewModel.resultHashMap[key]?.get(start)?.takeIf { it.isNotBlank() }?.let {
                 DateUtils.convertToMillis(it, DateUtils.DATE_ddMMyyyy)
             }
         } else null
@@ -123,17 +126,17 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
 
             tvDate.text = formattedDate
             val result =
-                viewModel.resultHashMap.getOrPut(key) { hashMapOf("start" to "", "end" to "") }
+                viewModel.resultHashMap.getOrPut(key) { hashMapOf(start to "", end to "") }
 
             if (isStart) {
-                result["start"] = formattedDate
-                result["end"] = ""
+                result[start] = formattedDate
+                result[end] = ""
 
                 val itemView = binding.llTreatmentList.findViewWithTag<View>("$key-Root")
                 val endDateView = itemView?.findViewById<MaterialTextView>(R.id.tvEndDate)
                 updateEndDateViewState(endDateView, isEnabled = true)
             } else {
-                result["end"] = formattedDate
+                result[end] = formattedDate
             }
 
             datePickerDialog = null
@@ -166,10 +169,16 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
         TreatmentItem("Cryptococcal Meningitis")
     )
 
-}
+    fun validateInput(): Boolean {
+        return hasAnyStartOrEndDateFilled(viewModel.resultHashMap)
+    }
 
-data class TreatmentItem(
-    val name: String,
-    var startDate: String? = null,
-    var endDate: String? = null
-)
+    private fun hasAnyStartOrEndDateFilled(resultMap: HashMap<String, HashMap<String, String>>): Boolean {
+        for ((_, dateMap) in resultMap) {
+            val startNotBlank = dateMap[start]?.isNotBlank() == true
+            val endNotBlank = dateMap[end]?.isNotBlank() == true
+            if (startNotBlank || endNotBlank) return true
+        }
+        return false
+    }
+}

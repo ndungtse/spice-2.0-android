@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ItemCbsNotificationBinding
 import com.medtroniclabs.spice.ncd.data.PeerSupervisorNotificationResponse
 
@@ -34,8 +35,20 @@ class PeerSupervisorNotificationAdapter() :
     override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) {
         val notification = notificationList?.get(position) ?: return
         with(holder.binding) {
-            tvAlertType.text = notification.formType
-            tvCondition.text = notification.formData.notifiableConditions.joinToString("/")
+            tvAlertType.text = if (notification.formType.equals(
+                    DefinedParams.CBS,
+                    true
+                )
+            ) holder.binding.root.context.getString(R.string.cbs_alert) else notification.formType
+            val conditionList = notification.formData.notifiableConditions
+            val otherCondition = notification.formData.otherNotifiableConditions.trim()
+            val condition = buildString {
+                append(conditionList.joinToString("/"))
+                if (!otherCondition.isNullOrEmpty()) {
+                    append(" - $otherCondition")
+                }
+            }
+            tvCondition.text = condition
             tvDate.text = DateUtils.convertDateFormat(
                 notification.formData.assessmentDate,
                 DateUtils.CALENDAR_FORMAT,

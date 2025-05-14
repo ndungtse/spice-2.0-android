@@ -61,5 +61,6 @@ object MedicalReviewDefinedParams {
     const val OtherFPMethod = "OtherFPmethod"
     const val HBsAg = "HBsAg"
     const val HIV_SYPHILIS_DUO_TEST = "SyphilisDuoTest"
-
+    const val start = "start"
+    const val end = "end"
 }

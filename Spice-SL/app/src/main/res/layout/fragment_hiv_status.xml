@@ -56,6 +56,12 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_end="@dimen/_16sdp" />
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pregnancyStatusGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="tvPregnancyAndBreastFeedingStatusLabel,llPregnancyAndBreastFeedingStatus" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvStatusTitle"
                 style="@style/Form_Header_Style"
@@ -107,6 +113,11 @@
                 app:layout_constraintStart_toStartOf="@id/startGuideline"
                 app:layout_constraintTop_toBottomOf="@id/llPregnancyAndBreastFeedingStatus" />
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/lmbGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="tvLastMenstrualPeriodLabel,tvLastMenstrualPeriodDate" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvLastMenstrualPeriodLabel"
@@ -160,6 +171,12 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="tvLastMenstrualPeriodError" />
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/gestationalAgeGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="tvGestationalAgeLabel,etGestationalAge" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvGestationalAgeLabel"
                 android:layout_width="@dimen/_0dp"
@@ -177,6 +194,7 @@
                 style="@style/Form_Input_Style_BG"
                 android:layout_width="@dimen/_0dp"
                 android:hint="@string/enter"
+                android:enabled="false"
                 android:paddingHorizontal="@dimen/_12sdp"
                 android:paddingVertical="@dimen/_10sdp"
                 app:layout_constraintEnd_toStartOf="@id/centerLeftGuideline"
@@ -197,6 +215,12 @@
                 app:layout_constraintStart_toStartOf="@id/etGestationalAge"
                 app:layout_constraintTop_toBottomOf="@id/etGestationalAge" />
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/expectedDateGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="tvExpectedDate,etExpectedDate" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvExpectedDate"
                 android:layout_width="@dimen/_0dp"
@@ -209,13 +233,12 @@
                 app:layout_constraintStart_toEndOf="@id/centerRightGuideline"
                 app:layout_constraintTop_toBottomOf="@id/barrierOne" />
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/etExpectedDate"
                 style="@style/Form_Input_Style_BG"
                 android:layout_width="@dimen/_0dp"
                 android:hint="@string/enter"
-                android:inputType="number"
-                android:maxLength="1"
+                android:enabled="false"
                 android:paddingHorizontal="@dimen/_12sdp"
                 android:paddingVertical="@dimen/_10sdp"
                 app:layout_constraintEnd_toStartOf="@id/endGuideline"

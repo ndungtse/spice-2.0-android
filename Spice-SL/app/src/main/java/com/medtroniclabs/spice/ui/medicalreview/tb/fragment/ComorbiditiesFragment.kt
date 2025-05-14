@@ -12,7 +12,6 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentSystemicExaminationsBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -43,12 +42,20 @@ class ComorbiditiesFragment : BaseFragment() {
 
     companion object {
         const val TAG = "ComorbiditiesFragment"
-        fun newInstance() = ComorbiditiesFragment()
+        fun newInstance(type: String) = ComorbiditiesFragment().apply {
+            arguments = Bundle().apply {
+                putString(DefinedParams.type, type)
+            }
+        }
+    }
+
+    fun getType(): String {
+        return arguments?.getString(DefinedParams.type, "") ?: ""
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getChips(TB)
+        viewModel.getChips(getType())
         setObserver()
         attachObserver()
     }

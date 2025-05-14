@@ -586,9 +586,6 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         val menu: Menu = binding.navView.menu
         val menuItemToRemove: MenuItem? = menu.findItem(R.id.offline_sync)
         val changeFacilityMenuItem: MenuItem? = menu.findItem(R.id.changeFacility)
-        if (CommonUtils.isCommunity()){
-            binding.navView.menu.findItem(R.id.support).isVisible = false
-        }
         if (CommonUtils.isCommunity() && !CommonUtils.isChw() && menuItemToRemove != null) {
             menu.removeItem(menuItemToRemove.itemId)
         }
@@ -731,9 +728,8 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             }
 
             R.id.support -> {
-                if (CommonUtils.isNonCommunity()) {
-                    launchSupportDialogFragment()
-                }
+                // TODO : Handle the tiberbu
+                launchSupportDialogFragment()
                 return true
             }
         }

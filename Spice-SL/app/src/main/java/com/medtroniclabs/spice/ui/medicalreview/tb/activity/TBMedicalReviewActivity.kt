@@ -507,7 +507,7 @@ class TBMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCa
         addOrReuseFragment(
             R.id.comorbiditiesContainer,
             ComorbiditiesFragment.TAG,
-            ComorbiditiesFragment.newInstance()
+            ComorbiditiesFragment.newInstance(DefinedParams.TB)
         )
         replaceFragment(
             R.id.patientMedicalReviewDiagnosis,

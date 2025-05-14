@@ -1563,5 +1563,5 @@
     <string name="collection_date" translatable="false">COLLECTION DATE</string>
     <string name="gestation_at_collection_date" translatable="false">GESTATION AT COLLECTION DATE</string>
     <string name="results" translatable="false">RESULTS</string>
-
+    <string name="cbs_alert" translatable="false">CBS Alert</string>
 </resources>

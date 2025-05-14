@@ -288,7 +288,7 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
         addOrReuseFragment(
             R.id.comorbiditiesContainer,
             ComorbiditiesFragment.TAG,
-            ComorbiditiesFragment.newInstance()
+            ComorbiditiesFragment.newInstance(MedicalReviewTypeEnums.HIV.name)
         )
         binding.systemicExaminationsContainer.visible()
         binding.clinicalNotesContainer.visible()
