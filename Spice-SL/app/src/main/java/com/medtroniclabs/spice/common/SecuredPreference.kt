@@ -542,6 +542,7 @@ object SecuredPreference {
         remove(EnvironmentKey.IS_ABOVE_FIVE_YEARS_LOADED.name)
         remove(EnvironmentKey.IS_MOTHER_NEONATE_LOADEDANC.name)
         remove(EnvironmentKey.IS_TB_LOADED.name)
+        remove(EnvironmentKey.IS_HIV_DATA_LOADED.name)
         remove(EnvironmentKey.IS_UNDER_TWO_MONTHS_LOADED.name)
         remove(EnvironmentKey.IS_LABOUR_DELIVERY_LOADED.name)
         remove(EnvironmentKey.IS_UNDER_FIVE_YEARS_LOADED.name)

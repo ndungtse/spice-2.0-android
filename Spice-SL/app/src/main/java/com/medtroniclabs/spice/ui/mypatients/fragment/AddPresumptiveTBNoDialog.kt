@@ -13,8 +13,8 @@ import androidx.fragment.app.DialogFragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentAddWeightDialogBinding
-import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class AddPresumptiveTBNoDialog : DialogFragment(), View.OnClickListener {
@@ -36,10 +36,20 @@ class AddPresumptiveTBNoDialog : DialogFragment(), View.OnClickListener {
     companion object {
         const val TAG = "AddPresumptiveTBNoDialog"
         const val Data = "Data"
-        fun newInstance(text: String? = null): AddPresumptiveTBNoDialog {
+        fun newInstance(
+            text: String? = null,
+            title: String,
+            hint: String,
+            length: Int,
+            inputType: Int
+        ): AddPresumptiveTBNoDialog {
             val fragment = AddPresumptiveTBNoDialog()
             fragment.arguments = Bundle().apply {
                 putString(Data, text)
+                putString(DefinedParams.Title, title)
+                putString(DefinedParams.Hint, hint)
+                putInt(DefinedParams.Length, length)
+                putInt(DefinedParams.InputType, inputType)
             }
             return fragment
         }
@@ -52,12 +62,18 @@ class AddPresumptiveTBNoDialog : DialogFragment(), View.OnClickListener {
 
     private fun initView() {
         with(binding) {
-            tvTitle.text = getString(R.string.presumptive_tb_no)
-            tvWeightLabel.text = getString(R.string.presumptive_tb_no)
-            etWeight.hint = getString(R.string.enter_number)
-            binding.etWeight.apply {
-                inputType = InputType.TYPE_CLASS_NUMBER
-                filters = arrayOf(InputFilter.LengthFilter(20))
+            with(arguments) {
+                val title = this?.getString(DefinedParams.Title).orEmpty().ifBlank { getString(R.string.hyphen_symbol) }
+                val hint = this?.getString(DefinedParams.Hint).orEmpty().ifBlank { getString(R.string.hyphen_symbol) }
+                val length = this?.getInt(DefinedParams.Length) ?: 20
+                val inputType = this?.getInt(DefinedParams.InputType) ?: InputType.TYPE_CLASS_NUMBER
+                tvTitle.text = title
+                tvWeightLabel.text = title
+                etWeight.hint = hint
+                etWeight.apply {
+                    this.inputType = inputType
+                    filters = arrayOf(InputFilter.LengthFilter(length))
+                }
             }
             btnCancel.safeClickListener(this@AddPresumptiveTBNoDialog)
             etWeight.addTextChangedListener(textWatcher)

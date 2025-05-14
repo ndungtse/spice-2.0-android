@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Name TextView -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingVertical="@dimen/_16sdp"
+        android:textColor="@color/house_hold_title"
+        android:textSize="@dimen/_14ssp"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toStartOf="@id/divider1"
+        app:layout_constraintHorizontal_weight="3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tool:text="@string/date" />
+
+    <!-- Divider after tvName -->
+    <View
+        android:id="@+id/divider1"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:background="@color/btn_disable_grey"
+        app:layout_constraintTop_toTopOf="@id/tvName"
+        app:layout_constraintBottom_toBottomOf="@id/tvName"
+        app:layout_constraintStart_toEndOf="@id/tvName"
+        app:layout_constraintEnd_toStartOf="@id/tvStartDate" />
+
+    <!-- Start Date TextView -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvStartDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingVertical="@dimen/_16sdp"
+        android:textColor="@color/house_hold_title"
+        android:textSize="@dimen/_14ssp"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toStartOf="@id/divider2"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintStart_toEndOf="@id/divider1"
+        app:layout_constraintTop_toTopOf="parent"
+        tool:text="@string/height_hint" />
+
+    <!-- Divider after tvStartDate -->
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:background="@color/btn_disable_grey"
+        app:layout_constraintTop_toTopOf="@id/tvStartDate"
+        app:layout_constraintBottom_toBottomOf="@id/tvStartDate"
+        app:layout_constraintStart_toEndOf="@id/tvStartDate"
+        app:layout_constraintEnd_toStartOf="@id/tvEndDate" />
+
+    <!-- End Date TextView -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvEndDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingVertical="@dimen/_16sdp"
+        android:textColor="@color/house_hold_title"
+        android:textSize="@dimen/_14ssp"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintStart_toEndOf="@id/divider2"
+        app:layout_constraintTop_toTopOf="parent"
+        tool:text="@string/weight_hint" />
+
+    <!-- Bottom divider -->
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/point_eight_dp"
+        app:dividerColor="@color/btn_disable_grey"
+        app:layout_constraintTop_toBottomOf="@id/tvName" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

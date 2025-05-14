@@ -59,5 +59,11 @@ enum class MedicalReviewTypeEnums{
     condoms,
     emergency_contraceptive,
     permanent_method,
-    iucd
+    iucd,
+    HIV_IMR_CMR,
+    ahdStatus,
+    hivPreganancyBreastFeedingStatus,
+    dsdStatus,
+    nonEstablishedModels,
+    whoClinicalStage
 }

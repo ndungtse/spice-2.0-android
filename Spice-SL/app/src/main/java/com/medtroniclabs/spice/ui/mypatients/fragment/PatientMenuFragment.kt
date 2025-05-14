@@ -44,6 +44,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.ui.household.ConsentFormActivity
 import com.medtroniclabs.spice.ui.medicalreview.epi.ImmunizationActivity
 import com.medtroniclabs.spice.ui.medicalreview.familyplan.activity.FamilyPlanMedicalReviewActivity
+import com.medtroniclabs.spice.ui.medicalreview.hiv.activity.HivImrAndCmrActivity
 import com.medtroniclabs.spice.ui.medicalreview.tb.activity.TBMedicalReviewActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -84,10 +85,6 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                 ResourceState.ERROR -> {
                     (activity as BaseActivity).hideLoading()
                 }
-
-                ResourceState.ERROR -> TODO()
-                ResourceState.LOADING -> TODO()
-                ResourceState.SUCCESS -> TODO()
             }
         }
     }

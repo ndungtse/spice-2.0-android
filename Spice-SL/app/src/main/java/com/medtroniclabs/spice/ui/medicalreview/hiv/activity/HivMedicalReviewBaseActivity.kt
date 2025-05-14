@@ -180,7 +180,6 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_HIV_DATA_LOADED.name))) {
             if (connectivityManager.isNetworkAvailable()) {
                 hivViewModel.getHivMetaData()
-                initializePatientDetailFragment()
             } else {
                 showErrorDialogue(
                     getString(R.string.error), getString(R.string.no_internet_error),

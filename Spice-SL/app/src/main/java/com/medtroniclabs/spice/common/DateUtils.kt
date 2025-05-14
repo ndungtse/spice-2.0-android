@@ -929,5 +929,8 @@ object DateUtils {
             false
         }
     }
-
+    fun convertToMillis(dateStr: String, pattern: String): Long {
+        val sdf = SimpleDateFormat(pattern, Locale.getDefault())
+        return sdf.parse(dateStr)?.time ?: 0L
+    }
 }

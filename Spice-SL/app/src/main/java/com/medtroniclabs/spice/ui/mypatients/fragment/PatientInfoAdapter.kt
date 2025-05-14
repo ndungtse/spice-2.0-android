@@ -46,6 +46,8 @@ class PatientInfoAdapter(
     private val maritalStatus: (String?) -> Unit,
     private val resultValues: HashMap<String, Any>,
     private val presumptiveTbNo: (String?) -> Unit,
+    private val artCode: (String?) -> Unit,
+    private val isHiv: Boolean = false
 ) :
     RecyclerView.Adapter<PatientInfoAdapter.ViewHolder>() {
 
@@ -113,14 +115,14 @@ class PatientInfoAdapter(
                     tvHighRiskPregnancyCriteria.gone()
                 }
 
-                if (label[DefinedParams.label]?.equals(context.getString(R.string.occupation)) == true) {
+                if (label[DefinedParams.label]?.equals(context.getString(R.string.occupation)) == true && !isHiv) {
                     tvValue.gone()
                     tvSeparator.gone()
                     etOccupation.visible()
                     setupEditText(etOccupation,occupation)
                 }
 
-                if (label[DefinedParams.label]?.equals(context.getString(R.string.marital_status)) == true) {
+                if (label[DefinedParams.label]?.equals(context.getString(R.string.marital_status)) == true && !isHiv) {
                     tvValue.gone()
                     tvSeparator.gone()
                     spinnerMaritalStatus.visible()
@@ -176,15 +178,33 @@ class PatientInfoAdapter(
                     spinnerMaritalStatus.gone()
                     tvLabel.text = context.getString(R.string.marital_status)
                 }
-                handlePresumptiveTbField(label, etValue, tvValue, ivEdit, context) {
+                handleCustomField(
+                    label,
+                    context.getString(R.string.presumptive_tb_no),
+                    etValue,
+                    tvValue,
+                    ivEdit,
+                    context
+                ) {
                     presumptiveTbNo.invoke(it)
+                }
+                handleCustomField(
+                    label,
+                    context.getString(R.string.art_code),
+                    etValue,
+                    tvValue,
+                    ivEdit,
+                    context
+                ) {
+                    artCode.invoke(it)
                 }
                 root.background = ContextCompat.getDrawable(context, fragmentBg)
             }
         }
 
-        private fun handlePresumptiveTbField(
+        private fun handleCustomField(
             label: Map<String, Any?>,
+            expectedLabel: String,
             etValue: AppCompatEditText,
             tvValue: AppCompatTextView,
             ivEdit: AppCompatImageView,
@@ -194,16 +214,15 @@ class PatientInfoAdapter(
             val labelText = label[DefinedParams.label] as? String
             val isSummary = label[DefinedParams.IsSummary] == "true"
             val value = label[DefinedParams.Value] as? String
-            val presumptiveTbNoLabel = context.getString(R.string.presumptive_tb_no)
             etValue.isEnabled = false
 
-            if (labelText == presumptiveTbNoLabel) {
+            if (labelText == expectedLabel) {
                 if (!isSummary) {
                     etValue.visible()
                     ivEdit.visible()
                     tvValue.gone()
                     value?.takeIf { it.isNotBlank() }?.let { etValue.setText(it) }
-                    ivEdit.safeClickListener{
+                    ivEdit.safeClickListener {
                         onTextChanged.invoke(value?.takeIf { it.isNotBlank() } ?: "")
                     }
                 } else {

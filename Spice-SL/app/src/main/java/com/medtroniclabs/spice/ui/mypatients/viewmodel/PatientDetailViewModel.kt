@@ -56,6 +56,7 @@ class PatientDetailViewModel @Inject constructor(
     var presumptiveTbNo: String? = null
     var maritalStatus:String?=null
     val clinicalWorkflowsMenusLiveData = MutableLiveData<List<ClinicalWorkflowEntity>>()
+    var artCode: String? = null
 
     fun getPatients(id: String, assessmentType: String? = null, origin: String? = null) {
         viewModelScope.launch(dispatcherIO) {

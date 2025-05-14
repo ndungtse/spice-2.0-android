@@ -18,6 +18,13 @@
         android:theme="@style/Theme.Spice_sl_mobile"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
+        <activity
+            android:name=".ui.medicalreview.hiv.activity.HivImrAndCmrActivity"
+            android:exported="false"
+            android:screenOrientation="sensorLandscape"
+            android:windowSoftInputMode="adjustPan" />
+
         <activity
             android:name=".ui.medicalreview.hiv.activity.HivMedicalReviewBaseActivity"
             android:screenOrientation="sensorLandscape"
@@ -31,18 +38,16 @@
 
         <activity
             android:name=".ui.communityprofile.CommunityProfileActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:windowSoftInputMode="adjustPan"/>
-
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.cbs.activity.CbsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
-
         <activity
             android:name=".ui.medicalreview.tb.activity.TBMedicalReviewActivity"
             android:exported="false"
@@ -58,7 +63,7 @@
             android:name=".ncd.followup.activity.NCDFollowUpActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ncd.landing.ui.UserTermsConditionsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
@@ -134,9 +139,9 @@
         </activity>
         <activity
             android:name=".ui.landing.LandingActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true"
             android:theme="@style/Theme.App.Starting"
-            android:configChanges="orientation|screenSize|keyboardHidden"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -195,8 +200,8 @@
             android:name=".ui.assessment.AssessmentActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".ui.household.ConsentFormActivity"

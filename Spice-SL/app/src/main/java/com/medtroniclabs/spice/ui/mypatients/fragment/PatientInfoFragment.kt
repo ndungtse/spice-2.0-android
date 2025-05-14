@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.mypatients.fragment
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
+import com.medtroniclabs.spice.common.DefinedParams.HIV_IMR_CMR
 import com.medtroniclabs.spice.common.DefinedParams.IsReferredScreen
 import com.medtroniclabs.spice.common.DefinedParams.MaritalStatus
 import com.medtroniclabs.spice.common.DefinedParams.Occupation
@@ -74,8 +76,9 @@ class PatientInfoFragment : BaseFragment() {
             isPnc:Boolean =false,
             isReferredScreen: Boolean = false,
             isTb:Boolean = false,
-            isFamilyPlan:Boolean = false,
-            isFPSummary:Boolean = false
+            isFamilyPlan: Boolean = false,
+            isFPSummary: Boolean = false,
+            isHivImrCmr: Boolean = false
         ): PatientInfoFragment {
             val fragment = PatientInfoFragment()
             val bundle = Bundle()
@@ -83,6 +86,7 @@ class PatientInfoFragment : BaseFragment() {
             bundle.putBoolean(ANC, isAnc)
             bundle.putBoolean(PNC,isPnc)
             bundle.putBoolean(TB,isTb)
+            bundle.putBoolean(HIV_IMR_CMR, isHivImrCmr)
             bundle.putBoolean(IsReferredScreen, isReferredScreen)
             bundle.putBoolean(familyPlanning,isFamilyPlan)
             bundle.putBoolean(isFamilyPlanSummary,isFPSummary)
@@ -212,6 +216,9 @@ class PatientInfoFragment : BaseFragment() {
 
     private fun isAnc(): Boolean? {
         return arguments?.getBoolean(ANC, false)
+    }
+    private fun isHivImrCmr(): Boolean {
+        return arguments?.getBoolean(HIV_IMR_CMR, false) ?: false
     }
     private fun isPnc(): Boolean? {
         return arguments?.getBoolean(PNC, false)
@@ -393,9 +400,67 @@ class PatientInfoFragment : BaseFragment() {
                     )
                 }
             }
-
+            if (isHivImrCmr()) {
+                prepareHivImrCmrData(
+                    dataList = dataList,
+                    patient = patientListRespModel,
+                    dateOfDelivery = dateOfDelivery
+                )
+            }
             commonAdapter(dataList as MutableList<Map<String, Any>>)
         }
+    }
+    private fun prepareHivImrCmrData(
+        dataList: MutableList<Map<String, String>>,
+        patient: PatientListRespModel,
+        dateOfDelivery: String?
+    ): MutableList<Map<String, String>> {
+        val hyphen = requireContext().getString(R.string.hyphen_symbol)
+        val formatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)
+        fun stringOrHyphen(value: String?) = value?.takeIf { it.isNotBlank() }?.trim() ?: hyphen
+        fun removeItem(labelResId: Int, value: String?) {
+            dataList.remove(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(labelResId),
+                    DefinedParams.Value to stringOrHyphen(value)
+                )
+            )
+        }
+        // Remove specific items if present
+        removeItem(R.string.dateofbirth, patient.birthDate?.getLocalDate()?.format(formatter))
+        removeItem(R.string.landmark, patient.landmark)
+        removeItem(R.string.household_location, patient.village)
+        // Add updated items
+        dataList.addAll(
+            listOf(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.occupation),
+                    DefinedParams.Value to stringOrHyphen(patient.occupation)
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.household_location),
+                    DefinedParams.Value to stringOrHyphen(patient.village)
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.chw),
+                    DefinedParams.Value to stringOrHyphen(viewModel.chwName)
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.marital_status),
+                    DefinedParams.Value to stringOrHyphen(dateOfDelivery)
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.population_type),
+                    DefinedParams.Value to hyphen
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.art_code),
+                    DefinedParams.Value to ((patient.artCode ?: viewModel.artCode) ?: ""),
+                    DefinedParams.IsSummary to viewModel.isSummary.toString()
+                )
+            )
+        )
+        return dataList
     }
 
     private fun commonAdapter(dataList: MutableList<Map<String, Any>>) {
@@ -449,7 +514,12 @@ class PatientInfoFragment : BaseFragment() {
                 resultValues = enteredAdapterValues,
                 presumptiveTbNo = {
                     showPresumptiveTbNo(it)
-                })
+                },
+                artCode = {
+                    showArtCode(it)
+                },
+                isHiv = isHivImrCmr()
+            )
         val isLandscape =
             resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -462,22 +532,61 @@ class PatientInfoFragment : BaseFragment() {
         binding.rvPatientInfo.adapter = adapter
         hideProgress()
     }
-    private fun showPresumptiveTbNo(text: String?) {
-        showDialogIfNotPresent(
-            AddPresumptiveTBNoDialog.TAG
-        ) {
-            AddPresumptiveTBNoDialog.newInstance(text).apply {
+
+    private fun showInputDialog(
+        tag: String,
+        text: String?,
+        titleRes: Int,
+        hintRes: Int,
+        length: Int = 20,
+        inputType: Int = InputType.TYPE_CLASS_NUMBER,
+        onEntered: (String) -> Unit
+    ) {
+        showDialogIfNotPresent(tag) {
+            AddPresumptiveTBNoDialog.newInstance(
+                text = text,
+                title = getString(titleRes),
+                hint = getString(hintRes),
+                length = length,
+                inputType = inputType
+            ).apply {
                 this.listener = object : OnPresumptiveTBEnteredListener {
                     override fun onPresumptiveTBEntered(tbNumber: String) {
-                        // Use the tbNumber string here
-                        viewModel.presumptiveTbNo = tbNumber
-                        viewModel.patientDetailsLiveData.value?.data?.apply {
-                            presumptiveTbNo = tbNumber
-                        }?.let {
-                            setDataInInfo(it)
-                        }
+                        onEntered(tbNumber)
                     }
                 }
+            }
+        }
+    }
+
+    private fun showPresumptiveTbNo(text: String?) {
+        showInputDialog(
+            tag = AddPresumptiveTBNoDialog.TAG,
+            text = text,
+            titleRes = R.string.presumptive_tb_no,
+            hintRes = R.string.enter_number
+        ) { tbNumber ->
+            viewModel.presumptiveTbNo = tbNumber
+            viewModel.patientDetailsLiveData.value?.data?.apply {
+                presumptiveTbNo = tbNumber
+            }?.let {
+                setDataInInfo(it)
+            }
+        }
+    }
+
+    private fun showArtCode(text: String?) {
+        showInputDialog(
+            tag = AddPresumptiveTBNoDialog.TAG,
+            text = text,
+            titleRes = R.string.art_code,
+            hintRes = R.string.enter_number
+        ) { artCode ->
+            viewModel.artCode = artCode
+            viewModel.patientDetailsLiveData.value?.data?.apply {
+                this.artCode = artCode
+            }?.let {
+                setDataInInfo(it)
             }
         }
     }

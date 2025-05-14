@@ -349,6 +349,7 @@ object DefinedParams {
     const val isCreateHouseholdForPhu = "isCreateHouseholdForPhu"
     const val FP = "FP"
     const val HIV = "HIV"
+    const val HIV_IMR_CMR = "HIV_IMR_CMR"
     const val HIV_SUMMARY = "HIV_SUMMARY"
     const val A1TestResult = "A1TestResult"
     const val A2TestResult = "A2TestResult"
@@ -360,5 +361,7 @@ object DefinedParams {
     const val MaritalStatus = "maritalStatus"
     const val Married = "Married"
     const val Single = "Single"
-
+    const val Hint = "Hint"
+    const val Length = "Length"
+    const val InputType = "inputType"
 }

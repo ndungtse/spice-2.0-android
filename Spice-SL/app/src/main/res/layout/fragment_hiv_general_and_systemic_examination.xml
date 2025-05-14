@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardSystemicExaminations"
+        style="@style/CardView_Style"
+        android:layout_width="match_parent"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/systemicExamContainer">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_16ssp">
+
+            <View
+                android:id="@+id/viewSystemicExaminationCardBG"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_0dp"
+                android:background="@color/card_background"
+                app:layout_constraintBottom_toBottomOf="@id/tvSystemicExaminationTitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvSystemicExaminationTitle"
+                style="@style/Form_Header_Style"
+                android:layout_width="@dimen/_0dp"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_10sdp"
+                android:text="@string/general_systemic_examinations"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintEnd_toEndOf="@id/viewSystemicExaminationCardBG"
+                app:layout_constraintStart_toStartOf="@id/viewSystemicExaminationCardBG"
+                app:layout_constraintTop_toTopOf="@id/viewSystemicExaminationCardBG" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/tagSystemicExaminationTitle"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/_16sdp"
+                android:paddingVertical="@dimen/_12sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvSystemicExaminationTitle" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvSystemicExaminationError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/default_user_input_error"
+                android:textColor="@color/a_red_error"
+                android:textSize="@dimen/_12ssp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tagSystemicExaminationTitle" />
+
+            <LinearLayout
+                android:id="@+id/llGeneralExamination"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="0dp"
+                android:orientation="vertical"
+                android:padding="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvSystemicExaminationError" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/llError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/default_user_input_error"
+                android:textColor="@color/a_red_error"
+                android:textSize="@dimen/_12ssp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/llGeneralExamination" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout>

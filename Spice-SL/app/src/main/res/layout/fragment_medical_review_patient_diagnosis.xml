@@ -253,6 +253,66 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardWhoClinicalStage"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_marginBottom="@dimen/_8sdp"
+            android:layout_weight="1"
+            android:visibility="gone"
+            app:cardCornerRadius="@dimen/_5sdp"
+            app:cardElevation="@dimen/_4sdp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clWho"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/white"
+                android:padding="@dimen/_10sdp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvWhoLbl"
+                    style="@style/TextStyle_Regular_16"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/who_clinical_stage"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvWhoValue"
+                    style="@style/TextStyle_Bold_16_Size"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="3"
+                    android:text="@string/seperator_hyphen"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvWhoLbl" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvWho"
+                    style="@style/TextStyle_Regular_16_Size"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/edit_who_clinical_stage"
+                    android:textColor="@color/medium_blue"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvWhoValue" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardAddWeight"
             android:layout_width="@dimen/_0dp"
             android:layout_height="match_parent"
@@ -414,6 +474,172 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvAddBp" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardCd4"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_marginBottom="@dimen/_8sdp"
+            android:layout_weight="1"
+            android:visibility="gone"
+            app:cardCornerRadius="@dimen/_5sdp"
+            app:cardElevation="@dimen/_4sdp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clCd4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white">
+
+                <ProgressBar
+                    android:id="@+id/pageProgressCd4"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvCd4Label"
+                    style="@style/TextStyle_Regular_16"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/cd4"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvCd4Value"
+                    style="@style/TextStyle_Bold_16_Size"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/hyphen_symbol"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvCd4Label" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvCd4"
+                    style="@style/TextStyle_Regular_16_Size"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/view_cd4"
+                    android:textColor="@color/medium_blue"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvCd4Value" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/retryCd4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="@string/retry"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:visibility="gone"
+                    app:cornerRadius="18dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvCd4" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardCd4Percent"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_marginBottom="@dimen/_8sdp"
+            android:layout_weight="1"
+            android:visibility="gone"
+            app:cardCornerRadius="@dimen/_5sdp"
+            app:cardElevation="@dimen/_4sdp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clCd4Percent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white">
+
+                <ProgressBar
+                    android:id="@+id/pageProgressCd4Percent"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvCd4PercentLabel"
+                    style="@style/TextStyle_Regular_16"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/cd4_percentage"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvCd4PercentValue"
+                    style="@style/TextStyle_Bold_16_Size"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/hyphen_symbol"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvCd4PercentLabel" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvCd4Percent"
+                    style="@style/TextStyle_Regular_16_Size"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/view_cd4_percentage"
+                    android:textColor="@color/medium_blue"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvCd4PercentValue" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/retryCd4Percent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="@string/retry"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:visibility="gone"
+                    app:cornerRadius="18dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvCd4Percent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>

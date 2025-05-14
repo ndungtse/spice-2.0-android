@@ -80,6 +80,7 @@ data class PatientListRespModel(
     val gad7Score: String? = null,
     val phq9Score: String? = null,
     var presumptiveTbNo: String? = null,
+    var artCode: String? = null,
     val tbIMRCompleted:Boolean = true,
     var systolic: Double? = null,
     var diastolic: Double? = null

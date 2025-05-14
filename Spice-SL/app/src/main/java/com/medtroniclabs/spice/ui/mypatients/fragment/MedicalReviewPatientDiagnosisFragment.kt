@@ -38,6 +38,7 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissL
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.calculateBp
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
+import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.WhoClinicalStageFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListenerForTb
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.PATIENT_TYPE_HYPHEN
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddBpDialog
@@ -70,12 +71,22 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             return MedicalReviewPatientDiagnosisFragment()
         }
 
-        fun newInstance(isAnc: Boolean,isPnc:Boolean=false, patientId: String?,memberID: String?, id: String?,isTB:Boolean = false, isFp:Boolean = false): MedicalReviewPatientDiagnosisFragment {
+        fun newInstance(
+            isAnc: Boolean,
+            isPnc: Boolean = false,
+            patientId: String?,
+            memberID: String?,
+            id: String?,
+            isTB: Boolean = false,
+            isHivImrCmr: Boolean = false,
+            isFp:Boolean = false
+        ): MedicalReviewPatientDiagnosisFragment {
             val fragment = MedicalReviewPatientDiagnosisFragment()
             fragment.arguments = Bundle().apply {
                 putBoolean(DefinedParams.PregnancyANC, isAnc)
                 putBoolean(DefinedParams.PregnancyPNC,isPnc)
                 putBoolean(DefinedParams.TB,isTB)
+                putBoolean(DefinedParams.HIV_IMR_CMR, isHivImrCmr)
                 putString(DefinedParams.PatientId, patientId)
                 putString(DefinedParams.MemberID, memberID)
                 putString(DefinedParams.ID, id)
@@ -106,7 +117,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 MedicalReviewTypeEnums.TB.name
             } else if (isFp()){
                 MedicalReviewTypeEnums.FP.name
-            }else {
+            } else if (isHivImrCmr()) {
+                MedicalReviewTypeEnums.HIV_REVIEW.name
+            } else {
                 it.getString(MedicalReviewTypeEnums.DiagnosisType.name)
             }
         } ?: ""
@@ -417,6 +430,10 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         return arguments?.getBoolean(DefinedParams.FP, false) ?: false
     }
 
+    private fun isHivImrCmr():Boolean {
+        return arguments?.getBoolean(DefinedParams.HIV_IMR_CMR, false) ?: false
+    }
+
     private fun handleFlow() {
         with(binding) {
             val isAnc = arguments?.getBoolean(DefinedParams.PregnancyANC, false)
@@ -424,8 +441,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             if (isAnc == false && isPnc == false) {
                 cardAddWeight.gone()
                 cardBloodPressure.gone()
-            }else {
-               ancPncFlow(cardAddWeight,cardBloodPressure)
+            } else {
+                ancPncFlow(cardAddWeight, cardBloodPressure)
             }
             tvAddWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
             tvFpAddWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
@@ -479,6 +496,22 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 tvAddHeightFP.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
                 tvFpBmiHistory.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
             }
+            if (isHivImrCmr()) {
+                viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
+                cardPatientStatus.gone()
+                cardBloodPressure.gone()
+                cardAddWeight.visible()
+                cardWhoClinicalStage.visible()
+                cardCd4.visible()
+                cardCd4Percent.visible()
+                tvCd4.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+                tvCd4Percent.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+                tvWho.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+            } else {
+                cardWhoClinicalStage.gone()
+                cardCd4.gone()
+                cardCd4Percent.gone()
+            }
         }
     }
 
@@ -505,7 +538,18 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             binding.tvBmiHistory.id, binding.tvFpBmiHistory.id -> showBmiDialog()
             binding.retryButtonTbBMI.id, binding.retryButtonFpBMI.id -> retryFetchingDataForBMI()
             binding.tvAddPatientType.id -> showPatientType()
+            binding.tvWho.id -> showWhoStage()
         }
+    }
+
+    private fun showWhoStage() {
+        withNetworkAvailability(online = {
+            showDialogIfNotPresent(WhoClinicalStageFragment.TAG) {
+                WhoClinicalStageFragment.newInstance().apply {
+                    listener = this@MedicalReviewPatientDiagnosisFragment
+                }
+            }
+        })
     }
 
     private fun fetchPatientType() {
@@ -858,7 +902,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 viewModel.fetchBmi(MotherNeonateAncRequest(memberId = getMemberId()))
             }
             val isAnc = arguments?.getBoolean(DefinedParams.PregnancyANC, false) ?: false
-            if (isAnc && (!isBp && !isHeight)) {
+            if ((isAnc || isHivImrCmr()) && (!isBp && !isHeight)) {
                 viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
             }
         }

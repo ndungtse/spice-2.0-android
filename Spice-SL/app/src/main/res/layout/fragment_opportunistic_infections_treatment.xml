@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardView"
+        style="@style/CardView_Style"
+        android:layout_width="match_parent"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/systemicExamContainer">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_16ssp">
+
+            <View
+                android:id="@+id/viewTreatmentCardBG"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_0dp"
+                android:background="@color/card_background"
+                app:layout_constraintBottom_toBottomOf="@id/tvTreatmentTitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTreatmentTitle"
+                style="@style/Form_Header_Style"
+                android:layout_width="@dimen/_0dp"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_10sdp"
+                android:text="@string/opportunistic_infections_prophylaxis_and_treatment"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintEnd_toEndOf="@id/viewTreatmentCardBG"
+                app:layout_constraintStart_toStartOf="@id/viewTreatmentCardBG"
+                app:layout_constraintTop_toTopOf="@id/viewTreatmentCardBG" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clTableRoot"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_15sdp"
+                android:layout_marginVertical="@dimen/_15sdp"
+                android:background="@drawable/card_border"
+                android:padding="@dimen/_1sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvTreatmentTitle">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/gradiant_treatment_start_background"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <!-- Name -->
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:paddingHorizontal="@dimen/_10sdp"
+                        android:paddingVertical="@dimen/_16sdp"
+                        android:text="@string/name"
+                        android:textAllCaps="true"
+                        android:textColor="@color/house_hold_title"
+                        android:textSize="@dimen/_14ssp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@id/divider1"
+                        app:layout_constraintHorizontal_weight="2.94"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- Divider after tvName -->
+                    <View
+                        android:id="@+id/divider1"
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:background="@color/btn_disable_grey"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/tvStartDate"
+                        app:layout_constraintStart_toEndOf="@id/tvName"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- Start Date -->
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvStartDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:paddingHorizontal="@dimen/_10sdp"
+                        android:paddingVertical="@dimen/_16sdp"
+                        android:text="@string/start_date"
+                        android:textAllCaps="true"
+                        android:textColor="@color/house_hold_title"
+                        android:textSize="@dimen/_14ssp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@id/divider2"
+                        app:layout_constraintHorizontal_weight="2"
+                        app:layout_constraintStart_toEndOf="@id/divider1"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- Divider after tvStartDate -->
+                    <View
+                        android:id="@+id/divider2"
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:background="@color/btn_disable_grey"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/tvEndDate"
+                        app:layout_constraintStart_toEndOf="@id/tvStartDate"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- End Date -->
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvEndDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:paddingHorizontal="@dimen/_10sdp"
+                        android:paddingVertical="@dimen/_16sdp"
+                        android:text="@string/end_date"
+                        android:textAllCaps="true"
+                        android:textColor="@color/house_hold_title"
+                        android:textSize="@dimen/_14ssp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_weight="2"
+                        app:layout_constraintStart_toEndOf="@id/divider2"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/point_eight_dp"
+                    app:dividerColor="@color/btn_disable_grey"
+                    app:layout_constraintTop_toBottomOf="@id/clTitle" />
+
+                <LinearLayout
+                    android:id="@+id/llTreatmentList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvNoHistory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/_16sdp"
+                    android:text="@string/no_history"
+                    android:textColor="@color/medium_risk_color"
+                    android:textSize="@dimen/_16ssp"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout>

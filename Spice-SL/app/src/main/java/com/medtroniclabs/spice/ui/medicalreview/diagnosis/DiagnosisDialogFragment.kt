@@ -450,7 +450,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
 
     private fun isShowAccordion(): Boolean {
         return when (diagnosisViewModel.diagnosisType) {
-            MedicalReviewTypeEnums.ANC_REVIEW.name, MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name, MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name, MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name -> {
+            MedicalReviewTypeEnums.ANC_REVIEW.name, MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name, MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name, MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name, MedicalReviewTypeEnums.HIV_REVIEW.name -> {
                 false
             }
 
@@ -467,7 +467,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                 binding.tvSelectedDiseaseConditionLbl.gone()
                 binding.llFamilyRoot.gone()
             }
-            MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name, MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name ,MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name-> {
+            MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name, MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name ,MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name, MedicalReviewTypeEnums.HIV_REVIEW.name-> {
                 binding.tvSelectedDiseaseConditionLbl.gone()
                 binding.tvSelectedDiseaseCategoryLbl.gone()
                 binding.etOtherDiagnosisNotes.visible()

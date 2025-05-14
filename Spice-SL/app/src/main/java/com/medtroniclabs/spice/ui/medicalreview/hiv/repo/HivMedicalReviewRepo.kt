@@ -27,32 +27,35 @@ class HivMedicalReviewRepo @Inject constructor(
             val response = apiHelper.getHivStaticData()
             if (response.isSuccessful) {
                 response.body()?.entity?.apply {
+                    roomHelper.deleteExaminationsComplaintsForAnc(MedicalReviewTypeEnums.HIV.name)
                     roomHelper.insertExaminationsComplaint(
                         generateChipItemByType(
                             hivHistory,
                             populationType,
                             hivTestDurations,
                             entryPoint,
-                            patientStatus
+                            patientStatus,
+                            comorbidities,
+                            presentingComplaints,
+                            systemicExaminations,
+                            hivPreganancyBreastFeedingStatus,
+                            ahdStatus,
+                            dsdStatus,
+                            nonEstablishedModels,
+                            whoClinicalStage
                         )
                     )
                     roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.HIV_REVIEW.name)
                     roomHelper.saveDiagnosisList(diseaseCategories)
                 }
-                SecuredPreference.putBoolean(
-                    SecuredPreference.EnvironmentKey.IS_HIV_DATA_LOADED.name,
-                    true
-                )
+                SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.IS_HIV_DATA_LOADED.name, true)
                 Resource(state = ResourceState.SUCCESS, true)
             } else {
                 Resource(state = ResourceState.ERROR)
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            SecuredPreference.putBoolean(
-                SecuredPreference.EnvironmentKey.IS_HIV_DATA_LOADED.name,
-                false
-            )
+            SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.IS_HIV_DATA_LOADED.name, false)
             Resource(state = ResourceState.ERROR)
         }
     }
@@ -62,21 +65,83 @@ class HivMedicalReviewRepo @Inject constructor(
         populationType: List<MedicalReviewMetaItems>,
         hivTestDuration: List<MedicalReviewMetaItems>,
         entryPoint: List<MedicalReviewMetaItems>,
-        patientStatus: List<MedicalReviewMetaItems>
+        patientStatus: List<MedicalReviewMetaItems>,
+        comorbidities: List<MedicalReviewMetaItems>,
+        presentingComplaints: List<MedicalReviewMetaItems>,
+        systemicExaminations: List<MedicalReviewMetaItems>,
+        hivPreganancyBreastFeedingStatus: List<MedicalReviewMetaItems>,
+        ahdStatus: List<MedicalReviewMetaItems>,
+        dsdStatus: List<MedicalReviewMetaItems>,
+        nonEstablishedModels: List<MedicalReviewMetaItems>,
+        whoClinicalStage: List<MedicalReviewMetaItems>
     ): List<MedicalReviewMetaItems> {
         val chipItemList = ArrayList<MedicalReviewMetaItems>()
-        chipItemList.addAll(hivHistory)
-        chipItemList.addAll(populationType)
-        chipItemList.addAll(hivTestDuration)
-        chipItemList.addAll(entryPoint)
-        chipItemList.addAll(
-            patientStatus.map {
-                it.apply {
-                    type = MedicalReviewTypeEnums.HIV.name
-                    category = MedicalReviewTypeEnums.patient_status.name
-                }
+        chipItemList.addAll(hivHistory.map { it.apply { type = MedicalReviewTypeEnums.HIV.name } })
+        chipItemList.addAll(populationType.map {
+            it.apply {
+                type = MedicalReviewTypeEnums.HIV.name
             }
-        )
+        })
+        chipItemList.addAll(hivTestDuration.map {
+            it.apply {
+                type = MedicalReviewTypeEnums.HIV.name
+            }
+        })
+        chipItemList.addAll(entryPoint.map { it.apply { type = MedicalReviewTypeEnums.HIV.name } })
+        chipItemList.addAll(patientStatus.map {
+            it.apply {
+                type = MedicalReviewTypeEnums.HIV.name
+                category = MedicalReviewTypeEnums.patient_status.name
+            }
+        })
+        chipItemList.addAll(comorbidities.map {
+            it.apply {
+                category = MedicalReviewTypeEnums.comorbidities.name
+                type = MedicalReviewTypeEnums.HIV.name
+            }
+        })
+        chipItemList.addAll(presentingComplaints.map {
+            it.apply {
+                category = MedicalReviewTypeEnums.PresentingComplaints.name
+                type = MedicalReviewTypeEnums.HIV.name
+            }
+        })
+        chipItemList.addAll(systemicExaminations.map {
+            it.apply {
+                category = MedicalReviewTypeEnums.SystemicExaminations.name
+                type = MedicalReviewTypeEnums.HIV.name
+            }
+        })
+        chipItemList.addAll(ahdStatus.map {
+            it.apply {
+                type = MedicalReviewTypeEnums.HIV.name
+                category = MedicalReviewTypeEnums.ahdStatus.name
+            }
+        })
+        chipItemList.addAll(hivPreganancyBreastFeedingStatus.map {
+            it.apply {
+                type = MedicalReviewTypeEnums.HIV.name
+                category = MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name
+            }
+        })
+        chipItemList.addAll(dsdStatus.map {
+            it.apply {
+                type = MedicalReviewTypeEnums.HIV.name
+                category = MedicalReviewTypeEnums.dsdStatus.name
+            }
+        })
+        chipItemList.addAll(nonEstablishedModels.map {
+            it.apply {
+                type = MedicalReviewTypeEnums.HIV.name
+                category = MedicalReviewTypeEnums.nonEstablishedModels.name
+            }
+        })
+        chipItemList.addAll(whoClinicalStage.map {
+            it.apply {
+                type = MedicalReviewTypeEnums.HIV.name
+                category = MedicalReviewTypeEnums.whoClinicalStage.name
+            }
+        })
         return chipItemList
     }
 
@@ -141,4 +206,19 @@ class HivMedicalReviewRepo @Inject constructor(
         return roomHelper.getExaminationsComplaintsForAnc(category, type)
     }
 
+    suspend fun getComplaintsListByType(type: String): Resource<List<MedicalReviewMetaItems>> {
+        return try {
+            val response = roomHelper.getExaminationsComplaintByType(type)
+            Resource(state = ResourceState.SUCCESS, data = response)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    fun getExaminationsComplaints(
+        category: String,
+        type: String
+    ): LiveData<List<MedicalReviewMetaItems>> {
+        return roomHelper.getExaminationsComplaintsForAnc(category, type)
+    }
 }
