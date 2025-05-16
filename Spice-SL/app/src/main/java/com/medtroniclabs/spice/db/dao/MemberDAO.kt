@@ -55,7 +55,7 @@ interface MemberDAO {
     @Query("SELECT date_of_birth,gender FROM HouseHoldMember WHERE id = :memberId")
     suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel
 
-    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name, CASE WHEN hhm.tBContactTraceStatus IS NULL THEN NULL WHEN hhm.tBContactTraceStatus = 0 THEN 1 WHEN hhm.tBContactTraceStatus = 1 THEN 0 ELSE NULL END AS tbcontactTraceStatus, CASE WHEN lhhm.memberId IS NOT NULL AND lhhm.syncStatus IN (:status) THEN 1 ELSE NULL END AS assignHousehold FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id LEFT JOIN LinkHouseholdMember AS lhhm ON lhhm.memberId = hhm.fhir_id WHERE hhm.id NOT IN (:memberIds) AND (hh.fhir_id IS NULL OR hhm.fhir_id IS NULL) AND hhm.household_id = :houseHoldId AND hhm.sync_status IN (:status)")
+    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name, CASE WHEN hhm.tBContactTraceStatus IS NULL THEN NULL WHEN hhm.tBContactTraceStatus = 0 THEN 1 WHEN hhm.tBContactTraceStatus = 1 THEN 0 ELSE NULL END AS hasTbContactTracing, CASE WHEN lhhm.memberId IS NOT NULL AND lhhm.syncStatus IN (:status) THEN 1 ELSE NULL END AS assignHousehold FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id LEFT JOIN LinkHouseholdMember AS lhhm ON lhhm.memberId = hhm.fhir_id WHERE hhm.id NOT IN (:memberIds) AND (hh.fhir_id IS NULL OR hhm.fhir_id IS NULL) AND hhm.household_id = :houseHoldId AND hhm.sync_status IN (:status)")
     suspend fun getAllUnSyncedHouseHoldMembers(
         houseHoldId: Long,
         memberIds: List<Long>,
@@ -65,7 +65,7 @@ interface MemberDAO {
         )
     ): List<HouseHoldMember>
 
-    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name, CASE WHEN hhm.tBContactTraceStatus IS NULL THEN NULL WHEN hhm.tBContactTraceStatus = 0 THEN 1 WHEN hhm.tBContactTraceStatus = 1 THEN 0 ELSE NULL END AS tbcontactTraceStatus, CASE WHEN lhhm.memberId IS NOT NULL AND lhhm.syncStatus IN (:status) THEN 1 ELSE NULL END AS assignHousehold FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id LEFT JOIN LinkHouseholdMember AS lhhm ON lhhm.memberId = hhm.fhir_id WHERE hhm.id NOT IN (:memberIds) AND hh.fhir_id IS NOT NULL AND hhm.sync_status IN (:status)")
+    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name, CASE WHEN hhm.tBContactTraceStatus IS NULL THEN NULL WHEN hhm.tBContactTraceStatus = 0 THEN 1 WHEN hhm.tBContactTraceStatus = 1 THEN 0 ELSE NULL END AS hasTbContactTracing, CASE WHEN lhhm.memberId IS NOT NULL AND lhhm.syncStatus IN (:status) THEN 1 ELSE NULL END AS assignHousehold FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id LEFT JOIN LinkHouseholdMember AS lhhm ON lhhm.memberId = hhm.fhir_id WHERE hhm.id NOT IN (:memberIds) AND hh.fhir_id IS NOT NULL AND hhm.sync_status IN (:status)")
     suspend fun getOtherHouseholdMembers(
         memberIds: List<String>,
         status: List<String> = listOf(

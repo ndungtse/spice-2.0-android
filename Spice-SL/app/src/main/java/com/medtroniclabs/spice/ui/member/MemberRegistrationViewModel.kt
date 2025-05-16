@@ -7,12 +7,14 @@ import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams.HouseholdHead
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.FormGenerator
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.HouseholdHeadRelationship
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.network.resource.Resource
@@ -86,6 +88,12 @@ class MemberRegistrationViewModel @Inject constructor(
                       householdEntity.longitude = it.longitude
                   }
                   val houseHoldId = houseHoldRepository.insertHouseHoldEntity(householdEntity)
+
+
+                  /*
+                  * Update Relation Household Head* */
+                  memberResultMap[HouseholdHeadRelationship] = HouseholdHead
+
                   registerMember(
                       memberResultMap,
                       houseHoldId,

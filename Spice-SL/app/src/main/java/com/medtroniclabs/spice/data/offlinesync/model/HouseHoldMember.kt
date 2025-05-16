@@ -76,7 +76,7 @@ data class HouseHoldMember(
 
     val assignHousehold: Boolean? = null,
 
-    val tbcontactTraceStatus: Boolean? = null,
+    val hasTbContactTracing: Boolean? = null,
 
     var latitude: Double = 0.0,
 
@@ -119,7 +119,7 @@ data class HouseHoldMember(
             version = this.version,
             lastUpdated = this.lastUpdated,
             deceasedReason = this.deceasedReason,
-            tBContactTraceStatus = getTBContactStatus(this.tbcontactTraceStatus),
+            tBContactTraceStatus = getTBContactStatus(this.hasTbContactTracing),
             latitude = this.latitude,
             longitude = this.longitude,
         ).apply {

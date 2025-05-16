@@ -314,12 +314,16 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             formGenerator.setValueForView(details.name, view)
         }
 
-        val title = if (details.householdHeadRelationship.isEmpty() ||
-            !details.householdHeadRelationship.equals(HouseholdHead, true)) {
+        val title = if (householdRegistrationViewModel.householdEntityDetail?.id == 0L) {
+            getString(R.string.relationship_to_household)
+        } else if (details.householdHeadRelationship.isEmpty() ||
+            !details.householdHeadRelationship.equals(HouseholdHead, true)
+        ) {
             getString(R.string.relationship_to_household_head)
         } else {
             getString(R.string.relationship_to_household)
         }
+
         updateRelationShipSpinnerTitle(title)
 
         val canDisableHHRelation = !(arguments?.getBoolean(HouseholdDefinedParams.isPhuWalkInsFlow) == true || details.householdHeadRelationship.isEmpty())

@@ -161,7 +161,7 @@ object AssessmentDefinedParams {
     const val DateOfOnset = "dateOfOnset"
     const val RelationshipToIC = "relationshipToIC"
     const val SleepLocation = "sleepLocation"
-    const val PreviouslyTreatedForTB = "previouslyTreatedForTB"
+    const val PreviouslyTreatedForTB = "hasPreviouslyTreatedForTB"
 
     const val MemberUsingAnyFamilyPlanning = "isUsingFamilyPlanningMethod"
     const val IsAnySideEffects = "hasSideEffects"
