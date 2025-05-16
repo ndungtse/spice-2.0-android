@@ -67,6 +67,13 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     fun initView() {
+        if (arguments?.getBoolean(
+                DefinedParams.EMTCT,
+                false
+            ) == false
+        ) {
+            binding.groupHivHbsag?.gone()
+        }
         hivViewModel.getHivScreeningDetails(
             HivScreeningResponse(
                 encounterId = arguments?.getString(DefinedParams.EncounterId) ?: "",
@@ -136,6 +143,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         binding.tvA2TestText.text = response.a2TestResult?.takeIf { it.isNotEmpty() } ?: "-"
         binding.tvA3TestText.text = response.a3TestResult?.takeIf { it.isNotEmpty() } ?: "-"
         binding.tvEntryPointText.text = response.entryPoint?.takeIf { it.isNotEmpty() } ?: "-"
+        binding.tvHivSyphilisText?.text = response.hivSyphilisDuoTest?.takeIf { it.isNotEmpty() } ?: "-"
 
         renderSymptoms(response)
     }

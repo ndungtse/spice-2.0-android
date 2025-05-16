@@ -26,6 +26,7 @@ class ToolsViewModel @Inject constructor(
     val resultRMNCHFlowHashMap = HashMap<String, Any>()
     val menuListLiveData = MutableLiveData<Resource<List<MenuEntity>>>()
     val resultANCFlowHashMap = HashMap<String, Any>()
+    var isEMTCT = false
 
     fun getMenuForClinicalWorkflows(gender: String?) {
         viewModelScope.launch(dispatcherIO) {

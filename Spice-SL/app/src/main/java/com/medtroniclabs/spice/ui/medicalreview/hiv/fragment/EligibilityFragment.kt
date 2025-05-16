@@ -1,38 +1,52 @@
 package com.medtroniclabs.spice.ui.medicalreview.hiv.fragment
 
+import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.os.bundleOf
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_ddMMyyyy
+import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
+import com.medtroniclabs.spice.common.DateUtils.calculateEddFromLmpAndGestationalAge
+import com.medtroniclabs.spice.common.DateUtils.convertToRequiredFormat
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.databinding.FragmentEligibilityBinding
-import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.formgeneration.utility.MultiSelectSpinnerAdapter
+import com.medtroniclabs.spice.formgeneration.utility.MultiSelectionNoneSpinner
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.HaveYouTakenHivTestBefore
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 class EligibilityFragment : BaseFragment() {
     private lateinit var binding: FragmentEligibilityBinding
     private val hivViewModel: HivViewModel by activityViewModels()
+    private var datePickerDialog: DatePickerDialog? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -44,6 +58,8 @@ class EligibilityFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         addObservers()
+        lmpValidation()
+        valueObserver()
     }
 
     companion object {
@@ -65,10 +81,13 @@ class EligibilityFragment : BaseFragment() {
                     hideProgress()
                     resourceState.data?.let { list ->
                         initializeHivHistoryOptions(list.filter { it.category == MedicalReviewTypeEnums.hiv_history.name }
+                            .distinctBy { it.name }
                             .sortedBy { it.displayOrder })
                         initializePopulationType(list.filter { it.category == MedicalReviewTypeEnums.population_type.name }
+                            .distinctBy { it.name }
                             .sortedBy { it.displayOrder })
                         initializeHivTestDuration(list.filter { it.category == MedicalReviewTypeEnums.hiv_test_durations.name }
+                            .distinctBy { it.name }
                             .sortedBy { it.displayOrder })
                     }
                 }
@@ -77,7 +96,6 @@ class EligibilityFragment : BaseFragment() {
     }
 
     private fun initViews() {
-        binding.tvHaveYouTestedHIVBefore.markMandatory()
         hivViewModel.getHistoryListMetaItems()
         addCustomView(
             getData(),
@@ -86,6 +104,17 @@ class EligibilityFragment : BaseFragment() {
             alreadyHIVTestedCallBack,
             binding.haveTestedHIVBeforeRoot
         )
+        val isEmtct = arguments?.getBoolean(DefinedParams.EMTCT, false)
+        if (isEmtct == true) {
+            binding.hivEMTCTViewGroup.visible()
+        }
+        binding.tvLastMenstrualPeriodDateLabelText.setOnClickListener {
+            showDatePickerDialog(
+                binding.tvLastMenstrualPeriodDateLabelText,
+                disableFuture = true,
+                isLmp = true
+            )
+        }
     }
 
 
@@ -142,10 +171,12 @@ class EligibilityFragment : BaseFragment() {
                     hivViewModel.selectedLastTestForHIV = testDuration
                     binding.tvTestingDurationSpinner.visible()
                 }
+
                 getString(R.string.no) -> {
                     hivViewModel.selectedLastTestForHIV = null
                     binding.tvTestingDurationSpinner.gone()
                 }
+
                 else -> {
                     hivViewModel.selectedLastTestForHIV = null
                     binding.tvTestingDurationSpinner.gone()
@@ -166,18 +197,30 @@ class EligibilityFragment : BaseFragment() {
                 )
             )
         }
-        val adapter = MultiSelectSpinnerAdapter(
+        val adapter = MultiSelectionNoneSpinner(
             requireContext(), dropDownList, hivViewModel.selectedHistoryListItem
         )
         binding.tvHistorySpinner.adapter = adapter
         adapter.setOnItemSelectedListener(object :
-            MultiSelectSpinnerAdapter.OnItemSelectedListener {
+            MultiSelectionNoneSpinner.OnItemSelectedListener {
             override fun onItemSelected(
                 selectedItems: List<MultiSelectDropDownModel>,
                 pos: Int,
             ) {
                 if (selectedItems.isNotEmpty()) {
-                    hivViewModel.selectedHistoryListItem = ArrayList(selectedItems)
+                    val containsNone =
+                        selectedItems.any { it.name.equals(getString(R.string.none), true) }
+                    hivViewModel.selectedHistoryListItem =
+                        if (containsNone) {
+                            arrayListOf(selectedItems.first {
+                                it.name.equals(
+                                    getString(R.string.none),
+                                    true
+                                )
+                            })
+                        } else {
+                            ArrayList(selectedItems)
+                        }
                 }
             }
         })
@@ -204,6 +247,17 @@ class EligibilityFragment : BaseFragment() {
             ) {
                 if (selectedItems.isNotEmpty()) {
                     hivViewModel.selectedPopulationType = ArrayList(selectedItems)
+                    val containsOther =
+                        selectedItems.any { it.name.equals(getString(R.string.other), true) }
+                    if (containsOther) {
+                        binding.viewOtherType.visible()
+                    } else {
+                        binding.viewOtherType.gone()
+                        binding.etOtherPopulated.setText("")
+                    }
+                } else {
+                    binding.viewOtherType.gone()
+                    binding.etOtherPopulated.setText("")
                 }
             }
         })
@@ -245,9 +299,10 @@ class EligibilityFragment : BaseFragment() {
                     binding.tvHaveTestedHIVBeforeError.gone()
                     binding.viewGroupHivTestDuration.visible()
                 } else {
+                    binding.tvTestingDurationSpinner.setSelection(0, false)
                     hivViewModel.selectedLastTestForHIV = null
                     binding.tvTestingDurationError.gone()
-                    binding.viewGroupHivTestDuration.invisible()
+                    binding.viewGroupHivTestDuration.gone()
                 }
                 resultMapChanged()
             }
@@ -263,18 +318,123 @@ class EligibilityFragment : BaseFragment() {
 
     fun validation(): Boolean {
         var isValid = true
-        val isHaveYouTakenHivTestBefore = hivViewModel.resultHashMap[HaveYouTakenHivTestBefore] as? String
-        val selectedLastTestForHIV = hivViewModel.selectedLastTestForHIV
-
-        if (isHaveYouTakenHivTestBefore.isNullOrEmpty()) {
-            binding.tvHaveTestedHIVBeforeError.visible()
-            isValid = false
-        } else binding.tvHaveTestedHIVBeforeError.gone()
-
-        if (isHaveYouTakenHivTestBefore == getString(R.string.yes) && selectedLastTestForHIV.isNullOrEmpty()) {
-            isValid = false
-            binding.tvTestingDurationError.visible()
-        } else binding.tvTestingDurationError.gone()
+       if(binding.etOtherPopulated.isVisible()){
+           if(binding.etOtherPopulated.text.isNullOrEmpty()){
+               isValid = false
+               binding.tvOtherError.visible()
+           }else binding.tvOtherError.gone()
+       }
         return isValid
+    }
+
+    private fun showDatePickerDialog(
+        textView: AppCompatTextView,
+        disableFuture: Boolean = false,
+        isLmp: Boolean = false
+    ) {
+        var yearMonthDate: Triple<Int?, Int?, Int?>? = null
+        if (!textView.text.isNullOrBlank())
+            yearMonthDate =
+                DateUtils.convertedMMMToddMM(textView.text.toString())
+        if (datePickerDialog == null) {
+            datePickerDialog = ViewUtils.showDatePicker(
+                context = requireContext(),
+                minDate = null,
+                date = yearMonthDate,
+                isMenstrualPeriod = true,
+                disableFutureDate = disableFuture,
+                cancelCallBack = { datePickerDialog = null }
+            ) { _, year, month, dayOfMonth ->
+                val stringDate = "$dayOfMonth-$month-$year"
+                textView.text =
+                    DateUtils.convertDateTimeToDate(
+                        stringDate,
+                        DATE_FORMAT_ddMMyyyy,
+                        DATE_ddMMyyyy
+                    )
+                lmpValidation()
+                datePickerDialog = null
+            }
+        }
+    }
+
+    private fun lmpValidation() {
+        val isNotEmpty = !binding.tvLastMenstrualPeriodDateLabelText.text.isNullOrEmpty()
+        val alphaEnabled = 1.0f
+        val alphaDisabled = 0.5f // Faded look
+        binding.etGestationalInWeek.isEnabled = isNotEmpty
+        binding.etExpectedDateOfDelivery.isEnabled = isNotEmpty
+        binding.etGestationalInWeek.alpha = if (isNotEmpty) alphaEnabled else alphaDisabled
+        binding.etExpectedDateOfDelivery.alpha = if (isNotEmpty) alphaEnabled else alphaDisabled
+        binding.tvGestationalInWeekLabel.alpha = if (isNotEmpty) alphaEnabled else alphaDisabled
+        binding.tvExpectedDateOfDeliveryLabel.alpha =
+            if (isNotEmpty) alphaEnabled else alphaDisabled
+
+        if (!isNotEmpty) {
+            listOf(binding.etGestationalInWeek, binding.etExpectedDateOfDelivery).forEach {
+                it.text?.clear()
+            }
+        }
+    }
+
+    private fun expectedDateOfdDelivery(){
+        val lmpDateStr = binding.tvLastMenstrualPeriodDateLabelText.text.toString()
+        val gestationalWeeksStr = binding.etGestationalInWeek.text?.trim().toString()
+
+            if (!lmpDateStr.isNullOrBlank() && !gestationalWeeksStr.isNullOrBlank()) {
+                try {
+                    val gestationalWeeks = gestationalWeeksStr.toIntOrNull()
+
+                    if (gestationalWeeks != null && gestationalWeeks in 0..40) {
+                        binding.etGestationalInWeek.isClickable =  false
+                        binding.etExpectedDateOfDelivery.setText(calculateEddFromLmpAndGestationalAge(lmpDateStr,gestationalWeeks).first)
+                        hivViewModel.expectedDateOfDelivery = calculateEddFromLmpAndGestationalAge(lmpDateStr,gestationalWeeks).second
+                    } else {
+                        binding.etExpectedDateOfDelivery.setText("") // Clear or show invalid input message
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    binding.etExpectedDateOfDelivery.setText("") // Clear or show invalid input message
+                }
+            } else {
+                binding.etExpectedDateOfDelivery.setText("") // Clear or show invalid input message
+            }
+        }
+
+    private fun valueObserver() {
+        binding.etOtherPopulated.doOnTextChanged { text, _, _, _ ->
+            if (!text.isNullOrBlank()) {
+                hivViewModel.populationOther = text.toString()
+            }
+        }
+        binding.etGestationalInWeek.apply {
+            doOnTextChanged { text, _, _, _ ->
+                if (!text.isNullOrBlank()) {
+
+                    expectedDateOfdDelivery()
+                    hivViewModel.gestationalWeeks = text.toString()
+                }
+            }
+            filters = arrayOf(InputFilter { source, start, end, dest, dstart, dend ->
+                val newValue = dest.substring(0, dstart) + source.subSequence(start, end) + dest.substring(dend)
+                if (newValue.isEmpty()) {
+                    return@InputFilter null
+                }
+
+                try {
+                    val value = newValue.toFloat()
+                    if (value in 0.0..40.0) null else ""
+                } catch (e: NumberFormatException) {
+                    ""
+                }
+            })
+        }
+        binding.tvLastMenstrualPeriodDateLabelText.doOnTextChanged { text, _, _, _ ->
+            if (!text.isNullOrBlank()) {
+                expectedDateOfdDelivery()
+                hivViewModel.lastMenstrualPeriod = convertToRequiredFormat(text.toString())
+
+            }
+        }
     }
 }

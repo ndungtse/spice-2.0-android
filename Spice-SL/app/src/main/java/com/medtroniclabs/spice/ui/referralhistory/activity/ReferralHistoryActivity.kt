@@ -245,6 +245,10 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             DefinedParams.villageId,
             patientDetailViewModel.getVillageId()
         )
+        intent.putExtra(
+            DefinedParams.isPregnant,
+            patientDetailViewModel.isPregnant()
+        )
         startActivity(intent)
     }
 

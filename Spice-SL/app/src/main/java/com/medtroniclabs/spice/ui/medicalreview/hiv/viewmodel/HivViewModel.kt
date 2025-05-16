@@ -8,6 +8,7 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
@@ -35,6 +36,8 @@ class HivViewModel @Inject constructor(
     private var repository: HivMedicalReviewRepo,
     private var repo: DiagnosisRepository
 ) : ViewModel() {
+
+
     var patientId: String? = null
     var memberId: String? = null
     var isHivSummary: Boolean = false
@@ -59,6 +62,14 @@ class HivViewModel @Inject constructor(
     var isSummary : Boolean = false
     val getHivPatientStatusMeta = MutableLiveData<String>()
     val shouldCloseParent = MutableLiveData<Boolean>()
+    var isEMTCT = false
+    var populationOther: String? = null
+    var gestationalWeeks: String? = null
+    var lastMenstrualPeriod: String? = null
+    var expectedDateOfDelivery: String? = null
+    var isViralLoad = false
+    var isARTRegimen = false
+
 
     fun getHivMetaData() {
         viewModelScope.launch(dispatcherIO) {
@@ -82,7 +93,8 @@ class HivViewModel @Inject constructor(
         selectedEligibilityPair: Pair<List<String?>, List<String?>>,
         haveHivTestTestedBeforePair: Pair<String?, String?>,
         hivTestResult: Triple<String?, String?, String?>,
-        entryPoint: String?
+        entryPoint: String?,
+        hivEmtctResult: Pair<String, String>
     ) {
         viewModelScope.launch(dispatcherIO) {
             val currentTime =
@@ -102,13 +114,20 @@ class HivViewModel @Inject constructor(
                             longitude = lastLocation?.longitude ?: 0.0,
                             memberId = patientListRespModel.memberId,
                             patientId = patientListRespModel.patientId,
-                            provenance = ProvanceDto()
+                            provenance = ProvanceDto(),
                         ),
                         entryPoint = entryPoint,
                         populationTypeList = selectedEligibilityPair.second.filterNotNull(),
+                        otherPopulationType = populationOther,
                         a1TestResult = hivTestResult.first,
                         a2TestResult = hivTestResult.second,
-                        a3TestResult = hivTestResult.third
+                        a3TestResult = hivTestResult.third,
+                        gestationalInWeeks = gestationalWeeks?.toIntOrNull(),
+                        lastMenstrualPeriod = lastMenstrualPeriod,
+                        expectedDateOfDelivery = expectedDateOfDelivery,
+                        hivSyphilisDuoTest = hivEmtctResult.first,
+                        hbsAGTest = hivEmtctResult.second,
+                        screeningType = if(isEMTCT) DefinedParams.EMTCT_HIV_MEDICAL_SCREENING else DefinedParams.HIV_MEDICAL_SCREENING
                     )
                 )
             )

@@ -364,4 +364,13 @@ object DefinedParams {
     const val Hint = "Hint"
     const val Length = "Length"
     const val InputType = "inputType"
+
+    const val EMTCT_HIV_MEDICAL_SCREENING = "EMTCT_HIV_MEDICAL_SCREENING"
+    const val HIV_MEDICAL_SCREENING = "HIV_MEDICAL_SCREENING"
+    const val EMTCT = "EMTCT"
+    const val EMTCTMR =  "EMTCTMR"
+    const val EMTCT_SUMMARY = "EMTCT_SUMMARY"
+    const val isPregnant = "isPregnant"
+    const val VIRAL_LOAD = "VIRAL_LOAD"
+
 }

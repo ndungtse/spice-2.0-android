@@ -1545,4 +1545,23 @@
     <string name="cd4_percentage" translatable="false">CD4 Percentage</string>
     <string name="view_cd4" translatable="false">View CD4</string>
     <string name="view_cd4_percentage" translatable="false">View CD4 %</string>
+    <string name="emtct" translatable="false">EMTCT</string>
+    <string name="hiv_syphilis_duo_test" translatable="false">HIV / Syphilis Duo Test</string>
+    <string name="hbsag_test" translatable="false">HBsAg Test</string>
+    <string name="edit_height" translatable="false">Edit Height</string>
+    <string name="edit_weights" translatable="false">Edit Weight</string>
+    <string name="other_type" translatable="false">Other type</string>
+    <string name="enter_type" translatable="false">Enter type</string>
+    <string name="select_patient_type" translatable="false">Select Patient Type</string>
+    <string name="is_the_patient_known_positive" translatable="false">Is the patient known positive?</string>
+    <string name="hbsg_test_result" translatable="false">HBsAg Test Result</string>
+    <string name="hiv_ve_syphilis_ve" translatable="false">HIV -ve; Syphilis -ve</string>
+    <string name="hiv_ve_syphilis_ve_" translatable="false">HIV -ve; Syphilis +ve</string>
+    <string name="hiv_ve_syphilis_ve__" translatable="false">HIV +ve; Syphilis -ve</string>
+    <string name="hiv_ve__syphilis_ve" translatable="false">HIV +ve; Syphilis +ve</string>
+    <string name="viral_load" translatable="false">VIRAL LOAD</string>
+    <string name="collection_date" translatable="false">COLLECTION DATE</string>
+    <string name="gestation_at_collection_date" translatable="false">GESTATION AT COLLECTION DATE</string>
+    <string name="results" translatable="false">RESULTS</string>
+
 </resources>

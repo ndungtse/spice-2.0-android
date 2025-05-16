@@ -1,18 +1,25 @@
 package com.medtroniclabs.spice.data.model
 
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
-import com.medtroniclabs.spice.model.medicalreview.ExaminationDetail
 
 data class HivScreeningRequest(
     private val historyList: List<String>? = null,
     private val populationTypeList: List<String>? = null,
+    private val otherPopulationType: String? = null,
     private val isHIVTestedBefore: String? = null,
     private val hivTestDuration: String? = null,
     private val entryPoint: String? = null,
     private val a1TestResult: String? = null,
     private val a2TestResult: String? = null,
     private val a3TestResult: String? = null,
-    private val encounter: MedicalReviewEncounter? = null
+    private val encounter: MedicalReviewEncounter? = null,
+    private val lastMenstrualPeriod: String? = null,
+    private val gestationalInWeeks: Int? = null,
+    private val expectedDateOfDelivery: String? = null,
+    private val hivSyphilisDuoTest:String? = null,
+    private val hbsAGTest:String? = null,
+    private val screeningType: String? = null,
+
 )
 
 
@@ -27,7 +34,8 @@ data class HivCreateScreeningSummaryResponse(
     val a1TestResult: String? = null,
     val a2TestResult: String? = null,
     val a3TestResult: String? = null,
-    val entryPoint: String? = null
+    val entryPoint: String? = null,
+    val hivSyphilisDuoTest: String? = null
 )
 
 data class Eligibilities(

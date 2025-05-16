@@ -146,7 +146,7 @@ class SystemicExaminationsFragment : BaseFragment() {
     private fun initializeViews() {
         val (titleResId, showObstetricGroup) = when (viewModel.systemicExaminationsType) {
             MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name -> {Pair(R.string.systemic_examinations, true)}
-            MedicalReviewTypeEnums.ANC_REVIEW.name -> Pair(R.string.obstetric_examination, true)
+            MedicalReviewTypeEnums.ANC_REVIEW.name,MedicalReviewTypeEnums.HIV.name -> Pair(R.string.obstetric_examination, true)
             MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name -> Pair(
                 R.string.systemic_examinations,
                 false
@@ -156,7 +156,7 @@ class SystemicExaminationsFragment : BaseFragment() {
                 R.string.systemic_examinations,
                 false
             )
-            MedicalReviewTypeEnums.TB.name -> {
+            MedicalReviewTypeEnums.TB.name,MedicalReviewTypeEnums.HIV.name -> {
                 binding.etPhysicalExaminationComments.gone()
                 Pair(R.string.general_systemic_examinations, false)
             }

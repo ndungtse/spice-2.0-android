@@ -45,6 +45,7 @@ object DateUtils {
     const val DATE_FORMAT_ddMMyy_GRAPH = "dd-MM-yyyy"
     const val DATE_TIME_yyyyMMddTHHmmssSSSXXX = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
     const val DATE_TIME_EEEMMMddHHmmsszyyyy = "EEE MMM dd HH:mm:ss z yyyy"
+    const val DATE_TIME_YYYYMMDDTHHmmssSSSZ = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
 
     fun getYearMonthAndWeek(
@@ -929,6 +930,31 @@ object DateUtils {
             false
         }
     }
+
+    fun calculateEddFromLmpAndGestationalAge(lmp: String, gestationalWeeks: Int): Pair<String, String> {
+        val formatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)
+        val lmpDate = LocalDate.parse(lmp, formatter)
+        val remainingWeeks = 40 - gestationalWeeks
+        val eddDate = lmpDate.plusWeeks(remainingWeeks.toLong())
+        val formattedDate1 = eddDate.format(formatter)
+        val outputFormatter = DateTimeFormatter.ofPattern(DATE_TIME_YYYYMMDDTHHmmssSSSZ)
+        val formattedDate2 = eddDate.atStartOfDay().format(outputFormatter) // Assuming 00:00:00.000Z for time
+        return Pair(formattedDate1, formattedDate2)
+    }
+    fun convertToRequiredFormat(dateStr: String): String {
+        try {
+          val inputFormatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)
+            val date = LocalDate.parse(dateStr, inputFormatter)
+            val localDateTime = date.atStartOfDay()
+            val outputFormatter = DateTimeFormatter.ofPattern(DATE_TIME_YYYYMMDDTHHmmssSSSZ)
+            val formattedDate = localDateTime.format(outputFormatter)
+            return formattedDate
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return ""  // return empty or error message if parsing fails
+        }
+    }
+
     fun convertToMillis(dateStr: String, pattern: String): Long {
         val sdf = SimpleDateFormat(pattern, Locale.getDefault())
         return sdf.parse(dateStr)?.time ?: 0L

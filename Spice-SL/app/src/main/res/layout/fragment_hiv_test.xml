@@ -104,8 +104,88 @@
                 android:layout_marginBottom="@dimen/_8sdp"
                 android:orientation="vertical"
                 app:layout_constraintTop_toBottomOf="@+id/tvPostTestCounselling">
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvSyphilisTestResult"
+                    style="@style/TextStyle_Regular_16_Gray"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:text="@string/hiv_syphilis_duo_test"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llSyphilisTestResultRoot"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:layout_marginBottom="@dimen/_8sdp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvSyphilisTestResult"/>
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvSyphilisTestResultError"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/default_user_input_error"
+                    android:textColor="@color/a_red_error"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/llSyphilisTestResultRoot" />
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvHBsAgTestResult"
+                        style="@style/TextStyle_Regular_16_Gray"
+                        android:layout_width="@dimen/_0dp"
+                        android:layout_marginTop="@dimen/_16sdp"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:text="@string/hbsag_test"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvSyphilisTestResultError" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/llHBsAgTestResultRoot"
+                        android:layout_width="@dimen/_0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_4sdp"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_marginBottom="@dimen/_8sdp"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvHBsAgTestResult"/>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvHBsAgTestResultError"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_regular"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/default_user_input_error"
+                        android:textColor="@color/a_red_error"
+                        android:textSize="@dimen/_12ssp"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/llHBsAgTestResultRoot" />
+
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/forEmtct"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="tvSyphilisTestResult,llSyphilisTestResultRoot,tvHBsAgTestResult,llHBsAgTestResultRoot" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvA1TestResult"
                     style="@style/TextStyle_Regular_16_Gray"
                     android:layout_width="@dimen/_0dp"
@@ -113,7 +193,7 @@
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:text="@string/a_test_result"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@+id/tvHBsAgTestResultError"/>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/llA1TestResultRoot"
@@ -161,7 +241,9 @@
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvA2TestResult"></androidx.appcompat.widget.LinearLayoutCompat>
+                    app:layout_constraintTop_toBottomOf="@+id/tvA2TestResult">
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvA2TestResultError"

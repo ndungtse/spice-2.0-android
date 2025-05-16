@@ -80,8 +80,6 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
         binding.tvDiagnosisConfirm.safeClickListener(this)
         binding.tvBmiHistory.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
         binding.tvAddHeight.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
-        binding.tvAddWeight.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
-        binding.retryButtonWeight.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
         binding.retryButtonWeight.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
         binding.tvAddWeight.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
         viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
@@ -182,6 +180,9 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                     resourceState.data?.let {
                         weightTextView.text =
                             MotherNeonateUtil.convertWeight(it.weight, requireContext())
+                        if(it.weight == null || it.weight == 0.0){
+                            binding.tvAddWeight.text = getString(R.string.edit_weights)
+                        }
                     }
                 }
 
@@ -261,7 +262,12 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                                 data.height,
                                 requireContext()
                             ).takeIf { it.isNotEmpty() } ?: "--"
+
+                        if (!binding.tvHeight.text.toString().equals("--",true)){
+                            binding.tvAddHeight.text = getString(R.string.edit_height)
+                        }
                     }
+
                 }
 
                 ResourceState.ERROR -> {

@@ -21,6 +21,8 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.HIV_IMR_CMR
+import com.medtroniclabs.spice.common.DefinedParams.EMTCT
+import com.medtroniclabs.spice.common.DefinedParams.EMTCT_SUMMARY
 import com.medtroniclabs.spice.common.DefinedParams.IsReferredScreen
 import com.medtroniclabs.spice.common.DefinedParams.MaritalStatus
 import com.medtroniclabs.spice.common.DefinedParams.Occupation
@@ -106,16 +108,18 @@ class PatientInfoFragment : BaseFragment() {
             return fragment
         }
 
-        fun newInstanceForHIV(
+        // EMTCT Patient Info
+        fun newInstanceForEMTCT(
             patientId: String?,
-            isHiv:Boolean = false,
-            isHivSummary:Boolean = false
-        ):PatientInfoFragment{
+            isEMTCT:Boolean = false,
+            isEMTCTMR: Boolean = false,
+            isEMTCTSummary:Boolean = false
+            ):PatientInfoFragment {
             val fragment = PatientInfoFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
-            bundle.putBoolean(DefinedParams.HIV,isHiv)
-            bundle.putBoolean(DefinedParams.HIV_SUMMARY,isHivSummary)
+            bundle.putBoolean(DefinedParams.EMTCT, isEMTCT)
+            bundle.putBoolean(DefinedParams.EMTCT_SUMMARY, isEMTCTSummary)
             fragment.arguments = bundle
             return fragment
         }
@@ -237,6 +241,13 @@ class PatientInfoFragment : BaseFragment() {
     private fun isFamilyPlanSummary():Boolean?{
         return arguments?.getBoolean(isFamilyPlanSummary,false)
     }
+
+    private fun isEMTCT():Boolean?{
+        return arguments?.getBoolean(EMTCT,false)
+    }
+    private fun isEMTCTSummary():Boolean?{
+        return arguments?.getBoolean(EMTCT_SUMMARY,false)
+    }
     private fun setDataInInfo(patientListRespModel: PatientListRespModel) {
         showProgress()
         viewModel.patientDetailsId = patientListRespModel.id
@@ -328,6 +339,7 @@ class PatientInfoFragment : BaseFragment() {
                     )
                 )
             }
+
             if (isTB() == true) {
                 val tbNo = viewModel.presumptiveTbNo ?: ""
                 dataList.add(
@@ -400,6 +412,33 @@ class PatientInfoFragment : BaseFragment() {
                     )
                 }
             }
+            if (isEMTCT() == true ||isEMTCTSummary() == true ) {
+                dataList.add(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.chw),
+                        DefinedParams.Value to (viewModel.chwName ?: requireContext().getString(R.string.hyphen_symbol))
+                    )
+                )
+                dataList.add(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.occupation_summary),
+                        DefinedParams.Value to (viewModel.occupation ?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+                    )
+                )
+
+            }
+            if (isEMTCTSummary() == true ){
+                dataList.add(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.anc_visit),
+                        DefinedParams.Value to (patientListRespModel.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }
+                            ?.plus(1)
+                            ?.toString()
+                            ?: "1")
+                    )
+                )
+            }
+
             if (isHivImrCmr()) {
                 prepareHivImrCmrData(
                     dataList = dataList,

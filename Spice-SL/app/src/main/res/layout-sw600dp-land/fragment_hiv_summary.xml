@@ -194,6 +194,97 @@
                     android:textSize="@dimen/_16ssp"
                     android:visibility="visible" />
             </com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout>
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/groupHivHbsag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:constraint_referenced_ids="barrierHbsg,tvHbsgText,tvHbsgSeparator,tvHbsgLabel,barrierHiv,tvHivSyphilisText,tvHivSyphilisSeparator,tvHivSyphilisLabel" />
+            <!-- HIV / Syphilis Duo Test -->
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvHivSyphilisLabel"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="@string/hiv_syphilis_duo_test"
+                app:layout_constraintEnd_toStartOf="@id/tvHivSyphilisSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/flExaminationContainer" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvHivSyphilisSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvHivSyphilisText"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/tvHivSyphilisLabel"
+                app:layout_constraintTop_toTopOf="@id/tvHivSyphilisLabel" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvHivSyphilisText"
+                style="@style/TextStyle_Regular_16_Bold"
+                android:textColor="@color/grey_black"
+                android:layout_width="@dimen/_0dp"
+                android:text="@string/seperator_hyphen"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvHivSyphilisSeparator"
+                app:layout_constraintTop_toTopOf="@id/tvHivSyphilisLabel" />
+            <!-- Barrier for HIV/Syphilis and HBsAg -->
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrierHiv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="tvHivSyphilisText,tvHivSyphilisLabel" />
+
+            <!-- HBsAg Test -->
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvHbsgLabel"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="@string/hbsg_test_result"
+                app:layout_constraintEnd_toStartOf="@id/tvHbsgSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/barrierHiv" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvHbsgSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvHbsgText"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/tvHbsgLabel"
+                app:layout_constraintTop_toTopOf="@id/tvHbsgLabel" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvHbsgText"
+                style="@style/TextStyle_Regular_16_Bold"
+                android:textColor="@color/grey_black"
+                android:layout_width="@dimen/_0dp"
+                android:text="@string/seperator_hyphen"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvHbsgSeparator"
+                app:layout_constraintTop_toTopOf="@id/tvHbsgLabel" />
+
+            <!-- Barrier for HIV/Syphilis and HBsAg -->
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrierHbsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="tvHbsgText,tvHbsgLabel" />
+
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -205,7 +296,7 @@
                 app:layout_constraintEnd_toStartOf="@id/tvA1TestSeparator"
                 app:layout_constraintHorizontal_weight="0.3"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
-                app:layout_constraintTop_toBottomOf="@id/flExaminationContainer" />
+                app:layout_constraintTop_toBottomOf="@id/barrierHbsg" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvA1TestSeparator"

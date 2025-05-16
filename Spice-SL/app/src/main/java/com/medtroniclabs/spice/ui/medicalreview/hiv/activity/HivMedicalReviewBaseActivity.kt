@@ -1,11 +1,9 @@
 package com.medtroniclabs.spice.ui.medicalreview.hiv.activity
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -16,9 +14,6 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.HIV
 import com.medtroniclabs.spice.common.DefinedParams.HIV_MEDICAL_REVIEW
-import com.medtroniclabs.spice.common.DefinedParams.ID
-import com.medtroniclabs.spice.common.DefinedParams.MemberID
-import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
@@ -26,12 +21,9 @@ import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityHivMedicalReviewBaseBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
-import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
-import com.medtroniclabs.spice.ui.home.MedicalReviewToolsActivity
-import com.medtroniclabs.spice.ui.household.ConsentFormActivity
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.EligibilityFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivMedicalReviewDiagnosesFragment
@@ -43,7 +35,9 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.A1_TEST_RESULT
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.A2_TEST_RESULT
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.A3_TEST_RESULT
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.HBsAg
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.HIV_ELIGIBILITY_ITEM
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.HIV_SYPHILIS_DUO_TEST
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.HIV_TEST_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.HaveYouTakenHivTestBefore
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
@@ -73,13 +67,15 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                 backNavigationToHome()
             }
         )
+        initStaticDataCall()
+
 
         binding.refreshLayout.setOnRefreshListener {
             swipeRefresh()
         }
         setButtonClickListener()
         hivViewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
-        initStaticDataCall()
+        hivViewModel.isEMTCT = intent.getBooleanExtra(DefinedParams.EMTCT, false)
         attachObserver()
     }
 
@@ -104,6 +100,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                 }
 
                 ResourceState.SUCCESS -> {
+                    initializePatientDetailFragment()
                     hideLoading()
                 }
             }
@@ -121,7 +118,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                         resourceState.data?.let {
                             hivViewModel.encounterId = it.encounterId.toString()
                             hivViewModel.patientReference = it.patientReference.toString()
-                            hivViewModel.isSummary = true
+                            hivViewModel.isHivSummary = true
                             showReviewSummary(it.encounterId, it.patientReference)
                         }
                     }
@@ -195,13 +192,13 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         replaceFragment(
             R.id.patientDetailFragment,
             PatientInfoFragment.TAG,
-            PatientInfoFragment.newInstanceForHIV(
-                intent.getStringExtra(DefinedParams.PatientId),
-                isHiv = true,
-                isHivSummary = hivViewModel.isHivSummary
-            ).apply {
-                setDataCallback(this@HivMedicalReviewBaseActivity)
-            }
+                PatientInfoFragment.newInstanceForEMTCT(
+                    intent.getStringExtra(DefinedParams.PatientId),
+                    isEMTCT = true,
+                    isEMTCTSummary = hivViewModel.isHivSummary
+                ).apply {
+                    setDataCallback(this@HivMedicalReviewBaseActivity)
+                }
         )
     }
 
@@ -222,7 +219,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
             return
         }
 
-        if (hivViewModel.isSummary) {
+        if (hivViewModel.isHivSummary) {
             showReviewSummary(hivViewModel.encounterId, hivViewModel.patientReference)
             binding.refreshLayout.isRefreshing = false
         } else {
@@ -314,16 +311,24 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                 putBoolean(MedicalReviewTypeEnums.HIV.name, true)
             }
         )
+        val bundle = if (hivViewModel.isEMTCT) {
+            Bundle().apply {
+                putBoolean(DefinedParams.EMTCT, intent.getBooleanExtra(DefinedParams.EMTCT, false))
+            }
+        } else null
+
         replaceFragmentOrCreateNewFragment<EligibilityFragment>(
             binding.patientEligibility.id,
-            bundle = null,
+            bundle = bundle,
             tag = EligibilityFragment.TAG
         )
+
         replaceFragmentOrCreateNewFragment<HivTestFragment>(
             binding.patientHIVTest.id,
-            bundle = null,
+            bundle = bundle,
             tag = HivTestFragment.TAG
         )
+
     }
 
     private fun enableReferralDoneBtn() {
@@ -371,7 +376,10 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                             hivViewModel.resultHashMap[A2_TEST_RESULT] as? String ?: "",
                             hivViewModel.resultHashMap[A3_TEST_RESULT] as? String ?: "",
                         ),
-                        entryPoint = hivViewModel.selectedEntryPoint
+                        entryPoint = hivViewModel.selectedEntryPoint,
+                        hivEmtctResult = Pair(hivViewModel.resultHashMap[HIV_SYPHILIS_DUO_TEST] as? String ?: "",
+                            hivViewModel.resultHashMap[HBsAg] as? String ?: ""
+                        ),
                     )
                 }
             } else {
@@ -387,6 +395,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         when (view?.id) {
             R.id.btnSubmit -> {
                 if (validation()) {
+                    showLoading()
                     createHivDetails()
                 }
             }
@@ -427,11 +436,13 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
     }
 
     private fun showReviewSummary(encounterId: String?, patientReference: String?) {
+        removeFragment(R.id.patientBMIContainer)
         removeFragment(R.id.patientHIVTest)
         removeFragment(R.id.patientEligibility)
         val bundle = Bundle().apply {
             putString(DefinedParams.EncounterId, encounterId)
             putString(DefinedParams.PatientReference, patientReference)
+            putBoolean(DefinedParams.EMTCT,hivViewModel.isEMTCT)
         }
         replaceFragmentInId<HivSummaryFragment>(
             binding.hivSummary.id,

@@ -18,7 +18,6 @@ import com.medtroniclabs.spice.common.DefinedParams.ChildPatientId
 import com.medtroniclabs.spice.common.DefinedParams.DOB
 import com.medtroniclabs.spice.common.DefinedParams.DateOfDelivery
 import com.medtroniclabs.spice.common.DefinedParams.Gender
-import com.medtroniclabs.spice.common.DefinedParams.HIV
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.NeonateOutcome
@@ -41,7 +40,6 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.Selec
 import com.medtroniclabs.spice.ui.medicalreview.underfiveyears.UnderFiveYearsBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
-import com.medtroniclabs.spice.ui.household.ConsentFormActivity
 import com.medtroniclabs.spice.ui.medicalreview.epi.ImmunizationActivity
 import com.medtroniclabs.spice.ui.medicalreview.familyplan.activity.FamilyPlanMedicalReviewActivity
 import com.medtroniclabs.spice.ui.medicalreview.hiv.activity.HivImrAndCmrActivity
@@ -157,7 +155,8 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             dateOfDelivery:String?,
             neonateOutcome: String?,
             householdId:String?,
-            villageId:String?
+            villageId:String?,
+            isPregnant:Boolean,
         ): PatientMenuFragment {
             val fragment = PatientMenuFragment()
             val bundle = Bundle()
@@ -171,6 +170,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             bundle.putString(NeonateOutcome,neonateOutcome)
             bundle.putString(DefinedParams.householdId, householdId)
             bundle.putString(DefinedParams.villageId, villageId)
+            bundle.putBoolean(DefinedParams.isPregnant,isPregnant)
             fragment.arguments = bundle
             return fragment
         }
@@ -245,11 +245,11 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.HIV -> {
-                val intent = Intent(requireContext(), ConsentFormActivity::class.java)
-                intent.putExtra(PatientId, arguments?.getString(PatientId))
-                intent.putExtra(HIV, true)
-                intent.putExtra(ID, arguments?.getString(ID))
-                startActivity(intent)
+                val isPregnant = arguments?.getBoolean(DefinedParams.isPregnant,false)
+                SelectFlowDialog.newInstanceHiv(arguments?.getString(PatientId), arguments?.getString(ID),true,
+                    isPregnant == true,arguments?.getString(MemberID)
+                )
+                    .show(childFragmentManager, SelectFlowDialog.TAG)
             }
             else -> {
                 startAssessmentActivity()

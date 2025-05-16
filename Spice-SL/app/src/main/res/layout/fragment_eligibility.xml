@@ -141,7 +141,7 @@
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toStartOf="@+id/g_center"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvHaveYouTestedHIVBefore"></androidx.appcompat.widget.LinearLayoutCompat>
+                    app:layout_constraintTop_toBottomOf="@+id/tvHaveYouTestedHIVBefore" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvHaveTestedHIVBeforeError"
@@ -158,15 +158,60 @@
                     app:layout_constraintTop_toBottomOf="@+id/haveTestedHIVBeforeRoot" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvHowLongBeforeYouHaveTested"
+                    android:id="@+id/tvPopulatedTypeOther"
                     style="@style/TextStyle_Regular_16_Gray"
                     android:layout_width="@dimen/_0dp"
                     android:layout_marginStart="@dimen/_8sdp"
                     android:layout_marginTop="@dimen/_16sdp"
-                    android:text="@string/how_long_ago_were_you_tested_for_hiv"
+                    android:text="@string/other_type"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/g_center"
                     app:layout_constraintTop_toBottomOf="@+id/tvHistoryError" />
+
+                 <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/etOtherPopulated"
+                    style="@style/Form_Input_Style_BG"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:fontFamily="@font/inter_regular"
+                    android:gravity="top"
+                    android:hint="@string/enter_type"
+                    android:textColor="@color/black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/g_center"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPopulatedTypeOther"
+                     app:layout_constraintBottom_toBottomOf="@+id/haveTestedHIVBeforeRoot"/>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvOtherError"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/default_user_input_error"
+                    android:textColor="@color/a_red_error"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/g_center"
+                    app:layout_constraintTop_toBottomOf="@+id/etOtherPopulated" />
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/viewOtherType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    app:constraint_referenced_ids="etOtherPopulated,tvPopulatedTypeOther" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvHowLongBeforeYouHaveTested"
+                    style="@style/TextStyle_Regular_16_Gray"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:text="@string/how_long_ago_were_you_tested_for_hiv"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvHaveTestedHIVBeforeError" />
 
                 <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/tvTestingDurationSpinner"
@@ -175,7 +220,7 @@
                     android:layout_marginStart="@dimen/_8sdp"
                     android:layout_marginTop="@dimen/_4sdp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/g_center"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvHowLongBeforeYouHaveTested" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -189,17 +234,18 @@
                     android:textSize="@dimen/_12ssp"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/g_center"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvTestingDurationSpinner" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvLastMenstrualPeriodDate"
                     style="@style/TextStyle_Regular_16_Gray"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_marginTop="@dimen/_16sdp"
                     android:text="@string/last_menstrual_period"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvHaveTestedHIVBeforeError" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvTestingDurationError" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvLastMenstrualPeriodDateLabelText"
@@ -247,6 +293,7 @@
                     android:layout_marginTop="@dimen/_4sdp"
                     android:hint="@string/enter"
                     android:inputType="numberDecimal"
+                    android:maxEms="2"
                     android:paddingHorizontal="@dimen/_12sdp"
                     android:paddingVertical="@dimen/_10sdp"
                     app:layout_constraintEnd_toStartOf="@+id/g_center"
@@ -285,6 +332,9 @@
                     android:layout_marginTop="@dimen/_4sdp"
                     android:hint="@string/enter"
                     android:inputType="numberDecimal"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:paddingHorizontal="@dimen/_12sdp"
                     android:paddingVertical="@dimen/_10sdp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -317,7 +367,7 @@
                     android:id="@+id/viewGroupHivTestDuration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     app:constraint_referenced_ids="tvTestingDurationSpinner,tvHowLongBeforeYouHaveTested" />
 
                 <androidx.constraintlayout.widget.Group
