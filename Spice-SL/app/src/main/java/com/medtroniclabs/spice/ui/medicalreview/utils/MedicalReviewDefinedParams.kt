@@ -59,6 +59,7 @@ object MedicalReviewDefinedParams {
     const val OtherInjectablesSpecify = "OtherInjectablesSpecify"
     const val OtherImplantSpecify = "OtherImplantSpecify"
     const val OtherFPMethod = "OtherFPmethod"
+    const val EMTCCT_VISIT_STATUS = "emtctVisitStatus"
     const val HBsAg = "HBsAg"
     const val HIV_SYPHILIS_DUO_TEST = "SyphilisDuoTest"
     const val startDate = "startDate"

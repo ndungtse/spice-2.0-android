@@ -20,6 +20,10 @@ import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusRequest
+import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusResponse
+import com.medtroniclabs.spice.model.medicalreview.HivVitalsRequest
+import com.medtroniclabs.spice.model.medicalreview.HivVitalsResponse
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.DiagnosisRepository
 import com.medtroniclabs.spice.ui.medicalreview.hiv.repo.HivMedicalReviewRepo
@@ -61,6 +65,11 @@ class HivViewModel @Inject constructor(
     var selectedPatientStatus: String? = null
     var isSummary : Boolean = false
     val getHivPatientStatusMeta = MutableLiveData<String>()
+    val getHivEmtctStatusMeta = MutableLiveData<String>()
+    val createEMTCTVistStatusLiveData = MutableLiveData<Resource<EMTCTVisitStatusResponse>>()
+    val hivVitalsLiveData = MutableLiveData<Resource<HivVitalsResponse>>()
+    val hivVitalsByTypeLiveData = MutableLiveData<Resource<HivVitalsResponse>>()
+    var selectedemtctVisitStatus: String? = null
     val shouldCloseParent = MutableLiveData<Boolean>()
     var isEMTCT = false
     var populationOther: String? = null
@@ -157,5 +166,38 @@ class HivViewModel @Inject constructor(
         getHivPatientStatusMeta.switchMap {
             repository.getHivPatientStatus(it, MedicalReviewTypeEnums.HIV.name)
         }
+
+
+    fun getHivEmtctVistStatusByCategory(category: String) {
+        getHivEmtctStatusMeta.value = category
+    }
+
+    val hivEmtctStatusLiveData: LiveData<List<MedicalReviewMetaItems>> =
+        getHivEmtctStatusMeta.switchMap {
+            repository.getHivPatientStatus(it, MedicalReviewTypeEnums.HIV_REVIEW.name)
+        }
+
+
+    fun createEMTCT(request: EMTCTVisitStatusRequest) {
+        viewModelScope.launch(Dispatchers.IO) {
+            createEMTCTVistStatusLiveData.postLoading()
+            createEMTCTVistStatusLiveData.postValue(repository.createEMTCT(request))
+        }
+    }
+
+    fun getHivVitalsDetails(request: HivVitalsRequest) {
+        viewModelScope.launch(Dispatchers.IO) {
+            hivVitalsLiveData.postLoading()
+            hivVitalsLiveData.postValue(repository.getHivVitalsDetails(request))
+        }
+    }
+
+    fun getHivVitalsDetailsbyType(request: HivVitalsRequest) {
+        viewModelScope.launch(Dispatchers.IO) {
+            hivVitalsByTypeLiveData.postLoading()
+            hivVitalsByTypeLiveData.postValue(repository.getHivVitalsDetails(request))
+        }
+    }
+
 
 }

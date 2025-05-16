@@ -24,6 +24,7 @@ import com.medtroniclabs.spice.common.DefinedParams.NeonateOutcome
 import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.DefinedParams.male
+import com.medtroniclabs.spice.common.DefinedParams.villageId
 import com.medtroniclabs.spice.databinding.FragmentPatientMenuBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -247,10 +248,12 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
 
             MenuConstants.HIV -> {
                 val isPregnant = arguments?.getBoolean(DefinedParams.isPregnant,false)
-                SelectFlowDialog.newInstanceHiv(arguments?.getString(PatientId), arguments?.getString(ID),true,
-                    isPregnant == true,arguments?.getString(MemberID)
-                )
-                    .show(childFragmentManager, SelectFlowDialog.TAG)
+                arguments?.getString(villageId)?.let { villageId ->
+                    SelectFlowDialog.newInstanceHiv(arguments?.getString(PatientId), arguments?.getString(ID),true,
+                        isPregnant == true,arguments?.getString(MemberID), villageId,
+                    )
+                        .show(childFragmentManager, SelectFlowDialog.TAG)
+                }
             }
             else -> {
                 startAssessmentActivity()

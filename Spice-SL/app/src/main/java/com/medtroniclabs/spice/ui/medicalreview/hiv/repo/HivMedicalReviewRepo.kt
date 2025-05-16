@@ -16,6 +16,10 @@ import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusRequest
+import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusResponse
+import com.medtroniclabs.spice.model.medicalreview.HivVitalsRequest
+import com.medtroniclabs.spice.model.medicalreview.HivVitalsResponse
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -46,7 +50,8 @@ class HivMedicalReviewRepo @Inject constructor(
                             ahdStatus,
                             dsdStatus,
                             nonEstablishedModels,
-                            whoClinicalStage
+                            whoClinicalStage,
+                            emtctVisitStatus
                         )
                     )
                     roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.HIV_REVIEW.name)
@@ -77,7 +82,8 @@ class HivMedicalReviewRepo @Inject constructor(
         ahdStatus: List<MedicalReviewMetaItems>,
         dsdStatus: List<MedicalReviewMetaItems>,
         nonEstablishedModels: List<MedicalReviewMetaItems>,
-        whoClinicalStage: List<MedicalReviewMetaItems>
+        whoClinicalStage: List<MedicalReviewMetaItems>,
+        emtctVisitStatus: List<MedicalReviewMetaItems>
     ): List<MedicalReviewMetaItems> {
         val chipItemList = ArrayList<MedicalReviewMetaItems>()
         chipItemList.addAll(hivHistory.map { it.apply { type = MedicalReviewTypeEnums.HIV.name } })
@@ -146,6 +152,7 @@ class HivMedicalReviewRepo @Inject constructor(
                 category = MedicalReviewTypeEnums.whoClinicalStage.name
             }
         })
+        chipItemList.addAll(emtctVisitStatus)
         return chipItemList
     }
 
@@ -260,6 +267,33 @@ class HivMedicalReviewRepo @Inject constructor(
             Resource(ResourceState.ERROR)
         }
     }
+
+    suspend fun createEMTCT(request: EMTCTVisitStatusRequest): Resource<EMTCTVisitStatusResponse> {
+        return try {
+            val res = apiHelper.createEMTCT(request)
+            if (res.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = res.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR, message = res.message())
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getHivVitalsDetails(request: HivVitalsRequest): Resource<HivVitalsResponse> {
+        return try {
+            val res = apiHelper.getHivVitalsDetails(request)
+            if (res.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = res.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR, message = res.message())
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
 
     suspend fun getOpportunisticInfection(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<HashMap<String, HashMap<String, String>?>> {
         return try {

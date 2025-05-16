@@ -20,7 +20,9 @@ import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.common.DefinedParams.isPregnant
+import com.medtroniclabs.spice.common.DefinedParams.villageId
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.Village
 import com.medtroniclabs.spice.databinding.FragmentSelectFlowDialogBinding
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
@@ -83,15 +85,17 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             id: String?,
             isHIV: Boolean = false,
             isPregnant: Boolean = false,
-            memberId: String?
+            memberId: String?,
+            village: String
         ): SelectFlowDialog {
             val fragment = SelectFlowDialog()
             val bundle = Bundle()
             bundle.putString(PatientId, patientId)
             bundle.putString(ID, id)
-            bundle.putBoolean(DefinedParams.HIV,isHIV)
+            bundle.putBoolean(HIV,isHIV)
             bundle.putBoolean(DefinedParams.isPregnant,isPregnant)
             bundle.putString(MemberID,memberId)
+            bundle.putString(DefinedParams.villageId,village)
             fragment.arguments = bundle
             return fragment
         }
@@ -218,6 +222,9 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                         intent.putExtra(PatientId, patientId)
                         intent.putExtra(ID, id)
                         intent.putExtra(EMTCT, true)
+                        intent.putExtra(PatientId, patientId)
+                        intent.putExtra(ID, id)
+                        intent.putExtra(EMTCT, true)
                     }
                     startActivity(intent)
                 } else {
@@ -242,6 +249,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                         putExtra(EMTCT,true)
                         putExtra(ID, arguments?.getString(ID))
                         putExtra(MemberID,  arguments?.getString(MemberID))
+                        putExtra(villageId, arguments?.getString(villageId))
                     }
                     startActivity(intent)
                 }else if(viewModel.isEMTCT){
@@ -251,6 +259,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                         putExtra(EMTCT,true)
                         putExtra(ID, arguments?.getString(ID))
                         putExtra(MemberID,  arguments?.getString(MemberID))
+                        putExtra(villageId, arguments?.getString(villageId))
                     }
                     startActivity(intent)
                 } else{
@@ -258,6 +267,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                     intent.putExtra(PatientId, arguments?.getString(PatientId))
                     intent.putExtra(HIV, arguments?.getBoolean(HIV, false))
                     intent.putExtra(ID, arguments?.getString(ID))
+                    intent.putExtra(villageId, arguments?.getString(villageId))
                     startActivity(intent)
                 }
 

@@ -107,6 +107,10 @@ import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
+import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusRequest
+import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusResponse
+import com.medtroniclabs.spice.model.medicalreview.HivVitalsRequest
+import com.medtroniclabs.spice.model.medicalreview.HivVitalsResponse
 import com.medtroniclabs.spice.model.medicalreview.RequestBirthDetails
 import com.medtroniclabs.spice.model.medicalreview.RequestCreateImmunisation
 import com.medtroniclabs.spice.model.medicalreview.RequestImmunisationSummaryCreate
@@ -810,8 +814,6 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
       return apiService.createHivSummary(request)
     }
 
-
-
     override suspend fun getCBSNotificationDetails(request: PeerSupervisorNotificationRequest): Response<APIResponse<ArrayList<PeerSupervisorNotificationResponse>>> {
         return apiService.getCBSNotificationDetails(request)
     }
@@ -846,4 +848,13 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun getOpportunisticInfection(request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, HashMap<String, String>?>>> {
         return apiService.getOpportunisticInfection(request)
     }
+
+    override suspend fun createEMTCT(request: EMTCTVisitStatusRequest): Response<APIResponse<EMTCTVisitStatusResponse>> {
+        return apiService.createEmtct(request)
+    }
+
+    override suspend fun getHivVitalsDetails(request: HivVitalsRequest): Response<APIResponse<HivVitalsResponse>> {
+        return apiService.getHivVitalsDetails(request)
+    }
+
 }

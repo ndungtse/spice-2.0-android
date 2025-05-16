@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.common.DefinedParams.VillageId
 import com.medtroniclabs.spice.common.DefinedParams.isCreateHouseholdForPhu
 import com.medtroniclabs.spice.common.DefinedParams.isHouseHold
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
+import com.medtroniclabs.spice.common.DefinedParams.villageId
 import com.medtroniclabs.spice.databinding.ActivityConsentFormBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -182,6 +183,7 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
                     putExtra(HIV, intent.getBooleanExtra(HIV, false))
                     putExtra(ID, intent.getStringExtra(ID))
                     putExtra(MemberID, intent.getStringExtra(MemberID))
+                    putExtra(villageId, intent.getStringExtra(villageId))
                 }
                 launcher.launch(intent)
             }

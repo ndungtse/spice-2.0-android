@@ -107,6 +107,10 @@ import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
+import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusRequest
+import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusResponse
+import com.medtroniclabs.spice.model.medicalreview.HivVitalsRequest
+import com.medtroniclabs.spice.model.medicalreview.HivVitalsResponse
 import com.medtroniclabs.spice.model.medicalreview.RequestBirthDetails
 import com.medtroniclabs.spice.model.medicalreview.RequestCreateImmunisation
 import com.medtroniclabs.spice.model.medicalreview.RequestImmunisationSummaryCreate
@@ -685,4 +689,9 @@ interface ApiService {
 
     @POST("/spice-service/hiv/opportunistic-infection-details")
     suspend fun getOpportunisticInfection(@Body request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, HashMap<String, String>?>>>
+    @POST("/spice-service/medical-review/emtct-visit/create")
+    suspend fun createEmtct(@Body eMTCTVisitStatusRequest : EMTCTVisitStatusRequest) : Response<APIResponse<EMTCTVisitStatusResponse>>
+
+    @POST("/spice-service/medical-review/vital-details")
+    suspend fun getHivVitalsDetails(@Body hivVitalsRequest: HivVitalsRequest) : Response<APIResponse<HivVitalsResponse>>
 }

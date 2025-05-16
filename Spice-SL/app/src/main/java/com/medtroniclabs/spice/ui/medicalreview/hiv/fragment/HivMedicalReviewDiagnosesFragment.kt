@@ -23,11 +23,13 @@ import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.databinding.FragmentHivMedicalReviewDiagnosesBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
+import com.medtroniclabs.spice.model.medicalreview.HivVitalsRequest
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
+import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListenerForTb
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
@@ -35,6 +37,7 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddWe
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.AddHeightDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.BMIListDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.TbConfirmDiagnosisAndSiteOfDiseaseDialog
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.EMTCCT_VISIT_STATUS
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
@@ -46,6 +49,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
     private val diagnosisViewModel: DiagnosisViewModel by activityViewModels()
     private val viewModel: MotherNeonateBpWeightViewModel by activityViewModels()
+    private val hivViewModel: HivViewModel by activityViewModels()
 
 
     override fun onCreateView(
@@ -79,6 +83,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
         diagnosisViewModel.getDiagnosisMetaList(diagnosisViewModel.diagnosisType)
         binding.tvDiagnosisConfirm.safeClickListener(this)
         binding.tvBmiHistory.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
+        binding.tvEmtctVisitStatusUpdate.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
         binding.tvAddHeight.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
         binding.retryButtonWeight.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
         binding.tvAddWeight.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
@@ -111,6 +116,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
             binding.tvDiagnosisConfirm.id -> showDiagnosisDialog()
             binding.tvAddHeight.id -> showAddHeightDialog()
             binding.tvBmiHistory.id -> showBmiDialog()
+            binding.tvEmtctVisitStatusUpdate.id -> showEmtctVisitStatusDialog()
         }
     }
 
@@ -163,13 +169,11 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
 
 
     fun attachObserver() {
-        val isHiv = isHiv()
-        val progressBar = if (isHiv) binding.pbWeightPageProgress else binding.pbWeightPageProgress
-        val addWeightText = if (isHiv) binding.tvWeight else binding.tvAddWeight
-        val weightContainer = if (isHiv) binding.clWeight else binding.clWeight
-        val retryButton =
-            if (isHiv) binding.retryButtonWeight else binding.retryButtonWeight
-        val weightTextView = if (isHiv) binding.tvWeight else binding.tvWeight
+        val progressBar = binding.pbWeightPageProgress
+        val addWeightText = binding.tvAddWeight
+        val weightContainer = binding.clWeight
+        val retryButton = binding.retryButtonWeight
+        val weightTextView = binding.tvWeight
 
         viewModel.getWeight.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
@@ -197,7 +201,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
         }
         diagnosisViewModel.diagnosisDetailsList.observe(viewLifecycleOwner) { resource ->
             when (resource.state) {
-                ResourceState.LOADING ->{
+                ResourceState.LOADING -> {
                     binding.diagnosesPageProgress.visible()
                     showProgress()
                 }
@@ -320,6 +324,41 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                 }
             }
         }
+
+        hivViewModel.hivVitalsLiveData.observe(viewLifecycleOwner) { response ->
+            when (response.state) {
+                ResourceState.ERROR -> {
+                    handleError(
+                        binding.emtctPageProgress,
+                        binding.tvEmtctVisitStatusUpdate,
+                        binding.clEmtct,
+                        binding.retryButtonEmtct,
+                        binding.tvEmtct
+                    )
+                }
+
+                ResourceState.LOADING -> {
+                    handleLoading(
+                        binding.emtctPageProgress,
+                        binding.tvEmtctVisitStatusUpdate,
+                        binding.clEmtct,
+                    )
+                }
+
+                ResourceState.SUCCESS -> {
+                    handleSuccess(
+                        binding.emtctPageProgress,
+                        binding.retryButtonEmtct,
+                        binding.clEmtct,
+                        binding.tvEmtctVisitStatusUpdate
+                    )
+                    response.data?.let { data ->
+                        binding.tvEmtct.text =
+                            data.emtctVisitStatus.takeIf { !it.isNullOrEmpty() } ?: "-"
+                    }
+                }
+            }
+        }
     }
 
 
@@ -425,9 +464,14 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                 viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
             } else viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
 
-            if (isHiv()) {
-                viewModel.fetchBmi(MotherNeonateAncRequest(memberId = getMemberId()))
-            }
+            viewModel.fetchBmi(MotherNeonateAncRequest(memberId = getMemberId()))
+            hivViewModel.getHivVitalsDetails(
+                HivVitalsRequest(
+                    patientReference = hivViewModel.id,
+                    memberId = hivViewModel.memberId,
+                    types = listOf(EMTCCT_VISIT_STATUS)
+                )
+            )
 
             val dialog =
                 childFragmentManager.findFragmentByTag(AddWeightDialog.TAG) as? AddWeightDialog
@@ -451,9 +495,23 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
                 isNegativeButtonNeed = false
-            ) {
+            ) {}
+        }
+    }
 
+    private fun showEmtctVisitStatusDialog() {
+        if (connectivityManager.isNetworkAvailable()) {
+            showDialogIfNotPresent(EmctVisitStatusDialogFragment.TAG) {
+                EmctVisitStatusDialogFragment.newInstance().apply {
+                    listener = this@HivMedicalReviewDiagnosesFragment
+                }
             }
+        } else {
+            (activity as BaseActivity?)?.showErrorDialogue(
+                getString(R.string.error),
+                getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false
+            ) {}
         }
     }
 
