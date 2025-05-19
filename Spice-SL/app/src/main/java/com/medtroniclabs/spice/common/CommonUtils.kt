@@ -2033,4 +2033,8 @@ object CommonUtils {
         }
         return false
     }
+
+    fun Map<String, String>.toFormattedList(): List<String> {
+        return this.map { (key, value) -> "$key : $value" }
+    }
 }

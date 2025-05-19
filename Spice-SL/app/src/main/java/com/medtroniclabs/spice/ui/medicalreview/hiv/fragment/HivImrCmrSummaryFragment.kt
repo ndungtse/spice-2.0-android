@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.medicalreview.tb.fragment
+package com.medtroniclabs.spice.ui.medicalreview.hiv.fragment
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.invisible
@@ -14,11 +15,12 @@ import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.toFormattedList
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.SiteOfDisease
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
+import com.medtroniclabs.spice.data.model.HivSummaryResponse
 import com.medtroniclabs.spice.data.model.TbHistory
 import com.medtroniclabs.spice.databinding.FragmentTbSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -28,26 +30,24 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.PATIENT_STATUS_HYPHEN
-import com.medtroniclabs.spice.ui.medicalreview.tb.activity.TBMedicalReviewActivity
+import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivImrCmrSummaryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.TbSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.TbSummaryViewModel
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.respiratory
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TbSummaryFragment : BaseFragment(), View.OnClickListener {
+class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentTbSummaryBinding
     val adapter: CustomSpinnerAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
-    val adapterForTreatmentOutCome : CustomSpinnerAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
-    private var datePickerDialog: DatePickerDialog? = null
-    val viewModel: TbSummaryViewModel by activityViewModels()
     val patientViewModel: PatientDetailViewModel by activityViewModels()
     private var encounterId: String? = null
     private var fhirId: String? = null
-
+    private var datePickerDialog: DatePickerDialog? = null
+    val viewModel: HivImrCmrSummaryViewModel by activityViewModels()
     fun setIds(encounterId: String?, fhirId: String?) {
         this.encounterId = encounterId
         this.fhirId = fhirId
@@ -63,12 +63,12 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     companion object {
-        const val TAG = "TbSummaryFragment"
+        const val TAG = "HivImrCmrSummaryFragment"
         fun newInstance() =
-            TbSummaryFragment()
+            HivImrCmrSummaryFragment()
 
-        fun newInstance(encounterId: String?, fhirId: String?): TbSummaryFragment {
-            val fragment = TbSummaryFragment()
+        fun newInstance(encounterId: String?, fhirId: String?): HivImrCmrSummaryFragment {
+            val fragment = HivImrCmrSummaryFragment()
             fragment.setIds(encounterId = encounterId, fhirId = fhirId)
             return fragment
         }
@@ -94,37 +94,22 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
             DateUtils.DATE_ddMMyyyy
         )
         binding.tvNextMedicalReviewLabelText.safeClickListener(this)
-        viewModel.fetchTbAssessmentDetails(
+        viewModel.fetchHivSummaryDetails(
             encounterId, fhirId
         )
+        val views = listOf(
+            binding.tvSiteLabel, binding.tvSiteSeparator, binding.tvSiteText,
+            binding.tvTreatmentText,
+            binding.tvTreatmentLabel, binding.tvTreatmentSeparator,
+            binding.tvClinicalNotesLabel, binding.tvClinicalNotesSeparator, binding.tvClinicalNotesText
+        )
+        binding.tvDiagnosesLabel.text = getText(R.string.diagnosis_tb)
+        binding.tvComborbiditiesLabel.text = getString(R.string.comorbidities_coinfections)
+        views.forEach { it.setVisible(false) }
     }
 
     private fun attachObserver() {
-        viewModel.getTreatmentOutComeLiveData.observe(viewLifecycleOwner) { items ->
-            val list = arrayListOf<Map<String, Any>>().apply {
-                add(
-                    mapOf(
-                        DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                        DefinedParams.ID to -1L
-                    )
-                )
-
-                items?.forEach { item ->
-                    if (!item.value.equals(ReferralStatus.Died.name , true)) {
-                        add(
-                            mapOf(
-                                DefinedParams.id to item.id,
-                                DefinedParams.NAME to item.name,
-                                DefinedParams.Value to (item.value ?: item.name)
-                            )
-                        )
-                    }
-                }
-            }
-            setTreatmentOutCome(list)
-        }
-
-        viewModel.tbSummary.observe(viewLifecycleOwner) { resourceState ->
+        viewModel.hivSummary.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
                     showProgress()
@@ -144,17 +129,8 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun populate(data: TbHistory) {
+    private fun populate(data: HivSummaryResponse) {
         with(binding) {
-            val views = listOf(
-                tvDiagnosesLabel, tvDiagnosesText, tvDiagnosesSeparator,
-                tvSiteLabel, tvSiteSeparator, tvSiteText,
-                tvTreatmentText,
-                tvTreatmentLabel, tvTreatmentSeparator
-            )
-            tvDiagnosesLabel.text = getText(R.string.diagnosis_tb)
-            views.forEach { it.setVisible(patientViewModel.getTbMedicalReviewStatus()) }
-
             // Diagnosis Text
             val diagnosisList = data.diagnosis ?: emptyList()
             if (diagnosisList.isNotEmpty()) {
@@ -168,19 +144,10 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
             tvDiagnosesText.text = diagnosisList
                 .filter {
                     it.diseaseCategory.equals(DefinedParams.OtherNotes, ignoreCase = true)
-                        .not() && (it.type.equals(DefinedParams.TB,true) || it.type.isNullOrBlank() )
-                }
-                .map { it.diseaseCategory }
-                .distinct()
-                .takeIf { it.isNotEmpty() }
-                ?.let { CommonUtils.convertListToString(ArrayList(it)) }
-                ?: getString(R.string.hyphen_symbol)
-
-            // Site Text
-            tvSiteText.text = diagnosisList
-                .filter {
-                    it.diseaseCategory.equals(DefinedParams.OtherNotes, ignoreCase = true)
-                        .not() && it.type.equals(SiteOfDisease,true)
+                        .not() && (it.type.equals(
+                        DefinedParams.TB,
+                        true
+                    ) || it.type.isNullOrBlank())
                 }
                 .map { it.diseaseCategory }
                 .distinct()
@@ -200,20 +167,11 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                 activity = requireActivity() as BaseActivity
             )
 
-            // Clinical Notes
-            tvClinicalNotesText.setExpandableText(
-                fullText = data.clinicalNotes?.takeIf { it.isNotEmpty() }
-                    ?: getString(R.string.hyphen_symbol),
-                moreColorResId = R.color.purple_700,
-                title = tvClinicalNotesLabel.text.toString(),
-                activity = requireActivity() as BaseActivity
-            )
-
             // Comorbidities
             tvComborbiditiesText.setExpandableText(
                 fullText = CommonUtils.combineText(
-                    data.comorbidities,
-                    data.comorbiditiesNotes,
+                    data.comorbiditiesCoinfections,
+                    data.comorbiditiesCoinfectionsNotes,
                     getString(R.string.hyphen_symbol)
                 ),
                 moreColorResId = R.color.purple_700,
@@ -224,13 +182,8 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
             // Systematic Examination
             tvGeneralText.setExpandableText(
                 fullText = CommonUtils.combineText(
-                    data.systemicExaminations?.map {
-                        if (it.name.equals(respiratory, ignoreCase = true) && !it.value.isNullOrBlank()) {
-                            "${it.name} : ${it.value}"
-                        } else {
-                            it.name
-                        }
-                    } ?: emptyList(),
+                    data.systemicExaminations?.toFormattedList().takeIf { !it.isNullOrEmpty() }
+                        ?: emptyList(),
                     "",
                     getString(R.string.hyphen_symbol)
                 ),
@@ -263,9 +216,6 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                 )
             }
             setSpinner(dropDownList)
-            if (patientViewModel.getTbMedicalReviewStatus()) {
-                viewModel.getTreatmentOutCome(MedicalReviewTypeEnums.treatment_outcome.name)
-            }
         }
     }
 
@@ -313,139 +263,14 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
             }
     }
 
-    private fun setTreatmentOutCome(treatmentOutCome: ArrayList<Map<String, Any>>) {
-        adapterForTreatmentOutCome.setData(treatmentOutCome)
-        binding.tvTreatmentText.post {
-            binding.tvTreatmentText.setSelection(0, false)
-        }
-        binding.tvTreatmentText.adapter = adapterForTreatmentOutCome
-        binding.tvTreatmentText.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    adapterView: AdapterView<*>?,
-                    view: View?,
-                    pos: Int,
-                    itemId: Long
-                ) {
-                    val selectedItem = adapterForTreatmentOutCome.getData(position = pos)
-                    selectedItem?.let {
-                        val selectedId = (it[DefinedParams.id] as? Long) ?: -1L
-                        val selectedTreatmentOutCome = it[DefinedParams.Value] as String?
-                        if (selectedId != -1L) {
-                            viewModel.treatmentOutCome = selectedTreatmentOutCome
-                            // handleRecoveredState()
-                        } else {
-                            viewModel.treatmentOutCome = null
-                        }
-                        showHideNextVisit()
-                    }
-                }
-
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-                    /**
-                     * this method is not used
-                     */
-                }
-            }
-    }
-
     private fun showHideNextVisit() {
-        // Enable next medical review label unless patient is Recovered or Died
-        binding.tvNextMedicalReviewLabelText.isEnabled =
-            !(viewModel.patientStatus.equals(ReferralStatus.Recovered.name, true) ||
-                    viewModel.patientStatus.equals(ReferralStatus.Died.name, true))
-
-        if (viewModel.patientStatus.equals(ReferralStatus.OnTreatment.name, true)) {
-            binding.tvNextMedicalReviewLabelText.text = DateUtils.getFormattedDateAfterMonths(1)
-            viewModel.nextFollowupDate = binding.tvNextMedicalReviewLabelText.text.toString()
-        }
-
-        // Clear label text if patient is Recovered or Died
-        if (viewModel.patientStatus.equals(ReferralStatus.Recovered.name, true) ||
-            viewModel.patientStatus.equals(ReferralStatus.Died.name, true)
-        ) {
-            binding.tvNextMedicalReviewLabelText.text = ""
+        if (viewModel.patientStatus?.equals(ReferralStatus.Recovered.name, true) == true || viewModel.patientStatus?.equals(ReferralStatus.Died.name, true) == true) {
             viewModel.nextFollowupDate = null
-            binding.tvNextMedicalReviewError.invisible()
-        }
-
-        // Special case: Patient status is Recovered but treatment outcome is Died
-        if ((viewModel.patientStatus.equals(ReferralStatus.Recovered.name, true)
-                    || viewModel.patientStatus.equals(ReferralStatus.OnTreatment.name, true))
-            &&
-            viewModel.treatmentOutCome.equals(ReferralStatus.Died.name, true)
-        ) {
-            val treatmentList = arrayListOf<Map<String, Any>>().apply {
-                add(
-                    mapOf(
-                        DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                        DefinedParams.ID to -1L
-                    )
-                )
-
-                viewModel.getTreatmentOutComeLiveData.value?.forEach { item ->
-                    if (!item.value.equals(ReferralStatus.Died.name, true)) {
-                        add(
-                            mapOf(
-                                DefinedParams.id to item.id,
-                                DefinedParams.NAME to item.name,
-                                DefinedParams.Value to (item.value ?: item.name)
-                            )
-                        )
-                    }
-                }
-            }
-            adapterForTreatmentOutCome.setData(treatmentList)
-            binding.tvTreatmentText.post {
-                binding.tvTreatmentText.isEnabled = true
-                binding.tvTreatmentText.setSelection(0, false)
-                viewModel.treatmentOutCome = ""
-            }
-        }
-
-        // If patient is Died, auto-select the "Died" outcome and disable the field
-        if (viewModel.patientStatus.equals(ReferralStatus.Died.name, true)) {
-            val treatmentList = arrayListOf<Map<String, Any>>().apply {
-                add(
-                    mapOf(
-                        DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                        DefinedParams.ID to -1L
-                    )
-                )
-                viewModel.getTreatmentOutComeLiveData.value?.forEach { item ->
-                    add(
-                        mapOf(
-                            DefinedParams.id to item.id,
-                            DefinedParams.NAME to item.name,
-                            DefinedParams.Value to (item.value ?: item.name)
-                        )
-                    )
-                }
-            }
-
-            adapterForTreatmentOutCome.setData(treatmentList)
-
-            val outcomeId = viewModel.getTreatmentOutComeLiveData.value
-                ?.firstOrNull { it.value.equals(ReferralStatus.Died.name, true) }
-                ?.id ?: -1L
-
-            val index = adapterForTreatmentOutCome.getIndexOfItem(outcomeId)
-
-            binding.tvTreatmentText.apply {
-                post { setSelection(index, false) }
-                isEnabled = false
-            }
-        }
-        (requireActivity() as? TBMedicalReviewActivity)?.enableRefer(
-            !viewModel.patientStatus.equals(ReferralStatus.Died.name, true)
-        )
-    }
-
-    override fun onClick(view: View) {
-        when (view.id) {
-            binding.tvNextMedicalReviewLabelText.id -> {
-                showDatePickerDialog()
-            }
+            binding.tvNextMedicalReviewLabelText.text = ""
+            binding.tvNextMedicalReviewLabelText.isEnabled = false
+        } else {
+            binding.tvNextMedicalReviewLabelText.isEnabled = true
+            binding.tvNextMedicalReviewLabelText.text = DateUtils.getFormattedDateAfterMonths(1)
         }
     }
 
@@ -470,6 +295,14 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                 )
                 viewModel.nextFollowupDate = binding.tvNextMedicalReviewLabelText.text.toString()
                 datePickerDialog = null
+            }
+        }
+    }
+
+    override fun onClick(view: View) {
+        when (view.id) {
+            binding.tvNextMedicalReviewLabelText.id -> {
+                showDatePickerDialog()
             }
         }
     }

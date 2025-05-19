@@ -304,6 +304,9 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
             MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name -> {
                 MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name
             }
+            MedicalReviewTypeEnums.HIV.name -> {
+                MedicalReviewTypeEnums.HIV.name
+            }
             else -> {
                 ""
             }

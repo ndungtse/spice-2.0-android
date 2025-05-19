@@ -69,8 +69,8 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
         fun newInstance(patientId: String?, id: String?,childPatientId:String?,dateOfDelivery:String?,neonateOutcome:String?): SelectFlowDialog {
             val fragment = SelectFlowDialog()
             val bundle = Bundle()
-            bundle.putString(DefinedParams.PatientId, patientId)
-            bundle.putString(DefinedParams.ID, id)
+            bundle.putString(PatientId, patientId)
+            bundle.putString(ID, id)
             bundle.putString(DefinedParams.ChildPatientId,childPatientId)
             bundle.putString(DefinedParams.DateOfDelivery,dateOfDelivery)
             bundle.putString(DefinedParams.NeonateOutcome,neonateOutcome)
@@ -86,8 +86,8 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
         ): SelectFlowDialog {
             val fragment = SelectFlowDialog()
             val bundle = Bundle()
-            bundle.putString(DefinedParams.PatientId, patientId)
-            bundle.putString(DefinedParams.ID, id)
+            bundle.putString(PatientId, patientId)
+            bundle.putString(ID, id)
             bundle.putBoolean(DefinedParams.HIV,isHIV)
             bundle.putBoolean(DefinedParams.isPregnant,isPregnant)
             bundle.putString(MemberID,memberId)
@@ -138,19 +138,19 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
     private fun launchActivity() {
         when (viewModel.resultANCFlowHashMap[TAG]) {
             getString(R.string.anc) -> {
-                val patientId = arguments?.getString(DefinedParams.PatientId, "")
-                val id = arguments?.getString(DefinedParams.ID, "")
+                val patientId = arguments?.getString(PatientId, "")
+                val id = arguments?.getString(ID, "")
                 val intent = Intent(requireContext(), MotherNeonateANCActivity::class.java)
                 if (patientId?.isNotBlank() == true) {
-                    intent.putExtra(DefinedParams.PatientId, patientId)
-                    intent.putExtra(DefinedParams.ID, id)
+                    intent.putExtra(PatientId, patientId)
+                    intent.putExtra(ID, id)
                 }
                 startActivity(intent)
             }
 
             getString(R.string.pnc) -> {
-                val patientId = arguments?.getString(DefinedParams.PatientId, "")
-                val id = arguments?.getString(DefinedParams.ID, "")
+                val patientId = arguments?.getString(PatientId, "")
+                val id = arguments?.getString(ID, "")
                 val childId = arguments?.getString(DefinedParams.ChildPatientId, null)
                 val  neonateOutcome = arguments?.getString(DefinedParams.NeonateOutcome, null)
                 val targetActivity = if (!childId.isNullOrEmpty()) MotherNeonatePncActivity::class.java else{
@@ -165,8 +165,8 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                 }
                 val intent = Intent(requireContext(), targetActivity).apply {
                     if (!patientId.isNullOrBlank()) {
-                        putExtra(DefinedParams.PatientId, patientId)
-                        putExtra(DefinedParams.ID, id)
+                        putExtra(PatientId, patientId)
+                        putExtra(ID, id)
                     }
                     if (targetActivity == LabourDeliveryBaseActivity::class.java) {
                         putExtra(DefinedParams.DirectPNCFlow, true)
@@ -179,10 +179,10 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
 
             }
             getString(R.string.labour_delivery) -> {
-                val patientId = arguments?.getString(DefinedParams.PatientId, "")
+                val patientId = arguments?.getString(PatientId, "")
                 val intent = Intent(requireContext(), LabourDeliveryBaseActivity::class.java)
                 if (patientId?.isNotBlank() == true) {
-                    intent.putExtra(DefinedParams.PatientId, patientId)
+                    intent.putExtra(PatientId, patientId)
                 }
                 startActivity(intent)
             }
@@ -209,14 +209,24 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             }
             getString(R.string.yes)-> {
                 if (viewModel.isEMTCT) {
-                    val patientId = arguments?.getString(DefinedParams.PatientId, "")
-                    val id = arguments?.getString(DefinedParams.ID, "")
+                    val patientId = arguments?.getString(PatientId, "")
+                    val id = arguments?.getString(ID, "")
                     val intent =
                         Intent(requireContext(), MotherNeonateEMTCTActivity::class.java)
                     if (patientId?.isNotBlank() == true) {
-                        intent.putExtra(DefinedParams.PatientId, patientId)
-                        intent.putExtra(DefinedParams.ID, id)
-                        intent.putExtra(DefinedParams.EMTCT, true)
+                        intent.putExtra(PatientId, patientId)
+                        intent.putExtra(ID, id)
+                        intent.putExtra(EMTCT, true)
+                    }
+                    startActivity(intent)
+                } else {
+                    val patientId = arguments?.getString(PatientId, "")
+                    val id = arguments?.getString(ID, "")
+                    val intent =
+                        Intent(requireContext(), MotherNeonateEMTCTActivity::class.java)
+                    if (patientId?.isNotBlank() == true) {
+                        intent.putExtra(PatientId, patientId)
+                        intent.putExtra(ID, id)
                     }
                     startActivity(intent)
                 }

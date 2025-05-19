@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateU
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class HivGeneralAndSystemicExaminationFragment : BaseFragment() {
@@ -70,10 +71,17 @@ class HivGeneralAndSystemicExaminationFragment : BaseFragment() {
             ) { name, _, isChecked ->
                 viewModel.selectedSystemicExaminations =
                     ArrayList(examinationsTagView.getSelectedTags())
+                if (examinationsTagView.getSelectedTags().isNotEmpty()) {
+                    setFragmentResult(
+                        MedicalReviewDefinedParams.SE_ITEM, bundleOf(
+                            MedicalReviewDefinedParams.CHIP_ITEMS to true
+                        )
+                    )
+                }
                 if (!isChecked) {
                     viewModel.resultHashMap.remove(name)
                 }
-                showListView(ArrayList(examinationsTagView.getSelectedTags()).map { it.name })
+                showListView(ArrayList(examinationsTagView.getSelectedTags()))
                 setFragmentResult(
                     MedicalReviewDefinedParams.SE_ITEM, bundleOf(
                         MedicalReviewDefinedParams.CHIP_ITEMS to true
@@ -83,14 +91,14 @@ class HivGeneralAndSystemicExaminationFragment : BaseFragment() {
         viewModel.getSystemicExaminationList(viewModel.systemicExaminationsType)
     }
 
-    private fun showListView(listItems: List<String>) {
+    private fun showListView(listItems: List<ChipViewItemModel>) {
         binding.llGeneralExamination.removeAllViews()
-        listItems.forEach { name ->
-            val trimmedName = name.trim()
+        listItems.forEach { item ->
+            val trimmedName = item.value?.trim()?: item.name
             val tag = trimmedName + "Root"
             val bindingItem = HivGeneralSystemicItemLayoutBinding.inflate(layoutInflater).apply {
                 root.tag = tag
-                tvRespiratoryLabel.text = trimmedName
+                tvRespiratoryLabel.text = item.name
                 // Prepopulate if existing
                 val existingText = viewModel.resultHashMap[trimmedName]?.trim().orEmpty()
                 if (existingText.isNotEmpty()) {
@@ -98,7 +106,7 @@ class HivGeneralAndSystemicExaminationFragment : BaseFragment() {
                 }
                 MotherNeonateUtil.initTextWatcherForString(tvRespiratoryText) {
                     if (it.isBlank()) {
-                        viewModel.resultHashMap.remove(trimmedName)
+                        viewModel.resultHashMap[trimmedName] = null
                     } else {
                         viewModel.resultHashMap[trimmedName] = it
                     }
@@ -145,6 +153,7 @@ class HivGeneralAndSystemicExaminationFragment : BaseFragment() {
     }
 
     fun validateInput(): Boolean {
-        return examinationsTagView.getSelectedTags().isNotEmpty()
+        return examinationsTagView.getSelectedTags()
+            .isNotEmpty() && viewModel.resultHashMap.isNotEmpty()
     }
 }

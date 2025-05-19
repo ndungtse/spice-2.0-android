@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import com.google.android.material.textview.MaterialTextView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -20,6 +22,7 @@ import com.medtroniclabs.spice.databinding.OpportunisticItemLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.OpportunisticInfectionViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.end
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.start
 import dagger.hilt.android.AndroidEntryPoint
@@ -58,12 +61,12 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
         binding.tvNoHistory.gone()
         binding.llTreatmentList.removeAllViews()
         treatmentList.forEachIndexed { index, treatment ->
-            val trimmedName = treatment.name.trim()
+            val trimmedName = treatment.value.trim()
             val tagKey = "$trimmedName-Root"
 
             val itemBinding = OpportunisticItemLayoutBinding.inflate(layoutInflater).apply {
                 root.tag = tagKey
-                tvName.text = trimmedName
+                tvName.text = treatment.name.trim()
 
                 val existing = viewModel.resultHashMap[trimmedName].orEmpty()
                 tvStartDate.text = existing[start].takeUnless { it.isNullOrBlank() }
@@ -138,7 +141,11 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
             } else {
                 result[end] = formattedDate
             }
-
+            setFragmentResult(
+                MedicalReviewDefinedParams.HIV_STATUS, bundleOf(
+                    MedicalReviewDefinedParams.CHIP_ITEMS to true
+                )
+            )
             datePickerDialog = null
         }
     }
@@ -163,10 +170,10 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
     }
 
     private val treatmentList = listOf(
-        TreatmentItem("TB Preventive Treatment (TPT)"),
-        TreatmentItem("Cotrimoxazole (CTX)"),
-        TreatmentItem("TB Treatment"),
-        TreatmentItem("Cryptococcal Meningitis")
+        TreatmentItem("TB Preventive Treatment (TPT)", value = "tbPreventiveDateRange"),
+        TreatmentItem("Cotrimoxazole (CTX)", value = "cotrimoxazoleDateRange"),
+        TreatmentItem("TB Treatment", value = "tbTreatmentDateRange"),
+        TreatmentItem("Cryptococcal Meningitis", value = "cryptococcalMeningitisDateRange")
     )
 
     fun validateInput(): Boolean {

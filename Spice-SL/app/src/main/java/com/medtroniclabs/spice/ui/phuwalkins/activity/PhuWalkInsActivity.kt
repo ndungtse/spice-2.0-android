@@ -212,4 +212,8 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
         finish()
     }
 
+    override fun onResume() {
+        super.onResume()
+        hideLoading()
+    }
 }

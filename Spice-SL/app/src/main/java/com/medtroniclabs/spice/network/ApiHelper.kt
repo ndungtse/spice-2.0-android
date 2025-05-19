@@ -67,6 +67,8 @@ import com.medtroniclabs.spice.data.model.HivScreeningResponse
 import com.medtroniclabs.spice.data.model.FamilyPlanningContraceptivesRequest
 import com.medtroniclabs.spice.data.model.FamilyPlanningCreateResponse
 import com.medtroniclabs.spice.data.model.FamilyPlanningSummaryResponse
+import com.medtroniclabs.spice.data.model.HivRequestData
+import com.medtroniclabs.spice.data.model.HivSummaryResponse
 import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
@@ -168,7 +170,6 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.Body
 
 interface ApiHelper {
     suspend fun doLogin(loginRequest: MultipartBody): Response<LoginResponse>
@@ -358,4 +359,6 @@ interface ApiHelper {
     suspend fun createFamilyPlanningMR(request: FamilyPlanningContraceptivesRequest): Response<APIResponse<FamilyPlanningCreateResponse>>
     suspend fun getFamilyPlanningStaticData(): Response<APIResponse<FamilyPlanningMetaResponse>>
     suspend fun getFamilyPlanningMRSummaryDetails(request: AboveFiveYearsSummaryRequest): Response<APIResponse<FamilyPlanningSummaryResponse>>
+    suspend fun createHivImrCmr(request: HivRequestData): Response<APIResponse<PatientEncounterResponse>>
+    suspend fun fetchHivSummaryDetails(request: MotherNeonateAncRequest): Response<APIResponse<HivSummaryResponse>>
 }

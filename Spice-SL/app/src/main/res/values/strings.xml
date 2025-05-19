@@ -1564,4 +1564,5 @@
     <string name="gestation_at_collection_date" translatable="false">GESTATION AT COLLECTION DATE</string>
     <string name="results" translatable="false">RESULTS</string>
     <string name="cbs_alert" translatable="false">CBS Alert</string>
+    <string name="comorbidities_coinfections" translatable="false">Comorbidities &amp; Coinfections</string>
 </resources>

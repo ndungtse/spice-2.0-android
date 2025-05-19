@@ -65,8 +65,10 @@ import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
 import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryResponse
 import com.medtroniclabs.spice.data.model.HivMetaResponse
+import com.medtroniclabs.spice.data.model.HivRequestData
 import com.medtroniclabs.spice.data.model.HivScreeningRequest
 import com.medtroniclabs.spice.data.model.HivScreeningResponse
+import com.medtroniclabs.spice.data.model.HivSummaryResponse
 import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
@@ -674,4 +676,11 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/family-planning/details")
     suspend fun getFamilyPlanningMRSummaryDetails(@Body id: AboveFiveYearsSummaryRequest): Response<APIResponse<FamilyPlanningSummaryResponse>>
+
+    @POST("/spice-service/hiv/medical-review/create")
+    suspend fun createHivImrCmr(@Body request: HivRequestData): Response<APIResponse<PatientEncounterResponse>>
+
+    @POST("/spice-service/hiv/medical-review/details")
+    suspend fun fetchHivSummaryDetails(@Body request: MotherNeonateAncRequest): Response<APIResponse<HivSummaryResponse>>
+
 }

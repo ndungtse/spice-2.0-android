@@ -408,12 +408,14 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             }
 
             dateDob?.let { dob ->
-                formGenerator.fillDetailsOnDatePickerSet(dob, false)
+                formGenerator.fillDetailsOnDatePickerSet(
+                    dob,
+                    memberRegistrationViewModel.isPhuWalkInsFlow == true
+                )
             }
-                formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
-                    visibility = View.GONE
-                }
-
+            formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
+                visibility = View.GONE
+            }
         }
     }
 

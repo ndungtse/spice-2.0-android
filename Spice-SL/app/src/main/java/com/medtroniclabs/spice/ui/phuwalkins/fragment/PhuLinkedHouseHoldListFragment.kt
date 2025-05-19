@@ -143,6 +143,7 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
         return viewModel.getPatientName(context, patient.name, patient.dateOfBirth, patient.gender)
     }
 
+    var isNavigated = false
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.searchView -> {
@@ -159,6 +160,7 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
                     intent.putExtra(isCreateHouseholdForPhu,true)
                     intent.putExtra(MemberID, patientLinkedDetails.lMemberId.toLongOrNull())
                     intent.putExtra(FhirMemberID, patientLinkedDetails.memberId.toLongOrNull())
+                    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
                     startActivity(intent)
                 })
             }

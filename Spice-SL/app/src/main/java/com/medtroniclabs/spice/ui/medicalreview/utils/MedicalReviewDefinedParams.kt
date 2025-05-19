@@ -63,4 +63,5 @@ object MedicalReviewDefinedParams {
     const val HIV_SYPHILIS_DUO_TEST = "SyphilisDuoTest"
     const val start = "start"
     const val end = "end"
+    const val HIV_STATUS = "HIV_STATUS_FRAGMENT"
 }

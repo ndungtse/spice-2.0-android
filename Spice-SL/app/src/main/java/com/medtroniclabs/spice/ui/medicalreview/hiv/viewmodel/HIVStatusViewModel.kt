@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.model.HivStatus
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.BaseViewModel
@@ -24,6 +25,7 @@ class HIVStatusViewModel @Inject constructor(
     val resultDSD = HashMap<String, Any>()
     val getHivStatusMetaList = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
     var selectModel: String? = null
+    val request: HivStatus? = null
 
     fun getHivStatusMeta(type: String) {
         viewModelScope.launch(dispatcherIO) {

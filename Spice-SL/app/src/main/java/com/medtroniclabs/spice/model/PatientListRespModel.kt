@@ -81,9 +81,12 @@ data class PatientListRespModel(
     val phq9Score: String? = null,
     var presumptiveTbNo: String? = null,
     var artCode: String? = null,
-    val tbIMRCompleted:Boolean = true,
+    val tbIMRCompleted: Boolean = false,
     var systolic: Double? = null,
-    var diastolic: Double? = null
+    var diastolic: Double? = null,
+    val hivIMRCompleted: Boolean = false,
+    val hivTestedPositive: Boolean = false,
+    val populationTypeList: List<String>? = null
 ) : Serializable
 
 data class PregnancyDetails(

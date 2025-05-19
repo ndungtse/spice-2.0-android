@@ -22,7 +22,7 @@ class HivGeneralAndSystemicExaminationViewModel @Inject constructor(
     var systemicExaminationsType: String = ""
     var selectedSystemicExaminations = ArrayList<ChipViewItemModel>()
     val systemicExaminationList = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
-    val resultHashMap = hashMapOf<String, String>()
+    val resultHashMap = hashMapOf<String, String?>()
     fun getSystemicExaminationList(type: String) {
         viewModelScope.launch(dispatcherIO) {
             systemicExaminationList.postLoading()

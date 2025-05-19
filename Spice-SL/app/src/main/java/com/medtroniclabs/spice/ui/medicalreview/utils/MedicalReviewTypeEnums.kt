@@ -65,5 +65,8 @@ enum class MedicalReviewTypeEnums{
     hivPreganancyBreastFeedingStatus,
     dsdStatus,
     nonEstablishedModels,
-    whoClinicalStage
+    whoClinicalStage,
+    HIV_MEDICAL_REVIEW,
+    hivImr,
+    hivCmr
 }
