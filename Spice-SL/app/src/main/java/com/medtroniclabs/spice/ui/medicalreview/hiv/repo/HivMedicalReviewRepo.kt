@@ -4,7 +4,11 @@ import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.common.ConsentFormType
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.data.HivClinicalInfoResponse
+import com.medtroniclabs.spice.data.HivVitalDetailsRequest
+import com.medtroniclabs.spice.data.HivVitalDetailsResponse
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.WhoClinicalStageCreateRequest
 import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
 import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryResponse
@@ -14,6 +18,8 @@ import com.medtroniclabs.spice.data.model.HivScreeningResponse
 import com.medtroniclabs.spice.data.model.HivSummaryResponse
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
+import com.medtroniclabs.spice.data.resource.CD4DetailsRequest
+import com.medtroniclabs.spice.data.resource.CD4DetailsResponse
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusRequest
@@ -232,6 +238,7 @@ class HivMedicalReviewRepo @Inject constructor(
     ): LiveData<List<MedicalReviewMetaItems>> {
         return roomHelper.getExaminationsComplaintsForAnc(category, type)
     }
+
     suspend fun saveHIVMedicalReview(
         request: HivRequestData
     ): Resource<PatientEncounterResponse> {
@@ -312,6 +319,48 @@ class HivMedicalReviewRepo @Inject constructor(
             }
         } catch (e: Exception) {
             Resource(ResourceState.ERROR)
+        }
+    }
+
+    suspend fun createWhoClinicalStage(request: WhoClinicalStageCreateRequest): Resource<HivClinicalInfoResponse> {
+        return try {
+            val response = apiHelper.createWhoClinicalStage(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+            } else {
+                val errorMessage = StringConverter.getErrorMessage(response.errorBody())
+                Resource(state = ResourceState.ERROR, message = errorMessage)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getHivVitalsDetails(hivVitalDetailsRequest: HivVitalDetailsRequest): Resource<HivVitalDetailsResponse> {
+        return try {
+            val response = apiHelper.getHivVitalDetails(hivVitalDetailsRequest)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+            } else {
+                val errorMessage = StringConverter.getErrorMessage(response.errorBody())
+                Resource(state = ResourceState.ERROR, message = errorMessage)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getHivCD4Details(request: CD4DetailsRequest): Resource<ArrayList<CD4DetailsResponse>> {
+        return try {
+            val response = apiHelper.getHivCD4Details(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+            } else {
+                val errorMessage = StringConverter.getErrorMessage(response.errorBody())
+                Resource(state = ResourceState.ERROR, message = errorMessage)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
         }
     }
 }

@@ -7,11 +7,15 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
 import com.medtroniclabs.spice.data.DiagnosisSaveUpdateRequest
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
+import com.medtroniclabs.spice.data.HivVitalDetailsRequest
+import com.medtroniclabs.spice.data.HivVitalDetailsResponse
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.DiagnosisRepository
+import com.medtroniclabs.spice.ui.medicalreview.hiv.repo.HivMedicalReviewRepo
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -20,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DiagnosisViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var repository: DiagnosisRepository
+    private var repository: DiagnosisRepository,
+    private var hivRepository: HivMedicalReviewRepo
 ) : ViewModel() {
 
     @Inject
@@ -32,6 +37,7 @@ class DiagnosisViewModel @Inject constructor(
     val diagnosisSaveUpdateResponse = MutableLiveData<Resource<ArrayList<DiagnosisDiseaseModel>>>()
     var viewDiagnosis: Boolean = true
     var diagnosisType:String = ""
+    val hivVitalsDetailLiveData = MutableLiveData<Resource<HivVitalDetailsResponse>>()
 
     fun getDiagnosisMetaList(diagnosisType: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -60,4 +66,27 @@ class DiagnosisViewModel @Inject constructor(
             }
         }
     }
+
+    fun getHivVitalsDetails(patientReference: String?, memberId: String?) {
+        viewModelScope.launch(dispatcherIO) {
+            hivVitalsDetailLiveData.postLoading()
+            hivVitalsDetailLiveData.postValue(
+                hivRepository.getHivVitalsDetails(
+                    HivVitalDetailsRequest(
+                        patientReference,
+                        memberId,
+                        arrayListOf(
+                            MedicalReviewTypeEnums.whoClinicalStage.name,
+                            MedicalReviewTypeEnums.cd4.name,
+                            MedicalReviewTypeEnums.cd4Percentage.name,
+                            MedicalReviewTypeEnums.weight.name,
+                            MedicalReviewTypeEnums.height.name
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+
 }

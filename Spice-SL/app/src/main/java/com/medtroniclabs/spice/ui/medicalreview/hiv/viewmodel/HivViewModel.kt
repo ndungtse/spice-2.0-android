@@ -18,6 +18,8 @@ import com.medtroniclabs.spice.data.model.HivScreeningResponse
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+import com.medtroniclabs.spice.data.resource.CD4DetailsRequest
+import com.medtroniclabs.spice.data.resource.CD4DetailsResponse
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusRequest
@@ -78,7 +80,7 @@ class HivViewModel @Inject constructor(
     var expectedDateOfDelivery: String? = null
     var isViralLoad = false
     var isARTRegimen = false
-
+    val hivCD4DetailLiveData = MutableLiveData<Resource<ArrayList<CD4DetailsResponse>>>()
 
     fun getHivMetaData() {
         viewModelScope.launch(dispatcherIO) {
@@ -199,5 +201,20 @@ class HivViewModel @Inject constructor(
         }
     }
 
+
+    fun getHivCD4Details(patientReference: String?, isCD4: Boolean, isCD4Percentage: Boolean) {
+        viewModelScope.launch(dispatcherIO) {
+            hivCD4DetailLiveData.postLoading()
+            hivCD4DetailLiveData.postValue(
+                repository.getHivCD4Details(
+                    CD4DetailsRequest(
+                        patientReference = patientReference,
+                        isCD4 = isCD4,
+                        isCD4Percentage = isCD4Percentage
+                    )
+                )
+            )
+        }
+    }
 
 }

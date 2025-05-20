@@ -17,8 +17,10 @@ import com.medtroniclabs.spice.appextensions.changePatientStatus
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.setVisible
+import com.medtroniclabs.spice.appextensions.toCleanString
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
+import com.medtroniclabs.spice.common.CommonUtils.toDoubleOrEmptyString
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Lactating
 import com.medtroniclabs.spice.common.DefinedParams.Postpartum
@@ -38,7 +40,9 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissL
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.calculateBp
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
+import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.CD4DialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.WhoClinicalStageFragment
+import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.WhoClinicalStageViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListenerForTb
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.PATIENT_TYPE_HYPHEN
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddBpDialog
@@ -62,6 +66,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     private val statusViewModel: PatientStatusViewModel by activityViewModels()
     private val diagnosisViewModel: DiagnosisViewModel by activityViewModels()
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
+    private val whoStageViewModel: WhoClinicalStageViewModel by activityViewModels()
     private val pregnancyDetailsViewModel: PregnancyDetailsViewModel by activityViewModels()
 
     companion object {
@@ -501,6 +506,14 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             }
             if (isHivImrCmr()) {
                 viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
+                patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                    details.id?.let { id ->
+                        diagnosisViewModel.getHivVitalsDetails(
+                            patientReference = id,
+                            memberId = getMemberId()
+                        )
+                    }
+                }
                 cardPatientStatus.gone()
                 cardBloodPressure.gone()
                 cardAddWeight.visible()
@@ -542,7 +555,20 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             binding.retryButtonTbBMI.id, binding.retryButtonFpBMI.id -> retryFetchingDataForBMI()
             binding.tvAddPatientType.id -> showPatientType()
             binding.tvWho.id -> showWhoStage()
+            binding.tvCd4.id -> showCD4Dialog(true, false)
+            binding.tvCd4Percent.id -> showCD4Dialog(false, true)
         }
+    }
+
+    private fun showCD4Dialog(isCd4: Boolean, isCd4Percentage: Boolean) {
+        withNetworkAvailability(online = {
+            showDialogIfNotPresent(CD4DialogFragment.TAG) {
+                CD4DialogFragment.newInstance(
+                    isCD4 = isCd4,
+                    isCD4Percentage = isCd4Percentage
+                )
+            }
+        })
     }
 
     private fun showWhoStage() {
@@ -808,6 +834,52 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                                 requireContext().getString(R.string.hyphen_symbol)
                             binding.tvDiagnosisConfirm.text = getString(R.string.add_diagnosis)
                         }
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+
+        diagnosisViewModel.hivVitalsDetailLiveData.observe(viewLifecycleOwner){resources ->
+            when(resources.state){
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resources.data?.let { list ->
+                        binding.tvCd4Value.text = list.cd4?.toCleanString() ?: getString(R.string.seperator_hyphen)
+                        binding.tvCd4PercentValue.text = list.cd4Percentage?.toCleanString() ?: getString(R.string.seperator_hyphen)
+                        binding.tvWhoValue.text = list.whoClinicalStage ?: getText(R.string.seperator_hyphen)
+                        binding.tvWho.text = if (list.whoClinicalStage != null) {
+                            getString(R.string.edit_who_clinical_stage)
+                        } else {
+                            getString(R.string.add_who_clinical_stage)
+                        }
+                    }
+                }
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+
+        whoStageViewModel.whoStageCreateLiveData.observe(viewLifecycleOwner) { resourcesState ->
+            when (resourcesState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    patientViewModel.patientDetailsLiveData.value?.data?.let {details ->
+                        diagnosisViewModel.getHivVitalsDetails(
+                            patientReference = details.id,
+                            memberId = details.memberId
+                        )
                     }
                 }
 

@@ -69,5 +69,9 @@ enum class MedicalReviewTypeEnums{
     hivImr,
     hivCmr,
     whoClinicalStage,
-    emtct_visit_status
+    emtct_visit_status,
+    height,
+    weight,
+    cd4,
+    cd4Percentage
 }

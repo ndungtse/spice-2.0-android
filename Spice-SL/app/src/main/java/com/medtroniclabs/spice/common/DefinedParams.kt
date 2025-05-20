@@ -372,5 +372,6 @@ object DefinedParams {
     const val EMTCT_SUMMARY = "EMTCT_SUMMARY"
     const val isPregnant = "isPregnant"
     const val VIRAL_LOAD = "VIRAL_LOAD"
-
+    const val IS_CD4 = "isCD4"
+    const val IS_CD4_PERCENTAGE = "isCD4Percentage"
 }

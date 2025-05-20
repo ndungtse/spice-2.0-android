@@ -10,7 +10,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.setDialogPercent
+import com.medtroniclabs.spice.appextensions.toCleanString
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SpiceLocationManager
@@ -19,7 +22,9 @@ import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentPatientStatusDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.TagListCustomView
+import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.WhoClinicalStageViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListenerForTb
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
@@ -33,6 +38,7 @@ class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {
     private lateinit var binding: FragmentPatientStatusDialogBinding
     private val viewModel: WhoClinicalStageViewModel by viewModels()
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
+    private val diagnosisViewModel: DiagnosisViewModel by activityViewModels()
     private lateinit var chipTag: TagListCustomView
 
     companion object {
@@ -73,8 +79,59 @@ class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {
                     value = item.value
                 )
             }
+            viewModel.whoStageCreateLiveData.value?.data?.let { response ->
+                viewModel.whoStageChip =
+                    ArrayList(chipList.filter { it.value.equals(response.stringValue, true) })
+            } ?: kotlin.run {
+                diagnosisViewModel.hivVitalsDetailLiveData.value?.data?.let { response ->
+                    viewModel.whoStageChip = ArrayList(chipList.filter {
+                        it.value.equals(
+                            response.whoClinicalStage,
+                            true
+                        )
+                    })
+                }
+            }
+
             initChipView(ArrayList(chipList))
         }
+
+        viewModel.whoStageCreateLiveData.observe(viewLifecycleOwner) { resourcesState ->
+            when (resourcesState.state) {
+                ResourceState.LOADING -> {
+                    binding.loader.visible()
+                }
+
+                ResourceState.SUCCESS -> {
+                    binding.loader.gone()
+                    patientViewModel.patientDetailsLiveData.value?.data?.let {details ->
+                        diagnosisViewModel.getHivVitalsDetails(
+                            patientReference = details.id,
+                            memberId = details.memberId
+                        )
+                    }
+                    dismiss()
+                }
+
+                ResourceState.ERROR -> {
+                    binding.loader.gone()
+                }
+            }
+        }
+
+       /* diagnosisViewModel.hivVitalsDetailLiveData.observe(viewLifecycleOwner){resources ->
+            when(resources.state){
+                ResourceState.LOADING -> {
+                    binding.loader.visible()
+                }
+                ResourceState.SUCCESS -> {
+                    binding.loader.gone()
+                }
+                ResourceState.ERROR -> {
+                    binding.loader.gone()
+                }
+            }
+        }*/
     }
 
     private fun initChipView(chipList: ArrayList<ChipViewItemModel>) {
@@ -119,6 +176,13 @@ class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun submitPatientType() {
+        patientViewModel.patientDetailsLiveData.value?.data?.let {details->
+            if(chipTag.getSelectedTags().isNotEmpty()){
+                viewModel.createWhoClinicalStage(
+                    createEncounter()
+                )
+            }
+        }
     }
 
     private fun createEncounter(): MedicalReviewEncounter {

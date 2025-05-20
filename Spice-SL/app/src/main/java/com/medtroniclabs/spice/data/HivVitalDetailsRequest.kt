@@ -1,0 +1,15 @@
+package com.medtroniclabs.spice.data
+
+data class HivVitalDetailsRequest(
+    val patientReference: String? = null,
+    val memberId: String? = null,
+    val types: ArrayList<String>
+)
+
+data class HivVitalDetailsResponse(
+    val cd4: Double? = null,
+    val whoClinicalStage: String? = null,
+    val weight: Double? = null,
+    val cd4Percentage: Double? = null,
+    val height: Double? = null,
+)

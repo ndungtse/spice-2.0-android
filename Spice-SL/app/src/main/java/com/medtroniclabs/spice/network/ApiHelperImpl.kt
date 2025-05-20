@@ -1,6 +1,8 @@
 package com.medtroniclabs.spice.network
 
 import com.google.gson.JsonObject
+import com.medtroniclabs.spice.data.HivVitalDetailsRequest
+import com.medtroniclabs.spice.data.HivVitalDetailsResponse
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
@@ -17,6 +19,7 @@ import com.medtroniclabs.spice.data.FamilyPlanningMetaResponse
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
+import com.medtroniclabs.spice.data.HivClinicalInfoResponse
 import com.medtroniclabs.spice.data.LabourDeliveryMetaResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
@@ -49,6 +52,7 @@ import com.medtroniclabs.spice.data.TbMetaResponse
 import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
+import com.medtroniclabs.spice.data.WhoClinicalStageCreateRequest
 import com.medtroniclabs.spice.data.history.BirthDetails
 import com.medtroniclabs.spice.data.history.HistoryEntity
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
@@ -88,6 +92,8 @@ import com.medtroniclabs.spice.data.performance.CHWPerformanceMonitoring
 import com.medtroniclabs.spice.data.performance.ChwVillageFilterModel
 import com.medtroniclabs.spice.data.performance.FilterPreference
 import com.medtroniclabs.spice.data.performance.PerformanceReportRequest
+import com.medtroniclabs.spice.data.resource.CD4DetailsRequest
+import com.medtroniclabs.spice.data.resource.CD4DetailsResponse
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.CultureLocaleModel
@@ -857,4 +863,16 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getHivVitalsDetails(request)
     }
 
+
+    override suspend fun createWhoClinicalStage(request: WhoClinicalStageCreateRequest): Response<APIResponse<HivClinicalInfoResponse>> {
+        return apiService.createWhoClinicalStage(request)
+    }
+
+    override suspend fun getHivVitalDetails(request: HivVitalDetailsRequest): Response<APIResponse<HivVitalDetailsResponse>> {
+        return apiService.getHivVitalDetails(request)
+    }
+
+    override suspend fun getHivCD4Details(request: CD4DetailsRequest): Response<APIResponse<ArrayList<CD4DetailsResponse>>> {
+        return apiService.getHivCD4Details(request)
+    }
 }

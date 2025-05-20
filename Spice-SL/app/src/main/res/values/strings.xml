@@ -1541,6 +1541,7 @@
     <string name="art_code" translatable="false">ART Code</string>
     <string name="who_clinical_stage" translatable="false">WHO Clinical stage</string>
     <string name="edit_who_clinical_stage" translatable="false">Edit WHO Clinical stage</string>
+    <string name="add_who_clinical_stage" translatable="false">Add WHO Clinical stage</string>
     <string name="cd4" translatable="false">CD4</string>
     <string name="cd4_percentage" translatable="false">CD4 Percentage</string>
     <string name="view_cd4" translatable="false">View CD4</string>
@@ -1565,6 +1566,7 @@
     <string name="results" translatable="false">RESULTS</string>
     <string name="cbs_alert" translatable="false">CBS Alert</string>
     <string name="comorbidities_coinfections" translatable="false">Comorbidities &amp; Coinfections</string>
+    <string name="cd4_percentage_symbol" translatable="false">CD4 %</string>
     <string name="tb_preventive_treatment" translatable="false">TB Preventive Treatment (TPT)</string>
     <string name="cotrimoxazole" translatable="false">Cotrimoxazole (CTX)</string>
     <string name="tb_treatment" translatable="false">TB Treatment</string>

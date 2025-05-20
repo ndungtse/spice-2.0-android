@@ -1,6 +1,8 @@
 package com.medtroniclabs.spice.network
 
 import com.google.gson.JsonObject
+import com.medtroniclabs.spice.data.HivVitalDetailsRequest
+import com.medtroniclabs.spice.data.HivVitalDetailsResponse
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
@@ -17,6 +19,7 @@ import com.medtroniclabs.spice.data.FamilyPlanningMetaResponse
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
+import com.medtroniclabs.spice.data.HivClinicalInfoResponse
 import com.medtroniclabs.spice.data.LabourDeliveryMetaResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
@@ -49,6 +52,7 @@ import com.medtroniclabs.spice.data.TbMetaResponse
 import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
+import com.medtroniclabs.spice.data.WhoClinicalStageCreateRequest
 import com.medtroniclabs.spice.data.history.BirthDetails
 import com.medtroniclabs.spice.data.history.HistoryEntity
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
@@ -88,6 +92,8 @@ import com.medtroniclabs.spice.data.performance.CHWPerformanceMonitoring
 import com.medtroniclabs.spice.data.performance.ChwVillageFilterModel
 import com.medtroniclabs.spice.data.performance.FilterPreference
 import com.medtroniclabs.spice.data.performance.PerformanceReportRequest
+import com.medtroniclabs.spice.data.resource.CD4DetailsRequest
+import com.medtroniclabs.spice.data.resource.CD4DetailsResponse
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.CultureLocaleModel
@@ -689,9 +695,19 @@ interface ApiService {
 
     @POST("/spice-service/hiv/opportunistic-infection-details")
     suspend fun getOpportunisticInfection(@Body request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, HashMap<String, String>?>>>
+
     @POST("/spice-service/medical-review/emtct-visit/create")
     suspend fun createEmtct(@Body eMTCTVisitStatusRequest : EMTCTVisitStatusRequest) : Response<APIResponse<EMTCTVisitStatusResponse>>
 
     @POST("/spice-service/medical-review/vital-details")
     suspend fun getHivVitalsDetails(@Body hivVitalsRequest: HivVitalsRequest) : Response<APIResponse<HivVitalsResponse>>
+
+    @POST("/spice-service/medical-review/who-clinical-stage/create")
+    suspend fun createWhoClinicalStage(@Body request: WhoClinicalStageCreateRequest): Response<APIResponse<HivClinicalInfoResponse>>
+
+    @POST("/spice-service/medical-review/vital-details")
+    suspend fun getHivVitalDetails(@Body request: HivVitalDetailsRequest): Response<APIResponse<HivVitalDetailsResponse>>
+
+    @POST("/spice-service/hiv/cd4-details")
+    suspend fun getHivCD4Details(@Body request: CD4DetailsRequest): Response<APIResponse<ArrayList<CD4DetailsResponse>>>
 }
