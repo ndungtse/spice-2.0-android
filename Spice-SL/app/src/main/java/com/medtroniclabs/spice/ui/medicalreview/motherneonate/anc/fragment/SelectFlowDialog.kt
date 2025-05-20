@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
 import com.medtroniclabs.spice.ui.household.ConsentFormActivity
+import com.medtroniclabs.spice.ui.medicalreview.hiv.activity.HivImrAndCmrActivity
 import com.medtroniclabs.spice.ui.medicalreview.hiv.activity.HivMedicalReviewBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.activity.LabourDeliveryBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.activity.MotherNeonateANCActivity
@@ -223,7 +224,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                     val patientId = arguments?.getString(PatientId, "")
                     val id = arguments?.getString(ID, "")
                     val intent =
-                        Intent(requireContext(), MotherNeonateEMTCTActivity::class.java)
+                        Intent(requireContext(), HivImrAndCmrActivity::class.java)
                     if (patientId?.isNotBlank() == true) {
                         intent.putExtra(PatientId, patientId)
                         intent.putExtra(ID, id)

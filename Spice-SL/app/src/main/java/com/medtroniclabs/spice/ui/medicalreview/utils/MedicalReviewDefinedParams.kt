@@ -61,7 +61,11 @@ object MedicalReviewDefinedParams {
     const val OtherFPMethod = "OtherFPmethod"
     const val HBsAg = "HBsAg"
     const val HIV_SYPHILIS_DUO_TEST = "SyphilisDuoTest"
-    const val start = "start"
-    const val end = "end"
+    const val startDate = "startDate"
+    const val endDate = "endDate"
     const val HIV_STATUS = "HIV_STATUS_FRAGMENT"
+    const val tbPreventiveDateRange = "tbPreventiveDateRange"
+    const val cotrimoxazoleDateRange = "cotrimoxazoleDateRange"
+    const val tbTreatmentDateRange = "tbTreatmentDateRange"
+    const val cryptococcalMeningitisDateRange = "cryptococcalMeningitisDateRange"
 }

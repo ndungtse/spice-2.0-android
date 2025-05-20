@@ -1565,4 +1565,8 @@
     <string name="results" translatable="false">RESULTS</string>
     <string name="cbs_alert" translatable="false">CBS Alert</string>
     <string name="comorbidities_coinfections" translatable="false">Comorbidities &amp; Coinfections</string>
+    <string name="tb_preventive_treatment" translatable="false">TB Preventive Treatment (TPT)</string>
+    <string name="cotrimoxazole" translatable="false">Cotrimoxazole (CTX)</string>
+    <string name="tb_treatment" translatable="false">TB Treatment</string>
+    <string name="cryptococcal_meningitis" translatable="false">Cryptococcal Meningitis</string>
 </resources>

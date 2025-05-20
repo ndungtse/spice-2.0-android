@@ -78,9 +78,9 @@ class HivGeneralAndSystemicExaminationFragment : BaseFragment() {
                         )
                     )
                 }
-                if (!isChecked) {
-                    viewModel.resultHashMap.remove(name)
-                }
+                val selectedValues = examinationsTagView.getSelectedTags().mapNotNull { it.value }
+                val keysToRemove = viewModel.resultHashMap.keys.filterNot { it in selectedValues }
+                keysToRemove.forEach { viewModel.resultHashMap.remove(it) }
                 showListView(ArrayList(examinationsTagView.getSelectedTags()))
                 setFragmentResult(
                     MedicalReviewDefinedParams.SE_ITEM, bundleOf(
@@ -106,10 +106,15 @@ class HivGeneralAndSystemicExaminationFragment : BaseFragment() {
                 }
                 MotherNeonateUtil.initTextWatcherForString(tvRespiratoryText) {
                     if (it.isBlank()) {
-                        viewModel.resultHashMap[trimmedName] = null
+                        viewModel.resultHashMap.remove(trimmedName)
                     } else {
                         viewModel.resultHashMap[trimmedName] = it
                     }
+                    setFragmentResult(
+                        MedicalReviewDefinedParams.SE_ITEM, bundleOf(
+                            MedicalReviewDefinedParams.CHIP_ITEMS to true
+                        )
+                    )
                 }
             }
             binding.llGeneralExamination.addView(bindingItem.root)
@@ -153,7 +158,11 @@ class HivGeneralAndSystemicExaminationFragment : BaseFragment() {
     }
 
     fun validateInput(): Boolean {
-        return examinationsTagView.getSelectedTags()
-            .isNotEmpty() && viewModel.resultHashMap.isNotEmpty()
+        val hasExaminations = examinationsTagView.getSelectedTags().isNotEmpty()
+        val hasValid = viewModel.resultHashMap.any { (_, valueMap) ->
+            !valueMap.isNullOrBlank()
+        }
+
+        return hasExaminations && hasValid
     }
 }

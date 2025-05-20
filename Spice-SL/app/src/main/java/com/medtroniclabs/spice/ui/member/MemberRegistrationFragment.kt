@@ -267,6 +267,12 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
 
                 ResourceState.ERROR -> {
                     (activity as BaseActivity?)?.hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+                    }
                 }
             }
         }

@@ -13,7 +13,6 @@ data class HivRequestData(
     val comorbiditiesCoinfections: List<String?>? = emptyList(),
     val opportunisticInfections: Map<String, HashMap<String, String>>? = null,
     val encounter: MedicalReviewEncounter? = null,
-    val isIMRFlow: Boolean? = null,
     val medicalReviewType: String? = null
 )
 

@@ -14,8 +14,6 @@ import com.medtroniclabs.spice.data.model.HivScreeningResponse
 import com.medtroniclabs.spice.data.model.HivSummaryResponse
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
-import com.medtroniclabs.spice.data.model.TbHistory
-import com.medtroniclabs.spice.data.model.TbMedicalReviewCreateRequest
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
@@ -246,6 +244,26 @@ class HivMedicalReviewRepo @Inject constructor(
     suspend fun fetchHivSummaryDetails(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<HivSummaryResponse> {
         return try {
             apiHelper.fetchHivSummaryDetails(motherNeonateAncRequest).let { response ->
+                if (response.isSuccessful) {
+                    response.body()?.let { body ->
+                        if (body.status) {
+                            Resource(ResourceState.SUCCESS, body.entity)
+                        } else {
+                            Resource(ResourceState.ERROR)
+                        }
+                    } ?: Resource(ResourceState.ERROR)
+                } else {
+                    Resource(ResourceState.ERROR)
+                }
+            }
+        } catch (e: Exception) {
+            Resource(ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getOpportunisticInfection(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<HashMap<String, HashMap<String, String>?>> {
+        return try {
+            apiHelper.getOpportunisticInfection(motherNeonateAncRequest).let { response ->
                 if (response.isSuccessful) {
                     response.body()?.let { body ->
                         if (body.status) {

@@ -683,4 +683,6 @@ interface ApiService {
     @POST("/spice-service/hiv/medical-review/details")
     suspend fun fetchHivSummaryDetails(@Body request: MotherNeonateAncRequest): Response<APIResponse<HivSummaryResponse>>
 
+    @POST("/spice-service/hiv/opportunistic-infection-details")
+    suspend fun getOpportunisticInfection(@Body request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, HashMap<String, String>?>>>
 }

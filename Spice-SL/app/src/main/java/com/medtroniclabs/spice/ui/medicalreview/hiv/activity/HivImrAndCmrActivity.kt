@@ -447,6 +447,37 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
     }
 
     private fun createMedicalReviewRequest(): HivRequestData {
+        val opportunisticInfectionsData = hashMapOf<String, HashMap<String, String>>()
+
+        opportunisticInfectionViewModel.resultHashMap.forEach { (key, valueMap) ->
+            val startDate = valueMap[MedicalReviewDefinedParams.startDate]?.takeIf { it.isNotBlank() }
+            val endDate = valueMap[MedicalReviewDefinedParams.endDate]?.takeIf { it.isNotBlank() }
+
+            if (startDate != null) {
+                val formattedMap = hashMapOf<String, String>().apply {
+                    put(
+                        MedicalReviewDefinedParams.startDate,
+                        DateUtils.convertDateTimeToDate(
+                            startDate,
+                            DateUtils.DATE_ddMMyyyy,
+                            DateUtils.DATE_FORMAT_yyyyMMdd
+                        )
+                    )
+                    endDate?.let {
+                        put(
+                            MedicalReviewDefinedParams.endDate,
+                            DateUtils.convertDateTimeToDate(
+                                it,
+                                DateUtils.DATE_ddMMyyyy,
+                                DateUtils.DATE_FORMAT_yyyyMMdd
+                            )
+                        )
+                    }
+                }
+
+                opportunisticInfectionsData[key] = formattedMap
+            }
+        }
         // TODO:
         return HivRequestData(
             clinicalStage = null,
@@ -454,18 +485,17 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
             artCode = patientViewModel.artCode,
             weight = weightViewModel.getWeight(),
             hivStatus = (supportFragmentManager.findFragmentByTag(HIVStatusFragment.TAG) as? HIVStatusFragment)?.getRequest(),
-            presentingComplaints = presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value },
+            presentingComplaints = presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value }.takeIf { it.isNotEmpty() },
             presentingComplaintsNotes = presentingComplaintsViewModel.enteredComplaintNotes.takeIf { it.isNotBlank() },
             comorbiditiesCoinfectionsNotes = comorbiditiesViewModel.comments.ifBlank { null },
             systemicExaminations = hivGeneralAndSystemicExaminationViewModel.resultHashMap,
-            comorbiditiesCoinfections = comorbiditiesViewModel.chips.map { it.value },
-            opportunisticInfections = opportunisticInfectionViewModel.resultHashMap,
+            comorbiditiesCoinfections = comorbiditiesViewModel.chips.map { it.value }.takeIf { it.isNotEmpty() },
+            opportunisticInfections = opportunisticInfectionsData,
             encounter = createMedicalReviewEncounter(
                 encounterId = patientViewModel.encounterId,
                 patientHouseholdId = patientViewModel.getPatientHouseholdId(),
                 memberId = patientViewModel.getPatientMemberId()
             ),
-            isIMRFlow = patientViewModel.getHivMedicalReviewStatus(),
             medicalReviewType = MedicalReviewTypeEnums.HIV_MEDICAL_REVIEW.name
         )
     }

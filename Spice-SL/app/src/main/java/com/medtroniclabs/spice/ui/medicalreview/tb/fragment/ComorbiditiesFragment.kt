@@ -110,7 +110,7 @@ class ComorbiditiesFragment : BaseFragment() {
             binding.tvCommentsTitle.gone()
             binding.etPhysicalExaminationComments.gone()
             binding.tvCommentsTitle.gone()
-            tvSystemicExaminationTitle.text = getString(R.string.comorbidities)
+            tvSystemicExaminationTitle.text = if (getType().equals(MedicalReviewTypeEnums.HIV.name, true)) getString(R.string.comorbidities_coinfections) else getString(R.string.comorbidities)
             tagView =
                 TagListCustomView(
                     root.context,

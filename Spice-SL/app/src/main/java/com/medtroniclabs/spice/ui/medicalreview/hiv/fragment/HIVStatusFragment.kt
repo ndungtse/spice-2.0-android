@@ -24,6 +24,8 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HIVStatusViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
@@ -151,7 +153,26 @@ class HIVStatusFragment : BaseFragment() {
 
     private fun initView() {
         viewModel.getHivStatusMeta(MedicalReviewTypeEnums.HIV.name)
-        binding.pregnancyStatusGroup.setVisible(patientViewModel.getGenderIsFemale())
+        val isFemale = patientViewModel.getGenderIsFemale()
+        val dob = patientViewModel.getDob()
+        val isDobValid = !dob.isNullOrBlank()
+
+        val isEligibleAge = if (isFemale && isDobValid && !dob.isNullOrBlank()) {
+            val ageAndWeek = DateUtils.getV2YearMonthAndWeek(dob)
+            val ageYears = ageAndWeek.years
+            val ageMonths = ageAndWeek.months
+            val ageWeeks = ageAndWeek.weeks
+            val ageDays = ageAndWeek.days
+
+            ageYears in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE &&
+                    !(ageYears == PREGNANCY_MAX_AGE && (ageMonths + ageWeeks + ageDays) != 0)
+        } else {
+            false
+        }
+
+        // Show pregnancy group only if gender is female AND eligible age
+        binding.pregnancyStatusGroup.setVisible(isEligibleAge)
+        binding.tvLastMenstrualPeriodDate.isEnabled = true
         binding.tvLastMenstrualPeriodDate.safeClickListener {
             showDatePickerDialog(binding.tvLastMenstrualPeriodDate)
         }
@@ -171,7 +192,7 @@ class HIVStatusFragment : BaseFragment() {
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                         DateUtils.DATE_ddMMyyyy
                     )
-                    tvLastMenstrualPeriodDate.isEnabled = false
+//                    tvLastMenstrualPeriodDate.isEnabled = false
                 }
                 calculateGestationalAgeAndEstimationDeliveryDate()
             }
@@ -299,19 +320,22 @@ class HIVStatusFragment : BaseFragment() {
                     pos: Int,
                     itemId: Long
                 ) {
-                    val selectedItem = adapter.getData(position = pos)
-                    selectedItem?.let {
-                        val selectedModel = it[DefinedParams.Value] as String?
-                        selectedModel?.let {
-                            viewModel.selectModel = selectedModel
-                        } ?: kotlin.run {
-                            viewModel.selectModel = null
+                    val selectedItem = adapter.getData(pos)
+                    val selectedModel = selectedItem?.get(DefinedParams.Value) as? String
+                    viewModel.selectModel =
+                        if (!selectedModel.isNullOrEmpty() && !selectedModel.equals(
+                                DefinedParams.DefaultID,
+                                ignoreCase = true
+                            )
+                        ) {
+                            selectedModel
+                        } else {
+                            null
                         }
-                        setFragmentResult(
-                            MedicalReviewDefinedParams.HIV_STATUS, bundleOf(
-                                MedicalReviewDefinedParams.CHIP_ITEMS to true)
-                        )
-                    }
+                    setFragmentResult(
+                        MedicalReviewDefinedParams.HIV_STATUS,
+                        bundleOf(MedicalReviewDefinedParams.CHIP_ITEMS to true)
+                    )
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {

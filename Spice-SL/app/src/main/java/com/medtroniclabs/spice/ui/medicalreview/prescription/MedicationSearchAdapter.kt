@@ -42,7 +42,7 @@ class MedicationSearchAdapter(context: Context) :
                 binding.tvMedicationName.text = name
                 binding.tvClassification.text = item.classificationName
             } else {
-                val name = "${item.name}, ${item.brandName}, ${item.dosageFormName}"
+                val name = "${item.name}, ${item.brandName}"
                 binding.tvMedicationName.text = name
                 binding.tvClassification.text = item.classificationName
             }

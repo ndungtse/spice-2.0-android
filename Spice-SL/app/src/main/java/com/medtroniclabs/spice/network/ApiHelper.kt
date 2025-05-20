@@ -361,4 +361,5 @@ interface ApiHelper {
     suspend fun getFamilyPlanningMRSummaryDetails(request: AboveFiveYearsSummaryRequest): Response<APIResponse<FamilyPlanningSummaryResponse>>
     suspend fun createHivImrCmr(request: HivRequestData): Response<APIResponse<PatientEncounterResponse>>
     suspend fun fetchHivSummaryDetails(request: MotherNeonateAncRequest): Response<APIResponse<HivSummaryResponse>>
+    suspend fun getOpportunisticInfection(request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, HashMap<String, String>?>>>
 }

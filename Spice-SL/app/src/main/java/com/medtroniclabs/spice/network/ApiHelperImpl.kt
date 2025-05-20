@@ -842,4 +842,8 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun fetchHivSummaryDetails(request: MotherNeonateAncRequest): Response<APIResponse<HivSummaryResponse>> {
         return apiService.fetchHivSummaryDetails(request)
     }
+
+    override suspend fun getOpportunisticInfection(request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, HashMap<String, String>?>>> {
+        return apiService.getOpportunisticInfection(request)
+    }
 }

@@ -217,5 +217,7 @@ class PatientDetailViewModel @Inject constructor(
     fun getHivMedicalReviewStatus(): Boolean {
         return patientDetailsLiveData.value?.data?.hivIMRCompleted ?: false
     }
-
+    fun getDob(): String? {
+        return patientDetailsLiveData.value?.data?.birthDate
+    }
 }
