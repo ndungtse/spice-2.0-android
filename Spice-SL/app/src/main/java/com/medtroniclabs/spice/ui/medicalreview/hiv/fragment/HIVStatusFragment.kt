@@ -183,6 +183,9 @@ class HIVStatusFragment : BaseFragment() {
         if (patientViewModel.isPregnant()) {
             viewModel.resultPregnantStatus[MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name] =
                 DefinedParams.yes
+            binding.lmbGroup.setVisible(true)
+            binding.gestationalAgeGroup.setVisible(true)
+            binding.expectedDateGroup.setVisible(true)
         }
         patientViewModel.getPregnantDetails()?.lastMenstrualPeriod?.takeIf { it.isNotBlank() }
             ?.let { lmp ->

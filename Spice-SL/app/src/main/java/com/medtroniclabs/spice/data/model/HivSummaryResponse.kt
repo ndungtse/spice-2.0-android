@@ -16,5 +16,6 @@ data class HivSummaryResponse(
     val comorbiditiesCoinfectionsNotes: String? = null,
     val prescriptions: List<Prescription>? = null,
     val investigations: List<Investigation>? = null,
-    val summaryStatus: List<PatientStatus>? = null
+    val summaryStatus: List<PatientStatus>? = null,
+    val clinicalNotes: String? = null
 )

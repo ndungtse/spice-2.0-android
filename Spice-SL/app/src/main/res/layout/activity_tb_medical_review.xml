@@ -100,10 +100,21 @@
                     android:paddingHorizontal="@dimen/_16sdp"
                     android:paddingBottom="@dimen/_16sdp"
                     android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/systemicExaminationsContainer" />
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/hivClinicalNotesContainer"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/_16sdp"
+                    android:paddingBottom="@dimen/_16sdp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/clinicalNotesContainer" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -146,6 +146,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             binding.tvAddWeight.invisible()
             binding.tvAddBp.invisible()
         }
+        if (isHivImrCmr()) {
+            binding.tvAddWeight.visible()
+        }
     }
 
     private fun attachListeners() {

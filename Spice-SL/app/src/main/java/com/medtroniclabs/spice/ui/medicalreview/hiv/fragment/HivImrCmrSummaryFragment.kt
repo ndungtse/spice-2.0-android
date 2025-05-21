@@ -30,11 +30,8 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+import com.medtroniclabs.spice.ui.medicalreview.hiv.activity.HivImrAndCmrActivity
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivImrCmrSummaryViewModel
-import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.TbSummaryFragment
-import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.TbSummaryViewModel
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -100,8 +97,7 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
         val views = listOf(
             binding.tvSiteLabel, binding.tvSiteSeparator, binding.tvSiteText,
             binding.tvTreatmentText,
-            binding.tvTreatmentLabel, binding.tvTreatmentSeparator,
-            binding.tvClinicalNotesLabel, binding.tvClinicalNotesSeparator, binding.tvClinicalNotesText
+            binding.tvTreatmentLabel, binding.tvTreatmentSeparator
         )
         binding.tvDiagnosesLabel.text = getText(R.string.diagnosis_tb)
         binding.tvComborbiditiesLabel.text = getString(R.string.comorbidities_coinfections)
@@ -176,6 +172,15 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
                 ),
                 moreColorResId = R.color.purple_700,
                 title = tvComborbiditiesLabel.text.toString(),
+                activity = requireActivity() as BaseActivity
+            )
+
+            // Clinical Notes
+            tvClinicalNotesText.setExpandableText(
+                fullText = data.clinicalNotes?.takeIf { it.isNotEmpty() }
+                    ?: getString(R.string.hyphen_symbol),
+                moreColorResId = R.color.purple_700,
+                title = tvClinicalNotesLabel.text.toString(),
                 activity = requireActivity() as BaseActivity
             )
 
@@ -272,6 +277,9 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
             binding.tvNextMedicalReviewLabelText.isEnabled = true
             binding.tvNextMedicalReviewLabelText.text = DateUtils.getFormattedDateAfterMonths(1)
         }
+        (requireActivity() as? HivImrAndCmrActivity)?.enableRefer(
+            !viewModel.patientStatus.equals(ReferralStatus.Died.name, true)
+        )
     }
 
     private fun showDatePickerDialog() {

@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -24,12 +25,15 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
+import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
+import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HIVStatusFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivGeneralAndSystemicExaminationFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivImrCmrSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.OpportunisticInfectionsTreatmentFragment
+import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.ViralLoadFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivGeneralAndSystemicExaminationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivImrAndCmrViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivImrCmrSummaryViewModel
@@ -64,6 +68,7 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
     private val opportunisticInfectionViewModel: OpportunisticInfectionViewModel by viewModels()
     private val summaryViewModel: HivImrCmrSummaryViewModel by viewModels()
     private val referPatientViewModel: ReferPatientViewModel by viewModels()
+    private val clinicalNotesViewModel: ClinicalNotesViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         val a = ""
         super.onCreate(savedInstanceState)
@@ -249,17 +254,18 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
             patientSummaryContainer.gone()
             comorbiditiesContainer.gone()
             presentingComplaintsContainer.gone()
-            comorbiditiesContainer.gone()
             systemicExaminationsContainer.gone()
             clinicalNotesContainer.gone()
+            patientHistoryContainer.gone()
+            hivClinicalNotesContainer.gone()
             patientMedicalReviewDiagnosis.gone()
-            clinicalNotesContainer.visible()
+            hivClinicalNotesContainer.visible()
             binding.bottomNavigationView.gone()
             binding.referralBottomView.visible()
             binding.btnDone.isEnabled = true
             patientViewModel.isSummary = true
             replaceFragment(
-                R.id.clinicalNotesContainer,
+                R.id.hivClinicalNotesContainer,
                 HivImrCmrSummaryFragment.TAG,
                 HivImrCmrSummaryFragment.newInstance(
                     encounterId = viewModel.hivCreateResponse.value?.data?.encounterId,
@@ -308,13 +314,15 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
 
         binding.btnSubmit.isEnabled =
             isValidHiv || hasComplaintNotes || hasSelectedComplaints || isValidFragment || isValidExamination || isValidTreatment
-
+        val hasClinicalNotes = clinicalNotesViewModel.enteredClinicalNotes.isNotBlank()
         if (hasComorbidities) {
             binding.btnSubmit.isEnabled = isValidFragment
             if (!isValidFragment) {
                 return
             }
         }
+
+        binding.btnSubmit.isEnabled = hasClinicalNotes
     }
 
     private fun initializePatientDetailFragment() {
@@ -405,7 +413,7 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
         })
     }
     private fun createSummary() {
-        val fragment = supportFragmentManager.findFragmentById(R.id.clinicalNotesContainer)
+        val fragment = supportFragmentManager.findFragmentById(R.id.hivClinicalNotesContainer)
         if (fragment is HivImrCmrSummaryFragment) {
             val isValid = (fragment as? HivImrCmrSummaryFragment)?.validateInput()
             if (isValid == true) {
@@ -496,6 +504,7 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
                 patientHouseholdId = patientViewModel.getPatientHouseholdId(),
                 memberId = patientViewModel.getPatientMemberId()
             ),
+            clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
             medicalReviewType = MedicalReviewTypeEnums.HIV_MEDICAL_REVIEW.name
         )
     }
@@ -557,7 +566,7 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
 
     override fun onDataLoaded(details: PatientListRespModel) {
         viewModel.memberId = details.memberId
-        (supportFragmentManager.findFragmentById(R.id.clinicalNotesContainer) as? HivImrCmrSummaryFragment)
+        (supportFragmentManager.findFragmentById(R.id.hivClinicalNotesContainer) as? HivImrCmrSummaryFragment)
             ?.let {
                 showSummary {
                     // Do nothing
@@ -593,19 +602,34 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
                 MedicalReviewTypeEnums.SystemicExaminations.name,
                 MedicalReviewTypeEnums.HIV.name
             )
+            putString(
+                MedicalReviewTypeEnums.ClinicalNotes.name,
+                MedicalReviewTypeEnums.HIV.name
+            )
         }
         replaceFragmentInId<PresentingComplaintsFragment>(
-            binding.presentingComplaintsContainer.id,
+            binding.patientHistoryContainer.id,
             bundle = bundle,
             tag = PresentingComplaintsFragment::class.simpleName
         )
         addOrReuseFragment(
-            R.id.comorbiditiesContainer,
+            R.id.presentingComplaintsContainer,
             ComorbiditiesFragment.TAG,
             ComorbiditiesFragment.newInstance(MedicalReviewTypeEnums.HIV.name)
         )
         binding.systemicExaminationsContainer.visible()
+        binding.comorbiditiesContainer.setVisible(patientViewModel.getHivMedicalReviewStatus())
         binding.clinicalNotesContainer.visible()
+        binding.hivClinicalNotesContainer.visible()
+        replaceFragmentOrCreateNewFragment<ViralLoadFragment>(
+            R.id.comorbiditiesContainer,
+            bundle = Bundle().apply {
+                putBoolean(DefinedParams.VIRAL_LOAD, false)
+                putString(DefinedParams.PatientId, intent.getStringExtra(DefinedParams.PatientId))
+                putString(DefinedParams.ID, intent.getStringExtra(DefinedParams.ID))
+            },
+            tag = ViralLoadFragment.TAG_ART
+        )
         addOrReuseFragment(
             R.id.systemicExaminationsContainer,
             OpportunisticInfectionsTreatmentFragment.TAG,
@@ -615,6 +639,11 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
             binding.clinicalNotesContainer.id,
             bundle = bundle,
             tag = HivGeneralAndSystemicExaminationFragment.TAG
+        )
+        replaceFragmentOrCreateNewFragment<ClinicalNotesFragment>(
+            binding.hivClinicalNotesContainer.id,
+            bundle = bundle,
+            tag = ClinicalNotesFragment.TAG
         )
         supportFragmentManager
             .setFragmentResultListener(MedicalReviewDefinedParams.PC_ITEM, this) { _, _ ->
@@ -633,9 +662,18 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
             .setFragmentResultListener(MedicalReviewDefinedParams.HIV_STATUS, this) { _, _ ->
                 enableSubmitButton()
             }
+
+        supportFragmentManager
+            .setFragmentResultListener(MedicalReviewDefinedParams.CLINICAL_NOTES, this) { _, _ ->
+                enableSubmitButton()
+            }
     }
 
     override fun onDialogDismissListener(isFinish: Boolean) {
         startActivityWithoutSplashScreen()
+    }
+
+    fun enableRefer(isEnable: Boolean) {
+        binding.btnRefer.isEnabled = isEnable
     }
 }

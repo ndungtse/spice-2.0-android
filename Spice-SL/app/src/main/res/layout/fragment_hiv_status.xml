@@ -117,6 +117,7 @@
                 android:id="@+id/lmbGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:constraint_referenced_ids="tvLastMenstrualPeriodLabel,tvLastMenstrualPeriodDate" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -175,6 +176,7 @@
                 android:id="@+id/gestationalAgeGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:constraint_referenced_ids="tvGestationalAgeLabel,etGestationalAge" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -218,6 +220,7 @@
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/expectedDateGroup"
                 android:layout_width="wrap_content"
+                android:visibility="gone"
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="tvExpectedDate,etExpectedDate" />
 
