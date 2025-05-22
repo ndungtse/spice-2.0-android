@@ -269,6 +269,9 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
     }
 
     private fun initView() {
+        if (diagnosisViewModel.diagnosisType.equals(MedicalReviewTypeEnums.HIV_REVIEW.name, true)){
+            binding.diseaseConditionChipGroup.isSingleSelection = true
+        }
         if (diagnosisViewModel.diagnosisDetailsList.value?.data?.isNotEmpty() == true) {
             patientViewModel.setUserJourney(AnalyticsDefinedParams.EDITDIAGNOSISDIALOGUEFRAGMENT)
         }else{
@@ -506,7 +509,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
             }
 
             MedicalReviewTypeEnums.ANC_REVIEW.name, MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name, MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name,
-            MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name -> {
+            MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name, MedicalReviewTypeEnums.HIV_REVIEW.name -> {
                 if (diseaseCategoryTagView.getSelectedTags().isNotEmpty() || otherSelection) {
                     binding.btnOkay.isEnabled = true
                 } else {

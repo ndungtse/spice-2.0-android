@@ -374,4 +374,6 @@ object DefinedParams {
     const val VIRAL_LOAD = "VIRAL_LOAD"
     const val IS_CD4 = "isCD4"
     const val IS_CD4_PERCENTAGE = "isCD4Percentage"
+    const val Post_Partum = "Post Partum"
+    const val postPartum = "postPartum"
 }

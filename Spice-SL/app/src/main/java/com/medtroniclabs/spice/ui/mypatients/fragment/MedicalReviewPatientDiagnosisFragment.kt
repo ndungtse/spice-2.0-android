@@ -751,6 +751,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                         } else {
                             //  binding.tvPatientStatusValue.text = getPatientStatus(patientStatus.status)
                             binding.tvPatientStatusValue.text = patientStatus.status
+                            patientViewModel.patientCurrentStatus.postValue(patientStatus.status)
                         }
                         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
                             details.id?.let { id ->

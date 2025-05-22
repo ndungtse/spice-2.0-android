@@ -12,6 +12,8 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
+import com.medtroniclabs.spice.common.DefinedParams.Post_Partum
+import com.medtroniclabs.spice.common.DefinedParams.postPartum
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentContraceptivesBinding
@@ -45,6 +47,7 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.PostPartum
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.ProgestinOnlyOrals
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -52,6 +55,7 @@ class ContraceptivesFragment : BaseFragment() {
     private lateinit var binding: FragmentContraceptivesBinding
     private lateinit var iucdTagView: TagListCustomView
     private val viewModel: ContraceptivesViewModel by activityViewModels()
+    private val patientViewModel: PatientDetailViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -89,16 +93,35 @@ class ContraceptivesFragment : BaseFragment() {
                 }
             }
         }
+
+
+        patientViewModel.patientCurrentStatus.observe(viewLifecycleOwner) { status ->
+            initClientType()
+        }
+    }
+
+    private fun initClientType() {
+        viewModel.contraceptiveMetaList.value?.data?.let { metaItems ->
+            if (!binding.ClientTypeRoot.isVisible()){
+                binding.ClientTypeRoot.visible()
+                addCustomView(
+                    getSingleSelectionViewData(metaItems.filter {
+                        it.category.equals(
+                            MedicalReviewTypeEnums.client_type.name,
+                            true
+                        )
+                    }
+                        .sortedBy { it.displayOrder }),
+                    ClientType,
+                    getClientTypeResult(),
+                    clientTypeSelectionCallBack,
+                    binding.ClientTypeRoot
+                )
+            }
+        }
     }
 
     private fun initializeMetaItems(metaList: List<MedicalReviewMetaItems>) {
-        addCustomView(
-            getSingleSelectionViewData(metaList.filter { it.category.equals(MedicalReviewTypeEnums.client_type.name, true) }.sortedBy { it.displayOrder }),
-            ClientType,
-            viewModel.resultHashMap,
-            clientTypeSelectionCallBack,
-            binding.ClientTypeRoot
-        )
 
         addCustomView(
             getSingleSelectionViewData(metaList.filter { it.category.equals(MedicalReviewTypeEnums.combined_oral_contraceptive.name, true) }.sortedBy { it.displayOrder }),
@@ -167,6 +190,20 @@ class ContraceptivesFragment : BaseFragment() {
                 )
             )
             iucdTagView.addChipItemList(chipItemList, viewModel.selectedIUCD)
+        }
+    }
+
+    private fun getClientTypeResult(): HashMap<String, Any> {
+        return patientViewModel.patientCurrentStatus.value?.let {
+            return if (it.contains(Post_Partum, true) && !viewModel.resultHashMap.containsKey(ClientType)) {
+                viewModel.resultHashMap[ClientType] = postPartum
+                enablePostPartumChipView()
+                resultMapChanged()
+                viewModel.resultHashMap
+            } else
+                viewModel.resultHashMap
+        } ?: kotlin.run {
+            viewModel.resultHashMap
         }
     }
 
@@ -249,24 +286,7 @@ class ContraceptivesFragment : BaseFragment() {
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[ClientType] = selectedID as String
             if(selectedID.equals(PostPartum, true)){
-                if (!(binding.tvPostPartum.isVisible())){
-                    binding.tvPostPartum.visible()
-                    viewModel.contraceptiveMetaList.value?.data?.let { metaList ->
-                        addCustomView(
-                            getSingleSelectionViewData(metaList.filter {
-                                it.category.equals(
-                                    MedicalReviewTypeEnums.post_partum.name,
-                                    true
-                                )
-                            }.sortedBy { it.displayOrder }),
-                            PostPartum,
-                            viewModel.resultHashMap,
-                            postPartumSelectionCallBack,
-                            binding.PostPartumRoot
-                        )
-                    }
-                    binding.PostPartumRoot.visible()
-                }
+                enablePostPartumChipView()
             }else{
                 viewModel.resultHashMap.remove(PostPartum)
                 binding.tvPostPartum.gone()
@@ -275,6 +295,27 @@ class ContraceptivesFragment : BaseFragment() {
             }
             resultMapChanged()
         }
+
+    private fun enablePostPartumChipView() {
+        if (!(binding.tvPostPartum.isVisible())){
+            binding.tvPostPartum.visible()
+            viewModel.contraceptiveMetaList.value?.data?.let { metaList ->
+                addCustomView(
+                    getSingleSelectionViewData(metaList.filter {
+                        it.category.equals(
+                            MedicalReviewTypeEnums.post_partum.name,
+                            true
+                        )
+                    }.sortedBy { it.displayOrder }),
+                    PostPartum,
+                    viewModel.resultHashMap,
+                    postPartumSelectionCallBack,
+                    binding.PostPartumRoot
+                )
+            }
+            binding.PostPartumRoot.visible()
+        }
+    }
 
     private var postPartumSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->

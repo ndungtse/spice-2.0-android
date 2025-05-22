@@ -458,6 +458,9 @@ object CommonUtils {
             MedicalReviewTypeEnums.TB.name -> {
                 MedicalReviewTypeEnums.TB.name
             }
+            MedicalReviewTypeEnums.FP.name ->{
+                MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name
+            }
             else -> {
                 null
             }
