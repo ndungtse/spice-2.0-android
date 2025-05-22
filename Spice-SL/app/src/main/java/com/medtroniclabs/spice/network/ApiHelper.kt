@@ -84,6 +84,8 @@ import com.medtroniclabs.spice.data.model.RequestChangePassword
 import com.medtroniclabs.spice.data.model.ResponseChangePassword
 import com.medtroniclabs.spice.data.model.TbHistory
 import com.medtroniclabs.spice.data.model.TbMedicalReviewCreateRequest
+import com.medtroniclabs.spice.data.model.ViralLoadRequest
+import com.medtroniclabs.spice.data.model.ViralLoadResponse
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseSignatureUpload
@@ -96,6 +98,8 @@ import com.medtroniclabs.spice.data.resource.CD4DetailsRequest
 import com.medtroniclabs.spice.data.resource.CD4DetailsResponse
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
+import com.medtroniclabs.spice.model.ARTResponse
+import com.medtroniclabs.spice.model.ArtRequest
 import com.medtroniclabs.spice.model.CultureLocaleModel
 import com.medtroniclabs.spice.model.LabTestCreateRequest
 import com.medtroniclabs.spice.model.LabTestListRequest
@@ -104,6 +108,7 @@ import com.medtroniclabs.spice.model.NcdMRStaticDataModel
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
+import com.medtroniclabs.spice.model.PregnancySummaryRequest
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.RemoveLabTestRequest
@@ -371,6 +376,10 @@ interface ApiHelper {
     suspend fun getFamilyPlanningMRSummaryDetails(request: AboveFiveYearsSummaryRequest): Response<APIResponse<FamilyPlanningSummaryResponse>>
     suspend fun createHivImrCmr(request: HivRequestData): Response<APIResponse<PatientEncounterResponse>>
     suspend fun fetchHivSummaryDetails(request: MotherNeonateAncRequest): Response<APIResponse<HivSummaryResponse>>
+    suspend fun getViralLoadData(request: ViralLoadRequest) : Response<APIResponse<List<ViralLoadResponse>>>
+    suspend fun getARTData(request: ArtRequest) : Response<APIResponse<List<ARTResponse>>>
+
+
     suspend fun getOpportunisticInfection(request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, HashMap<String, String>?>>>
     suspend fun createEMTCT(request: EMTCTVisitStatusRequest): Response<APIResponse<EMTCTVisitStatusResponse>>
     suspend fun getHivVitalsDetails(request: HivVitalsRequest): Response<APIResponse<HivVitalsResponse>>
@@ -378,4 +387,6 @@ interface ApiHelper {
     suspend fun getHivVitalDetails(request: HivVitalDetailsRequest): Response<APIResponse<HivVitalDetailsResponse>>
     suspend fun getHivCD4Details(request: CD4DetailsRequest): Response<APIResponse<ArrayList<CD4DetailsResponse>>>
     suspend fun checkRecommendationInvestigations(request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, Boolean?>?>>
+    suspend fun getPatientSummaryDetails(request: PregnancySummaryRequest) : Response<APIResponse<PregnancyDetailsModel>>
+
 }

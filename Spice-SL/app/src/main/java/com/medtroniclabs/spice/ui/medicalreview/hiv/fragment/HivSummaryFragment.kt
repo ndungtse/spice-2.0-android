@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
@@ -15,11 +16,11 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
-import com.medtroniclabs.spice.data.history.PatientStatus
 import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivScreeningResponse
 import com.medtroniclabs.spice.data.resource.ExaminationResult
@@ -111,16 +112,6 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
             }
         }
 
-        hivViewModel.hivPatientStatusLiveData.observe(viewLifecycleOwner) {
-           it?.map { item ->
-                hashMapOf(
-                    DefinedParams.NAME to item.name,
-                    DefinedParams.Value to (item.value ?: item.name)
-                )
-            }?.let { statusList ->
-                setListenerToDeliveryStatus(ArrayList(statusList)) }
-        }
-
         val swipeRefresh =
             (activity as HivMedicalReviewBaseActivity).findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
         if (swipeRefresh.isRefreshing) {
@@ -129,6 +120,27 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun renderSummaryDetails(response: HivCreateScreeningSummaryResponse) {
+        with(binding) {
+//             Diagnosis Text
+            val diagnosisList = response.diagnosis ?: emptyList()
+            if (diagnosisList.isNotEmpty()) {
+                tvDiagnosesText.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.a_red_error
+                    )
+                )
+            }
+            tvDiagnosesText.text = diagnosisList
+                .filter {
+                    it.diseaseCategory.lowercase() != DefinedParams.OtherNotes.lowercase()
+                }
+                .map { it.diseaseCategory }
+                .distinct()
+                .takeIf { it.isNotEmpty() }
+                ?.let { CommonUtils.convertListToString(ArrayList(it)) }
+                ?: getString(R.string.hyphen_symbol)
+        }
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
             SecuredPreference.getUserDetails()?.firstName,
@@ -143,9 +155,58 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         binding.tvA2TestText.text = response.a2TestResult?.takeIf { it.isNotEmpty() } ?: "-"
         binding.tvA3TestText.text = response.a3TestResult?.takeIf { it.isNotEmpty() } ?: "-"
         binding.tvEntryPointText.text = response.entryPoint?.takeIf { it.isNotEmpty() } ?: "-"
-        binding.tvHivSyphilisText?.text = response.hivSyphilisDuoTest?.takeIf { it.isNotEmpty() } ?: "-"
+        binding.tvHivSyphilisText.text =
+            response.hivSyphilisDuoTest?.takeIf { it.isNotEmpty() } ?: "-"
+        binding.tvHbsgText.text =
+            response.hbsAGTest?.takeIf { it.isNotEmpty() } ?: "-"
+        binding.tvClinicalNotesText.text =  response.clinicalNotes?.takeIf { it.isNotEmpty() } ?: "-"
 
+        // Prescription
+        binding.tvPrescrptionText.text = response.prescriptions
+            ?.let { CommonUtils.createPrescription(it, requireContext()) }
+            ?.takeIf { it.isNotEmpty() }
+            ?: getString(R.string.hyphen_symbol)
+
+        // Investigation
+        binding.tvInvestigationText.text = response.investigations
+            ?.let { CommonUtils.createInvestigation(it, requireContext()) }
+            ?.takeIf { it.isNotEmpty() }
+            ?: getString(R.string.hyphen_symbol)
+        val dropDownList = ArrayList<Map<String, Any>>()
+        val (test1, test2, test3) = if (response.hbsAGTest.isNullOrEmpty())
+            Triple(response.a1TestResult, response.a2TestResult, response.a3TestResult)
+        else
+            Triple(response.hbsAGTest, response.a2TestResult, response.a3TestResult)
+
+        val nextVisitType = getTestResultStatus(test1, test2, test3)
+
+        binding.tvNextMedicalReviewLabelText.text = when (nextVisitType) {
+            1 -> DateUtils.getFormattedDateAfterMonths(1)
+            2 -> DateUtils.getFormattedDateAfterDays(14)
+            else -> ""
+        }
+        hivViewModel.nextVisitDate = binding.tvNextMedicalReviewLabelText.text.toString().trim()
+        if (!response.summaryStatus.isNullOrEmpty()) {
+            for (item in response.summaryStatus) {
+                dropDownList.add(
+                    hashMapOf<String, Any>(
+                        DefinedParams.NAME to item.name,
+                        DefinedParams.Value to item.value
+                    )
+                )
+            }
+            setListenerToDeliveryStatus(dropDownList)
+        }
         renderSymptoms(response)
+    }
+    private fun getTestResultStatus(a1: String?, a2: String?, a3: String?): Int {
+        val testResults = listOf(a1, a2, a3)
+
+        return when {
+            testResults.all { it.equals(getString(R.string.reactive), ignoreCase = true) } -> 1
+            testResults.any { it.equals(getString(R.string.inconclusive), ignoreCase = true) } -> 2
+            else -> 3
+        }
     }
 
     private fun renderSymptoms(response: HivCreateScreeningSummaryResponse) {
@@ -208,10 +269,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
 
-
-
     private fun setListenerToDeliveryStatus(list: ArrayList<Map<String, Any>>) {
-
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(list)
         var defaultPosition = 0
@@ -255,7 +313,14 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun updateNextFollowUpDate() {
-        if (hivViewModel.selectedPatientStatus?.equals(ReferralStatus.Recovered.name, true) == true ||hivViewModel.selectedPatientStatus?.equals(ReferralStatus.Died.name, true) == true ) {
+        if (hivViewModel.selectedPatientStatus?.equals(
+                ReferralStatus.Recovered.name,
+                true
+            ) == true || hivViewModel.selectedPatientStatus?.equals(
+                ReferralStatus.Died.name,
+                true
+            ) == true
+        ) {
             if (hivViewModel.nextVisitDate != null) {
                 hivViewModel.nextVisitDate = null
                 binding.tvNextMedicalReviewLabelText.text = ""

@@ -64,7 +64,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                app:constraint_referenced_ids="tvFundalHeightError,tvFundalHeight,tvFetalHeartRateError, tvFetalHeartReate,etFetalHeartRate,etFundalHeight" />
+                app:constraint_referenced_ids="tvFundalHeight,, tvFetalHeartReate,etFetalHeartRate,etFundalHeight" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvFundalHeight"

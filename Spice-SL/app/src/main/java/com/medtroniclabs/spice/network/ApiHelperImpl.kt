@@ -84,6 +84,8 @@ import com.medtroniclabs.spice.data.model.RequestChangePassword
 import com.medtroniclabs.spice.data.model.ResponseChangePassword
 import com.medtroniclabs.spice.data.model.TbHistory
 import com.medtroniclabs.spice.data.model.TbMedicalReviewCreateRequest
+import com.medtroniclabs.spice.data.model.ViralLoadRequest
+import com.medtroniclabs.spice.data.model.ViralLoadResponse
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseSignatureUpload
@@ -96,6 +98,8 @@ import com.medtroniclabs.spice.data.resource.CD4DetailsRequest
 import com.medtroniclabs.spice.data.resource.CD4DetailsResponse
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
+import com.medtroniclabs.spice.model.ARTResponse
+import com.medtroniclabs.spice.model.ArtRequest
 import com.medtroniclabs.spice.model.CultureLocaleModel
 import com.medtroniclabs.spice.model.LabTestCreateRequest
 import com.medtroniclabs.spice.model.LabTestListRequest
@@ -104,6 +108,7 @@ import com.medtroniclabs.spice.model.NcdMRStaticDataModel
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
+import com.medtroniclabs.spice.model.PregnancySummaryRequest
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.RemoveLabTestRequest
@@ -851,6 +856,13 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.fetchHivSummaryDetails(request)
     }
 
+    override suspend fun getViralLoadData(request: ViralLoadRequest): Response<APIResponse<List<ViralLoadResponse>>> {
+        return apiService.getViralLoadData(request)
+    }
+    override suspend fun getARTData(request: ArtRequest): Response<APIResponse<List<ARTResponse>>> {
+        return apiService.getARTData(request)
+    }
+
     override suspend fun getOpportunisticInfection(request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, HashMap<String, String>?>>> {
         return apiService.getOpportunisticInfection(request)
     }
@@ -874,6 +886,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun getHivCD4Details(request: CD4DetailsRequest): Response<APIResponse<ArrayList<CD4DetailsResponse>>> {
         return apiService.getHivCD4Details(request)
+    }
+    override suspend fun getPatientSummaryDetails(request: PregnancySummaryRequest): Response<APIResponse<PregnancyDetailsModel>> {
+        return apiService.getPatientSummaryDetails(request)
     }
 
     override suspend fun checkRecommendationInvestigations(request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, Boolean?>?>> {

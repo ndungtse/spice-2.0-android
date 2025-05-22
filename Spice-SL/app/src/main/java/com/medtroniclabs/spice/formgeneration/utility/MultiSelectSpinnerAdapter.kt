@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.formgeneration.utility
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,7 +57,7 @@ class MultiSelectSpinnerAdapter(
         val textView = view.findViewById<TextView>(R.id.spin_txt)
 
         if (isDropDown) {
-            val checkBox = view.findViewById<CheckBox>(R.id.spinnerCheckbox)
+            var checkBox = view.findViewById<CheckBox>(R.id.spinnerCheckbox)
             val itemName = view.findViewById<TextView>(R.id.itemName)
 
             itemName.text = items[position].displayValue ?: items[position].name

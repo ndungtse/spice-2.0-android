@@ -9,7 +9,10 @@ import android.widget.AdapterView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.switchMap
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.setVisible
@@ -20,6 +23,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.HivSummaryResponse
 import com.medtroniclabs.spice.data.model.TbHistory
 import com.medtroniclabs.spice.databinding.FragmentTbSummaryBinding
@@ -32,6 +36,8 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.medicalreview.hiv.activity.HivImrAndCmrActivity
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivImrCmrSummaryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.emtct.activity.MotherNeonateEMTCTActivity
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,14 +46,18 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentTbSummaryBinding
     val adapter: CustomSpinnerAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
+    val adapterEmtctStatus: CustomSpinnerAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
+    val adapterMaternalOutcome: CustomSpinnerAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
     val patientViewModel: PatientDetailViewModel by activityViewModels()
     private var encounterId: String? = null
     private var fhirId: String? = null
+    private var isEMTCTMR: Boolean = false
     private var datePickerDialog: DatePickerDialog? = null
     val viewModel: HivImrCmrSummaryViewModel by activityViewModels()
-    fun setIds(encounterId: String?, fhirId: String?) {
+    fun setIds(encounterId: String?, fhirId: String?, isEMTCTMR: Boolean) {
         this.encounterId = encounterId
         this.fhirId = fhirId
+        this.isEMTCTMR = isEMTCTMR
     }
 
     override fun onCreateView(
@@ -64,9 +74,9 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
         fun newInstance() =
             HivImrCmrSummaryFragment()
 
-        fun newInstance(encounterId: String?, fhirId: String?): HivImrCmrSummaryFragment {
+        fun newInstance(encounterId: String?, fhirId: String?, isEMTCTMR: Boolean = false): HivImrCmrSummaryFragment {
             val fragment = HivImrCmrSummaryFragment()
-            fragment.setIds(encounterId = encounterId, fhirId = fhirId)
+            fragment.setIds(encounterId = encounterId, fhirId = fhirId ,isEMTCTMR =isEMTCTMR)
             return fragment
         }
     }
@@ -102,6 +112,8 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
         binding.tvDiagnosesLabel.text = getText(R.string.diagnosis_tb)
         binding.tvComborbiditiesLabel.text = getString(R.string.comorbidities_coinfections)
         views.forEach { it.setVisible(false) }
+        viewModel.getEmtctStatusByCategory(DefinedParams.emtctVisitStatus)
+        viewModel.getMaternalStatusByCategory(MedicalReviewTypeEnums.maternal_outcome.name)
     }
 
     private fun attachObserver() {
@@ -123,6 +135,32 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
                 }
             }
         }
+        viewModel.hivEmtctStatusLiveData.observe(viewLifecycleOwner) {
+            it?.map { item ->
+                hashMapOf(
+                    DefinedParams.NAME to item.name,
+                    DefinedParams.Value to (item.value ?: item.name)
+                )
+            } ?.distinctBy { it[DefinedParams.Value] } // Ensure uniqueness by Value
+                ?.let { uniqueStatusList ->
+                    viewModel.statusSpinner = ArrayList(uniqueStatusList)
+                    setEmtctStatusSpinner()
+                }
+        }
+
+        viewModel.hivMaternalStatusLiveData.observe(viewLifecycleOwner) {
+            it?.map { item ->
+                hashMapOf(
+                    DefinedParams.NAME to item.name,
+                    DefinedParams.Value to (item.value ?: item.name)
+                )
+            } ?.distinctBy { it[DefinedParams.Value] } // Ensure uniqueness by Value
+                ?.let { statusList ->
+                    viewModel.maternalOutcomeMap = ArrayList(statusList)
+                    setMaternalOutcomeSpinner()
+                }
+        }
+
     }
 
     private fun populate(data: HivSummaryResponse) {
@@ -147,6 +185,14 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
                 ?.let { CommonUtils.convertListToString(ArrayList(it)) }
                 ?: getString(R.string.hyphen_symbol)
 
+            if (isEMTCTMR){
+                tvSiteLabel.visible()
+                tvSiteLabel.text = getString(R.string.anc)
+                tvSiteSeparator.visible()
+                tvSiteText.visible()
+                tvSiteText.text = "1"
+                eMTCTSummaryGroup.visible()
+            }
             // Presenting Complaints
             tvPresentingText.setExpandableText(
                 fullText = CommonUtils.combineText(
@@ -253,6 +299,59 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
                             viewModel.patientStatus = null
                         }
                         showHideNextVisit()
+                        setMaternalOutcomeSpinner()
+                        setEmtctStatusSpinner()
+                    }
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    /**
+                     * this method is not used
+                     */
+                }
+
+            }
+    }
+    private fun setEmtctStatusSpinner() {
+        var statusList =viewModel.statusSpinner
+        adapterEmtctStatus.setData(statusList)
+        binding.tvEmtctVisitStatusText.adapter = adapterEmtctStatus
+        val isPatientDied = viewModel.patientStatus.equals(getString(R.string.died), ignoreCase = true)
+        val defaultPosition = if (isPatientDied) {
+            statusList.indexOfFirst {
+                val value = it[DefinedParams.Value] as? String
+                value.equals(getString(R.string.d_dead), ignoreCase = true)
+            }.takeIf { it != -1 } ?: 0
+        } else {
+            // Optional: If not died, try to retain previously selected eMTCTStatus
+            statusList.indexOfFirst {
+                val value = it[DefinedParams.Value] as? String
+                value.equals(viewModel.eMTCTStatus, ignoreCase = true)
+            }.takeIf { it != -1 } ?: 0
+        }
+        // Set selection AFTER adapter is attached
+        binding.tvEmtctVisitStatusText.post {
+            binding.tvEmtctVisitStatusText.setSelection(defaultPosition, false)
+        }
+        // Disable the spinner if "Died"
+        binding.tvEmtctVisitStatusText.isEnabled = !isPatientDied
+        binding.tvEmtctVisitStatusText.isClickable = !isPatientDied
+        binding.tvEmtctVisitStatusText.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long
+                ) {
+                    val selectedItem = adapterEmtctStatus.getData(position = pos)
+                    selectedItem?.let {
+                        val selectedPatientStatus = it[DefinedParams.Value] as String?
+                        selectedPatientStatus?.let {
+                            viewModel.eMTCTStatus = selectedPatientStatus
+                        } ?: kotlin.run {
+                            viewModel.eMTCTStatus = null
+                        }
                     }
                 }
 
@@ -263,6 +362,58 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
                 }
             }
     }
+
+    private fun setMaternalOutcomeSpinner() {
+        var statusList =viewModel.maternalOutcomeMap
+        adapterMaternalOutcome.setData(statusList)
+        val isPatientDied = viewModel.patientStatus.equals(getString(R.string.died), ignoreCase = true)
+        val defaultPosition = if (isPatientDied) {
+            statusList.indexOfFirst {
+                val value = it[DefinedParams.Value] as? String
+                value.equals("D-Dead", ignoreCase = true)
+            }.takeIf { it != -1 } ?: 0
+        } else {
+            // Optional: If not died, try to retain previously selected eMTCTStatus
+            statusList.indexOfFirst {
+                val value = it[DefinedParams.Value] as? String
+                value.equals(viewModel.eMTCTStatus, ignoreCase = true)
+            }.takeIf { it != -1 } ?: 0
+        }
+        binding.tvMaternalOutcomeText.post {
+            binding.tvMaternalOutcomeText.setSelection(defaultPosition, false)
+        }
+        binding.tvMaternalOutcomeText.adapter = adapterMaternalOutcome
+        // Disable the spinner if "Died"
+        binding.tvMaternalOutcomeText.isEnabled = !isPatientDied
+        binding.tvMaternalOutcomeText.isClickable = !isPatientDied
+        binding.tvMaternalOutcomeText.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long
+                ) {
+                    val selectedItem = adapter.getData(position = pos)
+                    selectedItem?.let {
+                        val selectedPatientStatus = it[DefinedParams.Value] as String?
+                        selectedPatientStatus?.let {
+                            viewModel.maternalOutcome = selectedPatientStatus
+                        } ?: kotlin.run {
+                            viewModel.maternalOutcome = null
+                        }
+                        showHideNextVisit()
+                    }
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    /**
+                     * this method is not used
+                     */
+                }
+            }
+    }
+
 
     private fun showHideNextVisit() {
         if (viewModel.patientStatus?.equals(ReferralStatus.Recovered.name, true) == true || viewModel.patientStatus?.equals(ReferralStatus.Died.name, true) == true) {
@@ -276,6 +427,12 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
         (requireActivity() as? HivImrAndCmrActivity)?.enableRefer(
             !viewModel.patientStatus.equals(ReferralStatus.Died.name, true)
         )
+        if (isEMTCTMR){
+            (requireActivity() as? MotherNeonateEMTCTActivity)?.enableRefer(
+                !viewModel.patientStatus.equals(ReferralStatus.Died.name, true)
+            )
+        }
+
     }
 
     private fun showDatePickerDialog() {

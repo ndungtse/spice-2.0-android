@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.databinding.FragmentHivTestBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
+import com.medtroniclabs.spice.formgeneration.extension.markNonMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
@@ -101,6 +102,8 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
         val isEmtct = arguments?.getBoolean(DefinedParams.EMTCT, false)
         if (isEmtct == true){
             binding.forEmtct.visible()
+            binding.forA3.gone()
+            binding.tvHBsAgTestResult.markMandatory()
         }else{
             binding.tvA1TestResult.markMandatory()
         }
@@ -120,9 +123,10 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     hideProgress()
+                    val isEmtct = arguments?.getBoolean(DefinedParams.EMTCT, false)
                     resourceState.data?.let { list ->
                         initializeEntryPointOptions(
-                            list.filter { it.category == MedicalReviewTypeEnums.entry_point.name }
+                            list.filter { it.category == if(isEmtct ==true) MedicalReviewTypeEnums.emtctEntryPoint.name else MedicalReviewTypeEnums.entry_point.name }
                                 .sortedBy { it.displayOrder }
                         )
                     }
@@ -254,8 +258,7 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                 resetSelectionViews(A3_TEST_RESULT)
                 binding.tvA2TestResult.gone()
                 binding.llA2TestResultRoot.gone()
-                binding.tvA3TestResult.gone()
-                binding.llA3TestResultRoot.gone()
+                binding.forA3.gone()
             }
         }
     private var A1TestCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
@@ -282,9 +285,10 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                 hivViewModel.resultHashMap[A2_TEST_RESULT] = selectedID as String
                 testResultVisibility(A2_TEST_RESULT)
                 resultMapChanged()
-                if (!hivViewModel.resultHashMap[A1_TEST_RESULT]?.toString()
+                if (!hivViewModel.resultHashMap[A2_TEST_RESULT]?.toString()
                         .equals(getString(R.string.reactive), true)
-                ) {
+                    || !hivViewModel.resultHashMap[A1_TEST_RESULT]?.toString()
+                        .equals(getString(R.string.reactive), true)) {
                     hivViewModel.resultHashMap.remove(A3_TEST_RESULT)
                     resetSelectionViews(A3_TEST_RESULT)
                 }
@@ -338,15 +342,30 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
     fun validation(): Boolean {
         var isValid = true
         val a1TestResult = hivViewModel.resultHashMap[A1_TEST_RESULT] as? String
-        val isMandatory = binding.tvA1TestResult.text.toString().endsWith("*")
-        if (isMandatory) {
-            if (!a1TestResult.isNullOrEmpty()) {
-                binding.tvA1TestResultError.gone()
-            } else {
-                binding.tvA1TestResultError.visible()
+        val a2TestResult = hivViewModel.resultHashMap[A2_TEST_RESULT] as? String
+        val a3TestResult = hivViewModel.resultHashMap[A3_TEST_RESULT] as? String
+        val hbsgTestResult = hivViewModel.resultHashMap[HBsAg] as? String
+        val isEmtct = arguments?.getBoolean(DefinedParams.EMTCT, false)
+
+        val testCases = mutableListOf<Triple<Float, String?, View>>().apply {
+            add(Triple(binding.tvA1TestResult.alpha, a1TestResult, binding.tvA1TestResultError))
+            add(Triple(binding.tvA2TestResult.alpha, a2TestResult, binding.tvA2TestResultError))
+            if (isEmtct == true) {
+                add(Triple(binding.tvHBsAgTestResult.alpha, hbsgTestResult, binding.tvHBsAgTestResultError))
+            } else if (binding.tvA3TestResult.alpha == 1.0f && binding.tvA3TestResult.visibility == View.VISIBLE) {
+                add(Triple(binding.tvA3TestResult.alpha, a3TestResult, binding.tvA3TestResultError))
+            }
+        }
+
+        for ((alpha, result, errorView) in testCases) {
+            if (alpha == 1.0f && result.isNullOrEmpty()) {
+                errorView.visible()
                 isValid = false
             }
         }
+
+
+
         return isValid
     }
 
@@ -383,6 +402,13 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                     binding.tvA2TestResult.updateState(false, false, if (isA1Reactive) 1.0f else 0.5f, true)
                     binding.llA3TestResultRoot.updateState(alpha = 0.5f, visible = isA1Reactive)
                     binding.tvA3TestResult.updateState(alpha = 0.5f, visible = isA1Reactive)
+                    if (isEnabled) {
+                        binding.tvA2TestResult.markNonMandatory()
+                        binding.tvA3TestResult.markNonMandatory()
+                    }else{
+                        binding.tvA2TestResult.markMandatory()
+                    }
+
                 }
 
                 A2_TEST_RESULT -> {
@@ -390,6 +416,12 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                     val isEnabled = isA2Reactive
                     binding.llA3TestResultRoot.updateState(isEnabled, isEnabled, if (isEnabled) 1.0f else 0.5f, show)
                     binding.tvA3TestResult.updateState(false, false, if (isEnabled) 1.0f else 0.5f, show)
+
+                    if (!isEnabled) {
+                        binding.tvA3TestResult.markNonMandatory()
+                    }else{
+                        binding.tvA3TestResult.markMandatory()
+                    }
                 }
 
                 else -> {
@@ -410,6 +442,11 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                     setAlpha(binding.tvA1TestResult, isHBsAgReactive)
                     binding.llA2TestResultRoot.updateState(alpha = 0.5f, visible = true)
                     binding.tvA2TestResult.updateState(alpha = 0.5f, visible = true)
+                    if (isHBsAgReactive) {
+                        binding.tvA1TestResult.markMandatory()
+                    }else{
+                        binding.tvA1TestResult.markNonMandatory()
+                    }
                 }
 
                 A1_TEST_RESULT -> {
@@ -418,6 +455,11 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                     binding.tvA2TestResult.updateState(false, false, if (isA1Reactive) 1.0f else 0.5f, isHBsAgReactive)
                     binding.llA3TestResultRoot.updateState(alpha = 0.5f, visible = true)
                     binding.tvA3TestResult.updateState(alpha = 0.5f, visible = true)
+                    if (isA1Reactive) {
+                        binding.tvA2TestResult.markMandatory()
+                    }else{
+                        binding.tvA3TestResult.markNonMandatory()
+                    }
                 }
 
                 A2_TEST_RESULT -> {

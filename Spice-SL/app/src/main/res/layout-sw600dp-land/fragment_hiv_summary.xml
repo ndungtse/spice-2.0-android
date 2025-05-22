@@ -462,6 +462,120 @@
                 android:layout_height="wrap_content"
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="tvEntryPointLabel,tvEntryPointError" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvClinicalNotes"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="@string/clinical_notes"
+                app:layout_constraintEnd_toStartOf="@id/tvClinicalNotesSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/barrier1" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvClinicalNotesSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvClinicalNotesText"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/tvClinicalNotes"
+                app:layout_constraintTop_toTopOf="@id/tvClinicalNotes" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvClinicalNotesText"
+                style="@style/TextStyle_Regular_16_Bold"
+                android:textColor="@color/grey_black"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/seperator_hyphen"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvClinicalNotesSeparator"
+                app:layout_constraintTop_toTopOf="@id/tvClinicalNotes" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvInvestigationLabel"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="@string/investigation"
+                app:layout_constraintEnd_toStartOf="@id/tvInvestigationSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/tvClinicalNotesText" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvInvestigationSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvInvestigationText"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/tvInvestigationLabel"
+                app:layout_constraintTop_toTopOf="@id/tvInvestigationLabel" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvInvestigationText"
+                style="@style/TextStyle_Regular_16_Bold"
+                android:layout_width="@dimen/_0dp"
+                android:text="@string/seperator_hyphen"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvInvestigationSeparator"
+                app:layout_constraintTop_toTopOf="@id/tvInvestigationLabel" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrierTens"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="tvInvestigationText, tvInvestigationLabel" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvPrescrptionlabel"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="@string/prescription"
+                app:layout_constraintEnd_toStartOf="@id/tvPrescrptionSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/barrierTens" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvPrescrptionSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvPrescrptionText"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/tvPrescrptionlabel"
+                app:layout_constraintTop_toTopOf="@id/tvPrescrptionlabel" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvPrescrptionText"
+                style="@style/TextStyle_Regular_16_Bold"
+                android:layout_width="@dimen/_0dp"
+                android:lineSpacingExtra="@dimen/_12sdp"
+                android:text="@string/seperator_hyphen"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvPrescrptionSeparator"
+                app:layout_constraintTop_toTopOf="@id/tvPrescrptionlabel" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barriers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="tvPrescrptionlabel, tvPrescrptionText" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvNextMedicalReviewLabel"
@@ -472,7 +586,7 @@
                 app:layout_constraintEnd_toStartOf="@id/tvNextMedicalReviewSeparator"
                 app:layout_constraintHorizontal_weight="0.3"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
-                app:layout_constraintTop_toBottomOf="@id/barrier1" />
+                app:layout_constraintTop_toBottomOf="@id/barriers" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvNextMedicalReviewSeparator"
@@ -481,9 +595,9 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:text="@string/separator_colon"
-                app:layout_constraintEnd_toEndOf="@id/tvA2TestSeparator"
+                app:layout_constraintEnd_toStartOf="@id/tvNextMedicalReviewLabelText"
                 app:layout_constraintHorizontal_weight="0.05"
-                app:layout_constraintStart_toStartOf="@id/tvA2TestSeparator"
+                app:layout_constraintStart_toEndOf="@id/tvNextMedicalReviewLabel"
                 app:layout_constraintTop_toTopOf="@id/tvNextMedicalReviewLabel" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -506,7 +620,7 @@
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
                 app:layout_constraintStart_toEndOf="@id/tvNextMedicalReviewSeparator"
-                app:layout_constraintTop_toTopOf="@id/barrier1" />
+                app:layout_constraintTop_toTopOf="@id/barriers" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvNextMedicalReviewError"

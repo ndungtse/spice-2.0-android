@@ -118,7 +118,7 @@ class SystemicExaminationsFragment : BaseFragment() {
                     resource.data?.let { listItems ->
                         val chipItemList = ArrayList<ChipViewItemModel>()
                         val category =
-                            if (viewModel.systemicExaminationsType == MedicalReviewTypeEnums.ANC_REVIEW.name) MedicalReviewTypeEnums.ObstetricExaminations.name else MedicalReviewTypeEnums.SystemicExaminations.name
+                            if (viewModel.systemicExaminationsType == MedicalReviewTypeEnums.ANC_REVIEW.name) {MedicalReviewTypeEnums.ObstetricExaminations.name }else if (viewModel.systemicExaminationsType == MedicalReviewTypeEnums.HIV.name){MedicalReviewTypeEnums.obstetricExaminations.name}  else MedicalReviewTypeEnums.SystemicExaminations.name
                         listItems.filter { it.category == category }.forEach {
                             chipItemList.add(
                                 ChipViewItemModel(

@@ -10,18 +10,27 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
 import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryResponse
+import com.medtroniclabs.spice.data.model.HivRequestData
 import com.medtroniclabs.spice.data.model.HivScreeningRequest
 import com.medtroniclabs.spice.data.model.HivScreeningResponse
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
+import com.medtroniclabs.spice.data.model.PatientEncounterResponse
+import com.medtroniclabs.spice.data.model.ViralLoadRequest
+import com.medtroniclabs.spice.data.model.ViralLoadResponse
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.data.resource.CD4DetailsRequest
 import com.medtroniclabs.spice.data.resource.CD4DetailsResponse
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.model.ARTResponse
+import com.medtroniclabs.spice.model.ArtRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.model.PatientsDataModel
+import com.medtroniclabs.spice.model.PregnancySummaryRequest
 import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusRequest
 import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusResponse
 import com.medtroniclabs.spice.model.medicalreview.HivVitalsRequest
@@ -81,6 +90,17 @@ class HivViewModel @Inject constructor(
     var isViralLoad = false
     var isARTRegimen = false
     val hivCD4DetailLiveData = MutableLiveData<Resource<ArrayList<CD4DetailsResponse>>>()
+    val getViralLoadLiveData = MutableLiveData<Resource<List<ViralLoadResponse>>>()
+    val getARTLiveData = MutableLiveData<Resource<List<ARTResponse>>>()
+    val hivCreateResponse = MutableLiveData<Resource<PatientEncounterResponse>>()
+    var isEMTCTMR =  false
+    val getPatientSummaryDetails = MutableLiveData<Resource<PregnancyDetailsModel>>()
+    var cd4Value: String? = null
+    var whovalue: String? = null
+    var emtctVisitStatus: String? = null
+    var ancVisit = -1
+
+
 
     fun getHivMetaData() {
         viewModelScope.launch(dispatcherIO) {
@@ -105,7 +125,9 @@ class HivViewModel @Inject constructor(
         haveHivTestTestedBeforePair: Pair<String?, String?>,
         hivTestResult: Triple<String?, String?, String?>,
         entryPoint: String?,
-        hivEmtctResult: Pair<String, String>
+        hivEmtctResult: Pair<String, String>,
+        clinicalNotes: String,
+        encounterId:String?
     ) {
         viewModelScope.launch(dispatcherIO) {
             val currentTime =
@@ -120,7 +142,7 @@ class HivViewModel @Inject constructor(
                             startTime = currentTime,
                             endTime = currentTime,
                             householdId = patientListRespModel.houseHoldId,
-                            id = patientListRespModel.id,
+                            id = encounterId,
                             latitude = lastLocation?.latitude ?: 0.0,
                             longitude = lastLocation?.longitude ?: 0.0,
                             memberId = patientListRespModel.memberId,
@@ -138,7 +160,9 @@ class HivViewModel @Inject constructor(
                         expectedDateOfDelivery = expectedDateOfDelivery,
                         hivSyphilisDuoTest = hivEmtctResult.first,
                         hbsAGTest = hivEmtctResult.second,
-                        screeningType = if(isEMTCT) DefinedParams.EMTCT_HIV_MEDICAL_SCREENING else DefinedParams.HIV_MEDICAL_SCREENING
+                        screeningType = if(isEMTCT) DefinedParams.EMTCT_HIV_MEDICAL_SCREENING else DefinedParams.HIV_MEDICAL_SCREENING,
+                        clinicalNotes =  clinicalNotes,
+                        id = encounterId
                     )
                 )
             )
@@ -176,7 +200,7 @@ class HivViewModel @Inject constructor(
 
     val hivEmtctStatusLiveData: LiveData<List<MedicalReviewMetaItems>> =
         getHivEmtctStatusMeta.switchMap {
-            repository.getHivPatientStatus(it, MedicalReviewTypeEnums.HIV_REVIEW.name)
+            repository.getHivPatientStatus(it, MedicalReviewTypeEnums.HIV.name)
         }
 
 
@@ -216,5 +240,56 @@ class HivViewModel @Inject constructor(
             )
         }
     }
+
+    fun getViralLoadData(patientReference: String?, memberReference: String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getViralLoadLiveData.postLoading()
+            val request = ViralLoadRequest(
+                patientReference = patientReference,
+                memberReference = memberReference
+            )
+            getViralLoadLiveData.postValue(repository.getViralLoadData(request))
+        }
+    }
+    fun getARTData(
+        patientReference: String?,
+        isActive: Boolean,
+        limit: Int,
+        category: String
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getARTLiveData.postLoading()
+            val request = ArtRequest(
+                patientReference = patientReference,
+                isActive = isActive,
+                limit = limit,
+                category = category
+            )
+            getARTLiveData.postValue(repository.getARTData(request))
+        }
+    }
+    fun hivCreate(request: HivRequestData) {
+        viewModelScope.launch(dispatcherIO) {
+            try {
+                hivCreateResponse.postLoading()
+                hivCreateResponse.postValue(repository.saveHIVMedicalReview(request))
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+    fun getPatientSummaryDetails(patientReference: String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getPatientSummaryDetails.postLoading()
+            var pregnancySummaryReq= PregnancySummaryRequest(patientReference)
+            getPatientSummaryDetails.postValue(
+                repository.getPatientSummaryDetails(
+                    pregnancySummaryReq
+                )
+            )
+        }
+    }
+
+
 
 }

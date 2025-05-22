@@ -69,14 +69,19 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             return SelectFlowDialog()
         }
 
-        fun newInstance(patientId: String?, id: String?,childPatientId:String?,dateOfDelivery:String?,neonateOutcome:String?): SelectFlowDialog {
+        fun newInstance(patientId: String?, id: String?,childPatientId:String?,dateOfDelivery:String?,neonateOutcome:String?,memberId: String?,
+                        isEMTCTFlow: Boolean?,
+                        hivTestedPositive: Boolean?): SelectFlowDialog {
             val fragment = SelectFlowDialog()
             val bundle = Bundle()
-            bundle.putString(PatientId, patientId)
-            bundle.putString(ID, id)
+            bundle.putString(DefinedParams.PatientId, patientId)
+            bundle.putString(DefinedParams.ID, id)
             bundle.putString(DefinedParams.ChildPatientId,childPatientId)
             bundle.putString(DefinedParams.DateOfDelivery,dateOfDelivery)
             bundle.putString(DefinedParams.NeonateOutcome,neonateOutcome)
+            bundle.putString(  MemberID,memberId)
+            bundle.putBoolean(DefinedParams.EMTCT, isEMTCTFlow == true )
+            bundle.putBoolean(DefinedParams.hivTestedPositive,hivTestedPositive == true )
             fragment.arguments = bundle
             return fragment
         }
@@ -135,7 +140,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             if (connectivityManager.isNetworkAvailable()) {
                 launchActivity()
             }
-           if(viewModel.resultANCFlowHashMap[TAG] != getString(R.string.emtct) ) {
+           if(viewModel.resultANCFlowHashMap[TAG] != getString(R.string.anc) ) {
                dismiss()
            }
         }
@@ -143,14 +148,56 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
     private fun launchActivity() {
         when (viewModel.resultANCFlowHashMap[TAG]) {
             getString(R.string.anc) -> {
-                val patientId = arguments?.getString(PatientId, "")
-                val id = arguments?.getString(ID, "")
-                val intent = Intent(requireContext(), MotherNeonateANCActivity::class.java)
-                if (patientId?.isNotBlank() == true) {
-                    intent.putExtra(PatientId, patientId)
-                    intent.putExtra(ID, id)
+                // if hivtestpositive true -> emtct mr
+                // if hivtestpositive false -> isEMtctflow true -> Selection dialog else -> ANC
+                if(arguments?.getBoolean(DefinedParams.hivTestedPositive,false) ==  true){
+                    val patientId = arguments?.getString(DefinedParams.PatientId, "")
+                    val id = arguments?.getString(DefinedParams.ID, "")
+                    val memberId = arguments?.getString(MemberID, "")
+                    val intent =
+                        Intent(requireContext(), MotherNeonateEMTCTActivity::class.java)
+                    if (patientId?.isNotBlank() == true) {
+                        intent.putExtra(PatientId, patientId)
+                        intent.putExtra(ID, id)
+                        intent.putExtra(MemberID,memberId)
+                        intent.putExtra(EMTCT, true)
+                        intent.putExtra(PatientId, patientId)
+                        intent.putExtra(ID, id)
+                        intent.putExtra(EMTCT, true)
+                    }
+                    startActivity(intent)
+                    dismiss()
+                }else{
+                    if (arguments?.getBoolean(DefinedParams.EMTCT,false) ==  true){
+                        binding.selectionGroup.removeAllViews()
+                        viewModel.isEMTCT =true
+                        getPositiveType().let {
+                            val view = SingleSelectionCustomView(requireContext())
+                            view.tag = TAG
+                            view.addViewElements(
+                                it,
+                                SecuredPreference.getIsTranslationEnabled(),
+                                viewModel.resultANCFlowHashMap,
+                                Pair(TAG, null),
+                                FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
+                                singleSelectionCallback
+                            )
+
+                            binding.selectionGroup.addView(view)
+                        }
+                        selectType()
+                        dismiss()
+                    }else {
+                        val patientId = arguments?.getString(PatientId, "")
+                        val id = arguments?.getString(ID, "")
+                        val intent = Intent(requireContext(), MotherNeonateANCActivity::class.java)
+                        if (patientId?.isNotBlank() == true) {
+                            intent.putExtra(PatientId, patientId)
+                            intent.putExtra(ID, id)
+                        }
+                        startActivity(intent)
+                    }
                 }
-                startActivity(intent)
             }
 
             getString(R.string.pnc) -> {
@@ -193,34 +240,18 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             }
 
             getString(R.string.emtct)->{
-                binding.selectionGroup.removeAllViews()
-                val isPregnant = arguments?.getBoolean(DefinedParams.isPregnant,false)
-                viewModel.isEMTCT =true
-                getPositiveType().let {
-                    val view = SingleSelectionCustomView(requireContext())
-                    view.tag = TAG
-                    view.addViewElements(
-                        it,
-                        SecuredPreference.getIsTranslationEnabled(),
-                        viewModel.resultANCFlowHashMap,
-                        Pair(TAG, null),
-                        FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                        singleSelectionCallback
-                    )
-
-                    binding.selectionGroup.addView(view)
-                }
-
             }
             getString(R.string.yes)-> {
                 if (viewModel.isEMTCT) {
-                    val patientId = arguments?.getString(PatientId, "")
-                    val id = arguments?.getString(ID, "")
+                    val patientId = arguments?.getString(DefinedParams.PatientId, "")
+                    val id = arguments?.getString(DefinedParams.ID, "")
+                    val memberId = arguments?.getString(MemberID, "")
                     val intent =
                         Intent(requireContext(), MotherNeonateEMTCTActivity::class.java)
                     if (patientId?.isNotBlank() == true) {
                         intent.putExtra(PatientId, patientId)
                         intent.putExtra(ID, id)
+                        intent.putExtra(MemberID,memberId)
                         intent.putExtra(EMTCT, true)
                         intent.putExtra(PatientId, patientId)
                         intent.putExtra(ID, id)
@@ -240,18 +271,15 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                 }
             }
             getString(R.string.no)->{
-                val isHiv=arguments?.getBoolean(HIV)
-                val isPregnant=arguments?.getBoolean(isPregnant)
-                if (isHiv==true && isPregnant==true ) {
-                    val intent = Intent(requireContext(), HivMedicalReviewBaseActivity::class.java).apply {
-                        putExtra(PatientId, arguments?.getString(PatientId))
-                        putExtra(HIV, arguments?.getBoolean(HIV, false))
-                        putExtra(EMTCT,true)
-                        putExtra(ID, arguments?.getString(ID))
-                        putExtra(MemberID,  arguments?.getString(MemberID))
-                        putExtra(villageId, arguments?.getString(villageId))
-                    }
+                val isHiv=arguments?.getBoolean(HIV,false)
+                if (isHiv == true) {
+                    val intent = Intent(requireContext(), ConsentFormActivity::class.java)
+                    intent.putExtra(PatientId, arguments?.getString(PatientId))
+                    intent.putExtra(HIV, arguments?.getBoolean(HIV, false))
+                    intent.putExtra(ID, arguments?.getString(ID))
+                    intent.putExtra(villageId, arguments?.getString(villageId))
                     startActivity(intent)
+//
                 }else if(viewModel.isEMTCT){
                     val intent = Intent(requireContext(), HivMedicalReviewBaseActivity::class.java).apply {
                         putExtra(PatientId, arguments?.getString(PatientId))
@@ -263,12 +291,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                     }
                     startActivity(intent)
                 } else{
-                    val intent = Intent(requireContext(), ConsentFormActivity::class.java)
-                    intent.putExtra(PatientId, arguments?.getString(PatientId))
-                    intent.putExtra(HIV, arguments?.getBoolean(HIV, false))
-                    intent.putExtra(ID, arguments?.getString(ID))
-                    intent.putExtra(villageId, arguments?.getString(villageId))
-                    startActivity(intent)
+
                 }
 
             }
@@ -327,8 +350,6 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             )
         )
         flowList.add(CommonUtils.getOptionMap(getString(R.string.pnc), getString(R.string.pnc)))
-        flowList.add(CommonUtils.getOptionMap(getString(R.string.emtct), getString(R.string.emtct)))
-
         val id = arguments?.getString(DefinedParams.ChildPatientId, null)
         val dateOfDelivery = arguments?.getString(DefinedParams.DateOfDelivery, null)
 //        if (!id.isNullOrEmpty()) {
@@ -389,8 +410,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
 
     private fun selectType(){
         val isHiv = arguments?.getBoolean(HIV,false)
-
-        if (isHiv == true){
+        if (isHiv == true ||viewModel.isEMTCT){
             binding.tvTitle.text = getString(R.string.select_patient_type)
             binding.tvSubTitle.visible()
         }

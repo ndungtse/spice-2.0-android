@@ -26,6 +26,8 @@ class HIVStatusViewModel @Inject constructor(
     val getHivStatusMetaList = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
     var selectModel: String? = null
     val request: HivStatus? = null
+    var tbStatus :String? = null
+    var isEMTCT :Boolean = false
 
     fun getHivStatusMeta(type: String) {
         viewModelScope.launch(dispatcherIO) {

@@ -72,7 +72,16 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/patientEligibility" />
-
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/clinicalNotesContainer"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/_16sdp"
+                    android:paddingHorizontal="@dimen/_25sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/patientHIVTest" />
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/hivSummary"
                     android:layout_width="0dp"
@@ -88,155 +97,142 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:paddingStart="@dimen/_12sdp"
-        android:paddingTop="@dimen/_12sdp"
-        android:paddingEnd="@dimen/_12sdp"
-        android:paddingBottom="@dimen/_12sdp"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:padding="@dimen/_12sdp"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/referralBottomView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/refreshLayout">
 
-        <!-- 66.6% Guideline -->
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/startGuideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.666" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/clNavi"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/_0dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/startGuideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/ivInvestigation"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:orientation="vertical">
 
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/ivInvestigation"
+            <ImageView
+                android:id="@+id/ivInvestigationImgView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/view1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/ivInvestigationImgView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/investigation"
-                    android:src="@drawable/ic_investigation"
-                    app:layout_constraintBottom_toTopOf="@id/tvInvestigation"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/ivIBatchCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/ic_notification_dot"
-                    android:gravity="center"
-                    android:padding="@dimen/_4sdp"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_10ssp"
-                    android:textStyle="bold"
-                    android:visibility="invisible"
-                    app:layout_constraintEnd_toEndOf="@id/ivInvestigationImgView"
-                    app:layout_constraintTop_toTopOf="@id/ivInvestigationImgView" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvInvestigation"
-                    style="@style/TextStyle_Bold_16_PrimaryMediumBlue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/investigation_caps"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ivInvestigationImgView" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <View
-                android:id="@+id/view1"
-                android:layout_width="@dimen/_1sdp"
-                android:layout_height="match_parent"
-                android:alpha="0.2"
-                android:background="@color/medium_blue"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/ivPrescription"
-                app:layout_constraintStart_toEndOf="@id/ivInvestigation"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <!-- Prescription Section -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/ivPrescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_gravity="center"
+                android:contentDescription="@string/investigation"
+                android:src="@drawable/ic_investigation"
+                app:layout_constraintBottom_toTopOf="@+id/tvInvestigation"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/view1"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintStart_toStartOf="parent" />
 
-                <ImageView
-                    android:id="@+id/ivPrescriptionImgView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/prescription"
-                    android:src="@drawable/ic_prescription"
-                    app:layout_constraintBottom_toTopOf="@id/tvPrescription"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/ivIBatchCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_notification_dot"
+                android:gravity="center"
+                android:padding="@dimen/_4sdp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toTopOf="@+id/ivInvestigationImgView"
+                app:layout_constraintEnd_toEndOf="@id/ivInvestigationImgView"
+                app:layout_constraintStart_toEndOf="@+id/ivInvestigationImgView"
+                app:layout_constraintTop_toTopOf="@id/ivInvestigationImgView" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/ivPBatchCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/ic_notification_dot"
-                    android:gravity="center"
-                    android:padding="@dimen/_4sdp"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_10ssp"
-                    android:textStyle="bold"
-                    android:visibility="invisible"
-                    app:layout_constraintEnd_toEndOf="@id/ivPrescriptionImgView"
-                    app:layout_constraintTop_toTopOf="@id/ivPrescriptionImgView" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvInvestigation"
+                style="@style/TextStyle_Bold_16_PrimaryMediumBlue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/investigation_caps"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvPrescription"
-                    style="@style/TextStyle_Bold_16_PrimaryMediumBlue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/prescription_caps"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ivPrescriptionImgView" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Submit Button Section -->
+        <View
+            android:layout_width="@dimen/_1sdp"
+            android:layout_height="match_parent"
+            android:alpha="0.2"
+            android:background="@color/medium_blue" />
+
+        <View
+            android:layout_width="@dimen/_1sdp"
+            android:layout_height="match_parent"
+            android:alpha="0.2"
+            android:background="@color/medium_blue" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/btnSection"
-            android:layout_width="0dp"
+            android:id="@+id/ivPrescription"
+            android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/startGuideline"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_weight="0.2"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivPrescriptionImgView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/prescription"
+                android:src="@drawable/ic_prescription"
+                app:layout_constraintBottom_toTopOf="@+id/tvPrescription"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/ivPBatchCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_notification_dot"
+                android:gravity="center"
+                android:padding="@dimen/_4sdp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toTopOf="@+id/ivPrescriptionImgView"
+                app:layout_constraintEnd_toEndOf="@id/ivPrescriptionImgView"
+                app:layout_constraintStart_toEndOf="@+id/ivPrescriptionImgView"
+                app:layout_constraintTop_toTopOf="@id/ivPrescriptionImgView" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvPrescription"
+                style="@style/TextStyle_Bold_16_PrimaryMediumBlue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prescription_caps"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/viewLine"
+            android:layout_width="@dimen/_1sdp"
+            android:layout_height="match_parent"
+            android:alpha="0.2"
+            android:background="@color/medium_blue" />
+
+        <View
+            android:layout_width="@dimen/_1sdp"
+            android:layout_height="match_parent"
+            android:alpha="0.2"
+            android:background="@color/medium_blue" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0.4">
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSubmit"
                 style="@style/Button_Style"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_24sdp"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
@@ -244,13 +240,11 @@
                 android:background="@drawable/button_selector_cobalt"
                 android:enabled="false"
                 android:text="@string/submit_caps"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/referralBottomView"

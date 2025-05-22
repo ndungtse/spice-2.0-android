@@ -24,7 +24,6 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DrugSensitiveTB
 import com.medtroniclabs.spice.common.DefinedParams.ExtraPulmonary
-import com.medtroniclabs.spice.common.DefinedParams.HIV_MEDICAL_REVIEW
 import com.medtroniclabs.spice.common.DefinedParams.OrganAffected
 import com.medtroniclabs.spice.common.DefinedParams.SiteOfDisease
 import com.medtroniclabs.spice.common.DefinedParams.TB
@@ -300,7 +299,7 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
             if (resource.state == ResourceState.SUCCESS) {
                 val patientId = patientViewModel.patientDetailsLiveData.value?.data?.id
                 if (patientId != null) {
-                  val type = if (isHiv()) HIV_MEDICAL_REVIEW else  MenuConstants.TB_MENU_ID
+                  val type = if (isHiv()) MedicalReviewTypeEnums.HIV_REVIEW.name else  MenuConstants.TB_MENU_ID
                     diagnosisViewModel.getDiagnosisDetails(
                         CreateUnderTwoMonthsResponse(
                             patientReference = patientId,
@@ -336,7 +335,7 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
                 val siteGetItem = listItems.filter { it.type == SiteOfDisease }
                 val confirmGetItem = listItems.filter {  it.type.isNullOrBlank() || it.type == TB.uppercase() }
                 val organGetItem = listItems.filter { it.type == OrganAffected }
-                val hivConfirmGetItem = listItems.filter { it.type == HIV_MEDICAL_REVIEW }
+                val hivConfirmGetItem = listItems.filter { it.type == MedicalReviewTypeEnums.HIV_REVIEW.name }
 
                 val filteredConfirmList = confirmMetaList.filter { diagnosis ->
                     confirmGetItem.any { it.diseaseCategory == diagnosis.value }
@@ -456,7 +455,7 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
     private fun handleOkayClick() {
         if (connectivityManager.isNetworkAvailable()) {
             patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                val type = if (isHiv()) { HIV_MEDICAL_REVIEW } else { MenuConstants.TB_MENU_ID.uppercase() }
+                val type = if (isHiv()) { MedicalReviewTypeEnums.HIV_REVIEW.name  } else { MenuConstants.TB_MENU_ID.uppercase() }
                 details.patientId?.let { patientId ->
                     val request = DiagnosisSaveUpdateRequest(
                         patientId = patientId,
@@ -520,7 +519,7 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
                     diseaseCategory = it.name,
                     diseaseConditionId = it.id ?: -1L,
                     diseaseCondition = it.name,
-                    type = HIV_MEDICAL_REVIEW
+                    type = MedicalReviewTypeEnums.HIV_REVIEW.name
                 )
             }
         }

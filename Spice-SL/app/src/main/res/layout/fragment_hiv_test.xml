@@ -259,6 +259,13 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/llA2TestResultRoot" />
 
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/forA3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="tvA3TestResult,llA3TestResultRoot" />
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvA3TestResult"
                     style="@style/TextStyle_Regular_16_Gray"
@@ -279,7 +286,9 @@
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvA3TestResult"></androidx.appcompat.widget.LinearLayoutCompat>
+                    app:layout_constraintTop_toBottomOf="@+id/tvA3TestResult">
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvA3TestResultError"

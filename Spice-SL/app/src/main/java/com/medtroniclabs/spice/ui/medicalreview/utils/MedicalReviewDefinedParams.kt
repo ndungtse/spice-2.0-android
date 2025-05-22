@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.ui.medicalreview.utils
 
+import com.medtroniclabs.spice.data.history.Investigation
+
 object MedicalReviewDefinedParams {
     const val PC_ITEM = "PresentingComplaintsType"
     const val SE_ITEM = "SystemicExaminationsType"
@@ -69,6 +71,10 @@ object MedicalReviewDefinedParams {
     const val cotrimoxazoleDateRange = "cotrimoxazoleDateRange"
     const val tbTreatmentDateRange = "tbTreatmentDateRange"
     const val cryptococcalMeningitisDateRange = "cryptococcalMeningitisDateRange"
+
+    const val Investigation = "Investigation"
+    const val PRESCRIPTION = "Prescription"
+
     const val cd4_percentage= "CD4 Percentage"
     const val isViralLoadTestRecommended= "isViralLoadTestRecommended"
     const val notEstablished= "notEstablished"

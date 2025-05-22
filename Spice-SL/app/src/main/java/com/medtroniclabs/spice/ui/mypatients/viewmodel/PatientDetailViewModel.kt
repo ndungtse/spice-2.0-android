@@ -60,6 +60,9 @@ class PatientDetailViewModel @Inject constructor(
     var artCode: String? = null
     var patientCurrentStatus = MutableLiveData<String>()
 
+    var isEmtctFlow: Boolean = false
+    var hivTestedPositive: Boolean = false
+
     fun getPatients(id: String, assessmentType: String? = null, origin: String? = null) {
         viewModelScope.launch(dispatcherIO) {
             patientDetailsLiveData.postLoading()

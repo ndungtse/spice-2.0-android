@@ -249,6 +249,14 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             DefinedParams.isPregnant,
             patientDetailViewModel.isPregnant()
         )
+        intent.putExtra(
+            DefinedParams.EMTCT,
+            patientDetailViewModel.isEmtctFlow
+        )
+        intent.putExtra(
+            DefinedParams.hivTestedPositive,
+            patientDetailViewModel.hivTestedPositive
+        )
         startActivity(intent)
     }
 

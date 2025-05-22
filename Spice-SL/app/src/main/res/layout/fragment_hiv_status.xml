@@ -75,6 +75,50 @@
                 app:layout_constraintStart_toStartOf="@id/startGuideline"
                 app:layout_constraintTop_toTopOf="@id/viewStatusBG" />
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/tbGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="tvTBStatus,etTBStatus" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTBStatus"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:paddingVertical="@dimen/_8sdp"
+                android:text="@string/tb_status"
+                android:textColor="@color/table_title"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintStart_toStartOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/tvStatusTitle" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/etTBStatus"
+                style="@style/Form_Spinner_Style"
+                android:layout_width="@dimen/_0dp"
+                android:paddingBottom="@dimen/_4sdp"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintStart_toStartOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/tvTBStatus" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTBStatusError"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/error_label"
+                android:textColor="@color/a_red_error"
+                android:textSize="@dimen/_12ssp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintStart_toStartOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/etTBStatus" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPregnancyAndBreastFeedingStatusLabel"
                 android:layout_width="@dimen/_0dp"
@@ -87,7 +131,7 @@
                 app:layout_constraintBottom_toTopOf="@id/llPregnancyAndBreastFeedingStatus"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintStart_toStartOf="@id/startGuideline"
-                app:layout_constraintTop_toBottomOf="@id/tvStatusTitle" />
+                app:layout_constraintTop_toBottomOf="@+id/tvTBStatusError"/>
 
             <LinearLayout
                 android:id="@+id/llPregnancyAndBreastFeedingStatus"

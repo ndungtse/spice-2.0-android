@@ -2,12 +2,14 @@ package com.medtroniclabs.spice.ui.medicalreview.hiv.repo
 
 import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.common.ConsentFormType
+import com.medtroniclabs.spice.common.DefinedParams.emtctVisitStatus
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.HivClinicalInfoResponse
 import com.medtroniclabs.spice.data.HivVitalDetailsRequest
 import com.medtroniclabs.spice.data.HivVitalDetailsResponse
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.WhoClinicalStageCreateRequest
 import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
@@ -15,6 +17,8 @@ import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryResponse
 import com.medtroniclabs.spice.data.model.HivRequestData
 import com.medtroniclabs.spice.data.model.HivScreeningRequest
 import com.medtroniclabs.spice.data.model.HivScreeningResponse
+import com.medtroniclabs.spice.data.model.ViralLoadRequest
+import com.medtroniclabs.spice.data.model.ViralLoadResponse
 import com.medtroniclabs.spice.data.model.HivSummaryResponse
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
@@ -22,6 +26,9 @@ import com.medtroniclabs.spice.data.resource.CD4DetailsRequest
 import com.medtroniclabs.spice.data.resource.CD4DetailsResponse
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.model.ARTResponse
+import com.medtroniclabs.spice.model.ArtRequest
+import com.medtroniclabs.spice.model.PregnancySummaryRequest
 import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusRequest
 import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusResponse
 import com.medtroniclabs.spice.model.medicalreview.HivVitalsRequest
@@ -44,20 +51,24 @@ class HivMedicalReviewRepo @Inject constructor(
                     roomHelper.deleteExaminationsComplaintsForAnc(MedicalReviewTypeEnums.HIV.name)
                     roomHelper.insertExaminationsComplaint(
                         generateChipItemByType(
-                            hivHistory,
-                            populationType,
-                            hivTestDurations,
-                            entryPoint,
-                            patientStatus,
-                            comorbidities,
-                            presentingComplaints,
-                            systemicExaminations,
-                            hivPreganancyBreastFeedingStatus,
-                            ahdStatus,
-                            dsdStatus,
-                            nonEstablishedModels,
-                            whoClinicalStage,
-                            emtctVisitStatus
+                            hivHistory = hivHistory,
+                            populationType = populationType,
+                            hivTestDuration = hivTestDurations,
+                            entryPoint = entryPoint,
+                            patientStatus = patientStatus,
+                            comorbidities = comorbidities,
+                            presentingComplaints = presentingComplaints,
+                            systemicExaminations = systemicExaminations,
+                            hivPreganancyBreastFeedingStatus = hivPreganancyBreastFeedingStatus,
+                            ahdStatus = ahdStatus,
+                            dsdStatus = dsdStatus,
+                            nonEstablishedModels = nonEstablishedModels,
+                            emtctVisitStatus = emtctVisitStatus,
+                            whoClinicalStage = whoClinicalStage,
+                            emtctEntryPoint = emtctEntryPoint,
+                            tbStatus = tbStatus,
+                            maternalOutcome = maternalOutcome,
+                            obstetricExaminations = obstetricExaminations
                         )
                     )
                     roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.HIV_REVIEW.name)
@@ -88,8 +99,13 @@ class HivMedicalReviewRepo @Inject constructor(
         ahdStatus: List<MedicalReviewMetaItems>,
         dsdStatus: List<MedicalReviewMetaItems>,
         nonEstablishedModels: List<MedicalReviewMetaItems>,
+        emtctVisitStatus: List<MedicalReviewMetaItems>,
         whoClinicalStage: List<MedicalReviewMetaItems>,
-        emtctVisitStatus: List<MedicalReviewMetaItems>
+        emtctEntryPoint: List<MedicalReviewMetaItems>,
+        tbStatus: List<MedicalReviewMetaItems>,
+        maternalOutcome: List<MedicalReviewMetaItems>,
+        obstetricExaminations: List<MedicalReviewMetaItems>
+
     ): List<MedicalReviewMetaItems> {
         val chipItemList = ArrayList<MedicalReviewMetaItems>()
         chipItemList.addAll(hivHistory.map { it.apply { type = MedicalReviewTypeEnums.HIV.name } })
@@ -159,6 +175,38 @@ class HivMedicalReviewRepo @Inject constructor(
             }
         })
         chipItemList.addAll(emtctVisitStatus)
+        chipItemList.addAll(emtctEntryPoint.map {
+            it.apply {
+                type = MedicalReviewTypeEnums.HIV.name
+                category = MedicalReviewTypeEnums.emtctEntryPoint.name
+            }
+        })
+
+        chipItemList.addAll(tbStatus.map {
+            it.apply {
+                type = MedicalReviewTypeEnums.HIV.name
+                category = MedicalReviewTypeEnums.tbStatus.name
+            }
+        })
+        chipItemList.addAll((emtctVisitStatus.map {
+            it.apply {
+                type = MedicalReviewTypeEnums.HIV.name
+                category = MedicalReviewTypeEnums.emtct_visit_status.name
+            }
+        }))
+        chipItemList.addAll((maternalOutcome.map {
+            it.apply {
+                type = MedicalReviewTypeEnums.HIV.name
+                category = MedicalReviewTypeEnums.maternal_outcome.name
+            }
+        }))
+        chipItemList.addAll(obstetricExaminations.map {
+            it.apply {
+                type = MedicalReviewTypeEnums.HIV.name
+                category = MedicalReviewTypeEnums.obstetricExaminations.name
+            }
+        })
+
         return chipItemList
     }
 
@@ -381,6 +429,43 @@ class HivMedicalReviewRepo @Inject constructor(
             }
         } catch (e: Exception) {
             Resource(ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getViralLoadData(request: ViralLoadRequest): Resource<List<ViralLoadResponse>> {
+        return try {
+            val res = apiHelper.getViralLoadData(request)
+            if (res.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = res.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR, message = res.message())
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+    suspend fun getARTData(request: ArtRequest): Resource<List<ARTResponse>> {
+        return try {
+            val res = apiHelper.getARTData(request)
+            if (res.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = res.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR, message = res.message())
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+    suspend fun getPatientSummaryDetails(request: PregnancySummaryRequest): Resource<PregnancyDetailsModel> {
+        return try {
+            val res = apiHelper.getPatientSummaryDetails(request)
+            if (res.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = res.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR, message = res.message())
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
         }
     }
 }

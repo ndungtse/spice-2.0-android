@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.HIV_IMR_CMR
 import com.medtroniclabs.spice.common.DefinedParams.EMTCT
+import com.medtroniclabs.spice.common.DefinedParams.EMTCTMR
 import com.medtroniclabs.spice.common.DefinedParams.EMTCT_SUMMARY
 import com.medtroniclabs.spice.common.DefinedParams.IsReferredScreen
 import com.medtroniclabs.spice.common.DefinedParams.MaritalStatus
@@ -119,6 +120,7 @@ class PatientInfoFragment : BaseFragment() {
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
             bundle.putBoolean(DefinedParams.EMTCT, isEMTCT)
+            bundle.putBoolean(EMTCTMR,isEMTCTMR)
             bundle.putBoolean(DefinedParams.EMTCT_SUMMARY, isEMTCTSummary)
             fragment.arguments = bundle
             return fragment
@@ -245,6 +247,10 @@ class PatientInfoFragment : BaseFragment() {
     private fun isEMTCT():Boolean?{
         return arguments?.getBoolean(EMTCT,false)
     }
+    private fun isEMTCTMR():Boolean?{
+        return arguments?.getBoolean(EMTCTMR,false)
+    }
+
     private fun isEMTCTSummary():Boolean?{
         return arguments?.getBoolean(EMTCT_SUMMARY,false)
     }
@@ -255,6 +261,8 @@ class PatientInfoFragment : BaseFragment() {
         viewModel.dateOfDelivery=patientListRespModel.pregnancyDetails?.dateOfDelivery
         viewModel.neonateOutCome=patientListRespModel.pregnancyDetails?.neonatalOutcomes
         viewModel.chwName = patientListRespModel.chwName
+        viewModel.isEmtctFlow = patientListRespModel.isEmtctFlow == true
+        viewModel.hivTestedPositive = patientListRespModel.hivTestedPositive == true
         val isAnc = isAnc()
         val isPnc= isPnc()
         val name =
@@ -446,6 +454,14 @@ class PatientInfoFragment : BaseFragment() {
                     dateOfDelivery = dateOfDelivery
                 )
             }
+
+            if (isEMTCTMR() == true){
+                prepareEMTCTMRData(
+                    dataList = dataList,
+                    patient = patientListRespModel,
+                    dateOfDelivery = dateOfDelivery
+                )
+            }
             commonAdapter(dataList as MutableList<Map<String, Any>>)
         }
     }
@@ -491,6 +507,65 @@ class PatientInfoFragment : BaseFragment() {
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.population_type),
                     DefinedParams.Value to hyphen
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.art_code),
+                    DefinedParams.Value to ((patient.artCode ?: viewModel.artCode) ?: ""),
+                    DefinedParams.IsSummary to viewModel.isSummary.toString()
+                )
+            )
+        )
+        return dataList
+    }
+
+    private fun prepareEMTCTMRData(
+        dataList: MutableList<Map<String, String>>,
+        patient: PatientListRespModel,
+        dateOfDelivery: String?
+    ): MutableList<Map<String, String>> {
+        val hyphen = requireContext().getString(R.string.hyphen_symbol)
+        val formatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)
+        fun stringOrHyphen(value: String?) = value?.takeIf { it.isNotBlank() }?.trim() ?: hyphen
+        fun removeItem(labelResId: Int, value: String?) {
+            dataList.remove(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(labelResId),
+                    DefinedParams.Value to stringOrHyphen(value)
+                )
+            )
+        }
+        // Remove specific items if present
+        removeItem(R.string.dateofbirth, patient.birthDate?.getLocalDate()?.format(formatter))
+        removeItem(R.string.landmark, patient.landmark)
+        removeItem(R.string.household_location, patient.village)
+        // Add updated items
+        dataList.addAll(
+            listOf(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.occupation_summary),
+                    DefinedParams.Value to (viewModel.occupation ?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.household_location),
+                    DefinedParams.Value to stringOrHyphen(patient.village)
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.chw),
+                    DefinedParams.Value to stringOrHyphen(viewModel.chwName)
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.marital_status_summary),
+                    DefinedParams.Value to (viewModel.maritalStatus ?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.emtct_enrolment_date),
+                    DefinedParams.Value to (patient.emtctEnrollDate?.getLocalDate()
+                        ?.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
+                        ?: requireContext().getString(R.string.empty__))
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.entry_point),
+                    DefinedParams.Value to(patient.entryPoint ?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.art_code),

@@ -172,6 +172,7 @@
                     android:id="@+id/etOtherPopulated"
                     style="@style/Form_Input_Style_BG"
                     android:layout_width="@dimen/_0dp"
+                    android:layout_height="@dimen/_0dp"
                     android:layout_marginStart="@dimen/_8sdp"
                     android:layout_marginTop="@dimen/_4sdp"
                     android:fontFamily="@font/inter_regular"

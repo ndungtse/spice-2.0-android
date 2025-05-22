@@ -185,6 +185,92 @@
                 android:layout_height="wrap_content"
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="tvPatientError, tvPatientStatus" />
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/eMTCTSummaryGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="tvMaternalOutcomeText,tvMaternalOutcomeSeparator,tvMaternalOutcome,tvEmtctVisitStatusText,tvEmtctVisitStatus, tvEmtctVisitStatusSeparator" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvEmtctVisitStatus"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="@string/emtct_visit_status"
+                app:layout_constraintEnd_toStartOf="@id/tvEmtctVisitStatusSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/barrierTwo" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvEmtctVisitStatusSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvEmtctVisitStatusText"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/tvEmtctVisitStatus"
+                app:layout_constraintTop_toTopOf="@id/tvEmtctVisitStatus" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/tvEmtctVisitStatusText"
+                style="@style/Form_Spinner_Style"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/barrierEleven"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvEmtctVisitStatusSeparator"
+                app:layout_constraintTop_toTopOf="@id/tvEmtctVisitStatus" />
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrierEleven"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="tvEmtctVisitStatus,tvEmtctVisitStatusText, tvEmtctVisitStatusSeparator" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvMaternalOutcome"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="@string/maternal_outcome"
+                app:layout_constraintEnd_toStartOf="@id/tvMaternalOutcomeSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/barrierEleven" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvMaternalOutcomeSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvMaternalOutcomeText"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/tvMaternalOutcome"
+                app:layout_constraintTop_toTopOf="@id/tvMaternalOutcome" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/tvMaternalOutcomeText"
+                style="@style/Form_Spinner_Style"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/barrierTwelve"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvMaternalOutcomeSeparator"
+                app:layout_constraintTop_toTopOf="@id/tvMaternalOutcome"/>
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrierTwelve"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="tvMaternalOutcomeText,tvMaternalOutcome" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPresentingLabel"
@@ -195,7 +281,7 @@
                 app:layout_constraintEnd_toStartOf="@id/tvPresentingSeparator"
                 app:layout_constraintHorizontal_weight="0.3"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
-                app:layout_constraintTop_toBottomOf="@id/barrierTwo" />
+                app:layout_constraintTop_toBottomOf="@id/barrierTwelve" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPresentingSeparator"

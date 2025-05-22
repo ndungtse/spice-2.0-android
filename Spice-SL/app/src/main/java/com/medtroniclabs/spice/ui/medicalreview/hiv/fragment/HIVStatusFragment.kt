@@ -10,12 +10,14 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.HivStatus
 import com.medtroniclabs.spice.databinding.FragmentHivStatusBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -83,6 +85,15 @@ class HIVStatusFragment : BaseFragment() {
                                     )
                                 }
                                 .toCollection(ArrayList())
+                        }
+
+                        if(viewModel.isEMTCT) {
+                            initTBStatus(listItems)
+//                            binding.lmbGroup.gone()
+//                            binding.gestationalAgeGroup.gone()
+//                            binding.expectedDateGroup.gone()
+                        }else{
+                            binding.tbGroup.gone()
                         }
                         initPregnancyStatus(filterAndMap(MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name))
                         initAHD(filterAndMap(MedicalReviewTypeEnums.ahdStatus.name))
@@ -153,6 +164,7 @@ class HIVStatusFragment : BaseFragment() {
     }
 
     private fun initView() {
+        viewModel.isEMTCT = arguments?.getBoolean(DefinedParams.EMTCTMR,false) == true
         viewModel.getHivStatusMeta(MedicalReviewTypeEnums.HIV.name)
         binding.etSelectModel.setVisible(false)
         binding.tvSelectModelLabel.setVisible(false)
@@ -181,6 +193,7 @@ class HIVStatusFragment : BaseFragment() {
             showDatePickerDialog(binding.tvLastMenstrualPeriodDate)
         }
         autoPopulatePregnantDetails()
+
     }
 
     private fun autoPopulatePregnantDetails() {
@@ -373,7 +386,8 @@ class HIVStatusFragment : BaseFragment() {
         val isValidDSD = viewModel.resultDSD.isNotEmpty()
         val isLMB = binding.tvLastMenstrualPeriodDate.text.toString().trim().isNotBlank()
         val isSelectModel = viewModel.selectModel != DefinedParams.DefaultID && viewModel.selectModel != null
-        return isValidPregnantStatus || isValidAHD || isValidDSD || isLMB || isSelectModel
+        val isTBStatus = viewModel.tbStatus != DefinedParams.DefaultID && viewModel.tbStatus != null
+        return isValidPregnantStatus || isValidAHD || isValidDSD || isLMB || isSelectModel || isTBStatus
     }
 
     fun getRequest(): HivStatus {
@@ -403,7 +417,64 @@ class HIVStatusFragment : BaseFragment() {
             model = viewModel.selectModel,
             lastMenstrualPeriod = lastMenstrualPeriodFormatted,
             gestationalInWeeks = lmpDate?.let { DateUtils.calculateGestationalAge(it) },
-            expectedDateOfDelivery = expectedDeliveryDateFormatted
+            expectedDateOfDelivery = expectedDeliveryDateFormatted ,
+            tbStatus = viewModel.tbStatus
         )
+    }
+    private fun initTBStatus(data: List<MedicalReviewMetaItems>) {
+        val dropDownList = ArrayList<Map<String, Any>>()
+        dropDownList.add(
+            mapOf(
+                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                DefinedParams.Value to DefinedParams.DefaultID
+            )
+        )
+        dropDownList.addAll(data
+            .filter { it.category == MedicalReviewTypeEnums.nonEstablishedModels.name }
+            .map { item ->
+                mapOf(
+                    DefinedParams.NAME to item.name,
+                    DefinedParams.Value to (item.value ?: item.name)
+                )
+            })
+        if (dropDownList.isNotEmpty()) {
+            adapter.setData(dropDownList)
+            binding.etTBStatus.adapter = adapter
+            val defaultPosition = 0
+            binding.etTBStatus.post {
+                binding.etTBStatus.setSelection(defaultPosition, false)
+            }
+            binding.etTBStatus.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        adapterView: AdapterView<*>?,
+                        view: View?,
+                        pos: Int,
+                        itemId: Long
+                    ) {
+                        val selectedItem = adapter.getData(position = pos)
+                        selectedItem?.let {
+                            var selectedModel = it[DefinedParams.Value] as String?
+                            if (selectedModel == DefinedParams.DefaultID) {
+                                selectedModel = null
+                            }
+                            selectedModel?.let {
+                                viewModel.tbStatus = selectedModel
+                            } ?: kotlin.run {
+                                viewModel.tbStatus = null
+                            }
+                            setFragmentResult(
+                                MedicalReviewDefinedParams.HIV_STATUS, bundleOf(
+                                    MedicalReviewDefinedParams.CHIP_ITEMS to true)
+                            )
+                        }
+                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+                        /**
+                         * this method is not used
+                         */
+                    }
+                }        }
     }
 }

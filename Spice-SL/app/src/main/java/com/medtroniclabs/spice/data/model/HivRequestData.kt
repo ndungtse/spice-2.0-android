@@ -15,7 +15,12 @@ data class HivRequestData(
     val encounter: MedicalReviewEncounter? = null,
     val medicalReviewType: String? = null,
     val clinicalNotes: String? = null,
-    val id: String? = null
+    val id: String? = null,
+    val emtctVisitStatus:String? = null,
+//    val obstetricExaminations: List<String?>? = null,
+    val obstetricExaminationNotes: String? = null,
+    val fundalHeight : String? = null,
+    val fetalHeartRate : String? = null,
 )
 
 data class HivStatus(
@@ -25,7 +30,8 @@ data class HivStatus(
     val model: String? = null,
     val lastMenstrualPeriod: String? = null,
     val gestationalInWeeks: Long? = null,
-    val expectedDateOfDelivery: String? = null
+    val expectedDateOfDelivery: String? = null,
+    val tbStatus : String? = null
 )
 
 data class OpportunisticInfectionsDTO(

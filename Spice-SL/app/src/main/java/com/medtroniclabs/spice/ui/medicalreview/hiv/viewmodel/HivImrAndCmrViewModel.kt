@@ -57,7 +57,9 @@ class HivImrAndCmrViewModel @Inject constructor(
         patientStatus: String?,
         villageId: String?,
         patientId: String?,
-        assessmentName: String
+        assessmentName: String,
+        eMTCTStatus: String?,
+        maternalOutcome: String?
     ) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
@@ -72,7 +74,9 @@ class HivImrAndCmrViewModel @Inject constructor(
                     referralTicketType = referralTicketType,
                     assessmentName = assessmentName,
                     householdId = householdId,
-                    villageId = villageId
+                    villageId = villageId,
+                    eMTCTStatus = eMTCTStatus,
+                    maternalOutcome = maternalOutcome
                 )
                 summaryCreateResponse.postValue(response)
             }

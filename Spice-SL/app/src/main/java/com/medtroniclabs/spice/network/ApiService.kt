@@ -84,6 +84,8 @@ import com.medtroniclabs.spice.data.model.RequestChangePassword
 import com.medtroniclabs.spice.data.model.ResponseChangePassword
 import com.medtroniclabs.spice.data.model.TbHistory
 import com.medtroniclabs.spice.data.model.TbMedicalReviewCreateRequest
+import com.medtroniclabs.spice.data.model.ViralLoadRequest
+import com.medtroniclabs.spice.data.model.ViralLoadResponse
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseSignatureUpload
@@ -96,6 +98,8 @@ import com.medtroniclabs.spice.data.resource.CD4DetailsRequest
 import com.medtroniclabs.spice.data.resource.CD4DetailsResponse
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
+import com.medtroniclabs.spice.model.ARTResponse
+import com.medtroniclabs.spice.model.ArtRequest
 import com.medtroniclabs.spice.model.CultureLocaleModel
 import com.medtroniclabs.spice.model.LabTestCreateRequest
 import com.medtroniclabs.spice.model.LabTestListRequest
@@ -104,6 +108,7 @@ import com.medtroniclabs.spice.model.NcdMRStaticDataModel
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
+import com.medtroniclabs.spice.model.PregnancySummaryRequest
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.RemoveLabTestRequest
@@ -713,4 +718,14 @@ interface ApiService {
 
     @POST("/spice-service/hiv/viral-load/recommendation")
     suspend fun checkRecommendationInvestigations(@Body request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, Boolean?>?>>
+
+    @POST("/spice-service/hiv/viral-load/list")
+    suspend fun getViralLoadData(@Body request: ViralLoadRequest): Response<APIResponse<List<ViralLoadResponse>>>
+
+    @POST("/spice-service/prescription-request/list")
+    suspend fun getARTData(@Body request: ArtRequest): Response<APIResponse<List<ARTResponse>>>
+
+    @POST("/spice-service/patient/pregnancy-details")
+    suspend fun getPatientSummaryDetails(@Body request: PregnancySummaryRequest): Response<APIResponse<PregnancyDetailsModel>>
+
 }

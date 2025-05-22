@@ -10,7 +10,7 @@ data class WhoClinicalStageCreateRequest(
 data class HivClinicalInfoResponse(
     val stringValue: String? = null,
     val cd4: String? = null,
-    val cd4Percentage: Double? = null,
+    val cd4Percentage: String? = null,
     val weight: Double? = null,
     val height: Double? = null
 )

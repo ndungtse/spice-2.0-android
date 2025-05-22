@@ -170,18 +170,19 @@
                     android:id="@+id/etOtherPopulated"
                     style="@style/Form_Input_Style_BG"
                     android:layout_width="@dimen/_0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="@dimen/_0dp"
                     android:layout_marginStart="@dimen/_8sdp"
                     android:layout_marginTop="@dimen/_4sdp"
                     android:fontFamily="@font/inter_regular"
                     android:hint="@string/enter_type"
                     android:maxLines="5"
-                    android:paddingHorizontal="@dimen/_4sdp"
-                    android:paddingVertical="@dimen/_9sdp"
+                    android:paddingHorizontal="@dimen/_6sdp"
+                    android:paddingVertical="@dimen/_5sdp"
                     android:textColor="@color/black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/g_center"
-                    app:layout_constraintTop_toBottomOf="@+id/tvPopulatedTypeOther" />
+                    app:layout_constraintTop_toBottomOf="@+id/tvPopulatedTypeOther"
+                    app:layout_constraintBottom_toBottomOf="@+id/haveTestedHIVBeforeRoot"/>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvOtherError"

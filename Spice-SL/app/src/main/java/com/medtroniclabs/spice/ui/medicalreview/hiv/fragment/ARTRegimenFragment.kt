@@ -37,18 +37,17 @@ import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.model.ViralLoadResponse
-import com.medtroniclabs.spice.model.ViralLoadRecord
+import com.medtroniclabs.spice.model.ARTLoadRecord
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ViralLoadFragment : BaseFragment() {
+class ARTRegimenFragment : BaseFragment() {
 
     private val viewModel: HivViewModel by viewModels()
-    private var viralLoadRecordsState = mutableStateOf<List<ViralLoadRecord>>(emptyList())
+    private var aRTRecordsState = mutableStateOf<List<ARTLoadRecord>>(emptyList())
 
     // viewModel.isViralLoad true means Viral Load fragment false means ART regimen fragment
     override fun onCreateView(
@@ -58,7 +57,7 @@ class ViralLoadFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 MaterialTheme {
-                    ViralLoadTable(records = viralLoadRecordsState.value)
+                    ARTLoadTable(records = aRTRecordsState.value)
                 }
             }
         }
@@ -67,68 +66,50 @@ class ViralLoadFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getViralLoadData(
-            arguments?.getString(DefinedParams.PatientReference),
-            arguments?.getString(DefinedParams.MemberReference)
+        viewModel.getARTData(
+            arguments?.getString(DefinedParams.ID),
+            limit = 5,
+            category = DefinedParams.HIV,
+            isActive = true
         )
         setupObserver()
     }
 
     private fun setupObserver() {
-        viewModel.getViralLoadLiveData.observe(viewLifecycleOwner) { resourceState ->
+        viewModel.getARTLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
+                    // Handle loading state if needed
                 }
 
                 ResourceState.ERROR -> {
-                }
-
-                ResourceState.SUCCESS -> {
-                    val records = resourceState.data.orEmpty()
-
-                    val responseList = if (records.isNullOrEmpty()) {
-                        listOf(
-                            ViralLoadRecord(
-                                getString(R.string._1st),
-                                getString(R.string.empty__),
-                                getString(R.string.empty__),
-                                getString(R.string.empty__)
-                            )
-                        )
-                    } else {
-                        records.mapIndexed { index, record ->
-                            if (record.collectionDate.isNullOrBlank()
-                                || record.gestationAtCollection.isNullOrBlank()
-                                || record.result.isNullOrBlank()
-                            ) {
-                                createPlaceholderRecord(getString(R.string._1st))
-                            } else {
-                                record.toViralLoadRecord(index + 1)
-                            }
-                        }
-                    }
-
-                    viralLoadRecordsState.value = responseList
+                    // Handle error state if needed
                 }
 
                 ResourceState.SUCCESS -> {
                     val recordList = resourceState.data
 
                     if (!recordList.isNullOrEmpty()) {
-                        viralLoadRecordsState.value = recordList.mapIndexed { index, record ->
-                            if (record.collectionDate.isNullOrBlank()
-                                || record.gestationAtCollection.isNullOrBlank()
-                                || record.result.isNullOrBlank()
-                            ) {
-                                createPlaceholderRecord(getString(R.string._1st))
-                            } else {
-                                record.toViralLoadRecord(index + 1)
-                            }
+                        val responseList = recordList.map { record ->
+                            val startDate = DateUtils.formatDateToDDMMYYYY(record.prescribedSince)
+                            val endDate = DateUtils.formatDateToDDMMYYYY(record.endDate)
+                            val regimen = record.medicationName
+                            val regimenLine = record.regimenLine
+                            val reasonForChange = record.reasonsForChange
+                            ARTLoadRecord(
+                                startDate,
+                                endDate,
+                                regimen,
+                                regimenLine ?: getString(R.string.empty__),
+                                reasonForChange ?: getString(R.string.empty__)
+                            )
                         }
+                        aRTRecordsState.value = responseList
                     } else {
-                        viralLoadRecordsState.value = listOf(
-                            ViralLoadRecord(
-                                getString(R.string._1st),
+                        aRTRecordsState.value = listOf(
+                            ARTLoadRecord(
+                                getString(R.string.empty__),
+                                getString(R.string.empty__),
                                 getString(R.string.empty__),
                                 getString(R.string.empty__),
                                 getString(R.string.empty__)
@@ -136,15 +117,13 @@ class ViralLoadFragment : BaseFragment() {
                         )
                     }
                 }
-
-
             }
         }
 
     }
 
     @Composable
-    fun ViralLoadTable(records: List<ViralLoadRecord>?) {
+    fun ARTLoadTable(records: List<ARTLoadRecord>?) {
         Card(
             shape = RoundedCornerShape(12.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -166,7 +145,9 @@ class ViralLoadFragment : BaseFragment() {
 
                 ) {
                     Text(
-                        text = stringResource(R.string.viral_load),
+                        text = if(arguments?.getBoolean(DefinedParams.HIV_IMR_CMR) != true) stringResource(
+                            R.string.art_regimen
+                        )else stringResource(R.string.current_medication),
                         fontSize = 16.sp,
                         color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.inter_bold))
@@ -194,11 +175,13 @@ class ViralLoadFragment : BaseFragment() {
 
                     val headers =
                         listOf(
-                            stringResource(R.string.viral_load),
-                            stringResource(R.string.collection_date),
-                            stringResource(R.string.gestation_at_collection_date),
-                            stringResource(R.string.results)
+                            stringResource(R.string.start_date).uppercase(),
+                            stringResource(R.string.end_date).uppercase(),
+                            stringResource(R.string.regimen),
+                            stringResource(R.string.regimen_line),
+                            stringResource(R.string.reasons_for_change)
                         )
+
                     headers.forEach { label ->
                         Box(
                             modifier = Modifier
@@ -221,15 +204,15 @@ class ViralLoadFragment : BaseFragment() {
                 }
 
                 // Data Rows
-
                 records?.forEachIndexed { rowIndex, record ->
                     val isLastRow = rowIndex == records.lastIndex
-                    var data =
-                        listOf(
-                            record.label,
-                            DateUtils.formatDateToDDMMYYYY(record.collectionDate.toString()),
-                            record.gestationAtDate.toString(),
-                            record.result ?: requireContext().getString(R.string.empty__))
+                    var data = listOf(
+                        record.startDate,
+                        record.endDate ?: "--",
+                        record.regimen ?: "--",
+                        record.regimenLine ?: "--",
+                        record.reasonForChange ?: "--"
+                    )
 
                     Row(
                         modifier = Modifier
@@ -284,8 +267,11 @@ class ViralLoadFragment : BaseFragment() {
             }
         }
     }
+
+
+
     companion object {
-        const val TAG = "ViralLoadFragment"
+        const val TAG = "ARTRegimenFragment"
     }
 
     private fun getOrdinal(number: Int): String {
@@ -298,24 +284,13 @@ class ViralLoadFragment : BaseFragment() {
         }
     }
 
-    // Extension function to map ViralLoadResponse to ViralLoadRecord with label ordinal
-    private fun ViralLoadResponse.toViralLoadRecord(position: Int): ViralLoadRecord =
-        ViralLoadRecord(
-            label = getOrdinal(position),
-            collectionDate = collectionDate!!,
-            gestationAtDate = gestationAtCollection!!,
-            result = result!!
+    fun refreshFragment(patientReference: String?, id: String?) {
+        viewModel.getARTData(
+            id,
+            limit = 5,
+            category = DefinedParams.HIV,
+            isActive = true
         )
-
-    // Helper to create placeholder record with hyphens and given label
-    private fun createPlaceholderRecord(label: String) = ViralLoadRecord(
-        label = label,
-        collectionDate = getString(R.string.empty__),
-        gestationAtDate = getString(R.string.empty__),
-        result = getString(R.string.empty__)
-    )
-    fun refreshFragment(patientReference: String?, memberReference: String?)
-    {
-        viewModel.getViralLoadData(patientReference,memberReference)
     }
+
 }

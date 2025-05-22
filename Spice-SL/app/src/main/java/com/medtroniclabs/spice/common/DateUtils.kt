@@ -19,6 +19,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Date
@@ -959,4 +960,27 @@ object DateUtils {
         val sdf = SimpleDateFormat(pattern, Locale.getDefault())
         return sdf.parse(dateStr)?.time ?: 0L
     }
+    fun formatDateToDDMMYYYY(dateString: String?): String {
+        if (dateString.isNullOrBlank() || dateString == "--") {
+            return "--"  // fallback display string
+        }
+
+        return try {
+            val parsedDate = OffsetDateTime.parse(dateString)
+            val formatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy, Locale.getDefault())
+            parsedDate.format(formatter)
+        } catch (e: DateTimeParseException) {
+            "--"
+        }
+    }
+    fun getFormattedDateAfterDays(
+        daysToAdd: Long = 14,
+        fromDate: LocalDate = LocalDate.now(),
+        format: String = DATE_ddMMyyyy
+    ): String {
+        val formatter = DateTimeFormatter.ofPattern(format)
+        val newDate = fromDate.plusDays(daysToAdd)
+        return newDate.format(formatter)
+    }
+
 }

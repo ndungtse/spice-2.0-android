@@ -1,6 +1,11 @@
 package com.medtroniclabs.spice.data.model
 
+import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
+import com.medtroniclabs.spice.data.Prescription
+import com.medtroniclabs.spice.data.history.Investigation
+import com.medtroniclabs.spice.data.history.PatientStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+import com.medtroniclabs.spice.ncd.data.Diagnosis
 
 data class HivScreeningRequest(
     private val historyList: List<String>? = null,
@@ -19,6 +24,8 @@ data class HivScreeningRequest(
     private val hivSyphilisDuoTest:String? = null,
     private val hbsAGTest:String? = null,
     private val screeningType: String? = null,
+    private val clinicalNotes: String? = null,
+    private val id: String? = null
 
 )
 
@@ -31,11 +38,17 @@ data class HivScreeningResponse(
 data class HivCreateScreeningSummaryResponse(
     val id: String? = null,
     val eligibilities: Eligibilities? = null,
+    val diagnosis : List<DiagnosisDiseaseModel>? = null,
     val a1TestResult: String? = null,
     val a2TestResult: String? = null,
     val a3TestResult: String? = null,
     val entryPoint: String? = null,
-    val hivSyphilisDuoTest: String? = null
+    val hivSyphilisDuoTest: String? = null,
+    val summaryStatus: List<PatientStatus>? = null,
+    val hbsAGTest: String? = null,
+    val clinicalNotes : String? = null,
+    val prescriptions: List<Prescription>? = null,
+    val investigations: List<Investigation>? = null,
 )
 
 data class Eligibilities(
@@ -87,4 +100,13 @@ data class MedicalReviewEntity(
     val referralDetails: Any? = null
 )
 
+data class ViralLoadRequest(
+    val patientReference: String? = null,
+    val memberReference: String? = null,
+)
 
+data class ViralLoadResponse(
+    val collectionDate: String? = null,
+    val gestationAtCollection: String?= null,
+    val result: String?= null,
+)

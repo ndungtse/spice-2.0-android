@@ -25,7 +25,9 @@ class MedicalReviewSummaryRepository @Inject constructor(
         householdId: String?,
         villageId: String,
         treatmentOutComes: String? = null,
-        tbIMRCompleted:Boolean? = null
+        tbIMRCompleted:Boolean? = null,
+        eMTCTStatus: String? = null,
+        maternalOutcome: String? = null
     ): Resource<HashMap<String, Any>> {
         return try {
             val request = MedicalReviewSummarySubmitRequest(
@@ -43,7 +45,9 @@ class MedicalReviewSummaryRepository @Inject constructor(
                 medicalSupplies = medicalSupplies,
                 patientReference = patientReference,
                 treatmentOutcome = treatmentOutComes,
-                tbIMRCompleted = tbIMRCompleted
+                tbIMRCompleted = tbIMRCompleted,
+                emtctVisitStatus = eMTCTStatus,
+                maternalOutcome = maternalOutcome
             )
             val response = request.let { apiHelper.createSummarySubmit(it) }
             if (response.isSuccessful) {

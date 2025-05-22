@@ -30,6 +30,7 @@ class WhoClinicalStageViewModel @Inject constructor(
     var lastLocation: Location? = null
     var whoStageChip: ArrayList<ChipViewItemModel> = ArrayList()
     val whoStageCreateLiveData = MutableLiveData<Resource<HivClinicalInfoResponse>>()
+    val whoValue :String? = null
 
 
     private val getMeta = MutableLiveData<String>()

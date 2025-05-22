@@ -17,5 +17,7 @@ data class MedicalReviewSummarySubmitRequest(
     val householdId: String? = null,
     val villageId: String? = null,
     val tbIMRCompleted: Boolean? = null,
-    val treatmentOutcome: String? = null
+    val treatmentOutcome: String? = null,
+    val maternalOutcome:String? = null,
+    val emtctVisitStatus:String? = null
 )

@@ -101,7 +101,7 @@
         android:gravity="bottom"
         android:orientation="horizontal"
         android:padding="@dimen/_12sdp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/btnLayout"
         app:layout_constraintTop_toBottomOf="@id/refreshLayout">
 

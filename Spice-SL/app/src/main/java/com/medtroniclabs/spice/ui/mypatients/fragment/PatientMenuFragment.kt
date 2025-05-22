@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.common.DefinedParams.male
 import com.medtroniclabs.spice.common.DefinedParams.villageId
 import com.medtroniclabs.spice.databinding.FragmentPatientMenuBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -37,14 +38,13 @@ import com.medtroniclabs.spice.ui.home.MenuSelectionListener
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsBaseActivity
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.SelectFlowDialog
-import com.medtroniclabs.spice.ui.medicalreview.underfiveyears.UnderFiveYearsBaseActivity
-import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity
-import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.ui.medicalreview.epi.ImmunizationActivity
 import com.medtroniclabs.spice.ui.medicalreview.familyplan.activity.FamilyPlanMedicalReviewActivity
 import com.medtroniclabs.spice.ui.medicalreview.hiv.activity.HivImrAndCmrActivity
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.SelectFlowDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.activity.TBMedicalReviewActivity
+import com.medtroniclabs.spice.ui.medicalreview.underfiveyears.UnderFiveYearsBaseActivity
+import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -105,7 +105,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
         // Check and set isDisable property based on gender
         menuItemsList.forEach { menuItem ->
             when (menuItem.name) {
-                 (MenuConstants.MOTHER_AND_NEONATE_ID)->{
+                (MenuConstants.MOTHER_AND_NEONATE_ID) -> {
                     menuItem.isDisabled = when {
                         gender.equals(male, true) -> true
                         gender.equals(female, true) && !dob.isNullOrBlank() -> {
@@ -127,13 +127,19 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                     }
                 }
 
-                    MenuConstants.GENERAL_ID -> menuItem.isDisabled = isGeneralDisabled(dob)
-                    MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID -> menuItem.isDisabled =isUnderFiveToTwoMonthsDisabled(dob)
-                    MenuConstants.UNDER_AGE_ABOVE_FIVE_YEAR_ID ->menuItem.isDisabled = isUnderAgeAboveFiveYearsDisabled(dob)
-                    MenuConstants.EPI_ID -> menuItem.isDisabled = !isUnderSixtyMonths(dob)
-                    MenuConstants.TB_MENU_ID -> menuItem.isDisabled = false
-                    MenuConstants.FP_MENU_MR -> menuItem.isDisabled = isUnderAgeFamilyPlanningDisabled(dob)
-                    else -> {}
+                MenuConstants.GENERAL_ID -> menuItem.isDisabled = isGeneralDisabled(dob)
+                MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID -> menuItem.isDisabled =
+                    isUnderFiveToTwoMonthsDisabled(dob)
+
+                MenuConstants.UNDER_AGE_ABOVE_FIVE_YEAR_ID -> menuItem.isDisabled =
+                    isUnderAgeAboveFiveYearsDisabled(dob)
+
+                MenuConstants.EPI_ID -> menuItem.isDisabled = !isUnderSixtyMonths(dob)
+                MenuConstants.TB_MENU_ID -> menuItem.isDisabled = false
+                MenuConstants.FP_MENU_MR -> menuItem.isDisabled =
+                    isUnderAgeFamilyPlanningDisabled(dob)
+
+                else -> {}
 
             }
 
@@ -154,11 +160,13 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             gender: String?,
             dob: String?,
             childPatientId: String?,
-            dateOfDelivery:String?,
+            dateOfDelivery: String?,
             neonateOutcome: String?,
-            householdId:String?,
-            villageId:String?,
-            isPregnant:Boolean,
+            householdId: String?,
+            villageId: String?,
+            isPregnant: Boolean,
+            isEMTCTFlow: Boolean,
+            hivTestedPositive: Boolean
         ): PatientMenuFragment {
             val fragment = PatientMenuFragment()
             val bundle = Bundle()
@@ -169,10 +177,12 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             bundle.putString(DOB, dob)
             bundle.putString(ChildPatientId, childPatientId)
             bundle.putString(DateOfDelivery, dateOfDelivery)
-            bundle.putString(NeonateOutcome,neonateOutcome)
+            bundle.putString(NeonateOutcome, neonateOutcome)
             bundle.putString(DefinedParams.householdId, householdId)
             bundle.putString(DefinedParams.villageId, villageId)
-            bundle.putBoolean(DefinedParams.isPregnant,isPregnant)
+            bundle.putBoolean(DefinedParams.isPregnant, isPregnant)
+            bundle.putBoolean(DefinedParams.EMTCT, isEMTCTFlow)
+            bundle.putBoolean(DefinedParams.hivTestedPositive, hivTestedPositive)
             fragment.arguments = bundle
             return fragment
         }
@@ -202,11 +212,23 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                 withNetworkAvailability(online = {
                     val patientId = arguments?.getString(PatientId, "")
                     val id = arguments?.getString(ID, "")
-                    val childPatientId=arguments?.getString(ChildPatientId,"")
-                    val dateOfDelivery=arguments?.getString(DateOfDelivery,"")
-                    val neonateOutcome=arguments?.getString(NeonateOutcome,"")
+                    val childPatientId = arguments?.getString(ChildPatientId, "")
+                    val dateOfDelivery = arguments?.getString(DateOfDelivery, "")
+                    val neonateOutcome = arguments?.getString(NeonateOutcome, "")
+                    val isEmtctFlow = arguments?.getBoolean(DefinedParams.EMTCT, false)
+                    val hivTestedPositive =
+                        arguments?.getBoolean(DefinedParams.hivTestedPositive, false)
                     if (patientId?.isNotBlank() == true) {
-                        SelectFlowDialog.newInstance(patientId, id,childPatientId,dateOfDelivery,neonateOutcome)
+                        SelectFlowDialog.newInstance(
+                            patientId,
+                            id,
+                            childPatientId,
+                            dateOfDelivery,
+                            neonateOutcome,
+                            arguments?.getString(MemberID),
+                            isEmtctFlow,
+                            hivTestedPositive
+                        )
                             .show(childFragmentManager, SelectFlowDialog.TAG)
                     }
                 })
@@ -232,13 +254,19 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                 intent.putExtra(DOB, arguments?.getString(DOB))
                 intent.putExtra(ID, arguments?.getString(ID))
                 intent.putExtra(MemberID, arguments?.getString(MemberID))
-                intent.putExtra(DefinedParams.householdId, arguments?.getString(DefinedParams.householdId))
-                intent.putExtra(DefinedParams.villageId, arguments?.getString(DefinedParams.villageId))
+                intent.putExtra(
+                    DefinedParams.householdId,
+                    arguments?.getString(DefinedParams.householdId)
+                )
+                intent.putExtra(
+                    DefinedParams.villageId,
+                    arguments?.getString(DefinedParams.villageId)
+                )
                 startActivity(intent)
             }
 
             MenuConstants.FP_MENU_MR -> {
-                val intent = Intent(requireContext(),FamilyPlanMedicalReviewActivity::class.java)
+                val intent = Intent(requireContext(), FamilyPlanMedicalReviewActivity::class.java)
                 intent.putExtra(PatientId, arguments?.getString(PatientId))
                 intent.putExtra(DOB, arguments?.getString(DOB))
                 intent.putExtra(ID, arguments?.getString(ID))
@@ -247,14 +275,28 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.HIV -> {
-                val isPregnant = arguments?.getBoolean(DefinedParams.isPregnant,false)
-                arguments?.getString(villageId)?.let { villageId ->
-                    SelectFlowDialog.newInstanceHiv(arguments?.getString(PatientId), arguments?.getString(ID),true,
-                        isPregnant == true,arguments?.getString(MemberID), villageId,
-                    )
-                        .show(childFragmentManager, SelectFlowDialog.TAG)
+                if (arguments?.getBoolean(DefinedParams.hivTestedPositive, false) == true) {
+                    val patientId = arguments?.getString(PatientId, "")
+                    val id = arguments?.getString(ID, "")
+                    val intent =
+                        Intent(requireContext(), HivImrAndCmrActivity::class.java)
+                    if (patientId?.isNotBlank() == true) {
+                        intent.putExtra(PatientId, patientId)
+                        intent.putExtra(ID, id)
+                    }
+                    startActivity(intent)
+                } else {
+                    val isPregnant = arguments?.getBoolean(DefinedParams.isPregnant, false)
+                    arguments?.getString(villageId)?.let { villageId ->
+                        SelectFlowDialog.newInstanceHiv(
+                            arguments?.getString(PatientId), arguments?.getString(ID), true,
+                            isPregnant == true, arguments?.getString(MemberID), villageId,
+                        )
+                            .show(childFragmentManager, SelectFlowDialog.TAG)
+                    }
                 }
             }
+
             else -> {
                 startAssessmentActivity()
             }
@@ -274,6 +316,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
         }
     }
+
     private fun isGeneralDisabled(dob: String?): Boolean {
         if (dob.isNullOrBlank()) return false
         val age = DateUtils.getV2YearMonthAndWeek(dob)
@@ -312,7 +355,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             // Age is less than 2 months
             age.years == 0 && age.months < 2 -> true
 
-            age.years == 0  && (age.months == 2 && age.weeks == 0 && age.days == 0)->false
+            age.years == 0 && (age.months == 2 && age.weeks == 0 && age.days == 0) -> false
             // Age is exactly 5 years
             age.years == 5 && (age.months == 0 && age.weeks == 0 && age.days == 0) -> false
             // Age is more than 2 months but less than 5 years

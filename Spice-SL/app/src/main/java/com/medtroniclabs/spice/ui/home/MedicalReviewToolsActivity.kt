@@ -58,7 +58,9 @@ class MedicalReviewToolsActivity : BaseActivity() {
                 intent.getStringExtra(DefinedParams.NeonateOutcome),
                 villageId = intent.getStringExtra(DefinedParams.villageId),
                 householdId = intent.getStringExtra(DefinedParams.householdId),
-                isPregnant = intent.getBooleanExtra(DefinedParams.isPregnant,false)
+                isPregnant = intent.getBooleanExtra(DefinedParams.isPregnant,false),
+                isEMTCTFlow = intent.getBooleanExtra(DefinedParams.EMTCT,false),
+                hivTestedPositive = intent.getBooleanExtra(DefinedParams.hivTestedPositive,false)
             )
             setTitle(
                 intent.getStringExtra(DefinedParams.MenuTitle)

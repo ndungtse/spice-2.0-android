@@ -18,5 +18,9 @@ data class HivMetaResponse(
     val hivTestDurations: List<MedicalReviewMetaItems>,
     val entryPoint: List<MedicalReviewMetaItems>,
     val whoClinicalStage: List<MedicalReviewMetaItems>,
-    val emtctVisitStatus: List<MedicalReviewMetaItems>
+    val emtctVisitStatus: List<MedicalReviewMetaItems>,
+    val emtctEntryPoint:  List<MedicalReviewMetaItems>,
+    val tbStatus: List<MedicalReviewMetaItems>,
+    val maternalOutcome: List<MedicalReviewMetaItems>,
+    val obstetricExaminations: List<MedicalReviewMetaItems>
     )

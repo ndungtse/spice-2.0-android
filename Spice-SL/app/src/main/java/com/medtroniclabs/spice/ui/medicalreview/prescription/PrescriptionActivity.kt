@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import androidx.activity.viewModels
+import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
@@ -33,6 +34,7 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.DeleteReasonDialog
 import com.medtroniclabs.spice.ui.medicalreview.SignatureDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.SignatureListener
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -203,10 +205,16 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             val value = map[DefinedParams.EncounterId]
                             if (value is String) {
                                 intent.putExtra(DefinedParams.EncounterId, value)
+                                intent.putExtra(DefinedParams.PRESCRIPTION,true)
+
                             }
                         }
                         setResult(RESULT_OK, intent)
                         finish()
+                        supportFragmentManager.setFragmentResult(
+                            MedicalReviewDefinedParams.PRESCRIPTION, bundleOf(
+                                MedicalReviewDefinedParams.Notes to true)
+                        )
                     }
                 }
             }

@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
 import com.medtroniclabs.spice.data.DiagnosisSaveUpdateRequest
 import com.medtroniclabs.spice.data.DiseaseCategoryItems

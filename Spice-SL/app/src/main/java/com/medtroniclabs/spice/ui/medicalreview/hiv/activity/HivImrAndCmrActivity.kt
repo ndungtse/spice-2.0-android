@@ -8,7 +8,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
@@ -31,6 +30,7 @@ import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
+import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.ARTRegimenFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HIVStatusFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivGeneralAndSystemicExaminationFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivImrCmrSummaryFragment
@@ -484,7 +484,9 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
                         summaryViewModel.patientStatus,
                         patientViewModel.getVillageId(),
                         patientViewModel.getPatientId(),
-                        MedicalReviewTypeEnums.HIV_MEDICAL_REVIEW.name
+                        MedicalReviewTypeEnums.HIV_MEDICAL_REVIEW.name,
+                        summaryViewModel.eMTCTStatus,
+                        summaryViewModel.maternalOutcome
                     )
                 } else {
                     showErrorDialogue(
@@ -679,14 +681,14 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
         binding.comorbiditiesContainer.setVisible(patientViewModel.getHivMedicalReviewStatus())
         binding.clinicalNotesContainer.visible()
         binding.hivClinicalNotesContainer.visible()
-        replaceFragmentOrCreateNewFragment<ViralLoadFragment>(
+        replaceFragmentOrCreateNewFragment<ARTRegimenFragment>(
             R.id.comorbiditiesContainer,
             bundle = Bundle().apply {
-                putBoolean(DefinedParams.VIRAL_LOAD, false)
                 putString(DefinedParams.PatientId, intent.getStringExtra(DefinedParams.PatientId))
                 putString(DefinedParams.ID, intent.getStringExtra(DefinedParams.ID))
+                putBoolean(DefinedParams.HIV_IMR_CMR,true)
             },
-            tag = ViralLoadFragment.TAG_ART
+            tag = ARTRegimenFragment.TAG
         )
         addOrReuseFragment(
             R.id.systemicExaminationsContainer,

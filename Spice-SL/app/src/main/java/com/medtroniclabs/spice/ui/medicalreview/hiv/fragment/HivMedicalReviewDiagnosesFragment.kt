@@ -17,7 +17,6 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.HIV
-import com.medtroniclabs.spice.common.DefinedParams.HIV_MEDICAL_REVIEW
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.databinding.FragmentHivMedicalReviewDiagnosesBinding
@@ -30,6 +29,7 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivViewModel
+import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.WhoClinicalStageViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListenerForTb
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
@@ -50,6 +50,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
     private val diagnosisViewModel: DiagnosisViewModel by activityViewModels()
     private val viewModel: MotherNeonateBpWeightViewModel by activityViewModels()
     private val hivViewModel: HivViewModel by activityViewModels()
+    private val whoStageViewModel: WhoClinicalStageViewModel by activityViewModels()
 
 
     override fun onCreateView(
@@ -68,30 +69,69 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
     }
 
     private fun initView() {
+        hivViewModel.isEMTCTMR = arguments?.getBoolean(DefinedParams.EMTCTMR, false) == true
+        diagnosisViewModel.diagnosisType = MedicalReviewTypeEnums.HIV_REVIEW.name
+        diagnosisViewModel.getDiagnosisMetaList(diagnosisViewModel.diagnosisType)
         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
             details.id?.let { id ->
                 diagnosisViewModel.getDiagnosisDetails(
                     CreateUnderTwoMonthsResponse(
                         patientReference = id,
-                        type = HIV_MEDICAL_REVIEW
+                        type = MedicalReviewTypeEnums.HIV_REVIEW.name
                     )
                 )
             }
         }
 
-        diagnosisViewModel.diagnosisType = MedicalReviewTypeEnums.HIV_REVIEW.name
-        diagnosisViewModel.getDiagnosisMetaList(diagnosisViewModel.diagnosisType)
         binding.tvDiagnosisConfirm.safeClickListener(this)
         binding.tvBmiHistory.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
         binding.tvEmtctVisitStatusUpdate.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
         binding.tvAddHeight.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
         binding.retryButtonWeight.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
         binding.tvAddWeight.safeClickListener(this@HivMedicalReviewDiagnosesFragment)
+        binding.tvWho.safeClickListener(this)
+        binding.tvCd4.safeClickListener(this)
         viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
         viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
         viewModel.fetchBmi(MotherNeonateAncRequest(memberId = getMemberId()))
         binding.tvDiagnosisLbl.text = getString(R.string.diagnosis)
         binding.tvHeightLbl.text = getString(R.string.height_hint)
+        patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+            details.id?.let { id ->
+                diagnosisViewModel.getDiagnosisDetails(
+                    CreateUnderTwoMonthsResponse(
+                        patientReference = id,
+                        type = MedicalReviewTypeEnums.HIV_REVIEW.name
+                    )
+                )
+            }
+        }
+        if (hivViewModel.isEMTCTMR) {
+            with(binding) {
+                cardWhoClinicalStage.visible()
+                cardCd4.visible()
+                cardEmtct.visible()
+                cardHeight.gone()
+                cardBMI.gone()
+            }
+
+            patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                details.id?.let { id ->
+                    diagnosisViewModel.getHivVitalsDetails(
+                        patientReference = id,
+                        memberId = getMemberId()
+                    )
+                }
+            }
+        } else {
+            with(binding) {
+                cardWhoClinicalStage.gone()
+                cardCd4.gone()
+                cardEmtct.gone()
+                cardHeight.visible()
+                cardBMI.visible()
+            }
+        }
 
     }
 
@@ -117,7 +157,29 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
             binding.tvAddHeight.id -> showAddHeightDialog()
             binding.tvBmiHistory.id -> showBmiDialog()
             binding.tvEmtctVisitStatusUpdate.id -> showEmtctVisitStatusDialog()
+            binding.tvWho.id -> showWhoStage()
+            binding.tvCd4.id -> showCD4Dialog(true, false)
         }
+    }
+    private fun showCD4Dialog(isCd4: Boolean, isCd4Percentage: Boolean) {
+        withNetworkAvailability(online = {
+            showDialogIfNotPresent(CD4DialogFragment.TAG) {
+                CD4DialogFragment.newInstance(
+                    isCD4 = isCd4,
+                    isCD4Percentage = isCd4Percentage
+                )
+            }
+        })
+    }
+
+    private fun showWhoStage() {
+        withNetworkAvailability(online = {
+            showDialogIfNotPresent(WhoClinicalStageFragment.TAG) {
+                WhoClinicalStageFragment.newInstance().apply {
+                    listener = this@HivMedicalReviewDiagnosesFragment
+                }
+            }
+        })
     }
 
     private fun showDiagnosisDialog() {
@@ -145,7 +207,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                 diagnosisViewModel.getDiagnosisDetails(
                     CreateUnderTwoMonthsResponse(
                         patientReference = id,
-                        type = HIV_MEDICAL_REVIEW
+                        type = MedicalReviewTypeEnums.HIV_REVIEW.name
                     )
                 )
             }
@@ -184,7 +246,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                     resourceState.data?.let {
                         weightTextView.text =
                             MotherNeonateUtil.convertWeight(it.weight, requireContext())
-                        if(it.weight == null || it.weight == 0.0){
+                        if (it.weight == null || it.weight == 0.0) {
                             binding.tvAddWeight.text = getString(R.string.edit_weights)
                         }
                     }
@@ -212,12 +274,12 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                     resource.data?.let { list ->
                         val diagnosisItems = list.map { it.diseaseCategory }.distinct()
                         if (isHiv()) {
-                            list.forEach { it.type = HIV_MEDICAL_REVIEW }
+                            list.forEach { it.type = MedicalReviewTypeEnums.HIV_REVIEW.name }
                             updateDiagnosisUI(
                                 diagnosisItems = diagnosisItems,
                                 condition = list.any {
                                     it.type.equals(
-                                        HIV_MEDICAL_REVIEW,
+                                        MedicalReviewTypeEnums.HIV_REVIEW.name,
                                         ignoreCase = true
                                     ) || it.type.isNullOrBlank()
                                 },
@@ -225,6 +287,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                                 buttonView = binding.tvDiagnosisConfirm,
                                 metaList = diagnosisViewModel.diagnosisMetaList
                             )
+
                         } else {
                             binding.diagnosesPageProgress.visible()
                             updateDiagnosisUI(
@@ -267,7 +330,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                                 requireContext()
                             ).takeIf { it.isNotEmpty() } ?: "--"
 
-                        if (!binding.tvHeight.text.toString().equals("--",true)){
+                        if (!binding.tvHeight.text.toString().equals("--", true)) {
                             binding.tvAddHeight.text = getString(R.string.edit_height)
                         }
                     }
@@ -355,10 +418,62 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                     response.data?.let { data ->
                         binding.tvEmtct.text =
                             data.emtctVisitStatus.takeIf { !it.isNullOrEmpty() } ?: "-"
+                        hivViewModel.emtctVisitStatus = data.emtctVisitStatus
                     }
                 }
             }
         }
+        diagnosisViewModel.hivVitalsDetailLiveData.observe(viewLifecycleOwner) { resources ->
+            when (resources.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resources.data?.let { list ->
+                        binding.tvCd4Value.text = list.cd4.takeIf { !it.isNullOrEmpty() } ?: getString(R.string.seperator_hyphen)
+                        binding.tvWhoValue.text =
+                            list.whoClinicalStage ?: getText(R.string.seperator_hyphen)
+                        binding.tvWho.text = if (list.whoClinicalStage != null) {
+                            getString(R.string.edit_who_clinical_stage)
+                        } else {
+                            getString(R.string.add_who_clinical_stage)
+                        }
+                        hivViewModel.cd4Value = list.cd4.takeIf { !it.isNullOrEmpty() }
+                        hivViewModel.whovalue = list.whoClinicalStage
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+
+
+        whoStageViewModel.whoStageCreateLiveData.observe(viewLifecycleOwner) { resourcesState ->
+            when (resourcesState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                        diagnosisViewModel.getHivVitalsDetails(
+                            patientReference = details.id,
+                            memberId = details.memberId
+                        )
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+
     }
 
 

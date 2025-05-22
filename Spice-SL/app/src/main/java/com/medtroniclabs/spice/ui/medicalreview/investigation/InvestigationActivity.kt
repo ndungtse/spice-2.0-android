@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import androidx.activity.viewModels
+import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
@@ -30,6 +32,7 @@ import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.LipidsNudge
 import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.MarkAsReviewedConfirmationDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.TbConfirmDiagnosisAndSiteOfDiseaseDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.TbConfirmDiagnosisAndSiteOfDiseaseViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
@@ -183,15 +186,18 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                 ResourceState.SUCCESS -> {
                     resource.data?.let { map ->
                         hideLoading()
+
                         val intent = Intent()
                         if (map.containsKey(DefinedParams.EncounterId)) {
                             val value = map[DefinedParams.EncounterId]
                             if (value is String) {
                                 intent.putExtra(DefinedParams.EncounterId, value)
+                                intent.putExtra(DefinedParams.Investigation,true)
                             }
                         }
                         setResult(RESULT_OK, intent)
                         finish()
+
                     } ?: kotlin.run {
                         hideLoading()
                     }

@@ -8,12 +8,13 @@
         android:id="@+id/flowCards"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="cardDiagnoses,cardHeight,cardWeight,cardBMI,cardEmtct"
+        app:constraint_referenced_ids="cardDiagnoses,cardWhoClinicalStage,cardHeight,cardWeight,cardCd4,cardBMI,cardEmtct"
         app:flow_wrapMode="none"
         app:flow_horizontalStyle="packed"
         app:flow_horizontalAlign="start"
         app:flow_maxElementsWrap="7"
         app:flow_horizontalGap="8dp"
+        app:flow_verticalGap="@dimen/_4sdp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -30,6 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
+            android:layout_margin="@dimen/_8sdp"
             android:padding="10dp">
 
             <ProgressBar
@@ -82,6 +84,66 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardWhoClinicalStage"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="@dimen/_0dp"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_8sdp"
+        android:layout_weight="1"
+        app:cardCornerRadius="@dimen/_5sdp"
+        app:cardElevation="@dimen/_4sdp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clWho"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/_8sdp"
+            android:background="@color/white"
+            android:padding="@dimen/_10sdp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvWhoLbl"
+                style="@style/TextStyle_Regular_16"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="@string/who_clinical_stage"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvWhoValue"
+                style="@style/TextStyle_Bold_16_Size"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="3"
+                android:text="@string/seperator_hyphen"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvWhoLbl" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvWho"
+                style="@style/TextStyle_Regular_16_Size"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="@string/edit_who_clinical_stage"
+                android:textColor="@color/medium_blue"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvWhoValue" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardHeight"
@@ -100,6 +162,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/_8sdp"
             android:background="@color/white"
             android:padding="@dimen/_10sdp">
 
@@ -184,6 +247,7 @@
             android:id="@+id/clWeight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_8sdp"
             android:layout_gravity="center_horizontal"
             android:background="@color/white"
             android:padding="@dimen/_10sdp">
@@ -252,6 +316,90 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardCd4"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="@dimen/_0dp"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_8sdp"
+        android:layout_weight="1"
+        app:cardCornerRadius="@dimen/_5sdp"
+        app:cardElevation="@dimen/_4sdp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clCd4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/_8sdp"
+            android:background="@color/white"
+            android:padding="@dimen/_10sdp">
+
+            <ProgressBar
+                android:id="@+id/pageProgressCd4"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCd4Label"
+                style="@style/TextStyle_Regular_16"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="@string/weight_hint"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCd4Value"
+                style="@style/TextStyle_Bold_16_Size"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="@string/hyphen_symbol"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvCd4Label" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCd4"
+                style="@style/TextStyle_Regular_16_Size"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="@string/view_cd4"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:textColor="@color/medium_blue"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvCd4Value" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/retryCd4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/retry"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:visibility="gone"
+                app:cornerRadius="18dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvCd4" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardBMI"
@@ -272,6 +420,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:background="@color/white"
+            android:layout_margin="@dimen/_8sdp"
             android:padding="@dimen/_10sdp">
 
             <ProgressBar
@@ -340,13 +489,12 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardEmtct"
         android:layout_width="@dimen/_0dp"
-        android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_height="@dimen/_0dp"
+        android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginTop="@dimen/_15sdp"
         android:layout_marginEnd="@dimen/_5sdp"
         android:layout_marginBottom="@dimen/_8sdp"
         android:layout_weight="1"
-        android:visibility="visible"
         app:cardCornerRadius="@dimen/_5sdp"
         app:cardElevation="@dimen/_4sdp">
 
@@ -354,8 +502,10 @@
             android:id="@+id/clEmtct"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:padding="10dp">
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/_8sdp"
+            android:background="@color/white"
+            android:padding="@dimen/_10sdp">
 
             <ProgressBar
                 android:id="@+id/emtctPageProgress"

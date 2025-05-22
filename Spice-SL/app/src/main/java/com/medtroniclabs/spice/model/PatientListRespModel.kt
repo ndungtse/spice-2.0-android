@@ -86,7 +86,10 @@ data class PatientListRespModel(
     var diastolic: Double? = null,
     val hivIMRCompleted: Boolean = false,
     val hivTestedPositive: Boolean = false,
-    val populationTypeList: List<String>? = null
+    val populationTypeList: List<String>? = null,
+    val emtctEnrollDate: String? = null,
+    val entryPoint: String? = null,
+    val isEmtctFlow:Boolean? = null
 ) : Serializable
 
 data class PregnancyDetails(
@@ -134,3 +137,5 @@ data class PrescribedDetails(
 ) : Serializable
 
 data class NeoNateListModel(var isActive:Boolean?=null)
+
+data class PregnancySummaryRequest(var patientReference: String? = null)
