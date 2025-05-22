@@ -511,7 +511,8 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
                 memberId = patientViewModel.getPatientMemberId()
             ),
             clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
-            medicalReviewType = MedicalReviewTypeEnums.HIV_MEDICAL_REVIEW.name
+            medicalReviewType = MedicalReviewTypeEnums.HIV_MEDICAL_REVIEW.name,
+            id = patientViewModel.encounterId
         )
     }
 

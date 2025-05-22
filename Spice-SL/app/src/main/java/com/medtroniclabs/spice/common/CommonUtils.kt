@@ -2040,4 +2040,8 @@ object CommonUtils {
     fun Map<String, String>.toFormattedList(): List<String> {
         return this.map { (key, value) -> "$key : $value" }
     }
+
+    fun Map<String, String>.toFormattedListWithHyphen(): List<String> {
+        return this.map { (key, value) -> "$key - $value" }
+    }
 }

@@ -24,6 +24,7 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.combineText
+import com.medtroniclabs.spice.common.CommonUtils.toFormattedListWithHyphen
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Above5MedicalReview
@@ -43,6 +44,7 @@ import com.medtroniclabs.spice.model.ReferredDate
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.adapter.DateListAdapter
 import com.medtroniclabs.spice.ui.referralhistory.adapter.ReferralHistoryAdapter
 import com.medtroniclabs.spice.ui.referralhistory.viewmodel.ReferralHistoryViewModel
@@ -374,6 +376,72 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
 
     private fun createMedicalReview(medicalReviewHistory: MedicalReviewHistory): List<Map<String, Any?>> {
+        if (medicalReviewHistory.type == MedicalReviewTypeEnums.HIV_MEDICAL_REVIEW.name) {
+            val hivSystemicExaminations =
+                (medicalReviewHistory.reviewDetails?.systemicExaminations as? Map<String, String>)?.toFormattedListWithHyphen()
+                    .takeIf { !it.isNullOrEmpty() }
+                    ?: emptyList()
+            return listOf(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.diagnosis_tb),
+                    Value to combineText(
+                        medicalReviewHistory.reviewDetails?.diagnosis?.filter {
+                            it.diseaseCategory?.lowercase() != OtherNotes.lowercase() && (it.type.equals(
+                                TB,
+                                true
+                            ) || it.type.isNullOrBlank())
+                        }
+                            ?.map { it.diseaseCategory }?.distinct(),
+                        "",
+                        getString(R.string.separator_double_hyphen)
+                    )
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.patient_status),
+                    Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                        ?.let { requireContext().changePatientStatus(it) }
+                        ?: getString(R.string.separator_double_hyphen))
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.date_of_review),
+                    Value to medicalReviewHistory.dateOfReview?.let {
+                        DateUtils.convertDateFormat(
+                            it,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            DateUtils.DATE_ddMMyyyy
+                        )
+                    }
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.presenting_complaints),
+                    Value to combineText(
+                        CommonUtils.convertAnyToListOfString(medicalReviewHistory.reviewDetails?.presentingComplaints),
+                        medicalReviewHistory.reviewDetails?.presentingComplaintsNotes,
+                        getString(R.string.separator_double_hyphen)
+                    )
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.comorbidities_coinfections),
+                    Value to combineText(
+                        medicalReviewHistory.reviewDetails?.comorbiditiesCoinfections,
+                        medicalReviewHistory.reviewDetails?.comorbiditiesCoinfectionsNotes,
+                        getString(R.string.separator_double_hyphen)
+                    )
+                ), mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.general_systemic_examinations),
+                    Value to combineText(
+                        hivSystemicExaminations,
+                        null,
+                        getString(R.string.separator_double_hyphen)
+                    )
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.clinical_notes),
+                    Value to (medicalReviewHistory.reviewDetails?.clinicalNotes?.takeIf { it.isNotBlank() }
+                        ?: getString(R.string.separator_double_hyphen))
+                )
+            )
+        }
 
         if (medicalReviewHistory.type == DefinedParams.TB_REVIEW) {
             val chipList = (medicalReviewHistory.reviewDetails?.systemicExaminations as? List<*>)?.mapNotNull { item ->

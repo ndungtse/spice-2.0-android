@@ -14,7 +14,8 @@ data class HivRequestData(
     val opportunisticInfections: Map<String, HashMap<String, String>>? = null,
     val encounter: MedicalReviewEncounter? = null,
     val medicalReviewType: String? = null,
-    val clinicalNotes: String? = null
+    val clinicalNotes: String? = null,
+    val id: String? = null
 )
 
 data class HivStatus(
