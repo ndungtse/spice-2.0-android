@@ -60,9 +60,7 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (patientViewModel.getHivMedicalReviewStatus()) {
-            viewModel.getOpportunisticInfection(patientViewModel.getPatientMemberId())
-        }
+        viewModel.getOpportunisticInfection(patientViewModel.getPatientMemberId())
         initView()
         attachObserver()
     }

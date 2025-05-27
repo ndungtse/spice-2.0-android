@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.common.CommonUtils.toFormattedListWithHyphen
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Above5MedicalReview
+import com.medtroniclabs.spice.common.DefinedParams.HIV_MEDICAL_SCREENING
 import com.medtroniclabs.spice.common.DefinedParams.ICCM_ABOVE_2M_5Y
 import com.medtroniclabs.spice.common.DefinedParams.MotherDeliveryReview
 import com.medtroniclabs.spice.common.DefinedParams.NAME
@@ -36,6 +37,7 @@ import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.common.DefinedParams.PregnancyAncMedicalReview
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.DefinedParams.Value
+import com.medtroniclabs.spice.data.history.Eligibility
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.data.model.ChipResponse
 import com.medtroniclabs.spice.databinding.FragmentReferralTicketBinding
@@ -374,13 +376,33 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
         return dateTime1.format(timeFormatter)
     }
 
+    private fun formatEligibility(eligibility: Eligibility): String {
+        return buildString {
+            // Handle Symptoms
+            eligibility.Symptoms?.takeIf { it.isNotEmpty() }?.let { symptoms ->
+                val label = "${getString(R.string.symptoms)} - "
+                append(label)
+                val padding = " ".repeat(label.length)
+                symptoms.forEach { symptom ->
+                    append("\n$padding$symptom")
+                }
+                append("\n") // Add a line break between sections
+            }
+
+            eligibility.hivPopulationType?.takeIf { it.isNotEmpty() }?.let { types ->
+                val label = "${getString(R.string.population_type)} - "
+                append(label)
+                val padding = " ".repeat(label.length)
+                types.forEach { type ->
+                    append("\n$padding$type")
+                }
+            }
+        }.trim()
+    }
+
 
     private fun createMedicalReview(medicalReviewHistory: MedicalReviewHistory): List<Map<String, Any?>> {
-        if (medicalReviewHistory.type == MedicalReviewTypeEnums.HIV_MEDICAL_REVIEW.name) {
-            val hivSystemicExaminations =
-                (medicalReviewHistory.reviewDetails?.systemicExaminations as? Map<String, String>)?.toFormattedListWithHyphen()
-                    .takeIf { !it.isNullOrEmpty() }
-                    ?: emptyList()
+        if (medicalReviewHistory.type == HIV_MEDICAL_SCREENING) {
             return listOf(
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.diagnosis_tb),
@@ -392,6 +414,75 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                             ) || it.type.isNullOrBlank())
                         }
                             ?.map { it.diseaseCategory }?.distinct(),
+                        "",
+                        getString(R.string.separator_double_hyphen)
+                    )
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.patient_status),
+                    Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                        ?.let { requireContext().changePatientStatus(it) }
+                        ?: getString(R.string.separator_double_hyphen))
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.date_of_review),
+                    Value to medicalReviewHistory.dateOfReview?.let {
+                        DateUtils.convertDateFormat(
+                            it,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            DateUtils.DATE_ddMMyyyy
+                        )
+                    }
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.a1_test_result),
+                    Value to (medicalReviewHistory.reviewDetails?.eligibilities?.let {
+                        formatEligibility(
+                            it
+                        )
+                    }.takeIf { !it.isNullOrBlank() }
+                        ?: getString(R.string.separator_double_hyphen))
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.a1_test_result),
+                    Value to (medicalReviewHistory.reviewDetails?.a1TestResult?.takeIf { it.isNotBlank() }
+                        ?: getString(R.string.separator_double_hyphen))
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.a2_test_result),
+                    Value to (medicalReviewHistory.reviewDetails?.a2TestResult?.takeIf { it.isNotBlank() }
+                        ?: getString(R.string.separator_double_hyphen))
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.a3_test_result),
+                    Value to (medicalReviewHistory.reviewDetails?.a3TestResult?.takeIf { it.isNotBlank() }
+                        ?: getString(R.string.separator_double_hyphen))
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.entry_point),
+                    Value to (medicalReviewHistory.reviewDetails?.entryPoint?.takeIf { it.isNotBlank() }
+                        ?: getString(R.string.separator_double_hyphen))
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.clinical_notes),
+                    Value to (medicalReviewHistory.reviewDetails?.clinicalNotes?.takeIf { it.isNotBlank() }
+                        ?: getString(R.string.separator_double_hyphen))
+                )
+            )
+        }
+
+        if (medicalReviewHistory.type == MedicalReviewTypeEnums.HIV_MEDICAL_REVIEW.name) {
+            val hivSystemicExaminations =
+                (medicalReviewHistory.reviewDetails?.systemicExaminations as? Map<String, String>)?.toFormattedListWithHyphen()
+                    .takeIf { !it.isNullOrEmpty() }
+                    ?: emptyList()
+            return listOf(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.diagnosis_tb),
+                    Value to combineText(
+                        medicalReviewHistory.reviewDetails?.diagnosis?.filter {
+                            it.diseaseCategory?.lowercase() != OtherNotes.lowercase()
+                        }?.map { it.diseaseCategory }?.distinct(),
                         "",
                         getString(R.string.separator_double_hyphen)
                     )

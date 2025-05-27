@@ -363,4 +363,24 @@ class HivMedicalReviewRepo @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
     }
+
+    suspend fun checkRecommendationRInvestigations(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<HashMap<String, Boolean?>?> {
+        return try {
+            apiHelper.checkRecommendationInvestigations(motherNeonateAncRequest).let { response ->
+                if (response.isSuccessful) {
+                    response.body()?.let { body ->
+                        if (body.status) {
+                            Resource(ResourceState.SUCCESS, body.entity)
+                        } else {
+                            Resource(ResourceState.ERROR)
+                        }
+                    } ?: Resource(ResourceState.ERROR)
+                } else {
+                    Resource(ResourceState.ERROR)
+                }
+            }
+        } catch (e: Exception) {
+            Resource(ResourceState.ERROR)
+        }
+    }
 }

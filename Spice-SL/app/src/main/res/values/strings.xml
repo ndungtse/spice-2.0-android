@@ -1571,4 +1571,7 @@
     <string name="cotrimoxazole" translatable="false">Cotrimoxazole (CTX)</string>
     <string name="tb_treatment" translatable="false">TB Treatment</string>
     <string name="cryptococcal_meningitis" translatable="false">Cryptococcal Meningitis</string>
+    <string name="recommended_investigations_considering" translatable="false">"Considering it has been more than Six Months since the last Viral Load Test "</string>
+    <string name="would_you_like_to_do_a_viral_load_test" translatable="false">would you like to do a Viral Load Test?</string>
+    <string name="viral_load_test" translatable="false">Viral Load Test</string>
 </resources>

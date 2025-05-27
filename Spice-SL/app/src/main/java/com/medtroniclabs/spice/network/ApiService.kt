@@ -710,4 +710,7 @@ interface ApiService {
 
     @POST("/spice-service/hiv/cd4-details")
     suspend fun getHivCD4Details(@Body request: CD4DetailsRequest): Response<APIResponse<ArrayList<CD4DetailsResponse>>>
+
+    @POST("/spice-service/hiv/viral-load/recommendation")
+    suspend fun checkRecommendationInvestigations(@Body request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, Boolean?>?>>
 }

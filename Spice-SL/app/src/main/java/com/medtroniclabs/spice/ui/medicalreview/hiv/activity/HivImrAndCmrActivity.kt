@@ -22,7 +22,6 @@ import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityTbMedicalReviewBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
-import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
@@ -36,6 +35,7 @@ import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HIVStatusFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivGeneralAndSystemicExaminationFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivImrCmrSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.OpportunisticInfectionsTreatmentFragment
+import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.RecommendedInvestigationsDialog
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.ViralLoadFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivGeneralAndSystemicExaminationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivImrAndCmrViewModel
@@ -49,6 +49,7 @@ import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivit
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.ComorbiditiesFragment
 import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.ComorbiditiesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.isViralLoadTestRecommended
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
@@ -131,6 +132,44 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
     }
 
     private fun attachObserver() {
+        viewModel.checkRecommendationRInvestigations.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resource.data?.let {
+                        if (it[isViralLoadTestRecommended] == true) {
+                            showDialogIfNotPresent(
+                                RecommendedInvestigationsDialog.TAG
+                            ) {
+                                RecommendedInvestigationsDialog.newInstance().apply {
+                                    onOkayClickListener = {
+                                        openInvestigationActivity()
+                                    }
+                                    onCancelClickListener = {
+                                        submitImrCmrRequest()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+
+                    }
+                }
+            }
+        }
         referPatientViewModel.referPatientResultLiveData.observe(this) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
@@ -403,6 +442,10 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
         }
     }
 
+    private fun callViralLoadTestRecommendation() {
+        viewModel.checkRecommendationRInvestigations(patientReference = patientViewModel.getPatientId())
+    }
+
     private fun showReferPatientDialog() {
         withNetworkAvailability(online = {
             viewModel.hivCreateResponse.value?.data?.let {
@@ -454,6 +497,14 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
     }
 
     private fun clickSubmit() {
+        if (patientViewModel.getHivMedicalReviewStatus()) {
+            callViralLoadTestRecommendation()
+        } else {
+            submitImrCmrRequest()
+        }
+    }
+
+    private fun submitImrCmrRequest() {
         val request = createMedicalReviewRequest()
         withNetworkAvailability(online = {
             viewModel.hivCreate(request = request)

@@ -852,9 +852,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resources.data?.let { list ->
-                        binding.tvCd4Value.text = list.cd4?.toCleanString() ?: getString(R.string.seperator_hyphen)
-                        binding.tvCd4PercentValue.text = list.cd4Percentage?.toCleanString() ?: getString(R.string.seperator_hyphen)
-                        binding.tvWhoValue.text = list.whoClinicalStage ?: getText(R.string.seperator_hyphen)
+                        binding.tvCd4Value.text = list.cd4.takeIf { !it.isNullOrBlank() }  ?: getString(R.string.seperator_hyphen)
+                        binding.tvCd4PercentValue.text = list.cd4Percentage.takeIf { !it.isNullOrBlank() } ?: getString(R.string.seperator_hyphen)
+                        binding.tvWhoValue.text = list.whoClinicalStage.takeIf { !it.isNullOrBlank() }  ?: getText(R.string.seperator_hyphen)
                         binding.tvWho.text = if (list.whoClinicalStage != null) {
                             getString(R.string.edit_who_clinical_stage)
                         } else {

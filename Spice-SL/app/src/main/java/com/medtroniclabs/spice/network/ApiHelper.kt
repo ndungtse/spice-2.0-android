@@ -377,4 +377,5 @@ interface ApiHelper {
     suspend fun createWhoClinicalStage(request: WhoClinicalStageCreateRequest): Response<APIResponse<HivClinicalInfoResponse>>
     suspend fun getHivVitalDetails(request: HivVitalDetailsRequest): Response<APIResponse<HivVitalDetailsResponse>>
     suspend fun getHivCD4Details(request: CD4DetailsRequest): Response<APIResponse<ArrayList<CD4DetailsResponse>>>
+    suspend fun checkRecommendationInvestigations(request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, Boolean?>?>>
 }

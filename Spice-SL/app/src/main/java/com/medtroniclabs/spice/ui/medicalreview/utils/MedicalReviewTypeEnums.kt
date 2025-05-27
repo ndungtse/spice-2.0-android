@@ -72,6 +72,5 @@ enum class MedicalReviewTypeEnums{
     emtct_visit_status,
     height,
     weight,
-    cd4,
-    cd4Percentage
+    CD4
 }

@@ -139,11 +139,7 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
             }
             tvDiagnosesText.text = diagnosisList
                 .filter {
-                    it.diseaseCategory.equals(DefinedParams.OtherNotes, ignoreCase = true)
-                        .not() && (it.type.equals(
-                        DefinedParams.TB,
-                        true
-                    ) || it.type.isNullOrBlank())
+                    it.diseaseCategory.lowercase() != DefinedParams.OtherNotes.lowercase()
                 }
                 .map { it.diseaseCategory }
                 .distinct()

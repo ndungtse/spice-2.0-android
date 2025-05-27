@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HIVStatusViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.notEstablished
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -153,6 +154,9 @@ class HIVStatusFragment : BaseFragment() {
 
     private fun initView() {
         viewModel.getHivStatusMeta(MedicalReviewTypeEnums.HIV.name)
+        binding.etSelectModel.setVisible(false)
+        binding.tvSelectModelLabel.setVisible(false)
+        binding.tvSelectModelError.setVisible(false)
         val isFemale = patientViewModel.getGenderIsFemale()
         val dob = patientViewModel.getDob()
         val isDobValid = !dob.isNullOrBlank()
@@ -306,7 +310,21 @@ class HIVStatusFragment : BaseFragment() {
                 MedicalReviewDefinedParams.HIV_STATUS, bundleOf(
                     MedicalReviewDefinedParams.CHIP_ITEMS to true)
             )
+            val isValid = (selectedID as? String).equals(notEstablished, ignoreCase = true)
+            showModel(isValid)
         }
+
+    private fun showModel(isValid: Boolean) {
+        binding.tvSelectModelLabel.setVisible(isValid)
+        binding.etSelectModel.setVisible(isValid)
+        binding.tvSelectModelError.setVisible(isValid)
+        if (!isValid) {
+            viewModel.selectModel = null
+            binding.etSelectModel.post {
+                binding.etSelectModel.setSelection(0, false)
+            }
+        }
+    }
 
     private fun setSpinner(statusList: ArrayList<Map<String, Any>>) {
         adapter.setData(statusList)

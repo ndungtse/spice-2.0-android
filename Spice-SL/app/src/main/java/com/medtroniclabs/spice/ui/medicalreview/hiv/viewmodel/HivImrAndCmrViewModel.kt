@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.model.HivRequestData
+import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
@@ -75,6 +76,18 @@ class HivImrAndCmrViewModel @Inject constructor(
                 )
                 summaryCreateResponse.postValue(response)
             }
+        }
+    }
+
+    val checkRecommendationRInvestigations = MutableLiveData<Resource<HashMap<String, Boolean?>?>>()
+    fun checkRecommendationRInvestigations(patientReference: String?) {
+        viewModelScope.launch(dispatcherIO) {
+            checkRecommendationRInvestigations.postLoading()
+            checkRecommendationRInvestigations.postValue(
+                repository.checkRecommendationRInvestigations(
+                    MotherNeonateAncRequest(patientReference = patientReference)
+                )
+            )
         }
     }
 }

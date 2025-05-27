@@ -56,12 +56,16 @@ data class ReviewDetails(
     val systemicExaminationNotes: String? = null,
     val obstetricExaminationNotes: String? = null,
     val clinicalNotes: String? = null,
+    val entryPoint: String? = null,
+    val a1TestResult: String? = null,
+    val a2TestResult: String? = null,
+    val a3TestResult: String? = null,
+    val eligibilities: Eligibility? = null,
     val labourDTO:LabourDTO? = null,
     val neonateOutcome:String?=null,
     val stateOfBaby:String? = null,
     val birthWeight:String? = null,
     val signs:List<String?>? = null,
-
     val vaccinated: List<String>? = null,
     val lastScheduledDate: String? = null,
     val lastScheduledDateReason: String? = null,
@@ -70,7 +74,10 @@ data class ReviewDetails(
     val nextVaccinationDate: String? = null
 
 )
-
+data class Eligibility(
+    val hivPopulationType: List<String>? = null,
+    val Symptoms: List<String>? = null,
+)
 data class DiseaseInfo(
     val diseaseCategoryId: Long? = null,
     val diseaseConditionId: Long? = null,

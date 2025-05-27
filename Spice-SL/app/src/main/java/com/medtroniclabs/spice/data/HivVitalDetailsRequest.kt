@@ -7,9 +7,9 @@ data class HivVitalDetailsRequest(
 )
 
 data class HivVitalDetailsResponse(
-    val cd4: Double? = null,
+    val cd4: String? = null,
     val whoClinicalStage: String? = null,
     val weight: Double? = null,
-    val cd4Percentage: Double? = null,
+    val cd4Percentage: String? = null,
     val height: Double? = null,
 )

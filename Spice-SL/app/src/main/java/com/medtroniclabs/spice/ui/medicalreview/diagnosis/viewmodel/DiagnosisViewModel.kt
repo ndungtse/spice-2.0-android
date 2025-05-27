@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.DiagnosisRepository
 import com.medtroniclabs.spice.ui.medicalreview.hiv.repo.HivMedicalReviewRepo
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.cd4_percentage
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -77,8 +78,8 @@ class DiagnosisViewModel @Inject constructor(
                         memberId,
                         arrayListOf(
                             MedicalReviewTypeEnums.whoClinicalStage.name,
-                            MedicalReviewTypeEnums.cd4.name,
-                            MedicalReviewTypeEnums.cd4Percentage.name,
+                            MedicalReviewTypeEnums.CD4.name,
+                            cd4_percentage,
                             MedicalReviewTypeEnums.weight.name,
                             MedicalReviewTypeEnums.height.name
                         )

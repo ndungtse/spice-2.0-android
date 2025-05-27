@@ -69,4 +69,7 @@ object MedicalReviewDefinedParams {
     const val cotrimoxazoleDateRange = "cotrimoxazoleDateRange"
     const val tbTreatmentDateRange = "tbTreatmentDateRange"
     const val cryptococcalMeningitisDateRange = "cryptococcalMeningitisDateRange"
+    const val cd4_percentage= "CD4 Percentage"
+    const val isViralLoadTestRecommended= "isViralLoadTestRecommended"
+    const val notEstablished= "notEstablished"
 }

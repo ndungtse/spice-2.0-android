@@ -875,4 +875,8 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun getHivCD4Details(request: CD4DetailsRequest): Response<APIResponse<ArrayList<CD4DetailsResponse>>> {
         return apiService.getHivCD4Details(request)
     }
+
+    override suspend fun checkRecommendationInvestigations(request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, Boolean?>?>> {
+        return apiService.checkRecommendationInvestigations(request)
+    }
 }
