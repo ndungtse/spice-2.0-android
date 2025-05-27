@@ -33,34 +33,71 @@ class PeerSupervisorNotificationAdapter() :
     }
 
     override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) {
-        val notification = notificationList?.get(position) ?: return
-        with(holder.binding) {
-            tvAlertType.text = if (notification.formType.equals(
-                    DefinedParams.CBS,
-                    true
-                )
-            ) holder.binding.root.context.getString(R.string.cbs_alert) else notification.formType
-            val conditionList = notification.formData.notifiableConditions
-            val otherCondition = notification.formData.otherNotifiableConditions.trim()
-            val condition = buildString {
-                append(conditionList.joinToString("/"))
-                if (!otherCondition.isNullOrEmpty()) {
-                    append(" - $otherCondition")
-                }
-            }
-            tvCondition.text = condition
-            tvDate.text = DateUtils.convertDateFormat(
-                notification.formData.assessmentDate,
-                DateUtils.CALENDAR_FORMAT,
-                DateUtils.DATE_ddMMyyyy
-            )
-            tvVillage.text = notification.formData.villageName
-            tvMemberName.text = notification.formData.memberName
-            tvMemberNumber.text = "+${notification.formData.countryCode} ${notification.formData.memberPhoneNumber}"
-            tvChwName.text = notification.formData.chwName
-            tvChwNumber.text = "+${notification.formData.countryCode} ${notification.formData.chwPhoneNumber}"
+        val context = holder.binding.root.context
+        val notification = notificationList?.getOrNull(position) ?: return
 
-            val context = root.context
+        with(holder.binding) {
+            val formData = notification.formData
+
+            // Alert Type
+            val formType = notification.formType?.takeIf { it.isNotBlank() }
+                ?: context.getString(R.string.hyphen_symbol)
+
+            tvAlertType.text = if (formType.equals(DefinedParams.CBS, ignoreCase = true)) {
+                context.getString(R.string.cbs_alert)
+            } else {
+                formType
+            }
+
+            // Member Name
+            tvMemberName.text = formData?.memberName?.takeIf { it.isNotBlank() }
+                ?: context.getString(R.string.hyphen_symbol)
+
+            // Village
+            tvVillage.text = formData?.villageName?.takeIf { it.isNotBlank() }
+                ?: context.getString(R.string.hyphen_symbol)
+
+            // CHW Name
+            tvChwName.text = formData?.chwName?.takeIf { it.isNotBlank() }
+                ?: context.getString(R.string.hyphen_symbol)
+
+            // Member Number
+            tvMemberNumber.text =
+                if (!formData?.countryCode.isNullOrBlank() && !formData?.memberPhoneNumber.isNullOrBlank()) {
+                    "+${formData!!.countryCode} ${formData.memberPhoneNumber}"
+                } else {
+                    context.getString(R.string.hyphen_symbol)
+                }
+
+            // CHW Number
+            tvChwNumber.text =
+                if (!formData?.countryCode.isNullOrBlank() && !formData?.chwPhoneNumber.isNullOrBlank()) {
+                    "+${formData!!.countryCode} ${formData.chwPhoneNumber}"
+                } else {
+                    context.getString(R.string.hyphen_symbol)
+                }
+
+            // Assessment Date
+            tvDate.text = formData?.assessmentDate?.takeIf { it.isNotBlank() }?.let {
+                DateUtils.convertDateFormat(it, DateUtils.CALENDAR_FORMAT, DateUtils.DATE_ddMMyyyy)
+            } ?: context.getString(R.string.hyphen_symbol)
+
+            // Notifiable Conditions + Other Condition
+            val conditionList = formData?.notifiableConditions?.filter { it.isNotBlank() }.orEmpty()
+            val otherCondition = formData?.otherNotifiableConditions?.trim()
+                ?.takeIf { it.isNotBlank() }
+
+            val conditionText = buildString {
+                if (conditionList.isNotEmpty()) append(conditionList.joinToString("/"))
+                if (!otherCondition.isNullOrEmpty()) {
+                    if (conditionList.isNotEmpty()) append(" - ")
+                    append(otherCondition)
+                }
+            }.ifBlank { context.getString(R.string.hyphen_symbol) }
+
+            tvCondition.text = conditionText
+
+            // Alternate card background
             val notificationCardBGColour = ContextCompat.getColor(context, R.color.bg_peer_notification_card)
             val white = ContextCompat.getColor(context, R.color.white)
             cardView.setCardBackgroundColor(if (position % 2 == 0) notificationCardBGColour else white)
