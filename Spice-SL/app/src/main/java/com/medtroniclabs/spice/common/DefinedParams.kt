@@ -366,6 +366,7 @@ object DefinedParams {
     const val InputType = "inputType"
 
     const val EMTCT_HIV_MEDICAL_SCREENING = "EMTCT_HIV_MEDICAL_SCREENING"
+    const val EMTCT_HIV_MEDICAL_REVIEW = "EMTCT_HIV_MEDICAL_REVIEW"
     const val HIV_MEDICAL_SCREENING = "HIV_MEDICAL_SCREENING"
     const val EMTCT = "EMTCT"
     const val EMTCTMR =  "EMTCTMR"

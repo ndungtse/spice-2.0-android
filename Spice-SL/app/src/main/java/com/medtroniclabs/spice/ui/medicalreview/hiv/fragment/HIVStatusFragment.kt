@@ -330,7 +330,7 @@ class HIVStatusFragment : BaseFragment() {
     private fun showModel(isValid: Boolean) {
         binding.tvSelectModelLabel.setVisible(isValid)
         binding.etSelectModel.setVisible(isValid)
-        binding.tvSelectModelError.setVisible(isValid)
+        binding.tvSelectModelError.setVisible(false)
         if (!isValid) {
             viewModel.selectModel = null
             binding.etSelectModel.post {
