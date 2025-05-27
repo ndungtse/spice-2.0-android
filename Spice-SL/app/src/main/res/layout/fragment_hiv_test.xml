@@ -325,6 +325,22 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvEntryPoint" />
 
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/etOtherEntryPoint"
+                    style="@style/Form_Input_Style_BG"
+                    android:layout_height="@dimen/_112sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginBottom="@dimen/_8sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:gravity="start|top"
+                    android:hint="@string/type_notes"
+                    android:inputType="textCapWords|textMultiLine"
+                    android:padding="@dimen/_8sdp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="@id/tvEntryPointSpinner"
+                    app:layout_constraintStart_toStartOf="@id/tvEntryPointSpinner"
+                    app:layout_constraintTop_toBottomOf="@+id/tvEntryPointSpinner" />
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvEntryPointError"
                     android:layout_width="0dp"
@@ -336,7 +352,7 @@
                     android:textSize="@dimen/_12ssp"
                     android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvEntryPointSpinner" />
+                    app:layout_constraintTop_toBottomOf="@+id/etOtherEntryPoint" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

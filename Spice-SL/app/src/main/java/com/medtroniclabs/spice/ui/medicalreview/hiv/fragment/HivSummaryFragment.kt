@@ -19,12 +19,14 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivScreeningResponse
 import com.medtroniclabs.spice.data.resource.ExaminationResult
 import com.medtroniclabs.spice.databinding.FragmentHivSummaryBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -154,7 +156,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         binding.tvA1TestText.text = response.a1TestResult?.takeIf { it.isNotEmpty() } ?: "-"
         binding.tvA2TestText.text = response.a2TestResult?.takeIf { it.isNotEmpty() } ?: "-"
         binding.tvA3TestText.text = response.a3TestResult?.takeIf { it.isNotEmpty() } ?: "-"
-        binding.tvEntryPointText.text = response.entryPoint?.takeIf { it.isNotEmpty() } ?: "-"
+        binding.tvEntryPointText.text = generateEntryPointText(response) ?: "-"
         binding.tvHivSyphilisText.text =
             response.hivSyphilisDuoTest?.takeIf { it.isNotEmpty() } ?: "-"
         binding.tvHbsgText.text =
@@ -206,6 +208,19 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
             testResults.all { it.equals(getString(R.string.reactive), ignoreCase = true) } -> 1
             testResults.any { it.equals(getString(R.string.inconclusive), ignoreCase = true) } -> 2
             else -> 3
+        }
+    }
+
+    private fun generateEntryPointText(response: HivCreateScreeningSummaryResponse): String? {
+       return response.entryPoint?.let {
+            if (it.isNotEmpty()) {
+                if (it.equals(Other, true)) {
+                   return "${it.capitalizeFirstChar()} - ${hivViewModel.otherEntryPoint}"
+                }
+                return it
+            } else{
+                return getString(R.string.seperator_hyphen)
+            }
         }
     }
 

@@ -25,7 +25,8 @@ data class HivScreeningRequest(
     private val hbsAGTest:String? = null,
     private val screeningType: String? = null,
     private val clinicalNotes: String? = null,
-    private val id: String? = null
+    private val id: String? = null,
+    private val otherEntryPoint: String? = null
 
 )
 

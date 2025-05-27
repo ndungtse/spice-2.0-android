@@ -349,17 +349,10 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
         binding.patientDetailFragment.visible()
         binding.patientBMIContainer.visible()
 
-        addOrReuseFragment(
+        replaceFragment(
             R.id.patientBMIContainer,
             HivMedicalReviewDiagnosesFragment.TAG,
-            HivMedicalReviewDiagnosesFragment.newInstance(),
-            Bundle().apply {
-                putString(DefinedParams.PatientId, intent.getStringExtra(DefinedParams.PatientId))
-                putString(DefinedParams.ID, intent.getStringExtra(DefinedParams.ID))
-                putString(DefinedParams.MemberID, hivViewModel.memberId)
-                putBoolean(MedicalReviewTypeEnums.HIV.name, true)
-                putBoolean(DefinedParams.EMTCTMR, true)
-            }
+            HivMedicalReviewDiagnosesFragment.newInstance(true)
         )
 
         initEmtctFragments()

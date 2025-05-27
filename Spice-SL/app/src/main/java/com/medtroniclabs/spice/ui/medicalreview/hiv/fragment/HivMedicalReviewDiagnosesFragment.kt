@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.diagnosis.DiagnosisDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.WhoClinicalStageViewModel
@@ -184,13 +185,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
 
     private fun showDiagnosisDialog() {
         if (connectivityManager.isNetworkAvailable()) {
-            val dialog = TbConfirmDiagnosisAndSiteOfDiseaseDialog().apply {
-                arguments = Bundle().apply {
-                    putBoolean(HIV, true)
-                }
-                this.listener = this@HivMedicalReviewDiagnosesFragment
-            }
-            dialog.show(childFragmentManager, TbConfirmDiagnosisAndSiteOfDiseaseDialog.TAG)
+            DiagnosisDialogFragment().show(childFragmentManager, DiagnosisDialogFragment.TAG)
         } else {
             (activity as BaseActivity?)?.showErrorDialogue(
                 getString(R.string.error),
@@ -491,7 +486,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                     .filter { item ->
                         diagnosisItems.any {
                             it.equals(
-                                item.name,
+                                item.value,
                                 ignoreCase = true
                             )
                         }
@@ -631,7 +626,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
     }
 
     private fun isHiv(): Boolean {
-        return arguments?.getBoolean(MedicalReviewTypeEnums.HIV.name, false) == true
+        return arguments?.getBoolean(MedicalReviewTypeEnums.HIV.name) == true
     }
 
 }

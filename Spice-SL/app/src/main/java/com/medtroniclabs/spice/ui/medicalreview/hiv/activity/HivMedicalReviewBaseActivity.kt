@@ -344,16 +344,10 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
             patientBMIContainer.visible()
             patientEligibility.visible()
         }
-        addOrReuseFragment(
+        replaceFragment(
             R.id.patientBMIContainer,
             HivMedicalReviewDiagnosesFragment.TAG,
-            HivMedicalReviewDiagnosesFragment.newInstance(),
-            Bundle().apply {
-                putString(PatientId, intent.getStringExtra(PatientId))
-                putString(ID, intent.getStringExtra(ID))
-                putString(MemberID, hivViewModel.memberId)
-                putBoolean(MedicalReviewTypeEnums.HIV.name, true)
-            }
+            HivMedicalReviewDiagnosesFragment.newInstance(true)
         )
         val bundle = if (hivViewModel.isEMTCT) {
             Bundle().apply {

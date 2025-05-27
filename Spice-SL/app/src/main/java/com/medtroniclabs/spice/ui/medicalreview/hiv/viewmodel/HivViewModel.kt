@@ -99,8 +99,7 @@ class HivViewModel @Inject constructor(
     var whovalue: String? = null
     var emtctVisitStatus: String? = null
     var ancVisit = -1
-
-
+    var otherEntryPoint :String? = null
 
     fun getHivMetaData() {
         viewModelScope.launch(dispatcherIO) {
@@ -150,6 +149,7 @@ class HivViewModel @Inject constructor(
                             provenance = ProvanceDto(),
                         ),
                         entryPoint = entryPoint,
+                        otherEntryPoint = otherEntryPoint,
                         populationTypeList = selectedEligibilityPair.second.filterNotNull(),
                         otherPopulationType = populationOther,
                         a1TestResult = hivTestResult.first,

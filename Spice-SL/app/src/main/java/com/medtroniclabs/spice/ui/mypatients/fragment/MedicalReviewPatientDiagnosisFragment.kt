@@ -748,6 +748,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                     resourceState.data?.let { patientStatus ->
                         if (patientStatus.status.isNullOrEmpty()) {
                             binding.tvPatientStatusValue.text = getString(R.string.seperator_hyphen)
+                            patientViewModel.patientCurrentStatus.postValue(patientStatus.status)
                         } else {
                             //  binding.tvPatientStatusValue.text = getPatientStatus(patientStatus.status)
                             binding.tvPatientStatusValue.text = patientStatus.status

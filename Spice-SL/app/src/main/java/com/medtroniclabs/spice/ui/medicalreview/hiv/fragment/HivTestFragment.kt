@@ -6,13 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.core.os.bundleOf
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.databinding.FragmentHivTestBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -32,6 +35,7 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.A3_TEST_RESULT
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.HBsAg
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.HIV_SYPHILIS_DUO_TEST
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherImplantSpecify
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 
 class HivTestFragment : BaseFragment(), View.OnClickListener {
@@ -108,6 +112,12 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
             binding.tvA1TestResult.markMandatory()
         }
 
+        binding.etOtherEntryPoint.doAfterTextChanged { input ->
+            input?.let {
+                hivViewModel.otherEntryPoint =
+                    if (it.trim().isNotEmpty()) it.trim().toString() else null
+            }
+        }
     }
 
     private fun addObservers() {
@@ -172,6 +182,11 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                         val selectedName = it[DefinedParams.NAME] as String?
                         if (selectedName != DefinedParams.DefaultIDLabel) {
                             hivViewModel.selectedEntryPoint = it[DefinedParams.Value] as String
+                            if (hivViewModel.selectedEntryPoint.equals(Other, true)) {
+                                binding.etOtherEntryPoint.visible()
+                            } else if (binding.etOtherEntryPoint.isVisible()) {
+                                binding.etOtherEntryPoint.gone()
+                            }
                             resultMapChanged()
                         } else {
                             hivViewModel.selectedEntryPoint = null
@@ -362,6 +377,12 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                 errorView.visible()
                 isValid = false
             }
+        }
+        if (isValid && binding.etOtherEntryPoint.isVisible() && hivViewModel.otherEntryPoint == null){
+            binding.tvEntryPointError.visible()
+            isValid = false
+        } else {
+            binding.tvEntryPointError.gone()
         }
 
 

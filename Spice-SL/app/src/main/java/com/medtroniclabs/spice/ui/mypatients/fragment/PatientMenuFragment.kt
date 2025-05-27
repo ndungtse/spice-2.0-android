@@ -368,11 +368,9 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
         if (dob.isNullOrBlank()) return false
         val age = DateUtils.getV2YearMonthAndWeek(dob)
         return when {
-            // Age is exactly 5 years
-            age.years == 14 && (age.months == 0 && age.weeks == 0 && age.days == 0) -> false
-            // Age is more than 2 months but less than 5 years
-            age.years > 14 -> false
-            else -> true
+            age.years == 13 && (age.months == 0 && age.weeks == 0 && age.days == 0) -> true
+            age.years < 13 -> true
+            else -> false
         }
     }
 
