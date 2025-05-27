@@ -377,7 +377,6 @@ object DefinedParams {
     const val IS_CD4_PERCENTAGE = "isCD4Percentage"
     const val Post_Partum = "Post Partum"
     const val postPartum = "postPartum"
-    const val EMTCT_HIV_MEDICAL_REVIEW = "EMTCT_HIV_MEDICAL_REVIEW"
     const val emtctVisitStatus = "emtct_visit_status"
     const val CD4 = "CD4"
     const val CD4_Percentage = "CD4 Percentage"

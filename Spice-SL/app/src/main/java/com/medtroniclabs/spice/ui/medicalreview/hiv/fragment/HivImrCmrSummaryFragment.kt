@@ -110,7 +110,7 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
             binding.tvTreatmentLabel, binding.tvTreatmentSeparator
         )
         binding.tvDiagnosesLabel.text = getText(R.string.diagnosis_tb)
-        binding.tvComborbiditiesLabel.text = getString(R.string.comorbidities_coinfections)
+        binding.tvComborbiditiesLabel.text = if (isEMTCTMR)getString(R.string.obstetric_examination)else getString(R.string.comorbidities_coinfections)
         views.forEach { it.setVisible(false) }
         viewModel.getEmtctStatusByCategory(DefinedParams.emtctVisitStatus)
         viewModel.getMaternalStatusByCategory(MedicalReviewTypeEnums.maternal_outcome.name)
@@ -207,11 +207,20 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
 
             // Comorbidities
             tvComborbiditiesText.setExpandableText(
-                fullText = CommonUtils.combineText(
-                    data.comorbiditiesCoinfections,
-                    data.comorbiditiesCoinfectionsNotes,
-                    getString(R.string.hyphen_symbol)
-                ),
+                fullText = if (isEMTCTMR) {
+                    CommonUtils.combineText(
+                        data.comorbiditiesCoinfections,
+                        data.comorbiditiesCoinfectionsNotes,
+                        getString(R.string.hyphen_symbol)
+                    )
+                } else {
+                    CommonUtils.combineText(
+                        data.obstetricExaminations,
+                        data.obstetricExaminationNotes,
+                        getString(R.string.hyphen_symbol)
+                    )
+                }
+                ,
                 moreColorResId = R.color.purple_700,
                 title = tvComborbiditiesLabel.text.toString(),
                 activity = requireActivity() as BaseActivity

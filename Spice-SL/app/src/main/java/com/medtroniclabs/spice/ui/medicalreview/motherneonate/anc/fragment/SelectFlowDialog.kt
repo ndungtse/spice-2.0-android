@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -131,7 +132,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         initView()
         setListener()
-        selectType()
+//        selectType()
     }
 
     private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
@@ -168,6 +169,8 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                     startActivity(intent)
                     dismiss()
                 }else{
+                    binding.tvTitle.text = getString(R.string.select_patient_type)
+                    binding.tvSubTitle.visible()
                     if (arguments?.getBoolean(DefinedParams.EMTCT,false) ==  true){
                         binding.selectionGroup.removeAllViews()
                         viewModel.isEMTCT =true
@@ -185,8 +188,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
 
                             binding.selectionGroup.addView(view)
                         }
-                        selectType()
-                        dismiss()
+
                     }else {
                         val patientId = arguments?.getString(PatientId, "")
                         val id = arguments?.getString(ID, "")
@@ -196,6 +198,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                             intent.putExtra(ID, id)
                         }
                         startActivity(intent)
+                        dismiss()
                     }
                 }
             }
@@ -305,6 +308,8 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
         var isHIV = arguments?.getBoolean(DefinedParams.HIV, false)
 
         if (isHIV == true){
+            binding.tvTitle.text = getString(R.string.select_patient_type)
+            binding.tvSubTitle.visible()
             getPositiveType().let {
                 val view = SingleSelectionCustomView(requireContext())
                 view.tag = TAG
@@ -403,6 +408,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view?.id) {
             binding.ivClose.id -> {
+                binding.tvSubTitle.invisible()
                 dismiss()
             }
         }

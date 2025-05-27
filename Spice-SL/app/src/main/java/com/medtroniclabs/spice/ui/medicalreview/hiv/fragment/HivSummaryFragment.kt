@@ -183,7 +183,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         binding.tvNextMedicalReviewLabelText.text = when (nextVisitType) {
             1 -> DateUtils.getFormattedDateAfterMonths(1)
             2 -> DateUtils.getFormattedDateAfterDays(14)
-            else -> ""
+            else -> DateUtils.getFormattedDateAfterMonths(1)
         }
         hivViewModel.nextVisitDate = binding.tvNextMedicalReviewLabelText.text.toString().trim()
         if (!response.summaryStatus.isNullOrEmpty()) {

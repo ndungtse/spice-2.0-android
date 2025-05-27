@@ -384,7 +384,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             eligibility.Symptoms?.takeIf { it.isNotEmpty() }?.let { symptoms ->
                 val label = "${getString(R.string.symptoms)} - "
                 append(label)
-                val padding = " ".repeat(label.length)
+                val padding = " ".repeat(8)
                 symptoms.forEach { symptom ->
                     append("\n$padding$symptom")
                 }
@@ -394,7 +394,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             eligibility.hivPopulationType?.takeIf { it.isNotEmpty() }?.let { types ->
                 val label = "${getString(R.string.population_type)} - "
                 append(label)
-                val padding = " ".repeat(label.length)
+                val padding = " ".repeat(8)
                 types.forEach { type ->
                     append("\n$padding$type")
                 }
@@ -463,7 +463,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun getHivScreening(medicalReviewHistory: MedicalReviewHistory): List<Map<String, Any?>> {
-        return return listOf(
+        return listOf(
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.diagnosis_tb),
                 Value to combineText(
