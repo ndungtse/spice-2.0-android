@@ -192,8 +192,5 @@ object AssessmentDefinedParams {
     const val PreTestCounselling = "preTestCounselling"
     const val PostTestCounselling = "postTestCounselling"
     const val TestForHiv = "testForHiv"
-
-
-
-
+    const val otherRelationshipIC = "otherRelationshipIC"
 }

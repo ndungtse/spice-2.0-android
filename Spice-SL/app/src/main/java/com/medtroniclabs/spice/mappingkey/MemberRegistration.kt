@@ -25,7 +25,7 @@ object MemberRegistration {
     private const val BrotherOrSister = "Brother / Sister"
     private const val Grandchild = "Grandchild"
     const val Grandparent = "Grandparent"
-    private const val OtherRelation = "Other Family Member (specify)"
+    const val OtherRelation = "Other Family Member (specify)"
 
     fun isValidRelationAge(ctx: Context, dob: String, relation: String, headDob: String?): String? {
         // No Age Validation for Brother or Sister and Other relation

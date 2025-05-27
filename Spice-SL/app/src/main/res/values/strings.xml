@@ -1574,4 +1574,5 @@
     <string name="recommended_investigations_considering" translatable="false">"Considering it has been more than Six Months since the last Viral Load Test "</string>
     <string name="would_you_like_to_do_a_viral_load_test" translatable="false">would you like to do a Viral Load Test?</string>
     <string name="viral_load_test" translatable="false">Viral Load Test</string>
+    <string name="household_head" translatable="false">Household Head</string>
 </resources>

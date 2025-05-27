@@ -15,11 +15,13 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
+import com.medtroniclabs.spice.common.DefinedParams.HouseholdHead
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentTBSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getValueOfKeyFromMap
@@ -33,6 +35,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Relationshi
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SleepLocation
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherRelationshipIC
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
@@ -108,12 +111,33 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
     private fun composeTbSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
         val isContactTrace = listSummaryData.any { it.id == RelationshipToIC }
         if(isContactTrace){
+            binding.btnStartContactTracing.visible()
             binding.tvTitle.text = binding.root.context.getString(R.string.contact_tracing)
             val stringBuilder = StringBuilder()
             listSummaryData.forEach{ item ->
                 item.value?.let {
                     when (item.id) {
-                        RelationshipToIC -> bindTbSummaryView(item.title, it)
+                        RelationshipToIC -> {
+                            val displayValue = when {
+                                it.equals(MemberRegistration.OtherRelation, ignoreCase = true) -> {
+                                    val otherValue = listSummaryData
+                                        .firstOrNull { data -> data.id == otherRelationshipIC }
+                                        ?.value
+                                        ?.takeIf { value -> value.isNotBlank() }
+
+                                    if (otherValue != null) "${item.value} - $otherValue"
+                                    else getString(R.string.hyphen_symbol)
+                                }
+
+                                it.equals(
+                                    HouseholdHead,
+                                    ignoreCase = true
+                                ) -> getString(R.string.household_head)
+
+                                else -> it
+                            }
+                            bindTbSummaryView(item.title, displayValue)
+                        }
                         SleepLocation -> bindTbSummaryView(removeTextInBrackets(item.title), it)
                         PreviouslyTreatedForTB,hasCough -> bindTbSummaryView(item.title, capitalizeYesNo(it))
                         HasCoughLastedLonger,HasNightSweatsTB, hasFever, HasWeightLoss ->
