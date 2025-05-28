@@ -17,7 +17,7 @@ data class HivRequestData(
     val clinicalNotes: String? = null,
     val id: String? = null,
     val emtctVisitStatus:String? = null,
-//    val obstetricExaminations: List<String?>? = null,
+    val obstetricExaminations: List<String?>? = null,
     val obstetricExaminationNotes: String? = null,
     val fundalHeight : String? = null,
     val fetalHeartRate : String? = null,

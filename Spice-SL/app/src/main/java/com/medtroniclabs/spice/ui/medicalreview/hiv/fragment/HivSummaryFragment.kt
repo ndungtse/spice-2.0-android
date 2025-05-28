@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.data.model.HivScreeningResponse
 import com.medtroniclabs.spice.data.resource.ExaminationResult
 import com.medtroniclabs.spice.databinding.FragmentHivSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -70,6 +71,8 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     fun initView() {
+        binding.tvNextMedicalReviewLabel.markMandatory()
+        binding.tvPatientStatus.markMandatory()
         if (arguments?.getBoolean(
                 DefinedParams.EMTCT,
                 false
@@ -358,10 +361,15 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
 
     fun validation(): Boolean {
         var isValid = true
-        if (hivViewModel.nextVisitDate.isNullOrEmpty()) {
+        if (  hivViewModel.selectedPatientStatus?.equals(
+                ReferralStatus.Died.name,
+                true
+            ) == true) {
+            binding.tvNextMedicalReviewError.invisible()
+        } else{
             binding.tvNextMedicalReviewError.visible()
             isValid = false
-        } else binding.tvNextMedicalReviewError.invisible()
+        }
 
         if (hivViewModel.selectedPatientStatus.isNullOrEmpty()) {
             binding.tvPatientError.visible()

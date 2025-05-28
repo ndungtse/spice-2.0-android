@@ -207,7 +207,7 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
 
             // Comorbidities
             tvComborbiditiesText.setExpandableText(
-                fullText = if (isEMTCTMR) {
+                fullText = if (!isEMTCTMR) {
                     CommonUtils.combineText(
                         data.comorbiditiesCoinfections,
                         data.comorbiditiesCoinfectionsNotes,

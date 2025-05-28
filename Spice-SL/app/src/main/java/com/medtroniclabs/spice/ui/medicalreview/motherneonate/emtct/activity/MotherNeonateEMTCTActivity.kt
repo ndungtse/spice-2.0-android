@@ -41,6 +41,7 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBa
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancySummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.CLINICAL_NOTES
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.isViralLoadTestRecommended
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
@@ -207,6 +208,45 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
     }
 
     private fun attachObserver() {
+        viewModel.checkRecommendationRInvestigations.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resource.data?.let {
+                        if (it[isViralLoadTestRecommended] == true) {
+                            showDialogIfNotPresent(
+                                RecommendedInvestigationsDialog.TAG
+                            ) {
+                                RecommendedInvestigationsDialog.newInstance().apply {
+                                    onOkayClickListener = {
+                                        openInvestigationActivity()
+                                    }
+                                    onCancelClickListener = {
+                                        submitEmtctRequest()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+
+                    }
+                }
+            }
+        }
+
         viewModel.summaryCreateResponse.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -538,6 +578,18 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
     }
 
     private fun clickSubmit() {
+        if (patientViewModel.getHivMedicalReviewStatus()) {
+            callViralLoadTestRecommendation()
+        } else {
+            submitEmtctRequest()
+        }
+    }
+
+    private fun callViralLoadTestRecommendation() {
+        viewModel.checkRecommendationRInvestigations(patientReference = patientViewModel.getPatientId())
+    }
+
+    private fun submitEmtctRequest() {
         val request = createMedicalReviewRequest()
         withNetworkAvailability(online = {
             viewModel.hivCreate(request = request)
@@ -562,6 +614,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
         clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
         id = patientViewModel.encounterId,
         emtctVisitStatus = hivViewModel.emtctVisitStatus,
+        obstetricExaminations = systemicExaminationViewModel.selectedSystemicExaminations.map { it.value } ,
         obstetricExaminationNotes = systemicExaminationViewModel.enteredExaminationNotes,
         fundalHeight = systemicExaminationViewModel.fundalHeight.takeIfNotNull(),
         fetalHeartRate = systemicExaminationViewModel.fetalHeartRate.takeIfNotNull()
@@ -616,7 +669,9 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
         }
     }
 
+
     private fun showSummary(callBack: () -> Unit) {
+        scrollUp()
         with(binding) {
             patientBMIContainer.gone()
             pregnancySummaryContainer.gone()
@@ -656,5 +711,10 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
     }
     private fun onBackPressPopStack() {
         this.finish()
+    }
+    private fun scrollUp() {
+        binding.nestedScrollViewID.post {
+            binding.nestedScrollViewID.fullScroll(View.FOCUS_UP)
+        }
     }
 }

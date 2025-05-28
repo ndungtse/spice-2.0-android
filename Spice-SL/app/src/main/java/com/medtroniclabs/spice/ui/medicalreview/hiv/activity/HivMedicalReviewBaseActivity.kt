@@ -421,7 +421,8 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                             hivViewModel.resultHashMap[HBsAg] as? String ?: ""
                         ),
                         clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
-                        encounterId = patientViewModel.encounterId
+                        encounterId = patientViewModel.encounterId,
+                        isConsentGiven = if (!hivViewModel.isEMTCT) true else false
                     )
                 }
             } else {
@@ -501,6 +502,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
     }
 
     private fun showReviewSummary(encounterId: String?, patientReference: String?) {
+        scrollUp()
         removeFragment(R.id.patientBMIContainer)
         removeFragment(R.id.patientHIVTest)
         removeFragment(R.id.patientEligibility)
@@ -553,6 +555,11 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                 }
             }
         }
+    private fun scrollUp() {
+        binding.nestedScrollViewID.post {
+            binding.nestedScrollViewID.fullScroll(View.FOCUS_UP)
+        }
+    }
 }
 
 

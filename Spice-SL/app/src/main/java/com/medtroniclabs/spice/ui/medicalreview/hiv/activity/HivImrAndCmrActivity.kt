@@ -293,8 +293,14 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
             }
         }
     }
+    private fun scrollUp() {
+        binding.nestedScrollViewID.post {
+            binding.nestedScrollViewID.fullScroll(View.FOCUS_UP)
+        }
+    }
 
     private fun showSummary(callBack: () -> Unit) {
+        scrollUp()
         with(binding) {
             patientSummaryContainer.gone()
             comorbiditiesContainer.gone()

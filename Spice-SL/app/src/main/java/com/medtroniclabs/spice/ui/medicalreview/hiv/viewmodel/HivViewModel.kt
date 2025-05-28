@@ -30,7 +30,6 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.ARTResponse
 import com.medtroniclabs.spice.model.ArtRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
-import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.PregnancySummaryRequest
 import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusRequest
 import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusResponse
@@ -127,7 +126,8 @@ class HivViewModel @Inject constructor(
         entryPoint: String?,
         hivEmtctResult: Pair<String, String>,
         clinicalNotes: String,
-        encounterId:String?
+        encounterId: String?,
+        isConsentGiven: Boolean
     ) {
         viewModelScope.launch(dispatcherIO) {
             val currentTime =
@@ -163,7 +163,8 @@ class HivViewModel @Inject constructor(
                         hbsAGTest = hivEmtctResult.second,
                         screeningType = if(isEMTCT) DefinedParams.EMTCT_HIV_MEDICAL_SCREENING else DefinedParams.HIV_MEDICAL_SCREENING,
                         clinicalNotes =  clinicalNotes,
-                        id = encounterId
+                        id = encounterId,
+                        isConsentGiven = isConsentGiven
                     )
                 )
             )
