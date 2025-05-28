@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.data.history
 
+import com.medtroniclabs.spice.data.model.Contraceptive
 import com.medtroniclabs.spice.model.ReferredDate
 import java.io.Serializable
 
@@ -72,7 +73,8 @@ data class ReviewDetails(
     val lastScheduledDateReason: String? = null,
     val nextVaccinationDuration: String? = null,
     val nextVaccinationDose: List<String>? = null,
-    val nextVaccinationDate: String? = null
+    val nextVaccinationDate: String? = null,
+    val contraceptive: Contraceptive? = null
 )
 data class Eligibility(
     val hivPopulationType: List<String>? = null,

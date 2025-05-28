@@ -21,10 +21,10 @@ class OpportunisticInfectionViewModel @Inject constructor(
     val resultHashMap = hashMapOf<String, HashMap<String, String>>()
 
     val getOpportunisticInfection = MutableLiveData<Resource<HashMap<String, HashMap<String, String>?>>>()
-    fun getOpportunisticInfection(memberId: String?) {
+    fun getOpportunisticInfection(memberId: String?, patientReference: String?) {
         viewModelScope.launch(dispatcherIO) {
             getOpportunisticInfection.postLoading()
-            getOpportunisticInfection.postValue(hivMedicalReviewRepo.getOpportunisticInfection(MotherNeonateAncRequest(memberId = memberId)))
+            getOpportunisticInfection.postValue(hivMedicalReviewRepo.getOpportunisticInfection(MotherNeonateAncRequest(memberId = memberId, patientReference = patientReference)))
         }
     }
 }

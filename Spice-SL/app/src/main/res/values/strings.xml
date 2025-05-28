@@ -1575,17 +1575,17 @@
     <string name="would_you_like_to_do_a_viral_load_test" translatable="false">would you like to do a Viral Load Test?</string>
     <string name="viral_load_test" translatable="false">Viral Load Test</string>
     <string name="household_head" translatable="false">Household Head</string>
-    <string name="tb_status">TB Status</string>
-    <string name="_1st">1st</string>
-    <string name="art_regimen">ART Regimen</string>
-    <string name="regimen">REGIMEN</string>
-    <string name="regimen_line">REGIMEN LINE</string>
-    <string name="reasons_for_change">REASONS FOR CHANGE</string>
-    <string name="emtct_enrolment_date">EMTCT Enrolment Date</string>
-    <string name="emtct_visit_status">eMTCT Visit Status</string>
-    <string name="maternal_outcome">Maternal Outcome</string>
-    <string name="current_medication">Current Medication</string>
-    <string name="pregnant_">Pregnant</string>
-    <string name="female_sex_worker_fsw">Female Sex Worker (FSW)</string>
-    <string name="d_dead">D-Dead</string>
+    <string name="tb_status" translatable="false">TB Status</string>
+    <string name="_1st" translatable="false">1st</string>
+    <string name="art_regimen" translatable="false">ART Regimen</string>
+    <string name="regimen" translatable="false">REGIMEN</string>
+    <string name="regimen_line" translatable="false">REGIMEN LINE</string>
+    <string name="reasons_for_change" translatable="false">REASONS FOR CHANGE</string>
+    <string name="emtct_enrolment_date" translatable="false">EMTCT Enrolment Date</string>
+    <string name="emtct_visit_status" translatable="false">eMTCT Visit Status</string>
+    <string name="maternal_outcome" translatable="false">Maternal Outcome</string>
+    <string name="current_medication" translatable="false">Current Medication</string>
+    <string name="pregnant_" translatable="false">Pregnant</string>
+    <string name="female_sex_worker_fsw" translatable="false">Female Sex Worker (FSW)</string>
+    <string name="d_dead" translatable="false">D-Dead</string>
 </resources>

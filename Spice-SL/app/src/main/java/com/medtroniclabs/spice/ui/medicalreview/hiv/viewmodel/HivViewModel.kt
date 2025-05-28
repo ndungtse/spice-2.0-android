@@ -48,8 +48,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HivViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var repository: HivMedicalReviewRepo,
-    private var repo: DiagnosisRepository
+    private var repository: HivMedicalReviewRepo
 ) : ViewModel() {
 
 
@@ -81,14 +80,11 @@ class HivViewModel @Inject constructor(
     val hivVitalsLiveData = MutableLiveData<Resource<HivVitalsResponse>>()
     val hivVitalsByTypeLiveData = MutableLiveData<Resource<HivVitalsResponse>>()
     var selectedemtctVisitStatus: String? = null
-    val shouldCloseParent = MutableLiveData<Boolean>()
     var isEMTCT = false
     var populationOther: String? = null
     var gestationalWeeks: String? = null
     var lastMenstrualPeriod: String? = null
     var expectedDateOfDelivery: String? = null
-    var isViralLoad = false
-    var isARTRegimen = false
     val hivCD4DetailLiveData = MutableLiveData<Resource<ArrayList<CD4DetailsResponse>>>()
     val getViralLoadLiveData = MutableLiveData<Resource<List<ViralLoadResponse>>>()
     val getARTLiveData = MutableLiveData<Resource<List<ARTResponse>>>()

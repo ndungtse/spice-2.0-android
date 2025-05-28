@@ -654,6 +654,51 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
         )
     }
 
+    private fun getFamilyPlanning(medicalReviewHistory: MedicalReviewHistory): List<Map<String, Any?>> {
+        return listOf(
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.patient_status),
+                Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                    ?.let { requireContext().changePatientStatus(it) }
+                    ?: getString(R.string.separator_double_hyphen))
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.date_of_review),
+                Value to medicalReviewHistory.dateOfReview?.let {
+                    DateUtils.convertDateFormat(
+                        it,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        DateUtils.DATE_ddMMyyyy
+                    )
+                }
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.client_type),
+                Value to (medicalReviewHistory.reviewDetails?.contraceptive?.clientType?.takeIf { it.isNotBlank() }
+                    ?: getString(R.string.separator_double_hyphen))
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.post_partum),
+                Value to (medicalReviewHistory.reviewDetails?.contraceptive?.postPartum?.takeIf { it.isNotBlank() }
+                    ?: getString(R.string.separator_double_hyphen))
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.progestin_only_orals),
+                Value to (medicalReviewHistory.reviewDetails?.contraceptive?.progestinOnlyOrals?.takeIf { it.isNotBlank() }
+                    ?: getString(R.string.separator_double_hyphen))
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.quantity_microlut),
+                Value to (medicalReviewHistory.reviewDetails?.contraceptive?.microlutQuantity?.toString()
+                    ?: getString(R.string.separator_double_hyphen))
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.clinical_notes),
+                Value to (medicalReviewHistory.reviewDetails?.clinicalNotes?.takeIf { it.isNotBlank() }
+                    ?: getString(R.string.separator_double_hyphen))
+            )
+        )
+    }
     private fun createMedicalReview(medicalReviewHistory: MedicalReviewHistory): List<Map<String, Any?>> {
         if (medicalReviewHistory.type == EMTCT_HIV_MEDICAL_SCREENING) {
             return getEmtctScreening(medicalReviewHistory)
@@ -666,6 +711,9 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
         }
         if (medicalReviewHistory.type == EMTCT_HIV_MEDICAL_REVIEW) {
             return getEmtctHivMr(medicalReviewHistory)
+        }
+        if (medicalReviewHistory.type == MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name) {
+            return getFamilyPlanning(medicalReviewHistory)
         }
         if (medicalReviewHistory.type == DefinedParams.TB_REVIEW) {
             val chipList = (medicalReviewHistory.reviewDetails?.systemicExaminations as? List<*>)?.mapNotNull { item ->

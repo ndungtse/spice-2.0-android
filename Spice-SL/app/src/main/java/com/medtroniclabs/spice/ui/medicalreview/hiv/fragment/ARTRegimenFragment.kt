@@ -145,9 +145,7 @@ class ARTRegimenFragment : BaseFragment() {
 
                 ) {
                     Text(
-                        text = if(arguments?.getBoolean(DefinedParams.HIV_IMR_CMR) != true) stringResource(
-                            R.string.art_regimen
-                        )else stringResource(R.string.current_medication),
+                        text = stringResource(R.string.current_medication),
                         fontSize = 16.sp,
                         color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.inter_bold))

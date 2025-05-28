@@ -144,7 +144,7 @@ class FamilyPlanningRepository @Inject constructor(
         return FamilyPlanningContraceptivesRequest(
             id = encounterId,
             patientId = details.id,
-            assessmentName = MedicalReviewTypeEnums.FAMILY_PLANNING.name,
+            assessmentName = MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name,
             clinicalNotes = notes,
             encounter = MedicalReviewEncounter(
                 id = encounterId,
