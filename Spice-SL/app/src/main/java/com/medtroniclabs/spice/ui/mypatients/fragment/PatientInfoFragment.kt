@@ -457,8 +457,7 @@ class PatientInfoFragment : BaseFragment() {
             if (isEMTCTMR() == true){
                 prepareEMTCTMRData(
                     dataList = dataList,
-                    patient = patientListRespModel,
-                    dateOfDelivery = dateOfDelivery
+                    patient = patientListRespModel
                 )
             }
             commonAdapter(dataList as MutableList<Map<String, Any>>)
@@ -520,8 +519,7 @@ class PatientInfoFragment : BaseFragment() {
 
     private fun prepareEMTCTMRData(
         dataList: MutableList<Map<String, String>>,
-        patient: PatientListRespModel,
-        dateOfDelivery: String?
+        patient: PatientListRespModel
     ): MutableList<Map<String, String>> {
         val hyphen = requireContext().getString(R.string.hyphen_symbol)
         val formatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)

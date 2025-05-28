@@ -36,7 +36,6 @@ import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivGeneralAndSystem
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivImrCmrSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.OpportunisticInfectionsTreatmentFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.RecommendedInvestigationsDialog
-import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.ViralLoadFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivGeneralAndSystemicExaminationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivImrAndCmrViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivImrCmrSummaryViewModel
