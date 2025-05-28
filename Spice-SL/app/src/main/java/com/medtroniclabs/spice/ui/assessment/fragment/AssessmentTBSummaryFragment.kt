@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -38,6 +39,8 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherRelationshipIC
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
+import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 
 class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -62,15 +65,30 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
 
     private fun initView() {
         binding.btnDone.safeClickListener(this)
+        binding.btnStartContactTracing.safeClickListener(this)
     }
 
     override fun onClick(view: View) {
-        when(view.id) {
+        when (view.id) {
             binding.btnDone.id -> {
                 viewModel.setUserJourney(AnalyticsDefinedParams.DONEBUTTONTRIGGERED)
                 viewModel.updateOtherAssessmentDetails()
             }
+
+            binding.btnStartContactTracing.id -> {
+                launchHouseholdSummaryPage()
+            }
         }
+    }
+
+    private fun launchHouseholdSummaryPage() {
+        val intent = Intent(requireContext(), HouseholdSummaryActivity::class.java)
+        intent.putExtra(
+            HouseholdDefinedParams.ID,
+            viewModel.memberDetailsLiveData.value?.data?.householdLocalId ?: -1L
+        )
+        intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, false)
+        startActivity(intent)
     }
 
     private fun attachObservers() {

@@ -33,6 +33,8 @@ data class PatientListRespModel(
     val fhirUrl: String? = null,
     val performer: String? = null,
     val chwName: String? = null,
+    val chwPhoneNumber: String? = null,
+    val maritalStatus: String? = null,
     val houseHoldId: String? = null,
     val houseHoldNumber: Long? = null,
     val dateOfOnset:String? = null,
@@ -86,7 +88,7 @@ data class PatientListRespModel(
     var diastolic: Double? = null,
     val hivIMRCompleted: Boolean = false,
     val hivTestedPositive: Boolean = false,
-    val populationTypeList: List<String>? = null,
+    val populationTypes: List<String>? = null,
     val emtctEnrollDate: String? = null,
     val entryPoint: String? = null,
     val isEmtctFlow:Boolean? = null
