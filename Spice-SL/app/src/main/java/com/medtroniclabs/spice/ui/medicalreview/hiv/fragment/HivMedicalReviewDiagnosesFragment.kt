@@ -37,7 +37,6 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateU
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddWeightDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.AddHeightDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.BMIListDialog
-import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.TbConfirmDiagnosisAndSiteOfDiseaseDialog
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.EMTCCT_VISIT_STATUS
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
@@ -427,7 +426,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resources.data?.let { list ->
-                        binding.tvCd4Value.text = list.cd4.takeIf { !it.isNullOrEmpty() } ?: getString(R.string.seperator_hyphen)
+                        binding.tvCd4Value.text = list.cd4 ?: getString(R.string.seperator_hyphen)
                         binding.tvWhoValue.text =
                             list.whoClinicalStage ?: getText(R.string.seperator_hyphen)
                         binding.tvWho.text = if (list.whoClinicalStage != null) {
@@ -435,7 +434,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                         } else {
                             getString(R.string.add_who_clinical_stage)
                         }
-                        hivViewModel.cd4Value = list.cd4.takeIf { !it.isNullOrEmpty() }
+                        hivViewModel.cd4Value = list.cd4
                         hivViewModel.whovalue = list.whoClinicalStage
                     }
                 }

@@ -104,7 +104,8 @@ class CD4DialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun initAdapter(cd4List: ArrayList<CD4DetailsResponse>){
-        cd4Adapter = CD4Adapter(cd4List)
+        cd4Adapter = CD4Adapter(cd4List, isCD4 = arguments?.getBoolean(IS_CD4) ?: false, isCD4Percentage = arguments?.getBoolean(
+            IS_CD4_PERCENTAGE) ?: false )
         binding.rvBmiList.layoutManager = LinearLayoutManager(requireContext())
         binding.rvBmiList.adapter = cd4Adapter
     }

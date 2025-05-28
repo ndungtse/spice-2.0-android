@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
@@ -70,7 +71,7 @@ class HivViewModel @Inject constructor(
     var encounterId : String? = null
     var patientReference : String? = null
     var nextVisitDate : String? = null
-    val createHivMedicalReviewSummaryLiveData = MutableLiveData<Resource<HivMedicalReviewSummaryResponse>>()
+    val createHivMedicalReviewSummaryLiveData = MutableLiveData<Resource<HashMap<String, Any>>>()
     var id : String? = null
     var villageId : String? = null
     var selectedPatientStatus: String? = null
@@ -176,7 +177,7 @@ class HivViewModel @Inject constructor(
         }
     }
 
-    fun createHivSummary(request: HivMedicalReviewSummaryRequest) {
+    fun createHivSummary(request: MedicalReviewSummarySubmitRequest) {
         viewModelScope.launch(Dispatchers.IO) {
             createHivMedicalReviewSummaryLiveData.postLoading()
             createHivMedicalReviewSummaryLiveData.postValue(repository.createHivSummary(request))

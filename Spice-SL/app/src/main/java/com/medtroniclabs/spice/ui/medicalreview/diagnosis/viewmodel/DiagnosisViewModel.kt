@@ -4,14 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
 import com.medtroniclabs.spice.data.DiagnosisSaveUpdateRequest
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
-import com.medtroniclabs.spice.data.HivVitalDetailsRequest
-import com.medtroniclabs.spice.data.HivVitalDetailsResponse
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
+import com.medtroniclabs.spice.model.medicalreview.HivVitalsRequest
+import com.medtroniclabs.spice.model.medicalreview.HivVitalsResponse
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.DiagnosisRepository
@@ -39,7 +38,7 @@ class DiagnosisViewModel @Inject constructor(
     val diagnosisSaveUpdateResponse = MutableLiveData<Resource<ArrayList<DiagnosisDiseaseModel>>>()
     var viewDiagnosis: Boolean = true
     var diagnosisType:String = ""
-    val hivVitalsDetailLiveData = MutableLiveData<Resource<HivVitalDetailsResponse>>()
+    val hivVitalsDetailLiveData = MutableLiveData<Resource<HivVitalsResponse>>()
 
     fun getDiagnosisMetaList(diagnosisType: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -74,7 +73,7 @@ class DiagnosisViewModel @Inject constructor(
             hivVitalsDetailLiveData.postLoading()
             hivVitalsDetailLiveData.postValue(
                 hivRepository.getHivVitalsDetails(
-                    HivVitalDetailsRequest(
+                    HivVitalsRequest(
                         patientReference,
                         memberId,
                         arrayListOf(

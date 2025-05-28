@@ -77,7 +77,6 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
     private val referPatientViewModel: ReferPatientViewModel by viewModels()
     private val clinicalNotesViewModel: ClinicalNotesViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
-        val a = ""
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         binding = ActivityTbMedicalReviewBinding.inflate(layoutInflater)
@@ -117,6 +116,7 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
     }
 
     private fun initStaticDataCall() {
+        whoViewModel.setWhoStage(MedicalReviewTypeEnums.whoClinicalStage.name)
         if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_HIV_DATA_LOADED.name))) {
             if (connectivityManager.isNetworkAvailable()) {
                 hivViewModel.getHivMetaData()

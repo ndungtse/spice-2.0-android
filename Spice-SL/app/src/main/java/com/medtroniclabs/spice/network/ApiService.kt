@@ -670,15 +670,11 @@ interface ApiService {
     @POST("/spice-service/hiv/screening/detail")
     suspend fun getHivScreeningDetails(@Body request: HivScreeningResponse) : Response<APIResponse<HivCreateScreeningSummaryResponse>>
 
-    @POST("/spice-service/medical-review/summary-create")
-    suspend fun createHivSummary(@Body request : HivMedicalReviewSummaryRequest) : Response<APIResponse<HivMedicalReviewSummaryResponse>>
-
-
     @POST("/notification-service/inapp-notification/list")
-    suspend fun getCBSNotificationDetails(@Body PeerSupervisorNotificationRequest: PeerSupervisorNotificationRequest) : Response<APIResponse<ArrayList<PeerSupervisorNotificationResponse>>>
+    suspend fun getCBSNotificationDetails(@Body peerSupervisorNotificationRequest: PeerSupervisorNotificationRequest) : Response<APIResponse<ArrayList<PeerSupervisorNotificationResponse>>>
 
     @POST(" /notification-service/inapp-notification/clear")
-    suspend fun updateCBSNotification(@Body PeerSupervisorNotificationRequest: PeerSupervisorNotificationRequest) :  Response<APIResponse<Unit>>
+    suspend fun updateCBSNotification(@Body peerSupervisorNotificationRequest: PeerSupervisorNotificationRequest) :  Response<APIResponse<Unit>>
 
     @POST("/spice-service/medical-review/bmi/create")
     suspend fun createBMI(@Body bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>>
@@ -709,9 +705,6 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/who-clinical-stage/create")
     suspend fun createWhoClinicalStage(@Body request: WhoClinicalStageCreateRequest): Response<APIResponse<HivClinicalInfoResponse>>
-
-    @POST("/spice-service/medical-review/vital-details")
-    suspend fun getHivVitalDetails(@Body request: HivVitalDetailsRequest): Response<APIResponse<HivVitalDetailsResponse>>
 
     @POST("/spice-service/hiv/cd4-details")
     suspend fun getHivCD4Details(@Body request: CD4DetailsRequest): Response<APIResponse<ArrayList<CD4DetailsResponse>>>

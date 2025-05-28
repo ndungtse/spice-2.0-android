@@ -104,7 +104,7 @@ class FamilyPlanViewModel @Inject constructor(
                     memberId = memberId,
                     id = submitEncounterId,
                     nextVisitDate = nextVisitDate,
-                    referralTicketType = MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name,
+                    referralTicketType = MedicalReviewTypeEnums.FAMILY_PLANNING.name,
                     assessmentName = MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name,
                     householdId = houseHoldId,
                     villageId = villageId,

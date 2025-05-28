@@ -821,10 +821,6 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getHivScreeningDetails(request)
     }
 
-    override suspend fun createHivSummary(request: HivMedicalReviewSummaryRequest): Response<APIResponse<HivMedicalReviewSummaryResponse>> {
-      return apiService.createHivSummary(request)
-    }
-
     override suspend fun getCBSNotificationDetails(request: PeerSupervisorNotificationRequest): Response<APIResponse<ArrayList<PeerSupervisorNotificationResponse>>> {
         return apiService.getCBSNotificationDetails(request)
     }
@@ -878,10 +874,6 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun createWhoClinicalStage(request: WhoClinicalStageCreateRequest): Response<APIResponse<HivClinicalInfoResponse>> {
         return apiService.createWhoClinicalStage(request)
-    }
-
-    override suspend fun getHivVitalDetails(request: HivVitalDetailsRequest): Response<APIResponse<HivVitalDetailsResponse>> {
-        return apiService.getHivVitalDetails(request)
     }
 
     override suspend fun getHivCD4Details(request: CD4DetailsRequest): Response<APIResponse<ArrayList<CD4DetailsResponse>>> {

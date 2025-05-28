@@ -715,6 +715,12 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     }
 
     private fun attachObserver() {
+        whoStageViewModel.getWhoStageLiveData.observe(viewLifecycleOwner){
+            diagnosisViewModel.hivVitalsDetailLiveData.value?.data?.let {list ->
+                binding.tvWhoValue.text = getClinicalStageText(list.whoClinicalStage)
+            }
+        }
+
         viewModel.getPatientTypeLiveData.observe(viewLifecycleOwner) {
             val type = viewModel.getPatientType.value?.data?.get(PATIENT_TYPE_HYPHEN) as? String
             if (!type.isNullOrBlank()) {
@@ -853,9 +859,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resources.data?.let { list ->
-                        binding.tvCd4Value.text = list.cd4.takeIf { !it.isNullOrBlank() }  ?: getString(R.string.seperator_hyphen)
-                        binding.tvCd4PercentValue.text = list.cd4Percentage.takeIf { !it.isNullOrBlank() } ?: getString(R.string.seperator_hyphen)
-                        binding.tvWhoValue.text = list.whoClinicalStage.takeIf { !it.isNullOrBlank() }  ?: getText(R.string.seperator_hyphen)
+                        binding.tvCd4Value.text = list.cd4 ?: getString(R.string.seperator_hyphen)
+                        binding.tvCd4PercentValue.text = list.cd4Percentage ?: getString(R.string.seperator_hyphen)
+                        binding.tvWhoValue.text = getClinicalStageText(list.whoClinicalStage)
                         binding.tvWho.text = if (list.whoClinicalStage != null) {
                             getString(R.string.edit_who_clinical_stage)
                         } else {
@@ -889,6 +895,19 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                     hideProgress()
                 }
             }
+        }
+    }
+
+    private fun getClinicalStageText(whoClinicalStage: String?): String {
+        whoStageViewModel.getWhoStageLiveData.value?.let { whoStageList ->
+            return if (whoClinicalStage.isNullOrEmpty()) {
+                getString(R.string.seperator_hyphen)
+            } else {
+                whoStageList.find { it.value == whoClinicalStage }?.name?.capitalizeFirstChar()
+                    ?: getString(R.string.seperator_hyphen)
+            }
+        } ?: run {
+            return getString(R.string.seperator_hyphen)
         }
     }
 

@@ -370,7 +370,6 @@ interface ApiHelper {
     suspend fun getHivStaticData(): Response<APIResponse<HivMetaResponse>>
     suspend fun createHivScreening(request:HivScreeningRequest) : Response<APIResponse<HivScreeningResponse>>
     suspend fun getHivScreeningDetails(request: HivScreeningResponse) : Response<APIResponse<HivCreateScreeningSummaryResponse>>
-    suspend fun createHivSummary(request: HivMedicalReviewSummaryRequest) : Response<APIResponse<HivMedicalReviewSummaryResponse>>
     suspend fun createFamilyPlanningMR(request: FamilyPlanningContraceptivesRequest): Response<APIResponse<FamilyPlanningCreateResponse>>
     suspend fun getFamilyPlanningStaticData(): Response<APIResponse<FamilyPlanningMetaResponse>>
     suspend fun getFamilyPlanningMRSummaryDetails(request: AboveFiveYearsSummaryRequest): Response<APIResponse<FamilyPlanningSummaryResponse>>
@@ -384,7 +383,6 @@ interface ApiHelper {
     suspend fun createEMTCT(request: EMTCTVisitStatusRequest): Response<APIResponse<EMTCTVisitStatusResponse>>
     suspend fun getHivVitalsDetails(request: HivVitalsRequest): Response<APIResponse<HivVitalsResponse>>
     suspend fun createWhoClinicalStage(request: WhoClinicalStageCreateRequest): Response<APIResponse<HivClinicalInfoResponse>>
-    suspend fun getHivVitalDetails(request: HivVitalDetailsRequest): Response<APIResponse<HivVitalDetailsResponse>>
     suspend fun getHivCD4Details(request: CD4DetailsRequest): Response<APIResponse<ArrayList<CD4DetailsResponse>>>
     suspend fun checkRecommendationInvestigations(request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, Boolean?>?>>
     suspend fun getPatientSummaryDetails(request: PregnancySummaryRequest) : Response<APIResponse<PregnancyDetailsModel>>

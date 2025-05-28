@@ -2,26 +2,22 @@ package com.medtroniclabs.spice.ui.medicalreview.hiv.repo
 
 import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.common.ConsentFormType
-import com.medtroniclabs.spice.common.DefinedParams.emtctVisitStatus
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.HivClinicalInfoResponse
-import com.medtroniclabs.spice.data.HivVitalDetailsRequest
-import com.medtroniclabs.spice.data.HivVitalDetailsResponse
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.WhoClinicalStageCreateRequest
 import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
-import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
-import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryResponse
 import com.medtroniclabs.spice.data.model.HivRequestData
 import com.medtroniclabs.spice.data.model.HivScreeningRequest
 import com.medtroniclabs.spice.data.model.HivScreeningResponse
-import com.medtroniclabs.spice.data.model.ViralLoadRequest
-import com.medtroniclabs.spice.data.model.ViralLoadResponse
 import com.medtroniclabs.spice.data.model.HivSummaryResponse
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
+import com.medtroniclabs.spice.data.model.ViralLoadRequest
+import com.medtroniclabs.spice.data.model.ViralLoadResponse
 import com.medtroniclabs.spice.data.resource.CD4DetailsRequest
 import com.medtroniclabs.spice.data.resource.CD4DetailsResponse
 import com.medtroniclabs.spice.db.entity.ConsentForm
@@ -251,9 +247,9 @@ class HivMedicalReviewRepo @Inject constructor(
         }
     }
 
-    suspend fun createHivSummary(request: HivMedicalReviewSummaryRequest): Resource<HivMedicalReviewSummaryResponse> {
+    suspend fun createHivSummary(request: MedicalReviewSummarySubmitRequest): Resource<HashMap<String, Any>> {
         return try {
-            val res = apiHelper.createHivSummary(request)
+            val res = apiHelper.createSummarySubmit(request)
             if (res.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = res.body()?.entity)
             } else {
@@ -336,20 +332,6 @@ class HivMedicalReviewRepo @Inject constructor(
         }
     }
 
-    suspend fun getHivVitalsDetails(request: HivVitalsRequest): Resource<HivVitalsResponse> {
-        return try {
-            val res = apiHelper.getHivVitalsDetails(request)
-            if (res.isSuccessful) {
-                Resource(state = ResourceState.SUCCESS, data = res.body()?.entity)
-            } else {
-                Resource(state = ResourceState.ERROR, message = res.message())
-            }
-        } catch (e: Exception) {
-            Resource(state = ResourceState.ERROR)
-        }
-    }
-
-
     suspend fun getOpportunisticInfection(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<HashMap<String, HashMap<String, String>?>> {
         return try {
             apiHelper.getOpportunisticInfection(motherNeonateAncRequest).let { response ->
@@ -384,9 +366,9 @@ class HivMedicalReviewRepo @Inject constructor(
         }
     }
 
-    suspend fun getHivVitalsDetails(hivVitalDetailsRequest: HivVitalDetailsRequest): Resource<HivVitalDetailsResponse> {
+    suspend fun getHivVitalsDetails(hivVitalDetailsRequest: HivVitalsRequest): Resource<HivVitalsResponse> {
         return try {
-            val response = apiHelper.getHivVitalDetails(hivVitalDetailsRequest)
+            val response = apiHelper.getHivVitalsDetails(hivVitalDetailsRequest)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
             } else {
