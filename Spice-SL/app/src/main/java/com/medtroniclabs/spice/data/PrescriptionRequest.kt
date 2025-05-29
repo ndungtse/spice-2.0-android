@@ -3,7 +3,9 @@ package com.medtroniclabs.spice.data
 
 data class PrescriptionRequest(
     val encounter: EncounterDetails,
-    val prescriptions: List<Prescription>
+    val prescriptions: List<Prescription>,
+    val reasonsForChange : String? = null,
+    val regimenLine: String? = null
 )
 
 data class  Prescription(
@@ -39,7 +41,8 @@ data class  Prescription(
     val categoryName: String? = null,
     val isGroup : Boolean? = null,
     val groupUniqueId: String? = null,
-    val instruction: String ? = null
+    val instruction: String ? = null,
+    val regimenLine: String?= null
 )
 
 

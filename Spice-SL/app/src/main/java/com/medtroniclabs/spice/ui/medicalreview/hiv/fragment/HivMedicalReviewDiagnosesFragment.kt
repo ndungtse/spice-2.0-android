@@ -505,7 +505,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
     }
 
     private fun getMemberId(): String {
-        return arguments?.getString(DefinedParams.MemberID, "") ?: ""
+        return patientViewModel.getPatientMemberId() ?: ""
     }
 
 

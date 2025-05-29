@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.data.Category
 import com.medtroniclabs.spice.data.EncounterDetails
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.MedicationGroupSearchRequest
@@ -167,7 +168,9 @@ class PrescriptionViewModel @Inject constructor(
         filePath: File,
         list: ArrayList<MedicationRequestObject>,
         data: PatientListRespModel,
-        encounterId: String?
+        encounterId: String?,
+        reason: String?,
+        regimenNumber: Int? = null
     ) {
         viewModelScope.launch(dispatcherIO) {
             try {
@@ -219,7 +222,9 @@ class PrescriptionViewModel @Inject constructor(
                         patientId = data.patientId ?: "",
                         memberId = data.memberId ?: "", provenance = ProvanceDto()
                     ),
-                    prescriptions = prescriptionList
+                    prescriptions = prescriptionList,
+                    reasonsForChange = reason,
+                    regimenLine = regimenNumber?.toString()
                 )
                 val dataRequest = Gson().toJson(prescriptionRequest)
                 builder.addFormDataPart("prescriptionRequest", dataRequest)
@@ -259,9 +264,10 @@ class PrescriptionViewModel @Inject constructor(
             prescriptionId = prescription.prescriptionId,
             prescribedSince = prescription.prescribedSince,
             groupName = prescription.groupName,
-            category = prescription.category,
+            category = Category(name = prescription.categoryName ?: "", id = null),
             groupUniqueId = prescription.groupUniqueId,
-            instruction = prescription.instruction
+            instruction = prescription.instruction,
+            regimenLine = prescription.regimenLine,
         )
     }
 

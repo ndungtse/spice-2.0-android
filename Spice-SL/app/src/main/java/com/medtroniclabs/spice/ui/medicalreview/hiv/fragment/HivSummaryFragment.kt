@@ -361,10 +361,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
 
     fun validation(): Boolean {
         var isValid = true
-        if (  hivViewModel.selectedPatientStatus?.equals(
-                ReferralStatus.Died.name,
-                true
-            ) == true) {
+        if ( hivViewModel.nextVisitDate != null ) {
             binding.tvNextMedicalReviewError.invisible()
         } else{
             binding.tvNextMedicalReviewError.visible()

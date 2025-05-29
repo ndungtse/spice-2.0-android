@@ -15,8 +15,10 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.HIV
 import com.medtroniclabs.spice.common.DefinedParams.SearchLengthPrescription
 import com.medtroniclabs.spice.data.MedicationRequestObject
 import com.medtroniclabs.spice.data.MedicationResponse
@@ -32,6 +34,7 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.DeleteReasonDialog
+import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.SignatureDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.SignatureListener
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
@@ -936,17 +939,57 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             prescriptionCreateList.add(it)
                         }
                     }
-                prescriptionCreateList.let { list ->
-                    prescriptionViewModel.createPrescription(
-                        signatureBitmap,
-                        CommonUtils.getFilePath(
-                            patientId,
-                            context = this
-                        ),
-                        ArrayList(list),
-                        data,
-                        patientViewModel.encounterId
-                    )
+                if (prescriptionCreateList.any { it.medicationResponse.category?.name?.equals(
+                        HIV, true) == true }){
+                    val medications = prescriptionCreateList.filter { it.medicationResponse.category?.name?.equals(
+                        HIV, true) == true
+                           // && it.medicationResponse.regimenLine != null
+                    }
+                        .map { it.medicationResponse.name }
+                    val medicationsRegimen = prescriptionCreateList
+                        .filter { it.medicationResponse.category?.name?.equals(HIV, true) == true }
+                        .mapNotNull { it.medicationResponse.regimenLine?.toIntOrNull() } // List<Int>
+                        .maxOrNull()
+                    val prescriptionId =
+                        prescriptionCreateList.any { it.medicationResponse.prescriptionId != null }
+                    ReasonForChangeDialogFragment.newInstance(
+                        name = convertListToString(ArrayList(medications.filterNotNull())),
+                        regimen = medicationsRegimen,
+                        prescribedMedicine = prescriptionId,
+                        callback = object : ReasonForChangeDialogFragment.ReasonChangeCallback {
+                            override fun onReasonProvided(reason: String) {
+                                prescriptionCreateList.let { list ->
+                                    prescriptionViewModel.createPrescription(
+                                        signatureBitmap,
+                                        CommonUtils.getFilePath(
+                                            patientId,
+                                            context = this@PrescriptionActivity
+                                        ),
+                                        ArrayList(list),
+                                        data,
+                                        patientViewModel.encounterId,
+                                        reason,
+                                        medicationsRegimen?.apply { this+1 } ?: 1
+                                    )
+                                }
+                            }
+                        }
+                    ).show(supportFragmentManager, ReasonForChangeDialogFragment.TAG)
+
+                } else {
+                    prescriptionCreateList.let { list ->
+                        prescriptionViewModel.createPrescription(
+                            signatureBitmap,
+                            CommonUtils.getFilePath(
+                                patientId,
+                                context = this
+                            ),
+                            ArrayList(list),
+                            data,
+                            patientViewModel.encounterId,
+                            null
+                        )
+                    }
                 }
             }
         }

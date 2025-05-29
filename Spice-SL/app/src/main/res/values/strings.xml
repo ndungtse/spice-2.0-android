@@ -1579,7 +1579,6 @@
     <string name="_1st" translatable="false">1st</string>
     <string name="art_regimen" translatable="false">ART Regimen</string>
     <string name="regimen" translatable="false">REGIMEN</string>
-    <string name="regimen_line" translatable="false">REGIMEN LINE</string>
     <string name="reasons_for_change" translatable="false">REASONS FOR CHANGE</string>
     <string name="emtct_enrolment_date" translatable="false">EMTCT Enrolment Date</string>
     <string name="emtct_visit_status" translatable="false">eMTCT Visit Status</string>
@@ -1588,4 +1587,7 @@
     <string name="pregnant_" translatable="false">Pregnant</string>
     <string name="female_sex_worker_fsw" translatable="false">Female Sex Worker (FSW)</string>
     <string name="d_dead" translatable="false">D-Dead</string>
+   <string name="reason_for_change" translatable="false">Reason for change</string>
+    <string name="write_reason" translatable="false">Write Reason</string>
+    <string name="regimen_line" translatable="false">Regimen Line</string>
 </resources>

@@ -176,7 +176,7 @@ class ARTRegimenFragment : BaseFragment() {
                             stringResource(R.string.start_date).uppercase(),
                             stringResource(R.string.end_date).uppercase(),
                             stringResource(R.string.regimen),
-                            stringResource(R.string.regimen_line),
+                            stringResource(R.string.regimen_line).uppercase(),
                             stringResource(R.string.reasons_for_change)
                         )
 
