@@ -432,6 +432,7 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
         } else {
             binding.tvNextMedicalReviewLabelText.isEnabled = true
             binding.tvNextMedicalReviewLabelText.text = DateUtils.getFormattedDateAfterMonths(1)
+            viewModel.nextFollowupDate = DateUtils.getFormattedDateAfterMonths(1)
         }
         (requireActivity() as? HivImrAndCmrActivity)?.enableRefer(
             !viewModel.patientStatus.equals(ReferralStatus.Died.name, true)

@@ -53,6 +53,7 @@ data class PatientListRespModel(
     val confirmDiagnosis: NCDDiagnosisGetResponse? = null,
     val provisionalDiagnosis: ArrayList<String>? = null,
     val pregnancyStatus: String? = null,
+    val pregnancyBreastFeedStatus: String? = null,
     val isRegularSmoker: Boolean? = null,
     val initialReviewed: Boolean? = false,
     val identityValue: String? = null,

@@ -209,13 +209,17 @@ class HIVStatusFragment : BaseFragment() {
     }
 
     private fun autoPopulatePregnantDetails() {
-        if (patientViewModel.isPregnant()) {
+        if (patientViewModel.getPregnancyBreastFeedStatus()
+                ?.equals(DefinedParams.yes, true) == true
+        ) {
             viewModel.resultPregnantStatus[MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name] =
                 DefinedParams.yes
             binding.lmbGroup.setVisible(true)
             binding.gestationalAgeGroup.setVisible(true)
             binding.expectedDateGroup.setVisible(true)
-        } else if (!patientViewModel.isPregnant()) {
+        } else if (patientViewModel.getPregnancyBreastFeedStatus()
+                ?.equals(DefinedParams.no, true) == true
+        ) {
             viewModel.resultPregnantStatus[MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name] =
                 DefinedParams.no
         }

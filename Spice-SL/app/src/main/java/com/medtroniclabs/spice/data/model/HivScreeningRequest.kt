@@ -51,6 +51,7 @@ data class HivCreateScreeningSummaryResponse(
     val clinicalNotes : String? = null,
     val prescriptions: List<Prescription>? = null,
     val investigations: List<Investigation>? = null,
+    val otherPopulationType: String? = null
 )
 
 data class Eligibilities(

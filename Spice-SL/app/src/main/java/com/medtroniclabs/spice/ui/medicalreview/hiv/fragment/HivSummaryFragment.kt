@@ -232,14 +232,12 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun renderSymptoms(response: HivCreateScreeningSummaryResponse) {
         hivViewModel.getHivPatientStatusByCategory(MedicalReviewTypeEnums.patient_status.name)
         binding.flExaminationContainer.text = (response.eligibilities?.let {
-            formatEligibility(
-                it
-            )
+            formatEligibility(it, otherPopulationType = response.otherPopulationType)
         }.takeIf { !it.isNullOrBlank() }
             ?: getString(R.string.hyphen_symbol))
     }
 
-    private fun formatEligibility(eligibility: Eligibilities): String {
+    private fun formatEligibility(eligibility: Eligibilities, otherPopulationType:String? = null): String {
         return buildString {
             // Handle Symptoms
             eligibility.Symptoms?.takeIf { it.isNotEmpty() }?.let { symptoms ->
@@ -257,7 +255,13 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
                 append(label)
                 val padding = " ".repeat(8)
                 types.forEach { type ->
-                    append("\n$padding$type")
+                    val line = if (type.equals(Other, ignoreCase = true)
+                        && !otherPopulationType.isNullOrBlank()) {
+                        "$type - ${otherPopulationType.trim()}"
+                    } else {
+                        type
+                    }
+                    append("\n$padding$line")
                 }
             }
         }.trim()

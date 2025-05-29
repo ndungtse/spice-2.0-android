@@ -84,7 +84,7 @@ class HivImrAndCmrViewModel @Inject constructor(
     }
 
     val checkRecommendationRInvestigations = MutableLiveData<Resource<HashMap<String, Boolean?>?>>()
-    fun checkRecommendationRInvestigations(patientReference: String?) {
+    fun checkRecommendationRInvestigations(patientReference: String?, memberId: String?) {
         viewModelScope.launch(dispatcherIO) {
             checkRecommendationRInvestigations.postLoading()
             checkRecommendationRInvestigations.postValue(

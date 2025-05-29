@@ -224,4 +224,8 @@ class PatientDetailViewModel @Inject constructor(
     fun getDob(): String? {
         return patientDetailsLiveData.value?.data?.birthDate
     }
+
+    fun getPregnancyBreastFeedStatus(): String? {
+        return patientDetailsLiveData.value?.data?.pregnancyBreastFeedStatus
+    }
 }

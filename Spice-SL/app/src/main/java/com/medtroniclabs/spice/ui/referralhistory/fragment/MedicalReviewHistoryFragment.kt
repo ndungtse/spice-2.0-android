@@ -378,7 +378,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
         return dateTime1.format(timeFormatter)
     }
 
-    private fun formatEligibility(eligibility: Eligibility): String {
+    private fun formatEligibility(eligibility: Eligibility, otherPopulationType: String? = null): String {
         return buildString {
             // Handle Symptoms
             eligibility.Symptoms?.takeIf { it.isNotEmpty() }?.let { symptoms ->
@@ -396,13 +396,29 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 append(label)
                 val padding = " ".repeat(8)
                 types.forEach { type ->
-                    append("\n$padding$type")
+                    val line = if (type.equals(DefinedParams.Other, ignoreCase = true)
+                        && !otherPopulationType.isNullOrBlank()) {
+                        "$type - ${otherPopulationType.trim()}"
+                    } else {
+                        type
+                    }
+                    append("\n$padding$line")
                 }
             }
         }.trim()
     }
 
     private fun getEmtctScreening(medicalReviewHistory: MedicalReviewHistory): List<Map<String, Any?>> {
+        val entryPoint = medicalReviewHistory.reviewDetails?.entryPoint?.takeIf { it.isNotBlank() }?.let { entry ->
+            if (entry.equals(DefinedParams.Other, ignoreCase = true) &&
+                !medicalReviewHistory.reviewDetails.otherEntryPoint.isNullOrBlank()
+            ) {
+                "$entry - ${medicalReviewHistory.reviewDetails.otherEntryPoint}"
+            } else {
+                entry
+            }
+        } ?: getString(R.string.separator_double_hyphen)
+
         return listOf(
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.diagnosis_tb),
@@ -433,9 +449,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.eligibility),
                 Value to (medicalReviewHistory.reviewDetails?.eligibilities?.let {
-                    formatEligibility(
-                        it
-                    )
+                    formatEligibility(it, otherPopulationType = medicalReviewHistory.reviewDetails.otherPopulationType)
                 }.takeIf { !it.isNullOrBlank() }
                     ?: getString(R.string.separator_double_hyphen))
             ),
@@ -455,14 +469,27 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                     ?: getString(R.string.separator_double_hyphen))
             ),
             mapOf(
+                DefinedParams.label to requireContext().getString(R.string.entry_point),
+                Value to entryPoint
+            ),
+            mapOf(
                 DefinedParams.label to requireContext().getString(R.string.clinical_notes),
                 Value to (medicalReviewHistory.reviewDetails?.clinicalNotes?.takeIf { it.isNotBlank() }
                     ?: getString(R.string.separator_double_hyphen))
-            ),
+            )
         )
     }
 
     private fun getHivScreening(medicalReviewHistory: MedicalReviewHistory): List<Map<String, Any?>> {
+        val entryPoint = medicalReviewHistory.reviewDetails?.entryPoint?.takeIf { it.isNotBlank() }?.let { entry ->
+            if (entry.equals(DefinedParams.Other, ignoreCase = true) &&
+                !medicalReviewHistory.reviewDetails.otherEntryPoint.isNullOrBlank()
+            ) {
+                "$entry - ${medicalReviewHistory.reviewDetails.otherEntryPoint}"
+            } else {
+                entry
+            }
+        } ?: getString(R.string.separator_double_hyphen)
         return listOf(
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.diagnosis_tb),
@@ -493,9 +520,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.eligibility),
                 Value to (medicalReviewHistory.reviewDetails?.eligibilities?.let {
-                    formatEligibility(
-                        it
-                    )
+                    formatEligibility(it, otherPopulationType = medicalReviewHistory.reviewDetails.otherPopulationType)
                 }.takeIf { !it.isNullOrBlank() }
                     ?: getString(R.string.separator_double_hyphen))
             ),
@@ -516,8 +541,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.entry_point),
-                Value to (medicalReviewHistory.reviewDetails?.entryPoint?.takeIf { it.isNotBlank() }
-                    ?: getString(R.string.separator_double_hyphen))
+                Value to entryPoint
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.clinical_notes),

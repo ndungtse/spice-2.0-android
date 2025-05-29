@@ -450,7 +450,7 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
     }
 
     private fun callViralLoadTestRecommendation() {
-        viewModel.checkRecommendationRInvestigations(patientReference = patientViewModel.getPatientId())
+        viewModel.checkRecommendationRInvestigations(patientReference = patientViewModel.getPatientId(), memberId = patientViewModel.getPatientMemberId())
     }
 
     private fun showReferPatientDialog() {
@@ -492,8 +492,8 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
                         patientViewModel.getVillageId(),
                         patientViewModel.getPatientId(),
                         MedicalReviewTypeEnums.HIV_MEDICAL_REVIEW.name,
-                        summaryViewModel.eMTCTStatus,
-                        summaryViewModel.maternalOutcome
+                        null,
+                        null
                     )
                 } else {
                     showErrorDialogue(
