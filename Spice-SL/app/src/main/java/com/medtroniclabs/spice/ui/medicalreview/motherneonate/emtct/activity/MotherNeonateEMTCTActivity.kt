@@ -230,6 +230,8 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                                     }
                                 }
                             }
+                        } else {
+                            submitEmtctRequest()
                         }
                     }
                 }

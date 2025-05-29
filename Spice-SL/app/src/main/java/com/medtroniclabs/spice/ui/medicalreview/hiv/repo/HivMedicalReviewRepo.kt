@@ -64,7 +64,8 @@ class HivMedicalReviewRepo @Inject constructor(
                             emtctEntryPoint = emtctEntryPoint,
                             tbStatus = tbStatus,
                             maternalOutcome = maternalOutcome,
-                            obstetricExaminations = obstetricExaminations
+                            obstetricExaminations = obstetricExaminations,
+                            establishedModels = establishedModels
                         )
                     )
                     roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.HIV_REVIEW.name)
@@ -100,8 +101,8 @@ class HivMedicalReviewRepo @Inject constructor(
         emtctEntryPoint: List<MedicalReviewMetaItems>,
         tbStatus: List<MedicalReviewMetaItems>,
         maternalOutcome: List<MedicalReviewMetaItems>,
-        obstetricExaminations: List<MedicalReviewMetaItems>
-
+        obstetricExaminations: List<MedicalReviewMetaItems>,
+        establishedModels: List<MedicalReviewMetaItems>
     ): List<MedicalReviewMetaItems> {
         val chipItemList = ArrayList<MedicalReviewMetaItems>()
         chipItemList.addAll(hivHistory.map { it.apply { type = MedicalReviewTypeEnums.HIV.name } })
@@ -162,6 +163,12 @@ class HivMedicalReviewRepo @Inject constructor(
             it.apply {
                 type = MedicalReviewTypeEnums.HIV.name
                 category = MedicalReviewTypeEnums.nonEstablishedModels.name
+            }
+        })
+        chipItemList.addAll(establishedModels.map {
+            it.apply {
+                type = MedicalReviewTypeEnums.HIV.name
+                category = MedicalReviewTypeEnums.establishedModels.name
             }
         })
         chipItemList.addAll(whoClinicalStage.map {

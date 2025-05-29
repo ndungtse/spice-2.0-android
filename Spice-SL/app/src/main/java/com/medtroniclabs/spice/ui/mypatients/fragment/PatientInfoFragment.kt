@@ -273,10 +273,17 @@ class PatientInfoFragment : BaseFragment() {
             DateUtils.getAgeDescription(patientListRespModel.birthDate, requireContext())
         } ?: (patientListRespModel.age ?: requireContext().getString(R.string.separator_hyphen))
         setTitle(requireContext().getString(R.string.household_summary_member_info, name.trim(), age, CommonUtils.translatedGender(requireContext(), gender)))
-        val chwPhoneNumber =
-            getContactNumber(patientListRespModel.chwPhoneNumber.takeIf { it?.isNotBlank() == true }
-                ?.trim())
-                .takeIf { !it.isNullOrBlank() } ?: ""
+        val chwPhoneNumber = patientListRespModel.chwPhoneNumber
+            ?.takeIf { it.isNotBlank() }
+            ?.let { getContactNumber(it) }
+            .orEmpty()
+
+        val chwName = patientListRespModel.chwName?.takeIf { it.isNotBlank() }?.trim()
+
+        val chwValue = listOfNotNull(
+            chwName,
+            chwPhoneNumber.takeIf { it.isNotBlank() }?.let { "($it)" }
+        ).joinToString(" ")
         with(binding) {
             val lastMenstrualDate =
                 patientListRespModel.pregnancyDetails?.lastMenstrualPeriod.takeIf { it?.isNotBlank() == true }?.let {
@@ -383,7 +390,7 @@ class PatientInfoFragment : BaseFragment() {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.chw),
-                        DefinedParams.Value to stringOrHyphen(patientListRespModel.chwName + chwPhoneNumber)
+                        DefinedParams.Value to stringOrHyphen(chwValue)
                     )
                 )
                 dataList.add(
@@ -424,7 +431,7 @@ class PatientInfoFragment : BaseFragment() {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.chw),
-                        DefinedParams.Value to stringOrHyphen(patientListRespModel.chwName + chwPhoneNumber)
+                        DefinedParams.Value to stringOrHyphen(chwValue)
                     )
                 )
                 dataList.add(
@@ -477,9 +484,17 @@ class PatientInfoFragment : BaseFragment() {
             )
         }
         removeItem(R.string.household_location, patient.village)
-        val chwPhoneNumber = getContactNumber(patient.chwPhoneNumber.takeIf { it?.isNotBlank() == true }
-            ?.trim())
-            .takeIf { !it.isNullOrBlank() } ?: ""
+        val chwPhoneNumber = patient.chwPhoneNumber
+            ?.takeIf { it.isNotBlank() }
+            ?.let { getContactNumber(it) }
+            .orEmpty()
+
+        val chwName = patient.chwName?.takeIf { it.isNotBlank() }?.trim()
+
+        val chwValue = listOfNotNull(
+            chwName,
+            chwPhoneNumber.takeIf { it.isNotBlank() }?.let { "($it)" }
+        ).joinToString(" ")
         // Add updated items
         dataList.addAll(
             listOf(
@@ -493,7 +508,7 @@ class PatientInfoFragment : BaseFragment() {
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.chw),
-                    DefinedParams.Value to stringOrHyphen(patient.chwName + chwPhoneNumber)
+                    DefinedParams.Value to stringOrHyphen(chwValue)
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.marital_status),
@@ -524,9 +539,17 @@ class PatientInfoFragment : BaseFragment() {
         val hyphen = requireContext().getString(R.string.hyphen_symbol)
         val formatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)
         fun stringOrHyphen(value: String?) = value?.takeIf { it.isNotBlank() }?.trim() ?: hyphen
-        val chwPhoneNumber = getContactNumber(patient.chwPhoneNumber.takeIf { it?.isNotBlank() == true }
-            ?.trim())
-            .takeIf { !it.isNullOrBlank() } ?: ""
+        val chwPhoneNumber = patient.chwPhoneNumber
+            ?.takeIf { it.isNotBlank() }
+            ?.let { getContactNumber(it) }
+            .orEmpty()
+
+        val chwName = patient.chwName?.takeIf { it.isNotBlank() }?.trim()
+
+        val chwValue = listOfNotNull(
+            chwName,
+            chwPhoneNumber.takeIf { it.isNotBlank() }?.let { "($it)" }
+        ).joinToString(" ")
         fun removeItem(labelResId: Int, value: String?) {
             dataList.remove(
                 mapOf(
@@ -552,7 +575,7 @@ class PatientInfoFragment : BaseFragment() {
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.chw),
-                    DefinedParams.Value to stringOrHyphen(patient.chwName + chwPhoneNumber)
+                    DefinedParams.Value to stringOrHyphen(chwValue)
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.marital_status_summary),

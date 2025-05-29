@@ -59,10 +59,9 @@ class ContraceptivesFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentContraceptivesBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
@@ -226,6 +225,7 @@ class ContraceptivesFragment : BaseFragment() {
     }
 
     private fun initViews() {
+        binding.ClientTypeRoot.gone()
         binding.tvPostPartum.markMandatory()
         binding.tvQuantityLabel.markMandatory()
 

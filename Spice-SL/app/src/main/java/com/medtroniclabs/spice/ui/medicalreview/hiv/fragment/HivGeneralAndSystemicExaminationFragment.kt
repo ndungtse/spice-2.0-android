@@ -18,7 +18,6 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateU
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class HivGeneralAndSystemicExaminationFragment : BaseFragment() {
@@ -94,6 +93,10 @@ class HivGeneralAndSystemicExaminationFragment : BaseFragment() {
     private fun showListView(listItems: List<ChipViewItemModel>) {
         binding.llGeneralExamination.removeAllViews()
         listItems.forEach { item ->
+            val key = item.value?.trim().orEmpty().ifEmpty { item.name }
+            viewModel.resultHashMap.getOrPut(key) { "" }
+        }
+        listItems.forEach { item ->
             val trimmedName = item.value?.trim()?: item.name
             val tag = trimmedName + "Root"
             val bindingItem = HivGeneralSystemicItemLayoutBinding.inflate(layoutInflater).apply {
@@ -106,7 +109,7 @@ class HivGeneralAndSystemicExaminationFragment : BaseFragment() {
                 }
                 MotherNeonateUtil.initTextWatcherForString(tvRespiratoryText) {
                     if (it.isBlank()) {
-                        viewModel.resultHashMap.remove(trimmedName)
+                        viewModel.resultHashMap[trimmedName] = ""
                     } else {
                         viewModel.resultHashMap[trimmedName] = it
                     }

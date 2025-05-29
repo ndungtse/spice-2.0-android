@@ -754,12 +754,11 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                     resourceState.data?.let { patientStatus ->
                         if (patientStatus.status.isNullOrEmpty()) {
                             binding.tvPatientStatusValue.text = getString(R.string.seperator_hyphen)
-                            patientViewModel.patientCurrentStatus.postValue(patientStatus.status)
                         } else {
                             //  binding.tvPatientStatusValue.text = getPatientStatus(patientStatus.status)
                             binding.tvPatientStatusValue.text = patientStatus.status
-                            patientViewModel.patientCurrentStatus.postValue(patientStatus.status)
                         }
+                        patientViewModel.patientCurrentStatus.postValue(patientStatus.status)
                         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
                             details.id?.let { id ->
                                 diagnosisViewModel.getDiagnosisDetails(
@@ -775,6 +774,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
                 ResourceState.ERROR -> {
                     hideProgress()
+                    patientViewModel.patientCurrentStatus.postValue("")
                 }
             }
         }

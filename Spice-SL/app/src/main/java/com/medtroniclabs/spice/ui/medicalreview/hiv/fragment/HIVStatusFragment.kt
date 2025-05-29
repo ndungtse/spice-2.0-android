@@ -98,24 +98,6 @@ class HIVStatusFragment : BaseFragment() {
                         initPregnancyStatus(filterAndMap(MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name))
                         initAHD(filterAndMap(MedicalReviewTypeEnums.ahdStatus.name))
                         initDSD(filterAndMap(MedicalReviewTypeEnums.dsdStatus.name))
-                        val dropDownList = ArrayList<Map<String, Any>>()
-                        dropDownList.add(
-                            mapOf(
-                                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                                DefinedParams.Value to DefinedParams.DefaultID
-                            )
-                        )
-                        dropDownList.addAll(listItems
-                            .filter { it.category == MedicalReviewTypeEnums.nonEstablishedModels.name }
-                            .map { item ->
-                                mapOf(
-                                    DefinedParams.NAME to item.name,
-                                    DefinedParams.Value to (item.value ?: item.name)
-                                )
-                            })
-                        if (dropDownList.isNotEmpty()) {
-                            setSpinner(ArrayList(dropDownList))
-                        }
                     }
                     hideProgress()
                 }
@@ -125,6 +107,34 @@ class HIVStatusFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    private fun getSelectModelMeta(isEstablished: Boolean) {
+        val listItems = viewModel.getHivStatusMetaList.value?.data.orEmpty()
+        val categoryKey = if (isEstablished) {
+            MedicalReviewTypeEnums.establishedModels.name
+        } else {
+            MedicalReviewTypeEnums.nonEstablishedModels.name
+        }
+        val dropDownList = buildList {
+            add(
+                mapOf(
+                    DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                    DefinedParams.Value to DefinedParams.DefaultID
+                )
+            )
+            addAll(
+                listItems
+                    .filter { it.category == categoryKey }
+                    .map { item ->
+                        mapOf(
+                            DefinedParams.NAME to item.name,
+                            DefinedParams.Value to (item.value ?: item.name)
+                        )
+                    }
+            )
+        }
+        setSpinner(ArrayList(dropDownList))
     }
 
     private fun initAHD(data: ArrayList<Map<String, Any>>?) {
@@ -203,6 +213,9 @@ class HIVStatusFragment : BaseFragment() {
             binding.lmbGroup.setVisible(true)
             binding.gestationalAgeGroup.setVisible(true)
             binding.expectedDateGroup.setVisible(true)
+        } else if (!patientViewModel.isPregnant()) {
+            viewModel.resultPregnantStatus[MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name] =
+                DefinedParams.no
         }
         patientViewModel.getPregnantDetails()?.lastMenstrualPeriod?.takeIf { it.isNotBlank() }
             ?.let { lmp ->
@@ -317,26 +330,25 @@ class HIVStatusFragment : BaseFragment() {
 
     private var singleSelectionDSDCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
-            viewModel.resultDSD[MedicalReviewTypeEnums.dsdStatus.name] =
-                selectedID as? String ?: ""
+            val selectedValue = selectedID as? String ?: ""
+            val currentValue = viewModel.resultDSD[MedicalReviewTypeEnums.dsdStatus.name] as? String ?: ""
+            viewModel.resultDSD[MedicalReviewTypeEnums.dsdStatus.name] = selectedValue
+            val isValid = selectedValue.equals(notEstablished, ignoreCase = true)
+            if (!selectedValue.equals(currentValue, ignoreCase = true)) {
+                showModel(isValid)
+            }
             setFragmentResult(
                 MedicalReviewDefinedParams.HIV_STATUS, bundleOf(
                     MedicalReviewDefinedParams.CHIP_ITEMS to true)
             )
-            val isValid = (selectedID as? String).equals(notEstablished, ignoreCase = true)
-            showModel(isValid)
         }
 
     private fun showModel(isValid: Boolean) {
-        binding.tvSelectModelLabel.setVisible(isValid)
-        binding.etSelectModel.setVisible(isValid)
+        binding.tvSelectModelLabel.setVisible(true)
+        binding.etSelectModel.setVisible(true)
         binding.tvSelectModelError.setVisible(false)
-        if (!isValid) {
-            viewModel.selectModel = null
-            binding.etSelectModel.post {
-                binding.etSelectModel.setSelection(0, false)
-            }
-        }
+        viewModel.selectModel = null
+        getSelectModelMeta(!isValid)
     }
 
     private fun setSpinner(statusList: ArrayList<Map<String, Any>>) {

@@ -2037,8 +2037,10 @@ object CommonUtils {
         return false
     }
 
-    fun Map<String, String>.toFormattedList(): List<String> {
-        return this.map { (key, value) -> "$key : $value" }
+    fun Map<String, String?>.toFormattedList(): List<String> {
+        return this.map { (key, value) ->
+            if (value.isNullOrBlank()) key else "$key : $value"
+        }
     }
 
     fun Map<String, String>.toFormattedListWithHyphen(): List<String> {

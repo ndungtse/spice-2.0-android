@@ -381,4 +381,5 @@ object DefinedParams {
     const val CD4 = "CD4"
     const val CD4_Percentage = "CD4 Percentage"
     const val hivTestedPositive = "hivTestedPositive"
+    const val no = "no"
 }

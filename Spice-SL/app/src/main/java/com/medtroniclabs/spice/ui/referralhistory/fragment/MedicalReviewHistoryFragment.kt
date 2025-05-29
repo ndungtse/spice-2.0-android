@@ -24,7 +24,7 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.combineText
-import com.medtroniclabs.spice.common.CommonUtils.toFormattedListWithHyphen
+import com.medtroniclabs.spice.common.CommonUtils.toFormattedList
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Above5MedicalReview
@@ -529,7 +529,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
     private fun getHivImrCmr(medicalReviewHistory: MedicalReviewHistory): List<Map<String, Any?>> {
         val hivSystemicExaminations =
-            (medicalReviewHistory.reviewDetails?.systemicExaminations as? Map<String, String>)?.toFormattedListWithHyphen()
+            (medicalReviewHistory.reviewDetails?.systemicExaminations as? Map<String, String>)?.toFormattedList()
                 .takeIf { !it.isNullOrEmpty() }
                 ?: emptyList()
         return listOf(
@@ -592,7 +592,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
     fun getEmtctHivMr(medicalReviewHistory: MedicalReviewHistory): List<Map<String, Any?>> {
         val hivSystemicExaminations =
-            (medicalReviewHistory.reviewDetails?.systemicExaminations as? Map<String, String>)?.toFormattedListWithHyphen()
+            (medicalReviewHistory.reviewDetails?.systemicExaminations as? Map<String, String>)?.toFormattedList()
                 .takeIf { !it.isNullOrEmpty() }
                 ?: emptyList()
         return listOf(
@@ -655,6 +655,11 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun getFamilyPlanning(medicalReviewHistory: MedicalReviewHistory): List<Map<String, Any?>> {
+        val progestin = listOfNotNull(
+            medicalReviewHistory.reviewDetails?.contraceptive?.progestinOnlyOrals?.takeIf { it.isNotBlank() },
+            medicalReviewHistory.reviewDetails?.contraceptive?.otherProgestinOnlyOrals?.takeIf { it.isNotBlank() }
+        ).joinToString("-")
+
         return listOf(
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.patient_status),
@@ -684,7 +689,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.progestin_only_orals),
-                Value to (medicalReviewHistory.reviewDetails?.contraceptive?.progestinOnlyOrals?.takeIf { it.isNotBlank() }
+                Value to (progestin.takeIf { it.isNotBlank() }
                     ?: getString(R.string.separator_double_hyphen))
             ),
             mapOf(

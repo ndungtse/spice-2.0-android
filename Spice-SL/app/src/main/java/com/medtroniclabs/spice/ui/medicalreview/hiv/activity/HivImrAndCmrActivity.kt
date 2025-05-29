@@ -153,6 +153,8 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
                                     }
                                 }
                             }
+                        } else {
+                            submitImrCmrRequest()
                         }
                     }
                 }
