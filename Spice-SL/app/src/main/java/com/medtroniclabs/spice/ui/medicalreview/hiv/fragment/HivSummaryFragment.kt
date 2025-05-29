@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
+import com.medtroniclabs.spice.data.model.Eligibilities
 import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivScreeningResponse
 import com.medtroniclabs.spice.data.resource.ExaminationResult
@@ -42,7 +43,6 @@ import com.medtroniclabs.spice.ui.mypatients.adapter.ExaminationSummaryAdapter
 class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentHivSummaryBinding
     private val hivViewModel: HivViewModel by activityViewModels()
-    private lateinit var examinationSummaryAdapter: ExaminationSummaryAdapter
     private var datePickerDialog: DatePickerDialog? = null
 
     override fun onCreateView(
@@ -87,9 +87,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
             )
         )
 
-        examinationSummaryAdapter = ExaminationSummaryAdapter()
-        binding.rvExaminationList.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvExaminationList.adapter = examinationSummaryAdapter
+
     }
 
     private fun attachObserver() {
@@ -191,8 +189,11 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
             else -> DateUtils.getFormattedDateAfterMonths(1)
         }
         hivViewModel.nextVisitDate = binding.tvNextMedicalReviewLabelText.text.toString().trim()
+
+
         if (!response.summaryStatus.isNullOrEmpty()) {
             for (item in response.summaryStatus) {
+                if (nextVisitType == 1 && item.name == "Retest (HTS)") continue
                 dropDownList.add(
                     hashMapOf<String, Any>(
                         DefinedParams.NAME to item.name,
@@ -200,10 +201,11 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
                     )
                 )
             }
-            setListenerToDeliveryStatus(dropDownList)
+            setListenerToDeliveryStatus(dropDownList, nextVisitType)
         }
         renderSymptoms(response)
     }
+
     private fun getTestResultStatus(a1: String?, a2: String?, a3: String?): Int {
         val testResults = listOf(a1, a2, a3)
 
@@ -215,13 +217,13 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun generateEntryPointText(response: HivCreateScreeningSummaryResponse): String? {
-       return response.entryPoint?.let {
+        return response.entryPoint?.let {
             if (it.isNotEmpty()) {
                 if (it.equals(Other, true)) {
-                   return "${it.capitalizeFirstChar()} - ${hivViewModel.otherEntryPoint}"
+                    return "${it.capitalizeFirstChar()} - ${hivViewModel.otherEntryPoint}"
                 }
                 return it
-            } else{
+            } else {
                 return getString(R.string.seperator_hyphen)
             }
         }
@@ -229,25 +231,36 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun renderSymptoms(response: HivCreateScreeningSummaryResponse) {
         hivViewModel.getHivPatientStatusByCategory(MedicalReviewTypeEnums.patient_status.name)
+        binding.flExaminationContainer.text = (response.eligibilities?.let {
+            formatEligibility(
+                it
+            )
+        }.takeIf { !it.isNullOrBlank() }
+            ?: getString(R.string.hyphen_symbol))
+    }
 
-        val eligibility = mapOf(
-            "${getString(R.string.symptoms)} - " to response.eligibilities?.Symptoms,
-            "${getString(R.string.hivPopulationType)} - " to response.eligibilities?.hivPopulationType
-        )
-
-        val list = eligibility.filterNot { it.value.isNullOrEmpty() }
-            .map { (key, value) ->
-                ExaminationResult(symptomsTitle = key, description = value)
+    private fun formatEligibility(eligibility: Eligibilities): String {
+        return buildString {
+            // Handle Symptoms
+            eligibility.Symptoms?.takeIf { it.isNotEmpty() }?.let { symptoms ->
+                val label = "${getString(R.string.symptoms)} - "
+                append(label)
+                val padding = " ".repeat(8)
+                symptoms.forEach { symptom ->
+                    append("\n$padding$symptom")
+                }
+                append("\n") // Add a line break between sections
             }
 
-        if (list.isNotEmpty()) {
-            examinationSummaryAdapter.updateData(list)
-            binding.rvExaminationList.visible()
-            binding.tvExaminationEmptyValue.invisible()
-        } else {
-            binding.rvExaminationList.invisible()
-            binding.tvExaminationEmptyValue.visible()
-        }
+            eligibility.hivPopulationType?.takeIf { it.isNotEmpty() }?.let { types ->
+                val label = "${getString(R.string.population_type)} - "
+                append(label)
+                val padding = " ".repeat(8)
+                types.forEach { type ->
+                    append("\n$padding$type")
+                }
+            }
+        }.trim()
     }
 
     private fun setListeners() {
@@ -287,19 +300,31 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
 
-    private fun setListenerToDeliveryStatus(list: ArrayList<Map<String, Any>>) {
+    private fun setListenerToDeliveryStatus(list: ArrayList<Map<String, Any>>, nextVisitType: Int) {
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(list)
         var defaultPosition = 0
-        for ((index, patientStatus) in list.withIndex()) {
-            if ((patientStatus[DefinedParams.Value] as? String).equals(
-                    ReferralStatus.OnTreatment.name,
-                    true
+        if (nextVisitType == 2) {
+            // Auto-populate "Retest (HTS)"
+            defaultPosition = list.indexOfFirst {
+                (it[DefinedParams.Value] as? String).equals(
+                    getString(R.string.retest_hts),
+                    ignoreCase = true
                 )
-            ) {
-                defaultPosition = index
+            }.takeIf { it != -1 } ?: 0
+        } else {
+            for ((index, patientStatus) in list.withIndex()) {
+                if ((patientStatus[DefinedParams.Value] as? String).equals(
+                        ReferralStatus.OnTreatment.name,
+                        true
+                    )
+                ) {
+                    defaultPosition = index
+                }
             }
         }
+
+
         binding.tvPatientStatusSpinner.post {
             binding.tvPatientStatusSpinner.setSelection(defaultPosition, false)
         }
@@ -361,9 +386,9 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
 
     fun validation(): Boolean {
         var isValid = true
-        if ( hivViewModel.nextVisitDate != null ) {
+        if (hivViewModel.nextVisitDate != null) {
             binding.tvNextMedicalReviewError.invisible()
-        } else{
+        } else {
             binding.tvNextMedicalReviewError.visible()
             isValid = false
         }

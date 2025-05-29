@@ -532,7 +532,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
             category = HIV,
             encounterType = HIV_MEDICAL_REVIEW,
             patientReference = hivViewModel.patientReference,
-            id = patientViewModel.encounterId,
+            id = hivViewModel.getSubmitCreateId(),
             villageId = hivViewModel.villageId,
             memberId = hivViewModel.memberId,
             provenance = ProvanceDto(),

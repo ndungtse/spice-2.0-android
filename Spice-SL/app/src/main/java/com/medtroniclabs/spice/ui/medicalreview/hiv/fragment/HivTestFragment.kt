@@ -18,7 +18,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.databinding.FragmentHivTestBinding
-import com.medtroniclabs.spice.formgeneration.extension.markMandatory
+import com.medtroniclabs.spice.formgeneration.extension.markMandatorys
 import com.medtroniclabs.spice.formgeneration.extension.markNonMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -107,9 +107,9 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
         if (isEmtct == true){
             binding.forEmtct.visible()
             binding.forA3.gone()
-            binding.tvHBsAgTestResult.markMandatory()
+            binding.tvHBsAgTestResult.markMandatorys()
         }else{
-            binding.tvA1TestResult.markMandatory()
+            binding.tvA1TestResult.markMandatorys()
         }
 
         binding.etOtherEntryPoint.doAfterTextChanged { input ->
@@ -419,15 +419,16 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
             when (type) {
                 A1_TEST_RESULT -> {
                     val isEnabled = !isA1Reactive
+                    val isA2Reactives = isA2Reactive
                     binding.llA2TestResultRoot.updateState(isEnabled, isEnabled, if (isEnabled) 0.5f else 1.0f, true)
                     binding.tvA2TestResult.updateState(false, false, if (isA1Reactive) 1.0f else 0.5f, true)
-                    binding.llA3TestResultRoot.updateState(alpha = 0.5f, visible = isA1Reactive)
-                    binding.tvA3TestResult.updateState(alpha = 0.5f, visible = isA1Reactive)
+                    binding.llA3TestResultRoot.updateState(alpha = if (isA1Reactive && isA2Reactives)1.0f else 0.5f, visible = isA1Reactive)
+                    binding.tvA3TestResult.updateState(alpha =  if (isA1Reactive && isA2Reactives)1.0f else 0.5f, visible = isA1Reactive)
                     if (isEnabled) {
                         binding.tvA2TestResult.markNonMandatory()
                         binding.tvA3TestResult.markNonMandatory()
                     }else{
-                        binding.tvA2TestResult.markMandatory()
+                        binding.tvA2TestResult.markMandatorys()
                     }
 
                 }
@@ -441,7 +442,7 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                     if (!isEnabled) {
                         binding.tvA3TestResult.markNonMandatory()
                     }else{
-                        binding.tvA3TestResult.markMandatory()
+                        binding.tvA3TestResult.markMandatorys()
                     }
                 }
 
@@ -464,7 +465,7 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                     binding.llA2TestResultRoot.updateState(alpha = 0.5f, visible = true)
                     binding.tvA2TestResult.updateState(alpha = 0.5f, visible = true)
                     if (isHBsAgReactive) {
-                        binding.tvA1TestResult.markMandatory()
+                        binding.tvA1TestResult.markMandatorys()
                     }else{
                         binding.tvA1TestResult.markNonMandatory()
                     }
@@ -477,7 +478,8 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                     binding.llA3TestResultRoot.updateState(alpha = 0.5f, visible = true)
                     binding.tvA3TestResult.updateState(alpha = 0.5f, visible = true)
                     if (isA1Reactive) {
-                        binding.tvA2TestResult.markMandatory()
+                        binding.tvA2TestResult.markNonMandatory()
+                        binding.tvA3TestResult.markNonMandatory()
                     }else{
                         binding.tvA3TestResult.markNonMandatory()
                     }
@@ -488,6 +490,11 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                     val isEnabled = isA2Reactive
                     binding.llA3TestResultRoot.updateState(isEnabled, isEnabled, if (isEnabled) 1.0f else 0.5f, show)
                     binding.tvA3TestResult.updateState(false, false, if (isEnabled) 1.0f else 0.5f, show)
+                    if (isA2Reactive) {
+                        binding.tvA3TestResult.markMandatorys()
+                    }else{
+                        binding.tvA3TestResult.markNonMandatory()
+                    }
                 }
 
                 else -> {

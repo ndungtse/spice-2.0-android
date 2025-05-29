@@ -78,4 +78,5 @@ object MedicalReviewDefinedParams {
     const val cd4_percentage= "CD4 Percentage"
     const val isViralLoadTestRecommended= "isViralLoadTestRecommended"
     const val notEstablished= "notEstablished"
+    const val emtctVisitStatus = "emtctVisitStatus"
 }

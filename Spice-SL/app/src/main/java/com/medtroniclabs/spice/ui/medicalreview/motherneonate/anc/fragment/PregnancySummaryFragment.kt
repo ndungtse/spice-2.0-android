@@ -9,7 +9,9 @@ import androidx.compose.runtime.snapshots.Snapshot.Companion.observe
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setExpandableText
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.combineText
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -56,7 +58,13 @@ class PregnancySummaryFragment() : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeView()
-        if (hivViewModel.isEMTCTMR)getPatientDetails() else setDataInfo()
+        if (hivViewModel.isEMTCTMR) {
+            getPatientDetails()
+            binding.ancVisitCountGroup.visible()
+        } else {
+            setDataInfo()
+            binding.ancVisitCountGroup.gone()
+        }
         attachObserver()
     }
 
@@ -132,11 +140,19 @@ class PregnancySummaryFragment() : BaseFragment() {
                         )
                     } ?: getString(R.string.hyphen_symbol)
                 tvPregnancyHistoryValue.setExpandableText(
-                    combineText(
-                        pregnancyHistoryChip?.map { it.name },
+                    if (hivViewModel.isEMTCTMR){
+                        combineText(
+                            pregnancyDetailsModel.pregnancyHistory?.map { it.toString() },
                         pregnancyHistoryNotes,
                         getString(R.string.hyphen_symbol)
-                    ),
+                    )
+                    }else{
+                        combineText(
+                            pregnancyHistoryChip?.map { it.name },
+                            pregnancyHistoryNotes,
+                            getString(R.string.hyphen_symbol)
+                        )
+                    },
                     title = tvPregnancyHistoryLabel.text.toString(),
                     maxLength = 60,
                     activity = (requireActivity() as BaseActivity)
@@ -148,6 +164,11 @@ class PregnancySummaryFragment() : BaseFragment() {
                     )
                 tvNoofFetusValue.text =
                     convertNullableIntToString(pregnancyDetailsModel.noOfFetus, requireContext())
+
+                tvAncVisitCountValue.apply {
+                    text = patientDetailsViewModel.getAncVisit().takeIf { it != 0 }?.toString() ?: getString(R.string.hyphen_symbol)
+                }
+
             }
         }
     }

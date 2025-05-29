@@ -172,33 +172,17 @@
                 app:layout_constraintStart_toEndOf="@id/tvEligibleLabel"
                 app:layout_constraintTop_toTopOf="@id/tvEligibleLabel" />
 
-            <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/flExaminationContainer"
+                style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
-                android:layout_height="wrap_content"
+                android:text="@string/seperator_hyphen"
+                android:textColor="@color/grey_black"
+                android:lineSpacingExtra="4dp"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
                 app:layout_constraintStart_toEndOf="@id/tvEligibleSeparator"
-                app:layout_constraintTop_toTopOf="@id/tvEligibleLabel">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvExaminationList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/table_title"
-                    android:visibility="gone" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvExaminationEmptyValue"
-                    style="@style/TextStyle_Regular_16"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_medium"
-                    android:text="@string/seperator_hyphen"
-                    android:textSize="@dimen/_16ssp"
-                    android:visibility="visible" />
-            </com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout>
-            <androidx.constraintlayout.widget.Group
+                app:layout_constraintTop_toTopOf="@id/tvEligibleLabel" />  <androidx.constraintlayout.widget.Group
                 android:id="@+id/groupHivHbsag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -615,8 +599,6 @@
                 android:background="@drawable/edittext_background_selector"
                 android:cursorVisible="false"
                 android:drawableEnd="@drawable/ic_date_picker_calendar"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
                 android:gravity="start|center"
                 android:paddingStart="@dimen/_10sdp"
                 android:paddingEnd="@dimen/_0dp"

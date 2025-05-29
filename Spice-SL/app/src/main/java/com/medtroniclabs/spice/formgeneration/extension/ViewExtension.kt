@@ -170,3 +170,13 @@ var TextView.textSizeSsp: Int?
         val resId = getResId(sizeString, R.dimen::class.java)
         setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(resId).toFloat())
     }
+fun TextView.markMandatorys() {
+    // Check if already marked
+    if (text.contains(" *")) return // Already marked, skip
+
+    // Otherwise, mark it
+    text = buildSpannedString {
+        append(text)
+        color(Color.RED) { append(" *") }
+    }
+}

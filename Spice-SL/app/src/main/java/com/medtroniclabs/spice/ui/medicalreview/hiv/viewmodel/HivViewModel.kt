@@ -289,5 +289,10 @@ class HivViewModel @Inject constructor(
     }
 
 
+    fun getSubmitCreateId(): String? {
+        return createHivScreeningLiveData.value?.data?.encounterId
+    }
+
+
 
 }

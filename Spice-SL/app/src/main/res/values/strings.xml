@@ -1501,7 +1501,7 @@
     <string name="reactive" translatable="false">Reactive</string>
     <string name="non_reactive" translatable="false">Non Reactive</string>
     <string name="inconclusive" translatable="false">inconclusive</string>
-    <string name="a_test_result" translatable="false">A%d Test Result</string>
+    <string name="a_test_result" translatable="false">A%d Test Results</string>
     <string name="pre_test_counselling" translatable="false">Pre-test counselling (Checklist / Job Aid)</string>
     <string name="test_for_hiv" translatable="false">Test for HIV (Rapid Test Kit / Job Aid)</string>
     <string name="post_test_counselling" translatable="false">Post test counselling (Checklist / Job Aid)</string>
@@ -1587,6 +1587,8 @@
     <string name="pregnant_" translatable="false">Pregnant</string>
     <string name="female_sex_worker_fsw" translatable="false">Female Sex Worker (FSW)</string>
     <string name="d_dead" translatable="false">D-Dead</string>
+    <string name="consent_form" translatable="false">Consent Form</string>
+    <string name="retest_hts" translatable="false">Retest (HTS)</string>
    <string name="reason_for_change" translatable="false">Reason for change</string>
     <string name="write_reason" translatable="false">Write Reason</string>
     <string name="regimen_line" translatable="false">Regimen Line</string>

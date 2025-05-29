@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.common.DefinedParams.HIV
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.databinding.FragmentHivMedicalReviewDiagnosesBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.model.medicalreview.HivVitalsRequest
@@ -141,10 +142,11 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
             return HivMedicalReviewDiagnosesFragment()
         }
 
-        fun newInstance(isHiv: Boolean = false): HivMedicalReviewDiagnosesFragment {
+        fun newInstance(isHiv: Boolean = false,isEmtctMR:Boolean = false): HivMedicalReviewDiagnosesFragment {
             val fragment = HivMedicalReviewDiagnosesFragment()
             fragment.arguments = Bundle().apply {
                 putBoolean(HIV, isHiv)
+                putBoolean(DefinedParams.EMTCTMR,isEmtctMR)
             }
             return fragment
         }
@@ -435,7 +437,9 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                             getString(R.string.add_who_clinical_stage)
                         }
                         hivViewModel.cd4Value = list.cd4
-                        hivViewModel.whovalue = list.whoClinicalStage
+                        hivViewModel.whovalue =getClinicalStageText(list.whoClinicalStage)
+                        binding.tvEmtct.text =getEmtctVisitText(list.emtctVisitStatus)
+                        hivViewModel.emtctVisitStatus = list.emtctVisitStatus
                     }
                 }
 
@@ -627,5 +631,31 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
     private fun isHiv(): Boolean {
         return arguments?.getBoolean(MedicalReviewTypeEnums.HIV.name) == true
     }
+
+    private fun getClinicalStageText(whoClinicalStage: String?): String {
+        whoStageViewModel.getWhoStageLiveData.value?.let { whoStageList ->
+            return if (whoClinicalStage.isNullOrEmpty()) {
+                getString(R.string.seperator_hyphen)
+            } else {
+                whoStageList.find { it.value == whoClinicalStage }?.name?.capitalizeFirstChar()
+                    ?: getString(R.string.seperator_hyphen)
+            }
+        } ?: run {
+            return getString(R.string.seperator_hyphen)
+        }
+    }
+    private fun getEmtctVisitText(whoClinicalStage: String?): String {
+        hivViewModel.hivEmtctStatusLiveData.value?.let { whoStageList ->
+            return if (whoClinicalStage.isNullOrEmpty()) {
+                getString(R.string.seperator_hyphen)
+            } else {
+                whoStageList.find { it.value == whoClinicalStage }?.name?.capitalizeFirstChar()
+                    ?: getString(R.string.seperator_hyphen)
+            }
+        } ?: run {
+            return getString(R.string.seperator_hyphen)
+        }
+    }
+
 
 }

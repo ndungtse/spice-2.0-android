@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.DiagnosisRepository
 import com.medtroniclabs.spice.ui.medicalreview.hiv.repo.HivMedicalReviewRepo
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.cd4_percentage
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.emtctVisitStatus
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -81,7 +82,8 @@ class DiagnosisViewModel @Inject constructor(
                             MedicalReviewTypeEnums.CD4.name,
                             cd4_percentage,
                             MedicalReviewTypeEnums.weight.name,
-                            MedicalReviewTypeEnums.height.name
+                            MedicalReviewTypeEnums.height.name,
+                            emtctVisitStatus
                         )
                     )
                 )

@@ -420,6 +420,52 @@
                 app:layout_constraintStart_toEndOf="@id/tvNoofFetusSeparator"
                 app:layout_constraintTop_toTopOf="@id/tvNoofFetusLabel"
                 tools:text="3" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvAncVisitCountLabel"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="@string/anc"
+                app:layout_constraintEnd_toStartOf="@id/tvAncVisitCountSeparator"
+                app:layout_constraintHorizontal_weight="0.2"
+                app:layout_constraintStart_toEndOf="@id/centreGuideline"
+                app:layout_constraintTop_toBottomOf="@id/barrierFour" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvAncVisitCountSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="0dp"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintBottom_toBottomOf="@id/tvAncVisitCountLabel"
+                app:layout_constraintEnd_toStartOf="@id/tvPregnancyHistoryValue"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/tvAncVisitCountLabel"
+                app:layout_constraintTop_toTopOf="@id/tvAncVisitCountLabel" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvAncVisitCountValue"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:fontFamily="@font/inter_regular"
+                android:textColor="@color/grey_black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="0.25"
+                app:layout_constraintStart_toEndOf="@id/tvAncVisitCountSeparator"
+                app:layout_constraintTop_toTopOf="@id/tvAncVisitCountLabel"
+                tools:text="normal" />
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/ancVisitCountGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:constraint_referenced_ids="tvAncVisitCountLabel, tvAncVisitCountSeparator,tvAncVisitCountValue" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

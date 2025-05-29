@@ -230,7 +230,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                                     }
                                 }
                             }
-                        } else {
+                        }else{
                             submitEmtctRequest()
                         }
                     }
@@ -394,7 +394,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
         replaceFragment(
             R.id.patientBMIContainer,
             HivMedicalReviewDiagnosesFragment.TAG,
-            HivMedicalReviewDiagnosesFragment.newInstance(true)
+            HivMedicalReviewDiagnosesFragment.newInstance(true,true)
         )
 
         initEmtctFragments()

@@ -49,7 +49,11 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
         binding = ActivityConsentFormBinding.inflate(layoutInflater)
         setMainContentView(
             binding.root, isToolbarVisible = true,
-            title = getString(R.string.terms_and_condition),
+            title = if (intent.getBooleanExtra(HIV, false)) {
+                getString(R.string.consent_form)
+            } else {
+                getString(R.string.terms_and_condition)
+            },
             homeAndBackVisibility = Pair(true, true)
         )
 

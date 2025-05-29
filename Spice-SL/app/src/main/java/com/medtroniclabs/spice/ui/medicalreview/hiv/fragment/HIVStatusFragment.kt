@@ -12,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -88,6 +89,7 @@ class HIVStatusFragment : BaseFragment() {
                         }
 
                         if(viewModel.isEMTCT) {
+                            binding.tbGroup.visible()
                             initTBStatus(listItems)
 //                            binding.lmbGroup.gone()
 //                            binding.gestationalAgeGroup.gone()
