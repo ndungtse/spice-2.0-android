@@ -34,7 +34,7 @@ class ReasonForChangeDialogFragment(
         ): ReasonForChangeDialogFragment {
             val args = Bundle().apply {
                 putString(Medications, name)
-                regimen?.let {putInt(Regimen, it)  }
+                regimen?.let {putInt(Regimen, it+1)  }
                 putBoolean(PrescribedMedicine, prescribedMedicine)
             }
             return ReasonForChangeDialogFragment(callback).apply {
@@ -86,11 +86,11 @@ class ReasonForChangeDialogFragment(
                     1 -> "1st"
                     2 -> "2nd"
                     3 -> "3rd"
-                    else -> "${arguments?.getString(Regimen)}th"
+                    else -> "${arguments?.getInt(Regimen)}th"
                 }
             } else "1st"
         } else {
-            "1 st"
+            "1st"
         }
     }
 

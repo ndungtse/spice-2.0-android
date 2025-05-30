@@ -79,7 +79,7 @@ class DiagnosisViewModel @Inject constructor(
                         memberId,
                         arrayListOf(
                             MedicalReviewTypeEnums.whoClinicalStage.name,
-                            MedicalReviewTypeEnums.CD4.name,
+                            MedicalReviewTypeEnums.cd4.name,
                             cd4_percentage,
                             MedicalReviewTypeEnums.weight.name,
                             MedicalReviewTypeEnums.height.name,

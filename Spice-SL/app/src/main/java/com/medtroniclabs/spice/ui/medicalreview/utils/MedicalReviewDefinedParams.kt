@@ -75,7 +75,7 @@ object MedicalReviewDefinedParams {
     const val Investigation = "Investigation"
     const val PRESCRIPTION = "Prescription"
 
-    const val cd4_percentage= "CD4 Percentage"
+    const val cd4_percentage= "cd4Percentage"
     const val isViralLoadTestRecommended= "isViralLoadTestRecommended"
     const val notEstablished= "notEstablished"
     const val emtctVisitStatus = "emtctVisitStatus"

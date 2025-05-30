@@ -36,6 +36,7 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissL
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListenerForTb
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddWeightDialog
+import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.AddBMIDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.AddHeightDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.BMIListDialog
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.EMTCCT_VISIT_STATUS
@@ -212,12 +213,12 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
 
     private fun showAddHeightDialog() {
         withNetworkAvailability(online = {
-            showDialogIfNotPresent(AddHeightDialog.TAG) {
-                AddHeightDialog.newInstance(
-                    getPatientId(),
-                    getMemberId(),
+            showDialogIfNotPresent(AddBMIDialog.TAG) {
+                AddBMIDialog.newInstance(
+                    patientId = getPatientId(),
                     villageId = patientViewModel.getVillageId(),
-                    householdId = patientViewModel.getPatientHouseholdId()
+                    householdId = patientViewModel.getPatientHouseholdId(),
+                    memberId = getMemberId(),
                 ).apply {
                     listener = this@HivMedicalReviewDiagnosesFragment
                 }
@@ -232,6 +233,12 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
         val weightContainer = binding.clWeight
         val retryButton = binding.retryButtonWeight
         val weightTextView = binding.tvWeight
+
+        whoStageViewModel.getWhoStageLiveData.observe(viewLifecycleOwner){
+            diagnosisViewModel.hivVitalsDetailLiveData.value?.data?.let {list ->
+                binding.tvWhoValue.text = getClinicalStageText(list.whoClinicalStage)
+            }
+        }
 
         viewModel.getWeight.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
@@ -429,8 +436,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                     hideProgress()
                     resources.data?.let { list ->
                         binding.tvCd4Value.text = list.cd4 ?: getString(R.string.seperator_hyphen)
-                        binding.tvWhoValue.text =
-                            list.whoClinicalStage ?: getText(R.string.seperator_hyphen)
+                        binding.tvWhoValue.text = getClinicalStageText(list.whoClinicalStage)
                         binding.tvWho.text = if (list.whoClinicalStage != null) {
                             getString(R.string.edit_who_clinical_stage)
                         } else {
@@ -552,12 +558,12 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
 
     private fun showAddWeightDialog() {
         withNetworkAvailability(online = {
-            showAddBpOrWeightDialog(isBp = false)
+            showAddBpOrWeightDialog()
         })
     }
 
-    private fun showAddBpOrWeightDialog(isBp: Boolean) {
-        val dialog = AddWeightDialog.newInstance(
+    private fun showAddBpOrWeightDialog() {
+        val dialog = AddBMIDialog.newInstance(
             getPatientId(),
             villageId = patientViewModel.getVillageId(),
             householdId = patientViewModel.getPatientHouseholdId(),
@@ -566,17 +572,15 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
             listener = this@HivMedicalReviewDiagnosesFragment
         }
 
-        showDialogIfNotPresent(AddWeightDialog.TAG) {
+        showDialogIfNotPresent(AddBMIDialog.TAG) {
             dialog
         }
     }
 
     override fun onDialogDismissed(isBp: Boolean, isHeight: Boolean) {
         if (connectivityManager.isNetworkAvailable()) {
-            if (isHeight) {
-                viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
-            } else viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
-
+            viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
+            viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
             viewModel.fetchBmi(MotherNeonateAncRequest(memberId = getMemberId()))
             hivViewModel.getHivVitalsDetails(
                 HivVitalsRequest(
@@ -587,7 +591,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
             )
 
             val dialog =
-                childFragmentManager.findFragmentByTag(AddWeightDialog.TAG) as? AddWeightDialog
+                childFragmentManager.findFragmentByTag(AddBMIDialog.TAG) as? AddBMIDialog
                     ?: return
             dialog.listener = null
             dialog.dismiss()

@@ -374,7 +374,8 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
             }
         }
 
-        binding.btnSubmit.isEnabled = hasClinicalNotes
+        binding.btnSubmit.isEnabled =
+            hasClinicalNotes
     }
 
     private fun initializePatientDetailFragment() {
@@ -554,8 +555,8 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
         }
         // TODO:
         return HivRequestData(
-            clinicalStage = null,
-            cd4 = null,
+            clinicalStage = diagnosisViewModel.hivVitalsDetailLiveData.value?.data?.whoClinicalStage,
+            cd4 = diagnosisViewModel.hivVitalsDetailLiveData.value?.data?.cd4,
             artCode = patientViewModel.artCode,
             weight = weightViewModel.getWeight(),
             hivStatus = (supportFragmentManager.findFragmentByTag(HIVStatusFragment.TAG) as? HIVStatusFragment)?.getRequest(),
@@ -565,6 +566,7 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
             systemicExaminations = hivGeneralAndSystemicExaminationViewModel.resultHashMap,
             comorbiditiesCoinfections = comorbiditiesViewModel.chips.map { it.value }.takeIf { it.isNotEmpty() },
             opportunisticInfections = opportunisticInfectionsData,
+            obstetricExaminations = emptyList(),
             encounter = createMedicalReviewEncounter(
                 encounterId = patientViewModel.encounterId,
                 patientHouseholdId = patientViewModel.getPatientHouseholdId(),
@@ -674,7 +676,7 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
                 MedicalReviewTypeEnums.HIV.name
             )
         }
-        replaceFragmentInId<PresentingComplaintsFragment>(
+        replaceFragmentOrCreateNewFragment<PresentingComplaintsFragment>(
             binding.patientHistoryContainer.id,
             bundle = bundle,
             tag = PresentingComplaintsFragment::class.simpleName

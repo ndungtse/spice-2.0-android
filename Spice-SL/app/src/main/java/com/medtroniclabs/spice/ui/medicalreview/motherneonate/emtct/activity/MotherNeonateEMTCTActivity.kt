@@ -36,6 +36,7 @@ import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivGeneralAndSyste
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivImrAndCmrViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivImrCmrSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivViewModel
+import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.WhoClinicalStageViewModel
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancySummaryFragment
@@ -76,6 +77,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
     private val summaryViewModel: HivImrCmrSummaryViewModel by viewModels()
     private val referPatientViewModel: ReferPatientViewModel by viewModels()
     private val systemicExaminationViewModel: SystemicExaminationViewModel by viewModels()
+    private val whoViewModel: WhoClinicalStageViewModel by viewModels()
 
     private val getResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -142,6 +144,9 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                 backNavigation()
             }
         })
+
+        whoViewModel.setWhoStage(MedicalReviewTypeEnums.whoClinicalStage.name)
+        hivViewModel.getHivEmtctVistStatusByCategory(MedicalReviewTypeEnums.emtct_visit_status.name)
     }
 
     private fun backNavigation() {

@@ -42,7 +42,8 @@ data class  Prescription(
     val isGroup : Boolean? = null,
     val groupUniqueId: String? = null,
     val instruction: String ? = null,
-    val regimenLine: String?= null
+    val regimenLine: String?= null,
+    val reasonsForChange: String?= null
 )
 
 
