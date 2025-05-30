@@ -89,7 +89,7 @@ class HivImrAndCmrViewModel @Inject constructor(
             checkRecommendationRInvestigations.postLoading()
             checkRecommendationRInvestigations.postValue(
                 repository.checkRecommendationRInvestigations(
-                    MotherNeonateAncRequest(patientReference = patientReference)
+                    MotherNeonateAncRequest(patientReference = patientReference, memberId = memberId)
                 )
             )
         }

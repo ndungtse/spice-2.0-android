@@ -35,6 +35,7 @@ import com.medtroniclabs.spice.common.DefinedParams.ICCM_ABOVE_2M_5Y
 import com.medtroniclabs.spice.common.DefinedParams.MotherDeliveryReview
 import com.medtroniclabs.spice.common.DefinedParams.NAME
 import com.medtroniclabs.spice.common.DefinedParams.Neonate_Birth_Review
+import com.medtroniclabs.spice.common.DefinedParams.OnTreatment
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.common.DefinedParams.PregnancyAncMedicalReview
 import com.medtroniclabs.spice.common.DefinedParams.TB
@@ -47,6 +48,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.ReferredDate
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.adapter.DateListAdapter
@@ -433,7 +435,14 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.patient_status),
                 Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
-                    ?.let { requireContext().changePatientStatus(it) }
+                    ?.let {
+                        if(it.equals(OnTreatment,true) || it.equals(ReferralStatus.OnTreatment.name,true))
+                        {
+                            requireContext().changePatientStatus(it)
+                        } else {
+                            it
+                        }
+                    }
                     ?: getString(R.string.separator_double_hyphen))
             ),
             mapOf(
@@ -504,7 +513,14 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.patient_status),
                 Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
-                    ?.let { requireContext().changePatientStatus(it) }
+                    ?.let {
+                        if(it.equals(OnTreatment,true) || it.equals(ReferralStatus.OnTreatment.name,true))
+                        {
+                            requireContext().changePatientStatus(it)
+                        } else {
+                            it
+                        }
+                    }
                     ?: getString(R.string.separator_double_hyphen))
             ),
             mapOf(

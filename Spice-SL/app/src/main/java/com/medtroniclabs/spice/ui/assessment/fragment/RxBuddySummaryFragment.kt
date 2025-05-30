@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -32,6 +33,8 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getValueOfKey
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NextFollowupDate
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBRxBuddyFollowUp
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
+import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -94,9 +97,18 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
             }
         }
     }
+    private fun launchHouseholdSummaryPage() {
+        val intent = Intent(requireContext(), HouseholdSummaryActivity::class.java)
+        intent.putExtra(
+            HouseholdDefinedParams.ID,
+            viewModel.memberDetailsLiveData.value?.data?.householdLocalId ?: -1L
+        )
+        intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, false)
+        startActivity(intent)
+    }
 
     private fun initView() {
-        binding.btnStartContactTracing.gone()
+        binding.btnStartContactTracing.visible()
         binding.riskResultLayout.text = getString(R.string.update_contact_tracing_for_other)
         binding.etNextFollowUpDate.text =
             LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy))
@@ -122,7 +134,7 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
                }
             }
             R.id.btnStartContactTracing -> {
-
+                launchHouseholdSummaryPage()
             }
             R.id.etNextFollowUpDate -> {
                 showDatePickerDialog()

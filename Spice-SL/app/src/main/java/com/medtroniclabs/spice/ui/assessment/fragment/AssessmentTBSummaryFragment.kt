@@ -65,7 +65,6 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
 
     private fun initView() {
         binding.btnDone.safeClickListener(this)
-        binding.btnStartContactTracing.safeClickListener(this)
     }
 
     override fun onClick(view: View) {
@@ -74,21 +73,7 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
                 viewModel.setUserJourney(AnalyticsDefinedParams.DONEBUTTONTRIGGERED)
                 viewModel.updateOtherAssessmentDetails()
             }
-
-            binding.btnStartContactTracing.id -> {
-                launchHouseholdSummaryPage()
-            }
         }
-    }
-
-    private fun launchHouseholdSummaryPage() {
-        val intent = Intent(requireContext(), HouseholdSummaryActivity::class.java)
-        intent.putExtra(
-            HouseholdDefinedParams.ID,
-            viewModel.memberDetailsLiveData.value?.data?.householdLocalId ?: -1L
-        )
-        intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, false)
-        startActivity(intent)
     }
 
     private fun attachObservers() {
@@ -129,7 +114,6 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
     private fun composeTbSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
         val isContactTrace = listSummaryData.any { it.id == RelationshipToIC }
         if(isContactTrace){
-            binding.btnStartContactTracing.visible()
             binding.tvTitle.text = binding.root.context.getString(R.string.contact_tracing)
             val stringBuilder = StringBuilder()
             listSummaryData.forEach{ item ->

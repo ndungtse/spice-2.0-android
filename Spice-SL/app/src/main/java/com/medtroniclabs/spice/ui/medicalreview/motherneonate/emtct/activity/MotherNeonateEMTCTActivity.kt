@@ -594,7 +594,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
     }
 
     private fun callViralLoadTestRecommendation() {
-        viewModel.checkRecommendationRInvestigations(patientReference = patientViewModel.getPatientId(),memberId = patientViewModel.getPatientMemberId())
+        viewModel.checkRecommendationRInvestigations(patientReference = patientViewModel.getPatientFHIRId(),memberId = patientViewModel.getPatientMemberId())
     }
 
     private fun submitEmtctRequest() {
