@@ -253,7 +253,8 @@ class HivViewModel @Inject constructor(
         patientReference: String?,
         isActive: Boolean,
         limit: Int,
-        category: String
+        category: String,
+        memberId: String?
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             getARTLiveData.postLoading()
@@ -261,7 +262,8 @@ class HivViewModel @Inject constructor(
                 patientReference = patientReference,
                 isActive = isActive,
                 limit = limit,
-                category = category
+                category = category,
+                memberReference = memberId
             )
             getARTLiveData.postValue(repository.getARTData(request))
         }

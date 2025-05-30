@@ -9,7 +9,8 @@ data class ArtRequest(
     val limit: Int,
     val category: String,
     val isActive: Boolean,
-    val patientReference: String?
+    val patientReference: String?,
+    val memberReference: String?
 )
 data class ARTResponse(
     val prescribedDays: Int,

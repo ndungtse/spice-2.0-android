@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.data.model.HivRequestData
@@ -695,6 +696,7 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
             bundle = Bundle().apply {
                 putString(DefinedParams.PatientId, intent.getStringExtra(DefinedParams.PatientId))
                 putString(DefinedParams.ID, intent.getStringExtra(DefinedParams.ID))
+                putString(MemberID, patientViewModel.getPatientMemberId())
                 putBoolean(DefinedParams.HIV_IMR_CMR,true)
             },
             tag = ARTRegimenFragment.TAG

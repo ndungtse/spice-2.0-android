@@ -715,7 +715,7 @@ interface ApiService {
     @POST("/spice-service/hiv/viral-load/list")
     suspend fun getViralLoadData(@Body request: ViralLoadRequest): Response<APIResponse<List<ViralLoadResponse>>>
 
-    @POST("/spice-service/prescription-request/list")
+    @POST("/spice-service/prescription-request/regimen-list")
     suspend fun getARTData(@Body request: ArtRequest): Response<APIResponse<List<ARTResponse>>>
 
     @POST("/spice-service/patient/pregnancy-details")

@@ -428,7 +428,7 @@ class PatientInfoFragment : BaseFragment() {
                 }
             }
             if (isEMTCT() == true ||isEMTCTSummary() == true ) {
-                dataList.add(
+               /* dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.chw),
                         DefinedParams.Value to stringOrHyphen(chwValue)
@@ -439,7 +439,7 @@ class PatientInfoFragment : BaseFragment() {
                         DefinedParams.label to requireContext().getString(R.string.occupation_summary),
                         DefinedParams.Value to stringOrHyphen(patientListRespModel.occupation)
                     )
-                )
+                )*/
 
             }
             if (isEMTCTSummary() == true ){
@@ -498,22 +498,22 @@ class PatientInfoFragment : BaseFragment() {
         // Add updated items
         dataList.addAll(
             listOf(
-                mapOf(
+                /*mapOf(
                     DefinedParams.label to requireContext().getString(R.string.occupation),
                     DefinedParams.Value to stringOrHyphen(patient.occupation)
-                ),
+                ),*/
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.household_location),
                     DefinedParams.Value to stringOrHyphen(patient.village)
                 ),
-                mapOf(
+                /*mapOf(
                     DefinedParams.label to requireContext().getString(R.string.chw),
                     DefinedParams.Value to stringOrHyphen(chwValue)
-                ),
-                mapOf(
+                ),*/
+                /*mapOf(
                     DefinedParams.label to requireContext().getString(R.string.marital_status),
                     DefinedParams.Value to stringOrHyphen(patient.maritalStatus)
-                ),
+                ),*/
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.population_type),
                     DefinedParams.Value to combineText(
@@ -565,22 +565,22 @@ class PatientInfoFragment : BaseFragment() {
         // Add updated items
         dataList.addAll(
             listOf(
-                mapOf(
+                /*mapOf(
                     DefinedParams.label to requireContext().getString(R.string.occupation_summary),
                     DefinedParams.Value to stringOrHyphen(patient.occupation)
-                ),
+                ),*/
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.household_location),
                     DefinedParams.Value to stringOrHyphen(patient.village)
                 ),
-                mapOf(
+                /*mapOf(
                     DefinedParams.label to requireContext().getString(R.string.chw),
                     DefinedParams.Value to stringOrHyphen(chwValue)
-                ),
-                mapOf(
+                ),*/
+                /*mapOf(
                     DefinedParams.label to requireContext().getString(R.string.marital_status_summary),
                     DefinedParams.Value to stringOrHyphen(patient.maritalStatus)
-                ),
+                ),*/
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.emtct_enrolment_date),
                     DefinedParams.Value to (patient.emtctEnrollDate?.getLocalDate()

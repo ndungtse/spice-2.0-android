@@ -969,7 +969,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                         data,
                                         patientViewModel.encounterId,
                                         reason,
-                                        medicationsRegimen?.apply { this+1 } ?: 1
+                                        medicationsRegimen?.apply { this+1 } ?: 0
                                     )
                                 }
                             }

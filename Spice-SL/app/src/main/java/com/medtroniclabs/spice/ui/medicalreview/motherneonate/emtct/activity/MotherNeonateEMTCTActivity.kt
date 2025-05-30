@@ -487,6 +487,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
             bundle = Bundle().apply {
                 putString(DefinedParams.PatientId, intent.getStringExtra(DefinedParams.PatientId))
                 putString(DefinedParams.ID, intent.getStringExtra(DefinedParams.ID))
+                putString(DefinedParams.MemberID, patientViewModel.getPatientMemberId())
             },
             tag = ARTRegimenFragment.TAG
         )

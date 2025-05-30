@@ -30,7 +30,7 @@
                 android:gravity="start"
                 android:paddingHorizontal="@dimen/_24sdp"
                 android:paddingVertical="@dimen/_16sdp"
-                android:text="@string/refer_patient"
+                android:text="@string/reason_for_change"
                 android:textColor="@color/house_hold_title"
                 android:textSize="@dimen/_20ssp"
                 app:layout_constraintEnd_toStartOf="@+id/ivClose"

@@ -37,6 +37,7 @@ import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.model.ARTLoadRecord
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -70,7 +71,8 @@ class ARTRegimenFragment : BaseFragment() {
             arguments?.getString(DefinedParams.ID),
             limit = 5,
             category = DefinedParams.HIV,
-            isActive = true
+            isActive = true,
+            memberId = arguments?.getString(MemberID),
         )
         setupObserver()
     }
@@ -287,7 +289,8 @@ class ARTRegimenFragment : BaseFragment() {
             id,
             limit = 5,
             category = DefinedParams.HIV,
-            isActive = true
+            isActive = true,
+            memberId = arguments?.getString(MemberID),
         )
     }
 
