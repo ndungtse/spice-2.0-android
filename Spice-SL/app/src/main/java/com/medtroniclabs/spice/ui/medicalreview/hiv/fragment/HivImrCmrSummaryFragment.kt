@@ -190,7 +190,10 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
                 tvSiteLabel.text = getString(R.string.anc)
                 tvSiteSeparator.visible()
                 tvSiteText.visible()
-                tvSiteText.text = "1"
+                tvSiteText.text = patientViewModel.getANCVisitCount()
+                    ?.toString()
+                    ?.takeIf { it.isNotEmpty() } // or use !it.isNullOrEmpty() for extra safety
+                    ?: getString(R.string.hyphen_symbol)
                 eMTCTSummaryGroup.visible()
             }
             // Presenting Complaints

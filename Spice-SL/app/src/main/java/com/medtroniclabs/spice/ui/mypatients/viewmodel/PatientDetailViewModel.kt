@@ -228,4 +228,8 @@ class PatientDetailViewModel @Inject constructor(
     fun getPregnancyBreastFeedStatus(): String? {
         return patientDetailsLiveData.value?.data?.pregnancyBreastFeedStatus
     }
+
+    fun getANCVisitCount(): Int? {
+        return patientDetailsLiveData.value?.data?.pregnancyDetails?.ancVisitMedicalReview
+    }
 }

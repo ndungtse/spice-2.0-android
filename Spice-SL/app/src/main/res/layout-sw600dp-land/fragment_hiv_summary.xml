@@ -592,8 +592,6 @@
                 android:background="@drawable/edittext_background_selector"
                 android:cursorVisible="false"
                 android:drawableEnd="@drawable/ic_date_picker_calendar"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
                 android:gravity="start|center"
                 android:paddingStart="@dimen/_10sdp"
                 android:paddingEnd="@dimen/_0dp"
