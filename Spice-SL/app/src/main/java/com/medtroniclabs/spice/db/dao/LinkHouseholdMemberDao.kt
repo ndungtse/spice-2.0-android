@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Assigned
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberFhirId
 import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
@@ -36,11 +37,11 @@ interface LinkHouseholdMemberDao {
     suspend fun updateMemberAsAssigned(memberId: String, status: String = Assigned, syncStatus: OfflineSyncStatus = OfflineSyncStatus.NotSynced)
 
 
-    @Query("SELECT fhir_id FROM HouseholdMember AS hhm INNER JOIN LinkHouseholdMember AS lhhm ON hhm.fhir_id = lhhm.memberId WHERE hhm.patient_id = :patientId AND lhhm.status = :status")
-    suspend fun getUnAssignedParentFhirId(patientId: String, status: String = DefinedParams.UnAssigned): List<String>
+    @Query("SELECT hhm.id as hhmId, hhm.fhir_id as hhmFhirId FROM HouseholdMember AS hhm INNER JOIN LinkHouseholdMember AS lhhm ON hhm.fhir_id = lhhm.memberId WHERE hhm.patient_id = :patientId AND lhhm.status = :status")
+    suspend fun getUnAssignedParentFhirId(patientId: String, status: String = DefinedParams.UnAssigned): List<HouseholdMemberFhirId>
 
-    @Query("SELECT fhir_id FROM HouseholdMember AS hhm INNER JOIN LinkHouseholdMember AS lhhm ON hhm.fhir_id = lhhm.memberId where hhm.parentId = :parentId AND lhhm.status = :status")
-    suspend fun getUnAssignedChildFhirIds(parentId: String, status: String = DefinedParams.UnAssigned): List<String>
+    @Query("SELECT hhm.id as hhmId, hhm.fhir_id as hhmFhirId FROM HouseholdMember AS hhm INNER JOIN LinkHouseholdMember AS lhhm ON hhm.fhir_id = lhhm.memberId where hhm.parentId = :parentId AND lhhm.status = :status")
+    suspend fun getUnAssignedChildFhirIds(parentId: String, status: String = DefinedParams.UnAssigned): List<HouseholdMemberFhirId>
 
     @Query("UPDATE LinkHouseholdMember SET status = :status, syncStatus = :syncStatus WHERE memberId in (:memberIds)")
     suspend fun updateMembersAsAssigned(memberIds: List<String>, status: String = Assigned, syncStatus: OfflineSyncStatus = OfflineSyncStatus.NotSynced)

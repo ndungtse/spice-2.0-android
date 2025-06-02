@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.repo
 
 import android.location.Location
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getStringOrEmptyString
 import com.medtroniclabs.spice.common.DefinedParams
@@ -9,7 +10,9 @@ import com.medtroniclabs.spice.common.DefinedParams.CHIEF_DOM_CODE_LENGTH
 import com.medtroniclabs.spice.common.DefinedParams.PATIENT_NUMBER_LENGTH
 import com.medtroniclabs.spice.common.DefinedParams.VILLAGE_CODE_LENGTH
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberFhirId
 import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.CALL_TYPE_LINK_HHM
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.entity.CallHistory
@@ -24,6 +27,7 @@ import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deceasedReason
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.isDeceased
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class HouseholdMemberRepository @Inject constructor(
@@ -54,8 +58,9 @@ class HouseholdMemberRepository @Inject constructor(
             }
 
             if (fhirIds.isNotEmpty()) {
-                roomHelper.updateHouseholdHeadAndRelationShip(fhirIds, householdId)
-                roomHelper.updateMembersAsAssigned(fhirIds)
+                memberEntity.fhirId?.let {
+                    updateMemberAsAssigned(fhirIds, householdId, it)
+                }
             }
         }
 
@@ -323,4 +328,30 @@ class HouseholdMemberRepository @Inject constructor(
     suspend fun updateContactTracingForLinkTbPatient(tbHHMId: Long, householdId: Long) {
         roomHelper.updateContactTracingForLinkTbPatient(tbHHMId, householdId)
     }
+
+    private suspend fun updateMemberAsAssigned(hhmFhirIds: List<HouseholdMemberFhirId>, hhId: Long, motherOrChildFhirId: String) {
+        val isMotherOrChildTbPatient = isTbPatient(motherOrChildFhirId)
+        hhmFhirIds.forEach { hhmFhirId ->
+            val hhTbPatientIds = getTbPatientLocalIdByHouseholdId(hhId)
+            val isTbPatient = isTbPatient(hhmFhirId.hhmFhirId)
+
+            if (isTbPatient) {
+                if (hhTbPatientIds.isEmpty()) {
+                    updateContactTracingForLinkTbPatient(hhmFhirId.hhmId, hhId)
+                }
+            } else {
+                if (hhTbPatientIds.isNotEmpty() || isMotherOrChildTbPatient) {
+                    updateContactTracingStatus(
+                        hhmFhirId.hhmId,
+                        OfflineConstant.CONTACT_TRACING_YET_TO_TAKE
+                    )
+                } else {
+                    updateContactTracingStatus(hhmFhirId.hhmId, null)
+                }
+            }
+            roomHelper.updateHouseholdHeadAndRelationShip(listOf(hhmFhirId.hhmFhirId), hhId)
+            updateMemberAsAssigned(hhmFhirId.hhmFhirId)
+        }
+    }
+
 }

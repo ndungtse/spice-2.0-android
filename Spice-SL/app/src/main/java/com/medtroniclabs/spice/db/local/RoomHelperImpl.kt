@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberCallRegisterDto
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberFhirId
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberStatus
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdWithMemberCount
@@ -1121,11 +1122,11 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.deleteDosageFrequencyList()
     }
 
-    override suspend fun getUnAssignedChildFhirIds(patientId: String): List<String> {
+    override suspend fun getUnAssignedChildFhirIds(patientId: String): List<HouseholdMemberFhirId> {
         return linkHouseholdMemberDao.getUnAssignedChildFhirIds(patientId)
     }
 
-    override suspend fun getUnAssignedParentFhirId(parentId: String): List<String> {
+    override suspend fun getUnAssignedParentFhirId(parentId: String): List<HouseholdMemberFhirId> {
         return linkHouseholdMemberDao.getUnAssignedParentFhirId(parentId)
     }
 

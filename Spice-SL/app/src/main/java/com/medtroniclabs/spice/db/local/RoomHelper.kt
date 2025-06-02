@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberCallRegisterDto
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberFhirId
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberStatus
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdWithMemberCount
@@ -420,8 +421,8 @@ interface RoomHelper {
     suspend fun getNCDShortageReason(type: String): List<ShortageReasonEntity>
     suspend fun deleteNCDShortageReason()
     suspend fun saveNCDShortageReason(shortageReasonEntity: List<ShortageReasonEntity>)
-    suspend fun getUnAssignedParentFhirId(parentId: String): List<String>
-    suspend fun getUnAssignedChildFhirIds(patientId: String): List<String>
+    suspend fun getUnAssignedParentFhirId(parentId: String): List<HouseholdMemberFhirId>
+    suspend fun getUnAssignedChildFhirIds(patientId: String): List<HouseholdMemberFhirId>
     suspend fun updateHouseholdHeadAndRelationShip(fhirIds: List<String>, householdId: Long)
     suspend fun updateMembersAsAssigned(fhirIds: List<String>)
 

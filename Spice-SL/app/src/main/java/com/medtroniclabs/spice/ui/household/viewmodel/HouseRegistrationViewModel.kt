@@ -143,6 +143,9 @@ class HouseRegistrationViewModel @Inject constructor(
                         // No TB patients in household but this member is one — update all household contact tracing statuses
                         houseHoldRepositoryMember.updateContactTracingForLinkTbPatient(hhmId, hhId)
                     }
+                    else -> {
+                        houseHoldRepositoryMember.updateContactTracingStatus(hhmId, null)
+                    }
                 }
             }
 
