@@ -195,7 +195,6 @@ class PrescriptionViewModel @Inject constructor(
                 list.forEach {
                     if (it.medicationResponse.prescribedDays != null) {
                         it.medicationResponse.name?.let { it1 ->
-                            val isHiv = it.medicationResponse.category?.name?.equals(HIV, true)
                             Prescription(
                                 prescribedDays = it.medicationResponse.prescribedDays,
                                 dosageDurationName = it.medicationResponse.dosageDurationName,
@@ -209,9 +208,7 @@ class PrescriptionViewModel @Inject constructor(
                                 groupName = it.medicationResponse.groupName,
                                 categoryName = it.medicationResponse.category?.name,
                                 groupUniqueId = it.medicationResponse.groupUniqueId,
-                                instruction = it.medicationResponse.instruction ?: "",
-                                reasonsForChange = if (isHiv == true) reason else null,
-                                regimenLine = if (isHiv == true) regimenNumber?.plus(1)?.toString() else null
+                                instruction = it.medicationResponse.instruction ?: ""
                             )
                         }?.let { it2 ->
                             prescriptionList.add(
@@ -220,6 +217,9 @@ class PrescriptionViewModel @Inject constructor(
                         }
                     }
                 }
+
+                val isHiv =
+                    list.any { it.medicationResponse.category?.name?.equals(HIV, true) == true }
                 val prescriptionRequest = PrescriptionRequest(
                     encounter = EncounterDetails(
                         id = encounterId,
@@ -228,6 +228,8 @@ class PrescriptionViewModel @Inject constructor(
                         memberId = data.memberId ?: "", provenance = ProvanceDto()
                     ),
                     prescriptions = prescriptionList,
+                    reasonsForChange = if (isHiv) reason else null,
+                    regimenLine = if (isHiv) regimenNumber?.plus(1)?.toString() else null
                 )
                 val dataRequest = Gson().toJson(prescriptionRequest)
                 builder.addFormDataPart("prescriptionRequest", dataRequest)

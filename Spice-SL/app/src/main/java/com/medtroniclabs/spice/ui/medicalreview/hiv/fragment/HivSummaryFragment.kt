@@ -184,7 +184,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         val nextVisitType = getTestResultStatus(test1, test2, test3)
 
         binding.tvNextMedicalReviewLabelText.text = when (nextVisitType) {
-            1 -> DateUtils.getFormattedDateAfterMonths(1)
+            1 -> DateUtils.getFormattedDateAfterDays(3)
             2 -> DateUtils.getFormattedDateAfterDays(14)
             else -> DateUtils.getFormattedDateAfterMonths(1)
         }
@@ -308,7 +308,15 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(list)
         var defaultPosition = 0
-        if (nextVisitType == 2) {
+        if (nextVisitType == 1) {
+            defaultPosition = list.indexOfFirst {
+                (it[DefinedParams.Value] as? String).equals(
+                    getString(R.string.referred),
+                    ignoreCase = true
+                )
+            }.takeIf { it != -1 } ?: 0
+            binding.tvPatientStatusSpinner.isEnabled = false
+        } else if (nextVisitType == 2) {
             // Auto-populate "Retest (HTS)"
             defaultPosition = list.indexOfFirst {
                 (it[DefinedParams.Value] as? String).equals(

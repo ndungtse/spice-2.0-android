@@ -6,5 +6,7 @@ data class RemovePrescriptionRequest(
     val prescriptionId: String? = null,
     val provenance: ProvanceDto? = null,
     val discontinuedReason: String? = null,
+    val regimenLine: String? = null,
+    val reasonsForChange: String? = null,
     val requestFrom: String? = null
 )

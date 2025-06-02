@@ -106,8 +106,8 @@ class ReasonForChangeDialogFragment(
                 dismiss()
             }
             R.id.btnOkay -> {
-                val reason = binding.etReason.text.toString()
-                callback?.onReasonProvided(reason)
+                val changeReason = binding.etReason.text.toString()
+                callback?.onReasonProvided(changeReason)
                 dismiss()
             }
         }
@@ -129,6 +129,6 @@ class ReasonForChangeDialogFragment(
     }
 
     interface ReasonChangeCallback {
-        fun onReasonProvided(reason: String)
+        fun onReasonProvided(changeReason: String)
     }
 }

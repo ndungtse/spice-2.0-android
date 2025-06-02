@@ -475,20 +475,83 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                     Pair(getString(R.string.ok), getString(R.string.cancel)),
                                     callback = { isPositiveResult, reason ->
                                         if (isPositiveResult) {
-                                            if (CommonUtils.isCommunity()){
-                                                val medicationList  = data.medicationResponse.groupName?.let { groupName ->
-                                                    prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter { it.medicationResponse.groupName == groupName }
-                                                }?.mapNotNull { it.medicationResponse.prescriptionId }
-                                                val removeMedicationsList = ArrayList<RemovePrescriptionRequest>()
-                                                medicationList?.forEach {
-                                                    removeMedicationsList.add(RemovePrescriptionRequest(
-                                                        prescriptionId = it,
-                                                        provenance = ProvanceDto(),
-                                                        discontinuedReason = reason,
-                                                    ))
+                                            if (CommonUtils.isCommunity()) {
+                                                val medicationList =
+                                                    data.medicationResponse.groupName?.let { groupName ->
+                                                        prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter { it.medicationResponse.groupName == groupName }
+                                                    }
+                                                        ?.mapNotNull { it.medicationResponse.prescriptionId }
+                                                val removeMedicationsList =
+                                                    ArrayList<RemovePrescriptionRequest>()
+                                                if (data.medicationResponse.category?.name.equals(
+                                                        HIV,
+                                                        true
+                                                    )
+                                                ) {
+                                                    val medicationsNameList = buildList {
+                                                        addAll(prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
+                                                            it.category?.name?.equals(
+                                                                HIV, true
+                                                            ) == true
+                                                        }?.map { it.medicationName } ?: emptyList())
+                                                        addAll(medicationList ?: emptyList())
+                                                    }
+                                                    val medicationsRegimen =
+                                                        prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
+                                                            it.category?.name?.equals(
+                                                                HIV,
+                                                                true
+                                                            ) == true
+                                                        }
+                                                            ?.mapNotNull { it.regimenLine?.toIntOrNull() }
+                                                            ?.maxOrNull()
+
+                                                    ReasonForChangeDialogFragment.newInstance(
+                                                        name = convertListToString(
+                                                            ArrayList(
+                                                                medicationsNameList
+                                                            )
+                                                        ),
+                                                        regimen = medicationsRegimen,
+                                                        prescribedMedicine = true,
+                                                        callback = object :
+                                                            ReasonForChangeDialogFragment.ReasonChangeCallback {
+                                                            override fun onReasonProvided(
+                                                                changeReason: String
+                                                            ) {
+                                                                medicationList?.forEach {
+                                                                    removeMedicationsList.add(
+                                                                        RemovePrescriptionRequest(
+                                                                            prescriptionId = prescriptionId,
+                                                                            provenance = ProvanceDto(),
+                                                                            discontinuedReason = reason,
+                                                                            regimenLine = medicationsRegimen?.plus(
+                                                                                1
+                                                                            )?.toString(),
+                                                                            reasonsForChange = changeReason,
+                                                                        )
+                                                                    )
+                                                                }
+                                                                prescriptionViewModel.removeCommunityPrescription(
+                                                                    removeMedicationsList
+                                                                )
+                                                            }
+                                                        })
+                                                } else {
+                                                    medicationList?.forEach {
+                                                        removeMedicationsList.add(
+                                                            RemovePrescriptionRequest(
+                                                                prescriptionId = it,
+                                                                provenance = ProvanceDto(),
+                                                                discontinuedReason = reason,
+                                                            )
+                                                        )
+                                                    }
                                                 }
-                                                if (medicationList?.isNotEmpty() == true){
-                                                    prescriptionViewModel.removeCommunityPrescription(removeMedicationsList)
+                                                if (medicationList?.isNotEmpty() == true) {
+                                                    prescriptionViewModel.removeCommunityPrescription(
+                                                        removeMedicationsList
+                                                    )
                                                 }
                                             } else {
                                                 prescriptionViewModel.removePrescription(
@@ -668,16 +731,52 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                     if (CommonUtils.isCommunity()) {
                                         val removeMedicationsList =
                                             ArrayList<RemovePrescriptionRequest>()
-                                        removeMedicationsList.add(
-                                            RemovePrescriptionRequest(
-                                                prescriptionId = prescriptionId,
-                                                provenance = ProvanceDto(),
-                                                discontinuedReason = reason,
+                                        if (data.medicationResponse.category?.name.equals(HIV, true)){
+                                            val medicationsNameList = buildList {
+                                                addAll(prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
+                                                    it.category?.name?.equals(
+                                                        HIV, true
+                                                    ) == true
+                                                }?.map { it.medicationName } ?: emptyList())
+                                                addAll(data.medicationResponse.name?.let { listOf(it) } ?: emptyList())
+                                            }
+                                            val medicationsRegimen =
+                                                prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
+                                                    it.category?.name?.equals(HIV, true) == true
+                                                }?.mapNotNull { it.regimenLine?.toIntOrNull() }?.maxOrNull()
+                                            ReasonForChangeDialogFragment.newInstance(
+                                                name = convertListToString(ArrayList(medicationsNameList)),
+                                                regimen = medicationsRegimen,
+                                                prescribedMedicine = true,
+                                                callback = object : ReasonForChangeDialogFragment.ReasonChangeCallback {
+                                                    override fun onReasonProvided(changeReason: String) {
+                                                        removeMedicationsList.add(
+                                                            RemovePrescriptionRequest(
+                                                                prescriptionId = prescriptionId,
+                                                                provenance = ProvanceDto(),
+                                                                discontinuedReason = reason,
+                                                                regimenLine = medicationsRegimen?.plus(1)?.toString(),
+                                                                reasonsForChange = changeReason,
+                                                            )
+                                                        )
+                                                        prescriptionViewModel.removeCommunityPrescription(
+                                                            removeMedicationsList
+                                                        )
+                                                    }
+                                                })
+                                        } else {
+                                            removeMedicationsList.add(
+                                                RemovePrescriptionRequest(
+                                                    prescriptionId = prescriptionId,
+                                                    provenance = ProvanceDto(),
+                                                    discontinuedReason = reason,
+                                                )
                                             )
-                                        )
-                                        prescriptionViewModel.removeCommunityPrescription(
-                                            removeMedicationsList
-                                        )
+                                            prescriptionViewModel.removeCommunityPrescription(
+                                                removeMedicationsList
+                                            )
+                                        }
+
                                     } else {
                                         prescriptionViewModel.removePrescription(
                                             prescriptionId,
@@ -939,25 +1038,43 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             prescriptionCreateList.add(it)
                         }
                     }
-                if (prescriptionCreateList.any { it.medicationResponse.category?.name?.equals(
-                        HIV, true) == true }){
-                    val medications = prescriptionCreateList.filter { it.medicationResponse.category?.name?.equals(
-                        HIV, true) == true
-                           // && it.medicationResponse.regimenLine != null
+
+                if (prescriptionViewModel.prescriptionListLiveData.value?.data?.any {
+                        it.category?.name?.equals(
+                            HIV, true) == true
+                    } == true){
+
+                    val medications = buildList {
+                        addAll(prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
+                            it.category?.name?.equals(
+                                HIV, true
+                            ) == true
+                        }?.map { it.medicationName } ?: emptyList())
+                        addAll(prescriptionCreateList.filter {
+                            it.medicationResponse.category?.name?.equals(
+                                HIV, true
+                            ) == true
+                        }.map { it.medicationResponse.name })
                     }
-                        .map { it.medicationResponse.name }
-                    val medicationsRegimen = prescriptionCreateList
+
+
+                    val medicationsRegimen =
+                        prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
+                            it.category?.name?.equals(HIV, true) == true
+                        }?.mapNotNull { it.regimenLine?.toIntOrNull() }?.maxOrNull()
+
+                        /*prescriptionCreateList
                         .filter { it.medicationResponse.category?.name?.equals(HIV, true) == true }
                         .mapNotNull { it.medicationResponse.regimenLine?.toIntOrNull() } // List<Int>
-                        .maxOrNull()
+                        .maxOrNull()*/
                     val prescriptionId =
-                        prescriptionCreateList.any { it.medicationResponse.prescriptionId != null }
+                        prescriptionCreateList.any { it.medicationResponse.prescriptionId == null }
                     ReasonForChangeDialogFragment.newInstance(
                         name = convertListToString(ArrayList(medications.filterNotNull())),
                         regimen = medicationsRegimen,
                         prescribedMedicine = prescriptionId,
                         callback = object : ReasonForChangeDialogFragment.ReasonChangeCallback {
-                            override fun onReasonProvided(reason: String) {
+                            override fun onReasonProvided(changeReason: String) {
                                 prescriptionCreateList.let { list ->
                                     prescriptionViewModel.createPrescription(
                                         signatureBitmap,
@@ -968,7 +1085,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                         ArrayList(list),
                                         data,
                                         patientViewModel.encounterId,
-                                        reason,
+                                        changeReason,
                                         medicationsRegimen?.apply { this+1 } ?: 0
                                     )
                                 }
