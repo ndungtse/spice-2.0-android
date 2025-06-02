@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.mappingkey.RxBuddy
 import com.medtroniclabs.spice.mappingkey.RxBuddy.rxBuddyMonitoringDates
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.MenuConstants.TB_MENU_ID
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getValueOfKeyFromMap
@@ -35,6 +36,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBRxBuddyFo
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
 import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
+import com.medtroniclabs.spice.ui.landing.LandingActivity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -98,13 +100,20 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
     private fun launchHouseholdSummaryPage() {
-        val intent = Intent(requireContext(), HouseholdSummaryActivity::class.java)
-        intent.putExtra(
-            HouseholdDefinedParams.ID,
-            viewModel.memberDetailsLiveData.value?.data?.householdLocalId ?: -1L
-        )
-        intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, false)
-        startActivity(intent)
+        if (arguments?.getBoolean(MenuConstants.FOLLOW_UP, false) == true) {
+            val intent = Intent(requireContext(), LandingActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            startActivity(intent)
+            requireActivity().finish()
+        } else {
+            val intent = Intent(requireContext(), HouseholdSummaryActivity::class.java)
+            intent.putExtra(
+                HouseholdDefinedParams.ID,
+                viewModel.memberDetailsLiveData.value?.data?.householdLocalId ?: -1L
+            )
+            intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, false)
+            startActivity(intent)
+        }
     }
 
     private fun initView() {

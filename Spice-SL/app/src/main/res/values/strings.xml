@@ -1500,7 +1500,7 @@
     <string name="hiv_test" translatable="false">HIV Test</string>
     <string name="reactive" translatable="false">Reactive</string>
     <string name="non_reactive" translatable="false">Non Reactive</string>
-    <string name="inconclusive" translatable="false">inconclusive</string>
+    <string name="inconclusive" translatable="false">Inconclusive</string>
     <string name="a_test_result" translatable="false">A%d Test Results</string>
     <string name="pre_test_counselling" translatable="false">Pre-test counselling (Checklist / Job Aid)</string>
     <string name="test_for_hiv" translatable="false">Test for HIV (Rapid Test Kit / Job Aid)</string>

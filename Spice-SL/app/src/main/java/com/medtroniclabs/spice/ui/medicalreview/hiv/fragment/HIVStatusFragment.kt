@@ -448,7 +448,7 @@ class HIVStatusFragment : BaseFragment() {
             )
         )
         dropDownList.addAll(data
-            .filter { it.category == MedicalReviewTypeEnums.nonEstablishedModels.name }
+            .filter { it.category == MedicalReviewTypeEnums.tbStatus.name }
             .map { item ->
                 mapOf(
                     DefinedParams.NAME to item.name,

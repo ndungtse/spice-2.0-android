@@ -154,7 +154,7 @@ class PregnancySummaryFragment() : BaseFragment() {
                         )
                     },
                     title = tvPregnancyHistoryLabel.text.toString(),
-                    maxLength = 60,
+                    maxLength = 20,
                     activity = (requireActivity() as BaseActivity)
                 )
                 tvBloodGroupValue.text =

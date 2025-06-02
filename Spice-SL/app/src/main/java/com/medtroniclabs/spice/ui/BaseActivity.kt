@@ -380,6 +380,31 @@ open class BaseActivity : SpiceRootActivity() {
             }
         }
     }
+    inline fun <reified F : Fragment> FragmentActivity.createNewFragmentOnly(
+        containerId: Int,
+        bundle: Bundle? = null,
+        tag: String? = null,
+        isAdd: Boolean = false
+    ) {
+        val fragmentManager = supportFragmentManager
+
+        fragmentManager.commit {
+            setReorderingAllowed(true)
+
+            // Always remove existing fragment by tag
+            tag?.let { tagStr ->
+                fragmentManager.findFragmentByTag(tagStr)?.let { existingFragment ->
+                    remove(existingFragment)
+                }
+            }
+
+            // Always create a new instance
+            if (isAdd)
+                add<F>(containerId, args = bundle, tag = tag)
+            else
+                replace<F>(containerId, args = bundle, tag = tag)
+        }
+    }
 
     fun getFragmentById(fragmentManager: FragmentManager, fragmentId: Int): Fragment? {
         return fragmentManager.findFragmentById(fragmentId)

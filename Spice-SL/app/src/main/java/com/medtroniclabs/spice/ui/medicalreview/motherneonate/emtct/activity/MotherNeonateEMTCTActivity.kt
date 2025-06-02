@@ -482,7 +482,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
         )
 
 
-        replaceFragmentOrCreateNewFragment<ARTRegimenFragment>(
+        createNewFragmentOnly<ARTRegimenFragment>(
             R.id.aRTRegimenResultContainer,
             bundle = Bundle().apply {
                 putString(DefinedParams.PatientId, intent.getStringExtra(DefinedParams.PatientId))

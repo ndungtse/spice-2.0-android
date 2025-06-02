@@ -4,6 +4,7 @@ data class HivRequestData(
     val clinicalStage: String? = null,
     val cd4: String? = null,
     val weight: Double? = null,
+    val height: Double? = null,
     val artCode: String? = null,
     val hivStatus: HivStatus? = null,
     val presentingComplaints: List<String?>? = emptyList(),

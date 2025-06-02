@@ -18,9 +18,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.convertDateTimeToDate
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentFollowUpDialogBinding
-import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_HH_VISIT
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_REFERRED

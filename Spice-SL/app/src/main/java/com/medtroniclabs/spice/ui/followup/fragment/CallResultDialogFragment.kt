@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.CallResultDialogue
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.CallResult
+import com.medtroniclabs.spice.common.DefinedParams.HIV
 import com.medtroniclabs.spice.common.DefinedParams.PatientStatus
 import com.medtroniclabs.spice.common.DefinedParams.UnSuccessful
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -35,7 +36,7 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
 
     private lateinit var binding: FragmentBottomCallResultDialogBinding
     private val viewModel: FollowUpViewModel by activityViewModels()
-    val data = setOf(NCD, IMMUNISATION)
+    val data = setOf(NCD, IMMUNISATION,HIV)
     val familyPlanningData = setOf(AssessmentDefinedParams.Family_Planning.uppercase())
     companion object {
         const val TAG = "CallResultDialogFragment"

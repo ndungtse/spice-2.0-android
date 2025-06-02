@@ -435,14 +435,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.patient_status),
                 Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
-                    ?.let {
-                        if(it.equals(OnTreatment,true) || it.equals(ReferralStatus.OnTreatment.name,true))
-                        {
-                            requireContext().changePatientStatus(it)
-                        } else {
-                            it
-                        }
-                    }
+                    ?.let { requireContext().changePatientStatus(it) }
                     ?: getString(R.string.separator_double_hyphen))
             ),
             mapOf(
@@ -513,14 +506,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.patient_status),
                 Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
-                    ?.let {
-                        if(it.equals(OnTreatment,true) || it.equals(ReferralStatus.OnTreatment.name,true))
-                        {
-                            requireContext().changePatientStatus(it)
-                        } else {
-                            it
-                        }
-                    }
+                    ?.let { requireContext().changePatientStatus(it) }
                     ?: getString(R.string.separator_double_hyphen))
             ),
             mapOf(

@@ -385,8 +385,18 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
     override fun onResume() {
         super.onResume()
         getCurrentLocation()
+        callPatientDetails()
     }
-
+    private fun callPatientDetails() {
+        withNetworkAvailability(online = {
+            supportFragmentManager.findFragmentById(R.id.patientDetailFragment)
+                .let {
+                    patientViewModel.getPatientId()?.let { id ->
+                        patientViewModel.getPatients(id)
+                    }
+                }
+        })
+    }
     private fun getCurrentLocation() {
         val locationManager = SpiceLocationManager(this)
         locationManager.getCurrentLocation {

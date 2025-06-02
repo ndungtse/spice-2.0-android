@@ -60,10 +60,7 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getOpportunisticInfection(
-            memberId = patientViewModel.getPatientMemberId(),
-            patientReference = patientViewModel.getPatientFHIRId()
-        )
+        viewModel.getOpportunisticInfection(memberId = patientViewModel.getPatientMemberId(), patientReference = patientViewModel.getPatientFHIRId())
         initView()
         attachObserver()
     }
@@ -196,6 +193,7 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
             context = requireContext(),
             minDate = minDate,
             date = initialDate,
+            disableFutureDate = true,
             cancelCallBack = { datePickerDialog = null }
         ) { _, year, month, day ->
             val formattedDate = DateUtils.convertDateTimeToDate(

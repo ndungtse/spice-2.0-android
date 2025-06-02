@@ -484,18 +484,18 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
                 )
                 if (connectivityManager.isNetworkAvailable()) {
                     viewModel.createHivSummary(
-                        MedicalReviewTypeEnums.HIV.name,
-                        patientViewModel.getPatientMemberId(),
-                        submitCreateId,
-                        patientViewModel.getPatientHouseholdId(),
-                        viewModel.getPatientReference(),
-                        nextVisitDate,
-                        summaryViewModel.patientStatus,
-                        patientViewModel.getVillageId(),
-                        patientViewModel.getPatientId(),
-                        MedicalReviewTypeEnums.HIV_MEDICAL_REVIEW.name,
-                        null,
-                        null
+                        referralTicketType = MedicalReviewTypeEnums.HIV.name,
+                        memberId = patientViewModel.getPatientMemberId(),
+                        submitCreateId = submitCreateId,
+                        householdId = patientViewModel.getPatientHouseholdId(),
+                        patientReference = viewModel.getPatientReference(),
+                        nextVisitDate = nextVisitDate,
+                        patientStatus = summaryViewModel.patientStatus,
+                        villageId = patientViewModel.getVillageId(),
+                        patientId = patientViewModel.getPatientId(),
+                        assessmentName = MedicalReviewTypeEnums.HIV_MEDICAL_REVIEW.name,
+                        eMTCTStatus = null,
+                        maternalOutcome = null
                     )
                 } else {
                     showErrorDialogue(
@@ -560,6 +560,7 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
             cd4 = diagnosisViewModel.hivVitalsDetailLiveData.value?.data?.cd4,
             artCode = patientViewModel.artCode,
             weight = weightViewModel.getWeight(),
+            height = weightViewModel.getHeight(),
             hivStatus = (supportFragmentManager.findFragmentByTag(HIVStatusFragment.TAG) as? HIVStatusFragment)?.getRequest(),
             presentingComplaints = presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value }.takeIf { it.isNotEmpty() },
             presentingComplaintsNotes = presentingComplaintsViewModel.enteredComplaintNotes.takeIf { it.isNotBlank() },
@@ -691,7 +692,7 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
         binding.comorbiditiesContainer.setVisible(patientViewModel.getHivMedicalReviewStatus())
         binding.clinicalNotesContainer.visible()
         binding.hivClinicalNotesContainer.visible()
-        replaceFragmentOrCreateNewFragment<ARTRegimenFragment>(
+        createNewFragmentOnly<ARTRegimenFragment>(
             R.id.comorbiditiesContainer,
             bundle = Bundle().apply {
                 putString(DefinedParams.PatientId, intent.getStringExtra(DefinedParams.PatientId))
@@ -701,7 +702,7 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
             },
             tag = ARTRegimenFragment.TAG
         )
-        addOrReuseFragment(
+        replaceFragment(
             R.id.systemicExaminationsContainer,
             OpportunisticInfectionsTreatmentFragment.TAG,
             OpportunisticInfectionsTreatmentFragment.newInstance()

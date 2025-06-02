@@ -515,7 +515,8 @@ class AssessmentActivity : BaseActivity() {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     val bundle = Bundle().apply {
-                        putBoolean(DefinedParams.isRxBuddyFollowUp,true)
+                        putBoolean(DefinedParams.isRxBuddyFollowUp, true)
+                        putBoolean(MenuConstants.FOLLOW_UP, intent.getBooleanExtra(MenuConstants.FOLLOW_UP,false))
                     }
                     setTitle(Summary.capitalizeFirstChar())
                     hideBackButton()

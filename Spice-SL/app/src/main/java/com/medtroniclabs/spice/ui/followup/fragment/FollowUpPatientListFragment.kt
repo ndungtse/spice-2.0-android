@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.FragmentFollowUpMyPatientListBinding
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.followup.adapter.PatientListAdapter
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
 import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
@@ -114,6 +115,7 @@ class FollowUpPatientListFragment: BaseFragment(), FollowUpDialogFragment.Follow
                 val intent = Intent(requireContext(), AssessmentToolsActivity::class.java)
                 intent.putExtra(DefinedParams.MemberID, data.localPatientId)
                 intent.putExtra(DefinedParams.FollowUpId, data.id)
+                intent.putExtra(MenuConstants.FOLLOW_UP, true)
                 intent.putExtra(DefinedParams.DOB, data.dateOfBirth)
                 startActivity(intent)
                 viewModel.setUserJourney(AnalyticsDefinedParams.STARTASSESSMENTTRIGGERED)
