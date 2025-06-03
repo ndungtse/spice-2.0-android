@@ -232,4 +232,10 @@ class PatientDetailViewModel @Inject constructor(
     fun getANCVisitCount(): Int? {
         return patientDetailsLiveData.value?.data?.pregnancyDetails?.ancVisitMedicalReview
     }
+    fun getEstimatedDeliveryDate():String? {
+        return patientDetailsLiveData.value?.data?.pregnancyDetails?.estimatedDeliveryDate
+    }
+    fun getGestationalAge():Long? {
+        return patientDetailsLiveData.value?.data?.pregnancyDetails?.gestationalAge.toString().toLongOrNull()
+    }
 }

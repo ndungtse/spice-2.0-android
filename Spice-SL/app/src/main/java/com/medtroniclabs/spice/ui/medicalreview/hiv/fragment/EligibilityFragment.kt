@@ -3,7 +3,6 @@ package com.medtroniclabs.spice.ui.medicalreview.hiv.fragment
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.InputFilter
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,13 +20,13 @@ import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
-import com.medtroniclabs.spice.common.DateUtils.calculateEddFromLmpAndGestationalAge
 import com.medtroniclabs.spice.common.DateUtils.convertToRequiredFormat
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.databinding.FragmentEligibilityBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
@@ -114,11 +113,12 @@ class EligibilityFragment : BaseFragment() {
         if (isEmtct == true) {
             binding.hivEMTCTViewGroup.visible()
         }
-        binding.tvLastMenstrualPeriodDateLabelText.setOnClickListener {
+        binding.tvLastMenstrualPeriodDateLabelText.safeClickListener() {
             showDatePickerDialog(
                 binding.tvLastMenstrualPeriodDateLabelText,
                 disableFuture = true,
-                isLmp = true
+                isLmp = true,
+                lmp = binding.tvLastMenstrualPeriodDateLabelText.text.toString().isNullOrEmpty()
             )
         }
     }
@@ -391,7 +391,8 @@ class EligibilityFragment : BaseFragment() {
     private fun showDatePickerDialog(
         textView: AppCompatTextView,
         disableFuture: Boolean = false,
-        isLmp: Boolean = false
+        isLmp: Boolean = false,
+        lmp: Boolean
     ) {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         if (!textView.text.isNullOrBlank())
@@ -447,32 +448,15 @@ class EligibilityFragment : BaseFragment() {
             listOf(binding.etGestationalInWeek, binding.etExpectedDateOfDelivery).forEach {
                 it.text?.clear()
             }
+
+        }else{
+            binding.tvLastMenstrualPeriodDateLabelText.isClickable = false
+            binding.etExpectedDateOfDelivery.isClickable = false
+            binding.etGestationalInWeek.isClickable = false
+            binding.etGestationalInWeek.isEnabled = false
         }
     }
 
-    private fun expectedDateOfdDelivery(){
-        val lmpDateStr = binding.tvLastMenstrualPeriodDateLabelText.text.toString()
-        val gestationalWeeksStr = binding.etGestationalInWeek.text?.trim().toString()
-
-            if (!lmpDateStr.isNullOrBlank() && !gestationalWeeksStr.isNullOrBlank()) {
-                try {
-                    val gestationalWeeks = gestationalWeeksStr.toIntOrNull()
-
-                    if (gestationalWeeks != null && gestationalWeeks in 0..40) {
-                        binding.etGestationalInWeek.isClickable =  false
-                        binding.etExpectedDateOfDelivery.setText(calculateEddFromLmpAndGestationalAge(lmpDateStr,gestationalWeeks).first)
-                        hivViewModel.expectedDateOfDelivery = calculateEddFromLmpAndGestationalAge(lmpDateStr,gestationalWeeks).second
-                    } else {
-                        binding.etExpectedDateOfDelivery.setText("") // Clear or show invalid input message
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    binding.etExpectedDateOfDelivery.setText("") // Clear or show invalid input message
-                }
-            } else {
-                binding.etExpectedDateOfDelivery.setText("") // Clear or show invalid input message
-            }
-        }
 
     private fun valueObserver() {
         binding.etOtherPopulated.doOnTextChanged { text, _, _, _ ->
@@ -506,7 +490,6 @@ class EligibilityFragment : BaseFragment() {
             if (!text.isNullOrBlank()) {
                 calculateGestationalAgeAndEstimationDeliveryDate()
                 hivViewModel.lastMenstrualPeriod = convertToRequiredFormat(text.toString())
-
             }
         }
     }

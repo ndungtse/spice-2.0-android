@@ -558,9 +558,9 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
         return HivRequestData(
             clinicalStage = diagnosisViewModel.hivVitalsDetailLiveData.value?.data?.whoClinicalStage,
             cd4 = diagnosisViewModel.hivVitalsDetailLiveData.value?.data?.cd4,
-            artCode = patientViewModel.artCode,
             weight = weightViewModel.getWeight(),
             height = weightViewModel.getHeight(),
+            artCode = patientViewModel.artCode,
             hivStatus = (supportFragmentManager.findFragmentByTag(HIVStatusFragment.TAG) as? HIVStatusFragment)?.getRequest(),
             presentingComplaints = presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value }.takeIf { it.isNotEmpty() },
             presentingComplaintsNotes = presentingComplaintsViewModel.enteredComplaintNotes.takeIf { it.isNotBlank() },
@@ -568,15 +568,15 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
             systemicExaminations = hivGeneralAndSystemicExaminationViewModel.resultHashMap,
             comorbiditiesCoinfections = comorbiditiesViewModel.chips.map { it.value }.takeIf { it.isNotEmpty() },
             opportunisticInfections = opportunisticInfectionsData,
-            obstetricExaminations = emptyList(),
             encounter = createMedicalReviewEncounter(
                 encounterId = patientViewModel.encounterId,
                 patientHouseholdId = patientViewModel.getPatientHouseholdId(),
                 memberId = patientViewModel.getPatientMemberId()
             ),
-            clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
             medicalReviewType = MedicalReviewTypeEnums.HIV_MEDICAL_REVIEW.name,
-            id = patientViewModel.encounterId
+            clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
+            id = patientViewModel.encounterId,
+            obstetricExaminations = emptyList(),
         )
     }
 

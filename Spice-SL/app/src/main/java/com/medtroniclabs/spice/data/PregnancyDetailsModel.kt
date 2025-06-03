@@ -29,7 +29,7 @@ data class PregnancyDetailsModel(
     var neonatalOutcomes: String? = null,
     var temperature: Double? = null,
     var ncdPatientStatus: NcdPatientStatus? = null,
-    val provenance: ProvanceDto = ProvanceDto(),
+    var provenance: ProvanceDto = ProvanceDto(),
     var patientVisitId: String? = null,
     var pregnancyHistory: List<String>? = null,
     var pregnancyHistoryNotes: String? = null

@@ -361,6 +361,12 @@
                 app:layout_constraintHorizontal_weight="0.3"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
                 app:layout_constraintTop_toBottomOf="@id/barrierTen" />
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/groupA3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="barrier,tvA3TestLabel,tvA3TestSeparator,tvA3TestText" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvA3TestSeparator"
@@ -417,7 +423,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvEntryPointText"
-                style="@style/Form_Spinner_Style"
+                style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/seperator_hyphen"

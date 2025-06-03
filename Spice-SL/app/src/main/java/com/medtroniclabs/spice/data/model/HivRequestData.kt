@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.data.model
 
+import com.medtroniclabs.spice.data.PregnancyDetailsModel
+
 data class HivRequestData(
     val clinicalStage: String? = null,
     val cd4: String? = null,
@@ -17,11 +19,12 @@ data class HivRequestData(
     val medicalReviewType: String? = null,
     val clinicalNotes: String? = null,
     val id: String? = null,
-    val emtctVisitStatus:String? = null,
+    val emtctVisitStatus: String? = null,
     val obstetricExaminations: List<String?>? = null,
     val obstetricExaminationNotes: String? = null,
-    val fundalHeight : String? = null,
-    val fetalHeartRate : String? = null,
+    val fundalHeight: String? = null,
+    val fetalHeartRate: String? = null,
+    val pregnancyDetails: PregnancyDetailsModel? = null
 )
 
 data class HivStatus(

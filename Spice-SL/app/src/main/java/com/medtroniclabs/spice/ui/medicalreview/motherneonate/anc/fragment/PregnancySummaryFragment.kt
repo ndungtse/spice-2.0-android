@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.databinding.FragmentPregnancySummaryBinding
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.gestationalAge
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertNullableDoubleToString
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertNullableIntToString
@@ -119,8 +120,10 @@ class PregnancySummaryFragment() : BaseFragment() {
                     }
                 tvParityValue.text =
                     convertNullableIntToString(pregnancyDetailsModel.parity, requireContext())
+                val estimatedDate = pregnancyDetailsModel.estimatedDeliveryDate
+                    ?: patientDetailsViewModel.getEstimatedDeliveryDate()
                 tvEstimatedDeliveryDateValue.text =
-                    pregnancyDetailsModel.estimatedDeliveryDate?.let {
+                    estimatedDate?.let {
                         DateUtils.convertDateFormat(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMdd,
@@ -132,8 +135,10 @@ class PregnancySummaryFragment() : BaseFragment() {
                             requireContext()
                         )
                     }
+                val gestationalAge = pregnancyDetailsModel.gestationalAge
+                    ?: patientDetailsViewModel.getGestationalAge()
                 tvGestationalAgeValue.text =
-                    pregnancyDetailsModel.gestationalAge?.let {
+                    gestationalAge?.let {
                         DateUtils.formatGestationalAge(
                             it,
                             requireContext()

@@ -382,6 +382,7 @@ object DefinedParams {
     const val CD4_Percentage = "CD4 Percentage"
     const val hivTestedPositive = "hivTestedPositive"
     const val no = "no"
+    const val not_applicable= "not-applicable"
     const val Medications = "medications"
     const val Regimen = "regimen"
     const val PrescribedMedicine = "PrescribedMedicine"

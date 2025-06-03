@@ -262,23 +262,10 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
             hivViewModel.resultHashMap[HBsAg] = selectedID as String
             testResultVisibility(HBsAg)
             resultMapChanged()
-            if (!hivViewModel.resultHashMap[HBsAg]?.toString()
-                    .equals(getString(R.string.reactive), true)
-            ) {
-                hivViewModel.resultHashMap.remove(A1_TEST_RESULT)
-                hivViewModel.resultHashMap.remove(A2_TEST_RESULT)
-                hivViewModel.resultHashMap.remove(A3_TEST_RESULT)
-                resetSelectionViews(A1_TEST_RESULT)
-                resetSelectionViews(A2_TEST_RESULT)
-                resetSelectionViews(A3_TEST_RESULT)
-                binding.tvA2TestResult.gone()
-                binding.llA2TestResultRoot.gone()
-                binding.forA3.gone()
-            }
         }
     private var A1TestCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
-            if (hivViewModel.resultHashMap[HBsAg]?.toString().equals(getString(R.string.reactive),true) || (binding.forEmtct.visibility != View.VISIBLE)) {
+            if (!hivViewModel.resultHashMap[HBsAg].toString().isNullOrEmpty() || (binding.forEmtct.visibility != View.VISIBLE)) {
                 hivViewModel.resultHashMap[A1_TEST_RESULT] = selectedID as String
                 testResultVisibility(A1_TEST_RESULT)
                 resultMapChanged()
@@ -402,7 +389,7 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
         val isA1Set = !a1Value.isNullOrEmpty()
         val isA2Set = !a2Value.isNullOrEmpty()
 
-        val isHBsAgReactive = hbsAgValue.equals(getString(R.string.reactive), ignoreCase = true)
+        val isHBsAgReactive = !hbsAgValue.isNullOrEmpty()
         val isA1Reactive = a1Value.equals(getString(R.string.reactive), ignoreCase = true)
         val isA2Reactive = a2Value.equals(getString(R.string.reactive), ignoreCase = true)
 
@@ -460,15 +447,18 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
         } else {
             when (type) {
                 HBsAg -> {
+
                     binding.llA1TestResultRoot.updateState(isHBsAgReactive, isHBsAgReactive, if (isHBsAgReactive) 1.0f else 0.5f)
                     setAlpha(binding.tvA1TestResult, isHBsAgReactive)
-                    binding.llA2TestResultRoot.updateState(alpha = if (isA1Reactive && isA2Reactive) 1.0f else 0.5f, visible = true)
-                    binding.tvA2TestResult.updateState(alpha = if (isA1Reactive && isA2Reactive) 1.0f else 0.5f, visible = true)
+                    binding.llA2TestResultRoot.updateState(alpha = if ( isHBsAgReactive || isA1Reactive) 0.5f else 1.0f , visible = true)
+                    binding.tvA2TestResult.updateState(alpha = if ( isHBsAgReactive ||  isA1Reactive) 0.5f else 1.0f, visible = true)
                     if (isHBsAgReactive) {
                         binding.tvA1TestResult.markMandatorys()
                     }else{
                         binding.tvA1TestResult.markNonMandatory()
                     }
+                    binding.llA2TestResultRoot.visible()
+                    binding.llA2TestResultRoot.visible()
                 }
 
                 A1_TEST_RESULT -> {

@@ -206,6 +206,8 @@ class HIVStatusFragment : BaseFragment() {
         }
         autoPopulatePregnantDetails()
 
+
+
     }
 
     private fun autoPopulatePregnantDetails() {
@@ -222,7 +224,13 @@ class HIVStatusFragment : BaseFragment() {
         ) {
             viewModel.resultPregnantStatus[MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name] =
                 DefinedParams.no
+        }else if (patientViewModel.getPregnancyBreastFeedStatus()
+                ?.equals(DefinedParams.not_applicable, true) == true
+        ) {
+            viewModel.resultPregnantStatus[MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name] =
+                DefinedParams.not_applicable
         }
+
         patientViewModel.getPregnantDetails()?.lastMenstrualPeriod?.takeIf { it.isNotBlank() }
             ?.let { lmp ->
                 binding.apply {
@@ -231,10 +239,13 @@ class HIVStatusFragment : BaseFragment() {
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                         DateUtils.DATE_ddMMyyyy
                     )
+                    lmpVisibility()
 //                    tvLastMenstrualPeriodDate.isEnabled = false
                 }
                 calculateGestationalAgeAndEstimationDeliveryDate()
             }
+
+
     }
 
     private fun initPregnancyStatus(data: ArrayList<Map<String, Any>>?) {
@@ -270,12 +281,21 @@ class HIVStatusFragment : BaseFragment() {
 
     private fun showPregnantRelatedViews(isValid: Boolean) {
         binding.lmbGroup.setVisible(isValid)
-        binding.tvLastMenstrualPeriodDate.text = ""
         binding.gestationalAgeGroup.setVisible(isValid)
-        binding.etGestationalAge.text = ""
         binding.expectedDateGroup.setVisible(isValid)
-        binding.etExpectedDate.text = ""
+        lmpVisibility()
         calculateGestationalAgeAndEstimationDeliveryDate()
+    }
+
+    private fun lmpVisibility() {
+        val isNotEmpty = !binding.tvLastMenstrualPeriodDate.text.isNullOrEmpty()
+
+        if (isNotEmpty) {
+            binding.tvLastMenstrualPeriodDate.isClickable = false
+            binding.etExpectedDate.isClickable = false
+            binding.etGestationalAge.isClickable = false
+            binding.etGestationalAge.isEnabled = false
+        }
     }
 
     private fun showDatePickerDialog(textView: AppCompatTextView) {
