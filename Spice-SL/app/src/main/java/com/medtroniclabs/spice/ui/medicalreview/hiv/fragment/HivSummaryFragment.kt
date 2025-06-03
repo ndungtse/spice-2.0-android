@@ -324,6 +324,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
                     ignoreCase = true
                 )
             }.takeIf { it != -1 } ?: 0
+            binding.tvPatientStatusSpinner.isEnabled = false
         } else {
             for ((index, patientStatus) in list.withIndex()) {
                 if ((patientStatus[DefinedParams.Value] as? String).equals(

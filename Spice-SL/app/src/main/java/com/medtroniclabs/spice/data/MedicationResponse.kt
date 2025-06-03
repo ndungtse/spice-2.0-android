@@ -34,7 +34,7 @@ data class MedicationResponse(
     val groupUniqueId: String? = null,
     var instruction: String? = null,
     var category: @RawValue Category? = null,
-    var regimenLine: String? = null
+    var regimenLine: Int? = null
 ) : Parcelable {
     var datetime :Long ?= null
     init {

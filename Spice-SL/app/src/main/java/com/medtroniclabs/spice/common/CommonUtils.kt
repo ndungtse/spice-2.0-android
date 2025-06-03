@@ -2046,4 +2046,11 @@ object CommonUtils {
     fun Map<String, String>.toFormattedListWithHyphen(): List<String> {
         return this.map { (key, value) -> "$key - $value" }
     }
+
+    fun convertListToIndexedString(dispensedList: ArrayList<String>): String {
+        return dispensedList.nullIfEmpty()
+            ?.mapIndexed { index, item -> "${index + 1}. ${item.capitalizeFirstChar()}" }
+            ?.joinToString(separator = "\n") ?: "-"
+    }
+
 }

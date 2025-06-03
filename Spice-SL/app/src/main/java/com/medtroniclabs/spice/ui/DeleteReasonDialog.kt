@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 class DeleteReasonDialog() : DialogFragment(), View.OnClickListener {
 
     var callback: ((isPositiveResult: Boolean, comments: String?) -> Unit)? = null
+    var postDismissAction: (() -> Unit)? = null
 
     constructor(callback: (isPositiveResult: Boolean, comments: String?) -> Unit) : this() {
         this.callback = callback
@@ -148,10 +149,12 @@ class DeleteReasonDialog() : DialogFragment(), View.OnClickListener {
                         binding.tvErrorMessage.gone()
                         callback?.invoke(true, binding.etComments.fetchString())
                         dismiss()
+                        postDismissAction?.invoke()
                     }
                 } else {
                     callback?.invoke(true, binding.etComments.fetchString())
                     dismiss()
+                    postDismissAction?.invoke()
                 }
 
             }

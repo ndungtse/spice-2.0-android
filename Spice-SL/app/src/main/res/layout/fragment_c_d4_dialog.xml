@@ -39,7 +39,6 @@
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/_18sdp"
-            android:text="@string/cd4_percentage"
             android:textColor="@color/house_hold_title"
             android:textSize="@dimen/_16ssp"
             android:textStyle="bold"

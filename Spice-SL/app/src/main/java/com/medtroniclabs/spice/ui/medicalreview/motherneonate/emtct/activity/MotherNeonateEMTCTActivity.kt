@@ -407,19 +407,23 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
 
     private fun setupSwipeRefresh() {
         binding.refreshLayout.setOnRefreshListener {
-            withNetworkAvailability(online = {
-                supportFragmentManager.findFragmentById(R.id.patientDetailFragment)
-                    .let {
-                        patientViewModel.getPatientId()?.let { id ->
-                            patientViewModel.getPatients(id)
-                        }
-                    }
-            }, offline = {
-                if (binding.refreshLayout.isRefreshing) {
-                    binding.refreshLayout.isRefreshing = false
-                }
-            })
+           getPatientDetails()
         }
+    }
+
+    private fun getPatientDetails() {
+        withNetworkAvailability(online = {
+            supportFragmentManager.findFragmentById(R.id.patientDetailFragment)
+                .let {
+                    patientViewModel.getPatientId()?.let { id ->
+                        patientViewModel.getPatients(id)
+                    }
+                }
+        }, offline = {
+            if (binding.refreshLayout.isRefreshing) {
+                binding.refreshLayout.isRefreshing = false
+            }
+        })
     }
 
     private fun enableSubmitButton() {
@@ -667,7 +671,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
     override fun onResume() {
         super.onResume()
         getCurrentLocation()
-        setupSwipeRefresh()
+        getPatientDetails()
     }
 
     private fun getCurrentLocation() {

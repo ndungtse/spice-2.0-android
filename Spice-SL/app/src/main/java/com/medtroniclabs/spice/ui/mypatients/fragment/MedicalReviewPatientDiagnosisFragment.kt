@@ -715,11 +715,11 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     }
 
     private fun attachObserver() {
-        whoStageViewModel.getWhoStageLiveData.observe(viewLifecycleOwner){
+      /*  whoStageViewModel.getWhoStageLiveData.observe(viewLifecycleOwner){
             diagnosisViewModel.hivVitalsDetailLiveData.value?.data?.let {list ->
                 binding.tvWhoValue.text = getClinicalStageText(list.whoClinicalStage)
             }
-        }
+        }*/
 
         viewModel.getPatientTypeLiveData.observe(viewLifecycleOwner) {
             val type = viewModel.getPatientType.value?.data?.get(PATIENT_TYPE_HYPHEN) as? String
@@ -861,7 +861,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                     resources.data?.let { list ->
                         binding.tvCd4Value.text = list.cd4 ?: getString(R.string.seperator_hyphen)
                         binding.tvCd4PercentValue.text = list.cd4Percentage ?: getString(R.string.seperator_hyphen)
-                        binding.tvWhoValue.text = getClinicalStageText(list.whoClinicalStage)
+                        binding.tvWhoValue.text = list.whoClinicalStage ?: getString(R.string.seperator_hyphen)
+                            //getClinicalStageText(list.whoClinicalStage)
                         binding.tvWho.text = if (list.whoClinicalStage != null) {
                             getString(R.string.edit_who_clinical_stage)
                         } else {

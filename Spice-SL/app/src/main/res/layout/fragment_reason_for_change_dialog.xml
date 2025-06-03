@@ -103,6 +103,8 @@
                     android:layout_marginStart="@dimen/_10sdp"
                     android:textColor="@color/grey_black"
                     android:textSize="@dimen/_16ssp"
+                    android:maxLines="5"
+                    android:ellipsize="end"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/tvSeparator"
                     app:layout_constraintTop_toTopOf="@+id/tvNameLabel" />

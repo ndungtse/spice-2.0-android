@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.medicalreview.prescription
 
 import android.graphics.Bitmap
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,6 +25,7 @@ import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.data.PrescriptionRequest
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
+import com.medtroniclabs.spice.data.model.ReasonForChangeParams
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -66,6 +68,14 @@ class PrescriptionViewModel @Inject constructor(
     val instructionListLiveDate = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
 
     val medicationGroupListLiveData = MutableLiveData<Resource<ArrayList<MedicationResponse>>>()
+
+    private val _showReasonForChangeDialog = MutableLiveData<ReasonForChangeParams?>()
+    val showReasonForChangeDialog: LiveData<ReasonForChangeParams?> = _showReasonForChangeDialog
+
+    fun triggerReasonForChangeDialog(params: ReasonForChangeParams) {
+        _showReasonForChangeDialog.value = params
+    }
+
 
     fun searchMedicationByName(name: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -229,7 +239,7 @@ class PrescriptionViewModel @Inject constructor(
                     ),
                     prescriptions = prescriptionList,
                     reasonsForChange = if (isHiv) reason else null,
-                    regimenLine = if (isHiv) regimenNumber?.plus(1)?.toString() else null
+                    regimenLine = if (isHiv) regimenNumber?.plus(1) else null
                 )
                 val dataRequest = Gson().toJson(prescriptionRequest)
                 builder.addFormDataPart("prescriptionRequest", dataRequest)

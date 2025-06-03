@@ -97,6 +97,11 @@ class CD4DialogFragment : DialogFragment(), View.OnClickListener {
         } else {
             getString(R.string.cd4_percentage_symbol)
         }
+        binding.tvBmiLabel.text = if (arguments?.getBoolean(IS_CD4) == true) {
+            getString(R.string.cd4)
+        } else {
+            getString(R.string.cd4_percentage_symbol)
+        }
         patientViewModel.patientDetailsLiveData.value?.data?.let { response ->
             viewModel.getHivCD4Details(response.id, isCD4 = arguments?.getBoolean(IS_CD4) ?: false, isCD4Percentage = arguments?.getBoolean(
                 IS_CD4_PERCENTAGE) ?: false)

@@ -234,11 +234,11 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
         val retryButton = binding.retryButtonWeight
         val weightTextView = binding.tvWeight
 
-        whoStageViewModel.getWhoStageLiveData.observe(viewLifecycleOwner){
+        /*whoStageViewModel.getWhoStageLiveData.observe(viewLifecycleOwner){
             diagnosisViewModel.hivVitalsDetailLiveData.value?.data?.let {list ->
                 binding.tvWhoValue.text = getClinicalStageText(list.whoClinicalStage)
             }
-        }
+        }*/
 
         viewModel.getWeight.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
@@ -250,7 +250,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                         weightTextView.text =
                             MotherNeonateUtil.convertWeight(it.weight, requireContext())
                         if (it.weight == null || it.weight == 0.0) {
-                            binding.tvAddWeight.text = getString(R.string.edit_weights)
+                            binding.tvAddWeight.text = getString(R.string.add_weight)
                         }
                     }
                 }
@@ -436,7 +436,8 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                     hideProgress()
                     resources.data?.let { list ->
                         binding.tvCd4Value.text = list.cd4 ?: getString(R.string.seperator_hyphen)
-                        binding.tvWhoValue.text = getClinicalStageText(list.whoClinicalStage)
+                        binding.tvWhoValue.text = list.whoClinicalStage ?: getString(R.string.seperator_hyphen)
+                            //getClinicalStageText(list.whoClinicalStage)
                         binding.tvWho.text = if (list.whoClinicalStage != null) {
                             getString(R.string.edit_who_clinical_stage)
                         } else {
