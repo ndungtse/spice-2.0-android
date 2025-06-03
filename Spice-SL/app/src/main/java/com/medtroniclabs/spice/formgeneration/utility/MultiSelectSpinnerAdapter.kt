@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
@@ -15,11 +16,14 @@ import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 class MultiSelectSpinnerAdapter(
     context: Context,
     private val items: List<MultiSelectDropDownModel>,
-    private val selectedItems: ArrayList<MultiSelectDropDownModel>
+    private var selectedItems: ArrayList<MultiSelectDropDownModel>,
+    private var types :Boolean = false
 ) : ArrayAdapter<MultiSelectDropDownModel>(context, 0, items) {
 
     private val checkedItems = BooleanArray(items.size)
     private var onItemSelectedListener: OnItemSelectedListener? = null
+    private var linearLayout: LinearLayout? = null
+    private var type: Boolean = false
 
     interface OnItemSelectedListener {
         fun onItemSelected(
@@ -59,10 +63,22 @@ class MultiSelectSpinnerAdapter(
         if (isDropDown) {
             var checkBox = view.findViewById<CheckBox>(R.id.spinnerCheckbox)
             val itemName = view.findViewById<TextView>(R.id.itemName)
+            val linearLayout = view.findViewById<LinearLayout>(R.id.linearLayout)
 
             itemName.text = items[position].displayValue ?: items[position].name
             checkBox.setOnCheckedChangeListener(null)
             checkBox.isChecked = checkedItems[position]
+
+            if (type || types) {
+                // Set background if selected and item is "Pregnant"
+                if (checkedItems[position] && (items[position].name.equals(
+                        context.getString(R.string.pregnant_),
+                        ignoreCase = true
+                    ))
+                ) {
+                    linearLayout.setBackgroundResource(R.drawable.blue_rectangle)
+                }
+            }
 
             checkBox.setOnCheckedChangeListener { _, isChecked ->
                 checkedItems[position] = isChecked
@@ -112,5 +128,16 @@ class MultiSelectSpinnerAdapter(
         //Update adapter
         notifyDataSetChanged()
         onItemSelectedListener?.onItemSelected(selectedItems, -1)
+    }
+    fun setSelectedItems(selected: List<MultiSelectDropDownModel>,types:Boolean = false) {
+        selectedItems = ArrayList(selected)
+        type = types
+
+        for (i in items.indices) {
+            checkedItems[i] = selectedItems.contains(items[i])
+            linearLayout?.setBackgroundResource(R.drawable.gradiant_background)
+
+        }
+        notifyDataSetChanged()
     }
 }

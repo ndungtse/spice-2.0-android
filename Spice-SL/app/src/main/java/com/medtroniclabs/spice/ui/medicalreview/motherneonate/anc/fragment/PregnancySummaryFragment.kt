@@ -171,7 +171,7 @@ class PregnancySummaryFragment() : BaseFragment() {
                     convertNullableIntToString(pregnancyDetailsModel.noOfFetus, requireContext())
 
                 tvAncVisitCountValue.apply {
-                    text = patientDetailsViewModel.getAncVisit().takeIf { it != 0 }?.toString() ?: getString(R.string.hyphen_symbol)
+                    text = patientDetailsViewModel.getANCVisitCount().takeIf { it != 0 }?.toString() ?: getString(R.string.hyphen_symbol)
                 }
 
             }

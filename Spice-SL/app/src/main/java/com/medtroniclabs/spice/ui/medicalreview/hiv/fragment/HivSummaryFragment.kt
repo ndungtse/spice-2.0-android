@@ -125,7 +125,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun renderSummaryDetails(response: HivCreateScreeningSummaryResponse) {
 
         with(binding) {
-            groupA3.visibility = if ( hivViewModel.isEMTCT) View.VISIBLE else View.GONE
+            groupA3.visibility = if ( hivViewModel.isEMTCT) View.GONE else View.VISIBLE
 //             Diagnosis Text
             val diagnosisList = response.diagnosis ?: emptyList()
             if (diagnosisList.isNotEmpty()) {

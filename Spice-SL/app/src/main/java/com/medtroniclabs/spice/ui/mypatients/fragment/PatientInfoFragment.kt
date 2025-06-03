@@ -447,7 +447,6 @@ class PatientInfoFragment : BaseFragment() {
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.anc_visit),
                         DefinedParams.Value to (patientListRespModel.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }
-                            ?.plus(1)
                             ?.toString()
                             ?: "1")
                     )

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
@@ -51,6 +52,8 @@ class EligibilityFragment : BaseFragment() {
     private val hivViewModel: HivViewModel by activityViewModels()
     private var datePickerDialog: DatePickerDialog? = null
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
+
+    private var adapter : MultiSelectSpinnerAdapter ?= null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -276,53 +279,70 @@ class EligibilityFragment : BaseFragment() {
             pregnantItemIndex = index  // Capture the index of "Pregnant"
         }
     }
-
        if(arguments?.getBoolean(DefinedParams.isPregnant, false)== true) {
            // Assign the default selected items to ViewModel (or create an empty list if not found)
            hivViewModel.selectedPopulationType = defaultSelectedItems
+           // Create the adapter with the dropDownList and default selection
+           adapter = MultiSelectSpinnerAdapter(
+               requireContext(), dropDownList, hivViewModel.selectedPopulationType,true
+           )
+       }else{
+           // Create the adapter with the dropDownList and default selection
+           adapter = MultiSelectSpinnerAdapter(
+               requireContext(), dropDownList, hivViewModel.selectedPopulationType,false
+           )
        }
 
-        // Create the adapter with the dropDownList and default selection
-        val adapter = MultiSelectSpinnerAdapter(
-            requireContext(), dropDownList, hivViewModel.selectedPopulationType
-        )
+
         binding.tvPopulationTypeSpinner.adapter = adapter
-        adapter.setOnItemSelectedListener(object : MultiSelectSpinnerAdapter.OnItemSelectedListener {
+        adapter?.setOnItemSelectedListener(object : MultiSelectSpinnerAdapter.OnItemSelectedListener {
             override fun onItemSelected(
                 selectedItems: List<MultiSelectDropDownModel>,
                 pos: Int,
             ) {
-                if (selectedItems.isNotEmpty()) {
-                    hivViewModel.selectedPopulationType = ArrayList(selectedItems)
-                    val containsOther = selectedItems.any {
-                        it.name.equals(getString(R.string.other), true)
-                    }
-                    if (containsOther) {
-                        binding.viewOtherType.visible()
-                    } else {
-                        binding.viewOtherType.gone()
-                        binding.etOtherPopulated.setText("")
-                    }
-                    val isPregnant = selectedItems.any {
-                        it.name.equals(getString(R.string.pregnant_), true)
-                    }
-                    if (isPregnant){
-                        binding.hivEMTCTViewGroup.visible()
-                    }else{
-                        binding.hivEMTCTViewGroup.gone()
-
-                    }
-
-                } else {
-                    binding.viewOtherType.gone()
-                    binding.etOtherPopulated.setText("")
-                    binding.hivEMTCTViewGroup.gone()
+                val isPregnancyEnforced = arguments?.getBoolean(DefinedParams.isPregnant, false) == true
+                val pregnantName = getString(R.string.pregnant_)
+                val pregnantItem = dropDownList.find {
+                    it.name.equals(pregnantName, ignoreCase = true)
                 }
+
+                val isPregnantSelected = selectedItems.any {
+                    it.name.equals(pregnantName, ignoreCase = true)
+                }
+
+                val updatedSelection = ArrayList(selectedItems)
+                if (isPregnancyEnforced && pregnantItem != null && !isPregnantSelected) {
+                    updatedSelection.add(pregnantItem)
+
+                    // Re-set the adapter with updated selection to refresh UI
+                    hivViewModel.selectedPopulationType = updatedSelection
+                    adapter?.setSelectedItems(updatedSelection,true) // <- You need to expose this method
+                    return
+                }
+
+                hivViewModel.selectedPopulationType = updatedSelection
+
+                // Show/hide "Other" and "Pregnant" UI parts
+                val containsOther = updatedSelection.any {
+                    it.name.equals(getString(R.string.other), true)
+                }
+                binding.viewOtherType.visibleIf(containsOther)
+                if (!containsOther) binding.etOtherPopulated.setText("")
+
+                val containsPregnant = updatedSelection.any {
+                    it.name.equals(pregnantName, true)
+                }
+                binding.hivEMTCTViewGroup.visibleIf(containsPregnant)
+                if (!containsPregnant) binding.hivEMTCTViewGroup.gone()
             }
         })
 
 
 }
+    fun View.visibleIf(condition: Boolean) {
+        if (condition) this.visibility = View.VISIBLE else this.visibility = View.GONE
+    }
+
 
     private fun addCustomView(
         data: ArrayList<Map<String, Any>>,
@@ -502,8 +522,12 @@ class EligibilityFragment : BaseFragment() {
             val formattedEstimatedDeliveryDate =
                 estimatedDeliveryDate.format(DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy))
             binding.etExpectedDateOfDelivery.setText(formattedEstimatedDeliveryDate.toString())
+            hivViewModel.expectedDateOfDelivery = estimatedDeliveryDate.toString()
+
             val gestationalAgeInWeeks = DateUtils.calculateGestationalAge(lmpDate)
             binding.etGestationalInWeek.setText(gestationalAgeInWeeks.toString())
+
+            hivViewModel.gestationalWeeks = binding.etGestationalInWeek.text.toString()
         }
     }
 
