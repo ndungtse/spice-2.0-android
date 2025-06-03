@@ -122,13 +122,13 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
                         RelationshipToIC -> {
                             val displayValue = when {
                                 it.equals(MemberRegistration.OtherRelation, ignoreCase = true) -> {
-                                    val otherValue = listSummaryData
-                                        .firstOrNull { data -> data.id == otherRelationshipIC }
-                                        ?.value
-                                        ?.takeIf { value -> value.isNotBlank() }
+                                    val data =
+                                        listSummaryData.firstOrNull { data -> data.id == otherRelationshipIC }
+                                    val title = data?.title?.takeIf { title -> title.isNotBlank() }
+                                        ?: item.title
+                                    val value = data?.value?.takeIf { value -> value.isNotBlank() }
 
-                                    if (otherValue != null) "${item.value} - $otherValue"
-                                    else getString(R.string.hyphen_symbol)
+                                    if (value != null) "$title - $value" else getString(R.string.hyphen_symbol)
                                 }
 
                                 it.equals(

@@ -215,7 +215,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
         withNetworkAvailability(online = {
             showDialogIfNotPresent(AddBMIDialog.TAG) {
                 AddBMIDialog.newInstance(
-                    patientId = getPatientId(),
+                    patientId = patientViewModel.getPatientId(),
                     villageId = patientViewModel.getVillageId(),
                     householdId = patientViewModel.getPatientHouseholdId(),
                     memberId = getMemberId(),
@@ -566,7 +566,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
 
     private fun showAddBpOrWeightDialog() {
         val dialog = AddBMIDialog.newInstance(
-            getPatientId(),
+            patientId = patientViewModel.getPatientId(),
             villageId = patientViewModel.getVillageId(),
             householdId = patientViewModel.getPatientHouseholdId(),
             memberId = patientViewModel.getPatientMemberId()

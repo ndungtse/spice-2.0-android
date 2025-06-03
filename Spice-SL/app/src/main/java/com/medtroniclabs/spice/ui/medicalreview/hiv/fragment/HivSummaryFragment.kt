@@ -187,7 +187,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
 
         binding.tvNextMedicalReviewLabelText.text = when (nextVisitType) {
             1 -> DateUtils.getFormattedDateAfterDays(3)
-            2 -> DateUtils.getFormattedDateAfterDays(14)
+            2,4 -> DateUtils.getFormattedDateAfterDays(14)
             else -> DateUtils.getFormattedDateAfterMonths(1)
         }
         hivViewModel.nextVisitDate = binding.tvNextMedicalReviewLabelText.text.toString().trim()
@@ -214,6 +214,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         return when {
             testResults.all { it.equals(getString(R.string.reactive), ignoreCase = true) } -> 1
             testResults.any { it.equals(getString(R.string.inconclusive), ignoreCase = true) } -> 2
+            testResults.any { it.equals(getString(R.string.non_reactive), ignoreCase = true) } -> 4
             else -> 3
         }
     }
@@ -318,13 +319,13 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
                 )
             }.takeIf { it != -1 } ?: 0
             binding.tvPatientStatusSpinner.isEnabled = false
-        } else if (nextVisitType == 2) {
+        } else if (nextVisitType == 2 || nextVisitType == 4) {
             // Auto-populate "Retest (HTS)"
             defaultPosition = list.indexOfFirst {
-                (it[DefinedParams.Value] as? String).equals(
-                    getString(R.string.retest_hts),
+                (it[DefinedParams.Value] as? String)?.equals(
+                    "retest",
                     ignoreCase = true
-                )
+                ) ?: false
             }.takeIf { it != -1 } ?: 0
             binding.tvPatientStatusSpinner.isEnabled = false
         } else {

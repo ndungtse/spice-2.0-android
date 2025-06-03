@@ -83,6 +83,10 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             binding.btnRenewAll.visible()
                         } else {
                             binding.btnRenewAll.gone()
+                            //In case of medication list is empty, but user have past regimen line, we get that from discontinued medication list live data
+                            patientViewModel.patientDetailsLiveData.value?.data?.let {
+                                prescriptionViewModel.getPrescriptionList(it, false)
+                            }
                         }
                         prescriptionViewModel.updateMedicationList(
                             prescriptionViewModel.constructMedicationRequestObjectList(ArrayList(data.filter { it.groupName.isNullOrEmpty() || it.groupUniqueId == null })),
@@ -257,9 +261,21 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resource.data?.let {
-                        processDiscontinuedMedication(it)
+                        if (prescriptionViewModel.isDiscontinuedMedicationView) {
+                            processDiscontinuedMedication(it)
+                            prescriptionViewModel.isDiscontinuedMedicationView = false
+                        } else {
+                            prescriptionViewModel.discontinuedMedicationRegimen =
+                                it.filter { item ->
+                                    item.categoryName?.equals(
+                                        HIV,
+                                        true
+                                    ) == true
+                                }
+                                    .mapNotNull { list -> list.regimenLine }
+                                    .maxOrNull()
+                        }
                     }
-
                 }
 
                 ResourceState.ERROR -> {
@@ -766,7 +782,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                                 addAll(prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
                                                     it.categoryName?.equals(HIV, true) == true
                                                 }?.map { it.medicationName } ?: emptyList())
-                                                addAll(data.medicationResponse.name?.let { listOf(it) } ?: emptyList())
+                                                //addAll(data.medicationResponse.name?.let { listOf(it) } ?: emptyList())
                                             }
 
                                             val medicationsRegimen =
@@ -983,6 +999,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             }
 
             binding.tvDiscontinuedMedication.id -> {
+                prescriptionViewModel.isDiscontinuedMedicationView = true
                 if (binding.tvDiscontinuedMedication.text.toString() == getString(R.string.hide_discontinued_medication)) {
                     binding.tvDiscontinuedMedication.text =
                         getText(R.string.view_discontinued_medication)
@@ -1066,10 +1083,19 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                         }
                     }
 
-                if (prescriptionViewModel.prescriptionListLiveData.value?.data?.any {
+                if ((prescriptionViewModel.prescriptionListLiveData.value?.data?.any {
                         it.categoryName?.equals(
-                            HIV, true) == true
-                    } == true && prescriptionCreateList.any { it.medicationResponse.prescriptionId == null }){
+                            HIV, true
+                        ) == true
+                    } == true || prescriptionViewModel.discontinuedPrescriptionListLiveData.value?.data?.any {
+                        it.categoryName?.equals(
+                            HIV, true
+                        ) == true
+                    } == true ) && prescriptionCreateList.any { it.medicationResponse.prescriptionId == null } && prescriptionCreateList.any {
+                        it.medicationResponse.category?.name?.equals(
+                            HIV, true
+                        ) == true
+                    }) {
 
                     val medications = buildList {
                         addAll(prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
@@ -1088,17 +1114,15 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                     val medicationsRegimen =
                         prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
                             it.categoryName?.equals(HIV, true) == true
-                        }?.mapNotNull { it.regimenLine }?.maxOrNull()
+                        }?.mapNotNull { it.regimenLine }?.maxOrNull() ?: kotlin.run {
+                            prescriptionViewModel.discontinuedMedicationRegimen ?: 0
+                        }
 
-                        /*prescriptionCreateList
-                        .filter { it.medicationResponse.category?.name?.equals(HIV, true) == true }
-                        .mapNotNull { it.medicationResponse.regimenLine?.toIntOrNull() } // List<Int>
-                        .maxOrNull()*/
                     val prescriptionId =
                         prescriptionCreateList.any { it.medicationResponse.prescriptionId == null }
                     ReasonForChangeDialogFragment.newInstance(
                         name = convertListToIndexedString(ArrayList(medications.filterNotNull())),
-                        regimen = medicationsRegimen ?: 0,
+                        regimen = medicationsRegimen,
                         prescribedMedicine = prescriptionId,
                         callback = object : ReasonForChangeDialogFragment.ReasonChangeCallback {
                             override fun onReasonProvided(changeReason: String) {
@@ -1113,7 +1137,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                         data,
                                         patientViewModel.encounterId,
                                         changeReason,
-                                        medicationsRegimen?.apply { this+1 } ?: 0
+                                        medicationsRegimen.apply { this+1 }
                                     )
                                 }
                             }

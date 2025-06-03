@@ -63,6 +63,8 @@ class PrescriptionViewModel @Inject constructor(
     val removePrescriptionLiveData = MutableLiveData<Resource<Map<String, Any>>>()
 
     var patientId: String? = null
+    var isDiscontinuedMedicationView = false
+    var discontinuedMedicationRegimen: Int? = null
 
     val frequencyListLiveDate = MutableLiveData<Resource<List<FrequencyEntity>>>()
     val instructionListLiveDate = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()

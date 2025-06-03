@@ -1001,6 +1001,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             val isAnc = arguments?.getBoolean(DefinedParams.PregnancyANC, false) ?: false
             if ((isAnc || isHivImrCmr()) && (!isBp && !isHeight)) {
                 viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
+                viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
             }
         }
         val dialog =
