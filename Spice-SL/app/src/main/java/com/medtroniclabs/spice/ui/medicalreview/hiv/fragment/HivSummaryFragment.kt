@@ -209,7 +209,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun getTestResultStatus(a1: String?, a2: String?, a3: String?): Int {
-        val testResults = listOf(a1, a2, a3)
+        val testResults = listOfNotNull(a1, a2, a3)
 
         return when {
             testResults.all { it.equals(getString(R.string.reactive), ignoreCase = true) } -> 1

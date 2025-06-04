@@ -85,7 +85,7 @@ class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {
             } ?: kotlin.run {
                 diagnosisViewModel.hivVitalsDetailLiveData.value?.data?.let { response ->
                     viewModel.whoStageChip = ArrayList(chipList.filter {
-                        it.value.equals(
+                        it.name.equals(
                             response.whoClinicalStage,
                             true
                         )

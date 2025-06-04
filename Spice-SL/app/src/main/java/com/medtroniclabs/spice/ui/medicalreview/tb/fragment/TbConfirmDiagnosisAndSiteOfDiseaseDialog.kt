@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -85,7 +86,14 @@ class TbConfirmDiagnosisAndSiteOfDiseaseDialog : DialogFragment(), View.OnClickL
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
+        setListener()
         initTag()
+    }
+
+    private fun setListener() {
+        binding.etOtherDiagnosisNotes.doAfterTextChanged {
+            enableBtn()
+        }
     }
 
     private fun initTag() {

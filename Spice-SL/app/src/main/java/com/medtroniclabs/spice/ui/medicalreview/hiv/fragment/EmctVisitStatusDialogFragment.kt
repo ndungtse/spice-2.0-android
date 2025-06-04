@@ -64,7 +64,7 @@ class EmctVisitStatusDialogFragment : DialogFragment(), View.OnClickListener {
             TagListCustomView(binding.root.context, binding.emctChipGroup) { name, _, isChecked ->
                 if (isChecked) {
                     binding.btnOkay.isEnabled = true
-                    hivViewModel.selectedemtctVisitStatus = name
+                    hivViewModel.selectedemtctVisitStatus =  emctTagView.getSelectedTags().firstOrNull()?.value
                 } else {
                     binding.btnOkay.isEnabled = false
                     hivViewModel.selectedemtctVisitStatus = null

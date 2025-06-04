@@ -446,7 +446,8 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                         hivViewModel.cd4Value = list.cd4
                         hivViewModel.whovalue = getClinicalStageText(list.whoClinicalStage)
                             .takeUnless { it.equals(getString(R.string.hyphen_symbol), true) }
-                        binding.tvEmtct.text = getEmtctVisitText(list.emtctVisitStatus)
+                        binding.tvEmtct.text = list.emtctVisitStatus
+                            //getEmtctVisitText(list.emtctVisitStatus)
                         hivViewModel.emtctVisitStatus = list.emtctVisitStatus
                     }
                 }
