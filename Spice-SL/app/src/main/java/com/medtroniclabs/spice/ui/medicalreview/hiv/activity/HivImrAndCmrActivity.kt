@@ -559,7 +559,7 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
             clinicalStage = diagnosisViewModel.hivVitalsDetailLiveData.value?.data?.whoClinicalStage,
             cd4 = diagnosisViewModel.hivVitalsDetailLiveData.value?.data?.cd4,
             weight = weightViewModel.getWeight(),
-            height = weightViewModel.getHeight(),
+            height = weightViewModel.getHeights(),
             artCode = patientViewModel.artCode,
             hivStatus = (supportFragmentManager.findFragmentByTag(HIVStatusFragment.TAG) as? HIVStatusFragment)?.getRequest(),
             presentingComplaints = presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value }.takeIf { it.isNotEmpty() },

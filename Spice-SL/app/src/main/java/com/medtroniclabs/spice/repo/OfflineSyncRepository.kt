@@ -107,7 +107,7 @@ class OfflineSyncRepository @Inject constructor(
                 assessmentType = entity.assessmentType,
                 assessmentDetails = assessmentDetail,
                 patientStatus = entity.referralStatus,
-                referredReasons = entity.referredReason?.joinToString(", "),
+                referredReasons = entity.referredReason?.filter { it.isNotBlank() }?.joinToString(", "),
                 summary = entity.otherDetails?.let { JsonParser.parseString(it) },
                 peerSupervisorId = peerSupervisorId,
                 encounter = AssessmentEncounter(

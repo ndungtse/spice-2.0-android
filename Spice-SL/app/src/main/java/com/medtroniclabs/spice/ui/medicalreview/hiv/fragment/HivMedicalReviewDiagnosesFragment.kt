@@ -443,6 +443,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                         } else {
                             getString(R.string.add_who_clinical_stage)
                         }
+//                        binding.tvEmtct.text = list.emtctVisitStatus
                         hivViewModel.cd4Value = list.cd4
                         hivViewModel.whovalue = getClinicalStageText(list.whoClinicalStage)
                             .takeUnless { it.equals(getString(R.string.hyphen_symbol), true) }
@@ -652,11 +653,11 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
         }
     }
     private fun getEmtctVisitText(whoClinicalStage: String?): String {
-        hivViewModel.hivEmtctStatusLiveData.value?.let { whoStageList ->
+        diagnosisViewModel.hivVitalsDetailLiveData.value?.let { whoStageList ->
             return if (whoClinicalStage.isNullOrEmpty()) {
                 getString(R.string.seperator_hyphen)
             } else {
-                whoStageList.find { it.value == whoClinicalStage }?.name?.capitalizeFirstChar()
+                whoStageList.data?.emtctVisitStatus
                     ?: getString(R.string.seperator_hyphen)
             }
         } ?: run {

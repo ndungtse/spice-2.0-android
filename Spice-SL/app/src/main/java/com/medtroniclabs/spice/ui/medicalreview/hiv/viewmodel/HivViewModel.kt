@@ -123,7 +123,9 @@ class HivViewModel @Inject constructor(
         hivEmtctResult: Pair<String, String>,
         clinicalNotes: String,
         encounterId: String?,
-        isConsentGiven: Boolean
+        isConsentGiven: Boolean,
+        weight :Double?,
+        height :Double?
     ) {
         viewModelScope.launch(dispatcherIO) {
             val currentTime =
@@ -160,7 +162,9 @@ class HivViewModel @Inject constructor(
                         screeningType = if(isEMTCT) DefinedParams.EMTCT_HIV_MEDICAL_SCREENING else DefinedParams.HIV_MEDICAL_SCREENING,
                         clinicalNotes =  clinicalNotes,
                         id = encounterId,
-                        isConsentGiven = isConsentGiven
+                        isConsentGiven = isConsentGiven,
+                        weight = weight,
+                        height = height,
                     )
                 )
             )

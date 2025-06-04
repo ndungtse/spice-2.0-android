@@ -92,7 +92,8 @@ data class PatientListRespModel(
     val populationTypes: List<String>? = null,
     val emtctEnrollDate: String? = null,
     val entryPoint: String? = null,
-    val isEmtctFlow:Boolean? = null
+    val isEmtctFlow:Boolean? = null,
+    val otherEntryPoint:String? = null
 ) : Serializable
 
 data class PregnancyDetails(

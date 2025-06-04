@@ -244,7 +244,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         return buildString {
             // Handle Symptoms
             eligibility.Symptoms?.takeIf { it.isNotEmpty() }?.let { symptoms ->
-                val label = "${getString(R.string.symptoms)} - "
+                val label = "${getString(R.string.history)} - "
                 append(label)
                 val padding = " ".repeat(8)
                 symptoms.forEach { symptom ->

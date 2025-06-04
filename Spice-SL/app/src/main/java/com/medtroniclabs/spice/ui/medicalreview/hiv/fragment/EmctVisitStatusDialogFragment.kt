@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusRequest
 import com.medtroniclabs.spice.model.medicalreview.HivVitalsRequest
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.TagListCustomView
+import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.EMTCCT_VISIT_STATUS
@@ -31,6 +32,8 @@ class EmctVisitStatusDialogFragment : DialogFragment(), View.OnClickListener {
     private lateinit var emctTagView: TagListCustomView
     private val hivViewModel: HivViewModel by activityViewModels()
     var listener: DialogDismissListener? = null
+    private val diagnosisViewModel: DiagnosisViewModel by activityViewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -1592,4 +1592,5 @@
    <string name="reason_for_change" translatable="false">Reason for change</string>
     <string name="write_reason" translatable="false">Write Reason</string>
     <string name="regimen_line" translatable="false">Regimen Line</string>
+    <string name="men_having_sex_with_men_msm">Men Having Sex with Men (MSM)</string>
 </resources>

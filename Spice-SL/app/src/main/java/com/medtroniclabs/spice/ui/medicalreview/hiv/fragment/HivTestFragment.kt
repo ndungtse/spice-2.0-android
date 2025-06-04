@@ -450,8 +450,8 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
 
                     binding.llA1TestResultRoot.updateState(isHBsAgReactive, isHBsAgReactive, if (isHBsAgReactive) 1.0f else 0.5f)
                     setAlpha(binding.tvA1TestResult, isHBsAgReactive)
-                    binding.llA2TestResultRoot.updateState(alpha = if ( isHBsAgReactive || isA1Reactive) 0.5f else 1.0f , visible = true)
-                    binding.tvA2TestResult.updateState(alpha = if ( isHBsAgReactive ||  isA1Reactive) 0.5f else 1.0f, visible = true)
+                    binding.llA2TestResultRoot.updateState(alpha = if ( isHBsAgReactive && isA1Reactive) 1.0f else 0.5f , visible = true)
+                    binding.tvA2TestResult.updateState(alpha = if ( isHBsAgReactive &&  isA1Reactive) 1.0f else 0.5f, visible = true)
                     if (isHBsAgReactive) {
                         binding.tvA1TestResult.markMandatorys()
                     }else{
@@ -466,6 +466,8 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                     binding.llA2TestResultRoot.updateState(isEnabled, isEnabled, if (isA1Reactive) 1.0f else 0.5f, isHBsAgReactive)
                     binding.tvA2TestResult.updateState(false, false, if (isA1Reactive) 1.0f else 0.5f, isHBsAgReactive)
                     if (isA1Reactive) {
+                        binding.tvA2TestResult.markMandatorys()
+                    }else{
                         binding.tvA2TestResult.markNonMandatory()
                     }
                 }

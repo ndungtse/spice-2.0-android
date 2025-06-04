@@ -10,6 +10,9 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
@@ -35,7 +38,9 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.notEstablished
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -47,6 +52,7 @@ class HIVStatusFragment : BaseFragment() {
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
     private lateinit var binding: FragmentHivStatusBinding
     private var datePickerDialog: DatePickerDialog? = null
+    private val pregnancyDetailsViewModel: PregnancyDetailsViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -68,6 +74,25 @@ class HIVStatusFragment : BaseFragment() {
     }
 
     fun attachObserver() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                pregnancyDetailsViewModel.sharedValueLmp.collect { value ->
+                    if (!value.isNullOrEmpty()) {
+                        binding.tvLastMenstrualPeriodDate.alpha = 0.5f
+                        binding.tvLastMenstrualPeriodLabel.alpha = 0.5f
+                        binding.tvGestationalAgeLabel.alpha = 0.5f
+                        binding.etGestationalAge.alpha = 0.5f
+                        binding.tvExpectedDate.alpha = 0.5f
+                        binding.etExpectedDate.alpha = 0.5f
+                        binding.tvLastMenstrualPeriodDate.isEnabled = false
+                        binding.tvLastMenstrualPeriodDate.isClickable = false
+                        binding.tvLastMenstrualPeriodDate.text = value
+                        calculateGestationalAgeAndEstimationDeliveryDate()
+                    }
+                }
+            }
+        }
+
         viewModel.getHivStatusMetaList.observe(viewLifecycleOwner) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {

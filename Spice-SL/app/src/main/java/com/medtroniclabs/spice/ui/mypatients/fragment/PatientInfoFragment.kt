@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.common.DefinedParams.MaritalStatus
 import com.medtroniclabs.spice.common.DefinedParams.Occupation
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.common.DefinedParams.TB
+import com.medtroniclabs.spice.common.DefinedParams.entryPoint
 import com.medtroniclabs.spice.common.DefinedParams.familyPlanning
 import com.medtroniclabs.spice.common.DefinedParams.isFamilyPlanSummary
 import com.medtroniclabs.spice.common.EntityMapper
@@ -562,6 +563,8 @@ class PatientInfoFragment : BaseFragment() {
         removeItem(R.string.landmark, patient.landmark)
         removeItem(R.string.household_location, patient.village)
         // Add updated items
+        var entryPoint = listOfNotNull(patient.entryPoint)
+
         dataList.addAll(
             listOf(
                 /*mapOf(
@@ -586,9 +589,14 @@ class PatientInfoFragment : BaseFragment() {
                         ?.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
                         ?: requireContext().getString(R.string.empty__))
                 ),
+
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.entry_point),
-                    DefinedParams.Value to(patient.entryPoint ?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+                    DefinedParams.Value to combineText(
+                        entryPoint,
+                        patient.otherEntryPoint,
+                    getString(R.string.hyphen_symbol)
+                )
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.art_code),

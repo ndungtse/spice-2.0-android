@@ -432,6 +432,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
                 if (isLmp) {
                     pregnancyDetailsViewModel.pregnancyDetailsModel.lastMenstrualPeriod = DateUtils.convertDateFormat(textView.text.toString(), DATE_ddMMyyyy, DATE_FORMAT_yyyyMMdd)
                     calculateGestationalAgeAndEstimationDeliveryDate()
+                    pregnancyDetailsViewModel.setSharedValue(textView.text.toString())
                 } else {
                     pregnancyDetailsViewModel.pregnancyDetailsModel.estimatedDeliveryDate = DateUtils.convertDateFormat(textView.text.toString(), DATE_ddMMyyyy, DATE_FORMAT_yyyyMMdd)
                 }

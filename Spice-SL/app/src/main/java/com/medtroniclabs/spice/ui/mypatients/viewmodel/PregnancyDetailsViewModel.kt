@@ -12,6 +12,9 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.repo.MotherNeo
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,5 +35,11 @@ class PregnancyDetailsViewModel @Inject constructor(
     }
     fun setAncReqToGetMetaForBloodGroup(category: String) {
         getAncMetaForBloodGroup.value = category
+    }
+    private val _sharedValueLmp = MutableStateFlow("")
+    val sharedValueLmp: StateFlow<String> = _sharedValueLmp.asStateFlow()
+
+    fun setSharedValue(value: String) {
+        _sharedValueLmp.value = value
     }
 }

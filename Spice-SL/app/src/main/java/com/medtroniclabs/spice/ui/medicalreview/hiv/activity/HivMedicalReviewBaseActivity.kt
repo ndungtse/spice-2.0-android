@@ -49,6 +49,7 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,6 +62,8 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
     private val hivViewModel: HivViewModel by viewModels()
     private val clinicalNotesViewModel: ClinicalNotesViewModel by viewModels()
     private val referPatientViewModel: ReferPatientViewModel by viewModels()
+    private val weightViewModel: MotherNeonateBpWeightViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -385,7 +388,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
     override fun onResume() {
         super.onResume()
         getCurrentLocation()
-        callPatientDetails()
+        swipeRefresh()
     }
     private fun callPatientDetails() {
         withNetworkAvailability(online = {
@@ -432,7 +435,10 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                         ),
                         clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
                         encounterId = patientViewModel.encounterId,
-                        isConsentGiven = if (!hivViewModel.isEMTCT) true else false
+                        isConsentGiven = if (!hivViewModel.isEMTCT) true else false,
+                        weight = weightViewModel.getWeight(),
+                        height = weightViewModel.getHeights(),
+
                     )
                 }
             } else {

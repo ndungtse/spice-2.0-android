@@ -267,12 +267,15 @@ class EligibilityFragment : BaseFragment() {
                     item.name.equals(getString(R.string.female_sex_worker_fsw), ignoreCase = true)
             val isExcludedForAge = item.name.equals(getString(R.string.pregnant_), ignoreCase = true)
 
-            if (!(isMale && isExcludedForMale )) {
+
+            val isFemale = arguments?.getBoolean(DefinedParams.Gender) == true
+
+            val isExcludedForFemale = item.name.equals(getString(R.string.men_having_sex_with_men_msm), ignoreCase = true)
+            if (!(isMale && isExcludedForMale )&& !(isFemale && isExcludedForFemale)) {
                 if (!(isExcludedForAge && !isEligibleAge)) {
                     dropDownList.add(dropDownItem)
                 }
             }
-
             // Check if the name is "Pregnant" (case-insensitive)
         if (item.name.equals(getString(R.string.pregnant_), ignoreCase = true)) {
             defaultSelectedItems.add(dropDownItem)

@@ -58,6 +58,9 @@ class MotherNeonateBpWeightViewModel @Inject constructor(
     fun getBp(): BpAndWeightResponse? {
         return getBloodPressure.value?.data
     }
+    fun getHeights(): Double? {
+        return getHeight.value?.data?.height
+    }
 
     fun fetchHeight(motherNeonateAncRequest: MotherNeonateAncRequest) {
         viewModelScope.launch(dispatcherIO) {

@@ -27,7 +27,9 @@ data class HivScreeningRequest(
     private val clinicalNotes: String? = null,
     private val id: String? = null,
     private val otherEntryPoint: String? = null,
-    private val isConsentGiven:Boolean? = null
+    private val isConsentGiven:Boolean? = null,
+    val weight: Double? = null,
+    val height: Double? = null,
 
 )
 

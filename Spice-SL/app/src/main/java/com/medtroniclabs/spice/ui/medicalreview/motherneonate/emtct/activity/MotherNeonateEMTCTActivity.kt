@@ -647,7 +647,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
             height =  pregnancyDetailsViewModel.pregnancyDetailsModel.height
             weight =  pregnancyDetailsViewModel.pregnancyDetailsModel.weight
         }else{
-            height =  weightViewModel.getHeight()
+            height =  weightViewModel.getHeights()
             weight =  weightViewModel.getWeight()
         }
         return HivRequestData(
