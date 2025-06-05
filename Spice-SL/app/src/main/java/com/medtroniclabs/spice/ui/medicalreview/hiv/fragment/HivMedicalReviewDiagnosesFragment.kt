@@ -421,7 +421,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                     response.data?.let { data ->
                         binding.tvEmtct.text =
                             data.emtctVisitStatus.takeIf { !it.isNullOrEmpty() } ?: "-"
-                        hivViewModel.emtctVisitStatus = data.emtctVisitStatus
+                        hivViewModel.emtctVisitStatus = getEmtctVisitText(data.emtctVisitStatus)
                     }
                 }
             }
@@ -449,7 +449,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                             .takeUnless { it.equals(getString(R.string.hyphen_symbol), true) }
                         binding.tvEmtct.text = list.emtctVisitStatus.takeIf { !it.isNullOrEmpty() } ?: "-"
                             //getEmtctVisitText(list.emtctVisitStatus)
-                        hivViewModel.emtctVisitStatus = list.emtctVisitStatus
+                        hivViewModel.emtctVisitStatus = getEmtctVisitText(list.emtctVisitStatus)
                     }
                 }
 
@@ -653,11 +653,16 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
         }
     }
     private fun getEmtctVisitText(whoClinicalStage: String?): String {
-        diagnosisViewModel.hivVitalsDetailLiveData.value?.let { whoStageList ->
+        hivViewModel.hivEmtctStatusLiveData.value?.let { whoStageList ->
             return if (whoClinicalStage.isNullOrEmpty()) {
                 getString(R.string.seperator_hyphen)
             } else {
-                whoStageList.data?.emtctVisitStatus
+                whoStageList.firstOrNull {
+                    it.name.equals(
+                        whoClinicalStage,
+                        ignoreCase = true
+                    )
+                }?.value
                     ?: getString(R.string.seperator_hyphen)
             }
         } ?: run {

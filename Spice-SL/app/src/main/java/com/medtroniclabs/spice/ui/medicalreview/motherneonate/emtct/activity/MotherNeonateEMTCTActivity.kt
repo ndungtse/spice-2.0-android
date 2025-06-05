@@ -436,7 +436,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
             supportFragmentManager.findFragmentById(R.id.pregnancySummaryContainer) as? Any
 
         if (pregnancyDetailsFragment is PregnancyDetailsFragment) {
-            binding.btnSubmit.isEnabled = isClinicalNotesValid == true && isPregnancyDetailsAndHistoryValidation()
+            binding.btnSubmit.isEnabled = isClinicalNotesValid == true
         }else{
             binding.btnSubmit.isEnabled = isClinicalNotesValid == true
         }
@@ -610,9 +610,13 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
     private fun clickSubmit() {
         val pregnancyDetailsFragment =
             supportFragmentManager.findFragmentById(R.id.pregnancySummaryContainer) as? PregnancyDetailsFragment
-        if (!patientViewModel.getPatientLmb().isNullOrEmpty()) {
+
+        val systemicExaminationFragment =
+            supportFragmentManager.findFragmentById(R.id.obstetricExaminationContainer) as? SystemicExaminationsFragment
+
+        if (!patientViewModel.getPatientLmb().isNullOrEmpty() &&   systemicExaminationFragment?.validateInput() == true) {
             callViralLoadTestRecommendation()
-        } else  if (pregnancyDetailsFragment?.validateInput() == true) {
+        } else  if (pregnancyDetailsFragment?.validateInput() == true && systemicExaminationFragment?.validateInput() == true) {
             callViralLoadTestRecommendation()
         }
     }
@@ -620,9 +624,12 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
     private fun submitWithPregnancyDetails() {
         val pregnancyDetailsFragment =
             supportFragmentManager.findFragmentById(R.id.pregnancySummaryContainer) as? PregnancyDetailsFragment
-        if (!patientViewModel.getPatientLmb().isNullOrEmpty()) {
+        val systemicExaminationFragment =
+            supportFragmentManager.findFragmentById(R.id.obstetricExaminationContainer) as? SystemicExaminationsFragment
+
+        if (!patientViewModel.getPatientLmb().isNullOrEmpty() &&   systemicExaminationFragment?.validateInput() == true) {
             submitEmtctRequest()
-        } else  if (pregnancyDetailsFragment?.validateInput() == true) {
+        } else  if (pregnancyDetailsFragment?.validateInput() == true &&   systemicExaminationFragment?.validateInput() == true) {
             submitEmtctRequest()
         }
     }

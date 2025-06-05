@@ -388,39 +388,21 @@ class PatientInfoFragment : BaseFragment() {
             if (isFamilyPlan() == true || isFamilyPlanSummary() == true){
                 dataList.removeAt(5)
                 dataList.removeAt(3)
-                dataList.add(
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.chw),
-                        DefinedParams.Value to stringOrHyphen(chwValue)
-                    )
-                )
-                dataList.add(
+          dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.date_of_delivery),
                         DefinedParams.Value to (dateOfDelivery?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()
                     )
                 )
                 if(isFamilyPlanSummary() == true){
-                    dataList.add(
-                        mapOf(
-                            DefinedParams.label to requireContext().getString(R.string.occupation_summary),
-                            DefinedParams.Value to stringOrHyphen(patientListRespModel.occupation)
-                        )
-                    )
-                    dataList.add(
+              dataList.add(
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.marital_status_summary),
                             DefinedParams.Value to stringOrHyphen(patientListRespModel.maritalStatus)
                         )
                     )
                 }else {
-                    dataList.add(
-                        mapOf(
-                            DefinedParams.label to requireContext().getString(R.string.occupation),
-                            DefinedParams.Value to (viewModel.occupation ?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()
-                        )
-                    )
-                    dataList.add(
+                dataList.add(
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.marital_status),
                             DefinedParams.Value to (viewModel.maritalStatus ?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()

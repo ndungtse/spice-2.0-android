@@ -186,6 +186,7 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
                 ?: getString(R.string.hyphen_symbol)
 
             if (isEMTCTMR){
+                viewModel.emtctStatusDefault = data.emtctVisitStatus
                 tvSiteLabel.visible()
                 tvSiteLabel.text = getString(R.string.anc)
                 tvSiteSeparator.visible()
@@ -339,7 +340,7 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
             // Optional: If not died, try to retain previously selected eMTCTStatus
             statusList.indexOfFirst {
                 val value = it[DefinedParams.Value] as? String
-                value.equals(viewModel.eMTCTStatus, ignoreCase = true)
+                value.equals(viewModel.emtctStatusDefault, ignoreCase = true)
             }.takeIf { it != -1 } ?: 0
         }
         // Set selection AFTER adapter is attached
@@ -386,11 +387,7 @@ class HivImrCmrSummaryFragment: BaseFragment(), View.OnClickListener {
                 value.equals("D-Dead", ignoreCase = true)
             }.takeIf { it != -1 } ?: 0
         } else {
-            // Optional: If not died, try to retain previously selected eMTCTStatus
-            statusList.indexOfFirst {
-                val value = it[DefinedParams.Value] as? String
-                value.equals(viewModel.eMTCTStatus, ignoreCase = true)
-            }.takeIf { it != -1 } ?: 0
+             0
         }
         binding.tvMaternalOutcomeText.post {
             binding.tvMaternalOutcomeText.setSelection(defaultPosition, false)

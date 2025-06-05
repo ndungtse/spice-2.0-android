@@ -46,6 +46,7 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.titleSuffix
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
@@ -472,6 +473,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
         spinnerTitle?.let {
             val tvTitle = it as TextView
             tvTitle.text = title
+            tvTitle.markMandatory()
         }
     }
 

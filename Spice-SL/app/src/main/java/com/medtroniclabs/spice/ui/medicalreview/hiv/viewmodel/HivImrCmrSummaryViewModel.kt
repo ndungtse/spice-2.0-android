@@ -33,6 +33,7 @@ class HivImrCmrSummaryViewModel @Inject constructor(
     val getMaternalOutcomeMeta = MutableLiveData<String>()
     var statusSpinner = ArrayList<Map<String, Any>>()
     var maternalOutcomeMap = ArrayList<Map<String, Any>>()
+    var emtctStatusDefault:String? =null
 
 
 
