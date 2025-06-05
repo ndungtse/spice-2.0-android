@@ -31,7 +31,7 @@ android {
         }
         create("sl") {
             dimension = "version"
-            versionName = "2.0.3"
+            versionName = "2.1.0"
             applicationIdSuffix = ".sl"
         }
         create("tiberbu") {
