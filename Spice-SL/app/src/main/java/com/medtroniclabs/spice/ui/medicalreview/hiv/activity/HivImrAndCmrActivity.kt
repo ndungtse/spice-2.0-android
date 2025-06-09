@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
@@ -692,16 +693,21 @@ class HivImrAndCmrActivity : BaseActivity(), View.OnClickListener, AncVisitCallB
         binding.comorbiditiesContainer.setVisible(patientViewModel.getHivMedicalReviewStatus())
         binding.clinicalNotesContainer.visible()
         binding.hivClinicalNotesContainer.visible()
-        createNewFragmentOnly<ARTRegimenFragment>(
-            R.id.comorbiditiesContainer,
-            bundle = Bundle().apply {
-                putString(DefinedParams.PatientId, intent.getStringExtra(DefinedParams.PatientId))
-                putString(DefinedParams.ID, intent.getStringExtra(DefinedParams.ID))
-                putString(MemberID, patientViewModel.getPatientMemberId())
-                putBoolean(DefinedParams.HIV_IMR_CMR,true)
-            },
-            tag = ARTRegimenFragment.TAG
-        )
+        if (binding.comorbiditiesContainer.isVisible()) {
+            createNewFragmentOnly<ARTRegimenFragment>(
+                R.id.comorbiditiesContainer,
+                bundle = Bundle().apply {
+                    putString(
+                        DefinedParams.PatientId,
+                        intent.getStringExtra(DefinedParams.PatientId)
+                    )
+                    putString(DefinedParams.ID, intent.getStringExtra(DefinedParams.ID))
+                    putString(MemberID, patientViewModel.getPatientMemberId())
+                    putBoolean(DefinedParams.HIV_IMR_CMR, true)
+                },
+                tag = ARTRegimenFragment.TAG
+            )
+        }
         replaceFragment(
             R.id.systemicExaminationsContainer,
             OpportunisticInfectionsTreatmentFragment.TAG,

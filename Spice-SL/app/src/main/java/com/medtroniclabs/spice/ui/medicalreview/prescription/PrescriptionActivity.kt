@@ -38,7 +38,6 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.DeleteReasonDialog
-import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.SignatureDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.SignatureListener
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
@@ -548,11 +547,10 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                                     )
                                                 ) {
                                                     val medicationsNameList = buildList {
-                                                        addAll(prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
-                                                            it.categoryName?.equals(
-                                                                HIV, true
-                                                            ) == true
-                                                        }?.map { it.medicationName } ?: emptyList())
+                                                        addAll(data.medicationResponse.groupName?.let { groupName ->
+                                                            prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter { it.medicationResponse.groupName == groupName }
+                                                        }?.mapNotNull { it.medicationResponse.name }
+                                                            ?: emptyList())
                                                     }
                                                     val medicationsRegimen =
                                                         prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
@@ -779,10 +777,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
                                         if (data.medicationResponse.category?.name.equals(HIV, true)) {
                                             val medicationsNameList = buildList {
-                                                addAll(prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
-                                                    it.categoryName?.equals(HIV, true) == true
-                                                }?.map { it.medicationName } ?: emptyList())
-                                                //addAll(data.medicationResponse.name?.let { listOf(it) } ?: emptyList())
+                                                addAll(data.medicationResponse.name?.let { listOf(it) } ?: emptyList())
                                             }
 
                                             val medicationsRegimen =
@@ -1098,11 +1093,6 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                     }) {
 
                     val medications = buildList {
-                        addAll(prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
-                            it.categoryName?.equals(
-                                HIV, true
-                            ) == true
-                        }?.map { it.medicationName } ?: emptyList())
                         addAll(prescriptionCreateList.filter {
                             it.medicationResponse.category?.name?.equals(
                                 HIV, true
