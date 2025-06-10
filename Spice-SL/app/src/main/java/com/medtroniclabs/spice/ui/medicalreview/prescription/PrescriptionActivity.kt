@@ -82,10 +82,6 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             binding.btnRenewAll.visible()
                         } else {
                             binding.btnRenewAll.gone()
-                            //In case of medication list is empty, but user have past regimen line, we get that from discontinued medication list live data
-                            patientViewModel.patientDetailsLiveData.value?.data?.let {
-                                prescriptionViewModel.getPrescriptionList(it, false)
-                            }
                         }
                         prescriptionViewModel.updateMedicationList(
                             prescriptionViewModel.constructMedicationRequestObjectList(ArrayList(data.filter { it.groupName.isNullOrEmpty() || it.groupUniqueId == null })),
@@ -95,6 +91,9 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             prescriptionViewModel.constructMedicationRequestObjectList(ArrayList(data.filter { it.groupName!=null && it.groupUniqueId != null })),
                             true
                         )
+                        patientViewModel.patientDetailsLiveData.value?.data?.let {
+                            prescriptionViewModel.getPrescriptionList(it, false)
+                        }
                     }
                 }
 
@@ -539,13 +538,13 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                                         prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter { it.medicationResponse.groupName == groupName }
                                                     }
                                                         ?.mapNotNull { it.medicationResponse.prescriptionId }
+                                                val categoryList = data.medicationResponse.groupName?.let { groupName ->
+                                                    prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter { it.medicationResponse.groupName == groupName }
+                                                }
+                                                    ?.mapNotNull { it.medicationResponse.category?.name }
                                                 val removeMedicationsList =
                                                     ArrayList<RemovePrescriptionRequest>()
-                                                if (data.medicationResponse.category?.name.equals(
-                                                        HIV,
-                                                        true
-                                                    )
-                                                ) {
+                                                if (categoryList?.any { it.equals(HIV, true) } == true) {
                                                     val medicationsNameList = buildList {
                                                         addAll(data.medicationResponse.groupName?.let { groupName ->
                                                             prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter { it.medicationResponse.groupName == groupName }

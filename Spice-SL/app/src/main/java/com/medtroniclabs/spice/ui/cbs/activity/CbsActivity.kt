@@ -4,6 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import com.google.gson.Gson
+import com.google.gson.internal.LinkedTreeMap
+import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postError
@@ -17,6 +20,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfNewborn
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -233,7 +237,15 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                             ((viewModel.assessmentMap[CBS.lowercase()] as? Map<String, Any>)
                                 ?.get(DefinedParams.surveillanceDetails) as? Map<String, Any>)
                                 ?.get(DefinedParams.OtherNotifiableConditions) as? String
-
+                        val cbsMap =
+                            (viewModel.assessmentMap[CBS.lowercase()] as? MutableMap<String, Any>)
+                                ?: mutableMapOf()
+                        val surveillanceMap =
+                            (cbsMap[DefinedParams.surveillanceDetails] as? MutableMap<String, Any>)
+                                ?: mutableMapOf()
+                        surveillanceMap[RMNCH.DateOfDelivery] = it.dateOfBirth
+                        cbsMap[DefinedParams.surveillanceDetails] = surveillanceMap
+                        viewModel.assessmentMap[CBS.lowercase()] = cbsMap
                         val index = rmnchText.indexOfFirst {
                             it.equals(
                                 DefinedParams.Other,
@@ -276,11 +288,16 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                                 viewModel.menuId
                             )
                         } else {
-                            viewModel.assessment?.let {
-                                viewModel.saveCallResult(
-                                    it,
-                                    viewModel.resultValue
-                                )
+                            val dataOfDelivery = it.dateOfBirth
+                            viewModel.assessment?.let { assessment ->
+                                val type = object : TypeToken<HashMap<String, Any>>() {}.type
+                                val assessmentMap: HashMap<String, Any> = Gson().fromJson(assessment.assessmentDetails, type)
+                                val cbsKey = CBS.lowercase()
+                                val cbsMap = (assessmentMap[cbsKey] as? LinkedTreeMap<String, Any>) ?: hashMapOf()
+                                cbsMap[RMNCH.DateOfDelivery] = dataOfDelivery
+                                assessmentMap[cbsKey] = cbsMap
+                                assessment.assessmentDetails = Gson().toJson(assessmentMap)
+                                viewModel.saveCallResult(assessment, viewModel.resultValue)
                             }
                         }
                     }
