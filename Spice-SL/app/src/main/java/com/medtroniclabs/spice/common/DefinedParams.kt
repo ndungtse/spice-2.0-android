@@ -386,4 +386,5 @@ object DefinedParams {
     const val Medications = "medications"
     const val Regimen = "regimen"
     const val PrescribedMedicine = "PrescribedMedicine"
+    const val isMenutypeHiv = "isMenutypeHiv"
 }

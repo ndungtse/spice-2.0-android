@@ -89,6 +89,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
     }
 
     private fun setAdapterViews(menuItemsList: List<MenuEntity>) {
+        viewModel.isMenutypeHiv = menuItemsList.any { it.name.equals(MenuConstants.HIV) }
         if (CommonUtils.checkIsTablet(requireContext())) {
             val layoutManager = FlexboxLayoutManager(context)
             layoutManager.flexDirection = FlexDirection.ROW
@@ -227,7 +228,8 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                             neonateOutcome,
                             arguments?.getString(MemberID),
                             isEmtctFlow,
-                            hivTestedPositive
+                            hivTestedPositive,
+                            viewModel.isMenutypeHiv
                         )
                             .show(childFragmentManager, SelectFlowDialog.TAG)
                     }

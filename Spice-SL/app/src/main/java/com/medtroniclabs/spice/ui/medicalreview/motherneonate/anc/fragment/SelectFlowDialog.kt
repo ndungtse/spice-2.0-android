@@ -72,7 +72,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
 
         fun newInstance(patientId: String?, id: String?,childPatientId:String?,dateOfDelivery:String?,neonateOutcome:String?,memberId: String?,
                         isEMTCTFlow: Boolean?,
-                        hivTestedPositive: Boolean?): SelectFlowDialog {
+                        hivTestedPositive: Boolean?,isMenutypeHiv: Boolean?): SelectFlowDialog {
             val fragment = SelectFlowDialog()
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
@@ -83,6 +83,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             bundle.putString(  MemberID,memberId)
             bundle.putBoolean(DefinedParams.EMTCT, isEMTCTFlow == true )
             bundle.putBoolean(DefinedParams.hivTestedPositive,hivTestedPositive == true )
+            bundle.putBoolean(DefinedParams.isMenutypeHiv,isMenutypeHiv == true )
             fragment.arguments = bundle
             return fragment
         }
@@ -151,7 +152,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             getString(R.string.anc) -> {
                 // if hivtestpositive true -> emtct mr
                 // if hivtestpositive false -> isEMtctflow true -> Selection dialog else -> ANC
-                if(arguments?.getBoolean(DefinedParams.hivTestedPositive,false) ==  true){
+                if(arguments?.getBoolean(DefinedParams.hivTestedPositive,false) ==  true && arguments?.getBoolean(DefinedParams.isMenutypeHiv,false) ==  true){
                     val patientId = arguments?.getString(DefinedParams.PatientId, "")
                     val id = arguments?.getString(DefinedParams.ID, "")
                     val memberId = arguments?.getString(MemberID, "")
@@ -171,7 +172,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                 }else{
                     binding.tvTitle.text = getString(R.string.select_patient_type)
                     binding.tvSubTitle.visible()
-                    if (arguments?.getBoolean(DefinedParams.EMTCT,false) ==  true){
+                    if (arguments?.getBoolean(DefinedParams.EMTCT,false) ==  true && arguments?.getBoolean(DefinedParams.isMenutypeHiv,false) ==  true){
                         binding.selectionGroup.removeAllViews()
                         viewModel.isEMTCT =true
                         getPositiveType().let {
