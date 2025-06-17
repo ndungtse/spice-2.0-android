@@ -72,11 +72,11 @@ const LoginPage: React.FC = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Email / Phone Number *</label>
+            <label className="form-label">Email *</label>
             <input
               type="text"
               className="form-input"
-              placeholder="Enter email or phone number"
+              placeholder="Email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               disabled={loading}
