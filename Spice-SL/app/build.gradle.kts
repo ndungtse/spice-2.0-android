@@ -1,4 +1,12 @@
-﻿plugins {
+﻿import java.util.Properties
+
+val envProperties = Properties()
+val envFile = rootProject.file("environment.properties")
+if (envFile.exists()) {
+    envFile.inputStream().use { envProperties.load(it) }
+}
+
+plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-kapt")
@@ -42,16 +50,24 @@ android {
     }
 
     signingConfigs {
+        val prodKeyAlias = envProperties["PROD_JKS_ALIAS"].toString()
+        val prodKeyPassword = envProperties["PROD_JKS_KEY_PASSWORD"].toString()
+        val prodStorePassword = envProperties["PROD_JKS_STORE_PASSWORD"].toString()
+
+        val devKeyAlias = envProperties["STAGE_JKS_ALIAS"].toString()
+        val devKeyPassword = envProperties["STAGE_JKS_KEY_PASSWORD"].toString()
+        val devStorePassword = envProperties["STAGE_JKS_STORE_PASSWORD"].toString()
+
         create("release") {
-            keyAlias = "medtronic"
-            keyPassword = "Med@Tr0ni#Lab$"
-            storePassword = "Med@Tr0ni#Lab$"
+            keyAlias = prodKeyAlias
+            keyPassword = prodKeyPassword
+            storePassword = prodStorePassword
             storeFile = file("spice_prod.jks")
         }
         create("staging") {
-            keyAlias = "spice"
-            keyPassword = "spice@123"
-            storePassword = "spice@123"
+            keyAlias = devKeyAlias
+            keyPassword = devKeyPassword
+            storePassword = devStorePassword
             storeFile = file("spice")
         }
     }
@@ -68,24 +84,24 @@ android {
                 if (buildType.name == "release") {
                     when (productFlavors[0].name) {
                         "sl" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"https://spice-backend.sl.medtroniclabs.org/\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spiceadmin.sl.medtroniclabs.org/\"")
-                            buildConfigField("String", "SALT", "\"Sp!(e_PrOD_II\"")
-                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["SL_PROD_API_BASE_URL"]}\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_PROD_ADMIN_BASE_URL"]}\"")
+                            buildConfigField("String", "SALT", "\"${envProperties["SL_PROD_SALT_KEY"]}\"")
+                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_PROD_DB_ENCRYPTION_KEY"]}\"")
                             resValue("string", "spice_app_name", "SPICE 2.0")
                         }
                         "africa" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"https://spice-backend.medtroniclabs.org/\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spiceadmin.medtroniclabs.org/\"")
-                            buildConfigField("String", "SALT", "\"spice_prod\"")
-                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_PROD_API_BASE_URL"]}\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["AF_PROD_ADMIN_BASE_URL"]}\"")
+                            buildConfigField("String", "SALT", "\"${envProperties["AF_PROD_SALT_KEY"]}\"")
+                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["AF_PROD_DB_ENCRYPTION_KEY"]}\"")
                             resValue("string", "spice_app_name", "SPICE")
                         }
                         "tiberbu" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.tbb.labsplatform.com/\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev.tbb.labsplatform.com/\"")
-                            buildConfigField("String", "SALT", "\"spice_uat\"")
-                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["TBU_PROD_API_BASE_URL"]}\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["TBU_PROD_ADMIN_BASE_URL"]}\"")
+                            buildConfigField("String", "SALT", "\"${envProperties["TBU_PROD_SALT_KEY"]}\"")
+                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["TBU_PROD_DB_ENCRYPTION_KEY"]}\"")
                             resValue("string", "spice_app_name", "TaifaCare(by SPICE) Dev")
                         }
                     }
@@ -101,24 +117,24 @@ android {
                 if (buildType.name == "debug") {
                     when (productFlavors[0].name) {
                         "sl" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.sl.labsplatform.com/\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev.sl.labsplatform.com/\"")
-                            buildConfigField("String", "SALT", "\"spice_uat\"")
-                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["SL_DEV_API_BASE_URL"]}\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_DEV_ADMIN_BASE_URL"]}\"")
+                            buildConfigField("String", "SALT", "\"${envProperties["SL_DEV_SALT_KEY"]}\"")
+                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_DEV_DB_ENCRYPTION_KEY"]}\"")
                             resValue("string", "spice_app_name", "SPICE 2.0 Dev")
                         }
                         "africa" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-migration-backend.labsplatform.com/\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev-migration.labsplatform.com/\"")
-                            buildConfigField("String", "SALT", "\"spice_uat\"")
-                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_DEV_API_BASE_URL"]}\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["AF_DEV_ADMIN_BASE_URL"]}\"")
+                            buildConfigField("String", "SALT", "\"${envProperties["AF_DEV_SALT_KEY"]}\"")
+                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["AF_DEV_DB_ENCRYPTION_KEY"]}\"")
                             resValue("string", "spice_app_name", "SPICE Dev")
                         }
                         "tiberbu" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"https://spice-training-back.tiberbu.health/\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.tiberbu.health/\"")
-                            buildConfigField("String", "SALT", "\"spice_uat\"")
-                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["TBU_DEV_API_BASE_URL"]}\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["TBU_DEV_ADMIN_BASE_URL"]}\"")
+                            buildConfigField("String", "SALT", "\"${envProperties["TBU_DEV_SALT_KEY"]}\"")
+                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["TBU_DEV_DB_ENCRYPTION_KEY"]}\"")
                             resValue("string", "spice_app_name", "TaifaCare(by SPICE) Dev")
                         }
                     }
@@ -139,16 +155,16 @@ android {
             applicationVariants.all {
                 if (buildType.name == "staging") {
                     if (productFlavors[0].name == "sl") {
-                        buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.sl.labsplatform.com/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev.sl.labsplatform.com/\"")
-                        buildConfigField("String", "SALT", "\"spice_uat\"")
-                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                        buildConfigField("String", "API_BASE_URL", "\"${envProperties["SL_STAGE_API_BASE_URL"]}\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_STAGE_ADMIN_BASE_URL"]}\"")
+                        buildConfigField("String", "SALT", "\"${envProperties["SL_STAGE_SALT_KEY"]}\"")
+                        buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_STAGE_DB_ENCRYPTION_KEY"]}\"")
                         resValue("string", "spice_app_name", "SPICE 2.0 Staging")
                     } else if (productFlavors[0].name == "africa") {
-                        buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
-                        buildConfigField("String", "SALT", "\" \"")
-                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                        buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_STAGE_API_BASE_URL"]}\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["AF_STAGE_ADMIN_BASE_URL"]}\"")
+                        buildConfigField("String", "SALT", "\"${envProperties["AF_STAGE_SALT_KEY"]}\"")
+                        buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["AF_STAGE_DB_ENCRYPTION_KEY"]}\"")
                         resValue("string", "spice_app_name", "SPICE 2.1 Staging")
                     }
                 }
@@ -169,24 +185,24 @@ android {
                 if (buildType.name == "training") {
                     when (productFlavors[0].name) {
                         "sl" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"https://spice-training-backend.sl.labsplatform.com/\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.sl.labsplatform.com/\"")
-                            buildConfigField("String", "SALT", "\"spice_uat\"")
-                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["SL_TRAINING_API_BASE_URL"]}\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_TRAINING_ADMIN_BASE_URL"]}\"")
+                            buildConfigField("String", "SALT", "\"${envProperties["SL_TRAINING_SALT_KEY"]}\"")
+                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_TRAINING_DB_ENCRYPTION_KEY"]}\"")
                             resValue("string", "spice_app_name", "SPICE 2.0 Training")
                         }
                         "africa" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"https://spice-training-backend.labsplatform.com/\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.labsplatform.com/\"")
-                            buildConfigField("String", "SALT", "\"spice_uat\"")
-                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_TRAINING_API_BASE_URL"]}\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["AF_TRAINING_ADMIN_BASE_URL"]}\"")
+                            buildConfigField("String", "SALT", "\"${envProperties["AF_TRAINING_SALT_KEY"]}\"")
+                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["AF_TRAINING_DB_ENCRYPTION_KEY"]}\"")
                             resValue("string", "spice_app_name", "SPICE 2.1 Training")
                         }
                         "tiberbu" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"https://spice-training-back.tiberbu.health/\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.tiberbu.health/\"")
-                            buildConfigField("String", "SALT", "\"spice_uat\"")
-                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["TBU_TRAINING_API_BASE_URL"]}\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["TBU_TRAINING_ADMIN_BASE_URL"]}\"")
+                            buildConfigField("String", "SALT", "\"${envProperties["TBU_TRAINING_SALT_KEY"]}\"")
+                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["TBU_TRAINING_DB_ENCRYPTION_KEY"]}\"")
                             resValue("string", "spice_app_name", "TaifaCare(by SPICE) Training")
                         }
                     }

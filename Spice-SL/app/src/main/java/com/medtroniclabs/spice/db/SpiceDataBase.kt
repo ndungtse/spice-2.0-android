@@ -144,7 +144,7 @@ abstract class SpiceDataBase : RoomDatabase() {
 
         private fun buildDatabase(context: Context): SpiceDataBase {
             System.loadLibrary("sqlcipher")
-            val factory = SupportOpenHelperFactory(BuildConfig.DB_PASSWORD.toByteArray(Charsets.UTF_8))
+            val factory = SupportOpenHelperFactory(BuildConfig.ROOM_DB_ENCRYPTION_KEY.toByteArray(Charsets.UTF_8))
             val db = Room.databaseBuilder(
                 context.applicationContext,
                 SpiceDataBase::class.java,
