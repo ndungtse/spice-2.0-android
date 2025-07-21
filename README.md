@@ -118,28 +118,30 @@ If you have multiple Java versions installed, ensure Android Studio uses Java 18
 
 ## Configuration
 
-### Step 1: Configure Server URLs
+### Step 1: Configure Environment Variables (SL Dev)
 
-Open `app/build.gradle.kts` and update the server URLs for your environment:
+Environment-specific values (such as server URLs, salts, API keys, etc.) are managed via the `environment.properties` file located at the **project root** (next to `build.gradle.kts`, not inside `app/`).
 
-```kotlin
-// For Debug builds
-debug {
-    applicationVariants.all {
-        if (buildType.name == "debug") {
-            when (productFlavors[0].name) {
-                "sl" -> {
-                    buildConfigField("String", "API_BASE_URL", "\"YOUR_SERVER_URL_HERE\"")
-                    buildConfigField("String", "ADMIN_BASE_URL", "\"YOUR_ADMIN_URL_HERE\"")
-                    buildConfigField("String", "SALT", "\"YOUR_SALT_KEY\"")
-                    buildConfigField("String", "DB_PASSWORD", "\"YOUR_DB_PASSWORD\"")
-                }
-                // ... other flavors
-            }
-        }
-    }
-}
-```
+1. **Create or update the `environment.properties` file** at the root of your project.
+2. **Add the required keys and values for the `SL` dev flavor**. Example:
+
+    ```properties
+    # Development flavor only
+    SL_DEV_API_BASE_URL=https://your-dev-api-url.dev/
+    SL_DEV_ADMIN_BASE_URL=https://your-dev-admin-url.dev/
+    SL_DEV_SALT_KEY=YOUR_DEV_SALT_KEY
+    SL_DEV_DB_ENCRYPTION_KEY=YOUR_DEV_DB_ENCRYPTION_KEY
+
+    STAGE_JKS_ALIAS=your_dev_key_alias
+    STAGE_JKS_KEY_PASSWORD=your_dev_key_password
+    STAGE_JKS_STORE_PASSWORD=your_dev_store_password
+    ```
+
+3. **Do not commit sensitive values** (like production salts or API keys) to version control. Use a template file (e.g., `environment.properties.example`) for sharing required keys with your team.
+
+4. **The build system will automatically load these values** from `environment.properties` for the appropriate build variant, including server URLs and signing configuration. No manual editing of build.gradle.kts is required for these values.
+
+---
 
 ### Step 2: Configure Product Flavors
 
@@ -153,21 +155,6 @@ Select the appropriate flavor for your deployment:
 
 1. In Android Studio, go to **Build** → **Select Build Variant**
 2. Choose your desired flavor and build type (debug/release/staging)
-
-### Step 3: Configure Signing (Optional)
-
-For release builds, configure signing certificates:
-
-```kotlin
-signingConfigs {
-    create("release") {
-        keyAlias = "your_key_alias"
-        keyPassword = "your_key_password"
-        storePassword = "your_store_password"
-        storeFile = file("path_to_keystore.jks")
-    }
-}
-```
 
 ## Building the Application
 
