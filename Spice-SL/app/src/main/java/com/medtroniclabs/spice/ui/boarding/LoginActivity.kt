@@ -50,7 +50,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
         //3. Set app version name
         val packageInfo = applicationContext.packageManager.getPackageInfo(packageName, 0)
-        UserDetail.appVersion = packageInfo.versionName
+        UserDetail.appVersion = packageInfo.versionName ?: ""
     }
 
     private fun createAndSaveDeviceId() {

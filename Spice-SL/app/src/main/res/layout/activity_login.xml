@@ -27,7 +27,7 @@
                 android:layout_gravity="center"
                 android:layout_marginVertical="@dimen/_32sdp"
                 android:contentDescription="@string/logo_description"
-                android:src="@drawable/ic_spice_logo" />
+                android:src="@drawable/ic_com_emr_login" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/TextStyle_Bold_16_NoBG"

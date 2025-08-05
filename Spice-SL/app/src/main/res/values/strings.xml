@@ -1313,7 +1313,7 @@
     <string name="ambulance_driver_contact" translatable="false">Ambulance Driver Contact no</string>
     <string name="colon" translatable="false">:</string>
 
-    <string name="support_label" translatable="false">Kindly share your challenges with the SPICE application below</string>
+    <string name="support_label" translatable="false">Kindly share your challenges with the ComEMR application below</string>
     <string name="support" translatable="false">Support</string>
     <string name="comment" translatable="false">Comment</string>
     <string name="description" translatable="false">Description</string>

@@ -37,7 +37,7 @@
                 android:id="@+id/divider"
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:layout_marginTop="@dimen/_66sdp"
+                android:layout_marginTop="@dimen/_80sdp"
                 android:background="@color/edittext_stroke" />
 
             <include

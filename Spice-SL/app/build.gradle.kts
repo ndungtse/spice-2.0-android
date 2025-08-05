@@ -19,12 +19,12 @@ plugins {
 
 android {
     namespace = "com.medtroniclabs.spice"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.medtroniclabs.spice"
         minSdk = 23
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 10
         versionName = "2.0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -88,7 +88,7 @@ android {
                             buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_PROD_ADMIN_BASE_URL"]}\"")
                             buildConfigField("String", "SALT", "\"${envProperties["SL_PROD_SALT_KEY"]}\"")
                             buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_PROD_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "SPICE 2.0")
+                            resValue("string", "spice_app_name", "ComEMR")
                         }
                         "africa" -> {
                             buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_PROD_API_BASE_URL"]}\"")
@@ -121,7 +121,7 @@ android {
                             buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_DEV_ADMIN_BASE_URL"]}\"")
                             buildConfigField("String", "SALT", "\"${envProperties["SL_DEV_SALT_KEY"]}\"")
                             buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_DEV_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "SPICE 2.0 Dev")
+                            resValue("string", "spice_app_name", "ComEMR Dev")
                         }
                         "africa" -> {
                             buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_DEV_API_BASE_URL"]}\"")
@@ -159,7 +159,7 @@ android {
                         buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_STAGE_ADMIN_BASE_URL"]}\"")
                         buildConfigField("String", "SALT", "\"${envProperties["SL_STAGE_SALT_KEY"]}\"")
                         buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_STAGE_DB_ENCRYPTION_KEY"]}\"")
-                        resValue("string", "spice_app_name", "SPICE 2.0 Staging")
+                        resValue("string", "spice_app_name", "ComEMR Staging")
                     } else if (productFlavors[0].name == "africa") {
                         buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_STAGE_API_BASE_URL"]}\"")
                         buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["AF_STAGE_ADMIN_BASE_URL"]}\"")
@@ -189,7 +189,7 @@ android {
                             buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_TRAINING_ADMIN_BASE_URL"]}\"")
                             buildConfigField("String", "SALT", "\"${envProperties["SL_TRAINING_SALT_KEY"]}\"")
                             buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_TRAINING_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "SPICE 2.0 Training")
+                            resValue("string", "spice_app_name", "ComEMR Training")
                         }
                         "africa" -> {
                             buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_TRAINING_API_BASE_URL"]}\"")
