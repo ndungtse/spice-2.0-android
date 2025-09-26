@@ -1,19 +1,19 @@
 package com.medtroniclabs.spice.app.analytics.upload
 
 import android.content.Context
+import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import com.medtroniclabs.spice.app.analytics.model.Analytics
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
+import com.medtroniclabs.spice.app.analytics.model.Analytics
 import com.medtroniclabs.spice.app.analytics.model.AnalyticsData
 import com.medtroniclabs.spice.app.analytics.model.AnalyticsDetail
 import com.medtroniclabs.spice.app.analytics.network.ApiService
 import com.medtroniclabs.spice.app.analytics.network.RetrofitHelper
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
-import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -25,10 +25,11 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
     private var stopIteration = false
 
     override suspend fun doWork(): Result {
+        Log.i("Analytics","UploadingLogs")
         val headers = inputData.keyValueMap
         val baseUrl = inputData.getString(AnalyticsDefinedParams.BaseUrl)
-        val lastSyncDate = inputData.getString(AnalyticsDefinedParams.LastSyncDate)
         val buildConfig= inputData.getString(AnalyticsDefinedParams.BuildConfig)
+        stopIteration = false
         generateAnalyticsReport(
             baseUrl,
             headers[AnalyticsDefinedParams.Authorization].toString(),
@@ -37,7 +38,7 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         return Result.success()
     }
 
-    private suspend fun getAllAnalyticsData(): AnalyticsData {
+    private suspend fun getAllAnalyticsData(): AnalyticsData? {
         val list = repository.getAllAnalytics()
         val userAnalyticsMap = list.groupBy(Analytics::userId)
             .mapValues { (_, analyticsList) ->
@@ -67,7 +68,10 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
             )
         }
 
-        return AnalyticsData(userAnalytics = userAnalyticsList)
+        return if (userAnalyticsList.isNotEmpty())
+            AnalyticsData(userAnalytics = userAnalyticsList)
+        else
+            null
     }
 
     // Generating & Saving the json file of analytics data in local
@@ -76,29 +80,41 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         headers: Any?,
         buildConfig: String?,
     ) {
-        val analyticsData = getAllAnalyticsData()
-        try {
-            val ids = analyticsData.userAnalytics.joinToString(separator = "_") { it.id }
-            applicationContext.openFileOutput(
-                CommonUtils.getAnalyticsFileName(ids),
-                Context.MODE_PRIVATE
-            ).use { outputStream ->
-                outputStream.write(Gson().toJson(analyticsData).toByteArray())
-            }
 
-            baseUrl?.let {
-                uploadFileFilter(it, headers.toString(),buildConfig)
-            }
+        getAllAnalyticsData()?.let { analyticsData ->
+            try {
+                val ids = analyticsData.userAnalytics.joinToString(separator = "_") { it.id }
+                val fileName = CommonUtils.getAnalyticsFileName(ids)
+                applicationContext.openFileOutput(
+                    fileName,
+                    Context.MODE_PRIVATE
+                ).use { outputStream ->
+                    outputStream.write(Gson().toJson(analyticsData).toByteArray())
+                }
 
-        } catch (e: Exception) {
-            e.printStackTrace()
+                Log.i("Analytics","Base URL : "+baseUrl)
+                Log.i("Analytics","header : "+headers)
+                Log.i("Analytics","Build Config : "+buildConfig)
+                Log.i("Analytics","Created File Name : "+fileName)
+
+                baseUrl?.let {
+                    uploadFileFilter(it, headers.toString(),buildConfig)
+                }
+
+                // Delete uploaded content
+                 repository.deleteAllAnalytics()
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
 
     // While extracting file from local Directory filtering based on userid
     private suspend fun uploadFileFilter(baseUrl: String, headers: String, buildConfig: String?) {
-        val filteredList = listFilesInDirectoryWithFilter(UserDetail.userId)
+        val filteredList = listFilesInDirectory()
+        Log.i("Analytics","Total Logs files count : "+filteredList.size)
         filteredList.forEach {
             if (!stopIteration) {
                 uploadFileApiCall(baseUrl, headers, it,buildConfig)
@@ -123,12 +139,12 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
                     if (apiService!=null) {
                         val response = apiService.uploadFile(filePart)
                         if (response.isSuccessful) {
-                         deleteUploadedFiles(file.name)
+                            deleteUploadedFiles(file.name)
                             true
                         } else {
                             false
                         }
-                    }else {
+                    } else {
                         true
                     }
                 },
@@ -179,19 +195,25 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
     }
 
 
-    private fun deleteUploadedFiles(filterString: String) {
-        listFilesInDirectoryWithFilter(filterString).forEach { fileName ->
-            fileName.delete()
+    private fun deleteUploadedFiles(fileName: String) {
+        Log.i("Analytics","Need to Delete File Name : "+fileName)
+        val file = File(applicationContext.filesDir, fileName)
+        if (file.exists()) {
+            val deleted = file.delete()
+            if (deleted) {
+                Log.d("Analytics", "$fileName deleted successfully")
+            } else {
+                Log.d("Analytics", "Failed to delete $fileName")
+            }
+        } else {
+            Log.d("Analytics", "$fileName does not exist")
         }
     }
 
-
-    private fun listFilesInDirectoryWithFilter(
-        filterString: String
-    ): List<File> {
-        val directoryPath = applicationContext.filesDir.absolutePath
-        val directory = File(directoryPath)
-        return directory.listFiles { file -> file.isFile && file.name.contains(filterString) }
-            ?.map { it } ?: emptyList()
+    private fun listFilesInDirectory(): List<File> {
+        val directory = applicationContext.filesDir
+        return directory.listFiles()
+            ?.filter { it.name.contains("_analytics.json") }
+            ?: emptyList()
     }
 }

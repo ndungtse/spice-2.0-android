@@ -42,7 +42,7 @@ object CommonUtils {
     fun getAnalyticsFileName(ids: String): String {
         val strBuilder = StringBuilder()
         val currentTime = System.currentTimeMillis()
-        val dateFormat = SimpleDateFormat("yyyy_MM_dd", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault())
         dateFormat.timeZone = TimeZone.getTimeZone("UTC")
         strBuilder.append(dateFormat.format(currentTime))
         strBuilder.append("_")
@@ -130,7 +130,8 @@ object CommonUtils {
         referenceId: String?,
         userJourney: List<ScreenDetails>?,
         analyticsRepository: AnalyticsRepository,
-        userId: String
+        userId: String,
+        lastSyncedAt: String? = null
     ) {
         val parameter = createEventParameter(
             endTime = null,
@@ -142,7 +143,7 @@ object CommonUtils {
         } else {
             UserDetail.role
         }
-        analyticsRepository.logEvent(userId, userRole = role, eventName, parameter, null)
+        analyticsRepository.logEvent(userId, userRole = role, eventName, parameter, lastSyncedAt)
     }
 
 }

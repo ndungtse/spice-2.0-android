@@ -84,8 +84,8 @@ open class BaseViewModel @Inject constructor(
         UserDetail.startDateTime = CommonUtils.getCurrentDateTimeInLocalTime()
     }
     private fun lastSyncDate(): String {
-        val longSyncedAt =
-            SecuredPreference.getLong(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
-        return if (longSyncedAt != 0L) longSyncedAt.convertToLocalDateTime() else "--"
+        val lastSyncedAt =
+            SecuredPreference.getString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
+        return lastSyncedAt ?: "--"
     }
 }

@@ -28,4 +28,13 @@ interface AnalyticsDao {
     @Query("DELETE FROM userJourneyAnalytics WHERE sessionId !=:referenceId")
     suspend fun deleteAllUserJourneys(referenceId: String)
 
+
+    @Query("DELETE FROM analytics")
+    suspend fun deleteAllAnalytics()
+
+    @Query("DELETE FROM userJourneyAnalytics")
+    suspend fun deleteAllUserJourneys()
+
+
+
 }

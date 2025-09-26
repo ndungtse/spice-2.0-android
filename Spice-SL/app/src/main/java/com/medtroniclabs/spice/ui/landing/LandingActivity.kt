@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.Constraints
 import androidx.work.Data
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
@@ -42,6 +44,7 @@ import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.setError
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
+import com.medtroniclabs.spice.appextensions.syncWorkerName
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.appextensions.workerUniqueName
@@ -933,12 +936,18 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
     private fun schedulePeriodicUploadWork(context: Context) {
         val periodicRequest =
-            PeriodicWorkRequestBuilder<UploadWorker>(30, TimeUnit.MINUTES)
+            PeriodicWorkRequestBuilder<UploadWorker>(60, TimeUnit.MINUTES)
+                .setInputData(periodicUploaderInputData())
                 .setInitialDelay(0, TimeUnit.SECONDS)
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
                 .build()
 
-        WorkManager.getInstance(context).enqueue(periodicRequest)
+        Log.i("Analytics","Periodic Request Added : ")
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "UploadWorker",
+            ExistingPeriodicWorkPolicy.REPLACE,
+            periodicRequest
+        )
     }
 
     private fun periodicUploaderInputData(): Data {

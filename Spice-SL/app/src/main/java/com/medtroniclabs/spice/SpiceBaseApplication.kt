@@ -52,12 +52,18 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
             override fun onActivityStarted(activity: Activity) {
                 activityCount++
                 if (activityCount == 1) {
-                    val backgroundTime = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.BACKGROUNDTIMESTAMP.name, 0L)
+                    val backgroundTime = SecuredPreference.getLong(
+                        SecuredPreference.EnvironmentKey.BACKGROUNDTIMESTAMP.name,
+                        0L
+                    )
                     val currentTime = System.currentTimeMillis()
                     if (backgroundTime != 0L) {
                         val diffInMinutes = (currentTime - backgroundTime) / (1000 * 60)
                         if (diffInMinutes >= 2) {
-                            SecuredPreference.putLong(SecuredPreference.EnvironmentKey.BACKGROUNDTIMESTAMP.name,0L)
+                            SecuredPreference.putLong(
+                                SecuredPreference.EnvironmentKey.BACKGROUNDTIMESTAMP.name,
+                                0L
+                            )
                             getUserJourneyAnalytics()
                         }
                     }
@@ -69,7 +75,10 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
                 if (activityCount == 0) {
                     // App has gone to background
                     Log.d("SpiceApp", "🌙 App in BACKGROUND")
-                    SecuredPreference.putLong(SecuredPreference.EnvironmentKey.BACKGROUNDTIMESTAMP.name,System.currentTimeMillis())
+                    SecuredPreference.putLong(
+                        SecuredPreference.EnvironmentKey.BACKGROUNDTIMESTAMP.name,
+                        System.currentTimeMillis()
+                    )
                     // End session tracking, etc.
                 }
             }
@@ -84,10 +93,13 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
     }
 
     private fun saveApplicationType() {
-        SecuredPreference.putString(SecuredPreference.EnvironmentKey.APPLICATION.name, getApplicationName())
+        SecuredPreference.putString(
+            SecuredPreference.EnvironmentKey.APPLICATION.name,
+            getApplicationName()
+        )
     }
 
-    private fun getApplicationName() : String {
+    private fun getApplicationName(): String {
         val packageName = applicationContext.packageName
         return when {
             packageName.contains(".sl") -> SPICE.SIERRA_LEONE.name
@@ -131,7 +143,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
             val list = analyticsRepository.getUserJourneyAnalytics()
             val userAnalytics = groupingBySessionId(list)
             UserDetail.referenceId = UUID.randomUUID().toString()
-            UserDetail.role = SecuredPreference.getRole()?:""
+            UserDetail.role = SecuredPreference.getRole() ?: ""
             SecuredPreference.putString(
                 AnalyticsDefinedParams.SessionId,
                 UserDetail.referenceId
@@ -139,23 +151,38 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
 
             userAnalytics?.second?.forEach {
                 CommonUtils.setUserJourneyData(
-                        userId= it.value[0].userID,
-                        eventName = AnalyticsDefinedParams.SessionTracking,
-                        referenceId = it.key,
-                        userJourney = it.value, analyticsRepository = analyticsRepository
-                    )
+                    userId = it.value[0].userID,
+                    eventName = AnalyticsDefinedParams.SessionTracking,
+                    referenceId = it.key,
+                    userJourney = it.value, analyticsRepository = analyticsRepository,
+                    lastSyncedAt = lastSyncDate()
+                )
             }
-           analyticsRepository.deleteAllUserJourneys(UserDetail.referenceId)
+            analyticsRepository.deleteAllUserJourneys(UserDetail.referenceId)
         }
+    }
+
+    private fun lastSyncDate(): String {
+        val lastSyncedAt =
+            SecuredPreference.getString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
+        return lastSyncedAt ?: "--"
     }
 
     private fun groupingBySessionId(list: List<UserJourneyAnalytics>): Pair<String, MutableMap<String, List<ScreenDetails>>>? {
         return when {
             list.isNotEmpty() -> {
-                Pair(list[0].userId, list.groupBy(UserJourneyAnalytics::sessionId)
-                    .mapValues { (_, analyticsList) ->
-                        analyticsList.map { ScreenDetails(it.userJourney, it.startTime ?: "",it.userId,it.userRole) }
-                    }.toMutableMap()
+                Pair(
+                    list[0].userId, list.groupBy(UserJourneyAnalytics::sessionId)
+                        .mapValues { (_, analyticsList) ->
+                            analyticsList.map {
+                                ScreenDetails(
+                                    it.userJourney,
+                                    it.startTime ?: "",
+                                    it.userId,
+                                    it.userRole
+                                )
+                            }
+                        }.toMutableMap()
                 )
             }
 

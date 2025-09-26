@@ -54,4 +54,8 @@ class AnalyticsRepository(private val ctx: Context) {
 
     suspend fun deleteAllUserJourneys(referenceId: String) =dao.deleteAllUserJourneys(referenceId)
 
+    suspend fun deleteAllAnalytics() = dao.deleteAllAnalytics()
+
+    suspend fun deleteAllUserJourneys() = dao.deleteAllUserJourneys()
+
 }
