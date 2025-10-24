@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.RadioGroup
 import androidx.fragment.app.activityViewModels
 import com.askjeffreyliu.flexboxradiogroup.FlexBoxRadioGroup
 import com.medtroniclabs.spice.R
@@ -31,8 +30,8 @@ import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 
-class GeneralDetailsFragment : BaseFragment(), View.OnClickListener,
-    RadioGroup.OnCheckedChangeListener, FlexBoxRadioGroup.OnCheckedChangeListener {
+// --- FIX 1: Remove the conflicting listener interfaces from the class declaration ---
+class GeneralDetailsFragment : BaseFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentGeneralDetailsBinding
     private val viewModel: GeneralDetailsViewModel by activityViewModels()
@@ -53,7 +52,7 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener,
 
     companion object {
         const val TAG = "GeneralDetailsFragment"
-        fun newInstance() = GeneralDetailsFragment() // Optimized: Simplified function.
+        fun newInstance() = GeneralDetailsFragment()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -94,7 +93,6 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener,
                 binding.etOthers.visible()
                 binding.etOthers.setText(viewModel.siteDetail.otherType)
             }
-
             DoorToDoor -> binding.rbTypeBtn6.isChecked = true
             Camp -> binding.rbTypeBtn7.isChecked = true
             else -> {
@@ -175,8 +173,14 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener,
             tvTitleCategory.markMandatory()
             tvTitleType.markMandatory()
             btnNext.safeClickListener(this@GeneralDetailsFragment)
-            rgCategoryRow.setOnCheckedChangeListener(this@GeneralDetailsFragment)
-            rgType.setOnCheckedChangeListener(this@GeneralDetailsFragment)
+
+            // --- FIX 3: Set listeners using modern lambda expressions ---
+            rgCategoryRow.setOnCheckedChangeListener { group, checkedId ->
+                onCategoryGroupChanged(group, checkedId)
+            }
+            rgType.setOnCheckedChangeListener { group, checkedId ->
+                onFlexBoxGroupChanged(group, checkedId)
+            }
         }
         viewModel.getSites(true)
         MotherNeonateUtil.initTextWatcherForString(binding.etOthers) {
@@ -186,7 +190,6 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener,
     }
 
     override fun onClick(view: View?) {
-        // Implement the click event as needed
         when (view?.id) {
             R.id.btnNext -> {
                 if (binding.etOthers.isVisible()) {
@@ -205,8 +208,9 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener,
         }
     }
 
-    override fun onCheckedChanged(radioGroup: RadioGroup?, radioButton: Int) {
-        when (radioGroup?.id) {
+    // --- FIX 2: Renamed method for the standard RadioGroup, remove 'override' ---
+    private fun onCategoryGroupChanged(radioGroup: android.widget.RadioGroup, radioButton: Int) {
+        when (radioGroup.id) {
             R.id.rgCategoryRow -> {
                 when (radioButton) {
                     R.id.rbFacility -> {
@@ -214,7 +218,6 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener,
                         viewModel.siteDetail.categoryDisplayName = getString(R.string.clinic)
                         showFacilityOptions()
                     }
-
                     R.id.rbCommunity -> {
                         viewModel.siteDetail.category = Community
                         viewModel.siteDetail.categoryDisplayName = getString(R.string.community)
@@ -260,8 +263,9 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener,
         }
     }
 
-    override fun onCheckedChanged(radioGroup: FlexBoxRadioGroup?, radioButton: Int) {
-        when (radioGroup?.checkedRadioButtonId) {
+    // --- FIX 2: Renamed method for the FlexBoxRadioGroup, remove 'override' ---
+    private fun onFlexBoxGroupChanged(radioGroup: FlexBoxRadioGroup, radioButton: Int) {
+        when (radioGroup.checkedRadioButtonId) {
             R.id.rbTypeBtn1 -> configureCategoryType(R.string.opd_triage, OPDTriage)
             R.id.rbTypeBtn2 -> configureCategoryType(R.string.outpatient, outpatient)
             R.id.rbTypeBtn3 -> configureCategoryType(R.string.inpatient, inpatient)
@@ -271,12 +275,11 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener,
                 viewModel.siteDetail.categoryDisplayType = getString(R.string.Other)
                 viewModel.siteDetail.categoryType = Other
             }
-
             R.id.rbTypeBtn6 -> configureCategoryType(R.string.door_to_door, DoorToDoor)
             R.id.rbTypeBtn7 -> configureCategoryType(R.string.camp, Camp)
             else -> {
                 val facilityList = listOf(Other, OPDTriage, outpatient, inpatient, Pharmacy)
-                val communityList = listOf( DoorToDoor, Camp)
+                val communityList = listOf(DoorToDoor, Camp)
                 if (viewModel.siteDetail.category == Community && (viewModel.siteDetail.categoryType == null || facilityList.contains(
                         viewModel.siteDetail.categoryType
                     ))

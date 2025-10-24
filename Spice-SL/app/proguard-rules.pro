@@ -150,3 +150,8 @@
 -keepclassmembers,allowobfuscation class * {
  @com.google.gson.annotations.SerializedName <fields>;
 }
+-dontwarn com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
+-dontwarn com.medtroniclabs.spice.app.analytics.model.ScreenDetails
+-dontwarn com.medtroniclabs.spice.app.analytics.model.UserDetail
+-dontwarn com.medtroniclabs.spice.app.analytics.model.UserJourneyAnalytics
+-dontwarn com.medtroniclabs.spice.app.analytics.utils.CommonUtils

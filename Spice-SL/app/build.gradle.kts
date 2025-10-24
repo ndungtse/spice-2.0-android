@@ -8,38 +8,53 @@ if (envFile.exists()) {
 
 plugins {
     id("com.android.application")
-    id("kotlin-android")
+    id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
-    id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("kotlin-parcelize")
 }
 
 android {
+
     namespace = "com.medtroniclabs.spice"
-    compileSdk = 35
+    compileSdk = 36
+    ndkVersion = "26.1.10909125"
 
     defaultConfig {
         applicationId = "com.medtroniclabs.spice"
         minSdk = 23
-        targetSdk = 35
-        versionCode = 10
+        targetSdk = 36
+        versionCode = 8
         versionName = "2.0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
+        missingDimensionStrategy("version", "prod")
+    }
+
+    // Make exported Room schemas available to tests
+    sourceSets {
+        getByName("androidTest") {
+            assets.srcDir("$projectDir/schemas")
+        }
+    }
+
+    lint {
+        disable += setOf("NullSafeMutableLiveData")
+        // abortOnError = false // <- enable if you need CI to pass while stabilizing
     }
 
     flavorDimensions += "version"
     productFlavors {
         create("africa") {
             dimension = "version"
-            versionName = "2.1.1"
-            versionCode = 20
+            versionName = "2.2"
+            versionCode = 24
         }
         create("sl") {
             dimension = "version"
-            versionName = "2.2"
+            versionName = "2.0.2"
             applicationIdSuffix = ".sl"
         }
         create("tiberbu") {
@@ -88,7 +103,7 @@ android {
                             buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_PROD_ADMIN_BASE_URL"]}\"")
                             buildConfigField("String", "SALT", "\"${envProperties["SL_PROD_SALT_KEY"]}\"")
                             buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_PROD_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "ComEMR")
+                            resValue("string", "spice_app_name", "SPICE 2.0")
                         }
                         "africa" -> {
                             buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_PROD_API_BASE_URL"]}\"")
@@ -121,7 +136,7 @@ android {
                             buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_DEV_ADMIN_BASE_URL"]}\"")
                             buildConfigField("String", "SALT", "\"${envProperties["SL_DEV_SALT_KEY"]}\"")
                             buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_DEV_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "ComEMR Dev")
+                            resValue("string", "spice_app_name", "SPICE 2.0 Dev")
                         }
                         "africa" -> {
                             buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_DEV_API_BASE_URL"]}\"")
@@ -140,13 +155,12 @@ android {
                     }
                 }
             }
-//            signingConfig = signingConfigs.getByName("staging")
+            signingConfig = signingConfigs.getByName("staging")
         }
 
         create("staging") {
             initWith(getByName("release"))
-            applicationIdSuffix = ".staging"
-           // versionNameSuffix = "-(20241212_02)"
+            applicationIdSuffix = ".dev"
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -159,7 +173,7 @@ android {
                         buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_STAGE_ADMIN_BASE_URL"]}\"")
                         buildConfigField("String", "SALT", "\"${envProperties["SL_STAGE_SALT_KEY"]}\"")
                         buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_STAGE_DB_ENCRYPTION_KEY"]}\"")
-                        resValue("string", "spice_app_name", "ComEMR Staging")
+                        resValue("string", "spice_app_name", "SPICE 2.0 Staging")
                     } else if (productFlavors[0].name == "africa") {
                         buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_STAGE_API_BASE_URL"]}\"")
                         buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["AF_STAGE_ADMIN_BASE_URL"]}\"")
@@ -175,7 +189,6 @@ android {
         create("training") {
             initWith(getByName("release"))
             applicationIdSuffix = ".training"
-//            versionNameSuffix = "-(20240829_01)"
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -189,14 +202,14 @@ android {
                             buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_TRAINING_ADMIN_BASE_URL"]}\"")
                             buildConfigField("String", "SALT", "\"${envProperties["SL_TRAINING_SALT_KEY"]}\"")
                             buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_TRAINING_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "ComEMR Training")
+                            resValue("string", "spice_app_name", "SPICE 2.0 Training")
                         }
                         "africa" -> {
                             buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_TRAINING_API_BASE_URL"]}\"")
                             buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["AF_TRAINING_ADMIN_BASE_URL"]}\"")
                             buildConfigField("String", "SALT", "\"${envProperties["AF_TRAINING_SALT_KEY"]}\"")
                             buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["AF_TRAINING_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "SPICE 2.1 Training")
+                            resValue("string", "spice_app_name", "SPICE Training")
                         }
                         "tiberbu" -> {
                             buildConfigField("String", "API_BASE_URL", "\"${envProperties["TBU_TRAINING_API_BASE_URL"]}\"")
@@ -224,98 +237,113 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
-    }
-
-    buildFeatures {
-        viewBinding = true
         compose = true
     }
-
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.6"
+        kotlinCompilerExtensionVersion = "1.5.15"
+    }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
+}
+
+/** Export Room schemas via KAPT (no Room plugin needed) */
+kapt {
+    correctErrorTypes = true
+    arguments {
+        arg("room.schemaLocation", "$projectDir/schemas")
+        // arg("room.incremental", "true")
+        // arg("room.expandProjection", "true")
     }
 }
 
 dependencies {
 
     implementation(project(":analytics"))
+
+    // Provide Lifecycle lint to avoid detector crashes
+    //lintChecks("androidx.lifecycle:lifecycle-runtime-lint:2.8.6")
+
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+
     implementation("androidx.hilt:hilt-common:1.2.0")
     implementation("androidx.hilt:hilt-work:1.2.0")
-    implementation("androidx.activity:activity:1.9.3")
+
+    // Use only the KTX artifact and align to latest you used elsewhere
+    implementation("androidx.activity:activity-ktx:1.9.3")
+    implementation("androidx.fragment:fragment-ktx:1.8.4")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 
-    //Dagger-Hilt
+    // Dagger-Hilt
     implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-compiler:2.50")
     kapt("androidx.hilt:hilt-compiler:1.2.0")
 
-    //Retrofit
+    // Retrofit & OkHttp
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
-    //Room database
+    // Room
     implementation("androidx.room:room-runtime:2.6.1")
-    annotationProcessor("androidx.room:room-compiler:2.6.1")
-    // To use Kotlin annotation processing tool (kapt)
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
 
-    //Kotlin coroutine dependencies
+    // Coroutines & Lifecycle
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
 
-    implementation("androidx.activity:activity-ktx:1.9.2")
-    implementation("androidx.fragment:fragment-ktx:1.8.4")
-
-    //Glide
+    // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
-    //Flexbox Layout
+    // Flexbox Layout
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 
-    //Lottie
+    // Lottie
     implementation("com.airbnb.android:lottie:6.5.0")
 
     implementation("com.jakewharton.timber:timber:5.0.1")
-
     implementation("joda-time:joda-time:2.12.5")
 
+    // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
-    //Swipe Refresh Layout
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
 
-    // Security hashing
+    // Security
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
 
-    //Workmanager
+    // WorkManager
     implementation("androidx.work:work-runtime:2.9.1")
 
-    //Local date
+    // Desugaring
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.2")
 
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
-    implementation("com.google.android.flexbox:flexbox:3.0.0")
-
     // Pagination
     implementation("androidx.paging:paging-runtime-ktx:3.3.2")
 
-    implementation("net.zetetic:sqlcipher-android:4.6.0@aar")
+    // SQLCipher & SQLite KTX
+    implementation("net.zetetic:sqlcipher-android:4.10.0@aar")
     implementation("androidx.sqlite:sqlite-ktx:2.4.0")
 
-    //in-app update
+    // In-app update
     implementation("com.google.android.play:app-update:2.1.0")
     implementation("com.google.android.play:app-update-ktx:2.1.0")
 
@@ -324,32 +352,28 @@ dependencies {
         exclude(group = "com.google.android", module = "flexbox")
     }
 
-    // Graph
-    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    // Charts
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
-    // loading progress
-    implementation ("com.github.ybq:Android-SpinKit:1.4.0")
+    // Loading progress
+    implementation("com.github.ybq:Android-SpinKit:1.4.0")
 
-    //compose
+    // Compose BOM + libs
     val composeBom = platform("androidx.compose:compose-bom:2024.10.01")
     implementation(composeBom)
     testImplementation(composeBom)
     androidTestImplementation(composeBom)
-    implementation("androidx.compose.foundation:foundation")
 
-    // Core Compose libraries
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.activity:activity-compose")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose")
     implementation("androidx.compose.runtime:runtime-livedata")
+
     implementation("com.google.accompanist:accompanist-themeadapter-material3:0.28.0")
 
-    // Debug dependencies
+    // Debug / Test for Compose
     debugImplementation("androidx.compose.ui:ui-tooling")
-
-    // Testing dependencies
     testImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.compose.ui:ui-test")
-
 }
