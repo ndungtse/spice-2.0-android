@@ -6,14 +6,12 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.data.IdentityType
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCriteria
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.CulturePreference
 import java.lang.reflect.Type
-import java.util.UUID
 
 
 object SecuredPreference {
@@ -532,6 +530,16 @@ object SecuredPreference {
         val identityTypesString = getString(EnvironmentKey.IDENTITY_TYPES.name)
         val type: Type = object : TypeToken<List<IdentityType>>() {}.type
         return Gson().fromJson(identityTypesString, type)
+    }
+
+    fun logout(isNetworkAvailable: Boolean): Boolean {
+        if (isNetworkAvailable) { // If network available usual logout
+            return logout()
+        } else { // If network not available the clear logged in flag
+            remove(EnvironmentKey.ISLOGGEDIN.name)
+            remove(EnvironmentKey.ISOFFLINELOGIN.name)
+        }
+        return true
     }
 
     fun logout(): Boolean {

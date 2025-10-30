@@ -1115,9 +1115,11 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     SecuredPreference.getString(SecuredPreference.EnvironmentKey.TOKEN.toString()))
             }
 
-            if (isPositive && SecuredPreference.logout()) {
+            val isNetworkAvailable = connectivityManager.isNetworkAvailable()
+
+            if (isPositive && SecuredPreference.logout(isNetworkAvailable)) {
                 if (CommonUtils.isPeerSuperVisor()) {
-                    if (!connectivityManager.isNetworkAvailable()) {
+                    if (!isNetworkAvailable) {
                         Handler(Looper.getMainLooper()).postDelayed({
                             showErrorDialogue(
                                 getString(R.string.error),
