@@ -3,17 +3,17 @@
     <string name="logo_description">Medtronic Logo</string>
     <string name="welcome">Welcome</string>
     <string name="login_to_your_account">Login to your account</string>
-    <string name="email">Email / Phone No</string>
+    <string name="email">Username / Email / Phone No</string>
     <string name="password">Password</string>
-    <string name="email_place_holder">Enter Email / Phone No</string>
+    <string name="email_place_holder">Enter Username / Email / Phone No</string>
     <string name="password_place_holder">Enter Password</string>
     <string name="remember_me">Remember me</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="login">Login</string>
     <string name="hide">Hide</string>
-    <string name="email_cannot_be_empty">Please enter email / phone number.</string>
+    <string name="email_cannot_be_empty">Please enter username / email / phone number.</string>
     <string name="password_cannot_be_empty">Please enter password.</string>
-    <string name="email_phone_invalid">Please enter a valid email/phone number.</string>
+    <string name="email_phone_invalid">Please enter a valid username/email/phone number.</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="logout">LOGOUT</string>
@@ -169,6 +169,7 @@
     <string name="offline_login_message">You does not have internet to connect our system. Though you can login offline for offline features. Do you wish to continue?</string>
     <string name="role">Role</string>
     <string name="email_cap">Email</string>
+    <string name="username">Username</string>
     <string name="phone_no">Phone No</string>
     <string name="assigned_health_facility">Assigned Health Facility</string>
     <string name="suite_access" translatable="false">SPICE Suite Access</string>
@@ -657,7 +658,7 @@
     <string name="confirm_password">Confirm Password </string>
     <string name="confirm_new_password">Confirm New Password </string>
     <string name="new_password">New Password</string>
-    <string name="email_registered_successfully">The reset password link has been sent to email / phone number.</string>
+    <string name="email_registered_successfully">The reset password link has been sent to username / email / phone number.</string>
     <string name="reset_password"> Reset Password </string>
     <string name="confirm_password_cannot_be_empty">Please enter password.</string>
     <string name="password_does_not_match">Password does not match</string>

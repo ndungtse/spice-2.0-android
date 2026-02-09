@@ -183,19 +183,19 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         }
 
         //Validate the username is phone number or email
-        if (userName.contains(DefinedParams.AT_CHAR)) {
-            if (!Validator.isEmailValid(userName)) {
-                binding.tvUserEmailError.visibility = View.VISIBLE
-                binding.tvUserEmailError.text = getString(R.string.email_phone_invalid)
-                return
-            }
-        } else {
-            if (!(Validator.isValidMobileNumber(userName))) {
-                binding.tvUserEmailError.visibility = View.VISIBLE
-                binding.tvUserEmailError.text = getString(R.string.email_phone_invalid)
-                return
-            }
-        }
+//        if (userName.contains(DefinedParams.AT_CHAR)) {
+//            if (!Validator.isEmailValid(userName)) {
+//                binding.tvUserEmailError.visibility = View.VISIBLE
+//                binding.tvUserEmailError.text = getString(R.string.email_phone_invalid)
+//                return
+//            }
+//        } else {
+//            if (!(Validator.isValidMobileNumber(userName))) {
+//                binding.tvUserEmailError.visibility = View.VISIBLE
+//                binding.tvUserEmailError.text = getString(R.string.email_phone_invalid)
+//                return
+//            }
+//        }
 
         // Check network connection and offline login
         binding.tvUserEmailError.visibility = View.GONE

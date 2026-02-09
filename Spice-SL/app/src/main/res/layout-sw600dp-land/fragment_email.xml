@@ -55,7 +55,7 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvEmailLabel"
                     style="@style/TextStyle_Regular_14"
-                    android:text="@string/email" />
+                    android:text="@string/username" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tlEmail"

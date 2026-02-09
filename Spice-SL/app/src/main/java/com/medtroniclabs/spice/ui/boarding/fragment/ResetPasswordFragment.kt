@@ -66,19 +66,19 @@ class ResetPasswordFragment : BaseFragment(), View.OnClickListener {
             return
         }
 
-        if (emailOrPhoneNumber.contains(DefinedParams.AT_CHAR)) {
-            if (!Validator.isEmailValid(emailOrPhoneNumber)) {
-                binding.tvEmailError.visible()
-                binding.tvEmailError.text = getString(R.string.email_phone_invalid)
-                return
-            }
-        } else {
-            if (!(Validator.isValidMobileNumber(emailOrPhoneNumber))) {
-                binding.tvEmailError.visible()
-                binding.tvEmailError.text = getString(R.string.email_phone_invalid)
-                return
-            }
-        }
+//        if (emailOrPhoneNumber.contains(DefinedParams.AT_CHAR)) {
+//            if (!Validator.isEmailValid(emailOrPhoneNumber)) {
+//                binding.tvEmailError.visible()
+//                binding.tvEmailError.text = getString(R.string.email_phone_invalid)
+//                return
+//            }
+//        } else {
+//            if (!(Validator.isValidMobileNumber(emailOrPhoneNumber))) {
+//                binding.tvEmailError.visible()
+//                binding.tvEmailError.text = getString(R.string.email_phone_invalid)
+//                return
+//            }
+//        }
         binding.tvEmailError.gone()
         withNetworkAvailability(online = { viewModel.resetEmail(emailOrPhoneNumber) })
     }
