@@ -4,6 +4,10 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
@@ -25,6 +29,9 @@ import com.medtroniclabs.spice.app.analytics.model.UserJourneyAnalytics
 import com.medtroniclabs.spice.common.SPICE
 
 
+const val ACTIVITY_LIFECYCLE = "ActivityLifeCycle"
+const val FRAGMENT_LIFECYCLE = "FragmentLifecycle"
+
 @HiltAndroidApp
 class SpiceBaseApplication : Application(), Configuration.Provider {
 
@@ -37,6 +44,9 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
 
     private var activityCount = 0
 
+    private var fragmentCallbacks =
+        mutableMapOf<Activity, FragmentManager.FragmentLifecycleCallbacks>()
+
 
     override fun onCreate() {
         super.onCreate()
@@ -47,9 +57,20 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
         handleAppForeground()
     }
 
+    private fun logActivityState(activity: Activity, state: String) {
+        Timber.tag(ACTIVITY_LIFECYCLE)
+            .d("$state : ${activity.javaClass.name} ${activity.hashCode()}")
+    }
+
+    private fun logFragmentState(activity: Activity, fragment: Fragment, state: String) {
+        Timber.tag(FRAGMENT_LIFECYCLE)
+            .d("$state : ${fragment.javaClass.name} ${fragment.hashCode()} in ${activity.javaClass.name} ${activity.hashCode()}")
+    }
+
     private fun handleAppForeground() {
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityStarted(activity: Activity) {
+                logActivityState(activity, "onActivityStarted")
                 activityCount++
                 if (activityCount == 1) {
                     val backgroundTime = SecuredPreference.getLong(
@@ -71,6 +92,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
             }
 
             override fun onActivityStopped(activity: Activity) {
+                logActivityState(activity, "onActivityStopped")
                 activityCount--
                 if (activityCount == 0) {
                     // App has gone to background
@@ -84,12 +106,47 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
             }
 
             // Other lifecycle methods — no-op
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                logActivityState(activity, "onActivityCreated")
+                registerFragmentLifecycleCallbacks(activity as? AppCompatActivity)
+            }
+
             override fun onActivityResumed(activity: Activity) {}
             override fun onActivityPaused(activity: Activity) {}
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-            override fun onActivityDestroyed(activity: Activity) {}
+            override fun onActivityDestroyed(activity: Activity) {
+                logActivityState(activity, "onActivityDestroyed")
+                unRegisterFragmentLifecycleCallbacks(activity as? AppCompatActivity)
+            }
         })
+    }
+
+    private fun registerFragmentLifecycleCallbacks(activity: AppCompatActivity?) {
+        activity ?: return
+        val listener = object : FragmentManager.FragmentLifecycleCallbacks() {
+            override fun onFragmentViewCreated(
+                fm: FragmentManager,
+                fragment: Fragment,
+                v: View,
+                savedInstanceState: Bundle?
+            ) {
+                super.onFragmentViewCreated(fm, fragment, v, savedInstanceState)
+                logFragmentState(activity, fragment, "onFragmentViewCreated")
+            }
+
+            override fun onFragmentViewDestroyed(fm: FragmentManager, fragment: Fragment) {
+                super.onFragmentViewDestroyed(fm, fragment)
+                logFragmentState(activity, fragment, "onFragmentViewDestroyed")
+            }
+        }
+        activity.supportFragmentManager.registerFragmentLifecycleCallbacks(listener, true)
+        fragmentCallbacks[activity] = listener
+    }
+
+    private fun unRegisterFragmentLifecycleCallbacks(activity: AppCompatActivity?) {
+        activity ?: return
+        val listener = fragmentCallbacks[activity] ?: return
+        activity.supportFragmentManager.unregisterFragmentLifecycleCallbacks(listener)
     }
 
     private fun saveApplicationType() {

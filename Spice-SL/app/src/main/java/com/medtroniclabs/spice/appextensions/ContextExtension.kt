@@ -158,7 +158,7 @@ fun Context.showNotification(title: String = "Background Task", message: String 
     val notification = NotificationCompat.Builder(this, channelId)
         .setContentTitle(title)
         .setContentText(message)
-        .setSmallIcon(R.drawable.ic_com_emr_notification)
+        .setSmallIcon(R.drawable.ic_splash_icon)
         .build()
 
     notificationManager.notify(notificationId, notification)
