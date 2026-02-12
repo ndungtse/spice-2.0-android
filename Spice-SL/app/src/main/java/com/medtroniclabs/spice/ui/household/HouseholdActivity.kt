@@ -201,6 +201,13 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
                                 UserDetail.startDateTime
                             )
                         }
+                        // Check if this is the first member (household head registration)
+                        val isFirstMember = !householdRegistrationViewModel.isMemberRegistration && 
+                                            memberId == -1L &&
+                                            householdRegistrationViewModel.householdEntityDetail != null
+                        if (isFirstMember) {
+                            setTitle(getString(R.string.household_head_registration))
+                        }
                         launchMemberRegistrationFragment(arguments)
                     }
                 }

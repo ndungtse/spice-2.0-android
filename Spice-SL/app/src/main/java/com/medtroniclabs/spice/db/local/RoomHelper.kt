@@ -46,6 +46,9 @@ import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 import com.medtroniclabs.spice.db.entity.LinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaEntity
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaLinkedVillageEntity
+import com.medtroniclabs.spice.db.entity.SubVillageEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
@@ -76,6 +79,7 @@ interface RoomHelper {
     suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long
     suspend fun updateHousehold(householdEntity: HouseholdEntity)
     suspend fun getLastHouseholdNo(villageId: Long): Long?
+    suspend fun checkHouseholdNumberExists(householdNo: Long): Boolean
     suspend fun getHouseHoldDetailsById(houseHoldId: Long): HouseholdEntity
     suspend fun registerMember(householdMemberEntity: HouseholdMemberEntity): Long
     suspend fun getAllHouseHoldMemberList(houseHoldId: Long): ArrayList<HouseholdMemberEntity>
@@ -99,6 +103,20 @@ interface RoomHelper {
 
     suspend fun deleteAllLinkedVillages()
     suspend fun getVillagesByChiefDom(chiefdomId: Long): List<VillageEntity>
+    
+    // SubVillage methods
+    suspend fun saveSubVillages(subVillageEntityList: List<SubVillageEntity>)
+    suspend fun deleteAllSubVillages()
+    
+    // ShasthyaShebika methods
+    suspend fun saveShasthyaShebikas(shasthyaShebikaEntityList: List<ShasthyaShebikaEntity>)
+    suspend fun deleteAllShasthyaShebikas()
+    suspend fun getShasthyaShebikaByShasthyaKormiId(shasthyaKormiId: Long): List<ShasthyaShebikaEntity>
+    
+    // ShasthyaShebikaLinkedVillage methods
+    suspend fun insertShasthyaShebikaLinkedVillages(linkedVillages: List<ShasthyaShebikaLinkedVillageEntity>)
+    suspend fun deleteAllShasthyaShebikaLinkedVillages()
+    suspend fun getSubVillagesByShasthyaShebikaId(shasthyaShebikaId: Long): List<SubVillageEntity>
     suspend fun deleteAllVillages()
     suspend fun deleteAllHouseholds()
     suspend fun deleteAllHouseholdMembers()
@@ -307,9 +325,6 @@ interface RoomHelper {
     suspend fun deleteAllConsentForm()
 
     suspend fun getHHSignatureDetails(): List<HHSignatureDetail>
-
-    //UpdateHouseHoldNumber
-    suspend fun updateHeadPhoneNumber(id: Long, phoneNumber: String, phoneNumberCategory: String)
 
     suspend fun updatePhoneNumberForHouseholdHead(id: Long, phoneNumber: String?, phoneNumberCategory: String?)
 

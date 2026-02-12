@@ -10,6 +10,8 @@ import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.db.entity.VillageEntity
+import com.medtroniclabs.spice.data.model.ShasthyaShebika
+import com.medtroniclabs.spice.data.model.SubVillage
 
 data class MetaDataResponse(
     val nearestHealthFacilities: List<HealthFacility>,
@@ -28,7 +30,9 @@ data class MetaDataResponse(
     val appTypes: ArrayList<String>? = null,
     val remainingAttemptsCount: Int? = null,
     val consentForm: ConsentFormResponse ? = null,
-    val medicationInstructions: List<String>? = null
+    val medicationInstructions: List<String>? = null,
+    val subVillages: List<SubVillage>? = null,
+    val shasthyaShebikas: List<ShasthyaShebika>? = null
 )
 
 data class Designation(

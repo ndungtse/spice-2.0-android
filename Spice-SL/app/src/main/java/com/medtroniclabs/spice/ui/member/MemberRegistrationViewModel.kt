@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.member
 
+import android.content.Context
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -18,10 +19,12 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.HouseholdHead
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,6 +34,7 @@ class MemberRegistrationViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val memberRegistrationRepository: HouseholdMemberRepository,
     private val houseHoldRepository: HouseHoldRepository,
+    @ApplicationContext private val context: Context
 ) : BaseViewModel(dispatcherIO) {
 
     var selectedHouseholdId: Long = -1L
@@ -59,7 +63,17 @@ class MemberRegistrationViewModel @Inject constructor(
 
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
-            formLayoutsLiveData.postValue(houseHoldRepository.getFormData(formType))
+//            if (formType == com.medtroniclabs.spice.common.DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION) {
+//                // Load from assets for member registration
+//                try {
+//                    val jsonString = CommonUtils.getStringFromAssets("member_registration.json", context.assets)
+//                    formLayoutsLiveData.postValue(Resource(state = ResourceState.SUCCESS, data = jsonString))
+//                } catch (e: Exception) {
+//                    formLayoutsLiveData.postValue(Resource(state = ResourceState.ERROR))
+//                }
+//            } else {
+                formLayoutsLiveData.postValue(houseHoldRepository.getFormData(formType))
+//            }
         }
     }
 
@@ -87,6 +101,15 @@ class MemberRegistrationViewModel @Inject constructor(
                       householdEntity.latitude = it.latitude
                       householdEntity.longitude = it.longitude
                   }
+                  
+                  // Update household name with member name if it's the household head
+                  val memberName = memberResultMap[MemberRegistration.name]
+                  if (memberName != null) {
+                      householdEntity.name = CommonUtils.getStringOrEmptyString(memberName)
+                      // Set isHouseholdHead to true when updating household name with member name
+                      memberResultMap[MemberRegistration.isHouseholdHead] = true
+                  }
+                  
                   val houseHoldId = houseHoldRepository.insertHouseHoldEntity(householdEntity)
 
 
@@ -156,9 +179,9 @@ class MemberRegistrationViewModel @Inject constructor(
             dateOfBirth = map[MemberRegistration.dateOfBirth]?.toString().orEmpty()
             gender = map[MemberRegistration.gender]?.toString().orEmpty()
             phoneNumber = map[MemberRegistration.phoneNumber]?.toString().orEmpty()
-            phoneNumberCategory = map[MemberRegistration.phoneNumberCategory]?.toString().orEmpty()
+            phoneNumberCategory = null
             provenance = ProvanceDto()
-            isPregnant = map[MemberRegistration.isPregnant]?.let { CommonUtils.getIsBooleanFromString(it) }
+            isPregnant = null
             location?.let {
                 longitude=location.longitude
                 latitude=location.latitude

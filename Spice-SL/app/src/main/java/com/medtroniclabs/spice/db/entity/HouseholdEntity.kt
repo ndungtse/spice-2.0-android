@@ -19,32 +19,20 @@ data class HouseholdEntity(
     @ColumnInfo(name = "village_id")
     var villageId: Long = 0,
 
-    @ColumnInfo(name = "landmark")
-    var landmark: String? = null,
-
-    @ColumnInfo(name = "head_phone_number")
-    var headPhoneNumber: String? = null,
-
-    @ColumnInfo(name = "head_phone_number_category")
-    var headPhoneNumberCategory: String? = null,
-
     @ColumnInfo(name = "no_of_people")
     var noOfPeople: Int = 0,
 
-    @ColumnInfo("is_owned_an_improved_latrine")
-    var isOwnedAnImprovedLatrine: Boolean = false,
+    @ColumnInfo(name = "shasthya_shebika_id")
+    var shasthyaShebikaId: Long? = null,
 
-    @ColumnInfo("has_improved_water_source")
-    var hasImprovedWaterSource: Boolean = false,
+    @ColumnInfo(name = "sub_village_id")
+    var subVillageId: Long? = null,
 
-    @ColumnInfo("is_owned_hand_washing_facility_with_soap")
-    var isOwnedHandWashingFacilityWithSoap: Boolean = false,
+    @ColumnInfo(name = "household_type")
+    var householdType: String? = null,
 
-    @ColumnInfo("is_owned_a_treated_bed_net")
-    var isOwnedATreatedBedNet: Boolean = false,
-
-    @ColumnInfo("bed_net_count")
-    var bedNetCount: Int? = null,
+    @ColumnInfo(name = "monthly_income")
+    var monthlyIncome: Double? = null,
 
     @ColumnInfo("latitude")
     var latitude: Double = 0.0,

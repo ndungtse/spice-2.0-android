@@ -919,7 +919,7 @@ class OfflineSyncRepository @Inject constructor(
         val members = roomHelper.getOtherHouseholdMembers(householdMemberIds) /*Hot Fix Change - Need to check*/
         val otherMembers = formatMemberForPnc(members, householdMemberIds, assessmentIds, rxBuddyRegisterIds, rxBuddyFollowUpIds)
 
-        val assignedMemberIds = otherMembers.filter { it.assignHousehold == true && it.id != null }.map { it.id!! }
+        val assignedMemberIds = otherMembers.filter { (it.assignHousehold == 1) && it.id != null }.map { it.id!! }
 
         //Assessment
         val otherAssessments = getOtherUnSyncedAssessments(assessmentIds) /*Hot Fix change - Done*/

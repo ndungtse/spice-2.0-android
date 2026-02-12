@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
@@ -25,19 +27,12 @@ import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.bedNetCount
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.hasImprovedWaterSource
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumberCategory
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.householdName
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.isOwnedATreatedBedNet
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.isOwnedAnImprovedLatrine
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.isOwnedHandWashingFacilityWithSoap
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.landmark
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.no
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.noOfPeople
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.totalMembers
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -53,6 +48,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
     private lateinit var formGenerator: FormGenerator
     private var onDismissListener: OnDialogDismissListener? = null
     private val householdRegistrationViewModel: HouseRegistrationViewModel by activityViewModels()
+    private var pendingSubVillageId: Long? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -74,6 +70,10 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
         initializeFormGenerator()
         setListeners()
         attachObservers()
+        // Generate random 10-digit household number when page loads (only for new household registration)
+        if (householdRegistrationViewModel.householdId == -1L) {
+            householdRegistrationViewModel.generateHouseholdNumber()
+        }
     }
 
     private fun attachObservers() {
@@ -98,11 +98,32 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
             }
         }
 
+        // Observe generated household number and populate the field
+        householdRegistrationViewModel.generatedHouseholdNumberLiveData.observe(viewLifecycleOwner) { householdNumber ->
+            if (householdRegistrationViewModel.householdId == -1L) {
+                // Only populate for new household registration
+                formGenerator.getViewByTag(HouseHoldRegistration.householdNumber)?.let { view ->
+                    formGenerator.setValueForView(householdNumber.toString(), view)
+                }
+            }
+        }
+
         householdRegistrationViewModel.villageListResponse.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.SUCCESS -> {
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
+
+                        // Auto-select if single village
+                        if (data.response is List<*> && (data.response as List<*>).size == 1) {
+                            val singleItem = (data.response as List<*>)[0]
+                            if (singleItem is Map<*, *>) {
+                                val id = singleItem[DefinedParams.ID]
+                                formGenerator.getViewByTag(villageId)?.let { view ->
+                                    formGenerator.setValueForView(id, view)
+                                }
+                            }
+                        }
 
                         arguments?.getLong(VillageId)?.let {
                             if (it != 0L) {
@@ -111,6 +132,73 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                                     formGenerator.setValueForView(it, view)
                                 }
                             }
+                        }
+                    }
+                }
+                else -> {
+                    //Invoked if response state is not success
+                }
+            }
+        }
+
+        householdRegistrationViewModel.shasthyaShebikaListResponse.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.SUCCESS -> {
+                    resourceState.data?.let { data ->
+                        formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
+
+                        // Auto-select if single shasthya shebika
+                        if (data.response is List<*> && (data.response as List<*>).size == 1) {
+                            val singleItem = (data.response as List<*>)[0]
+                            if (singleItem is Map<*, *>) {
+                                val id = singleItem[DefinedParams.ID]
+                                formGenerator.getViewByTag(HouseHoldRegistration.shasthyaShebikaId)?.let { view ->
+                                    formGenerator.setValueForView(id, view)
+                                    // Trigger sub-village loading
+                                    val shasthyaShebikaIdLong = com.medtroniclabs.spice.common.CommonUtils.getLongOrNull(id) ?: 0L
+                                    if (shasthyaShebikaIdLong != 0L) {
+                                        householdRegistrationViewModel.loadSubVillageDataCacheByType(
+                                            HouseHoldRegistration.subVillageId,
+                                            "",
+                                            shasthyaShebikaIdLong
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    //Invoked if response state is not success
+                }
+            }
+        }
+
+        householdRegistrationViewModel.subVillageListResponse.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.SUCCESS -> {
+                    resourceState.data?.let { data ->
+                        formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
+
+                        // Auto-select if single sub village
+                        if (data.response is List<*> && (data.response as List<*>).size == 1) {
+                            val singleItem = (data.response as List<*>)[0]
+                            if (singleItem is Map<*, *>) {
+                                val id = singleItem[DefinedParams.ID]
+                                formGenerator.getViewByTag(HouseHoldRegistration.subVillageId)?.let { view ->
+                                    formGenerator.setValueForView(id, view)
+                                }
+                            }
+                        }
+                        
+                        // Set pending sub village ID if available (for edit mode)
+                        pendingSubVillageId?.let { subVillageId ->
+                            if (subVillageId != 0L) {
+                                formGenerator.getViewByTag(HouseHoldRegistration.subVillageId)?.let { view ->
+                                    formGenerator.setValueForView(subVillageId, view)
+                                }
+                            }
+                            pendingSubVillageId = null // Clear after setting
                         }
                     }
                 }
@@ -147,102 +235,43 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
         formGenerator.getViewByTag(villageId)?.let { view ->
             if (details.villageId != 0L) {
                 view.isEnabled = false
+                formGenerator.setValueForView(details.villageId, view)
             }
-            formGenerator.setValueForView(details.villageId, view)
         }
-        formGenerator.getViewByTag(landmark)?.let { view ->
-            formGenerator.setValueForView(details.landmark, view)
-        }
-        formGenerator.getViewByTag(headPhoneNumber)?.let { view ->
-            formGenerator.setValueForView(details.headPhoneNumber, view)
-        }
-
-        formGenerator.getViewByTag(headPhoneNumberCategory)?.let { view ->
-            formGenerator.setValueForView(details.headPhoneNumberCategory, view)
-        }
-
         formGenerator.getViewByTag(noOfPeople)?.let { view ->
             formGenerator.setValueForView(details.noOfPeople, view)
         }
-        details.isOwnedAnImprovedLatrine.let {
-            when (getBooleanAsString(it)) {
-                yes -> {
-                    singleSelectValueOption(
-                        yes,
-                        isOwnedAnImprovedLatrine
-                    )
-                }
-
-                no -> {
-                    singleSelectValueOption(
-                        no,
-                        isOwnedAnImprovedLatrine
-                    )
-                }
-
-                else -> {}
+        formGenerator.getViewByTag(totalMembers)?.let { view ->
+            formGenerator.setValueForView(details.noOfPeople, view)
+        }
+        formGenerator.getViewByTag(HouseHoldRegistration.shasthyaShebikaId)?.let { view ->
+            val shasthyaShebikaId = details.shasthyaShebikaId
+            if (shasthyaShebikaId != null && shasthyaShebikaId != 0L) {
+                formGenerator.setValueForView(shasthyaShebikaId, view)
+                // Store sub village ID to set after list is loaded
+                pendingSubVillageId = details.subVillageId
+                // Load sub villages
+                householdRegistrationViewModel.loadSubVillageDataCacheByType(
+                    HouseHoldRegistration.subVillageId,
+                    "",
+                    shasthyaShebikaId
+                )
             }
         }
-
-        details.hasImprovedWaterSource.let {
-            when (getBooleanAsString(it)) {
-                yes -> {
-                    singleSelectValueOption(
-                        yes,
-                        hasImprovedWaterSource
-                    )
-                }
-
-                no -> {
-                    singleSelectValueOption(
-                        no,
-                        hasImprovedWaterSource
-                    )
-                }
-
-                else -> {}
+        formGenerator.getViewByTag(HouseHoldRegistration.householdType)?.let { view ->
+            details.householdType?.let { type ->
+                formGenerator.setValueForView(type, view)
             }
         }
-
-        details.isOwnedHandWashingFacilityWithSoap.let {
-            when (getBooleanAsString(it)) {
-                yes -> {
-                    singleSelectValueOption(
-                        yes,
-                        isOwnedHandWashingFacilityWithSoap
-                    )
-                }
-
-                no -> {
-                    singleSelectValueOption(
-                        no,
-                        isOwnedHandWashingFacilityWithSoap
-                    )
-                }
-
-                else -> {}
+        formGenerator.getViewByTag(HouseHoldRegistration.monthlyIncome)?.let { view ->
+            details.monthlyIncome?.let { income ->
+                // Convert Double to String for EditText
+                formGenerator.setValueForView(income.toString(), view)
             }
         }
-        details.isOwnedATreatedBedNet.let {
-            when (getBooleanAsString(it)) {
-                yes -> {
-                    singleSelectValueOption(
-                        yes,
-                        isOwnedATreatedBedNet
-                    )
-                    formGenerator.getViewByTag(bedNetCount)?.let { view ->
-                        formGenerator.setValueForView(details.bedNetCount, view)
-                    }
-                }
-
-                no -> {
-                    singleSelectValueOption(
-                        no,
-                        isOwnedATreatedBedNet
-                    )
-                }
-
-                else -> {}
+        formGenerator.getViewByTag(HouseHoldRegistration.householdNumber)?.let { view ->
+            details.householdNo?.let { householdNo ->
+                formGenerator.setValueForView(householdNo.toString(), view)
             }
         }
     }
@@ -302,7 +331,29 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
 
     override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
         if (localDataCache is String) {
-            householdRegistrationViewModel.loadDataCacheByType(id, localDataCache)
+            when (id) {
+                HouseHoldRegistration.villageId -> {
+                    householdRegistrationViewModel.loadDataCacheByType(id, localDataCache)
+                }
+                HouseHoldRegistration.shasthyaShebikaId -> {
+                    householdRegistrationViewModel.loadShasthyaShebikaDataCacheByType(id, localDataCache)
+                }
+                HouseHoldRegistration.subVillageId -> {
+                    // This will be triggered when shasthya shebika is selected (via dependentID)
+                    // selectedParent should contain the shasthya shebika id
+                    val shasthyaShebikaIdLong = selectedParent ?: 0L
+                    if (shasthyaShebikaIdLong != 0L) {
+                        // Clear sub village when parent changes
+                        formGenerator.getViewByTag(HouseHoldRegistration.subVillageId)?.let { view ->
+                            formGenerator.setValueForView("", view)
+                        }
+                        householdRegistrationViewModel.loadSubVillageDataCacheByType(id, localDataCache, shasthyaShebikaIdLong)
+                    }
+                }
+                else -> {
+                    householdRegistrationViewModel.loadDataCacheByType(id, localDataCache)
+                }
+            }
         }
     }
 
@@ -343,6 +394,10 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
     }
 
     override fun onRenderingComplete() {
+        // Load initial data
+        householdRegistrationViewModel.loadDataCacheByType(HouseHoldRegistration.villageId, HouseHoldRegistration.villageId)
+        householdRegistrationViewModel.loadShasthyaShebikaDataCacheByType(HouseHoldRegistration.shasthyaShebikaId, HouseHoldRegistration.shasthyaShebikaId)
+        
         if (householdRegistrationViewModel.householdId != -1L) {
             householdRegistrationViewModel.getHouseholdDetailsByID(householdRegistrationViewModel.householdId)
         }

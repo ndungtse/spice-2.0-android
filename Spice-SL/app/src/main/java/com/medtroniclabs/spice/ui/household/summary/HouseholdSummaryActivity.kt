@@ -77,7 +77,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     private fun attachObserver() {
 
         householdSummaryViewModel.householdCardDetailLiveData.observe(this) {
-            setTitle(it.name.capitalizeFirstChar() +" "+ getString(R.string.household))
+            setTitle(getString(R.string.household_family, it.name.capitalizeFirstChar()))
             initializePhuLinkFlow()
         }
 

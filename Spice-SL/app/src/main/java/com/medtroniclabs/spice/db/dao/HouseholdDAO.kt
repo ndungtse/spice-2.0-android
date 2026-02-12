@@ -46,13 +46,16 @@ interface HouseholdDAO {
     @Query("SELECT MAX(household_no) FROM household WHERE village_id = :villageId")
     suspend fun getLastHouseholdNo(villageId: Long): Long?
 
+    @Query("SELECT COUNT(*) FROM household WHERE household_no = :householdNo")
+    suspend fun checkHouseholdNumberExists(householdNo: Long): Int
+
     @Query("SELECT * FROM (SELECT hh.*, ve.name as village_name, COUNT(hhm.household_id) AS member_count, case when :status == '' then '' when COUNT(hhm.household_id) == hh.no_of_people then 'Finished' " +
-            " when COUNT(hhm.household_id) != hh.no_of_people then 'Pending' else '' end as status FROM Household AS hh LEFT JOIN HouseholdMember AS hhm ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE (hh.name LIKE '%' || :searchTerm || '%' OR hh.household_no LIKE :searchTerm OR hh.head_phone_number LIKE :searchTerm) GROUP BY hh.id) as subTable Where status=:status")
+            " when COUNT(hhm.household_id) != hh.no_of_people then 'Pending' else '' end as status FROM Household AS hh LEFT JOIN HouseholdMember AS hhm ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE (hh.name LIKE '%' || :searchTerm || '%' OR hh.household_no LIKE :searchTerm) GROUP BY hh.id) as subTable Where status=:status")
     fun getHouseholdsWithFilterLiveData(
         searchTerm: String, status: String): LiveData<List<HouseHoldEntityWithMemberCount>>
 
     @Query("SELECT * FROM (SELECT hh.*, ve.name as village_name, COUNT(hhm.household_id) AS member_count, case when :status == '' then '' when COUNT(hhm.household_id) == hh.no_of_people then 'Finished' " +
-            " when COUNT(hhm.household_id) != hh.no_of_people then 'Pending' else '' end as status FROM Household AS hh LEFT JOIN HouseholdMember AS hhm ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE hh.village_id IN (:ids) AND (hh.name LIKE '%' || :searchTerm || '%' OR hh.household_no LIKE :searchTerm OR hh.head_phone_number LIKE :searchTerm) GROUP BY hh.id) as subTable Where status=:status")
+            " when COUNT(hhm.household_id) != hh.no_of_people then 'Pending' else '' end as status FROM Household AS hh LEFT JOIN HouseholdMember AS hhm ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE hh.village_id IN (:ids) AND (hh.name LIKE '%' || :searchTerm || '%' OR hh.household_no LIKE :searchTerm) GROUP BY hh.id) as subTable Where status=:status")
     fun getHouseholdsWithFilterLiveData(
         searchTerm: String,
         status: String,
@@ -83,7 +86,7 @@ interface HouseholdDAO {
     @Query("DELETE FROM Household")
     suspend fun deleteAllHouseholds()
 
-    @Query("SELECT hh.id, hh.name, hh.household_no AS householdNo, hh.landmark, ve.name AS villageName, hh.head_phone_number AS householdHeadPhoneNumber, hh.no_of_people AS memberRegistered, COUNT(hhm.id) AS memberAdded " +
+    @Query("SELECT hh.id, hh.name, hh.household_no AS householdNo, ve.name AS villageName, hh.no_of_people AS memberRegistered, COUNT(hhm.id) AS memberAdded " +
             "FROM Household as hh INNER JOIN VillageEntity as ve ON hh.village_id = ve.id LEFT JOIN HouseholdMember as hhm ON hhm.household_id = hh.id  WHERE hh.id =:id")
     fun getHouseholdCardDetailLiveData(id: Long): LiveData<HouseholdCardDetail>
 
@@ -91,8 +94,6 @@ interface HouseholdDAO {
     @Query("UPDATE HouseHold SET sync_status =:syncStatus, updated_at =:updatedAt WHERE id IN (:householdIds)")
     suspend fun updateInProgress(householdIds: List<String>, syncStatus: String, updatedAt: Long = System.currentTimeMillis())
 
-    @Query("UPDATE Household SET head_phone_number = :phoneNumber, head_phone_number_category = :phoneNumberCategory,  sync_status =:syncStatus, updated_at =:updatedAt WHERE id = :id")
-    fun updateHeadPhoneNumber(id: Long, phoneNumber: String, phoneNumberCategory: String, syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis())
 
 
     @Query("SELECT hh.*, ve.name as villageName FROM HouseHold as hh INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id INNER JOIN HouseholdMember as hhm ON hh.id = hhm.household_id WHERE hh.fhir_id IS NULL AND hhm.id = :hhmId AND hh.sync_status IN (:status)")

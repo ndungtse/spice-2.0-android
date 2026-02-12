@@ -30,17 +30,11 @@ data class HouseHoldMember(
     @ColumnInfo("phone_number")
     val phoneNumber: String,
 
-    @ColumnInfo("phone_number_category")
-    val phoneNumberCategory: String,
-
     @ColumnInfo("patient_id")
     val patientId: String? = null,
 
     @ColumnInfo("gender")
     val gender: String,
-
-    @ColumnInfo("household_head_relationship")
-    val householdHeadRelationship: String?,
 
     @ColumnInfo("created_at")
     val createdAt: Long,
@@ -54,19 +48,15 @@ data class HouseHoldMember(
     @ColumnInfo(name = "village_id")
     val villageId: Long,
 
-    @ColumnInfo(name = "parentId")
-    val motherPatientId: String? = null,
+    @ColumnInfo(name = "sub_village_name")
+    val subVillage: String? = null,
 
-    @ColumnInfo(name = "isPregnant")
-    val isPregnant: Boolean? = null,
+    @ColumnInfo(name = "sub_village_id")
+    val subVillageId: Long? = null,
 
     val motherReferenceId: String? = null,
 
     val isActive: Boolean = true,
-
-    val signature: String? = null,
-
-    val initial: String? = null,
 
     val version: String? = null,
 
@@ -74,13 +64,21 @@ data class HouseHoldMember(
 
     var deceasedReason: String? = null,
 
-    val assignHousehold: Boolean? = null,
-
-    val hasTbContactTracing: Boolean? = null,
-
     var latitude: Double = 0.0,
 
-    var longitude: Double = 0.0
+    var longitude: Double = 0.0,
+
+    @ColumnInfo("id_type")
+    val idType: String = "",
+
+    @ColumnInfo("national_id")
+    val nationalId: String? = null,
+
+    @ColumnInfo("is_house_hold_head")
+    val isHouseholdHead: Boolean = false,
+
+    @ColumnInfo("assignHousehold")
+    val assignHousehold: Int? = null
 
 ) {
 
@@ -104,38 +102,25 @@ data class HouseHoldMember(
             id = id,
             name = this.name,
             phoneNumber = this.phoneNumber,
-            phoneNumberCategory = toRegularCase(this.phoneNumberCategory),
             dateOfBirth = this.dateOfBirth,
             gender = this.gender,
-            householdHeadRelationship = this.householdHeadRelationship ?: "",
             householdId = hhId,
             patientId = this.patientId,
-            parentId = this.motherPatientId,
-            isPregnant = this.isPregnant,
             villageId = this.villageId,
             isActive = this.isActive,
-            signature = this.signature,
-            initial = this.initial,
             version = this.version,
             lastUpdated = this.lastUpdated,
+            motherReferenceId = this.motherReferenceId?.toLongOrNull(),
             deceasedReason = this.deceasedReason,
-            tBContactTraceStatus = getTBContactStatus(this.hasTbContactTracing),
             latitude = this.latitude,
             longitude = this.longitude,
+            idType = this.idType,
+            nationalId = this.nationalId,
+            isHouseholdHead = this.isHouseholdHead,
+            householdFhirId = this.householdId
         ).apply {
             fhirId = this@HouseHoldMember.id.toString()
             sync_status = status
         }
-    }
-
-    private fun getTBContactStatus(flag: Boolean?): Int? = when (flag) {
-        null -> null
-        true -> 0
-        false -> 1
-    }
-
-    private fun toRegularCase(sentence: String): String {
-        return sentence.split(" ")
-            .joinToString(" ") { it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } }
     }
 }

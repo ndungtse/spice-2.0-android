@@ -46,8 +46,6 @@ class HouseholdDetailsFragment : Fragment() {
 
         addHouseholdNoView(houseHoldDetail.householdNo?.toString() ?: getString(R.string.separator_double_hyphen))
         addVillageNameView(houseHoldDetail.villageName)
-        addLandmarkView(houseHoldDetail.landmark)
-        addHouseholdHeadNumberView(houseHoldDetail.householdHeadPhoneNumber)
         addMemberRegisteredView(houseHoldDetail.memberRegistered, houseHoldDetail.memberAdded)
     }
 
@@ -65,20 +63,6 @@ class HouseholdDetailsFragment : Fragment() {
         binding.llDetails.addView(view.root)
     }
 
-    private fun addLandmarkView(landmark: String?) {
-        val view = SummaryListItemBinding.inflate(LayoutInflater.from(context))
-        view.tvLabel.text = getString(R.string.landmark)
-        view.tvValue.text = landmark ?: getString(R.string.hyphen_symbol)
-        binding.llDetails.addView(view.root)
-    }
-
-    private fun addHouseholdHeadNumberView(householdHeadPhoneNo: String?) {
-        val phoneNumberCode = SecuredPreference.getPhoneNumberCode()
-        val view = SummaryListItemBinding.inflate(LayoutInflater.from(context))
-        view.tvLabel.text = getString(R.string.hh_mobile_number)
-        view.tvValue.text = "+${phoneNumberCode} $householdHeadPhoneNo"
-        binding.llDetails.addView(view.root)
-    }
 
     private fun addMemberRegisteredView(memberRegistered: Int, memberAdded: Int) {
         binding.tvLabel.text = getString(R.string.members_registered)

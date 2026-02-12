@@ -61,42 +61,42 @@ class HouseholdMemberListAdapter(
         * 0 -> contactTrace need to do
         * 1 -> ContactTracing done
         * */
-        item.tBContactTraceStatus?.let {
-            when(it) {
-                0 -> {
-                    holder.binding.tvContactTracingStatus.text =
-                        context.resources.getString(R.string.update_contact_tracing)
-                    holder.binding.tvContactTracingStatus.setTextColor(
-                        ColorStateList.valueOf(context.getColor(R.color.card_color))
-                    )
-                    holder.binding.tvContactTracingStatus.setCompoundDrawablesWithIntrinsicBounds(
-                        ContextCompat.getDrawable(context, R.drawable.ic_alert_red),
-                        null,
-                        null,
-                        null
-                    )
-                    holder.binding.tvContactTracingStatus.visible()
-
-                    holder.binding.tvContactTracingStatus.safeClickListener(this)
-                    holder.binding.tvContactTracingStatus.tag = position
-                }
-
-                1 -> {
-                    holder.binding.tvContactTracingStatus.text =
-                        context.resources.getString(R.string.contact_tracing_updated)
-                    holder.binding.tvContactTracingStatus.setTextColor(
-                        ColorStateList.valueOf(context.getColor(R.color.secondary_green_color))
-                    )
-                    holder.binding.tvContactTracingStatus.setCompoundDrawablesWithIntrinsicBounds(
-                        ContextCompat.getDrawable(context, R.drawable.ic_circle_tick_green),
-                        null,
-                        null,
-                        null
-                    )
-                    holder.binding.tvContactTracingStatus.visible()
-                }
-            }
-        }
+//        item.tBContactTraceStatus?.let {
+//            when(it) {
+//                0 -> {
+//                    holder.binding.tvContactTracingStatus.text =
+//                        context.resources.getString(R.string.update_contact_tracing)
+//                    holder.binding.tvContactTracingStatus.setTextColor(
+//                        ColorStateList.valueOf(context.getColor(R.color.card_color))
+//                    )
+//                    holder.binding.tvContactTracingStatus.setCompoundDrawablesWithIntrinsicBounds(
+//                        ContextCompat.getDrawable(context, R.drawable.ic_alert_red),
+//                        null,
+//                        null,
+//                        null
+//                    )
+//                    holder.binding.tvContactTracingStatus.visible()
+//
+//                    holder.binding.tvContactTracingStatus.safeClickListener(this)
+//                    holder.binding.tvContactTracingStatus.tag = position
+//                }
+//
+//                1 -> {
+//                    holder.binding.tvContactTracingStatus.text =
+//                        context.resources.getString(R.string.contact_tracing_updated)
+//                    holder.binding.tvContactTracingStatus.setTextColor(
+//                        ColorStateList.valueOf(context.getColor(R.color.secondary_green_color))
+//                    )
+//                    holder.binding.tvContactTracingStatus.setCompoundDrawablesWithIntrinsicBounds(
+//                        ContextCompat.getDrawable(context, R.drawable.ic_circle_tick_green),
+//                        null,
+//                        null,
+//                        null
+//                    )
+//                    holder.binding.tvContactTracingStatus.visible()
+//                }
+//            }
+//        }
 
         if (item.isActive) {
             holder.binding.tvMemberName.text = getMemberInfoText(context, item)

@@ -1,0 +1,1353 @@
+{
+    "message": "Static user data fetched successfully.",
+    "entity": {
+        "nearestHealthFacilities": [
+            {
+                "id": 30,
+                "name": "Kelvin Care Center",
+                "type": "Community Health Post",
+                "chiefdom": {
+                    "id": 10,
+                    "name": "Mathora",
+                    "code": "143",
+                    "countryId": 1,
+                    "districtId": 8
+                },
+                "district": {
+                    "id": 8,
+                    "name": "Kenema",
+                    "code": "3650",
+                    "countryId": 1
+                },
+                "latitude": "23",
+                "longitude": "42",
+                "postalCode": "4223422323",
+                "language": "English",
+                "tenantId": 53,
+                "fhirId": "127958",
+                "clinicalWorkflows": [
+                    {
+                        "id": 5,
+                        "createdBy": 170,
+                        "updatedBy": null,
+                        "createdAt": null,
+                        "updatedAt": null,
+                        "name": "Above 5 (General) ",
+                        "moduleType": "clinical",
+                        "groupName": null,
+                        "workflowName": "ABOVE 5Y(GENERAL)",
+                        "countryId": 1,
+                        "displayOrder": 1,
+                        "conditions": [
+                            {
+                                "moduleType": "medicalreview"
+                            }
+                        ],
+                        "jsonDisplayValues": null,
+                        "viewScreens": null,
+                        "hasInitialValue": false,
+                        "appTypes": [
+                            "COMMUNITY"
+                        ],
+                        "readOnly": false,
+                        "active": true,
+                        "deleted": false
+                    },
+                    {
+                        "id": 2,
+                        "createdBy": 170,
+                        "updatedBy": null,
+                        "createdAt": null,
+                        "updatedAt": null,
+                        "name": "ICCM",
+                        "moduleType": "clinical",
+                        "groupName": null,
+                        "workflowName": "iccm",
+                        "countryId": 1,
+                        "displayOrder": 1,
+                        "conditions": [
+                            {
+                                "gender": "male",
+                                "moduleType": "assessment",
+                                "maxAge": 60,
+                                "minAge": 0
+                            },
+                            {
+                                "gender": "female",
+                                "moduleType": "assessment",
+                                "maxAge": 60,
+                                "minAge": 0
+                            }
+                        ],
+                        "jsonDisplayValues": null,
+                        "viewScreens": null,
+                        "hasInitialValue": false,
+                        "appTypes": [
+                            "COMMUNITY"
+                        ],
+                        "readOnly": false,
+                        "active": true,
+                        "deleted": false
+                    },
+                    {
+                        "id": 8,
+                        "createdBy": 170,
+                        "updatedBy": null,
+                        "createdAt": null,
+                        "updatedAt": null,
+                        "name": "Mother and Neonate ",
+                        "moduleType": "clinical",
+                        "groupName": null,
+                        "workflowName": "MOTHER & NEONATE",
+                        "countryId": 1,
+                        "displayOrder": 2,
+                        "conditions": [
+                            {
+                                "moduleType": "medicalreview"
+                            }
+                        ],
+                        "jsonDisplayValues": null,
+                        "viewScreens": null,
+                        "hasInitialValue": false,
+                        "appTypes": [
+                            "COMMUNITY"
+                        ],
+                        "readOnly": false,
+                        "active": true,
+                        "deleted": false
+                    },
+                    {
+                        "id": 3,
+                        "createdBy": 170,
+                        "updatedBy": null,
+                        "createdAt": null,
+                        "updatedAt": null,
+                        "name": "OTHER SYMPTOMS",
+                        "moduleType": "clinical",
+                        "groupName": null,
+                        "workflowName": "other_symptoms",
+                        "countryId": 1,
+                        "displayOrder": 4,
+                        "conditions": [
+                            {
+                                "gender": "male",
+                                "moduleType": "assessment",
+                                "maxAge": null,
+                                "minAge": 60
+                            },
+                            {
+                                "gender": "female",
+                                "moduleType": "assessment",
+                                "maxAge": null,
+                                "minAge": 60
+                            }
+                        ],
+                        "jsonDisplayValues": null,
+                        "viewScreens": null,
+                        "hasInitialValue": false,
+                        "appTypes": [
+                            "COMMUNITY"
+                        ],
+                        "readOnly": false,
+                        "active": true,
+                        "deleted": false
+                    },
+                    {
+                        "id": 7,
+                        "createdBy": 170,
+                        "updatedBy": null,
+                        "createdAt": null,
+                        "updatedAt": null,
+                        "name": "Under 5 (Age 2 months to 5 years) ",
+                        "moduleType": "clinical",
+                        "groupName": null,
+                        "workflowName": "UNDER 5Y (2M TO 5Y)",
+                        "countryId": 1,
+                        "displayOrder": 4,
+                        "conditions": [
+                            {
+                                "moduleType": "medicalreview"
+                            }
+                        ],
+                        "jsonDisplayValues": null,
+                        "viewScreens": null,
+                        "hasInitialValue": false,
+                        "appTypes": [
+                            "COMMUNITY"
+                        ],
+                        "readOnly": false,
+                        "active": true,
+                        "deleted": false
+                    },
+                    {
+                        "id": 4,
+                        "createdBy": 170,
+                        "updatedBy": null,
+                        "createdAt": null,
+                        "updatedAt": null,
+                        "name": "RMNCH",
+                        "moduleType": "clinical",
+                        "groupName": null,
+                        "workflowName": "rmnch",
+                        "countryId": 1,
+                        "displayOrder": 2,
+                        "conditions": [
+                            {
+                                "gender": "male",
+                                "moduleType": "assessment",
+                                "maxAge": 15,
+                                "subModule": "childhoodVisit",
+                                "minAge": 0
+                            },
+                            {
+                                "gender": "female",
+                                "moduleType": "assessment",
+                                "maxAge": 15,
+                                "subModule": "childhoodVisit",
+                                "minAge": 0
+                            },
+                            {
+                                "gender": "female",
+                                "moduleType": "assessment",
+                                "maxAge": 588,
+                                "minAge": 120
+                            }
+                        ],
+                        "jsonDisplayValues": null,
+                        "viewScreens": null,
+                        "hasInitialValue": false,
+                        "appTypes": [
+                            "COMMUNITY"
+                        ],
+                        "readOnly": false,
+                        "active": true,
+                        "deleted": false
+                    },
+                    {
+                        "id": 6,
+                        "createdBy": 170,
+                        "updatedBy": null,
+                        "createdAt": null,
+                        "updatedAt": null,
+                        "name": "Under 5 (Age upto 2 months) ",
+                        "moduleType": "clinical",
+                        "groupName": null,
+                        "workflowName": "UNDER 5Y AGE < 2M",
+                        "countryId": 1,
+                        "displayOrder": 3,
+                        "conditions": [
+                            {
+                                "moduleType": "medicalreview"
+                            }
+                        ],
+                        "jsonDisplayValues": null,
+                        "viewScreens": null,
+                        "hasInitialValue": false,
+                        "appTypes": [
+                            "COMMUNITY"
+                        ],
+                        "readOnly": false,
+                        "active": true,
+                        "deleted": false
+                    }
+                ],
+                "customizedWorkflows": [],
+                "phuFocalPersonNumber": "2983749823",
+                "linkedVillages": [
+                    {
+                        "id": 17,
+                        "name": "Mathora",
+                        "villagecode": null,
+                        "chiefdomId": 10,
+                        "userId": null,
+                        "countryId": 1,
+                        "districtId": 8,
+                        "chiefdomCode": null,
+                        "districtCode": null,
+                        "memberSequence": 33,
+                        "householdSequence": 5,
+                        "code": "2540",
+                        "healthFacilityId": null
+                    }
+                ],
+                "phuFocalPersonName": "Kelvin"
+            }
+        ],
+        "villages": [
+            {
+                "id": 17,
+                "name": "Mathora",
+                "villagecode": "2540",
+                "chiefdomId": 10,
+                "userId": null,
+                "countryId": 1,
+                "districtId": 8,
+                "chiefdomCode": "143",
+                "districtCode": "3650",
+                "memberSequence": 0,
+                "householdSequence": 0,
+                "code": null,
+                "healthFacilityId": 30
+            },
+            {
+                "id": 653,
+                "name": "Zambila",
+                "villagecode": "4540",
+                "chiefdomId": 491,
+                "userId": null,
+                "countryId": 1,
+                "districtId": 445,
+                "chiefdomCode": "343",
+                "districtCode": "5650",
+                "memberSequence": 0,
+                "householdSequence": 0,
+                "code": null,
+                "healthFacilityId": 46
+            }
+        ],
+        "subVillages": [
+            {
+                "id": 1001,
+                "name": "Mathora North",
+                "code": "SV001",
+                "villageId": 17,
+                "countryId": 1,
+                "districtId": 8,
+                "chiefdomId": 10
+            },
+            {
+                "id": 1002,
+                "name": "Mathora South",
+                "code": "SV002",
+                "villageId": 17,
+                "countryId": 1,
+                "districtId": 8,
+                "chiefdomId": 10
+            },
+            {
+                "id": 1003,
+                "name": "Mathora East",
+                "code": "SV003",
+                "villageId": 17,
+                "countryId": 1,
+                "districtId": 8,
+                "chiefdomId": 10
+            },
+            {
+                "id": 1004,
+                "name": "Mathora West",
+                "code": "SV004",
+                "villageId": 17,
+                "countryId": 1,
+                "districtId": 8,
+                "chiefdomId": 10
+            },
+            {
+                "id": 1005,
+                "name": "Zambila Central",
+                "code": "SV005",
+                "villageId": 653,
+                "countryId": 1,
+                "districtId": 445,
+                "chiefdomId": 491
+            },
+            {
+                "id": 1006,
+                "name": "Zambila West",
+                "code": "SV006",
+                "villageId": 653,
+                "countryId": 1,
+                "districtId": 445,
+                "chiefdomId": 491
+            },
+            {
+                "id": 1007,
+                "name": "Zambila East",
+                "code": "SV007",
+                "villageId": 653,
+                "countryId": 1,
+                "districtId": 445,
+                "chiefdomId": 491
+            }
+        ],
+        "shasthyaShebikas": [
+            {
+                "id": 2001,
+                "name": "Fatima Rahman",
+                "phoneNumber": "+8801712345678",
+                "ssId": "SS01",
+                "shasthyaKormiId": 170,
+                "shasthyaKormiName": "KCC CHW",
+                "subVillages": [
+                    {
+                        "id": 1001,
+                        "name": "Mathora North",
+                        "code": "SV001",
+                        "villageId": 17
+                    },
+                    {
+                        "id": 1002,
+                        "name": "Mathora South",
+                        "code": "SV002",
+                        "villageId": 17
+                    }
+                ]
+            },
+            {
+                "id": 2002,
+                "name": "Ayesha Khatun",
+                "phoneNumber": "+8801712345679",
+                "ssId": "SS02",
+                "shasthyaKormiId": 170,
+                "shasthyaKormiName": "KCC CHW",
+                "subVillages": [
+                    {
+                        "id": 1003,
+                        "name": "Mathora East",
+                        "code": "SV003",
+                        "villageId": 17
+                    },
+                    {
+                        "id": 1004,
+                        "name": "Mathora West",
+                        "code": "SV004",
+                        "villageId": 17
+                    }
+                ]
+            },
+            {
+                "id": 2003,
+                "name": "Rashida Begum",
+                "phoneNumber": "+8801712345680",
+                "ssId": "SS03",
+                "shasthyaKormiId": 170,
+                "shasthyaKormiName": "KCC CHW",
+                "subVillages": [
+                    {
+                        "id": 1005,
+                        "name": "Zambila Central",
+                        "code": "SV005",
+                        "villageId": 653
+                    },
+                    {
+                        "id": 1006,
+                        "name": "Zambila West",
+                        "code": "SV006",
+                        "villageId": 653
+                    },
+                    {
+                        "id": 1007,
+                        "name": "Zambila East",
+                        "code": "SV007",
+                        "villageId": 653
+                    }
+                ]
+            }
+        ],
+        "defaultHealthFacility": {
+            "id": 30,
+            "name": "Kelvin Care Center",
+            "type": "Community Health Post",
+            "chiefdom": {
+                "id": 10,
+                "name": "Mathora",
+                "code": "143",
+                "countryId": 1,
+                "districtId": 8
+            },
+            "district": {
+                "id": 8,
+                "name": "Kenema",
+                "code": "3650",
+                "countryId": 1
+            },
+            "latitude": "23",
+            "longitude": "42",
+            "postalCode": "4223422323",
+            "language": "English",
+            "tenantId": 53,
+            "fhirId": "127958",
+            "clinicalWorkflows": [
+                {
+                    "id": 5,
+                    "createdBy": 170,
+                    "updatedBy": null,
+                    "createdAt": null,
+                    "updatedAt": null,
+                    "name": "Above 5 (General) ",
+                    "moduleType": "clinical",
+                    "groupName": null,
+                    "workflowName": "ABOVE 5Y(GENERAL)",
+                    "countryId": 1,
+                    "displayOrder": 1,
+                    "conditions": [
+                        {
+                            "moduleType": "medicalreview"
+                        }
+                    ],
+                    "jsonDisplayValues": null,
+                    "viewScreens": null,
+                    "hasInitialValue": false,
+                    "appTypes": [
+                        "COMMUNITY"
+                    ],
+                    "readOnly": false,
+                    "active": true,
+                    "deleted": false
+                },
+                {
+                    "id": 2,
+                    "createdBy": 170,
+                    "updatedBy": null,
+                    "createdAt": null,
+                    "updatedAt": null,
+                    "name": "ICCM",
+                    "moduleType": "clinical",
+                    "groupName": null,
+                    "workflowName": "iccm",
+                    "countryId": 1,
+                    "displayOrder": 1,
+                    "conditions": [
+                        {
+                            "gender": "male",
+                            "moduleType": "assessment",
+                            "maxAge": 60,
+                            "minAge": 0
+                        },
+                        {
+                            "gender": "female",
+                            "moduleType": "assessment",
+                            "maxAge": 60,
+                            "minAge": 0
+                        }
+                    ],
+                    "jsonDisplayValues": null,
+                    "viewScreens": null,
+                    "hasInitialValue": false,
+                    "appTypes": [
+                        "COMMUNITY"
+                    ],
+                    "readOnly": false,
+                    "active": true,
+                    "deleted": false
+                },
+                {
+                    "id": 8,
+                    "createdBy": 170,
+                    "updatedBy": null,
+                    "createdAt": null,
+                    "updatedAt": null,
+                    "name": "Mother and Neonate ",
+                    "moduleType": "clinical",
+                    "groupName": null,
+                    "workflowName": "MOTHER & NEONATE",
+                    "countryId": 1,
+                    "displayOrder": 2,
+                    "conditions": [
+                        {
+                            "moduleType": "medicalreview"
+                        }
+                    ],
+                    "jsonDisplayValues": null,
+                    "viewScreens": null,
+                    "hasInitialValue": false,
+                    "appTypes": [
+                        "COMMUNITY"
+                    ],
+                    "readOnly": false,
+                    "active": true,
+                    "deleted": false
+                },
+                {
+                    "id": 3,
+                    "createdBy": 170,
+                    "updatedBy": null,
+                    "createdAt": null,
+                    "updatedAt": null,
+                    "name": "OTHER SYMPTOMS",
+                    "moduleType": "clinical",
+                    "groupName": null,
+                    "workflowName": "other_symptoms",
+                    "countryId": 1,
+                    "displayOrder": 4,
+                    "conditions": [
+                        {
+                            "gender": "male",
+                            "moduleType": "assessment",
+                            "maxAge": null,
+                            "minAge": 60
+                        },
+                        {
+                            "gender": "female",
+                            "moduleType": "assessment",
+                            "maxAge": null,
+                            "minAge": 60
+                        }
+                    ],
+                    "jsonDisplayValues": null,
+                    "viewScreens": null,
+                    "hasInitialValue": false,
+                    "appTypes": [
+                        "COMMUNITY"
+                    ],
+                    "readOnly": false,
+                    "active": true,
+                    "deleted": false
+                },
+                {
+                    "id": 7,
+                    "createdBy": 170,
+                    "updatedBy": null,
+                    "createdAt": null,
+                    "updatedAt": null,
+                    "name": "Under 5 (Age 2 months to 5 years) ",
+                    "moduleType": "clinical",
+                    "groupName": null,
+                    "workflowName": "UNDER 5Y (2M TO 5Y)",
+                    "countryId": 1,
+                    "displayOrder": 4,
+                    "conditions": [
+                        {
+                            "moduleType": "medicalreview"
+                        }
+                    ],
+                    "jsonDisplayValues": null,
+                    "viewScreens": null,
+                    "hasInitialValue": false,
+                    "appTypes": [
+                        "COMMUNITY"
+                    ],
+                    "readOnly": false,
+                    "active": true,
+                    "deleted": false
+                },
+                {
+                    "id": 4,
+                    "createdBy": 170,
+                    "updatedBy": null,
+                    "createdAt": null,
+                    "updatedAt": null,
+                    "name": "RMNCH",
+                    "moduleType": "clinical",
+                    "groupName": null,
+                    "workflowName": "rmnch",
+                    "countryId": 1,
+                    "displayOrder": 2,
+                    "conditions": [
+                        {
+                            "gender": "male",
+                            "moduleType": "assessment",
+                            "maxAge": 15,
+                            "subModule": "childhoodVisit",
+                            "minAge": 0
+                        },
+                        {
+                            "gender": "female",
+                            "moduleType": "assessment",
+                            "maxAge": 15,
+                            "subModule": "childhoodVisit",
+                            "minAge": 0
+                        },
+                        {
+                            "gender": "female",
+                            "moduleType": "assessment",
+                            "maxAge": 588,
+                            "minAge": 120
+                        }
+                    ],
+                    "jsonDisplayValues": null,
+                    "viewScreens": null,
+                    "hasInitialValue": false,
+                    "appTypes": [
+                        "COMMUNITY"
+                    ],
+                    "readOnly": false,
+                    "active": true,
+                    "deleted": false
+                },
+                {
+                    "id": 6,
+                    "createdBy": 170,
+                    "updatedBy": null,
+                    "createdAt": null,
+                    "updatedAt": null,
+                    "name": "Under 5 (Age upto 2 months) ",
+                    "moduleType": "clinical",
+                    "groupName": null,
+                    "workflowName": "UNDER 5Y AGE < 2M",
+                    "countryId": 1,
+                    "displayOrder": 3,
+                    "conditions": [
+                        {
+                            "moduleType": "medicalreview"
+                        }
+                    ],
+                    "jsonDisplayValues": null,
+                    "viewScreens": null,
+                    "hasInitialValue": false,
+                    "appTypes": [
+                        "COMMUNITY"
+                    ],
+                    "readOnly": false,
+                    "active": true,
+                    "deleted": false
+                }
+            ],
+            "customizedWorkflows": [],
+            "phuFocalPersonNumber": "2983749823",
+            "linkedVillages": [
+                {
+                    "id": 17,
+                    "name": "Mathora",
+                    "villagecode": null,
+                    "chiefdomId": 10,
+                    "userId": null,
+                    "countryId": 1,
+                    "districtId": 8,
+                    "chiefdomCode": null,
+                    "districtCode": null,
+                    "memberSequence": 33,
+                    "householdSequence": 5,
+                    "code": "2540",
+                    "healthFacilityId": null
+                }
+            ],
+            "phuFocalPersonName": "Kelvin"
+        },
+        "menu": {
+            "id": 12,
+            "createdBy": null,
+            "updatedBy": null,
+            "createdAt": "2024-02-06T19:32:16+00:00",
+            "updatedAt": "2024-02-06T19:32:16+00:00",
+            "roleName": "CHW",
+            "menus": [
+                {
+                    "name": "HOUSEHOLDS",
+                    "type": "main",
+                    "order": 1
+                },
+                {
+                    "name": "MY PATIENTS",
+                    "type": "main",
+                    "order": 2
+                }
+            ],
+            "meta": [
+                "Symptoms"
+            ],
+            "metaForms": null,
+            "jsonDisplayValues": null,
+            "countryId": 1,
+            "appTypes": [
+                "COMMUNITY"
+            ],
+            "active": true,
+            "deleted": false
+        },
+        "userProfile": {
+            "id": 170,
+            "firstName": "KCC",
+            "roles": [
+                {
+                    "id": 2,
+                    "name": "CHW",
+                    "level": null,
+                    "groupName": "SPICE",
+                    "displayName": "Community Health Worker",
+                    "suiteAccessName": "mob",
+                    "appTypes": [
+                        "COMMUNITY"
+                    ],
+                    "reportPrivileges": []
+                }
+            ],
+            "lastName": "CHW",
+            "gender": "Male",
+            "phoneNumber": "2342342243",
+            "username": "kcc_chw@spice.com",
+            "countryCode": "232",
+            "country": {
+                "id": 1,
+                "name": "Sierra Leone",
+                "phoneNumberCode": "232",
+                "unitMeasurement": null,
+                "regionCode": "1",
+                "appTypes": [
+                    "COMMUNITY"
+                ],
+                "tenantId": 1,
+                "displayValues": null
+            },
+            "organizations": [
+                {
+                    "id": 53,
+                    "formDataId": 30,
+                    "name": "Kelvin Care Center",
+                    "sequence": null,
+                    "parentOrganizationId": 48,
+                    "formName": "healthfacility",
+                    "active": true
+                },
+                {
+                    "id": 979,
+                    "formDataId": 44,
+                    "name": "David Care Facility",
+                    "sequence": null,
+                    "parentOrganizationId": 978,
+                    "formName": "healthfacility",
+                    "active": true
+                },
+                {
+                    "id": 983,
+                    "formDataId": 46,
+                    "name": "Carnival Care",
+                    "sequence": null,
+                    "parentOrganizationId": 982,
+                    "formName": "healthfacility",
+                    "active": true
+                }
+            ],
+            "tenantId": 53,
+            "fhirId": "129541",
+            "suiteAccess": [
+                "mob"
+            ],
+            "supervisor": {
+                "id": 148,
+                "firstName": "KCC",
+                "roles": [
+                    {
+                        "id": 4,
+                        "name": "PEER_SUPERVISOR",
+                        "level": null,
+                        "groupName": "SPICE",
+                        "displayName": "Peer Supervisor",
+                        "suiteAccessName": "mob",
+                        "appTypes": [
+                            "COMMUNITY"
+                        ],
+                        "reportPrivileges": []
+                    }
+                ],
+                "lastName": "Peer",
+                "gender": "Male",
+                "phoneNumber": "2387492349",
+                "username": "kcc_peer@spice.com",
+                "countryCode": "232",
+                "country": {
+                    "id": 1,
+                    "name": "Sierra Leone",
+                    "phoneNumberCode": "232",
+                    "unitMeasurement": null,
+                    "regionCode": "1",
+                    "appTypes": [
+                        "COMMUNITY"
+                    ],
+                    "tenantId": 1,
+                    "displayValues": null
+                },
+                "organizations": [
+                    {
+                        "id": 53,
+                        "formDataId": 30,
+                        "name": "Kelvin Care Center",
+                        "sequence": null,
+                        "parentOrganizationId": 48,
+                        "formName": "healthfacility",
+                        "active": true
+                    },
+                    {
+                        "id": 30,
+                        "formDataId": 21,
+                        "name": "Curi care",
+                        "sequence": null,
+                        "parentOrganizationId": 7,
+                        "formName": "healthfacility",
+                        "active": true
+                    },
+                    {
+                        "id": 979,
+                        "formDataId": 44,
+                        "name": "David Care Facility",
+                        "sequence": null,
+                        "parentOrganizationId": 978,
+                        "formName": "healthfacility",
+                        "active": true
+                    },
+                    {
+                        "id": 983,
+                        "formDataId": 46,
+                        "name": "Carnival Care",
+                        "sequence": null,
+                        "parentOrganizationId": 982,
+                        "formName": "healthfacility",
+                        "active": true
+                    }
+                ],
+                "tenantId": 53,
+                "fhirId": "127959",
+                "suiteAccess": [
+                    "mob"
+                ],
+                "villages": [],
+                "culture": {
+                    "id": 1,
+                    "name": "English",
+                    "code": "en"
+                },
+                "insightUserOrganization": [],
+                "reportUserOrganization": [],
+                "isTermsAndConditionsAccepted": false,
+                "designation": {
+                    "id": null,
+                    "name": null
+                },
+                "active": true,
+                "redRisk": false
+            },
+            "villages": [
+                {
+                    "id": 17,
+                    "name": "Mathora",
+                    "villagecode": null,
+                    "chiefdomId": 10,
+                    "userId": null,
+                    "countryId": 1,
+                    "districtId": 8,
+                    "chiefdomCode": null,
+                    "districtCode": null,
+                    "memberSequence": 33,
+                    "householdSequence": 5,
+                    "code": "2540",
+                    "healthFacilityId": null
+                },
+                {
+                    "id": 653,
+                    "name": "Zambila",
+                    "villagecode": null,
+                    "chiefdomId": 491,
+                    "userId": null,
+                    "countryId": 1,
+                    "districtId": 445,
+                    "chiefdomCode": null,
+                    "districtCode": null,
+                    "memberSequence": 23,
+                    "householdSequence": 5,
+                    "code": "4540",
+                    "healthFacilityId": null
+                }
+            ],
+            "culture": {
+                "id": 1,
+                "name": "English",
+                "code": "en"
+            },
+            "defaultRoleName": "CHW",
+            "insightUserOrganization": [],
+            "reportUserOrganization": [],
+            "isTermsAndConditionsAccepted": false,
+            "designation": {
+                "id": null,
+                "name": null
+            },
+            "active": true,
+            "redRisk": false
+        },
+        "workflowIds": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+        ],
+        "consentForm": {
+            "HIV": "<!DOCTYPE html>\\n<html>\\n\\n<head>\\n    <meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1.0\\\" />\\n    <style>\\n        html,\\n        body {\\n            max-width: 100%;\\n            overflow-x: hidden;\\n        }\\n\\n        .requlartext {\\n            font-weight: 400;\\n            font-family: \\\"Inter\\\";\\n            line-height: 1.6;\\n            font-size: 16px;\\n        }\\n\\n        .header {\\n            color: #6165DE;\\n            font-weight: 700;\\n            font-family: \\\"Inter\\\";\\n            line-height: 1.6;\\n            font-size: 16px;\\n        }\\n\\n        @media only screen and (max-width: 600px) {\\n\\n            .requlartext,\\n            .header {\\n                font-size: 16px;\\n            }\\n        }\\n\\n        @media only screen and (min-width: 600px) {\\n\\n            .requlartext,\\n            .header {\\n                font-size: 20px;\\n            }\\n        }\\n\\n        @media only screen and (min-width: 768px) {\\n\\n            .requlartext,\\n            .header {\\n                font-size: 20px;\\n            }\\n        }\\n\\n        @media only screen and (min-width: 992px) {\\n\\n            .requlartext,\\n            .header {\\n                font-size: 20px;\\n            }\\n        }\\n\\n        @media only screen and (min-width: 1200px) {\\n\\n            .requlartext,\\n            .header {\\n                font-size: 20px;\\n            }\\n        }\\n    </style>\\n</head>\\n\\n<body contenteditable=\\\"true\\\" spellcheck=\\\"false\\\" style=\\\"min-height: 233px\\\">\\n    <div class=\\\"header requlartext\\\">\\n        HIV Testing Services (HTS) Consent Form\\n    </div>\\n    <br />\\n    <div class=\\\"requlartext\\\">\\n        <strong>Purpose:</strong><br />\\n        This consent form ensures that all individuals receiving HIV Testing Services (HTS) are fully<br />\\n        informed and protected under public health and human rights standards. The process adheres<br />\\n        to the WHOâ€™s Five Cs: Consent, Confidentiality, Counselling, Correct test results, and Connection<br />\\n        to care.\\n    </div>\\n    <br />\\n    <div class=\\\"requlartext\\\">\\n        <strong>1. Consent</strong><br />\\n        The client has been informed about the purpose, benefits, and potential outcomes of HIV<br />\\n        testing and counselling.<br /><br />\\n        Consent is given voluntarily without coercion, with the understanding that testing is not<br />\\n        mandatory.<br /><br />\\n        Minors require consent from a parent or guardian unless they are assessed to have sufficient<br />\\n        decisional autonomy.<br /><br />\\n        The client understands that they have the right to decline testing at any point.\\n    </div>\\n    <br />\\n    <div class=\\\"requlartext\\\">\\n        <strong>2. Confidentiality</strong><br />\\n        All personal and health information shared during HTS will be kept confidential.<br /><br />\\n        Results will not be disclosed to anyone without the clientâ€™s informed permission, except when<br />\\n        required for clinical care coordination with other providers under shared confidentiality<br />\\n        practices.\\n    </div>\\n    <br />\\n    <div class=\\\"requlartext\\\">\\n        <strong>3. Counselling</strong><br />\\n        The client will receive both pre-test and post-test counselling as part of the service.<br /><br />\\n        Pre-test counselling includes information on HIV prevention, testing procedures, treatment<br />\\n        options, and available support services.<br /><br />\\n        Post-test counselling includes interpretation of results and next steps.\\n    </div>\\n    <br />\\n    <div class=\\\"requlartext\\\">\\n        <strong>4. Correct Test Results</strong><br />\\n        HIV testing will follow the nationally approved testing algorithm and quality assurance<br />\\n        procedures to ensure accurate and reliable results.<br /><br />\\n        Only validated testing kits and protocols will be used, and providers are trained in quality<br />\\n        control standards.\\n    </div>\\n    <br />\\n    <div class=\\\"requlartext\\\">\\n        <strong>5. Connection to Care</strong><br />\\n        Clients who test positive will be linked immediately to prevention, treatment, and care services,<br />\\n        including ART, PMTCT, PrEP, PEP, condom access, and psychosocial support.<br /><br />\\n        Clients who test negative will be offered prevention tools and risk-reduction support.\\n    </div>\\n    <br />\\n    <div class=\\\"requlartext\\\">\\n        <strong>Client Consent Confirmation</strong><br />\\n        The client has received and understood the information provided under the Five Cs framework.<br /><br />\\n        Consent is documented in accordance with Sierra Leone consolidated HIV National guidelines<br />\\n        2023 and will be stored securely in the system.\\n    </div>\\n</body>\\n\\n</html>",
+            "household": "<!DOCTYPE html>\\n<html>\\n  <head>\\n    <meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1.0\\\" />\\n    <style>\\n      html,\\n      body {\\n        max-width: 100%;\\n        overflow-x: hidden;\\n      }\\n      .requlartext {\\n        font-size: 16px;\\n        font-family: \\\"Inter\\\";\\n        font-weight: 400;\\n        line-height: 1.6;\\n      }\\n      .boldtext {\\n        font-size: 16px;\\n        font-family: \\\"Inter\\\";\\n        font-weight: 700;\\n        line-height: 1.6;\\n      }\\n      a {\\n        word-wrap: break-word;\\n      }\\n      .bold-text {\\n        font-weight: bold;\\n        padding-bottom: 10px;\\n      }\\n      ul {\\n        margin: 0px;\\n      } /* Extra small devices (phones, 600px and down) */\\n      @media only screen and (max-width: 600px) {\\n        .requlartext {\\n          font-size: 16px;\\n          font-family: \\\"Inter\\\";\\n          font-weight: 400;\\n          line-height: 1.6;\\n        }\\n        .boldtext {\\n          font-size: 16px;\\n          font-family: \\\"Inter\\\";\\n          font-weight: 700;\\n          line-height: 1.6;\\n        }\\n      } /* Small devices (portrait tablets and large phones, 600px and up) */\\n      @media only screen and (min-width: 600px) {\\n        .requlartext {\\n          font-size: 20px;\\n          font-family: \\\"Inter\\\";\\n          font-weight: 400;\\n          line-height: 1.6;\\n        }\\n        .boldtext {\\n          font-size: 20px;\\n          font-family: \\\"Inter\\\";\\n          font-weight: 700;\\n          line-height: 1.6;\\n        }\\n      } /* Medium devices (landscape tablets, 768px and up) */\\n      @media only screen and (min-width: 768px) {\\n        .requlartext {\\n          font-size: 20px;\\n          font-family: \\\"Inter\\\";\\n          font-weight: 400;\\n          line-height: 1.6;\\n        }\\n        .boldtext {\\n          font-size: 20px;\\n          font-family: \\\"Inter\\\";\\n          font-weight: 700;\\n          line-height: 1.6;\\n        }\\n      } /* Large devices (laptops/desktops, 992px and up) */\\n      @media only screen and (min-width: 992px) {\\n        .requlartext {\\n          font-size: 20px;\\n          font-family: \\\"Inter\\\";\\n          font-weight: 400;\\n          line-height: 1.6;\\n        }\\n        .boldtext {\\n          font-size: 20px;\\n          font-family: \\\"Inter\\\";\\n          font-weight: 700;\\n          line-height: 1.6;\\n        }\\n      } /* Extra large devices (large laptops and desktops, 1200px and up) */\\n      @media only screen and (min-width: 1200px) {\\n        .requlartext {\\n          font-size: 20px;\\n          font-family: \\\"Inter\\\";\\n          font-weight: 400;\\n          line-height: 1.6;\\n        }\\n        .boldtext {\\n          font-size: 20px;\\n          font-family: \\\"Inter\\\";\\n          font-weight: 700;\\n          line-height: 1.6;\\n        }\\n      }\\n    </style>\\n  </head>\\n  <body\\n    contenteditable=\\\"true\\\"\\n    spellcheck=\\\"false\\\"\\n    style=\\\"min-height: 233px\\\"\\n    data-new-gr-c-s-loaded=\\\"14.1154.0\\\"\\n    data-new-gr-c-s-check-loaded=\\\"14.1154.0\\\"\\n    data-gr-ext-installed=\\\"\\\"\\n  >\\n    <div class=\\\"requlartext\\\">\\n      The healthcare worker will be accepting the terms &amp; conditions on\\n      behalf of the screening participant.\\n    </div>\\n    <div class=\\\"boldtext\\\">\\n      <div class=\\\"bold-text\\\">\\n        The SMART Health Project SPICEâ„¢ Patient Consent and Notification\\n        Background:\\n      </div>\\n    </div>\\n    <div class=\\\"requlartext\\\">\\n      <div>\\n        Sierra Leone is heavily impacted by primary care conditions such as\\n        malaria, maternal and child mortality, TB, HIV, and non-communicable\\n        diseases (NCDs), which are significant health concerns in Sub-Saharan\\n        Africa. You are invited to join the Smart Health SPICEâ„¢ program, which\\n        integrates community and primary care to manage the leading causes of\\n        death in Sierra Leone.\\n      </div>\\n      <div>\\n        Managing your health condition, attending clinic appointments, getting\\n        prescriptions, and adhering to your treatment plan can be challenging.\\n        It can also be difficult for healthcare providers, including doctors,\\n        Community Health Officers (CHOs), and midwife nurses, to monitor your\\n        health status and medication information over time. The Smart Health\\n        program introduces a new method to enhance clinical care for patients\\n        with TB, lower respiratory infections, malaria, diabetes, hypertension,\\n        and antenatal care. This program aims to track your health data over\\n        time, present it clearly to your healthcare provider, and empower you\\n        with more information about your health status, ultimately improving\\n        care and reducing related complications and challenges.\\n      </div>\\n      <div>\\n        <br />\\n        <span class=\\\"boldtext\\\">Program Procedures</span>\\n        <div>\\n          As a participant in this program, you will:\\n          <ul>\\n            <li>\\n              Be requested to visit the PHU/hospital for enrolment into the\\n              program. You will be informed about the program and if you agree\\n              to participate, will be enrolled into the Smart Health SPICE\\n              system.\\n            </li>\\n            <li>Receive educational information about Health Status.</li>\\n            <li>\\n              Be asked to comply with the follow-up plan your health care\\n              provider provides you to the best of your ability.\\n            </li>\\n            <li>Regularly have follow up visit, per your follow-up plan.</li>\\n            <li>\\n              Attend hospital/PHU medical reviews to see your health care\\n              provider, per your follow-up plan.\\n            </li>\\n            <li>\\n              Receive and review short message service (SMS) messages with\\n              information from your health care provider.\\n            </li>\\n          </ul>\\n        </div>\\n      </div>\\n      <div>\\n        <br />\\n        <span class=\\\"boldtext\\\">Risk(s):</span>\\n        <div>\\n          The program may face delays or inaccuracies in information reaching\\n          your Healthcare provider potentially affecting your care. To reduce\\n          this risk, the software has been thoroughly tested for accuracy and\\n          functionality, with system checks to ensure your information is sent\\n          correctly. If you need to visit the PHU/hospital, your healthcare\\n          provider will be notified via SPICE and will follow up with you. It's\\n          important to provide accurate contact information (i.e. telephone\\n          number) and update it if it changes.\\n        </div>\\n      </div>\\n      <div>\\n        <br />\\n        <span class=\\\"boldtext\\\">Benefit(s):</span>\\n\\n        <div>\\n          <ul>\\n            <li>\\n              You may gain better understanding of your condition and how to\\n              improve your health.\\n            </li>\\n            <li>\\n              You will receive follow-ups and clear, actionable information to\\n              help manage your health condition.\\n            </li>\\n            <li>\\n              Data collected from the program can benefit future patients or\\n              family members with similar health conditions.\\n            </li>\\n          </ul>\\n        </div>\\n      </div>\\n      <div>\\n        <br />\\n        <span class=\\\"boldtext\\\"\\n          >Confidentiality/ Use of Personal Information:</span\\n        >\\n\\n        <div>\\n          While participating in this program the following information will be\\n          collected:\\n          <ul>\\n            <li>\\n              Identifying information (age, gender, phone number) and medical\\n              data and health information from you and from your medical records\\n              as prepared by your healthcare provider including treatment and\\n              examination notes and other health related information.\\n            </li>\\n            <li>\\n              You will be assigned to a program ID that will be used for unique\\n              identification and to protect data privacy.\\n            </li>\\n            <li>\\n              Your doctor, CHO, Midwife, nurse, pharmacist, may have direct\\n              access to your personal information.\\n            </li>\\n            <li>\\n              As an enrolled participant in the program, your personal\\n              information will be transferred to the United States as part of\\n              processing, with computing support from the software team in\\n              India. The program team will have your personal SPICE information\\n              processed manually or by computer including the use of internet or\\n              of cloud computing. By enrolling in the program, you agree to the\\n              said transfer, storage and processing of your personal\\n              information. Data results from the program may be published but\\n              will not disclose your name or any other identifying\\n              characteristics. No personal information will be used to market to\\n              you without your consent.\\n            </li>\\n            <li>\\n              Your de-identified medical information may also be used for\\n              additional research, educational purpose, publications, population\\n              health review, future health studies, development of new medical\\n              products or procedures, or for obtaining future approvals for\\n              health systems. In addition, the program team may also be required\\n              by law or by a court order. There is no patient portal to access\\n              your personal information collected as part of this program, but\\n              this information can be requested directly Ministry of Health The\\n              program will handle your personal information in accordance with\\n              appropriate confidentiality standards and all applicable data\\n              protection and privacy laws.\\n            </li>\\n          </ul>\\n        </div>\\n        <div>\\n          <br />\\n          <span class=\\\"boldtext\\\">Participation:</span>\\n\\n          <div>\\n            Whether you take part in this program is upto you. IF you choose to\\n            join the program, you may stop at any time, and this will not affect\\n            your current medical care.\\n          </div>\\n          <div>\\n            Please notify your Healthcare provider if you would like to\\n            withdraw.\\n          </div>\\n          <div>\\n            You may also choose not to answer any question you find\\n            uncomfortable or private during the program. There will be no\\n            consequence, loss of benefit or care to you if you choose to leave\\n            the program. Your collected data may be used as part of the program,\\n            unless you request otherwise. Program team members from may reach\\n            out to you via SMS or calls to ask about your experience or in\\n            follow-up to missed assessment or medical reviews as part of\\n            tele-counseling services. You may notify them if you wish to not\\n            receive any calls or SMS.\\n          </div>\\n        </div>\\n        <div>\\n          <br />\\n          <span class=\\\"boldtext\\\">Compensation:</span>\\n\\n          <div style=\\\"text-decoration: underline\\\">\\n            You will not receive any compensation for participating in this\\n            program.\\n          </div>\\n        </div>\\n        <div>\\n          <br />\\n          <span class=\\\"boldtext\\\">SMS and Calls:</span>\\n\\n          <div>\\n            By signing up for the program, you are accepting to receive SMS\\n            messages and calls used for communication of messages from your\\n            healthcare provider, or instructions to pick up filled\\n            prescriptions, visit the facility for further assessment. SMS\\n            messages from the software application will not be used for\\n            marketing purposes. If you wish to stop receiving the SMS messages,\\n            kindly inform your doctor or nurse.\\n          </div>\\n        </div>\\n        <div>\\n          <br />\\n          <span class=\\\"boldtext\\\">Secondary use of data:</span>\\n\\n          <div>\\n            Your de-identified medical information may be combined with data\\n            from other program participants and used by the program team for\\n            research, marketing, or publication purposes, or to inform on the\\n            performance of the SPICE system. Additionally, your de-identified\\n            medical information along with other patients may also be used by\\n            program stakeholders such as the Ministry of Health and\\n            County/Regional health teams, as part of their assessment of overall\\n            patient population health and to evaluate trends.\\n          </div>\\n          <div>\\n            Identifying information will be removed from individual patient\\n            records before sharing with program stakeholders to protect patient\\n            privacy.\\n          </div>\\n          <div>\\n            Consent for the secondary uses of program data is separate from your\\n            medical treatment and does not affect your care.\\n          </div>\\n        </div>\\n        <div>\\n          <br />\\n          <span class=\\\"boldtext\\\">Contacts:</span>\\n\\n          <div>\\n            If you have any questions concerning this program, please do not\\n            hesitate to contact your healthcare provider or\\n            <a href=\\\"mailto:support@medtroniclabs.org\\\"\\n              >support@medtroniclabs.org</a\\n            >\\n          </div>\\n          <div>\\n            If you have any question concerning your personal data, please do\\n            not hesitate to contact your healthcare provider or\\n            <a href=\\\"mailto:data.protection@medtroniclabs.org\\\"\\n              >data.protection@medtroniclabs.org</a\\n            >\\n          </div>\\n        </div>\\n        <div>\\n          <br />\\n          <span class=\\\"boldtext\\\">Statement of the person giving consent:</span>\\n          <ul>\\n            <li>\\n              I have read the information on this program or have had it\\n              translated into a language I understand. I have also talked it\\n              over to my satisfaction.\\n            </li>\\n            <li>I understand that my participation is voluntary.</li>\\n            <li>\\n              I know enough about the purpose, methods, risks and benefits of\\n              the program to decide that I want to take part in it.\\n            </li>\\n            <li>\\n              I understand that I may freely stop being part of this program at\\n              any time without having to explain myself.\\n            </li>\\n            <li>\\n              I understand and agree that, as part of the program, the program\\n              team shall collect my personal information which may be disclosed\\n              to doctors, nurses, pharmacists, and BP/Glucose checkers, and\\n              other parties that are involved in the program as well as other\\n              third parties.\\n            </li>\\n            <li>\\n              I understand that the program may be modified, ammended or\\n              terminated at any time with or without notice.\\n            </n            </li>\\n            <li>\\n              I understand and agree that the program team will store my\\n              personal information for a period of up to ten (10) years after\\n              the conclusion of the program.\\n            </li>\\n            <li>\\n              If I request a copy of this consent and notification form to keep\\n              for myself, I shall provide an email address to receive it.\\n            </li>\\n          </ul>\\n        </div>\\n      </div>\\n    </div>\\n    <p>\\n      <grammarly-desktop-integration\\n        data-grammarly-shadow-root=\\\"true\\\"\\n      ></grammarly-desktop-integration\\n      ><br />\\n    </p>\\n  </body>\\n</html>"
+        },
+        "userHealthFacilities": [
+            {
+                "id": 30,
+                "name": "Kelvin Care Center",
+                "type": "Community Health Post",
+                "chiefdom": {
+                    "id": 10,
+                    "name": "Mathora",
+                    "code": "143",
+                    "countryId": 1,
+                    "districtId": 8
+                },
+                "district": {
+                    "id": 8,
+                    "name": "Kenema",
+                    "code": "3650",
+                    "countryId": 1
+                },
+                "latitude": "23",
+                "longitude": "42",
+                "postalCode": "4223422323",
+                "language": "English",
+                "tenantId": 53,
+                "fhirId": "127958",
+                "clinicalWorkflows": [],
+                "customizedWorkflows": [],
+                "phuFocalPersonNumber": "2983749823",
+                "linkedVillages": [
+                    {
+                        "id": 17,
+                        "name": "Mathora",
+                        "villagecode": null,
+                        "chiefdomId": 10,
+                        "userId": null,
+                        "countryId": 1,
+                        "districtId": 8,
+                        "chiefdomCode": null,
+                        "districtCode": null,
+                        "memberSequence": 33,
+                        "householdSequence": 5,
+                        "code": "2540",
+                        "healthFacilityId": null
+                    }
+                ],
+                "phuFocalPersonName": "Kelvin"
+            },
+            {
+                "id": 44,
+                "name": "David Care Facility",
+                "type": "Community Health Post",
+                "chiefdom": {
+                    "id": 490,
+                    "name": "Lousia",
+                    "code": "243",
+                    "countryId": 1,
+                    "districtId": 444
+                },
+                "district": {
+                    "id": 444,
+                    "name": "Nemeria",
+                    "code": "4650",
+                    "countryId": 1
+                },
+                "latitude": "32",
+                "longitude": "42",
+                "postalCode": "4234242443",
+                "language": "English",
+                "tenantId": 979,
+                "fhirId": "138989",
+                "clinicalWorkflows": [],
+                "customizedWorkflows": [],
+                "phuFocalPersonNumber": "2398472344",
+                "linkedVillages": [
+                    {
+                        "id": 652,
+                        "name": "Lousia",
+                        "villagecode": null,
+                        "chiefdomId": 490,
+                        "userId": null,
+                        "countryId": 1,
+                        "districtId": 444,
+                        "chiefdomCode": null,
+                        "districtCode": null,
+                        "memberSequence": 0,
+                        "householdSequence": 0,
+                        "code": "3540",
+                        "healthFacilityId": null
+                    }
+                ],
+                "phuFocalPersonName": "David"
+            },
+            {
+                "id": 46,
+                "name": "Carnival Care",
+                "type": "Community Health Post",
+                "chiefdom": {
+                    "id": 491,
+                    "name": "Suriara",
+                    "code": "343",
+                    "countryId": 1,
+                    "districtId": 445
+                },
+                "district": {
+                    "id": 445,
+                    "name": "Zambila",
+                    "code": "5650",
+                    "countryId": 1
+                },
+                "latitude": "23",
+                "longitude": "45",
+                "postalCode": "5242422424",
+                "language": "English",
+                "tenantId": 983,
+                "fhirId": "140892",
+                "clinicalWorkflows": [],
+                "customizedWorkflows": [],
+                "phuFocalPersonNumber": "2984234328",
+                "linkedVillages": [
+                    {
+                        "id": 653,
+                        "name": "Zambila",
+                        "villagecode": null,
+                        "chiefdomId": 491,
+                        "userId": null,
+                        "countryId": 1,
+                        "districtId": 445,
+                        "chiefdomCode": null,
+                        "districtCode": null,
+                        "memberSequence": 23,
+                        "householdSequence": 5,
+                        "code": "4540",
+                        "healthFacilityId": null
+                    }
+                ],
+                "phuFocalPersonName": "Carnival"
+            }
+        ],
+        "smartAncEnabled": false,
+        "frequency": [
+            {
+                "name": "OD",
+                "description": "Daily",
+                "value": "1",
+                "category": "medication_frequency",
+                "type": null,
+                "duration": null,
+                "period": null,
+                "riskLevel": null,
+                "title": null,
+                "displayOrder": 1
+            },
+            {
+                "name": "BD",
+                "description": "Twice a day",
+                "value": "2",
+                "category": "medication_frequency",
+                "type": null,
+                "duration": null,
+                "period": null,
+                "riskLevel": null,
+                "title": null,
+                "displayOrder": 2
+            },
+            {
+                "name": "TDS",
+                "description": "Three times a day",
+                "value": "3",
+                "category": "medication_frequency",
+                "type": null,
+                "duration": null,
+                "period": null,
+                "riskLevel": null,
+                "title": null,
+                "displayOrder": 3
+            },
+            {
+                "name": "QDS",
+                "description": "Four times a day",
+                "value": "4",
+                "category": "medication_frequency",
+                "type": null,
+                "duration": null,
+                "period": null,
+                "riskLevel": null,
+                "title": null,
+                "displayOrder": 4
+            },
+            {
+                "name": "OM",
+                "description": "In the morning",
+                "value": "1",
+                "category": "medication_frequency",
+                "type": null,
+                "duration": null,
+                "period": null,
+                "riskLevel": null,
+                "title": null,
+                "displayOrder": 5
+            },
+            {
+                "name": "ON",
+                "description": "At night",
+                "value": "1",
+                "category": "medication_frequency",
+                "type": null,
+                "duration": null,
+                "period": null,
+                "riskLevel": null,
+                "title": null,
+                "displayOrder": 6
+            },
+            {
+                "name": "CC",
+                "description": "With food",
+                "value": "1",
+                "category": "medication_frequency",
+                "type": null,
+                "duration": null,
+                "period": null,
+                "riskLevel": null,
+                "title": null,
+                "displayOrder": 7
+            },
+            {
+                "name": "PC",
+                "description": "After food",
+                "value": "1",
+                "category": "medication_frequency",
+                "type": null,
+                "duration": null,
+                "period": null,
+                "riskLevel": null,
+                "title": null,
+                "displayOrder": 8
+            },
+            {
+                "name": "AC",
+                "description": "Before food",
+                "value": "1",
+                "category": "medication_frequency",
+                "type": null,
+                "duration": null,
+                "period": null,
+                "riskLevel": null,
+                "title": null,
+                "displayOrder": 9
+            },
+            {
+                "name": "PRN",
+                "description": "When required",
+                "value": "1",
+                "category": "medication_frequency",
+                "type": null,
+                "duration": null,
+                "period": null,
+                "riskLevel": null,
+                "title": null,
+                "displayOrder": 10
+            },
+            {
+                "name": "AM",
+                "description": "Once a day",
+                "value": "1",
+                "category": "medication_frequency",
+                "type": null,
+                "duration": null,
+                "period": null,
+                "riskLevel": null,
+                "title": null,
+                "displayOrder": 11
+            },
+            {
+                "name": "PM",
+                "description": "Once a day",
+                "value": "1",
+                "category": "medication_frequency",
+                "type": null,
+                "duration": null,
+                "period": null,
+                "riskLevel": null,
+                "title": null,
+                "displayOrder": 12
+            },
+            {
+                "name": "OTHER",
+                "description": " ",
+                "value": "1",
+                "category": "medication_frequency",
+                "type": null,
+                "duration": null,
+                "period": null,
+                "riskLevel": null,
+                "title": null,
+                "displayOrder": 13
+            }
+        ],
+        "districts": [
+            {
+                "id": 8,
+                "name": "Kenema",
+                "code": "3650",
+                "countryId": 1
+            },
+            {
+                "id": 444,
+                "name": "Nemeria",
+                "code": "4650",
+                "countryId": 1
+            },
+            {
+                "id": 445,
+                "name": "Zambila",
+                "code": "5650",
+                "countryId": 1
+            }
+        ],
+        "chiefdoms": [
+            {
+                "id": 10,
+                "name": "Mathora",
+                "code": "143",
+                "countryId": 1,
+                "districtId": 8
+            },
+            {
+                "id": 490,
+                "name": "Lousia",
+                "code": "243",
+                "countryId": 1,
+                "districtId": 444
+            },
+            {
+                "id": 491,
+                "name": "Suriara",
+                "code": "343",
+                "countryId": 1,
+                "districtId": 445
+            }
+        ],
+        "identityTypes": [
+            {
+                "value": "national-id",
+                "name": "National ID"
+            },
+            {
+                "value": "passport",
+                "name": "Passport Number"
+            },
+            {
+                "value": "birth-certificate",
+                "name": "Birth Certificate"
+            }
+        ],
+        "programs": [],
+        "cultures": [
+            {
+                "id": 1,
+                "createdBy": null,
+                "updatedBy": null,
+                "createdAt": "2024-05-06T09:52:46+00:00",
+                "updatedAt": "2024-05-06T09:52:46+00:00",
+                "name": "English",
+                "code": "en",
+                "appTypes": [
+                    "COMMUNITY"
+                ],
+                "active": true,
+                "deleted": false
+            }
+        ],
+        "remainingAttemptsCount": 5,
+        "medicationInstructions": [
+            "Before Meals",
+            "After Meals"
+        ],
+        "appTypes": [
+            "COMMUNITY"
+        ]
+    },
+    "status": true,
+    "entityList": null,
+    "responseCode": 200,
+    "totalCount": null
+}

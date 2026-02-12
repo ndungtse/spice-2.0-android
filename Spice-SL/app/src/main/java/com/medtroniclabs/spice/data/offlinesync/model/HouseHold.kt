@@ -24,35 +24,23 @@ data class HouseHold(
     @ColumnInfo(name = "village_id")
     val villageId: Long,
 
-    @ColumnInfo(name = "landmark")
-    val landmark: String? = null,
-
-    @ColumnInfo(name = "head_phone_number")
-    val headPhoneNumber: String,
-
-    @ColumnInfo(name = "head_phone_number_category")
-    val headPhoneNumberCategory: String? = null,
-
     @ColumnInfo(name = "no_of_people")
     val noOfPeople: Int,
 
     @ColumnInfo(name = "household_no")
     val householdNo: Long? = null,
 
-    @ColumnInfo(name = "is_owned_hand_washing_facility_with_soap")
-    val ownedHandWashingFacilityWithSoap: Boolean,
+    @ColumnInfo(name = "shasthya_shebika_id")
+    val shasthyaShebikaId: Long? = null,
 
-    @ColumnInfo(name = "is_owned_a_treated_bed_net")
-    val ownedTreatedBedNet: Boolean,
+    @ColumnInfo(name = "sub_village_id")
+    val subVillageId: Long? = null,
 
-    @ColumnInfo(name = "is_owned_an_improved_latrine")
-    val ownedAnImprovedLatrine: Boolean,
+    @ColumnInfo(name = "household_type")
+    val householdType: String? = null,
 
-    @ColumnInfo(name = "has_improved_water_source")
-    val hasImprovedWaterSource: Boolean,
-
-    @ColumnInfo(name = "bed_net_count")
-    val bedNetCount: Int? = null,
+    @ColumnInfo(name = "monthly_income")
+    val monthlyIncome: Double? = null,
 
     @ColumnInfo(name = "latitude")
     val latitude: Double = 0.0,
@@ -82,15 +70,11 @@ data class HouseHold(
             householdNo = this.householdNo,
             name = this.name,
             villageId = this.villageId,
-            landmark = this.landmark,
-            headPhoneNumber = this.headPhoneNumber,
-            headPhoneNumberCategory = toRegularCase(this.headPhoneNumberCategory),
             noOfPeople = this.noOfPeople,
-            isOwnedAnImprovedLatrine = this.ownedAnImprovedLatrine,
-            hasImprovedWaterSource = this.hasImprovedWaterSource,
-            isOwnedHandWashingFacilityWithSoap = this.ownedHandWashingFacilityWithSoap,
-            isOwnedATreatedBedNet = this.ownedTreatedBedNet,
-            bedNetCount = this.bedNetCount,
+            shasthyaShebikaId = this.shasthyaShebikaId,
+            subVillageId = this.subVillageId,
+            householdType = this.householdType,
+            monthlyIncome = this.monthlyIncome,
             latitude = this.latitude,
             longitude = this.longitude,
             version = this.version,

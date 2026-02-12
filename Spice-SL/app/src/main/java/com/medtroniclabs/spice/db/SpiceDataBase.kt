@@ -75,7 +75,10 @@ import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.RxBuddyDetails
 import com.medtroniclabs.spice.db.entity.RxBuddyFollowUpEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaEntity
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaLinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.SubVillageEntity
 import com.medtroniclabs.spice.db.entity.TreatmentDetailsEntity
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
@@ -92,8 +95,9 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class,
         RiskFactorEntity::class, LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, UnitMetricEntity::class,
         DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class, DosageDurationEntity::class, NCDFollowUp::class,
-        LinkedVillageEntity::class, NCDCallDetails::class, NCDPatientDetailsEntity::class,CommunityProfile::class,RxBuddyDetails::class,TreatmentDetailsEntity::class,RxBuddyFollowUpEntity::class],
-    version = 4
+        LinkedVillageEntity::class, NCDCallDetails::class, NCDPatientDetailsEntity::class,CommunityProfile::class,RxBuddyDetails::class,TreatmentDetailsEntity::class,RxBuddyFollowUpEntity::class,
+        SubVillageEntity::class, ShasthyaShebikaEntity::class, ShasthyaShebikaLinkedVillageEntity::class],
+    version = 1
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
 abstract class SpiceDataBase : RoomDatabase() {
@@ -153,14 +157,6 @@ abstract class SpiceDataBase : RoomDatabase() {
             if (!BuildConfig.DEBUG)
                 db.openHelperFactory(factory)
 
-            if (CommonUtils.isSL()) {
-                db.addMigrations(SpiceSLMigration.MIGRATION_1_2)
-                db.addMigrations(SpiceSLMigration.MIGRATION_2_3)
-                db.addMigrations(SpiceSLMigration.MIGRATION_3_4)
-            } else if (CommonUtils.isAfrica()) {
-                db.addMigrations(SpiceAfricaMigration.MIGRATION_1_2)
-                db.addMigrations(SpiceAfricaMigration.MIGRATION_2_5)
-            }
 
             return db.build()
         }

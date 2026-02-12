@@ -81,8 +81,8 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resources.data?.let { data ->
-                        childFormGenerator.populateViews(data.formLayout.filter { it.id != MemberRegistration.isPregnant })
-                        removeHouseHoldHeadMemberRelationShip()
+//                        childFormGenerator.populateViews(data.formLayout.filter { it.id != MemberRegistration.isPregnant })
+//                        removeHouseHoldHeadMemberRelationShip()
                     }
                 }
 
@@ -94,26 +94,26 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
     }
 
 
-    private fun removeHouseHoldHeadMemberRelationShip() {
-        val spinnerTitle =
-            childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship + com.medtroniclabs.spice.formgeneration.config.DefinedParams.titleSuffix)
-        spinnerTitle?.let {
-            val tvTitle = it as TextView
-            tvTitle.text = getString(R.string.relationship_to_household_head)
-        }
-
-        childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship)?.let { view ->
-            if (view is AppCompatSpinner) {
-                val adapter = view.adapter
-                if (adapter is CustomSpinnerAdapter) {
-                    adapter.removeItemById(DefinedParams.HouseholdHead)
-                    adapter.removeItemById(MemberRegistration.WifeOrHusband)
-                    adapter.removeItemById(MemberRegistration.FatherOrMother)
-                    adapter.removeItemById(MemberRegistration.Grandparent)
-                }
-            }
-        }
-    }
+//    private fun removeHouseHoldHeadMemberRelationShip() {
+//        val spinnerTitle =
+//            childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship + com.medtroniclabs.spice.formgeneration.config.DefinedParams.titleSuffix)
+//        spinnerTitle?.let {
+//            val tvTitle = it as TextView
+//            tvTitle.text = getString(R.string.relationship_to_household_head)
+//        }
+//
+//        childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship)?.let { view ->
+//            if (view is AppCompatSpinner) {
+//                val adapter = view.adapter
+//                if (adapter is CustomSpinnerAdapter) {
+//                    adapter.removeItemById(DefinedParams.HouseholdHead)
+//                    adapter.removeItemById(MemberRegistration.WifeOrHusband)
+//                    adapter.removeItemById(MemberRegistration.FatherOrMother)
+//                    adapter.removeItemById(MemberRegistration.Grandparent)
+//                }
+//            }
+//        }
+//    }
 
     override fun onClick(v: View) {
         when (v.id) {

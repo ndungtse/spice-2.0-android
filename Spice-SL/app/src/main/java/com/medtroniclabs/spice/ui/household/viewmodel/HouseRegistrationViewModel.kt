@@ -10,7 +10,9 @@ import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
@@ -39,6 +41,8 @@ class HouseRegistrationViewModel @Inject constructor(
     var householdId: Long = -1L
     var villageListResponse = MutableLiveData<Resource<LocalSpinnerResponse>>()
     var memberVillageListResponse = MutableLiveData<Resource<LocalSpinnerResponse>>()
+    var shasthyaShebikaListResponse = MutableLiveData<Resource<LocalSpinnerResponse>>()
+    var subVillageListResponse = MutableLiveData<Resource<LocalSpinnerResponse>>()
     var memberID: Long = -1L
     private var lastLocation: Location? = null
     var addNewMember: Boolean = false
@@ -47,7 +51,14 @@ class HouseRegistrationViewModel @Inject constructor(
 
     var signatureFilename: String? = null
     var initialValue: String? = null
+    val generatedHouseholdNumberLiveData = MutableLiveData<Long>()
 
+    fun generateHouseholdNumber() {
+        viewModelScope.launch(dispatcherIO) {
+            val householdNumber = houseHoldRepository.generateUniqueHouseholdNumber()
+            generatedHouseholdNumberLiveData.postValue(householdNumber)
+        }
+    }
 
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -78,6 +89,23 @@ class HouseRegistrationViewModel @Inject constructor(
         }
     }
 
+    fun loadShasthyaShebikaDataCacheByType(type: String, tag: String) {
+        viewModelScope.launch(dispatcherIO) {
+            val userId = SecuredPreference.getUserId()
+            shasthyaShebikaListResponse.postLoading()
+            shasthyaShebikaListResponse.postValue(houseHoldRepository.getShasthyaShebikasByKormiId(170))
+
+        }
+    }
+
+    fun loadSubVillageDataCacheByType(type: String, tag: String, shasthyaShebikaId: Long) {
+        viewModelScope.launch(dispatcherIO) {
+            subVillageListResponse.postLoading()
+            subVillageListResponse.postValue(houseHoldRepository.getSubVillagesByShasthyaShebikaId(shasthyaShebikaId))
+
+        }
+    }
+
     fun registerHousehold(map: HashMap<String, Any>) {
         viewModelScope.launch(dispatcherIO) {
             try {
@@ -97,7 +125,6 @@ class HouseRegistrationViewModel @Inject constructor(
                 val householdEntity =
                     houseHoldRepository.createOrUpdateHouseHoldEntity(map, householdEntityDetail)
                 houseHoldRepository.updateHouseHoldEntity(householdEntity)
-                houseHoldRepository.updateHouseholdHeadPhoneNumber(householdEntity.id, householdEntity.headPhoneNumber, householdEntity.headPhoneNumberCategory)
                 houseHoldUpdateLiveData.postSuccess()
             } catch (e: Exception) {
                 houseHoldUpdateLiveData.postError()

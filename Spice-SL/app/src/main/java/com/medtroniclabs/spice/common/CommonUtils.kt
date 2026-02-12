@@ -132,6 +132,31 @@ object CommonUtils {
             }
         }
     }
+    fun getBooleanFromString(answer: Any): Boolean? {
+        return (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
+    }
+    fun getDoubleOrNull(answer: Any?): Double? {
+        when (answer) {
+            is Double -> return answer
+            is String -> {
+                val answerNumber = answer.toDoubleOrNull()
+                return if (answerNumber is Double) {
+                    answerNumber
+                } else {
+                    null
+                }
+            }
+            is Int -> {
+                return answer.toDouble()
+            }
+            is Long -> {
+                return answer.toDouble()
+            }
+            else -> {
+                return null
+            }
+        }
+    }
 
     fun getStringOrEmptyString(answer: Any?): String {
         return if (answer is String) {

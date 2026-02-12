@@ -24,7 +24,10 @@ import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaEntity
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaLinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.SubVillageEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 
@@ -272,7 +275,7 @@ interface MetaDataDAO {
     @Query("""
         SELECT COUNT(DISTINCT household_id) as householdCount,
         COUNT(CASE WHEN isActive = 1 THEN 1 END) as populationCount,
-        COUNT(CASE WHEN isPregnant = 1 AND isActive = 1 THEN 1 END) as pregnantCount,
+        0 as pregnantCount,
         COUNT(CASE WHEN substr(date_of_birth, 1, 10) > date('now','-1 year') AND isActive = 1 THEN 1 END ) as belowOneYearCount,
         COUNT(CASE WHEN substr(date_of_birth, 1, 10) > date('now', '-5 years')
                AND substr(date_of_birth, 1, 10) <= date('now', '-1 year') AND isActive = 1 THEN 1 END) AS belowFiveYearCount,
@@ -291,4 +294,32 @@ interface MetaDataDAO {
     """)
     suspend fun getHealthFacilityBasedOnVillageId(villageId: Long): List<HealthFacilityEntity>
 
+    // SubVillage methods
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSubVillages(subVillageEntityList: List<SubVillageEntity>)
+
+    @Query("DELETE FROM SubVillageEntity")
+    suspend fun deleteAllSubVillages()
+
+    // ShasthyaShebika methods
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertShasthyaShebikas(shasthyaShebikaEntityList: List<ShasthyaShebikaEntity>)
+
+    @Query("DELETE FROM ShasthyaShebikaEntity")
+    suspend fun deleteAllShasthyaShebikas()
+
+    @Query("SELECT * FROM ShasthyaShebikaEntity WHERE shasthyaKormiId = :shasthyaKormiId")
+    suspend fun getShasthyaShebikaByShasthyaKormiId(shasthyaKormiId: Long): List<ShasthyaShebikaEntity>
+
+    // ShasthyaShebikaLinkedVillage methods
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertShasthyaShebikaLinkedVillages(linkedVillages: List<ShasthyaShebikaLinkedVillageEntity>)
+
+    @Query("DELETE FROM ShasthyaShebikaLinkedVillageEntity")
+    suspend fun deleteAllShasthyaShebikaLinkedVillages()
+
+    @Query("SELECT sv.* FROM SubVillageEntity sv " +
+           "INNER JOIN ShasthyaShebikaLinkedVillageEntity sslv ON sv.id = sslv.subVillageId " +
+           "WHERE sslv.shasthyaShebikaId = :shasthyaShebikaId")
+    suspend fun getSubVillagesByShasthyaShebikaId(shasthyaShebikaId: Long): List<SubVillageEntity>
 }

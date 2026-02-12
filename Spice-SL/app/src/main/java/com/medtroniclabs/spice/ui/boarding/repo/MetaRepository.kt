@@ -34,9 +34,14 @@ import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaEntity
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaLinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.SubVillageEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
+import com.medtroniclabs.spice.data.model.ShasthyaShebika
+import com.medtroniclabs.spice.data.model.SubVillage
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.CultureLocaleModel
@@ -62,10 +67,13 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import java.lang.reflect.Type
 import javax.inject.Inject
+import  dagger.hilt.android.qualifiers.ApplicationContext
+import  android.content.Context
 
 class MetaRepository @Inject constructor(
     private var apiHelper: ApiHelper,
-    private var roomHelper: RoomHelper
+    private var roomHelper: RoomHelper,
+    @ApplicationContext private val context: Context
 ) {
 
     suspend fun updateDeviceDetails(deviceDetails: DeviceDetails): Resource<DeviceDetails> {
@@ -108,6 +116,10 @@ class MetaRepository @Inject constructor(
                             )
                             deleteAllVillages()
                             saveVillage(modifiedVillages(villages, userProfile.villages))
+                            // Save SubVillages
+                            saveSubVillages(subVillages)
+                            // Save ShasthyaShebikas (includes saving linked subVillages)
+                            saveShasthyaShebikas(shasthyaShebikas)
                             deleteAllFrequencyList()
                             frequency?.let {
                                 saveFrequencyList(it)
@@ -701,9 +713,30 @@ class MetaRepository @Inject constructor(
     private suspend fun saveFormsInDb(formData: List<FormData>) {
         roomHelper.deleteAllForms()
         roomHelper.saveForms(formData.map { data ->
+            // Override formInput for specific form types from assets
+            val formInput = when (data.formType) {
+                "household_registration" -> {
+                    try {
+                        CommonUtils.getStringFromAssets("household_registration.json", context.assets)
+                    } catch (e: Exception) {
+                        // If asset file not found, use server formInput
+                        data.formInput
+                    }
+                }
+                "household_member_registration" -> {
+                    try {
+                        CommonUtils.getStringFromAssets("member_registration.json", context.assets)
+                    } catch (e: Exception) {
+                        // If asset file not found, use server formInput
+                        data.formInput
+                    }
+                }
+                else -> data.formInput
+            }
+            
             FormEntity(
                 id = data.id,
-                formInput = data.formInput,
+                formInput = formInput,
                 formType = data.formType,
                 workflowName = data.workflowName,
                 clinicalWorkflowId = data.clinicalWorkflowId
@@ -1118,6 +1151,55 @@ class MetaRepository @Inject constructor(
             }
         )
         return chipItemList
+    }
+
+    private suspend fun saveSubVillages(subVillages: List<SubVillage>?) {
+        subVillages?.let { list ->
+            val subVillageEntities = list.map { subVillage ->
+                SubVillageEntity(
+                    id = subVillage.id,
+                    name = subVillage.name,
+                    code = subVillage.code,
+                    villageId = subVillage.villageId
+                )
+            }
+            roomHelper.deleteAllSubVillages()
+            roomHelper.saveSubVillages(subVillageEntities)
+        }
+    }
+
+    private suspend fun saveShasthyaShebikas(shasthyaShebikas: List<ShasthyaShebika>?) {
+        shasthyaShebikas?.let { list ->
+            // Save ShasthyaShebika entities (without subVillages)
+            val shasthyaShebikaEntities = list.map { shebika ->
+                ShasthyaShebikaEntity(
+                    id = shebika.id,
+                    name = shebika.name,
+                    phoneNumber = shebika.phoneNumber,
+                    ssId = shebika.ssId,
+                    shasthyaKormiId = shebika.shasthyaKormiId
+                )
+            }
+            roomHelper.deleteAllShasthyaShebikas()
+            roomHelper.saveShasthyaShebikas(shasthyaShebikaEntities)
+            
+            // Save linked subVillages in junction table
+            val linkedVillages = mutableListOf<ShasthyaShebikaLinkedVillageEntity>()
+            list.forEach { shebika ->
+                shebika.subVillages?.forEach { subVillage ->
+                    linkedVillages.add(
+                        ShasthyaShebikaLinkedVillageEntity(
+                            shasthyaShebikaId = shebika.id,
+                            subVillageId = subVillage.id
+                        )
+                    )
+                }
+            }
+            roomHelper.deleteAllShasthyaShebikaLinkedVillages()
+            if (linkedVillages.isNotEmpty()) {
+                roomHelper.insertShasthyaShebikaLinkedVillages(linkedVillages)
+            }
+        }
     }
 }
 

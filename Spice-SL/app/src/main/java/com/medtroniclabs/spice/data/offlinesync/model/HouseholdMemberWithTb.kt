@@ -13,17 +13,11 @@ data class HouseholdMemberWithTb(
     @ColumnInfo("phone_number")
     var phoneNumber: String = "",
 
-    @ColumnInfo("phone_number_category")
-    var phoneNumberCategory: String = "",
-
     @ColumnInfo("date_of_birth")
     var dateOfBirth: String = "",
 
     @ColumnInfo("gender")
     var gender: String = "",
-
-    @ColumnInfo("household_head_relationship")
-    var householdHeadRelationship: String = "",
 
     @ColumnInfo("household_id")
     var householdId: Long? = null,
@@ -34,21 +28,11 @@ data class HouseholdMemberWithTb(
     @ColumnInfo("patient_id")
     var patientId: String? = null,
 
-    var isPregnant: Boolean? = null,
-
-    var parentId: String? = null,
-
     var isActive: Boolean = true,
-
-    var signature: String? = null,
-
-    var initial: String? = null,
 
     val version: String? = null,
 
     val lastUpdated: String? = null,
-
-    var localSignatureFile: String? = null,
 
     var motherReferenceId: Long? = null,
 
@@ -58,7 +42,17 @@ data class HouseholdMemberWithTb(
 
     var longitude: Double = 0.0,
 
-    val tBContactTraceStatus:Int? = null,
+    @ColumnInfo("id_type")
+    var idType: String = "",
+
+    @ColumnInfo("national_id")
+    var nationalId: String? = null,
+
+    @ColumnInfo("is_house_hold_head")
+    var isHouseholdHead: Boolean = false,
+
+    @ColumnInfo("household_fhir_id")
+    var householdFhirId: String? = null,
 
     @ColumnInfo("fhir_id")
     val fhirId: String? = null,

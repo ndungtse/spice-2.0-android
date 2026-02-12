@@ -1,6 +1,11 @@
 package com.medtroniclabs.spice.network
 
+import android.content.Context
+import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.common.CommonUtils
+import java.lang.reflect.Type
 import com.medtroniclabs.spice.data.HivVitalDetailsRequest
 import com.medtroniclabs.spice.data.HivVitalDetailsResponse
 import com.medtroniclabs.spice.data.APIResponse
@@ -186,14 +191,25 @@ import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import javax.inject.Inject
+import dagger.hilt.android.qualifiers.ApplicationContext
 
-class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : ApiHelper {
+class ApiHelperImpl @Inject constructor(
+    private val apiService: ApiService,
+    @ApplicationContext private val context: Context
+) : ApiHelper {
     override suspend fun doLogin(loginRequest: MultipartBody): Response<LoginResponse> {
         return apiService.doLogin(loginRequest)
     }
 
     override suspend fun getMetaDataInformation(): Response<APIResponse<MetaDataResponse>> {
-        return apiService.getMetaDataInformation()
+        // Mock data - return JSON from assets
+//        val jsonString = CommonUtils.getStringFromAssets("mock_static_data.json", context.assets)
+//        val type: Type = object : TypeToken<APIResponse<MetaDataResponse>>() {}.type
+//        val mockResponse: APIResponse<MetaDataResponse> = Gson().fromJson(jsonString, type)
+//        return Response.success(mockResponse)
+        
+        // Uncomment below line when backend is ready to use actual API
+         return apiService.getMetaDataInformation()
     }
 
     override suspend fun getForms(formRequest: FormRequest): Response<APIResponse<FormResponse>> {

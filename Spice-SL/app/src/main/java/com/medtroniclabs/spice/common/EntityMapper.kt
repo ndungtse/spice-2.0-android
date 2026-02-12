@@ -7,6 +7,8 @@ import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaEntity
+import com.medtroniclabs.spice.db.entity.SubVillageEntity
 
 object EntityMapper {
 
@@ -36,12 +38,23 @@ object EntityMapper {
             is ChiefDomEntity -> {
                 updateMapsIdName(map, properties.id, properties.name)
             }
-
             is DistrictEntity -> {
                 updateMapsIdName(map, properties.id, properties.name)
             }
 
             is ProgramEntity -> {
+                updateMapsIdName(map, properties.id, properties.name)
+            }
+            is ShasthyaShebikaEntity -> {
+                // Format as "[ssid] [name]" if ssId exists, otherwise just use name
+                val displayName = if (!properties.ssId.isNullOrBlank()) {
+                    "${properties.ssId}-${properties.name}"
+                } else {
+                    properties.name
+                }
+                updateMapsIdName(map, properties.id, displayName)
+            }
+            is SubVillageEntity -> {
                 updateMapsIdName(map, properties.id, properties.name)
             }
         }

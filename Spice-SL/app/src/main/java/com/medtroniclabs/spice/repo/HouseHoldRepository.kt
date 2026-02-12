@@ -31,6 +31,31 @@ class HouseHoldRepository @Inject constructor(
     suspend fun getLastHouseholdNo(villageId: Long): Long? =
         roomHelper.getLastHouseholdNo(villageId)
 
+    suspend fun checkHouseholdNumberExists(householdNo: Long): Boolean =
+        roomHelper.checkHouseholdNumberExists(householdNo)
+
+    suspend fun generateUniqueHouseholdNumber(): Long {
+        var householdNumber: Long
+        var attempts = 0
+        val maxAttempts = 100
+        
+        do {
+            // Generate random 10-digit number (1000000000 to 9999999999)
+            householdNumber = (1000000000L..9999999999L).random()
+            attempts++
+        } while (checkHouseholdNumberExists(householdNumber) && attempts < maxAttempts)
+        
+        if (attempts >= maxAttempts) {
+            // Fallback: use timestamp-based number if too many collisions
+            householdNumber = System.currentTimeMillis() % 10000000000L
+            if (householdNumber < 1000000000L) {
+                householdNumber += 1000000000L
+            }
+        }
+        
+        return householdNumber
+    }
+
     suspend fun getHouseHoldDetailsById(houseHoldId: Long) =
         roomHelper.getHouseHoldDetailsById(houseHoldId)
 
@@ -68,48 +93,38 @@ class HouseHoldRepository @Inject constructor(
         val householdName = map[HouseHoldRegistration.householdName]
         householdEntity.name = CommonUtils.getStringOrEmptyString(householdName)
 
-        val headPhoneNumber = map[HouseHoldRegistration.headPhoneNumber]
-        householdEntity.headPhoneNumber = CommonUtils.getStringOrEmptyString(headPhoneNumber)
-
-        val headPhoneNumberCategory = map[HouseHoldRegistration.headPhoneNumberCategory]
-        householdEntity.headPhoneNumberCategory = CommonUtils.getStringOrEmptyString(headPhoneNumberCategory)
-
-        val landmark = map[HouseHoldRegistration.landmark]
-        householdEntity.landmark = CommonUtils.getStringOrEmptyString(landmark)
-
         val villageID = map[HouseHoldRegistration.villageId]
         val villageLongID = CommonUtils.getLongOrNull(villageID) ?: 0
         householdEntity.villageId = villageLongID
 
-        val isOwnedAnImprovedLatrine = map[HouseHoldRegistration.isOwnedAnImprovedLatrine]
-        householdEntity.isOwnedAnImprovedLatrine = CommonUtils.getIsBooleanFromString(isOwnedAnImprovedLatrine)
+        val shasthyaShebikaId = map[HouseHoldRegistration.shasthyaShebikaId]
+        householdEntity.shasthyaShebikaId = CommonUtils.getLongOrNull(shasthyaShebikaId)
 
-        val hasWaterSource = map[HouseHoldRegistration.hasImprovedWaterSource]
-        householdEntity.hasImprovedWaterSource = CommonUtils.getIsBooleanFromString(hasWaterSource)
+        val subVillageId = map[HouseHoldRegistration.subVillageId]
+        householdEntity.subVillageId = CommonUtils.getLongOrNull(subVillageId)
 
-        val isOwnedHandWashingFacilityWithSoap =
-            map[HouseHoldRegistration.isOwnedHandWashingFacilityWithSoap]
-        householdEntity.isOwnedHandWashingFacilityWithSoap = CommonUtils.getIsBooleanFromString(
-            isOwnedHandWashingFacilityWithSoap
-        )
+        val householdType = map[HouseHoldRegistration.householdType]
+        householdEntity.householdType = CommonUtils.getStringOrEmptyString(householdType).takeIf { it.isNotEmpty() }
 
-        val isOwnedATreatedBedNet = map[HouseHoldRegistration.isOwnedATreatedBedNet]
-        householdEntity.isOwnedATreatedBedNet = CommonUtils.getIsBooleanFromString(isOwnedATreatedBedNet)
-
-        val bedNetCount = map[HouseHoldRegistration.bedNetCount]
-        householdEntity.bedNetCount = CommonUtils.getIntegerOrNull(bedNetCount)
-
-        val lastHouseHoldNo = getLastHouseholdNo(villageLongID) ?: 0
+        val monthlyIncome = map[HouseHoldRegistration.monthlyIncome]
+        householdEntity.monthlyIncome = CommonUtils.getDoubleOrNull(monthlyIncome)
 
         if (entity != null) {
             householdEntity.updatedAt = System.currentTimeMillis()
             householdEntity.sync_status = OfflineSyncStatus.NotSynced
 
-            val noOfPeople = map[HouseHoldRegistration.noOfPeople]
+            val noOfPeople = map[HouseHoldRegistration.noOfPeople] ?: map[HouseHoldRegistration.totalMembers]
             householdEntity.noOfPeople = checkHeadCountOfHouseHold(CommonUtils.getIntegerOrNull(noOfPeople) ?: 0, getMemberCountPerHouseHold(entity.id))
         } else {
-            //householdEntity.householdNo = lastHouseHoldNo + 1
-            val noOfPeople = map[HouseHoldRegistration.noOfPeople]
+            // Use household number from form if provided, otherwise generate new one
+            val householdNumberFromForm = map[HouseHoldRegistration.householdNumber]
+            householdEntity.householdNo = if (householdNumberFromForm != null) {
+                CommonUtils.getLongOrNull(householdNumberFromForm)
+            } else {
+                // Fallback: generate if not provided (shouldn't happen if form is populated correctly)
+                generateUniqueHouseholdNumber()
+            }
+            val noOfPeople = map[HouseHoldRegistration.noOfPeople] ?: map[HouseHoldRegistration.totalMembers]
             householdEntity.noOfPeople = CommonUtils.getIntegerOrNull(noOfPeople) ?: 0
         }
         return householdEntity
@@ -119,8 +134,22 @@ class HouseHoldRepository @Inject constructor(
         return roomHelper.saveHouseHoldEntry(householdEntity)
     }
 
-    suspend fun updateHouseholdHeadPhoneNumber(id: Long, phoneNumber: String?, phoneNumberCategory: String?) {
-        roomHelper.updatePhoneNumberForHouseholdHead(id, phoneNumber, phoneNumberCategory)
+    suspend fun getShasthyaShebikasByKormiId(shasthyaKormiId: Long): Resource<LocalSpinnerResponse> {
+        return try {
+            val response = roomHelper.getShasthyaShebikaByShasthyaKormiId(shasthyaKormiId)
+            Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse("shasthya_shebika_id", response))
+        } catch (_: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getSubVillagesByShasthyaShebikaId(shasthyaShebikaId: Long): Resource<LocalSpinnerResponse> {
+        return try {
+            val response = roomHelper.getSubVillagesByShasthyaShebikaId(shasthyaShebikaId)
+            Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse("sub_village_id", response))
+        } catch (_: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
     }
 
     suspend fun updateHouseHoldEntity(householdEntity: HouseholdEntity) {

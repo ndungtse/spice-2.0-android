@@ -1,0 +1,140 @@
+{
+  "formLayout": [
+    {
+      "familyOrder": 0,
+      "id": "householdInformation",
+      "title": "Household Information",
+      "viewType": "CardView"
+    },
+    {
+      "condition": [],
+      "defaultValue": null,
+      "errorMessage": "Please select Union",
+      "family": "householdInformation",
+      "fieldName": "Union",
+      "id": "village_id",
+      "isEditable": true,
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "localDataCache": "village_id",
+      "title": "Union",
+      "orderId": 1,
+      "viewType": "Spinner",
+      "visibility": "visible"
+    },
+    {
+      "condition": [],
+      "defaultValue": null,
+      "errorMessage": "Please select SS",
+      "family": "householdInformation",
+      "fieldName": "SS Name",
+      "id": "shasthya_shebika_id",
+      "isEditable": true,
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "localDataCache": "shasthya_shebika_id",
+      "dependentID": "sub_village_id",
+      "title": "SS Name",
+      "orderId": 2,
+      "viewType": "Spinner",
+      "visibility": "visible"
+    },
+    {
+      "condition": [],
+      "defaultValue": null,
+      "errorMessage": "Please select Village",
+      "family": "householdInformation",
+      "fieldName": "Village",
+      "id": "sub_village_id",
+      "isEditable": true,
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "localDataCache": "sub_village_id",
+
+      "title": "Village",
+      "orderId": 3,
+      "viewType": "Spinner",
+      "visibility": "visible"
+    },
+    {
+      "condition": [],
+      "defaultValue": null,
+      "errorMessage": "Please select Household Type",
+      "family": "householdInformation",
+      "fieldName": "Household Type",
+      "id": "household_type",
+      "isEditable": true,
+      "isEnabled": true,
+      "isMandatory": false,
+      "isNeededDefault": true,
+      "optionsList": [
+        {
+          "id": "BRACVO",
+          "name": "BRAC VO"
+        },
+        {
+          "id": "BRACNVO",
+          "name": "BRAC NVO"
+        }
+      ],
+      "title": "Household Type",
+      "orderId": 4,
+      "viewType": "Spinner",
+      "visibility": "visible"
+    },
+    {
+      "family": "householdInformation",
+      "fieldName": "Household Number",
+      "hint": "Enter Household Number",
+      "id": "household_number",
+      "inputType": 96,
+      "isEnabled": false,
+      "isMandatory": false,
+      "isNeededDefault": true,
+      "isNotDefault": false,
+      "orderId": 5,
+      "title": "Household Number",
+      "viewType": "EditText",
+      "visibility": "visible"
+    },
+    {
+      "family": "householdInformation",
+      "fieldName": "Total Members",
+      "hint": "Enter Total Members",
+      "id": "total_members",
+      "inputType": 3,
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "isNotDefault": false,
+      "isSummary": true,
+      "orderId": 6,
+      "maxLength": 2,
+      "minValue": 0,
+      "title": "Total Members",
+      "viewType": "EditText",
+      "visibility": "visible"
+    },
+    {
+      "family": "householdInformation",
+      "fieldName": "Monthly Income",
+      "hint": "Enter Monthly Income",
+      "id": "monthly_income",
+      "inputType": 3,
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "isNotDefault": false,
+      "isSummary": true,
+      "orderId": 7,
+      "maxLength": 10,
+      "minValue": 0,
+      "title": "Monthly Income",
+      "viewType": "EditText",
+      "visibility": "visible"
+    }
+  ]
+}

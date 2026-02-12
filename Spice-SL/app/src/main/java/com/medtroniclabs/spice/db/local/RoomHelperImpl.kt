@@ -77,6 +77,9 @@ import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 import com.medtroniclabs.spice.db.entity.LinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaEntity
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaLinkedVillageEntity
+import com.medtroniclabs.spice.db.entity.SubVillageEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
@@ -143,13 +146,14 @@ class RoomHelperImpl @Inject constructor(
         return householdDAO.updateHouseHold(householdEntity)
     }
 
-    override suspend fun updateHeadPhoneNumber(id: Long, phoneNumber: String, phoneNumberCategory: String){
-        return householdDAO.updateHeadPhoneNumber(id,phoneNumber, phoneNumberCategory)
-    }
 
 
     override suspend fun getLastHouseholdNo(villageId: Long): Long? {
         return householdDAO.getLastHouseholdNo(villageId)
+    }
+
+    override suspend fun checkHouseholdNumberExists(householdNo: Long): Boolean {
+        return householdDAO.checkHouseholdNumberExists(householdNo) > 0
     }
 
     override suspend fun getHouseHoldDetailsById(houseHoldId: Long): HouseholdEntity {
@@ -242,6 +246,38 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getVillagesByChiefDom(chiefdomId: Long): List<VillageEntity> {
         return metaDataDAO.getVillagesByChiefDom(chiefdomId)
+    }
+
+    override suspend fun saveSubVillages(subVillageEntityList: List<SubVillageEntity>) {
+        metaDataDAO.insertSubVillages(subVillageEntityList)
+    }
+
+    override suspend fun deleteAllSubVillages() {
+        metaDataDAO.deleteAllSubVillages()
+    }
+
+    override suspend fun saveShasthyaShebikas(shasthyaShebikaEntityList: List<ShasthyaShebikaEntity>) {
+        metaDataDAO.insertShasthyaShebikas(shasthyaShebikaEntityList)
+    }
+
+    override suspend fun deleteAllShasthyaShebikas() {
+        metaDataDAO.deleteAllShasthyaShebikas()
+    }
+
+    override suspend fun getShasthyaShebikaByShasthyaKormiId(shasthyaKormiId: Long): List<ShasthyaShebikaEntity> {
+        return metaDataDAO.getShasthyaShebikaByShasthyaKormiId(shasthyaKormiId)
+    }
+
+    override suspend fun insertShasthyaShebikaLinkedVillages(linkedVillages: List<ShasthyaShebikaLinkedVillageEntity>) {
+        metaDataDAO.insertShasthyaShebikaLinkedVillages(linkedVillages)
+    }
+
+    override suspend fun deleteAllShasthyaShebikaLinkedVillages() {
+        metaDataDAO.deleteAllShasthyaShebikaLinkedVillages()
+    }
+
+    override suspend fun getSubVillagesByShasthyaShebikaId(shasthyaShebikaId: Long): List<SubVillageEntity> {
+        return metaDataDAO.getSubVillagesByShasthyaShebikaId(shasthyaShebikaId)
     }
 
     override suspend fun getDefaultHealthFacility(): HealthFacilityEntity? {
@@ -830,7 +866,7 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getHHSignatureDetails()
     }
     override suspend fun updatePhoneNumberForHouseholdHead(id: Long, phoneNumber: String?, phoneNumberCategory: String?) {
-        return memberDAO.updatePhoneNumberForHouseholdHead(id,phoneNumber, phoneNumberCategory)
+        return memberDAO.updatePhoneNumberForHouseholdHead(id, phoneNumber)
     }
 
     override suspend fun insertLinkHouseholdMembers(insertList: List<LinkHouseholdMember>) {

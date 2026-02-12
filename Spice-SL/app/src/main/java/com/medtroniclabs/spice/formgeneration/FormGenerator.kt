@@ -134,7 +134,6 @@ import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.FormFieldValidator
 import com.medtroniclabs.spice.mappingkey.CommunityDetails
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.SelectedNetwork
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
@@ -379,7 +378,7 @@ class FormGenerator(
             binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
 
             if (serverViewModel.id.contains(Screening.phoneNumber) || serverViewModel.id.contains(phoneNumber)
-                || serverViewModel.id.contains(headPhoneNumber) || serverViewModel.id.contains(CommunityDetails.EmergencyContactPhu)
+                || serverViewModel.id.contains(CommunityDetails.EmergencyContactPhu)
                 || serverViewModel.id.contains(CommunityDetails.EmergencyTransportContactNo)
                 || serverViewModel.id.contains(CommunityDetails.AmbulanceDriverContactNo)
                 || serverViewModel.id.contains(RxBuddy.rxBuddyPhoneNumber)
@@ -2699,7 +2698,7 @@ class FormGenerator(
                 ) {
                     isValid = false
                     requestFocusView(data)
-                } else if ((id == Screening.phoneNumber || id == headPhoneNumber || id == phoneNumber
+                } else if ((id == Screening.phoneNumber || id == phoneNumber
                             || id == CommunityDetails.EmergencyContactPhu || id == CommunityDetails.EmergencyTransportContactNo
                             || id == CommunityDetails.AmbulanceDriverContactNo || id == RxBuddy.rxBuddyPhoneNumber) && isMandatory && resultHashMap.containsKey(
                         id
@@ -3425,31 +3424,30 @@ class FormGenerator(
     }
 
     private fun handleAgeBelowThreshold() {
-        if (isResultAvailable(gender, female)) {
-            val isPregnantRootView =
-                getViewByTag(MemberRegistration.isPregnant + rootSuffix) as? ViewGroup
-                    ?: return
-            removeIfContains(MemberRegistration.isPregnant)
-            (getViewByTag(MemberRegistration.isPregnant) as? ViewGroup)?.forEach { view ->
-                if (view is TextView) {
-                    view.isSelected = false
-                }
-            }
-            if (isPregnantRootView.isVisible()) {
-                isPregnantRootView.gone()
-            }
-        }
+//        if (isResultAvailable(gender, female)) {
+//            val isPregnantRootView =
+//                getViewByTag(MemberRegistration.isPregnant + rootSuffix) as? ViewGroup
+//                    ?: return
+//            removeIfContains(MemberRegistration.isPregnant)
+//            (getViewByTag(MemberRegistration.isPregnant) as? ViewGroup)?.forEach { view ->
+//                if (view is TextView) {
+//                    view.isSelected = false
+//                }
+//            }
+//            if (isPregnantRootView.isVisible()) {
+//            }
+//        }
     }
 
     private fun handleAgeAboveThreshold() {
-        if (isResultAvailable(gender, female)) {
-            val isPregnantRootView =
-                getViewByTag(MemberRegistration.isPregnant + rootSuffix) as? ViewGroup
-                    ?: return
-            if (isPregnantRootView.isGone()) {
-                isPregnantRootView.visible()
-            }
-        }
+//        if (isResultAvailable(gender, female)) {
+//            val isPregnantRootView =
+//                getViewByTag(MemberRegistration.isPregnant + rootSuffix) as? ViewGroup
+//                    ?: return
+//            if (isPregnantRootView.isGone()) {
+//                isPregnantRootView.visible()
+//            }
+//        }
     }
 
     private fun checkOnlyAlphabets(

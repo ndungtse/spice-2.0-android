@@ -143,7 +143,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                         binding.llChildForm.visible()
                         childFormGenerator.populateViews(data.formLayout)
                         disableDateOfBirth()
-                        removeHouseHoldHeadMemberRelationShip()
+//                        removeHouseHoldHeadMemberRelationShip()
                     }
                 }
 
@@ -174,23 +174,23 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
 
     }
 
-    private fun removeHouseHoldHeadMemberRelationShip() {
-        val spinnerTitle =
-            childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship + com.medtroniclabs.spice.formgeneration.config.DefinedParams.titleSuffix)
-        spinnerTitle?.let {
-            val tvTitle = it as TextView
-            tvTitle.text = getString(R.string.relationship_to_household_head)
-        }
-
-        childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship)?.let { view ->
-            if (view is AppCompatSpinner) {
-                val adapter = view.adapter
-                if (adapter is CustomSpinnerAdapter) {
-                    adapter.removeItemById(DefinedParams.HouseholdHead)
-                }
-            }
-        }
-    }
+//    private fun removeHouseHoldHeadMemberRelationShip() {
+//        val spinnerTitle =
+//            childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship + com.medtroniclabs.spice.formgeneration.config.DefinedParams.titleSuffix)
+//        spinnerTitle?.let {
+//            val tvTitle = it as TextView
+//            tvTitle.text = getString(R.string.relationship_to_household_head)
+//        }
+//
+//        childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship)?.let { view ->
+//            if (view is AppCompatSpinner) {
+//                val adapter = view.adapter
+//                if (adapter is CustomSpinnerAdapter) {
+//                    adapter.removeItemById(DefinedParams.HouseholdHead)
+//                }
+//            }
+//        }
+//    }
 
     private fun disableDateOfBirth() {
         val motherMap = viewModel.pncMotherDetailMap
@@ -229,39 +229,39 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                 withLocationCheck({
                     viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                     assessmentRMNCHNeonateViewModel.fetchCurrentLocation(requireContext())
-                    handleSubmitFormWithClinicalDateCheck(v)
+//                    handleSubmitFormWithClinicalDateCheck(v)
                 })
             }
         }
     }
 
-    private fun handleSubmitFormWithClinicalDateCheck(v: View) {
-        if (viewModel.memberClinicalLiveData.value?.clinicalDate == null) {
-            if (childFormGenerator.formSubmitAction(v)) {
-                val map = childFormGenerator.getResultMap()
-                if (map.containsKey(MemberRegistration.dateOfBirth) &&
-                    map.containsKey(MemberRegistration.householdHeadRelationship)
-                ) {
-                    val dob = map[MemberRegistration.dateOfBirth] as String
-                    val relation = map[MemberRegistration.householdHeadRelationship] as String
-                    val headDob = assessmentRMNCHNeonateViewModel.householdHeadDobLiveData.value
-                    isValidRelationAge(
-                        requireContext(),
-                        dob,
-                        relation,
-                        headDob
-                    )?.let { validAgeErrorMessage ->
-                        showInValidDob(validAgeErrorMessage)
-                        return
-                    }
-
-                    formGenerator.formSubmitAction(v)
-                }
-            }
-        } else {
-            formGenerator.formSubmitAction(v)
-        }
-    }
+//    private fun handleSubmitFormWithClinicalDateCheck(v: View) {
+//        if (viewModel.memberClinicalLiveData.value?.clinicalDate == null) {
+//            if (childFormGenerator.formSubmitAction(v)) {
+//                val map = childFormGenerator.getResultMap()
+//                if (map.containsKey(MemberRegistration.dateOfBirth) &&
+//                    map.containsKey(MemberRegistration.householdHeadRelationship)
+//                ) {
+//                    val dob = map[MemberRegistration.dateOfBirth] as String
+//                    val relation = map[MemberRegistration.householdHeadRelationship] as String
+//                    val headDob = assessmentRMNCHNeonateViewModel.householdHeadDobLiveData.value
+//                    isValidRelationAge(
+//                        requireContext(),
+//                        dob,
+//                        relation,
+//                        headDob
+//                    )?.let { validAgeErrorMessage ->
+//                        showInValidDob(validAgeErrorMessage)
+//                        return
+//                    }
+//
+//                    formGenerator.formSubmitAction(v)
+//                }
+//            }
+//        } else {
+//            formGenerator.formSubmitAction(v)
+//        }
+//    }
 
 
     override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {

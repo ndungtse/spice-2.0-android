@@ -40,10 +40,10 @@ interface MemberDAO {
     @Query("SELECT * FROM HouseHoldMember WHERE patient_id = :patientId")
     suspend fun getMemberDetailsByPatientId(patientId: String): HouseholdMemberEntity?
 
-    @Query("SELECT * FROM HouseHoldMember WHERE parentId = :memberId ORDER BY fhir_id IS NULL, fhir_id ASC")
+    @Query("SELECT * FROM HouseHoldMember WHERE motherReferenceId = :memberId ORDER BY fhir_id IS NULL, fhir_id ASC")
     suspend fun getMemberDetailsByParentId(memberId: String): List<HouseholdMemberEntity>
 
-    @Query("SELECT id, fhir_id AS fhirId, localSignatureFile AS signatureName FROM HouseHoldMember WHERE localSignatureFile IS NOT NULL AND fhir_id IS NOT NULL")
+    @Query("SELECT id, fhir_id AS fhirId, '' AS signatureName FROM HouseHoldMember WHERE fhir_id IS NOT NULL")
     suspend fun getHHSignatureDetails(): List<HHSignatureDetail>
 
     @Query("SELECT COUNT(household_id) FROM HouseHoldMember WHERE household_id = :householdId")
@@ -55,7 +55,7 @@ interface MemberDAO {
     @Query("SELECT date_of_birth,gender FROM HouseHoldMember WHERE id = :memberId")
     suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel
 
-    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name, CASE WHEN hhm.tBContactTraceStatus IS NULL THEN NULL WHEN hhm.tBContactTraceStatus = 0 THEN 1 WHEN hhm.tBContactTraceStatus = 1 THEN 0 ELSE NULL END AS hasTbContactTracing, CASE WHEN lhhm.memberId IS NOT NULL AND lhhm.syncStatus IN (:status) THEN 1 ELSE NULL END AS assignHousehold FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id LEFT JOIN LinkHouseholdMember AS lhhm ON lhhm.memberId = hhm.fhir_id WHERE hhm.id NOT IN (:memberIds) AND (hh.fhir_id IS NULL OR hhm.fhir_id IS NULL) AND hhm.household_id = :houseHoldId AND hhm.sync_status IN (:status)")
+    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name, hh.sub_village_id as sub_village_id, sv.name as sub_village_name, CASE WHEN lhhm.memberId IS NOT NULL AND lhhm.syncStatus IN (:status) THEN 1 ELSE NULL END AS assignHousehold FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id LEFT JOIN SubVillageEntity AS sv ON hh.sub_village_id = sv.id LEFT JOIN LinkHouseholdMember AS lhhm ON lhhm.memberId = hhm.fhir_id WHERE hhm.id NOT IN (:memberIds) AND (hh.fhir_id IS NULL OR hhm.fhir_id IS NULL) AND hhm.household_id = :houseHoldId AND hhm.sync_status IN (:status)")
     suspend fun getAllUnSyncedHouseHoldMembers(
         houseHoldId: Long,
         memberIds: List<Long>,
@@ -65,7 +65,7 @@ interface MemberDAO {
         )
     ): List<HouseHoldMember>
 
-    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name, CASE WHEN hhm.tBContactTraceStatus IS NULL THEN NULL WHEN hhm.tBContactTraceStatus = 0 THEN 1 WHEN hhm.tBContactTraceStatus = 1 THEN 0 ELSE NULL END AS hasTbContactTracing, CASE WHEN lhhm.memberId IS NOT NULL AND lhhm.syncStatus IN (:status) THEN 1 ELSE NULL END AS assignHousehold FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id LEFT JOIN LinkHouseholdMember AS lhhm ON lhhm.memberId = hhm.fhir_id WHERE hhm.id NOT IN (:memberIds) AND hh.fhir_id IS NOT NULL AND hhm.sync_status IN (:status)")
+    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name, hh.sub_village_id as sub_village_id, sv.name as sub_village_name, CASE WHEN lhhm.memberId IS NOT NULL AND lhhm.syncStatus IN (:status) THEN 1 ELSE NULL END AS assignHousehold FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id LEFT JOIN SubVillageEntity AS sv ON hh.sub_village_id = sv.id LEFT JOIN LinkHouseholdMember AS lhhm ON lhhm.memberId = hhm.fhir_id WHERE hhm.id NOT IN (:memberIds) AND hh.fhir_id IS NOT NULL AND hhm.sync_status IN (:status)")
     suspend fun getOtherHouseholdMembers(
         memberIds: List<String>,
         status: List<String> = listOf(
@@ -85,7 +85,7 @@ interface MemberDAO {
     @Query("SELECT id FROM HouseholdMember WHERE fhir_id =:fhirId")
     suspend fun getHouseholdMemberIdByFhirId(fhirId: String): Long?
 
-    @Query("SELECT hhm.isPregnant, hhm.name, hhm.gender, hhm.date_of_birth AS dateOfBirth, hhm.patient_id AS patientId, hh.village_id as villageId, hhm.fhir_id AS memberId, hh.household_no as householdNo, hh.fhir_id AS householdId, hhm.id AS id,hhm.household_id AS householdLocalId, hhm.tBContactTraceStatus AS contactTracingStatus FROM HouseholdMember AS hhm INNER JOIN Household AS hh ON hh.id = hhm.household_id WHERE hhm.id=:id")
+    @Query("SELECT hhm.name, hhm.gender, hhm.date_of_birth AS dateOfBirth, hhm.patient_id AS patientId, hh.village_id as villageId, hhm.fhir_id AS memberId, hh.household_no as householdNo, hh.fhir_id AS householdId, hhm.id AS id,hhm.household_id AS householdLocalId, NULL AS contactTracingStatus, NULL AS isPregnant FROM HouseholdMember AS hhm INNER JOIN Household AS hh ON hh.id = hhm.household_id WHERE hhm.id=:id")
     suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails
 
     @Query("DELETE FROM HouseholdMember")
@@ -147,41 +147,37 @@ interface MemberDAO {
         deceasedReason: String?, updatedAt: Long = System.currentTimeMillis()
     )
 
-    @Query("UPDATE householdmember SET phone_number = :phoneNumber, phone_number_category = :phoneNumberCategory, sync_status =:syncStatus, updated_at =:updatedAt  WHERE household_id = :householdId AND household_head_relationship = :houseHoldRelationShip")
+    @Query("UPDATE householdmember SET phone_number = :phoneNumber, sync_status =:syncStatus, updated_at =:updatedAt  WHERE household_id = :householdId AND is_house_hold_head = 1")
     suspend fun updatePhoneNumberForHouseholdHead(
         householdId: Long,
         phoneNumber: String?,
-        phoneNumberCategory: String?,
-        syncStatus: String = OfflineSyncStatus.NotSynced.name,
-        updatedAt: Long = System.currentTimeMillis(),
-        houseHoldRelationShip: String = DefinedParams.HosueHoldHead
-    )
-
-
-    @Query("UPDATE HouseholdMember SET household_id = :householdId, household_head_relationship = :defaultRelation, sync_status =:syncStatus, updated_at =:updatedAt  WHERE fhir_id IN (:memberIds)")
-    suspend fun updateHouseholdHeadAndRelationShip(
-        memberIds: List<String>,
-        householdId: Long,
-        defaultRelation: String = "",
         syncStatus: String = OfflineSyncStatus.NotSynced.name,
         updatedAt: Long = System.currentTimeMillis()
     )
 
 
-    @Query("SELECT date_of_birth FROM HouseholdMember WHERE household_id = :householdId AND household_head_relationship = :houseHoldRelationShip LIMIT 1")
-    suspend fun getHouseholdHeadDob(
+    @Query("UPDATE HouseholdMember SET household_id = :householdId, sync_status =:syncStatus, updated_at =:updatedAt  WHERE fhir_id IN (:memberIds)")
+    suspend fun updateHouseholdHeadAndRelationShip(
+        memberIds: List<String>,
         householdId: Long,
-        houseHoldRelationShip: String = DefinedParams.HosueHoldHead
+        syncStatus: String = OfflineSyncStatus.NotSynced.name,
+        updatedAt: Long = System.currentTimeMillis()
+    )
+
+
+    @Query("SELECT date_of_birth FROM HouseholdMember WHERE household_id = :householdId AND is_house_hold_head = 1 LIMIT 1")
+    suspend fun getHouseholdHeadDob(
+        householdId: Long
     ): String
 
-    @Query("SELECT hm.*, pd.tbContactTraceStatus as tBContactTraceStatus FROM HouseholdMember AS hm LEFT JOIN PregnancyDetail AS pd ON hm.id = pd.householdMemberLocalId WHERE hm.household_id = :hhId")
+    @Query("SELECT hm.* FROM HouseholdMember AS hm WHERE hm.household_id = :hhId")
     fun getHouseholdMemberWithTBContactTraceStatus(hhId: Long): LiveData<List<HouseholdMemberEntity>>
 
     @Query("UPDATE PregnancyDetail SET tbContactTraceStatus = :tbContactTraceStatus WHERE householdMemberLocalId = :householdMemberId")
     suspend fun updateTBContactTraceStatus(householdMemberId: Long, tbContactTraceStatus: Int)
 
-    @Query("UPDATE HouseholdMember SET isPregnant = :isPregnant , sync_status =:syncStatus WHERE id = :memberId")
-    suspend fun updatePregnantStatus(memberId: Long, isPregnant: Boolean, syncStatus: String)
+    @Query("UPDATE HouseholdMember SET sync_status =:syncStatus WHERE id = :memberId AND (:isPregnant IS NULL OR :isPregnant IS NOT NULL)")
+    suspend fun updatePregnantStatus(memberId: Long, isPregnant: Boolean, syncStatus: String = OfflineSyncStatus.NotSynced.name)
 
     @Query("SELECT * FROM HouseholdMember WHERE household_id = :householdId AND id != :patientId AND isActive=1 AND substr(date_of_birth, 1, 10) < date('now','-10 years') ")
     suspend fun getOtherHouseholdExcludeTBPatient(
@@ -204,9 +200,9 @@ interface MemberDAO {
     @Query("SELECT hhm.id FROM HouseholdMember AS hhm JOIN TreatmentDetailsEntity AS td ON hhm.fhir_id = td.memberId WHERE hhm.household_id =:householdId")
     suspend fun getTbPatientLocalIdByHouseholdId(householdId: Long): MutableList<Long>
 
-    @Query("UPDATE HouseholdMember SET tBContactTraceStatus = :status, sync_status =:syncStatus, updated_at =:updatedAt WHERE id = :memberId")
+    @Query("UPDATE HouseholdMember SET sync_status =:syncStatus, updated_at =:updatedAt WHERE id = :memberId AND (:status IS NULL OR :status IS NOT NULL)")
     suspend fun updateContactTracingStatus(memberId: Long, status: Int?, syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis())
 
-    @Query("UPDATE HouseholdMember SET tBContactTraceStatus = :status, sync_status =:syncStatus, updated_at =:updatedAt WHERE household_id = :householdId AND id != :tbHHMId")
-    suspend fun updateContactTracingForLinkTbPatient(tbHHMId: Long, householdId: Long, status: Int = 0, syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis())
+    @Query("UPDATE HouseholdMember SET sync_status =:syncStatus, updated_at =:updatedAt WHERE household_id = :householdId AND id != :tbHHMId")
+    suspend fun updateContactTracingForLinkTbPatient(tbHHMId: Long, householdId: Long, syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis())
 }

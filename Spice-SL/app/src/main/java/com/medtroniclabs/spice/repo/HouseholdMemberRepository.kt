@@ -21,7 +21,6 @@ import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
-import com.medtroniclabs.spice.mappingkey.MemberRegistration.otherFamilyMember
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -50,19 +49,19 @@ class HouseholdMemberRepository @Inject constructor(
         val memberId = roomHelper.registerMember(memberEntity)
 
         // Assign same household for Parent or Child
-        if (isPhuWalkInFlow == true) {
-            val fhirIds = if (memberEntity.parentId != null) {
-                roomHelper.getUnAssignedParentFhirId(memberEntity.parentId!!)
-            } else {
-                roomHelper.getUnAssignedChildFhirIds(memberEntity.patientId!!)
-            }
-
-            if (fhirIds.isNotEmpty()) {
-                memberEntity.fhirId?.let {
-                    updateMemberAsAssigned(fhirIds, householdId, it)
-                }
-            }
-        }
+//        if (isPhuWalkInFlow == true) {
+//            val fhirIds = if (memberEntity.parentId != null) {
+//                roomHelper.getUnAssignedParentFhirId(memberEntity.parentId!!)
+//            } else {
+//                roomHelper.getUnAssignedChildFhirIds(memberEntity.patientId!!)
+//            }
+//
+//            if (fhirIds.isNotEmpty()) {
+//                memberEntity.fhirId?.let {
+//                    updateMemberAsAssigned(fhirIds, householdId, it)
+//                }
+//            }
+//        }
 
         //Update Member count in household only in insert case
         if (entity == null || isPhuWalkInFlow == true) {
@@ -78,11 +77,13 @@ class HouseholdMemberRepository @Inject constructor(
     }
 
     suspend fun updateHeadPhoneNumber(householdId: Long, map: HashMap<String, Any>) {
-         if (map[MemberRegistration.householdHeadRelationship]==DefinedParams.HouseholdHead) {
+         val isHouseholdHead = map[MemberRegistration.isHouseholdHead]
+         if (CommonUtils.getIsBooleanFromString(isHouseholdHead) == true) {
             //Updating in HouseHoldMEMBER
-            roomHelper.updateHeadPhoneNumber(householdId,
-                map[MemberRegistration.phoneNumber].toString(),
-                map[MemberRegistration.phoneNumberCategory].toString()
+            roomHelper.updatePhoneNumberForHouseholdHead(
+                householdId,
+                map[MemberRegistration.phoneNumber]?.toString(),
+                null // phoneNumberCategory parameter kept for interface compatibility
             )
         }
     }
@@ -98,7 +99,7 @@ class HouseholdMemberRepository @Inject constructor(
         location: Location?
     ): HouseholdMemberEntity {
 
-        val householdMemberEntity = entity ?: HouseholdMemberEntity(tBContactTraceStatus = if (roomHelper.getTbPatientLocalIdByHouseholdId(householdId).size > 0) 0 else null)
+        val householdMemberEntity = entity ?: HouseholdMemberEntity()
 
         val name = map[MemberRegistration.name]
         householdMemberEntity.name = getStringOrEmptyString(name)
@@ -110,25 +111,23 @@ class HouseholdMemberRepository @Inject constructor(
         val phoneNumber = map[MemberRegistration.phoneNumber]
         householdMemberEntity.phoneNumber = getStringOrEmptyString(phoneNumber)
 
-        val phoneNumberCategory = map[MemberRegistration.phoneNumberCategory]
-        householdMemberEntity.phoneNumberCategory =
-            getStringOrEmptyString(phoneNumberCategory)
-
         val dateOfBirth = map[MemberRegistration.dateOfBirth]
         householdMemberEntity.dateOfBirth = getStringOrEmptyString(dateOfBirth)
 
         val gender = map[MemberRegistration.gender]
         householdMemberEntity.gender = getStringOrEmptyString(gender)
 
-        val householdHeadRelationship = map[MemberRegistration.householdHeadRelationship]
-        val otherHouseholdRelationship =
-            if (map.containsKey(otherFamilyMember)) map[otherFamilyMember] else null
-        householdMemberEntity.householdHeadRelationship =
-            householdRelationshipStatus(householdHeadRelationship, otherHouseholdRelationship)
+        val idType = map[MemberRegistration.idType]
+        householdMemberEntity.idType = getStringOrEmptyString(idType)
 
-        val isPregnantOrNot = map[MemberRegistration.isPregnant]
-        householdMemberEntity.isPregnant =
-            isPregnantOrNot?.let { CommonUtils.getIsBooleanFromString(isPregnantOrNot) }
+        val nationalId = map[MemberRegistration.nationalId]
+        householdMemberEntity.nationalId = nationalId?.toString()?.takeIf { it.isNotEmpty() }
+
+        val isHouseholdHead = map[MemberRegistration.isHouseholdHead]
+        householdMemberEntity.isHouseholdHead = isHouseholdHead==true
+
+        val householdFhirId = map[MemberRegistration.householdFhirId]
+        householdMemberEntity.householdFhirId = householdFhirId?.toString()?.takeIf { it.isNotEmpty() }
 
         val isDeceased = map[isDeceased]
         if (isDeceased != null && isDeceased is Boolean && isDeceased){
@@ -145,8 +144,6 @@ class HouseholdMemberRepository @Inject constructor(
         if (entity == null) {
             val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
             householdMemberEntity.villageId = householdDetails.villageId
-            householdMemberEntity.initial = initial
-            householdMemberEntity.localSignatureFile = signature
         } else {
             householdMemberEntity.updatedAt = System.currentTimeMillis()
             householdMemberEntity.sync_status = OfflineSyncStatus.NotSynced
@@ -159,20 +156,6 @@ class HouseholdMemberRepository @Inject constructor(
         return householdMemberEntity
     }
 
-    private fun householdRelationshipStatus(
-        householdHeadRelationship: Any?,
-        otherHouseholdRelationship: Any?
-    ): String {
-        return if (otherHouseholdRelationship != null) {
-            "${getStringOrEmptyString(householdHeadRelationship)}-${
-                getStringOrEmptyString(
-                    otherHouseholdRelationship
-                )
-            }"
-        } else {
-            getStringOrEmptyString(householdHeadRelationship)
-        }
-    }
 
     private suspend fun getNextPatientId(villageId: Long): String? {
         val villageDetail = roomHelper.getVillageByID(villageId)

@@ -103,6 +103,9 @@
     <string name="red_alert">(Red Alert)</string>
     <string name="scroll_view">Scroll View</string>
     <string name="household_registration">Household Registration</string>
+    <string name="household_head_registration">Household Head Registration</string>
+    <string name="household_head_name">Household Head Name</string>
+    <string name="household_family">%1$s\'s Family</string>
     <string name="cancel">Cancel</string>
     <string name="member_registration">Member Registration</string>
     <string name="submit">Submit</string>

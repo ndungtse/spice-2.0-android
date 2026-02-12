@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -35,6 +37,7 @@ import com.medtroniclabs.spice.common.DefinedParams.No
 import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.DefinedParams.male
+import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
@@ -51,21 +54,15 @@ import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumberCategory
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.no
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
-import com.medtroniclabs.spice.mappingkey.MemberRegistration.householdHeadRelationship
-import com.medtroniclabs.spice.mappingkey.MemberRegistration.isPregnant
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.isValidMinAge
-import com.medtroniclabs.spice.mappingkey.MemberRegistration.isValidRelationAge
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.name
-import com.medtroniclabs.spice.mappingkey.MemberRegistration.otherFamilyMember
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
-import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumberCategory
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -222,7 +219,67 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                         val formFieldsType = object : TypeToken<FormResponse>() {}.type
                         val formFields: FormResponse = Gson().fromJson(data, formFieldsType)
                         formGenerator.populateViews(formFields.formLayout)
-                        handleRelationshipSpinner()
+                        
+                        // Check if this is the first member (household just created, no existing members)
+                        val isFirstMember = !householdRegistrationViewModel.isMemberRegistration && 
+                                            householdRegistrationViewModel.memberID == -1L &&
+                                            householdRegistrationViewModel.householdEntityDetail != null &&
+                                            householdRegistrationViewModel.householdId == -1L
+                        
+                        if (isFirstMember) {
+                            // Update activity title
+                            (activity as? HouseholdActivity)?.setTitle(getString(R.string.household_head_registration))
+                            
+                            // Update name field label to "Household head name"
+                            formGenerator.getViewByTag(MemberRegistration.name + titleSuffix)?.let { view ->
+                                if (view is TextView) {
+                                    view.text = getString(R.string.household_head_name)
+                                    // Check if the field is mandatory and add asterisk if needed
+                                    val nameFieldLayout = formGenerator.getServerData()?.find { it.id == MemberRegistration.name }
+                                    if (nameFieldLayout?.isMandatory == true) {
+                                        view.markMandatory()
+                                    }
+                                }
+                            }
+                            
+                            // Auto-check isHouseholdHead checkbox and add to result map
+                            formGenerator.getViewByTag(MemberRegistration.isHouseholdHead)?.let { view ->
+                                if (view is CheckBox) {
+                                    view.isChecked = true
+                                    // Add the value to the result map
+                                    formGenerator.getResultMap()[MemberRegistration.isHouseholdHead] = true
+                                }
+                            }
+                        }
+                        
+                        // Set up id_type listener to enable national_id
+                        formGenerator.getViewByTag(MemberRegistration.idType)?.let { view ->
+                            if (view is AppCompatSpinner) {
+                                val existingListener = view.onItemSelectedListener
+                                view.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                                        // Call existing listener first
+                                        existingListener?.onItemSelected(parent, view, position, id)
+                                        
+                                        // Enable/disable national_id based on selection
+                                        val adapter = parent?.adapter
+                                        if (adapter is CustomSpinnerAdapter) {
+                                            val selectedItem = adapter.getData(position)
+                                            selectedItem?.let { item ->
+                                                val selectedId = item[com.medtroniclabs.spice.formgeneration.config.DefinedParams.ID]
+                                                val isDefaultOption = selectedId == "-1" || selectedId == com.medtroniclabs.spice.common.DefinedParams.DefaultID
+                                                formGenerator.getViewByTag(MemberRegistration.nationalId)?.let { nationalIdView ->
+                                                    nationalIdView.isEnabled = !isDefaultOption
+                                                }
+                                            }
+                                        }
+                                    }
+                                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                                        existingListener?.onNothingSelected(parent)
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -321,49 +378,26 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             formGenerator.setValueForView(details.name, view)
         }
 
-        val title = if (householdRegistrationViewModel.householdEntityDetail?.id == 0L) {
-            getString(R.string.relationship_to_household)
-        } else if (details.householdHeadRelationship.isEmpty() ||
-            !details.householdHeadRelationship.equals(HouseholdHead, true)
-        ) {
-            getString(R.string.relationship_to_household_head)
-        } else {
-            getString(R.string.relationship_to_household)
-        }
-
-        updateRelationShipSpinnerTitle(title)
-
-        val canDisableHHRelation = !(arguments?.getBoolean(HouseholdDefinedParams.isPhuWalkInsFlow) == true || details.householdHeadRelationship.isEmpty())
-
-        if (canDisableHHRelation) {
-            formGenerator.getViewByTag(householdHeadRelationship)?.let { view ->
-                val relationship =
-                    if (details.householdHeadRelationship.contains(getString(R.string.separator_hyphen))) {
-                        details.householdHeadRelationship.substringBefore(getString(R.string.separator_hyphen))
-                    } else details.householdHeadRelationship
-                view.isEnabled = false
-                formGenerator.setValueForView(relationship, view)
-            }
-            formGenerator.getViewByTag(otherFamilyMember)?.let { view ->
-                val relationship =
-                    if (details.householdHeadRelationship.contains(getString(R.string.separator_hyphen))) {
-                        details.householdHeadRelationship.substringAfter(getString(R.string.separator_hyphen))
-                    } else details.householdHeadRelationship
-                formGenerator.disableView(view, requireContext())
-                formGenerator.setValueForView(relationship, view)
-            }
-        } else {
-            val view =
-                formGenerator.getViewByTag(DefinedParams.HouseholdHeadRelationship) as AppCompatSpinner
-            (view.adapter as CustomSpinnerAdapter).removeItemById(HouseholdHead)
-        }
-
         formGenerator.getViewByTag(phoneNumber)?.let { view ->
             formGenerator.setValueForView(details.phoneNumber, view)
         }
-        formGenerator.getViewByTag(phoneNumberCategory)?.let { view ->
-            formGenerator.setValueForView(details.phoneNumberCategory, view)
+        
+        formGenerator.getViewByTag(MemberRegistration.idType)?.let { view ->
+            formGenerator.setValueForView(details.idType, view)
         }
+        
+        formGenerator.getViewByTag(MemberRegistration.nationalId)?.let { view ->
+            formGenerator.setValueForView(details.nationalId, view)
+            // Enable if idType is set
+            view.isEnabled = details.idType.isNotEmpty()
+        }
+        
+        formGenerator.getViewByTag(MemberRegistration.isHouseholdHead)?.let { view ->
+            if (view is CheckBox) {
+                view.isChecked = details.isHouseholdHead
+            }
+        }
+        
         details.gender.let {
             when (it) {
                 male -> {
@@ -379,28 +413,16 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                         gender
                     )
                 }
-
+                Other -> {
+                    singleSelectValueOption(
+                        Other,
+                        gender
+                    )
+                }
                 else -> {}
             }
             if (details.gender.isNotBlank()) {
                 formGenerator.disableSingleSelection(gender)
-            }
-        }
-        details.isPregnant?.let {
-            when (getBooleanAsString(it)) {
-                yes -> {
-                    singleSelectValueOption(
-                        Yes.lowercase(),
-                        isPregnant
-                    )
-                }
-
-                no -> {
-                    singleSelectValueOption(
-                        No.lowercase(),
-                        isPregnant
-                    )
-                }
             }
         }
         details.dateOfBirth.let {
@@ -467,48 +489,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
         }
     }
 
-    private fun updateRelationShipSpinnerTitle(title: String) {
-        val spinnerTitle =
-            formGenerator.getViewByTag(DefinedParams.HouseholdHeadRelationship + titleSuffix)
-        spinnerTitle?.let {
-            val tvTitle = it as TextView
-            tvTitle.text = title
-            tvTitle.markMandatory()
-        }
-    }
 
-    private fun handleRelationshipSpinner() {
-        val view =
-            formGenerator.getViewByTag(DefinedParams.HouseholdHeadRelationship) as AppCompatSpinner
-        householdRegistrationViewModel.householdEntityDetail?.let {
-            if (it.id == 0L) {
-                updateRelationShipSpinnerTitle(getString(R.string.relationship_to_household))
-                val index =
-                    (view.adapter as CustomSpinnerAdapter).getIndexOfItemById(HouseholdHead)
-                view.setSelection(index, true)
-                view.isEnabled = false
-                householdRegistrationViewModel.householdEntityDetail?.let { details ->
-                    formGenerator.getViewByTag(phoneNumber)?.let { view ->
-                        formGenerator.setValueForView(details.headPhoneNumber, view)
-                        updateMobileNumberCategoryForHead(details.headPhoneNumberCategory)
-                    }
-                }
-            }
-        } ?: kotlin.run {
-            if (householdRegistrationViewModel.memberID == -1L) {
-                updateRelationShipSpinnerTitle(getString(R.string.relationship_to_household_head))
-                (view.adapter as CustomSpinnerAdapter).removeItemById(HouseholdHead)
-            }
-        }
-    }
-
-    private fun updateMobileNumberCategoryForHead(category: String?) {
-        category?.let {
-            val view = formGenerator.getViewByTag(headPhoneNumberCategory) as AppCompatSpinner
-            val index = (view.adapter as CustomSpinnerAdapter).getIndexOfItemById(it)
-            view.setSelection(index, true)
-        }
-    }
 
     private fun handleAddNewMember() {
         memberRegistrationViewModel.addNewMember =
@@ -586,16 +567,6 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             val dob = map[dateOfBirth] as String
             if (!householdRegistrationViewModel.isCreateHouseholdForPhu &&
                 (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L)) {
-                val relation = map[householdHeadRelationship] as String
-
-                // Showing warning for only new member
-                if (householdRegistrationViewModel.isMemberRegistration) {
-                    val headDob = memberRegistrationViewModel.householdHeadDobLiveData.value
-                    isValidRelationAge(requireContext(), dob, relation, headDob)?.let { validAgeErrorMessage ->
-                        showInValidDob(validAgeErrorMessage)
-                        return
-                    }
-                }
 
                 if (memberRegistrationViewModel.isPhuWalkInsFlow == true) {
                     val memberLocalId = memberRegistrationViewModel.memberDetailsLiveData.value?.data?.id

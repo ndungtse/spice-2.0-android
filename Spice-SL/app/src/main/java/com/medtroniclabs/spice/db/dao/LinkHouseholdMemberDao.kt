@@ -40,7 +40,7 @@ interface LinkHouseholdMemberDao {
     @Query("SELECT hhm.id as hhmId, hhm.fhir_id as hhmFhirId FROM HouseholdMember AS hhm INNER JOIN LinkHouseholdMember AS lhhm ON hhm.fhir_id = lhhm.memberId WHERE hhm.patient_id = :patientId AND lhhm.status = :status")
     suspend fun getUnAssignedParentFhirId(patientId: String, status: String = DefinedParams.UnAssigned): List<HouseholdMemberFhirId>
 
-    @Query("SELECT hhm.id as hhmId, hhm.fhir_id as hhmFhirId FROM HouseholdMember AS hhm INNER JOIN LinkHouseholdMember AS lhhm ON hhm.fhir_id = lhhm.memberId where hhm.parentId = :parentId AND lhhm.status = :status")
+    @Query("SELECT hhm.id as hhmId, hhm.fhir_id as hhmFhirId FROM HouseholdMember AS hhm INNER JOIN LinkHouseholdMember AS lhhm ON hhm.fhir_id = lhhm.memberId INNER JOIN HouseholdMember AS parent ON hhm.motherReferenceId = parent.id WHERE parent.patient_id = :parentId AND lhhm.status = :status")
     suspend fun getUnAssignedChildFhirIds(parentId: String, status: String = DefinedParams.UnAssigned): List<HouseholdMemberFhirId>
 
     @Query("UPDATE LinkHouseholdMember SET status = :status, syncStatus = :syncStatus WHERE memberId in (:memberIds)")
