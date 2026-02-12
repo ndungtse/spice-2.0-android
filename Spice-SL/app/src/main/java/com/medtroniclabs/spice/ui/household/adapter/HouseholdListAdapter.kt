@@ -37,14 +37,6 @@ class HouseholdListAdapter(
         holder.binding.tvCardHouseholdName.text = item.name
         holder.binding.tvHouseholdNo.text = item.householdNo?.toString() ?: holder.context.getString(R.string.separator_double_hyphen)
         holder.binding.tvVillageName.text = item.villageName
-        val membersText = holder.context.getString(
-            R.string.people_registered,
-            item.registerMemberCount,
-            item.noOfPeople
-        )
-        holder.binding.tvMembersRegistered.text = membersText
-        holder.binding.ivMemberRegCount.visibility =
-            if (item.noOfPeople == item.registerMemberCount) View.INVISIBLE else View.VISIBLE
         holder.binding.cardPatient.safeClickListener {
             callback(item.id)
         }

@@ -13,11 +13,13 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.CompoundButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
 import com.medtroniclabs.spice.common.DefinedParams.HIV
 import com.medtroniclabs.spice.common.DefinedParams.ID
@@ -45,11 +47,13 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.isHivFlow = intent.getBooleanExtra(HIV,false)
+        viewModel.isHouseHoldFlow = intent.getBooleanExtra(isHouseHold, false)
 
         binding = ActivityConsentFormBinding.inflate(layoutInflater)
         setMainContentView(
             binding.root, isToolbarVisible = true,
-            title = if (intent.getBooleanExtra(HIV, false)) {
+            title = if (viewModel.isHivFlow) {
                 getString(R.string.consent_form)
             } else {
                 getString(R.string.terms_and_condition)
@@ -68,15 +72,19 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun initView() {
-        if (intent.getBooleanExtra(HIV, false)) {
+        if (viewModel.isHivFlow) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             binding.btnSignature.gone()
             binding.btnAccept.visible()
-            viewModel.isHivFlow = intent.getBooleanExtra(HIV, false)
         } else {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            binding.btnAccept.gone()
-            binding.btnSignature.visible()
+            if (viewModel.isHouseHoldFlow) {
+                binding.btnAccept.visible()
+                binding.btnSignature.gone()
+            } else {
+                binding.btnAccept.gone()
+                binding.btnSignature.visible()
+            }
         }
         viewModel.setUserJourney(getString(R.string.terms_and_condition))
         binding.btnSignature.setOnClickListener {
@@ -182,14 +190,25 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view) {
             binding.btnAccept -> {
-                val intent = Intent(this, HivMedicalReviewBaseActivity::class.java).apply {
-                    putExtra(PatientId, intent.getStringExtra(PatientId))
-                    putExtra(HIV, intent.getBooleanExtra(HIV, false))
-                    putExtra(ID, intent.getStringExtra(ID))
-                    putExtra(MemberID, intent.getStringExtra(MemberID))
-                    putExtra(villageId, intent.getStringExtra(villageId))
+                if (viewModel.isHouseHoldFlow) {
+                    val intent = Intent(this, HouseholdActivity::class.java)
+                    intent.putExtra(VillageId, intent.getLongExtra(VillageId, -1L))
+                    intent.putExtra(FhirMemberID, intent.getLongExtra(FhirMemberID, -1L))
+                    intent.putExtra(isPhuWalkInsFlow, intent.getBooleanExtra(isPhuWalkInsFlow, false))
+                    intent.putExtra(isCreateHouseholdForPhu, intent.getBooleanExtra(isCreateHouseholdForPhu, false))
+                    intent.putExtra(MemberID, intent.getLongExtra(MemberID, -1L))
+                    finish()
+                    startActivity(intent)
+                } else {
+                    val intent = Intent(this, HivMedicalReviewBaseActivity::class.java).apply {
+                        putExtra(PatientId, intent.getStringExtra(PatientId))
+                        putExtra(HIV, viewModel.isHivFlow)
+                        putExtra(ID, intent.getStringExtra(ID))
+                        putExtra(MemberID, intent.getStringExtra(MemberID))
+                        putExtra(villageId, intent.getStringExtra(villageId))
+                    }
+                    launcher.launch(intent)
                 }
-                launcher.launch(intent)
             }
         }
     }

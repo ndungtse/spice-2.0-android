@@ -25,6 +25,7 @@ class ConsentFormViewModel @Inject constructor(
     var enableConfirmLiveData = MutableLiveData<Pair<Boolean, Boolean>>()
     val termsAndConditionStringLiveData = MutableLiveData<String>()
     var isHivFlow : Boolean = false
+    var isHouseHoldFlow: Boolean = false
 
     init {
         viewModelScope.launch(dispatcherIO) {

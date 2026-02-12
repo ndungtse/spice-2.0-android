@@ -1,27 +1,19 @@
 package com.medtroniclabs.spice.ui.household
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HOUSEHOLDLISTSEARCHTRIGGERED
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HOUSEHOLDS
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
-import com.medtroniclabs.spice.appextensions.isGpsEnabled
 import com.medtroniclabs.spice.appextensions.setTextChangeListener
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.SpiceLocationManager
+import com.medtroniclabs.spice.common.DefinedParams.isHouseHold
 import com.medtroniclabs.spice.databinding.ActivityHouseholdSearchBinding
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -35,8 +27,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
-
-
 
     private lateinit var binding: ActivityHouseholdSearchBinding
     private val householdListViewModel: HouseholdListViewModel by viewModels()
@@ -186,49 +176,9 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun launchHouseholdActivity() {
-        startActivity(Intent(this, ConsentFormActivity::class.java))
+        val intent = Intent(this, ConsentFormActivity::class.java)
+        intent.putExtra(isHouseHold, true)
+        startActivity(intent)
     }
 
-    private fun ableToGetLocation(): Boolean {
-        //Check Location service is enabled
-        if (!isGpsEnabled()) {
-            showTurnOnGPSDialog()
-            return false
-        }
-
-        //Check Location permission for limit exceed
-        if (ActivityCompat.shouldShowRequestPermissionRationale(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-        ) {
-            showAllowLocationServiceDialog()
-            return false
-        }
-
-        //Check Location permission
-        if (!isFineAndCoarseLocationPermissionGranted()) {
-            requestPermissionLauncher.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-            )
-            return false
-        }
-
-        return true
-    }
-
-    private val requestPermissionLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
-            val finePermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION]
-            val coarsePermission = permissions[Manifest.permission.ACCESS_COARSE_LOCATION]
-
-            if (finePermission == true && coarsePermission == true) {
-                launchHouseholdActivity()
-            }
-        }
 }

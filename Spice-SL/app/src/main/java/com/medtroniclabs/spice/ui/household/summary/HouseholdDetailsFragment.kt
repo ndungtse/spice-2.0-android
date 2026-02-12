@@ -46,7 +46,6 @@ class HouseholdDetailsFragment : Fragment() {
 
         addHouseholdNoView(houseHoldDetail.householdNo?.toString() ?: getString(R.string.separator_double_hyphen))
         addVillageNameView(houseHoldDetail.villageName)
-        addMemberRegisteredView(houseHoldDetail.memberRegistered, houseHoldDetail.memberAdded)
     }
 
     private fun addHouseholdNoView(householdNo: String) {
@@ -61,19 +60,6 @@ class HouseholdDetailsFragment : Fragment() {
         view.tvLabel.text = getString(R.string.household_location)
         view.tvValue.text = villageName
         binding.llDetails.addView(view.root)
-    }
-
-
-    private fun addMemberRegisteredView(memberRegistered: Int, memberAdded: Int) {
-        binding.tvLabel.text = getString(R.string.members_registered)
-        binding.tvValue.text =
-            requireContext().getString(
-                R.string.people_registered,
-                memberAdded,
-                memberRegistered
-            )
-        binding.ivMemberRegCount.visibility =
-            if (memberRegistered == memberAdded) View.INVISIBLE else View.VISIBLE
     }
 
 }
