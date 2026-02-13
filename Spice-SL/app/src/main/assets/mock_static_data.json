@@ -691,6 +691,40 @@
                     "readOnly": false,
                     "active": true,
                     "deleted": false
+                },
+                {
+                    "id": 100,
+                    "createdBy": 1,
+                    "updatedBy": 1,
+                    "createdAt": "2025-03-04T17:26:17+05:30",
+                    "updatedAt": "2025-03-04T17:26:17+05:30",
+                    "name": "Family Planning",
+                    "moduleType": "clinical",
+                    "groupName": null,
+                    "workflowName": "family_planning",
+                    "countryId": null,
+                    "displayOrder": 6,
+                    "conditions": [
+                        {
+                            "gender": "male",
+                            "minAge": 156,
+                            "moduleType": "assessment"
+                        },
+                        {
+                            "gender": "female",
+                            "minAge": 6,
+                            "moduleType": "assessment"
+                        }
+                    ],
+                    "jsonDisplayValues": null,
+                    "viewScreens": null,
+                    "hasInitialValue": true,
+                    "appTypes": [
+                        "COMMUNITY"
+                    ],
+                    "readOnly": false,
+                    "active": true,
+                    "deleted": false
                 }
             ],
             "customizedWorkflows": [],
@@ -961,7 +995,8 @@
             5,
             6,
             7,
-            8
+            8,
+            100
         ],
         "consentForm": {
             "HIV": "<!DOCTYPE html>\\n<html>\\n\\n<head>\\n    <meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1.0\\\" />\\n    <style>\\n        html,\\n        body {\\n            max-width: 100%;\\n            overflow-x: hidden;\\n        }\\n\\n        .requlartext {\\n            font-weight: 400;\\n            font-family: \\\"Inter\\\";\\n            line-height: 1.6;\\n            font-size: 16px;\\n        }\\n\\n        .header {\\n            color: #6165DE;\\n            font-weight: 700;\\n            font-family: \\\"Inter\\\";\\n            line-height: 1.6;\\n            font-size: 16px;\\n        }\\n\\n        @media only screen and (max-width: 600px) {\\n\\n            .requlartext,\\n            .header {\\n                font-size: 16px;\\n            }\\n        }\\n\\n        @media only screen and (min-width: 600px) {\\n\\n            .requlartext,\\n            .header {\\n                font-size: 20px;\\n            }\\n        }\\n\\n        @media only screen and (min-width: 768px) {\\n\\n            .requlartext,\\n            .header {\\n                font-size: 20px;\\n            }\\n        }\\n\\n        @media only screen and (min-width: 992px) {\\n\\n            .requlartext,\\n            .header {\\n                font-size: 20px;\\n            }\\n        }\\n\\n        @media only screen and (min-width: 1200px) {\\n\\n            .requlartext,\\n            .header {\\n                font-size: 20px;\\n            }\\n        }\\n    </style>\\n</head>\\n\\n<body contenteditable=\\\"true\\\" spellcheck=\\\"false\\\" style=\\\"min-height: 233px\\\">\\n    <div class=\\\"header requlartext\\\">\\n        HIV Testing Services (HTS) Consent Form\\n    </div>\\n    <br />\\n    <div class=\\\"requlartext\\\">\\n        <strong>Purpose:</strong><br />\\n        This consent form ensures that all individuals receiving HIV Testing Services (HTS) are fully<br />\\n        informed and protected under public health and human rights standards. The process adheres<br />\\n        to the WHOâ€™s Five Cs: Consent, Confidentiality, Counselling, Correct test results, and Connection<br />\\n        to care.\\n    </div>\\n    <br />\\n    <div class=\\\"requlartext\\\">\\n        <strong>1. Consent</strong><br />\\n        The client has been informed about the purpose, benefits, and potential outcomes of HIV<br />\\n        testing and counselling.<br /><br />\\n        Consent is given voluntarily without coercion, with the understanding that testing is not<br />\\n        mandatory.<br /><br />\\n        Minors require consent from a parent or guardian unless they are assessed to have sufficient<br />\\n        decisional autonomy.<br /><br />\\n        The client understands that they have the right to decline testing at any point.\\n    </div>\\n    <br />\\n    <div class=\\\"requlartext\\\">\\n        <strong>2. Confidentiality</strong><br />\\n        All personal and health information shared during HTS will be kept confidential.<br /><br />\\n        Results will not be disclosed to anyone without the clientâ€™s informed permission, except when<br />\\n        required for clinical care coordination with other providers under shared confidentiality<br />\\n        practices.\\n    </div>\\n    <br />\\n    <div class=\\\"requlartext\\\">\\n        <strong>3. Counselling</strong><br />\\n        The client will receive both pre-test and post-test counselling as part of the service.<br /><br />\\n        Pre-test counselling includes information on HIV prevention, testing procedures, treatment<br />\\n        options, and available support services.<br /><br />\\n        Post-test counselling includes interpretation of results and next steps.\\n    </div>\\n    <br />\\n    <div class=\\\"requlartext\\\">\\n        <strong>4. Correct Test Results</strong><br />\\n        HIV testing will follow the nationally approved testing algorithm and quality assurance<br />\\n        procedures to ensure accurate and reliable results.<br /><br />\\n        Only validated testing kits and protocols will be used, and providers are trained in quality<br />\\n        control standards.\\n    </div>\\n    <br />\\n    <div class=\\\"requlartext\\\">\\n        <strong>5. Connection to Care</strong><br />\\n        Clients who test positive will be linked immediately to prevention, treatment, and care services,<br />\\n        including ART, PMTCT, PrEP, PEP, condom access, and psychosocial support.<br /><br />\\n        Clients who test negative will be offered prevention tools and risk-reduction support.\\n    </div>\\n    <br />\\n    <div class=\\\"requlartext\\\">\\n        <strong>Client Consent Confirmation</strong><br />\\n        The client has received and understood the information provided under the Five Cs framework.<br /><br />\\n        Consent is documented in accordance with Sierra Leone consolidated HIV National guidelines<br />\\n        2023 and will be stored securely in the system.\\n    </div>\\n</body>\\n\\n</html>",

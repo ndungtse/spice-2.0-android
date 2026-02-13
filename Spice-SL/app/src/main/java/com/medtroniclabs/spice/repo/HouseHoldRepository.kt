@@ -102,7 +102,16 @@ class HouseHoldRepository @Inject constructor(
         val householdEntity = entity ?: HouseholdEntity()
 
         val householdName = map[HouseHoldRegistration.householdName]
-        householdEntity.name = CommonUtils.getStringOrEmptyString(householdName)
+        var nameFromMap = CommonUtils.getStringOrEmptyString(householdName)
+        // If updating and household name is not provided or empty, get it from household head member
+        if (entity != null && nameFromMap.isEmpty()) {
+            val householdHeadMember = getAllHouseHoldMemberList(entity.id)
+                .firstOrNull { it.isHouseholdHead && it.isActive }
+            householdHeadMember?.let {
+                nameFromMap = it.name
+            }
+        }
+        householdEntity.name = nameFromMap
 
         val villageID = map[HouseHoldRegistration.villageId]
         val villageLongID = CommonUtils.getLongOrNull(villageID) ?: 0

@@ -46,7 +46,23 @@ class HouseholdMemberRepository @Inject constructor(
        /* if (memberEntity.patientId == null) {
             return  null
         }*/
+        
+        // If updating a member and isHouseholdHead is not explicitly set in the map, preserve the old value
+        if (entity != null && !map.containsKey(MemberRegistration.isHouseholdHead)) {
+            val oldMemberEntity = roomHelper.getMemberDetailsByID(memberEntity.id)
+            memberEntity.isHouseholdHead = oldMemberEntity.isHouseholdHead
+        }
+        
         val memberId = roomHelper.registerMember(memberEntity)
+
+        // If updating a member who is household head, update household name with member's name
+        if (entity != null && memberEntity.isHouseholdHead && memberEntity.name.isNotEmpty()) {
+            val householdEntity = roomHelper.getHouseHoldDetailsById(householdId)
+            householdEntity.name = memberEntity.name
+            householdEntity.updatedAt = System.currentTimeMillis()
+            householdEntity.sync_status = OfflineSyncStatus.NotSynced
+            roomHelper.updateHousehold(householdEntity)
+        }
 
         // Assign same household for Parent or Child
 //        if (isPhuWalkInFlow == true) {
