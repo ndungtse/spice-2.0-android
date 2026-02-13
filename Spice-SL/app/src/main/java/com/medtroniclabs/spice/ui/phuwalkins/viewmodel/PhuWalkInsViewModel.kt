@@ -54,16 +54,21 @@ class PhuWalkInsViewModel @Inject constructor(
         return houseHoldRepository.getFilteredHouseholdsLiveData(
             "",
             villageIds = listOf(villageIds),
+            ssIds = emptyList(),
             ""
         )
     }
 
-    fun getSearchHouseholdsLiveData(search: String, villageId: Long): LiveData<List<HouseHoldEntityWithMemberCount>> {
-      val listVillage= ArrayList<Long>()
+    fun getSearchHouseholdsLiveData(
+        search: String,
+        villageId: Long
+    ): LiveData<List<HouseHoldEntityWithMemberCount>> {
+        val listVillage = ArrayList<Long>()
         listVillage.add(villageId)
         return houseHoldRepository.getFilteredHouseholdsLiveData(
             search,
             villageIds = listVillage,
+            ssIds = emptyList(),
             ""
         )
     }

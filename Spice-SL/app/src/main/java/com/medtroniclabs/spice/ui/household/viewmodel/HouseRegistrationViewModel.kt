@@ -93,7 +93,7 @@ class HouseRegistrationViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             val userId = SecuredPreference.getUserId()
             shasthyaShebikaListResponse.postLoading()
-            shasthyaShebikaListResponse.postValue(houseHoldRepository.getShasthyaShebikasByKormiId(170))
+            shasthyaShebikaListResponse.postValue(houseHoldRepository.getShasthyaShebikasByKormiId(userId))
 
         }
     }

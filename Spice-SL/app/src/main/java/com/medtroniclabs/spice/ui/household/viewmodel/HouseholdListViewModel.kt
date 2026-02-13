@@ -5,10 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
-import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.model.household.HouseHoldFilterUiData
 import com.medtroniclabs.spice.model.household.HouseHoldSearchFilter
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
@@ -24,7 +25,7 @@ class HouseholdListViewModel @Inject constructor(
     private val houseHoldRepository: HouseHoldRepository
 ) : BaseViewModel(dispatcherIO) {
 
-    var villageListResponse = MutableLiveData<Resource<List<VillageEntity>>>()
+    var filterUiData = MutableLiveData<Resource<HouseHoldFilterUiData>>()
 
     private val filterLiveData = MutableLiveData<HouseHoldSearchFilter>()
     val filteredHouseholdsLiveData: LiveData<List<HouseHoldEntityWithMemberCount>> =
@@ -35,6 +36,7 @@ class HouseholdListViewModel @Inject constructor(
             houseHoldRepository.getFilteredHouseholdsLiveData(
                 filter.searchInput,
                 filter.filterByVillage.map { it.id!! },
+                filter.filterBySs.map { it.id!! },
                 status
             )
         }
@@ -46,6 +48,7 @@ class HouseholdListViewModel @Inject constructor(
     fun setFilterLiveData(
         search: String? = null,
         villageFilter: List<ChipViewItemModel>? = null,
+        ssFilter: List<ChipViewItemModel>? = null,
         statusFilter: List<ChipViewItemModel>? = null
     ) {
         val filter = filterLiveData.value ?: HouseHoldSearchFilter()
@@ -54,6 +57,9 @@ class HouseholdListViewModel @Inject constructor(
         }
         villageFilter?.let {
             filter.filterByVillage = it
+        }
+        ssFilter?.let {
+            filter.filterBySs = it
         }
         statusFilter?.let {
             filter.filterByStatus = it
@@ -65,10 +71,10 @@ class HouseholdListViewModel @Inject constructor(
         return filterLiveData
     }
 
-    fun getAllVillagesName() {
+    fun getFilterUiData() {
         viewModelScope.launch(dispatcherIO) {
-            villageListResponse.postLoading()
-            villageListResponse.postValue(houseHoldRepository.getAllVillagesName())
+            filterUiData.postLoading()
+            filterUiData.postValue(houseHoldRepository.getHouseHoldFilterUiData(SecuredPreference.getUserId()))
         }
     }
 }

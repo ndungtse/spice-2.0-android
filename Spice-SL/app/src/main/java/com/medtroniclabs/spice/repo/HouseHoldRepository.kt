@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
+import com.medtroniclabs.spice.model.household.HouseHoldFilterUiData
 import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
@@ -66,8 +67,13 @@ class HouseHoldRepository @Inject constructor(
         return roomHelper.getMemberCountInHouseholdLiveData(houseHoldId)
     }
 
-    fun getFilteredHouseholdsLiveData(searchTerm: String, villageIds: List<Long>, status: String): LiveData<List<HouseHoldEntityWithMemberCount>> {
-        return roomHelper.getFilteredHouseholdsLiveData(searchTerm, villageIds, status)
+    fun getFilteredHouseholdsLiveData(
+        searchTerm: String,
+        villageIds: List<Long>,
+        ssIds: List<Long>,
+        status: String
+    ): LiveData<List<HouseHoldEntityWithMemberCount>> {
+        return roomHelper.getFilteredHouseholdsLiveData(searchTerm, villageIds, ssIds, status)
     }
 
     suspend fun getFormData(
@@ -82,9 +88,14 @@ class HouseHoldRepository @Inject constructor(
     }
 
 
-    suspend fun getAllVillagesName(): Resource<List<VillageEntity>> {
-        val response = roomHelper.getAllVillageEntity()
-        return Resource(state = ResourceState.SUCCESS, data = response)
+    suspend fun getHouseHoldFilterUiData(userId:Long): Resource<HouseHoldFilterUiData> {
+        return try {
+            val villages = roomHelper.getAllVillageEntity()
+            val swasthyaSevikas = roomHelper.getShasthyaShebikaByShasthyaKormiId(userId)
+            Resource(state = ResourceState.SUCCESS, HouseHoldFilterUiData(villages,swasthyaSevikas))
+        }catch (_: Exception){
+            Resource(state = ResourceState.ERROR)
+        }
     }
 
     suspend fun createOrUpdateHouseHoldEntity(map: HashMap<String, Any>, entity: HouseholdEntity? = null): HouseholdEntity {

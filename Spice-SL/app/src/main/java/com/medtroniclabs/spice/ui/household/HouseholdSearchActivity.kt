@@ -104,6 +104,8 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
             var count = 0
             if (it.filterByVillage.isNotEmpty())
                 count++
+            if (it.filterBySs.isNotEmpty())
+                count++
             if (it.filterByStatus.isNotEmpty())
                 count++
 

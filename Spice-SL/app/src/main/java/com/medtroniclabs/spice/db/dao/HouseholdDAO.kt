@@ -59,7 +59,23 @@ interface HouseholdDAO {
     fun getHouseholdsWithFilterLiveData(
         searchTerm: String,
         status: String,
-            ids: List<Long>
+        ids: List<Long>
+    ): LiveData<List<HouseHoldEntityWithMemberCount>>
+    @Query("SELECT * FROM (SELECT hh.*, ve.name as village_name, COUNT(hhm.household_id) AS member_count, case when :status == '' then '' when COUNT(hhm.household_id) == hh.no_of_people then 'Finished' " +
+            " when COUNT(hhm.household_id) != hh.no_of_people then 'Pending' else '' end as status FROM Household AS hh LEFT JOIN HouseholdMember AS hhm ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE hh.village_id IN (:ids)  AND (hh.name LIKE '%' || :searchTerm || '%' OR hh.household_no LIKE :searchTerm) AND hh.shasthya_shebika_id IN (:ssIds) GROUP BY hh.id) as subTable Where status=:status")
+    fun getHouseholdsWithFilterLiveData(
+        searchTerm: String,
+        status: String,
+        ids: List<Long>,
+        ssIds:List<Long>
+    ): LiveData<List<HouseHoldEntityWithMemberCount>>
+
+    @Query("SELECT * FROM (SELECT hh.*, ve.name as village_name, COUNT(hhm.household_id) AS member_count, case when :status == '' then '' when COUNT(hhm.household_id) == hh.no_of_people then 'Finished' " +
+            " when COUNT(hhm.household_id) != hh.no_of_people then 'Pending' else '' end as status FROM Household AS hh LEFT JOIN HouseholdMember AS hhm ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id AND (hh.name LIKE '%' || :searchTerm || '%' OR hh.household_no LIKE :searchTerm) AND hh.shasthya_shebika_id IN (:ssIds) GROUP BY hh.id) as subTable Where status=:status")
+    fun getHouseHoldsWithStatusAndSsFilterLiveData(
+        searchTerm: String,
+        status: String,
+        ssIds: List<Long>
     ): LiveData<List<HouseHoldEntityWithMemberCount>>
 
     @Query("SELECT * FROM HouseHold WHERE id= :houseHoldId")

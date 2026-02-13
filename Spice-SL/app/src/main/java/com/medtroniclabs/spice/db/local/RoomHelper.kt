@@ -159,6 +159,7 @@ interface RoomHelper {
     fun getFilteredHouseholdsLiveData(
         searchInput: String,
         filterByVillage: List<Long>,
+        filterBySs: List<Long>,
         filterByStatus: String
     ): LiveData<List<HouseHoldEntityWithMemberCount>>
 

@@ -410,15 +410,29 @@ class RoomHelperImpl @Inject constructor(
     override fun getFilteredHouseholdsLiveData(
         searchInput: String,
         filterByVillage: List<Long>,
+        filterBySs: List<Long>,
         filterByStatus: String
     ): LiveData<List<HouseHoldEntityWithMemberCount>> {
-        if (filterByVillage.isEmpty()) {
-            return householdDAO.getHouseholdsWithFilterLiveData(searchInput, filterByStatus)
-        } else {
-            return householdDAO.getHouseholdsWithFilterLiveData(
+        return if (filterByVillage.isEmpty() && filterBySs.isEmpty()) {
+            householdDAO.getHouseholdsWithFilterLiveData(searchInput, filterByStatus)
+        } else if(filterBySs.isEmpty()) {
+             householdDAO.getHouseholdsWithFilterLiveData(
                 searchInput,
                 filterByStatus,
                 filterByVillage
+            )
+        } else if(filterByVillage.isEmpty()){
+            householdDAO.getHouseHoldsWithStatusAndSsFilterLiveData(
+                searchInput,
+                filterByStatus,
+                filterBySs
+            )
+        } else {
+            householdDAO.getHouseholdsWithFilterLiveData(
+                searchInput,
+                filterByStatus,
+                filterByVillage,
+                filterBySs
             )
         }
 
