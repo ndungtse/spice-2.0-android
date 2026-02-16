@@ -177,7 +177,7 @@ object DateUtils {
             .withSecond(0)
             .withNano(0)
 
-        val resul = localDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmss))
+        val resul = localDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmss).withLocale(Locale.ENGLISH))
         return "$resul+00:00"
     }
 
@@ -307,11 +307,11 @@ object DateUtils {
         inputDateFormat: String,
         outputDateFormat: String
     ): String {
-        val inputFormat = SimpleDateFormat(inputDateFormat, Locale.getDefault())
+        val inputFormat = SimpleDateFormat(inputDateFormat, Locale.ENGLISH)
 
         return try {
             val date = inputFormat.parse(inputDateString)
-            val outputFormat = SimpleDateFormat(outputDateFormat, Locale.getDefault())
+            val outputFormat = SimpleDateFormat(outputDateFormat, Locale.ENGLISH)
             date?.let { outputFormat.format(it) } ?: " "
         } catch (e: Exception) {
             " "

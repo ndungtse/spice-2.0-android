@@ -147,7 +147,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             languageViewModel.getCultures()
         } else {
             val menu = binding.navView.menu
-            menu.findItem(R.id.switch_language)?.let { menu.removeItem(it.itemId) }
+       //     menu.findItem(R.id.switch_language)?.let { menu.removeItem(it.itemId) }
         }
         initializeDrawerView()
         initializeHomeViews()

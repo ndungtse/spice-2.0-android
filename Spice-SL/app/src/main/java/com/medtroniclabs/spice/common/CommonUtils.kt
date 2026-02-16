@@ -179,10 +179,10 @@ object CommonUtils {
 
         if (months == 0 && years == 0 && weeks == 0) {
             if (days > 1) {
-                strBuilder.append("$days $DAYS")
+                strBuilder.append("$days ${context.getString(R.string.days)}")
                 strBuilder.append(" ")
             } else {
-                strBuilder.append("$days $DAY")
+                strBuilder.append("$days ${context.getString(R.string.day)}")
                 strBuilder.append(" ")
             }
             return strBuilder.toString()
@@ -192,16 +192,16 @@ object CommonUtils {
         if (years < 5) {
             months += (years * 12)
         } else {
-            strBuilder.append("$years $YEARS ")
+            strBuilder.append("$years ${context.getString(R.string.years)} ")
             strBuilder.append(" ")
         }
 
         if (months > 0) {
             if (months == 1) {
-                strBuilder.append("$months $MONTH")
+                strBuilder.append("$months ${context.getString(R.string.month)}")
                 strBuilder.append(" ")
             } else {
-                strBuilder.append("$months $MONTHS")
+                strBuilder.append("$months ${context.getString(R.string.months)}")
                 strBuilder.append(" ")
             }
         }
@@ -1996,21 +1996,28 @@ object CommonUtils {
             preference.contains(DefinedParams.SW_Locale, ignoreCase = true) ->
                 DefinedParams.SW
 
+            preference.contains(DefinedParams.BN_Locale, ignoreCase = true) ->
+                DefinedParams.BN
+
             else -> DefinedParams.EN
         }
     }
 
     fun checkIfTranslationEnabled(name: String): Boolean {
-        return name.contains(DefinedParams.SW_Locale, ignoreCase = true)
+        return name.contains(DefinedParams.BN_Locale, ignoreCase = true)
     }
 
-    fun getAgeInYearsByDOB(dob: String) : Int {
-        val formatter = DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy)
+    fun getAgeInYearsByDOB(dob: String): Int {
+        val formatter = DateTimeFormatter
+            .ofPattern(DateUtils.DATE_ddMMyyyy)
+            .withLocale(Locale.ENGLISH)
+
         val birthDate = LocalDate.parse(dob, formatter)
         val currentDate = LocalDate.now()
 
         return Period.between(birthDate, currentDate).years
     }
+
 
     fun mandatoryNotRequired(): Boolean {
         return isNonCommunity() && (isProvider() || isPhysicianPrescriber())
@@ -2019,6 +2026,7 @@ object CommonUtils {
     fun isDateHigherThanInput(dateString: String, noOfDayFever: Int): Boolean {
             // Parse the given date string
             val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+                .withLocale(Locale.ENGLISH)
             val givenDate = LocalDate.parse(dateString, formatter)
 
             // Get the current date

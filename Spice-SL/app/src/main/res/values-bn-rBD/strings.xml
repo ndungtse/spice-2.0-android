@@ -1,0 +1,1532 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">@string/spice_app_name</string>
+    <string name="logo_description">মেডট্রনিক লোগো</string>
+    <string name="welcome">স্বাগতম</string>
+    <string name="login_to_your_account">আপনার অ্যাকাউন্টে লগইন করুন</string>
+    <string name="email">ইউজারনেম / ইমেইল / ফোন নম্বর</string>
+    <string name="password">পাসওয়ার্ড</string>
+    <string name="email_place_holder">ইউজারনেম / ইমেইল / ফোন নম্বর লিখুন</string>
+    <string name="password_place_holder">পাসওয়ার্ড লিখুন</string>
+    <string name="remember_me">আমাকে মনে রাখুন</string>
+    <string name="forgot_password">পাসওয়ার্ড ভুলে গেছেন?</string>
+    <string name="login">লগইন</string>
+    <string name="hide">লুকান</string>
+    <string name="email_cannot_be_empty">দয়া করে ইউজারনেম / ইমেইল / ফোন নম্বর লিখুন।</string>
+    <string name="password_cannot_be_empty">দয়া করে পাসওয়ার্ড লিখুন।</string>
+    <string name="email_phone_invalid">দয়া করে একটি বৈধ ইউজারনেম/ইমেইল/ফোন নম্বর লিখুন।</string>
+    <string name="navigation_drawer_open">নেভিগেশন ড্রয়ার খুলুন</string>
+    <string name="navigation_drawer_close">নেভিগেশন ড্রয়ার বন্ধ করুন</string>
+    <string name="logout">লগআউট</string>
+    <string name="home">হোম</string>
+    <string name="home_title">হোম</string>
+    <string name="app_version">অ্যাপ্লিকেশন সংস্করণ</string>
+    <string name="profile">প্রোফাইল</string>
+    <string name="privacy_policy">গোপনীয়তা নীতি</string>
+    <string name="offline_sync">অফলাইন সিঙ্ক</string>
+    <string name="community_health_worker">কমিউনিটি স্বাস্থ্য কর্মী</string>
+    <string name="chw">সিএইচডব্লিউ</string>
+    <string name="households">পরিবার</string>
+    <string name="search">খুঁজুন</string>
+    <string name="search_name_patient_id">নাম / রোগী আইডি দিয়ে খুঁজুন</string>
+    <string name="add_household">পরিবার যোগ করুন</string>
+    <string name="household_no">পরিবার নম্বর</string>
+    <string name="no_of_people">লোক সংখ্যা</string>
+    <string name="members_registered">নিবন্ধিত সদস্য</string>
+    <string name="filters">ফিল্টার</string>
+    <string name="people_registered">%1$d/%2$d</string>
+    <string name="investigation">তদন্ত</string>
+    <string name="investigation_caps">তদন্ত</string>
+    <string name="prescription">প্রেসক্রিপশন</string>
+    <string name="prescription_caps">প্রেসক্রিপশন</string>
+    <string name="counselling_caps">পরামর্শ</string>
+    <string name="counselling">পরামর্শ</string>
+    <string name="submit_caps">জমা দিন</string>
+    <string name="household_name_no">পরিবারের নাম / নম্বর</string>
+    <string name="diagnoses">নির্ণয়</string>
+    <string name="confirm_diagnoses">নির্ণয় নিশ্চিত করুন</string>
+    <string name="edit_diagnosis">নির্ণয় সম্পাদনা করুন</string>
+    <string name="patient_status">রোগীর অবস্থা</string>
+    <string name="referred">রেফার করা হয়েছে</string>
+    <string name="edit_diagnoses">নির্ণয় সম্পাদনা করুন</string>
+    <string name="edit_status">অবস্থা সম্পাদনা করুন</string>
+    <string name="patient_category">রোগী বিভাগ</string>
+    <string name="general">সাধারণ</string>
+    <string name="edit_category">বিভাগ সম্পাদনা করুন</string>
+    <string name="presenting_complaints">বর্তমান অভিযোগ</string>
+    <string name="type_notes">আপনার নোট লিখুন</string>
+    <string name="clinical_notes">ক্লিনিকাল নোট</string>
+    <string name="systemic_examinations">সিস্টেমিক পরীক্ষা</string>
+    <string name="other">অন্যান্য</string>
+    <string name="none">কিছুই না</string>
+    <string name="assessment">মূল্যায়ন</string>
+    <string name="household_members">পরিবারের সদস্য</string>
+    <string name="finish_registration">নিবন্ধন শেষ করুন</string>
+    <string name="add_new_member">নতুন সদস্য যোগ করুন</string>
+    <string name="household_details">পরিবারের বিবরণ</string>
+    <string name="house_no">বাড়ি নম্বর</string>
+    <string name="village">গ্রাম</string>
+    <string name="household_location">পরিবারের অবস্থান</string>
+    <string name="landmark">ল্যান্ডমার্ক</string>
+    <string name="hh_mobile_number">পরিবারের প্রধানের মোবাইল নম্বর</string>
+    <string name="household_summary_member_info">%1$s - %2$s - %3$s</string>
+    <string name="patient_medical_review">রোগীর চিকিৎসা পর্যালোচনা</string>
+    <string name="sugar_append" translatable="false">%1$.0f mmHg</string>
+    <string name="pulse_append" translatable="false">%1$.0f BPM</string>
+    <string name="dateofbirth">জন্ম তারিখ</string>
+    <string name="age_in_years">বয়স (বছরে)</string>
+    <string name="dd_mm_yyyy" translatable="false">DD/MM/YYYY</string>
+    <string name="please_select">--নির্বাচন করুন--</string>
+    <string name="enter_the_age">বয়স লিখুন</string>
+    <string name="enter_the_value">মান লিখুন</string>
+    <string name="confirm">নিশ্চিত করুন</string>
+    <string name="yesterday">গতকাল</string>
+    <string name="today">আজ</string>
+    <string name="skip">এড়িয়ে যান</string>
+    <string name="hr">ঘন্টা</string>
+    <string name="min">মিনিট</string>
+    <string name="am">সকাল</string>
+    <string name="pm">বিকাল</string>
+    <string name="pulse">নাড়ি</string>
+    <string name="don_t_have_id_generate_id">আইডি নেই? আইডি তৈরি করুন</string>
+    <string name="separator_hyphen" translatable="false">-</string>
+    <string name="separator_double_hyphen" translatable="false">--</string>
+    <string name="separator_colon" translatable="false">:</string>
+    <string name="hyphen_symbol" translatable="false">-</string>
+    <string name="hash_symbol" translatable="false">#</string>
+    <string name="next">পরবর্তী</string>
+    <string name="default_user_input_error">দয়া করে একটি বৈধ মান লিখুন</string>
+    <string name="arrow_back">পিছনে</string>
+    <string name="more">আরও</string>
+    <string name="arrow_home">হোম</string>
+    <string name="red_alert">(লাল সতর্কতা)</string>
+    <string name="scroll_view">স্ক্রল ভিউ</string>
+    <string name="household_registration">পরিবার নিবন্ধন</string>
+    <string name="household_head_registration">পরিবারের প্রধান নিবন্ধন</string>
+    <string name="household_head_name">পরিবারের প্রধান নাম</string>
+    <string name="household_family">%1 এর পরিবার</string>
+    <string name="cancel">বাতিল</string>
+    <string name="member_registration">সদস্য নিবন্ধন</string>
+    <string name="submit">জমা দিন</string>
+    <string name="start_screening">স্ক্রিনিং শুরু করুন</string>
+    <string name="start_assessment">মূল্যায়ন শুরু করুন</string>
+    <string name="date_of_birth">জন্ম তারিখ</string>
+    <string name="years">বছর</string>
+    <string name="months">মাস</string>
+    <string name="weeks">সপ্তাহ</string>
+    <string name="days">দিন</string>
+    <string name="age">বয়স</string>
+    <string name="seperator_hyphen" translatable="false">-</string>
+    <string name="household_empty_text">কোন পরিবার পাওয়া যায়নি।</string>
+    <string name="household_name_or_no">নাম / নম্বর / ফোন</string>
+    <string name="member_deceased">সদস্য মৃত</string>
+    <string name="male_prefix">M</string>
+    <string name="female_prefix">F</string>
+    <string name="iccm">ICCM</string>
+    <string name="rmnch">RMNCH</string>
+    <string name="tb">TB</string>
+    <string name="national_id">জাতীয় আইডি</string>
+    <string name="bio_data">জৈব তথ্য</string>
+    <string name="name">নাম</string>
+    <string name="gender">লিঙ্গ</string>
+    <string name="no_of_months">%1$s মাস</string>
+    <string name="no_of_weeks">%1$s সপ্তাহ</string>
+    <string name="no_of_years">%1$s বছর</string>
+    <string name="result">ফলাফল</string>
+    <string name="patient_s_summary_could_not_be_fetched">রোগীর সারাংশ আনা যায়নি</string>
+    <string name="referred_for_further_assessment">আরও মূল্যায়নের জন্য রেফার করা হয়েছে</string>
+    <string name="done">সম্পন্ন</string>
+    <string name="general_danger_signs">সাধারণ বিপদ লক্ষণ</string>
+    <string name="muac">MUAC</string>
+    <string name="cough">কাশি</string>
+    <string name="fever">জ্বর</string>
+    <string name="breathing_rate">শ্বাস প্রশ্বাসের হার</string>
+    <string name="dispensed">বিতরণ করা হয়েছে</string>
+    <string name="rdt_test">আরডিটি টেস্ট</string>
+    <string name="diarrhoea">ডায়রিয়া</string>
+    <string name="signs">লক্ষণ</string>
+    <string name="label">লেবেল</string>
+    <string name="write_your_observation">আপনার পর্যবেক্ষণ লিখুন</string>
+    <string name="notes">নোট</string>
+    <string name="yes">হ্যাঁ</string>
+    <string name="no">না</string>
+    <string name="phu_referred_to">নিকটতম পিএইচইউতে রেফার করা হয়েছে</string>
+    <string name="phu">PHU</string>
+    <string name="was_the_child">শিশু কি সত্যিই ক্লিনিকে নেওয়া হয়েছিল?</string>
+    <string name="next_follow_up_date">পরবর্তী পরিদর্শনের তারিখ</string>
+    <string name="presumptive_tb_no">প্রেসাম্পটিভ TB নম্বর</string>
+    <string name="tb_signs_symptoms">TB লক্ষণ ও উপসর্গ</string>
+    <string name="symptoms">লক্ষণ</string>
+    <string name="no_symptom_selected">কোন লক্ষণ নির্বাচন করা হয়নি</string>
+    <string name="symptoms_selected">লক্ষণ নির্বাচিত</string>
+    <string name="select_symptoms">লক্ষণ নির্বাচন করুন</string>
+    <string name="ok">ঠিক আছে</string>
+    <string name="no_internet_error">আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন।</string>
+    <string name="incorrect_username_password">ভুল ইমেইল বা পাসওয়ার্ড</string>
+    <string name="close">বন্ধ</string>
+    <string name="error">ত্রুটি</string>
+    <string name="alert">সতর্কতা</string>
+    <string name="retry">পুনরায় চেষ্টা করুন</string>
+    <string name="session_expired">সেশন মেয়াদ শেষ! অনুগ্রহ করে আবার লগইন করুন।</string>
+    <string name="offline_login_message">আপনার কাছে আমাদের সিস্টেমে সংযোগ করার জন্য ইন্টারনেট নেই। যদিও আপনি অফলাইন বৈশিষ্ট্যের জন্য অফলাইনে লগইন করতে পারেন। আপনি কি চালিয়ে যেতে চান?</string>
+    <string name="role">ভূমিকা</string>
+    <string name="email_cap">ইমেইল</string>
+    <string name="username">ইউজারনেম</string>
+    <string name="phone_no">ফোন নম্বর</string>
+    <string name="assigned_health_facility">নির্ধারিত স্বাস্থ্য সুবিধা</string>
+    <string name="suite_access" translatable="false">SPICE Suite Access</string>
+    <string name="back">পিছনে</string>
+    <string name="firstname_lastname" translatable="false">%1$s %2$s</string>
+    <string name="registration_status">নিবন্ধন অবস্থা</string>
+    <string name="pending">বিচারাধীন</string>
+    <string name="finished">সম্পন্ন</string>
+    <string name="apply">প্রয়োগ করুন</string>
+    <string name="filter_count">ফিল্টার (%1d)</string>
+    <string name="sort_count">সাজান (%1d)</string>
+    <string name="villages">গ্রাম</string>
+    <string name="start_with_validation">ফোন নম্বর %1$s দিয়ে শুরু হতে হবে</string>
+    <string name="or">or</string>
+    <string name="edit_household">পরিবার সম্পাদনা</string>
+    <string name="edit_member">সদস্য সম্পাদনা</string>
+    <string name="select_member">সদস্য নির্বাচন করুন</string>
+    <string name="okay">ঠিক আছে</string>
+    <string name="months_m">%1$s মাস</string>
+    <string name="weeks_w">%1$s সপ্তাহ</string>
+    <string name="years_y">%1$s বছর</string>
+    <string name="household_successfully">পরিবার নিবন্ধন
+সফলভাবে সম্পন্ন হয়েছে।</string>
+    <string name="household_with_no">পরিবার নম্বর: %1$s</string>
+    <string name="patient_id">রোগী আইডি</string>
+    <string name="select_flow">ফ্লো নির্বাচন করুন</string>
+    <string name="anc">প্রসবপূর্ব যত্ন</string>
+    <string name="pnc">প্রসবোত্তর যত্ন</string>
+    <string name="child_hood_visit">শৈশব সাক্ষাৎ</string>
+    <string name="other_value" translatable="false">%1$s - %2$s</string>
+    <string name="gps_disabled_title">লোকেশন সেবা বন্ধ!</string>
+    <string name="gps_disabled_message">অগ্রসর হতে আপনার বর্তমান অবস্থান পেতে দয়া করে লোকেশন সেবা চালু করুন</string>
+    <string name="search_patient">রোগী খুঁজুন</string>
+    <string name="advanced_search">উন্নত খুঁজুন</string>
+    <string name="first_name">প্রথম নাম</string>
+    <string name="last_name">পদবি</string>
+    <string name="mobile_number">মোবাইল নম্বর</string>
+    <string name="patient_found">১ জন রোগী পাওয়া গেছে</string>
+    <string name="patients_found">%1d জন রোগী পাওয়া গেছে</string>
+    <string name="zero_patients_found">%1d জন রোগী</string>
+    <string name="no_patients_found">কোন রোগী পাওয়া যায়নি</string>
+    <string name="no_patients_found_perform_screening">কোন রোগী পাওয়া যায়নি। অগ্রসর হতে দয়া করে স্ক্রিনিং করুন।</string>
+    <string name="no_records_found">কোন রেকর্ড পাওয়া যায়নি।</string>
+    <string name="search_by_national_id">নাম / আইডি / মোবাইল নম্বর লিখুন</string>
+    <string name="search_by_patient_id_name" translatable="false">Enter Patient ID/Name</string>
+    <string name="referral_ticket">রেফারাল টিকিট</string>
+    <string name="cost">খরচ</string>
+    <string name="next_medical_review">পরবর্তী চিকিৎসা পর্যালোচনা</string>
+    <string name="summary">সারসংক্ষেপ</string>
+    <string name="pregnancy_summary">গর্ভাবস্থার সারাংশ</string>
+    <string name="pregnancy_history">গর্ভাবস্থার ইতিহাস</string>
+    <string name="diagnosis">নির্ণয়</string>
+    <string name="disease_category">রোগ বিভাগ</string>
+    <string name="disease_condition">রোগের অবস্থা</string>
+    <string name="prescriptions">প্রেসক্রিপশন</string>
+    <string name="medical_supplies">চিকিৎসা সরঞ্জাম</string>
+    <string name="normal">স্বাভাবিক</string>
+    <string name="moderate_malnutrition">মাঝারি অপুষ্টি</string>
+    <string name="severe_nutrition">তীব্র অপুষ্টি</string>
+    <string name="nutrition_summary" translatable="false">%1$s (%2$s)</string>
+    <string name="severe_dehydration">তীব্র পানিশূন্যতা</string>
+    <string name="pneumonia">নিউমোনিয়া</string>
+    <string name="bpm">BPM</string>
+    <string name="malaria">ম্যালেরিয়া</string>
+    <string name="days_summary">%1$d (≥ %2$d দিন)</string>
+    <string name="hh_id">পরিবার আইডি</string>
+    <string name="date_of_onset">শুরুর তারিখ</string>
+    <string name="date_of_review">পর্যালোচনার তারিখ</string>
+    <string name="warning_different_login_title">ভিন্ন লগইন!</string>
+    <string name="warning_different_login_message">শেষ ব্যবহারকারীর (%1$s) কিছু অসিঙ্ক্রোনাইজড ডেটা আছে। দয়া করে ডেটা সিঙ্ক করুন।</string>
+    <string name="title_sync_status">সিঙ্ক অবস্থা</string>
+    <string name="message_sync_error">আপলোডের সময় কিছু ভুল হয়েছে। দয়া করে পরে আবার চেষ্টা করুন</string>
+    <string name="display_un_synced_count">%1$d রেকর্ড এখনও সিঙ্ক হয়নি</string>
+    <string name="instructions">নির্দেশাবলী</string>
+    <string name="measuring_muac">MUAC মাপা হচ্ছে</string>
+    <string name="checking_for_oedema">শোথ পরীক্ষা করা হচ্ছে</string>
+    <string name="chest_in_drawing">বুক ভেতরের দিকে টানা</string>
+    <string name="patient_on_treatment">চিকিৎসাধীন রোগী</string>
+    <string name="treatment_pneumonia" translatable="false"> Treatment for Pneumonia Amoxicillin 250mg tab</string>
+    <string name="no_refferral_treatment_required">কোন রেফারেল / চিকিৎসার প্রয়োজন নেই</string>
+    <string name="select">নির্বাচন করুন</string>
+    <string name="muac_info_1">মাকে বলুন শিশুর বাম বাহু ঢেকে রাখে এমন যেকোনো পোশাক খুলে দিতে।</string>
+    <string name="muac_info_2">শিশুর বাম উপরের বাহুর মধ্যবিন্দু নির্ধারণ করুন। এটি করার জন্য একটি সুতা (অথবা মাপার ফিতা) নিন, একটি প্রান্ত শিশুর কাঁধের শীর্ষে এবং অন্য প্রান্ত কনুইতে রাখুন।</string>
+    <string name="muac_info_3">এবার সুতাটি ভাঁজ করে দ্বিগুণ করুন যাতে কনুইয়ের বিন্দুটি কাঁধের বিন্দুর সাথে মিলে যায় এবং একটি লুপ নিচে ঝুলে থাকে — সোজা করা লুপের শেষ অংশটি মধ্যবিন্দু নির্দেশ করে।</string>
+    <string name="muac_info_4">শিশুর বাহু সোজা করুন এবং মধ্যবিন্দুতে বাহুর চারপাশে ফিতা পেঁচিয়ে নিন। নিশ্চিত করুন ফিতাটি ত্বকের উপর সমানভাবে লেগে আছে।</string>
+    <string name="muac_info_5">শিশুর বাহুতে ফিতার টান পরীক্ষা করুন। নিশ্চিত করুন ফিতাটি সঠিকভাবে টানটান আছে—এতটা টাইট নয় যাতে ত্বক চেপে যায়, আবার এতটা ঢিলা নয় যাতে ফিতাটি পুরো বাহুর চারপাশে ত্বকের সাথে স্পর্শ না করে।</string>
+    <string name="muac_info_6">ফিতাটি সঠিক অবস্থানে এবং সঠিক টানসহ থাকলে, MUAC-এর রঙের দিকে খেয়াল করুন।</string>
+    <string name="oedema_info_1">দুই পায়ের উপরের অংশে একই সময়ে আপনার বৃদ্ধাঙ্গুলি দিয়ে আলতো করে চাপ দিন এবং “১০০১, ১০০২, ১০০৩” পর্যন্ত গণনা করুন।</string>
+    <string name="oedema_info_2">আঙুল সরিয়ে দেখুন কোনো গর্ত (দাগ) থেকে যায় কি না।</string>
+    <string name="oedema_info_3">আপনি বৃদ্ধাঙ্গুলি সরানোর পর যদি দুই পায়েই গর্ত থেকে যায়, তবে শিশুর এডিমা (ফোলা) রয়েছে।</string>
+    <string name="chest_info_1">শিশু শ্বাস নেওয়ার সময় নিচের বুকের দেয়াল ভেতরে ঢুকে গেলে তাকে বুক ভেতরে ঢোকা (Chest in-drawing) বলা হয়। শ্বাস ছাড়ার সময় এটি দেখা যায় না।</string>
+    <string name="chest_info_2">Chest in-drawing নিশ্চিত হতে হলে এটি স্পষ্টভাবে দৃশ্যমান হতে হবে এবং প্রতিটি শ্বাসে উপস্থিত থাকতে হবে।</string>
+    <string name="_34_weeks_premature">34 weeks(Premature)</string>
+    <string name="gestational_age">গর্ভাবস্থার বয়স</string>
+    <string name="_1780gms_weeks_low_birth_weight">1780gms weeks(Low birth weight)</string>
+    <string name="last_menstrual_period">শেষ ঋতুস্রাব</string>
+    <string name="estimated_delivery_date">আনুমানিক প্রসব তারিখ</string>
+    <string name="refer_patient">রোগী রেফার করুন</string>
+    <string name="treatment">চিকিৎসা</string>
+    <string name="next_visit_date">পরবর্তী পরিদর্শনের তারিখ</string>
+    <string name="reload">পুনরায় লোড</string>
+    <string name="select_review_date">তারিখ নির্বাচন করুন</string>
+    <string name="selected">নির্বাচিত</string>
+    <string name="referral_date">রেফারেল তারিখ</string>
+    <string name="referral_reason">রেফারেল কারণ</string>
+    <string name="referral_to">রেফার করা হয়েছে</string>
+    <string name="referral_by">রেফার করেছেন</string>
+    <string name="date_of_delivery_label">প্রসবের তারিখ</string>
+    <string name="date_type">প্রসবের ধরন</string>
+    <string name="labour_delivery">Labour/Delivery</string>
+    <string name="date_of_delivery">Date of Delivery</string>
+    <string name="date_of_labour_onset">Date of Labour Onset</string>
+    <string name="delivery_type">Delivery Type</string>
+    <string name="delivery_at">Delivery At</string>
+    <string name="no_of_neonates">No of Neonates</string>
+    <string name="time_of_delivery">Time of Delivery</string>
+    <string name="time_of_labour_onset">Time of Labour Onset</string>
+    <string name="delivery_by">Delivery By</string>
+    <string name="delivery_by_others">Delivery By (Others)</string>
+    <string name="delivery_status">প্রসবের অবস্থা</string>
+    <string name="error_label">দয়া করে বৈধ ইনপুট লিখুন</string>
+    <string name="select_date">তারিখ নির্বাচন করুন</string>
+    <string name="number">নম্বর</string>
+    <string name="hour">ঘন্টা</string>
+    <string name="minutes">মিনিট</string>
+    <string name="member_registered_successfully">সদস্য নিবন্ধন
+সফলভাবে সম্পন্ন হয়েছে।</string>
+    <string name="member_registered_successfully_linked">সদস্য সফলভাবে এই পরিবারের সাথে সংযুক্ত হয়েছে</string>
+    <string name="patient_with_id">রোগী আইডি: %1$s</string>
+    <string name="result_mother">ফলাফল - মা</string>
+    <string name="result_neonate">ফলাফল - নবজাতক</string>
+    <string name="anc_visit">প্রসবপূর্ব সাক্ষাৎ</string>
+    <string name="pnc_visit">প্রসবোত্তর সাক্ষাৎ</string>
+    <string name="exit_reason">আপনি এই স্ক্রিন ছেড়ে গেলে আপনার প্রবেশ করা ডেটা সংরক্ষণ হবে না।</string>
+    <string name="add_new_member_small">নতুন সদস্য যোগ করুন</string>
+    <string name="birth_history">জন্ম ইতিহাস</string>
+    <string name="breathing_problem_at_birth">জন্মের সময় শ্বাসকষ্ট</string>
+    <string name="clinical_summary">ক্লিনিকাল সারাংশ ও প্রাণসূচক লক্ষণ</string>
+    <string name="weight_in_kg">ওজন (কেজিতে)</string>
+    <string name="waz">WAZ</string>
+    <string name="temperature_in_c">তাপমাত্রা (°C তে)</string>
+    <string name="temperature">তাপমাত্রা</string>
+    <string name="respiration_rate">শ্বাস প্রশ্বাসের হার</string>
+    <string name="rate">হার</string>
+    <string name="minute">মিনিট</string>
+    <string name="height_in_cm">উচ্চতা (সেমিতে)</string>
+    <string name="whz">WHZ</string>
+    <string name="immunisation_status">টিকাদান অবস্থা</string>
+    <string name="repeat_if_60" translatable="false">Repeat (if &gt;60)</string>
+    <string name="breast_feeding">Breast Feeding</string>
+    <string name="exclusive_breast_feeding">একান্ত বুকের দুধ খাওয়ানো</string>
+    <string name="vitamin_a_for_mother">মায়ের জন্য ভিটামিন এ</string>
+    <string name="title_mother">মা</string>
+    <string name="signs_Symptoms_observed">পর্যবেক্ষিত লক্ষণ/উপসর্গ</string>
+    <string name="general_condition_of_mother">মায়ের সাধারণ অবস্থা</string>
+    <string name="risk_factor">ঝুঁকির কারণ</string>
+    <string name="state_of_the_perineum">পেরিনিয়ামের অবস্থা</string>
+    <string name="episotomy">এপিসিওটমি</string>
+    <string name="tear">ছিঁড়ে যাওয়া</string>
+    <string name="TT_does_taken_so_far">এখন পর্যন্ত নেওয়া TT ডোজ</string>
+    <string name="status">অবস্থা</string>
+    <string name="title_neonate">নবজাতক</string>
+    <string name="neonate_outcome" translatable="false">Neonate Outcome</string>
+    <string name="male">পুরুষ</string>
+    <string name="female">মহিলা</string>
+    <string name="state_of_baby">শিশুর অবস্থা</string>
+    <string name="abnormal">অস্বাভাবিক</string>
+    <string name="birth_weight">জন্ম ওজন</string>
+    <string name="signs_symptoms_observed">পর্যবেক্ষিত লক্ষণ/উপসর্গ</string>
+    <string name="state_of_the_baby">শিশুর অবস্থা</string>
+    <string name="apgar_score">অ্যাপগার স্কোর</string>
+    <string name="deg_1">১ ডিগ্রি</string>
+    <string name="deg_2">২ ডিগ্রি</string>
+    <string name="deg_3">৩ ডিগ্রি</string>
+    <string name="deg_4">৪ ডিগ্রি</string>
+    <string name="title_labour_delivery">প্রসব/ডেলিভারি</string>
+    <string name="labour_delivery_medical_review">চিকিৎসা পর্যালোচনা প্রসব/ডেলিভারি</string>
+    <string name="search_and_add">ওষুধ খুঁজে যোগ করুন</string>
+    <string name="search_investigation_and_add">ল্যাব/রেডিওলজি টেস্ট খুঁজে যোগ করুন</string>
+    <string name="medication_name">ওষুধের নাম</string>
+    <string name="frequency">ফ্রিকোয়েন্সি</string>
+    <string name="prescribed_days">প্রেসক্রাইব করা দিন</string>
+    <string name="quantity">পরিমাণ</string>
+    <string name="no_of_fetus">ভ্রূণের সংখ্যা</string>
+    <string name="pregnancy_details">গর্ভাবস্থার বিবরণ</string>
+    <string name="gravida">গর্ভাবস্থার সংখ্যা</string>
+    <string name="height_hint">উচ্চতা</string>
+    <string name="weight">ওজন</string>
+    <string name="weight_hint">ওজন</string>
+    <string name="bmi">বিএমআই</string>
+    <string name="semicolon" translatable="false">:</string>
+    <string name="systolic">সিস্টোলিক</string>
+    <string name="diastolic">ডায়াস্টোলিক</string>
+    <string name="plus" translatable="false">+</string>
+    <string name="parity">প্রসব সংখ্যা</string>
+    <string name="weight_error">দয়া করে ওজন 10 থেকে 400 এর মধ্যে লিখুন</string>
+    <string name="weight_error_0_400">দয়া করে ওজন 0.1 থেকে 400 এর মধ্যে লিখুন</string>
+    <string name="height_error_0_300">দয়া করে উচ্চতা 10 থেকে 300 এর মধ্যে লিখুন</string>
+    <string name="height_error">দয়া করে উচ্চতা 50 থেকে 300 এর মধ্যে লিখুন</string>
+    <string name="gestational_error">দয়া করে গর্ভাবস্থার বয়স 60 এর নিচে লিখুন</string>
+    <string name="patient_blood_group">রোগীর রক্তের গ্রুপ</string>
+    <string name="diastolic_error">ডায়াস্টোলিক চাপ 30 এর উপরে হতে হবে</string>
+    <string name="pulse_error">নাড়ি 35 এর উপরে হতে হবে</string>
+    <string name="systolic_error">সিস্টোলিক চাপ 30 এর উপরে হতে হবে</string>
+    <string name="examination">পরীক্ষা</string>
+    <string name="clinician_name">চিকিৎসকের নাম</string>
+    <string name="the_review_has_been_successfully_submitted">পর্যালোচনা সফলভাবে জমা দেওয়া হয়েছে।</string>
+    <string name="review_completed">পর্যালোচনা সম্পন্ন</string>
+    <string name="finish">শেষ</string>
+    <string name="add_weight">ওজন যোগ করুন</string>
+    <string name="blood_pressure">রক্তচাপ</string>
+    <string name="add_blood_pressure">রক্তচাপ যোগ করুন</string>
+    <string name="enter_the_weight">ওজন লিখুন</string>
+    <string name="diastolic_error_min">ডায়াস্টোলিক চাপ 30 এর উপরে হতে হবে</string>
+    <string name="pulse_error_min">নাড়ি 35 এর উপরে হতে হবে</string>
+    <string name="systolic_error_min">সিস্টোলিক চাপ 30 এর উপরে হতে হবে</string>
+    <string name="diastolic_error_max">ডায়াস্টোলিক চাপ 300 এর চেয়ে কম হতে হবে</string>
+    <string name="pulse_error_max">নাড়ি 300 এর চেয়ে কম হতে হবে</string>
+    <string name="systolic_error_max">সিস্টোলিক চাপ 300 এর চেয়ে কম হতে হবে</string>
+    <string name="systolic_diastolic_error">সিস্টোলিক চাপ ডায়াস্টোলিক চাপের চেয়ে বড় হতে হবে</string>
+    <string name="call_result">কল ফলাফল</string>
+    <string name="un_successful">ব্যর্থ</string>
+    <string name="successful">সফল</string>
+    <string name="on_treatment">চিকিৎসাধীন</string>
+    <string name="recovered">সুস্থ</string>
+    <string name="data_range">তারিখ পরিসীমা</string>
+    <string name="from">থেকে</string>
+    <string name="to">প্রতি</string>
+    <string name="un_reachable">পৌঁছানো যায় না</string>
+    <string name="wrong_number">ভুল নম্বর</string>
+    <string name="Select_Date">দয়া করে তারিখ থেকে নির্বাচন করুন</string>
+    <string name="medical_review">চিকিৎসা পর্যালোচনা সাক্ষাৎ</string>
+    <string name="hh_visit">পরিবার সাক্ষাৎ</string>
+    <string name="no_patient_found">কোন রোগী পাওয়া যায়নি।</string>
+    <string name="patient_count">%1$d জন রোগী</string>
+    <string name="reason">কারণ</string>
+    <string name="start_date">শুরুর তারিখ</string>
+    <string name="hh_name">পরিবারের নাম</string>
+    <string name="calls_made">কোল করা হয়েছে</string>
+    <string name="indicator_header">সূচক</string>
+    <string name="one_minute_header">১ মিনিট</string>
+    <string name="five_minute_header">৫ মিনিট</string>
+    <string name="ten_minute_header">১০ মিনিট</string>
+    <string name="activity_label">ক-কার্যক্রম</string>
+    <string name="pulse_label">প-নাড়ি</string>
+    <string name="grimace_label">গ-ভ্রূকুটি</string>
+    <string name="appearance_label">আ-চেহারা</string>
+    <string name="respiration_label">শ-শ্বাসপ্রশ্বাস</string>
+    <string name="total_label">মোট</string>
+    <string name="save">সংরক্ষণ</string>
+    <string name="select_disease_category">রোগ বিভাগ নির্বাচন করুন</string>
+    <string name="select_disease_condition">রোগের অবস্থা নির্বাচন করুন</string>
+    <string name="add_diagnosis">নির্ণয় যোগ করুন</string>
+    <string name="jaundice">জন্ডিস</string>
+    <string name="gene_expert">জিন এক্সপার্ট</string>
+    <string name="_1_jaundice">1.Jaundice</string>
+    <string name="empty__" translatable="false">--</string>
+    <string name="child">child</string>
+    <string name="june">June</string>
+    <string name="breathing_problems_at_birth">Breathing problems at birth</string>
+    <string name="title_birth_history">জন্ম ইতিহাস</string>
+    <string name="title_clinical_summary_vital_signs">Clinical Summary &amp; Vital Signs</string>
+    <string name="minute_slash">/minute</string>
+    <string name="day">দিন</string>
+    <string name="morning">সকাল</string>
+    <string name="night">রাত</string>
+    <string name="no_of_tablets_no_of_days">(%1$d ট্যাবলেট প্রতিদিন - %2$d দিন)</string>
+    <string name="no_of_tablets_no_of_days_string">(%1$s ট্যাবলেট প্রতিদিন - %2$d দিন)</string>
+    <string name="amoxicillin_250_mg">Amoxicillin 250mg</string>
+    <string name="zinc_tablet">Zinc Tablet</string>
+    <string name="with_one_litre_of_water">(with 1 litre of water)</string>
+    <string name="ors_packet">ORS Packet</string>
+    <string name="act_6">এসিটি-৬</string>
+    <string name="no_of_tablets" translatable="false">%1$d %2$s</string>
+    <string name="tablet">ট্যাবলেট</string>
+    <string name="tablets">ট্যাবলেট</string>
+    <string name="no_recommended_dosages">এই বয়সের গ্রুপের জন্য কোন ডোজ সুপারিশ করা হয়নি</string>
+    <string name="logout_alert">আপনি কি নিশ্চিত লগআউট করতে চান?</string>
+    <string name="only_alphabets_validation">প্রবেশ করা মানে শুধুমাত্র বর্ণ থাকতে হবে</string>
+    <string name="immunisation_status_up_to_date">আপ টু ডেট</string>
+    <string name="immunisation_status_not_up_to_date">আপ টু ডেট নয়</string>
+    <string name="immunisation_status_upcoming">আসন্ন</string>
+    <string name="start">শুরু</string>
+    <string name="Offline_data">অফলাইন ডেটা</string>
+    <string name="syncing_offline_data">অফলাইন ডেটা সিঙ্ক করা হচ্ছে</string>
+    <string name="offline_data_completion">আপনার অফলাইন ডেটা সিঙ্ক সফলভাবে সম্পন্ন হয়েছে!</string>
+    <string name="offline_data_failed">অফলাইন ডেটা সিঙ্ক ব্যর্থ। দয়া করে পরে আবার চেষ্টা করুন!</string>
+    <string name="offline_sync_started">অফলাইন ডেটা সিঙ্ক শুরু হয়েছে</string>
+    <string name="offline_sync_start">এখন অফলাইন সিঙ্ক শুরু করবেন?</string>
+    <string name="offline_sync_small">অফলাইন সিঙ্ক</string>
+    <string name="title_no_network">নেটওয়ার্ক উপলব্ধ নয়</string>
+    <string name="message_no_network">দয়া করে আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন।</string>
+    <string name="min_char_length_validation">কমপক্ষে %1$s অক্ষর প্রয়োজন</string>
+    <string name="general_min_max_validation">মান %1$s থেকে %2$s এর মধ্যে হতে হবে</string>
+    <string name="general_min_validation">মান %1$s এর চেয়ে বড় হতে হবে</string>
+    <string name="general_max_validation">মান %1$s এর চেয়ে ছোট হতে হবে</string>
+    <string name="household">পরিবার</string>
+    <string name="please_select_a_site">দয়া করে একটি বৈধ সাইট নির্বাচন করুন</string>
+    <string name="nutrition_summary_without_signs" translatable="false">%1$s</string>
+    <string name="tomorrow">আগামীকাল</string>
+    <string name="title_pregnancy_summary">গর্ভাবস্থার সারাংশ</string>
+    <string name="fundal_height">ফান্ডাল উচ্চতা (সেমিতে)</string>
+    <string name="fetal_heart_rate_bpm">ভ্রূণের হৃদস্পন্দন (BPM)</string>
+    <string name="obstetric_examination">প্রসূতি পরীক্ষা</string>
+    <string name="contact_number">যোগাযোগ নম্বর</string>
+    <string name="mother_neonate_anc_saved_successfully">মা ও নবজাতক প্রসবপূর্ব ডেটা সফলভাবে সংরক্ষিত হয়েছে</string>
+    <string name="moderate_dehydration">মাঝারি পানিশূন্যতা</string>
+    <string name="my_patients">আমার রোগী</string>
+    <string name="something_went_wrong">কিছু ভুল হয়েছে</string>
+    <string name="last_synced_at">সর্বশেষ সিঙ্ক: </string>
+    <string name="cut_offs_for_fast_breathing">দ্রুত শ্বাসের জন্য কাট-অফ</string>
+    <string name="instructions_to_calculate_n_breathing_rate">শ্বাসের হার গণনার নির্দেশনা</string>
+    <string name="_2_to_11_months">2 to 11 Months</string>
+    <string name="_1_to_5_years">1 to 5 Years</string>
+    <string name="_50_or_more">50 or more</string>
+    <string name="breaths_per_minute">প্রতি মিনিটে শ্বাস</string>
+    <string name="_40_or_more">40 or more</string>
+    <string name="fb_info_1">Make sure that your respiratory timer is ready.</string>
+    <string name="fb_info_2">Make sure the child is calm. If the child is sleeping, do not wake her/him - Ask caregiver to gently remove clothing from the chest and tummy.</string>
+    <string name="fb_info_3">Make sure you are able to see the child’s chest; observe the child’s breathing; and see when the chest moves in and out</string>
+    <string name="fb_info_4">One breath in and out makes one breath count.</string>
+    <string name="fb_info_5">When ready to count, press the centre of your timer (Note that the timer beeps every second for 60 seconds; will alarm in 30 seconds and then in 60 seconds before stopping beeping)</string>
+    <string name="fb_info_6">Keep counting until the timer stops beeping</string>
+    <string name="fast_breathing">দ্রুত শ্বাস</string>
+    <string name="phone_number_invalid">দয়া করে একটি বৈধ মোবাইল নম্বর লিখুন</string>
+    <string name="dob_invalid">দয়া করে 0 থেকে %1$d এর মধ্যে বয়স লিখুন</string>
+    <string name="zinc_ors_status" translatable="false">(Zinc - %1$s), (ORS - %2$s)</string>
+    <string name="physical_examinations">শারীরিক পরীক্ষা</string>
+    <string name="congenital_detect">জন্মগত সনাক্তকরণ</string>
+    <string name="cord_examination">নাভিরজ্জু পরীক্ষা</string>
+    <string name="healing_satisfactorily">সন্তোষজনকভাবে সেরে উঠছে</string>
+    <string name="poor_healing">খারাপ নিরাময়</string>
+    <string name="infected">সংক্রমিত</string>
+    <string name="filter">ফিল্টার</string>
+    <string name="refer_to">রেফার করুন</string>
+    <string name="referred_reason">রেফারের কারণ</string>
+    <string name="type_comments">আপনার মন্তব্য লিখুন</string>
+    <string name="name_number">নাম/নম্বর</string>
+    <string name="refer">রেফার</string>
+    <string name="is_the_mother_alive">মা কি বেঁচে আছেন?</string>
+    <string name="refer_patient_name_num_display" translatable="false">%1$s (%2$s) / +%3$s %4$s</string>
+    <string name="dispense">বিতরণ করুন</string>
+    <string name="renew_all">সব নবায়ন করুন</string>
+    <string name="clear_signature">স্বাক্ষর মোছুন</string>
+    <string name="signature_required">স্বাক্ষর প্রয়োজন</string>
+    <string name="signature_or_initial_required">স্বাক্ষর বা আদ্যক্ষর প্রয়োজন</string>
+    <string name="sign_and_confirm_prescription">স্বাক্ষর করে প্রেসক্রিপশন নিশ্চিত করুন</string>
+    <string name="year">Year</string>
+    <string name="week">সপ্তাহ</string>
+    <string name="month">মাস</string>
+    <string name="kg">কেজি</string>
+    <string name="mmHg">mmHg</string>
+    <string name="zinc">Zinc</string>
+    <string name="ors">ORS</string>
+    <string name="jelly_water">Jelly Water</string>
+    <string name="sss">SSS</string>
+    <string name="zinc_or_ors_status" translatable="false">(%1$s - %2$s)</string>
+    <string name="remove_medication">ওষুধ সরান</string>
+    <string name="medical_review_history">চিকিৎসা পর্যালোচনা ইতিহাস</string>
+    <string name="cm">সেমি</string>
+    <string name="beats_per_minute">প্রতি মিনিটে স্পন্দন</string>
+    <string name="does_mother_have_a_delivery_kit">মায়ের কি প্রসব কিট আছে?</string>
+    <string name="pregnancy_history_past_obstetric_history">গর্ভাবস্থার ইতিহাস (অতীত প্রসূতি ইতিহাস)</string>
+    <string name="no_referral_history">কোন রেফার ইতিহাস পাওয়া যায়নি</string>
+    <string name="pnc_visit_no">প্রসবোত্তর সাক্ষাৎ নম্বর</string>
+    <string name="general_systemic_examinations">সাধারণ ও সিস্টেমিক পরীক্ষা</string>
+    <string name="referral_by_phone_number" translatable="false">%1$s (%2$s)</string>
+    <string name="select_diagnosis_found_on_the_patient">রোগীর উপর পাওয়া নির্ণয় নির্বাচন করুন</string>
+    <string name="something_went_wrong_try_later">কিছু ভুল হয়েছে। দয়া করে আবার চেষ্টা করুন</string>
+    <string name="is_the_baby_alive">শিশু কি বেঁচে আছে?</string>
+    <string name="view_discontinued_medication">বন্ধ ওষুধ দেখুন</string>
+    <string name="hide_discontinued_medication">বন্ধ ওষুধ লুকান</string>
+    <string name="no_data_found">কোন ডেটা পাওয়া যায়নি</string>
+    <string name="edit">সম্পাদনা</string>
+    <string name="confirmation">নিশ্চিতকরণ</string>
+    <string name="delete_confirmation">আপনি কি নিশ্চিত যে আপনি এটি মুছতে চান?</string>
+    <string name="prescribed_since">যেদিন থেকে প্রেসক্রাইব</string>
+    <string name="value_range_error">দয়া করে 1 থেকে %1$d এর মধ্যে মান লিখুন</string>
+    <string name="no_discontinued_medication">কোন বন্ধ ওষুধ নেই</string>
+    <string name="no_medication_prescribed">কোন ওষুধ প্রেসক্রাইব করা হয়নি</string>
+    <string name="discontinued_on">বন্ধ করার তারিখ</string>
+    <string name="medication_prescribed">প্রেসক্রাইব করা ওষুধ</string>
+    <string name="investigations_referred">তদন্ত রেফার করা হয়েছে</string>
+    <string name="date_of_prescription">প্রেসক্রিপশনের তারিখ</string>
+    <string name="date_of_investigation">তদন্তের তারিখ</string>
+    <string name="no_prescription_history">কোন প্রেসক্রিপশন ইতিহাস নেই</string>
+    <string name="no_investigation_history">কোন তদন্ত ইতিহাস নেই</string>
+    <string name="no_medical_review_history">কোন চিকিৎসা পর্যালোচনা ইতিহাস নেই</string>
+    <string name="chief_complaints">প্রধান অভিযোগ</string>
+    <string name="successful_calls">সফল কল</string>
+    <string name="unsuccessful_calls">ব্যর্থ কল</string>
+    <string name="called_at">কোলের সময়</string>
+    <string name="referred_at">রেফারের সময়</string>
+    <string name="no_new_medicines_prescribed">কোন নতুন ওষুধ প্রেসক্রাইব করা হয়নি</string>
+    <string name="ancSigns">প্রসবপূর্ব লক্ষণ</string>
+    <string name="pncMotherSigns">প্রসবোত্তর মায়ের লক্ষণ</string>
+    <string name="pncNeonateSigns">প্রসবোত্তর নবজাতকের লক্ষণ</string>
+    <string name="childhoodVisitSigns">শৈশব সাক্ষাৎ লক্ষণ</string>
+    <string name="pnc_visit_summary_mother">প্রসবোত্তর সাক্ষাৎ সারাংশ - মা</string>
+    <string name="pnc_visit_summary_neonate">প্রসবোত্তর সাক্ষাৎ সারাংশ - নবজাতক</string>
+    <string name="weeks_baby">" weeks"</string>
+    <string name="gms_baby">" gms"</string>
+    <string name="premature_baby">" (Premature)"</string>
+    <string name="low_birth_weight">" (Low birth weight)"</string>
+    <string name="_kg">" Kg"</string>
+    <string name="week_baby">" week"</string>
+    <string name="please_enter_temperature_between_10_to_200">দয়া করে তাপমাত্রা 10 থেকে 200 এর মধ্যে লিখুন</string>
+    <string name="respiratory_error">দয়া করে শ্বাসের হার 1 থেকে 99 এর মধ্যে লিখুন</string>
+    <string name="please_enter_repeat_between_0_to_100">দয়া করে 1 থেকে 99 এর মধ্যে পুনরাবৃত্তি লিখুন</string>
+    <string name="sy" translatable="false">:</string>
+    <string name="albendazole">অ্যালবেনডাজোল</string>
+    <string name="muac_in_cm">MUAC (সেমিতে)</string>
+    <string name="muac_green">MUAC সবুজ</string>
+    <string name="muac_yellow">MUAC হলুদ</string>
+    <string name="muac_red">MUAC লাল</string>
+    <string name="title_clinical_summary">ক্লিনিকাল সারাংশ</string>
+    <string name="green">সবুজ</string>
+    <string name="yellow">হলুদ</string>
+    <string name="red">লাল</string>
+    <string name="severe_malnutrition">গুরুতর অপুষ্টি</string>
+    <string name="background_sync_in_progress">ব্যাকগ্রাউন্ড সিঙ্ক চলছে। দয়া করে পরে আবার চেষ্টা করুন</string>
+    <string name="syncing_is_in_progress">সিঙ্ক করা হচ্ছে</string>
+    <string name="treatment_start_date">চিকিৎসা শুরুর তারিখ</string>
+    <string name="referred_date">রেফারের তারিখ</string>
+    <string name="tab_medical_review">চিকিৎসা পর্যালোচনা</string>
+    <string name="tab_counter_referral">কাউন্টার রেফারাল</string>
+    <string name="test_name">পরীক্ষার নাম</string>
+    <string name="recommended_on">সুপারিশ করা হয়েছে</string>
+    <string name="recommended_by">সুপারিশ করেছেন</string>
+    <string name="no_investigation_referred">কোন তদন্ত রেফার করা হয়নি</string>
+    <string name="unit">ইউনিট</string>
+    <string name="call">কল</string>
+    <string name="post_natal">প্রসবোত্তর</string>
+    <string name="tear_hypen">ছিঁড়ে যাওয়া - </string>
+    <string name="specify_your_ncondition">আপনার অবস্থা নির্দিষ্ট করুন</string>
+    <string name="involutions_of_the_nuterus">জরায়ুর সংকোচন</string>
+    <string name="involutions_of_the_nuterus_summary">জরায়ুর সংকোচন</string>
+    <string name="breast_condition">স্তনের অবস্থা</string>
+    <string name="five_minutes">" (Five minutes)"</string>
+    <string name="tested_on">পরীক্ষা করা হয়েছে</string>
+    <string name="birth_weight_in_kg">জন্ম ওজন (কেজিতে)</string>
+    <string name="performance_monitoring">কর্মক্ষমতা পর্যবেক্ষণ</string>
+    <string name="year_colon">বছর:</string>
+    <string name="month_colon">মাস:</string>
+    <string name="village_colon">গ্রাম:</string>
+    <string name="chw_colon">সিএইচডব্লিউ:</string>
+    <string name="chp_colon">সিএইচপি:</string>
+    <string name="from_date_colon">থেকে:</string>
+    <string name="toDate_colon">পর্যন্ত:</string>
+    <string name="_36_weeks">" (&lt;36 weeks)"</string>
+    <string name="time_meal_error">দয়া করে ঘন্টা %1$d থেকে %2$d এবং মিনিট %3$d থেকে %4$d এর মধ্যে লিখুন</string>
+    <string name="change_facility">সুবিধা পরিবর্তন</string>
+    <string name="change_health_facility" translatable="false">CHANGE HEALTH FACILITY</string>
+    <string name="choose_site">স্বাস্থ্য সুবিধা পরিবর্তন</string>
+    <string name="display_range">প্রদর্শন পরিসীমা</string>
+    <string name="tested_value">পরীক্ষিত মান</string>
+    <string name="tested_result">পরীক্ষার ফলাফল</string>
+    <string name="separator_character" translatable="false">/</string>
+    <string name="sys">Sys</string>
+    <string name="dis">Dia</string>
+    <string name="string_1" translatable="false">1</string>
+    <string name="string_2" translatable="false">2</string>
+    <string name="string_3" translatable="false">3</string>
+    <string name="reading_nno">রিডিং নম্বর</string>
+    <string name="systolic_mmhg">সিস্টোলিক (mmHg)</string>
+    <string name="diastolic_mmhg">ডায়াস্টোলিক (mmHg)</string>
+    <string name="pulse_n_bpm">নাড়ি (BPM)</string>
+    <string name="blood_pressure_instructions">রক্তচাপ মাপার নির্দেশনা</string>
+    <string name="bp_measure">রক্তচাপ মাপার সময়:</string>
+    <string name="sno_2" translatable="false">2</string>
+    <string name="sno_3" translatable="false">3</string>
+    <string name="sno_1" translatable="false">1</string>
+    <string name="systolic_diastolic_min_validation">সিস্টোলিক এবং ডায়াস্টোলিক মান %1$s এর চেয়ে বড় হতে হবে</string>
+    <string name="systolic_diastolic_max_validation">সিস্টোলিক এবং ডায়াস্টোলিক মান %1$s এর চেয়ে ছোট হতে হবে</string>
+    <string name="systolic_greater_than_diastolic">সিস্টোলিক মান সর্বদা ডায়াস্টোলিক মানের চেয়ে বড় হতে হবে।</string>
+    <string name="pulse_min_validation">নাড়ির মান %1$s এর চেয়ে বড় হতে হবে</string>
+    <string name="pulse_max_validation">নাড়ির মান %1$s এর চেয়ে ছোট হতে হবে</string>
+    <string name="login_forgot_password">পাসওয়ার্ড ভুলে গেছেন</string>
+    <string name="go_back">লগইনে ফিরে যান</string>
+    <string name="login_forgot_email">ইমেইল</string>
+    <string name="confirm_password">পাসওয়ার্ড নিশ্চিত করুন</string>
+    <string name="confirm_new_password">নতুন পাসওয়ার্ড নিশ্চিত করুন</string>
+    <string name="new_password">নতুন পাসওয়ার্ড</string>
+    <string name="email_registered_successfully">রিসেট পাসওয়ার্ড লিঙ্ক ইউজারনেম / ইমেইল / ফোন নম্বরে পাঠানো হয়েছে।</string>
+    <string name="reset_password">পাসওয়ার্ড রিসেট করুন</string>
+    <string name="confirm_password_cannot_be_empty">দয়া করে পাসওয়ার্ড লিখুন।</string>
+    <string name="password_does_not_match">পাসওয়ার্ড মিলছে না</string>
+    <string name="password_registered_successfully">পাসওয়ার্ড সফলভাবে রিসেট করা হয়েছে।</string>
+    <string name="password_error_message">পাসওয়ার্ডে কমপক্ষে একটি সংখ্যা, ছোট হাতের অক্ষর, বড় হাতের অক্ষর এবং কমপক্ষে ৬টি অক্ষর থাকতে হবে</string>
+    <string name="mismatch_password">পাসওয়ার্ডে কমপক্ষে একটি সংখ্যা, ছোট হাতের অক্ষর, বড় হাতের অক্ষর এবং কমপক্ষে ৬টি অক্ষর থাকতে হবে</string>
+    <string name="na">N/A</string>
+    <string name="e_signature">ই-স্বাক্ষর</string>
+    <string name="terms_and_condition">শর্তাবলী</string>
+    <string name="signature_or_initial">স্বাক্ষর বা আদ্যক্ষর লিখুন</string>
+    <string name="reset">রিসেট</string>
+    <string name="neonateOutcome">নবজাতকের ফলাফল</string>
+    <string name="stateOfBaby">শিশুর অবস্থা</string>
+    <string name="loading">লোড হচ্ছে...</string>
+    <string name="patient_status_append" translatable="false">%1$s, %2$s</string>
+    <string name="chw_name">সিএইচডব্লিউর নাম</string>
+    <string name="chp_name">সিএইচপির নাম</string>
+    <string name="no_of_hh">পরিবারের সংখ্যা</string>
+    <string name="no_of_member">সদস্য সংখ্যা</string>
+    <string name="os">OS</string>
+    <string name="referrals">রেফারাল</string>
+    <string name="treatment_started">চিকিৎসা শুরু হয়েছে</string>
+    <string name="follow_up_due">ফলো-আপ বাকি</string>
+    <string name="visit">সাক্ষাৎ</string>
+    <string name="follow_up_conducted">ফলো-আপ সম্পন্ন হয়েছে</string>
+    <string name="recovered_improved">সুস্থ / উন্নত</string>
+    <string name="worsened">খারাপ হয়েছে</string>
+    <string name="lbw">"Low Birth Weight"</string>
+    <string name="vlbw">"Very Low Birth Weight"</string>
+    <string name="elbw">"Extremely Low Birth Weight"</string>
+    <string name="nbw">"Normal Birth Weight"</string>
+    <string name="hbw">"High Birth Weight"</string>
+    <string name="upload_log">আপলোড লগ</string>
+    <string name="enter_less_than_2">দয়া করে 2 এর চেয়ে কম বা সমান মান লিখুন</string>
+    <string name="phu_walk_ins">পিএইচইউ ওয়াক-ইন</string>
+    <string name="link_patient">রোগী লিংক করুন</string>
+    <string name="please_select_valid_input">দয়া করে একটি বৈধ ইনপুট নির্বাচন করুন</string>
+    <string name="search_by_hh_name_hh_no_mobile">পরিবারের নাম, নম্বর, মোবাইল দিয়ে খুঁজুন</string>
+    <string name="are_you_sure_you_want_to_link_this_patient_to_this_household">আপনি কি নিশ্চিত এই রোগীকে এই পরিবারের সাথে লিংক করতে চান?</string>
+    <string name="link">লিংক</string>
+    <string name="_patients">" Patients"</string>
+    <string name="phu_walk_ins_title">পিএইচইউ ওয়াক-ইন</string>
+    <string name="households_in">" Households in "</string>
+    <string name="no_household_found">কোন পরিবার পাওয়া যায়নি।</string>
+    <string name="open_play_store">প্লে স্টোর খুলুন</string>
+    <string name="please_check_if_play_store_available">দয়া করে পরীক্ষা করুন ডিভাইসে Google Play Store ইনস্টল আছে কিনা</string>
+    <string name="register">নিবন্ধন</string>
+    <string name="registration">নিবন্ধন</string>
+    <string name="registered">নিবন্ধিত</string>
+    <string name="enrolled_data">নিবন্ধিত</string>
+    <string name="not_registered">নিবন্ধিত নয়</string>
+    <string name="not_enrolled_data">নিবন্ধিত নয়</string>
+    <string name="terms_and_conditions">শর্তাবলী</string>
+    <string name="terms_and_conditions_info_enrollment">স্বাস্থ্যকর্মী নিবন্ধন অংশগ্রহণকারীর পক্ষে শর্তাবলী গ্রহণ করবেন।</string>
+    <string name="patient_initial">Patient’s Initial</string>
+    <string name="enter_your_initials">আপনার আদ্যক্ষর লিখুন</string>
+    <string name="accept_terms_condition">শর্তাবলী গ্রহণ করুন</string>
+    <string name="date_of_registration">নিবন্ধনের তারিখ</string>
+    <string name="facility_name">সুবিধার নাম</string>
+    <string name="screening">স্ক্রিনিং</string>
+    <string name="general_details_label">স্ক্রিন করা অংশগ্রহণকারীদের সাইটের সাথে লিংক করা হবে:</string>
+    <string name="screening_catagory">স্ক্রিনিং বিভাগ</string>
+    <string name="clinic">ক্লিনিক</string>
+    <string name="camp">ক্যাম্প</string>
+    <string name="community">সম্প্রদায়</string>
+    <string name="door_to_door">দরজা থেকে দরজা</string>
+    <string name="pharmacy">ফার্মেসি</string>
+    <string name="screening_type">বিভাগ/স্ক্রিনিং প্রকার</string>
+    <string name="type_your_comments">আপনার মন্তব্য লিখুন</string>
+    <string name="Other">অন্যান্য</string>
+    <string name="outpatient">আউটপেশেন্ট</string>
+    <string name="inpatient">ইনপেশেন্ট</string>
+    <string name="opd_triage">ট্রায়েজ</string>
+    <string name="facility_error">দয়া করে একটি সুবিধা নির্বাচন করুন।</string>
+    <string name="people_screened">স্ক্রিন করা হয়েছে</string>
+    <string name="people_referred">রেফার করা হয়েছে</string>
+    <string name="screening_category">স্ক্রিনিং বিভাগ</string>
+    <string name="screen_next_patient">রোগী স্ক্রিন করুন</string>
+    <string name="today_s_stats">Today’s Screening Stats</string>
+    <string name="zero_label" translatable="false">0</string>
+    <string name="dot" translatable="false">•</string>
+    <string name="under_weight">ওজন কম</string>
+    <string name="normal_weight">স্বাভাবিক ওজন</string>
+    <string name="over_weight">ওজন বেশি</string>
+    <string name="obese">স্থূল</string>
+    <string name="extremely_obese">অত্যন্ত স্থূল</string>
+    <string name="facility_referred_to">রেফার করা হয়েছে</string>
+    <string name="average_blood_pressure">গড় রক্তচাপ</string>
+    <string name="average_mmhg_string" translatable="false">%1$s/%2$s mmHg</string>
+    <string name="blood_glucose">রক্তে গ্লুকোজ</string>
+    <string name="blood_glucose_rbs">রক্তের গ্লুকোজ (RBS)</string>
+    <string name="blood_glucose_fbs">রক্তের গ্লুকোজ (FBS)</string>
+    <string name="phq4_score">PHQ4 Score</string>
+    <string name="phq9_score">PHQ9 Score</string>
+    <string name="gad7_score">GAD7 Score</string>
+    <string name="referred_for_nfurther_assessment">আরও মূল্যায়নের জন্য রেফার করা হয়েছে</string>
+    <string name="no_assessment_required">কোন মূল্যায়ন প্রয়োজন নেই</string>
+    <string name="cage_aid">CAGE-AID</string>
+    <string name="cvd_risk_level">সিভিডি ঝুঁকির মাত্রা</string>
+    <string name="phq4_normal">%1$d - স্বাভাবিক</string>
+    <string name="phq4_mild">%1$d - মৃদু</string>
+    <string name="phq9_minimal">%1$d - ন্যূনতম</string>
+    <string name="phq4_moderate">%1$d - মাঝারি</string>
+    <string name="phq4_severe">%1$d - গুরুতর</string>
+    <string name="phq9_moderately_severe">%1$d - মাঝারি গুরুতর</string>
+    <string name="terms_condition_info_screening">স্বাস্থ্যকর্মী স্ক্রিনিং অংশগ্রহণকারীর পক্ষে শর্তাবলী গ্রহণ করবেন।</string>
+    <string name="terms_condition_info_enrollment">স্বাস্থ্যকর্মী নিবন্ধন অংশগ্রহণকারীর পক্ষে শর্তাবলী গ্রহণ করবেন।</string>
+    <string name="diabetes">ডায়াবেটিস</string>
+    <string name="hypertension">উচ্চ রক্তচাপ</string>
+    <string name="year_of_diagnosis">নির্ণয়ের বছর</string>
+    <string name="new_patient">নতুন রোগী</string>
+    <string name="known_patient">জানা রোগী</string>
+    <string name="diabetes_controlled_type">ডায়াবেটিস প্রকার</string>
+    <string name="patient_history">রোগীর ইতিহাস</string>
+    <string name="add_new_reading">নতুন রিডিং যোগ করুন</string>
+    <string name="assessment_date">মূল্যায়নের তারিখ</string>
+    <string name="assessment_summary">মূল্যায়ন সারসংক্ষেপ</string>
+    <string name="rbs">RBS</string>
+    <string name="fbs">FBS</string>
+    <string name="hba1c">HbA1c</string>
+    <string name="systolic_diastolic_mmHg">সিস্টোলিক / ডায়াস্টোলিক (mmHg)</string>
+    <string name="medical_adherence">চিকিৎসা আনুগত্য</string>
+    <string name="since_the_last_assessment_symptom_info">সর্বশেষ মূল্যায়নের পর থেকে রোগীর কি কোন নতুন বা খারাপ হওয়া উপসর্গ আছে?</string>
+    <string name="complaince_title">গত সপ্তাহে রোগীর ওষুধের কত ডোজ নেওয়া হয়েছে?</string>
+    <string name="other_hypertension_symptom">অন্যান্য উচ্চ রক্তচাপের উপসর্গ</string>
+    <string name="other_diabetes_symptom">অন্যান্য ডায়াবেটিস উপসর্গ</string>
+    <string name="other_hint">ওষুধ না নেওয়ার অন্যান্য কারণ লিখুন</string>
+    <string name="new_or_worsening_symptoms">কোন নতুন বা খারাপ হওয়া উপসর্গ</string>
+    <string name="new_or_worsening_diabetes">নতুন বা খারাপ হওয়া ডায়াবেটিস উপসর্গ</string>
+    <string name="new_or_worsening_hypertension">নতুন বা খারাপ হওয়া উচ্চ রক্তচাপ উপসর্গ</string>
+    <string name="empty_space" translatable="false">" "</string>
+    <string name="other_selected">উপসর্গ এবং অন্যান্য</string>
+    <string name="error_message_spinner">দয়া করে একটি বৈধ বিকল্প নির্বাচন করুন</string>
+    <string name="comma_symbol" translatable="false">, </string>
+    <string name="average_bp_text">গড় রক্তচাপ</string>
+    <string name="bg_with_type">রক্তের গ্লুকোজ (%1$s)</string>
+    <string name="pregnancy_signs">গর্ভাবস্থার বিপদ লক্ষণ</string>
+    <string name="gestational_period">গর্ভাবস্থার বয়স</string>
+    <string name="red_risk">লাল ঝুঁকি</string>
+    <string name="find_help">সাহায্য খুঁজুন?</string>
+    <string name="prescribe">প্রেসক্রাইব</string>
+    <string name="back_to_medical_review">চিকিৎসা পর্যালোচনায় ফিরে যান</string>
+    <string name="medication_search_hint">ওষুধ খুঁজুন এবং যোগ করুন</string>
+    <string name="add_medicine">ওষুধ যোগ করুন</string>
+    <string name="dosage">ডোজ</string>
+    <string name="form">ফর্ম</string>
+    <string name="instruction_to_take">গ্রহণের নির্দেশ</string>
+    <string name="started_from">শুরু হয়েছে</string>
+    <string name="days_prescribed">প্রেসক্রাইব করা দিন</string>
+    <string name="enter_instruction">নির্দেশ লিখুন</string>
+    <string name="please_check_your_inputs">আপনার ইনপুটগুলি পরীক্ষা করুন</string>
+    <string name="Instructions">নির্দেশনা</string>
+    <string name="close_dialog">ডায়ালগ বন্ধ করুন</string>
+    <string name="delete_alert">আপনি কি নিশ্চিত যে আপনি মুছতে চান?</string>
+    <string name="no_medication_history">কোন ওষুধের ইতিহাস নেই</string>
+    <string name="medication_history">ওষুধের ইতিহাস</string>
+    <string name="prescribed_date">প্রেসক্রাইব তারিখ</string>
+    <string name="reset_medication">ওষুধ রিসেট</string>
+    <string name="edit_medication">ওষুধ সম্পাদনা</string>
+    <string name="delete_medication">ওষুধ মুছুন</string>
+    <string name="please_enter_details">দয়া করে এর জন্য একটি বৈধ মান লিখুন</string>
+    <string name="positive">পজিটিভ</string>
+    <string name="negative">নেগেটিভ</string>
+    <string name="gestational_weeks">%1$d সপ্তাহ</string>
+    <string name="pregnancy_status">গর্ভাবস্থার অবস্থা</string>
+    <string name="other_lowercase">অন্যান্য</string>
+    <string name="separator_hyphen_space" translatable="false"> - </string>
+    <string name="empty" translatable="false" />
+    <string name="n_a">N/A</string>
+    <string name="pregnant">গর্ভবতী</string>
+    <string name="not_pregnant">গর্ভবতী নয়</string>
+    <string name="neonatal_outcomes">নবজাতকের ফলাফল</string>
+    <string name="no_of_fetuses_pregnancy">গর্ভাবস্থায় ভ্রূণের সংখ্যা</string>
+    <string name="enter_number">সংখ্যা লিখুন</string>
+    <string name="maternal_outcomes">মাতৃ ফলাফল</string>
+    <string name="ncd">NCD</string>
+    <string name="pregnancy_diagnosis">আপনার কি কখনও নিম্নলিখিত কোনটির সাথে নির্ণয় করা হয়েছে?</string>
+    <string name="eclampsia">এক্লাম্পসিয়া</string>
+    <string name="pre_eclampsia">প্রি-এক্লাম্পসিয়া</string>
+    <string name="gestational_diabetes_id">gestationalDiabetes</string>
+    <string name="gestational_diabetes">গর্ভকালীন ডায়াবেটিস</string>
+    <string name="time_of_diagnoses">নির্ণয়ের সময়</string>
+    <string name="is_the_patient_on_treatment">রোগী কি চিকিৎসাধীন?</string>
+    <string name="actual_delivery_date">প্রকৃত প্রসবের তারিখ</string>
+    <string name="still_birth">মৃত প্রসব</string>
+    <string name="live_birth">জীবিত প্রসব</string>
+    <string name="neo_natal_death">নবজাতক মৃত্যু</string>
+    <string name="alive_well">বেঁচে ও সুস্থ</string>
+    <string name="maternal_death">মাতৃ মৃত্যু</string>
+    <string name="nutrition_caps">NUTRITION</string>
+    <string name="lifestyle_caps">LIFESTYLE</string>
+    <string name="treatment_plan_caps">TREATMENT PLAN</string>
+    <string name="psychological">মানসিক</string>
+    <string name="psychological_caps">PSYCHOLOGICAL</string>
+    <string name="pregnancy">গর্ভাবস্থা</string>
+    <string name="Pregnant">গর্ভবতী</string>
+    <string name="edit_details">বিবরণ সম্পাদনা করুন</string>
+    <string name="view_details">বিবরণ দেখুন</string>
+    <string name="pregnancy_risk_criteria">গর্ভাবস্থার ঝুঁকি মানদণ্ড</string>
+    <string name="registration_date">নিবন্ধনের তারিখ</string>
+    <string name="pending_registration">বিচারাধীন নিবন্ধন</string>
+    <string name="cvd_risk">সিভিডি ঝুঁকি</string>
+    <string name="high_risk">উচ্চ ঝুঁকি</string>
+    <string name="comorbidities">সহ-রোগ</string>
+    <string name="lifestyle_assessment">জীবনযাত্রার মূল্যায়ন</string>
+    <string name="lifestyle_assessment_mandatory">জীবনযাত্রার মূল্যায়ন</string>
+    <string name="tobacoo_question_child_one">নেওয়া তামাক পণ্যের পরিমাণ</string>
+    <string name="tobacoo_question_child_one_smoke">দয়া করে বন্ধ করার তারিখ লিখুন</string>
+    <string name="tobacoo_question_comment">তামাক ব্যবহারের মন্তব্য</string>
+    <string name="alcohol_question_comment">মদ্যপান সম্পর্কে মন্তব্য</string>
+    <string name="drinks_per_week">প্রতি সপ্তাহে পানীয়</string>
+    <string name="comments_diet_nutrition">খাদ্য ও পুষ্টি সম্পর্কে মন্তব্য</string>
+    <string name="write_comments">মন্তব্য লিখুন</string>
+    <string name="subjective_validation">দয়া করে প্রশ্নের উত্তর দিন</string>
+    <string name="validation_message_lifestyle">দয়া করে সব প্রশ্নের উত্তর দিন</string>
+    <string name="please_specify_the_complication">দয়া করে জটিলতা নির্দিষ্ট করুন</string>
+    <string name="please_specify_the_comorbidity">দয়া করে সহ-রোগ নির্দিষ্ট করুন</string>
+    <string name="complications">জটিলতা</string>
+    <string name="offline_data">OFFLINE DATA</string>
+    <string name="language_preference">LANGUAGE PREFERENCE</string>
+    <string name="assessment_label">মূল্যায়ন</string>
+    <string name="upload">আপলোড</string>
+    <string name="offline_screened_data">অফলাইন স্ক্রিন করা ডেটা</string>
+    <string name="no_screened_patients">আপলোড করার জন্য কোন স্ক্রিন করা রোগী নেই।</string>
+    <string name="screened_patient">১ জন স্ক্রিন করা রোগী আপলোডের জন্য অপেক্ষায় আছে।</string>
+    <string name="screened_patients">%1$s স্ক্রিন করা রোগী আপলোডের জন্য অপেক্ষায় আছে।</string>
+    <string name="assessed_patients">%1$s মূল্যায়ন করা রোগী আপলোডের জন্য অপেক্ষায় আছে।</string>
+    <string name="assessed_patient">১ জন মূল্যায়ন করা রোগী আপলোডের জন্য অপেক্ষায় আছে।</string>
+    <string name="no_assessed_patients">আপলোড করার জন্য কোন মূল্যায়ন করা রোগী পাওয়া যায়নি।</string>
+    <string name="switch_language">ভাষা পরিবর্তন</string>
+    <string name="screening_caps">স্ক্রিনিং</string>
+    <string name="comments_on_diagnosis">নির্ণয় নিশ্চিতকরণের মন্তব্য</string>
+    <string name="select_diagnosis_found">রোগীর উপর পাওয়া নির্ণয় নির্বাচন করুন</string>
+    <string name="treatment_plan">চিকিৎসা পরিকল্পনা</string>
+    <string name="review_treatment_plan">চিকিৎসা পরিকল্পনা পর্যালোচনা করুন</string>
+    <string name="medical_review_frequency">চিকিৎসা পর্যালোচনার ফ্রিকোয়েন্সি</string>
+    <string name="blood_pressure_check_frequency">রক্তচাপ পরীক্ষার ফ্রিকোয়েন্সি</string>
+    <string name="blood_glucose_check_frequency">রক্তের গ্লুকোজ পরীক্ষার ফ্রিকোয়েন্সি</string>
+    <string name="hba1c_frequency">HbA1c Frequency</string>
+    <string name="cho_check_frequency">CHO Check Frequency</string>
+    <string name="no_confirm_diagnosis_warning">রোগীর নির্ণয় নিশ্চিত না করেই কি আপনি রিপোর্ট জমা দিয়ে এগিয়ে যেতে নিশ্চিত?</string>
+    <string name="no_confirm_diagnosis_prescribed_medication_warning">Are you sure want to continue submitting the report without confirming diagnoses and prescribing medicine for the patient?</string>
+    <string name="no_confirm_diagnosis_mandatory_warning">Please confirm diagnoses since known patient has been selected</string>
+    <string name="edit_confirm_diagnosis_mandatory_warning">Patient Diagnoses and Confirmed Diagnoses are mismatched</string>
+    <string name="bp_mandatory_warning">Please take a blood pressure reading for this patient.</string>
+    <string name="current_medication_details">Current Medication Details</string>
+    <string name="adhering_to_current_medications">Adhering to current medications?</string>
+    <string name="allergies_to_drugs">Any known allergies to drugs?</string>
+    <string name="other_allergies">Comments on allergies</string>
+    <string name="other_medication">Other Medication</string>
+    <string name="comment_current_medication">Comments on current medication</string>
+    <string name="enroll">Enroll</string>
+    <string name="previous">previous</string>
+    <string name="pharmacist_title">Pharmacist</string>
+    <string name="freq">Freq.</string>
+    <string name="medication_prescribed_in_days">Medication Prescribed(Days)</string>
+    <string name="days_filled">Days Filled</string>
+    <string name="prescriped_on">Prescribed On :</string>
+    <string name="dosage_form">Dosage form :</string>
+    <string name="brand">Brand :</string>
+    <string name="classification">Classification :</string>
+    <string name="Instructions_colon">নির্দেশনা:</string>
+    <string name="reason_for_quantity">Reason for Quantity Difference</string>
+    <string name="filled_qty">Filled Days</string>
+    <string name="details_on_other_reason">Detail on Other Reason</string>
+    <string name="last_refill_date">Last Refill Date</string>
+    <string name="prescriber_number">প্রেসক্রাইবারের নম্বর</string>
+    <string name="prescriber">Prescriber</string>
+    <string name="bp_value">Blood Pressure Value</string>
+    <string name="blood_glucose_value">Blood Glucose Value</string>
+    <string name="last_assessment_date">Last Assessment Date</string>
+    <string name="add_blood_pressure_readings">Add Blood Pressure Readings</string>
+    <string name="add_blood_glucose_readings">Add Blood Glucose Readings</string>
+    <string name="see_more"> ..More</string>
+    <string name="diastolic_formatted" translatable="false">%1$s: %2$s %3$s</string>
+    <string name="systolic_formatted" translatable="false">%1$s: %2$s %3$s</string>
+    <string name="prescription_history">প্রেসক্রিপশন ইতিহাস</string>
+    <string name="reason_error">Please select a reason.</string>
+    <string name="fill_prescription">Please enter any values to update.</string>
+    <string name="prescription_dispensed_successfully">Prescription dispensed successfully</string>
+    <string name="reason_for_qualipharm">Qualipharm Response</string>
+    <string name="quantity_success_message">%1$s - %2$d দিনের জন্য সফলভাবে বিতরণ করা হয়েছে</string>
+    <string name="quantity_difference_message">%1$s - %2$d দিনের জন্য অনুরোধ করা হয়েছিল, %3$d দিনের জন্য বিতরণ করা হয়েছে</string>
+    <string name="out_of_stock_message">%1$s - Qualipharm-এ স্টকে নেই</string>
+    <string name="days_are_required">Days are required</string>
+    <string name="lifestyle_management">Lifestyle Management</string>
+    <string name="clinician_notes_seperator">Clinician Notes: </string>
+    <string name="referred_for">Referred For</string>
+    <string name="referredBy">Referred By</string>
+    <string name="assessed_date">Assessed Date</string>
+    <string name="assessed_by">Assessed By</string>
+    <string name="no_lifestyle_management_referred">No Lifestyle Management Referred</string>
+    <string name="not_assessed">Not Assessed</string>
+    <string name="lifestyle_assessment_label">Lifestyle Assessment</string>
+    <string name="other_notes">Other Notes</string>
+    <string name="other_notes_mandatory">Other Notes</string>
+    <string name="not_available">Not Available</string>
+    <string name="clinician_notes">Clinician Notes</string>
+    <string name="exit_reason_message">Are you sure you want to leave this page? Changes made may not be saved.</string>
+    <string name="add">যোগ করুন</string>
+    <string name="plus_add">+ Add</string>
+    <string name="psychological_assessment">মানসিক মূল্যায়ন</string>
+    <string name="counselor_notes">Counselor Notes</string>
+    <string name="counselor_notes_mandatory">Counselor Notes</string>
+    <string name="no_psychological_assessment_referred">No Psychological Assessment Referred</string>
+    <string name="smoking_status">Smoking Status</string>
+    <string name="alcohol_status">Alcohol Status</string>
+    <string name="diet_and_nutrition">Diet &amp; Nutrition</string>
+    <string name="physical_activity">Physical Activity</string>
+    <string name="view_history">View History</string>
+    <string name="hide_history">Hide History</string>
+    <string name="suicidal_ideation">Suicidal Ideation</string>
+    <string name="session_date">Session Date</string>
+    <string name="add_lifestyle">Add Lifestyle</string>
+    <string name="dashboard">ড্যাশবোর্ড</string>
+    <string name="customize">কাস্টমাইজ</string>
+    <string name="activity">কার্যক্রম</string>
+    <string name="this_week">এই সপ্তাহ</string>
+    <string name="this_month">এই মাস</string>
+    <string name="phq9_score_display">PHQ9 Score</string>
+    <string name="enter_value">মান লিখুন</string>
+    <string name="required">আবশ্যক</string>
+    <string name="unit_text">ইউনিট</string>
+    <string name="please_select_unit">একটি ইউনিট নির্বাচন করুন</string>
+    <string name="dd_mmm_yyyy">dd_mm_yyyy</string>
+    <string name="test_comments">পরীক্ষার মন্তব্য</string>
+    <string name="screening_after_search">No Patient found. Please perform screening to proceed.</string>
+    <string name="duplicate_patient_found">ডুপ্লিকেট রোগী পাওয়া গেছে</string>
+    <string name="proceed">এগিয়ে যান</string>
+    <string name="mental_health">মানসিক স্বাস্থ্য</string>
+    <string name="job_aid">কাজের সহায়িকা</string>
+    <string name="or_label"> (OR) </string>
+    <string name="high_risk_confirmation">Are you sure you want to flag this as a High Risk Pregnancy?</string>
+    <string name="no_new_medicines_prescribed_warning">Are you sure you want to continue submitting the report without prescribing medicine for the patient?</string>
+    <string name="please_enter_valid_value_between_45_to_120">দয়া করে 45 থেকে 120 এর মধ্যে বৈধ মান লিখুন</string>
+    <string name="please_enter_muac_between_0_to_26">দয়া করে 0 থেকে 26.5 এর মধ্যে মান লিখুন</string>
+    <string name="tobacoo_question">Are you a regular smoker or have you been a regular smoker in the past 12 months?</string>
+    <string name="enter_height">Enter Height</string>
+    <string name="enter_weight">Enter Weight</string>
+    <string name="validation_error">দয়া করে একটি বৈধ %1$s লিখুন</string>
+    <string name="height_value">height value</string>
+    <string name="weight_value">weight value</string>
+    <string name="valid_assessment_date">Please select Assessment Date</string>
+    <string name="please_select_past_date">Please select past date</string>
+    <string name="blood_pressure_saved_successfully">Blood pressure saved successfully</string>
+    <string name="select_type">Select Type</string>
+    <string name="glucose_value">glucose value</string>
+    <string name="bg_select_type">Please select a type</string>
+    <string name="blood_glucose_saved_successfully">Blood glucose saved successfully</string>
+    <string name="lifestyle_status_">Lifestyle Status</string>
+    <string name="no_record_found">No Record Found</string>
+    <string name="reload_img_description">Reload</string>
+    <string name="lifestyle_smoking">Smoking\n-</string>
+    <string name="lifestyle_alcohol">Alcohol\n-</string>
+    <string name="lifestyle_diet_nutrition">Diet and Nutrition\n-</string>
+    <string name="lifestyle_physical_activity">Physical Activity\n-</string>
+    <string name="nutrition_comment_title">Nutrition Comments</string>
+    <string name="smoking_comments">"Smoking Comments "</string>
+    <string name="alcohol_comments">Alcohol Comments</string>
+    <string name="delete">মুছুন</string>
+    <string name="patient_delete_confirmation">আপনি কি নিশ্চিত যে আপনি %1 %2 আর্কাইভ করতে চান?</string>
+    <string name="valid_reason">কারণ আবশ্যক</string>
+    <string name="patient_delete_message">রোগী সফলভাবে মুছে ফেলা হয়েছে</string>
+    <string name="patient_details">রোগীর বিবরণ</string>
+    <string name="patient_detail_updated_successfully">Patient details updated successfully</string>
+    <string name="decline">প্রত্যাখ্যান</string>
+    <string name="accept">গ্রহণ</string>
+    <string name="schedule">নির্ধারণ করুন</string>
+    <string name="date_validation">একটি তারিখ নির্বাচন করুন</string>
+    <string name="schedule_next_medical_review">পরবর্তী চিকিৎসা পর্যালোচনা নির্ধারণ করুন</string>
+    <string name="mobile_category">মোবাইল নম্বর বিভাগ</string>
+    <string name="occupation">পেশা</string>
+    <string name="health_insurance_status">স্বাস্থ্য বীমা অবস্থা</string>
+    <string name="health_insurance_type">স্বাস্থ্য বীমা প্রকার</string>
+    <string name="health_insurance_Id">স্বাস্থ্য বীমা আইডি</string>
+    <string name="next_medical_review_date">পরবর্তী চিকিৎসা পর্যালোচনার তারিখ</string>
+    <string name="transfer">স্থানান্তর</string>
+    <string name="facility">সুবিধা</string>
+    <string name="search_facility">সুবিধার নাম লিখুন</string>
+    <string name="physician">চিকিৎসক</string>
+    <string name="search_physician">চিকিৎসকের নাম লিখুন</string>
+    <string name="reason_to_transfer">স্থানান্তরের কারণ</string>
+    <string name="type_reason">স্থানান্তরের কারণ লিখুন</string>
+    <string name="patient_transfer">রোগী স্থানান্তর</string>
+    <string name="notification">বিজ্ঞপ্তি</string>
+    <string name="no_notifications_found">কোন বিজ্ঞপ্তি পাওয়া যায়নি</string>
+    <string name="notification_count">বিজ্ঞপ্তি (%1)</string>
+    <string name="reject">প্রত্যাখ্যান</string>
+    <string name="reason_with_colon">Reason:</string>
+    <string name="pending_message_format">%1$s এর %2$s এ স্থানান্তর অনুরোধ অনুমোদনের অপেক্ষায়।</string>
+    <string name="rejected_message_format">%1$s এর %2$s এ স্থানান্তর অনুরোধ প্রত্যাখ্যান করা হয়েছে।</string>
+    <string name="accepted_message_format">%1$s এর %2$s এ স্থানান্তর অনুরোধ গৃহীত হয়েছে।</string>
+    <string name="information_message_template">%1$s এর %2$s এ স্থানান্তর অনুরোধ %3$s।</string>
+    <string name="reject_confirmation">Are you sure you want to reject it?</string>
+    <string name="notification_plus">99+</string>
+    <string name="enrollment_date">নিবন্ধনের তারিখ</string>
+    <string name="provisional_text">(Provisional)</string>
+    <string name="latest_screening_date">Latest Screening Date</string>
+    <string name="oldest_screening_date">Oldest Screening Date</string>
+    <string name="assessment_due_date">Assessment Due Date</string>
+    <string name="medical_review_due_date">Medical Review Due Date</string>
+    <string name="high_bp_to_low_bg">High BP to Low BP</string>
+    <string name="high_bg_to_low_bg">High BG to Low BG</string>
+    <string name="latest_assessment_on_that_day_in_that_respective_facility">BP Assessment Date</string>
+    <string name="sort_by">দ্বারা সাজান</string>
+    <string name="sort">সাজান</string>
+    <string name="medical_review_date">Medical Review Date</string>
+    <string name="session_due">Session Due</string>
+    <string name="weekly">This Week</string>
+    <string name="risk">ঝুঁকি</string>
+    <string name="enrollment">নিবন্ধন</string>
+    <string name="enrolled">নিবন্ধিত</string>
+    <string name="not_enrolled">নিবন্ধিত নয়</string>
+    <string name="high">উচ্চ</string>
+    <string name="high_risk_filter">High risk</string>
+    <string name="medium">মাঝারি</string>
+    <string name="medium_risk_filter">Medium risk</string>
+    <string name="low">নিম্ন</string>
+    <string name="treatment_intensification">Treatment Intensification</string>
+    <string name="presciption_since_last_3">Prescription since last 3 months:</string>
+    <string name="medication_nudege_card_header_text_prefix">Considering the patient is not at target, would you like to</string>
+    <string name="medication_nudege_card_header_text_sufix">intensify the treatment?</string>
+    <string name="glucose_rbs">RBS</string>
+    <string name="glucose_fbs">FBS</string>
+    <string name="glucose_hba1c">HbA1c</string>
+    <string name="review_date">পর্যালোচনার তারিখ</string>
+    <string name="recommended_investigations">Recommended Investigations</string>
+    <string name="lipids_recommended_investigations">রোগী %1$s করিয়ে এক বছর হয়ে গেছে। আপনি কি আরেক দফা %1$s সুপারিশ করবেন?</string>
+    <string name="hba1c_recommended_question">It has been three months since the patient has gone through the HbA1c test. Would you like to recommend another round of HbA1c test?</string>
+    <string name="lipid_profile">Lipid Profile</string>
+    <string name="low_risk_filter">Low risk</string>
+    <string name="unable_to_drink_or_breastfeed">Unable to drink or breastfeed</string>
+    <string name="convulsions">Convulsions</string>
+    <string name="vomits_everything">Vomiting Everything</string>
+    <string name="danger_sign_identified">Danger Sign Identified</string>
+    <string name="its_recommended_to_immediately">Its recommended to Immediately \n refer the patient to the nearest facility</string>
+    <string name="ask_is_the_child_very_sleepy">ASK: Is the child very sleepy or difficult to wake up?\nASK the caregiver to wake the child by shaking or speaking to the child</string>
+    <string name="clap_your_hands_close_to_the_child">CLAP your hands close to the child</string>
+    <string name="if_the_child_does_not">If the child does not wake up, REFER to the PHU immediately.</string>
+    <string name="unconscious_unusually_sleepy">Unconscious/unusually sleepy</string>
+    <string name="ask_does_the_child_vomit_everything_he_she_eats_or_drinks">ASK: Does the child vomit everything he/ she eats or drinks?</string>
+    <string name="give_the_child_clean_water_or_ask_the_mother_to_offer_her_breast_to_the_child">GIVE the child clean water or ask the mother to offer her breast to the child</string>
+    <string name="if_the_child_vomits_the_water_or_breastmilk_refer_to_the_phu_immediately">If the child vomits the water or breastmilk, REFER to the PHU immediately.\n</string>
+    <string name="look_is_the_child_convulsing_now">LOOK: Is the child convulsing now?</string>
+    <string name="ask_did_the_child_have_convulsions_at_home">ASK: Did the child have convulsions at home?</string>
+    <string name="give_did_the_child_have_convulsions_at_home" translatable="false">Give: Did the child have convulsions at home?</string>
+    <string name="if_the_child_is_convulsing_now_or_if_the_child_had_convulsions_at_home_refer_to_the_phu_immediately">If the child is convulsing now OR if the child had convulsions at home, REFER to the PHU immediately</string>
+    <string name="ask_if_the_child_is_able_to_drink_or_breastfeed">ASK: If the child is able to drink or breastfeed?</string>
+    <string name="if_the_child_is_not_able_to_drink_or_breastfeed_refer_to_the_phu_immediately">If the child is not able to drink or breastfeed, REFER to the PHU immediately</string>
+    <string name="job_aid_vomiting">Job Aid (Vomiting)</string>
+    <string name="job_aid_convulsions">Job Aid (Convulsions)</string>
+    <string name="job_aid_unconscious_unusually_sleepy">Job Aid (Unconscious/unusually sleepy)</string>
+    <string name="job_aid_not_able_to_breastfeed_drink">Job Aid (Not able to breastfeed/drink)</string>
+    <string name="latest_screening_due_date">Oldest Screening Date</string>
+    <string name="oldest_assessment_due_date">Oldest Assessment Date</string>
+    <string name="daily">Daily</string>
+    <string name="retry_attempts">Remaining Attempts</string>
+    <string name="due_at">Due at</string>
+    <string name="days_due">%1$s দিন বাকি</string>
+    <string name="day_due">%1$s দিন বাকি</string>
+    <string name="overdue_for">ওভারডিউ: %s</string>
+    <string name="device_phone_info">Your device does not support the calling feature.</string>
+    <string name="day_since_last_review">Days since last Review</string>
+    <string name="county">County</string>
+    <string name="sub_county">Sub County</string>
+    <string name="community_health_unit">Community Health Unit</string>
+    <string name="defaulters">Defaulters</string>
+    <string name="LTFU">দীর্ঘ অনুসরণ হারানো</string>
+    <string name="overdue">Overdue</string>
+    <string name="duplicate_patient_not_registered">A duplicate patient with the mentioned details has been found. Would you like to override it with the information you entered?</string>
+    <string name="duplicate_patient_different_acct">A duplicate patient with the same details has been found at another health facility.</string>
+    <string name="duplicate_patient_same_acct">A duplicate patient is found. Would you like to proceed with the assessment instead?</string>
+    <string name="mental_health_disorder">Mental Health Disorder</string>
+    <string name="comments">মন্তব্য</string>
+    <string name="substance_use">Substance Use</string>
+    <string name="substance_use_disorder">Substance Use Disorder</string>
+    <string name="phq9_mental_health">PHQ9</string>
+    <string name="gad7_mental_health">GAD7</string>
+    <string name="edit_assessment">Edit Assessment</string>
+    <string name="lab_test">ল্যাব পরীক্ষা</string>
+    <string name="lab_test_result_save">ল্যাব পরীক্ষার ফলাফল সফলভাবে সংরক্ষণ করা হয়েছে</string>
+    <string name="phq4_assessment">PHQ4 Assessment</string>
+    <string name="phq9_assessment">PHQ9 Assessment</string>
+    <string name="gad7_assessment">GAD7 Assessment</string>
+    <string name="suicide_screener">Suicide Screener</string>
+    <string name="mental_health_success">Mental Health updated successfully</string>
+    <string name="mark_as_reviewed">Mark as Reviewed</string>
+    <string name="test_review_confirmation">Test Review Confirmation</string>
+    <string name="yes_i_confirm">Yes, I Confirm</string>
+    <string name="test_review_confirmation_message">Have you observed to confirm the test values and comments uploaded by the Lab Technician?</string>
+    <string name="label_with_text" translatable="false">%1$s  :  %2$s</string>
+    <string name="follow_up">Follow-up</string>
+    <string name="follow_ups">%1$s ফলো-আপ কল ফলাফল আপলোডের জন্য অপেক্ষায় আছে।</string>
+    <string name="follow_up_one">1 follow-up call result is waiting to upload.</string>
+    <string name="no_follow_up">No follow-up call result found to upload.</string>
+    <string name="date_range">তারিখ পরিসীমা</string>
+    <string name="designation">Designation</string>
+    <string name="renal_function_test">Renal Function Test</string>
+    <string name="and">and</string>
+    <string name="which_facility_did_you_visit">Which facility did you visit?</string>
+    <string name="current_status">Current Status</string>
+    <string name="other_reason">অন্যান্য কারণ</string>
+    <string name="other_health_facility">Other Health Facility</string>
+    <string name="health_facility_name">Health Facility Name</string>
+    <string name="screened">স্ক্রিনিং করা হয়েছে</string>
+    <string name="assessed">মূল্যায়ন করা হয়েছে</string>
+    <string name="prescriptions_dispensed">প্রেসক্রিপশন বিতরণ করা হয়েছে</string>
+    <string name="investigations_conducted">তদন্ত পরিচালিত</string>
+    <string name="reviews_conducted">পর্যালোচনা পরিচালিত</string>
+    <string name="counsellings_conducted">পরামর্শ পরিচালিত</string>
+    <string name="language_change_alert">পুনরায় লগইন করা প্রয়োজন, আপনি কি চালিয়ে যেতে চান?</string>
+    <string name="visited_facility">Visited facility</string>
+    <string name="will_visit_facility">Will visit facility</string>
+    <string name="wont_visit_facility">Won\’t visit facility</string>
+    <string name="not_at_all">Not at all</string>
+    <string name="several_days">Several days</string>
+    <string name="more_than_half_day">More than half the days</string>
+    <string name="nearly_every_day">Nearly every day</string>
+    <string name="urgent_referral" translatable="false">Urgent Referral</string>
+    <string name="entered_values_should_contain_only_alphabets" translatable="false">Entered values should contain only alphabets</string>
+    <string name="delivery_at_others" translatable="false">Delivery At(Others)</string>
+    <string name="please_select_a_valid_value" translatable="false">Please select a valid value</string>
+    <string name="please_select_a_valid_value_month" translatable="false">"Please enter a valid input for the month (0 to 11) and the week (0 to 4)."</string>
+    <string name="select_member_deceased" translatable="false">Select Member Deceased</string>
+    <string name="other_signs_and_symptoms" translatable="false">Other Signs and Symptoms</string>
+    <string name="reason_of_death" translatable="false">Reason of Death</string>
+    <string name="deceased" translatable="false">Deceased</string>
+    <string name="general_danger_sign" translatable="false">General Danger Sign</string>
+    <string name="the_day_s_should_be_less_than_age" translatable="false">The day(s) should be less than Age</string>
+    <string name="relationship_to_household" translatable="false">Relationship to Household</string>
+    <string name="relationship_to_household_head" translatable="false">Relationship to Household Head</string>
+    <string name="age_validation_household_head" translatable="false">The age of the Household Head must be greater than 10 years.</string>
+    <string name="age_validation_wife_husband" translatable="false">The Wife or Husband must be at least 10 years old.</string>
+    <string name="age_validation_son_daughter" translatable="false">The Son or Daughter must be at least 10 years younger than the Household Head.</string>
+    <string name="age_validation_father_mother" translatable="false">The Father or Mother must be at least 10 years older than the Household Head.</string>
+    <string name="age_validation_grandchild" translatable="false">A Grandchild must be at least 30 years younger than the Household Head.</string>
+    <string name="age_validation_grandparent" translatable="false">A Grandparent must be at least 30 years older than the Household Head.</string>
+    <string name="invalid_credentials" translatable="false">Invalid credentials</string>
+    <string name="invalid_credentials_custom" translatable="false">Your username or password might be wrong. Please try again, or click on \'Forgot Password\' for help.</string>
+    <string name="job_aid_reading_result" translatable="false">Job Aid (RDT - Reading Results)</string>
+    <string name="site_of_disease" translatable="false">Site of Disease</string>
+    <string name="treatment_outcome" translatable="false">Treatment Outcome</string>
+    <string name="edit_weight" translatable="false">View Weight</string>
+    <string name="add_height" translatable="false">Add Height</string>
+    <string name="edit_disease" translatable="false">Edit Disease</string>
+    <string name="patient_type" translatable="false">Patient Type</string>
+    <string name="edit_type" translatable="false">Edit Patient Type</string>
+    <string name="community_profile" translatable="false">Community Profile</string>
+    <string name="no_of_households" translatable="false">No of Households(HH)</string>
+    <string name="no_of_communities" translatable="false">%1$d Communities</string>
+    <string name="no_of_community" translatable="false">%1$d Community</string>
+    <string name="profile_details" translatable="false">Profile Details</string>
+    <string name="name_of_community" translatable="false">Name of community</string>
+    <string name="community_boundary_desc" translatable="false">Community boundary description</string>
+    <string name="month_and_year_this_register_is_complete" translatable="false">Month and year this register is completed</string>
+    <string name="community_population_statistics" translatable="false">Community Population Statistics</string>
+    <string name="total_population" translatable="false">Total Population</string>
+    <string name="no_of_household_families" translatable="false">Number of households/families</string>
+    <string name="no_of_women_of_child_bearing_age" translatable="false">Number of women of child-bearing age</string>
+    <string name="no_of_pregnant_women" translatable="false">Number of pregnant women</string>
+    <string name="no_of_child_under_one_year" translatable="false">Number of children under 1 year</string>
+    <string name="no_of_children_under_five_years" translatable="false">Number of children under 5 years</string>
+    <string name="community_name" translatable="false">Community Name</string>
+    <string name="no_of_households_count" translatable="false">: %1$d</string>
+    <string name="market_days" translatable="false">Market Days</string>
+    <string name="market_days_key" translatable="false">marketDays</string>
+    <string name="market_day_selected" translatable="false">day selected</string>
+    <string name="market_days_selected" translatable="false">days selected</string>
+    <string name="registered_completed_on" translatable="false">Register Completed on %1$s</string>
+    <string name="water_and_sanitation_facilities" translatable="false">Water &amp; Sanitation Facilities</string>
+    <string name="no_of_improved_water_sources" translatable="false">Number of improved water resources</string>
+    <string name="no_of_non_improved_water_sources" translatable="false">Number of non-improved water resources</string>
+    <string name="no_of_imporved_toilets" translatable="false">Number of improved toilets</string>
+    <string name="no_of_non_improved_toilets" translatable="false">Number of non-improved toilets</string>
+    <string name="no_of_hand_pumps" translatable="false">Number of hand pumps not in functional</string>
+    <string name="community_details_added_successfully" translatable="false">Community details added successfully</string>
+    <string name="community_details_updated_successfully" translatable="false">Community details updated successfully\n</string>
+    <string name="infrastructure_facilities" translatable="false">Infrastructure Facilities</string>
+    <string name="primary_school" translatable="false">Primary School</string>
+    <string name="junior_secondary_school" translatable="false">Junior Secondary School</string>
+    <string name="senior_secondary_school" translatable="false">Senior Secondary School</string>
+    <string name="market" translatable="false">Market</string>
+    <string name="court_barrie" translatable="false">CourtBarrie</string>
+    <string name="church" translatable="false">Church</string>
+    <string name="mosque" translatable="false">Mosque</string>
+    <string name="mobile_network_coverage" translatable="false">Mobile Network Coverage</string>
+    <string name="selected_network" translatable="false">Selected Network</string>
+    <string name="chw_house_in_this_community" translatable="false">CHW\'s house in this community?</string>
+    <string name="describe_location" translatable="false">Describe Location</string>
+    <string name="nearest_phu" translatable="false">Nearest PHU</string>
+    <string name="emergency_management_plan" translatable="false">Emergency Management Plan</string>
+    <string name="emergency_contact_phu" translatable="false">Emergency Contact Phu</string>
+    <string name="access_road_to_phu" translatable="false">Access road for vehicles to the PHU?</string>
+    <string name="emergency_transport_available" translatable="false">Emergency Transport Available</string>
+    <string name="emergency_transport_contact" translatable="false">Emergency Transport Contact</string>
+    <string name="emergency_transport_contact_no" translatable="false">Emergency Transport Contact no</string>
+    <string name="ambulance_driver" translatable="false">Ambulance Driver</string>
+    <string name="ambulance_driver_contact" translatable="false">Ambulance Driver Contact no</string>
+    <string name="colon" translatable="false">:</string>
+    <string name="support_label" translatable="false">Kindly share your challenges with the ComEMR application below</string>
+    <string name="support" translatable="false">Support</string>
+    <string name="comment" translatable="false">Comment</string>
+    <string name="description" translatable="false">Description</string>
+    <string name="uom" translatable="false">UOM</string>
+    <string name="scheduled_date" translatable="false">Scheduled Date</string>
+    <string name="vaccination_date" translatable="false">Vaccination Date</string>
+    <string name="vaccination_taken" translatable="false">Vaccinations Taken </string>
+    <string name="next_vaccination_duration" translatable="false">Next Vaccination Duration</string>
+    <string name="next_vaccination_dose" translatable="false">Next Vaccination Dose</string>
+    <string name="next_vaccination_date" translatable="false">Next Vaccination Date</string>
+    <string name="missed_vaccination_count" translatable="false">You have missed %d vaccination</string>
+    <string name="missed_reason" translatable="false">Missed Reason :</string>
+    <string name="reason_for_missed_vaccination" translatable="false">Please provide the reason for the missed vaccination - %s</string>
+    <string name="date" translatable="false">Date</string>
+    <string name="vaccination_done" translatable="false">Vaccination Done</string>
+    <string name="cbs_register" translatable="false">CBS Register</string>
+    <string name="date_of_occurrence" translatable="false">Date of Occurrence</string>
+    <string name="informed_ps" translatable="false">Informed PS</string>
+    <string name="ps_not_reachable" translatable="false">PS not Reachable</string>
+    <string name="informed_phu" translatable="false">Informed PHU</string>
+    <string name="phu_not_reachable" translatable="false">PHU not Reachable</string>
+    <string name="linked_phu" translatable="false">Linked PHU</string>
+    <string name="peer_supervisor_number" translatable="false">Peer Supervisor Number</string>
+    <string name="peer_supervisor_name" translatable="false">Peer Supervisor Name</string>
+    <string name="call_peer_supervisor" translatable="false">Call Peer supervisor</string>
+    <string name="emergency_contact_at_PHU" translatable="false">Emergency contact at PHU</string>
+    <string name="cbs_register_updated" translatable="false">CBS Register Updated!</string>
+    <string name="cbs" translatable="false">CBS</string>
+    <string name="respiratory" translatable="false">Respiratory</string>
+    <string name="enter_the_height" translatable="false">Enter the Height</string>
+    <string name="height" translatable="false">Height (in cm)</string>
+    <string name="tb_sign_symptoms" translatable="false">TB Signs &amp; Symptoms</string>
+    <string name="presumptive_treatment_summary" translatable="false">Presumptive Treatment Summary</string>
+    <string name="add_disease" translatable="false">Add Disease </string>
+    <string name="lab_test_results" translatable="false">Lab Test Results</string>
+    <string name="descriptive_result" translatable="false">Descriptive Result</string>
+    <string name="test_name_" translatable="false">Test Name</string>
+    <string name="please_select_a_valid_value_age_cbs" translatable="false">"Please enter a valid age for a newborn child (must be less than 1 year)." </string>
+    <string name="support_" translatable="false">SUPPORT</string>
+    <string name="newly_Diagnosed" translatable="false">Newly Diagnosed</string>
+    <string name="clear_all" translatable="false">Clear All</string>
+    <string name="job_aid_contraceptive" translatable="false">Job Aid (Contraceptive)</string>
+    <string name="advise_to" translatable="false">Advise to:\n – Take her contraceptive pills once a day at the same time every day. It’s easier to remember if she takes her pill at the same time.</string>
+    <string name="explain_that" translatable="false">Explain that:\n – As soon as she finishes one pack of pills she continues on to a new pack.\n – If she forgets one pill, take it as soon as she remembers.</string>
+    <string name="diabetes_or_hypertension" translatable="false">Diabetes or Hypertension</string>
+    <string name="tobacco_consumption" translatable="false">Tobacco Consumption</string>
+    <string name="alcohol_consumption" translatable="false">Alcohol Consumption</string>
+    <string name="diagnosis_tb" translatable="false">Diagnoses</string>
+    <string name="drug_sensitive_tb" translatable="false">Drug sensitive TB</string>
+    <string name="contact_tracing_updated" translatable="false">Contact Tracing Updated</string>
+    <string name="update_contact_tracing" translatable="false">Update Contact Tracing</string>
+    <string name="contact_tracing" translatable="false">Contact Tracing</string>
+    <string name="tb_symptoms" translatable="false">TB Symptoms</string>
+    <string name="notifiable_conditions" translatable="false">Notifiable Conditions</string>
+    <string name="upcoming" translatable="false">UPCOMING</string>
+    <string name="vaccinated_on_time" translatable="false">VACCINATED\n(On Time)</string>
+    <string name="vaccinated_with_day_delay" translatable="false">VACCINATED\n(%d day delay)</string>
+    <string name="vaccinated_with_days_delay" translatable="false">VACCINATED\n(%d days delay)</string>
+    <string name="missed_vaccination_by_day" translatable="false">MISSED\n(By %d Day)</string>
+    <string name="missed_vaccination_by_days" translatable="false">MISSED\n(By %d Days)</string>
+    <string name="days_delay" translatable="false">%d Days Delay</string>
+    <string name="day_delay" translatable="false">%d Day Delay</string>
+    <string name="on_time" translatable="false">On Time</string>
+    <string name="family_planning" translatable="false">Family Planning</string>
+    <string name="epi_catch_up_policy" translatable="false">EPI Catch-Up Policy</string>
+    <string name="vaccine" translatable="false">Vaccine</string>
+    <string name="minimum_age" translatable="false">Minimum Age</string>
+    <string name="maximum_age" translatable="false">Maximum Age</string>
+    <string name="number_and_interval" translatable="false">Number &amp; Interval between doses</string>
+    <string name="view_catch_up_policy" translatable="false">View EPI Catch-Up Policy</string>
+    <string name="birth_details" translatable="false">Birth Details</string>
+    <string name="no_birth_details" translatable="false">No Birth Details Found</string>
+    <string name="client_type" translatable="false">Client Type</string>
+    <string name="new_family_planning_method" translatable="false">New family planning method</string>
+    <string name="continuing_family_planning_method" translatable="false">Continuing family planning method</string>
+    <string name="post_partum" translatable="false">Post Partum </string>
+    <string name="after_delivery" translatable="false"> &lt; 48 hours after delivery</string>
+    <string name="forty_nine_hrs_siz_weeks" translatable="false">49 hours-6 weeks</string>
+    <string name="seven_week_one_year" translatable="false">7 weeks-1 year</string>
+    <string name="combined_oral_contraceptive" translatable="false">Combined Oral Contraceptive</string>
+    <string name="microgynon" translatable="false">Microgynon</string>
+    <string name="other_oral_specify" translatable="false">Other oral specify</string>
+    <string name="progestin_only_orals" translatable="false">Progestin Only Orals</string>
+    <string name="microlut" translatable="false">Microlut</string>
+    <string name="other_specify" translatable="false">Other specify</string>
+    <string name="injectables" translatable="false">Injectables</string>
+    <string name="depo_provera" translatable="false">Depo provera</string>
+    <string name="sayana_press" translatable="false">Sayana press</string>
+    <string name="other_injectables_specify" translatable="false">Other injectables specify</string>
+    <string name="contraceptives" translatable="false">Contraceptives</string>
+    <string name="enter_quantity" translatable="false">Enter Quantity (Microlut)</string>
+    <string name="iucd" translatable="false">IUCD :</string>
+    <string name="implants" translatable="false">Implants</string>
+    <string name="five_year_implant" translatable="false">5 yr implant (ie. jadelle)</string>
+    <string name="three_year_implant" translatable="false">3 yr implant (ie. levoplant)</string>
+    <string name="other_implant" translatable="false">Other implant specify</string>
+    <string name="condoms" translatable="false">Condoms</string>
+    <string name="emergency_contraceptive" translatable="false">Emergency contraceptive</string>
+    <string name="permanent_method" translatable="false">Permanent Method</string>
+    <string name="tubal_ligation" translatable="false">Tubal ligation</string>
+    <string name="vasectomy" translatable="false">Vasectomy</string>
+    <string name="other_fp_method" translatable="false">Other FP method</string>
+    <string name="copper_t" translatable="false">Copper T</string>
+    <string name="marital_status" translatable="false">Marital Status</string>
+    <string name="enter" translatable="false">Enter</string>
+    <string name="occupation_summary" translatable="false">Occupation Summary</string>
+    <string name="marital_status_summary" translatable="false">Marital Status Summary</string>
+    <string name="quantity_microlut" translatable="false">Quantity (Microlut)</string>
+    <string name="methods" translatable="false">Methods</string>
+    <string name="methods_selected" translatable="false">Methods Selected</string>
+    <string name="networks_selected" translatable="false">Networks Selected</string>
+    <string name="network_selected" translatable="false">Network Selected</string>
+    <string name="referred_for_ncd_assessment" translatable="false">Referred for NCD Assessment</string>
+    <string name="was_the_member_taken_to_clinic" translatable="false">Was the member taken to the Clinic</string>
+    <string name="ncd_risk_factor" translatable="false">NCD Risk Factors</string>
+    <string name="the_dates_should_be_less_than_age" translatable="false">The date should be less than Age</string>
+    <string name="inform" translatable="false">Informed</string>
+    <string name="not_inform" translatable="false">Not Informed</string>
+    <string name="treatment_details" translatable="false">Treatment Details</string>
+    <string name="describe" translatable="false">Describe</string>
+    <string name="no_community_found" translatable="false">No community found</string>
+    <string name="two_zero" translatable="false">00</string>
+    <string name="three_zero" translatable="false">000</string>
+    <string name="visited" translatable="false">Visited</string>
+    <string name="not_visited" translatable="false">Not Visited</string>
+    <string name="default_user_input_error_date" translatable="false">Please enter a valid date</string>
+    <string name="networks" translatable="false">Networks</string>
+    <string name="community_boundary_desc_required" translatable="false">Community boundary description is required</string>
+    <string name="start_contact_tracing" translatable="false">Start Contact Tracing</string>
+    <string name="update_contact_tracing_for_other" translatable="false">Update Contact Tracing for other household members!</string>
+    <string name="rx_buddy_details" translatable="false">Rx Buddy Details</string>
+    <string name="relation_ship_with_patient" translatable="false">Relationship with Patient</string>
+    <string name="other_relationship" translatable="false">Other Relationship</string>
+    <string name="date_diagnosed" translatable="false">Date Diagnosed</string>
+    <string name="health_unit_no" translatable="false">Health Unit No</string>
+    <string name="ic_district_tb_no" translatable="false">IC District TB No</string>
+    <string name="type_of_drug" translatable="false">Type of Drug</string>
+    <string name="no_of_tablets_given_for_tb" translatable="false">No of tablets given for TB</string>
+    <string name="patient_treatment_details_error" translatable="false">Patient\'s Treatment details Could not be fetched</string>
+    <string name="rx_buddy_details_error" translatable="false">RxBuddy details Could not be fetched</string>
+    <string name="rx_buddy_name" translatable="false">RxBuddy Name</string>
+    <string name="contact_no" translatable="false">Contact No</string>
+    <string name="rx_buddy_monitoring_sheet_provided" translatable="false">Rx Buddy monitoring sheet provided?</string>
+    <string name="patient_followup_details_error" translatable="false">Patient\'s Followup details Could not be fetched</string>
+    <string name="rx_buddy_monitoring_sheet" translatable="false">RxBuddy monitoring sheet</string>
+    <string name="any_of_your_symptoms_getting_worse" translatable="false">Are any of your symptoms getting worse?</string>
+    <string name="have_you_had_a_reaction_to_any_of_your_medications" translatable="false">Have you had a reaction to any of your medications?</string>
+    <string name="follow_up_details" translatable="false">Follow Up Details</string>
+    <string name="no_bmi_history" translatable="false">No BMI History Found</string>
+    <string name="cough_2weeks" translatable="false">Cough (&gt;2 weeks)</string>
+    <string name="drenching_night_sweats" translatable="false">Drenching night sweats</string>
+    <string name="weight_loss" translatable="false">Weight loss</string>
+    <string name="organ_affected" translatable="false">Organ Affected</string>
+    <string name="notifications" translatable="false">NOTIFICATIONS</string>
+    <string name="alert_type" translatable="false">CBS Alert</string>
+    <string name="condition" translatable="false">Condition</string>
+    <string name="member_name" translatable="false">Member Name</string>
+    <string name="member_number" translatable="false">Member Number</string>
+    <string name="CHW_name" translatable="false">CHW Name</string>
+    <string name="chw_number" translatable="false">CHW Number</string>
+    <string name="add_type" translatable="false">Add Patient Type</string>
+    <string name="bmi_history" translatable="false">BMI History</string>
+    <string name="warning_link_to_household" translatable="false">Please assign this member to a household via the PHU Walk-ins page to continue the workflow.</string>
+    <string name="please_wait_until_current_operation_completes" translatable="false">Please wait until current operation completes.</string>
+    <string name="tb_diagnosis_reason" translatable="false">Would you like to confirm TB diagnosis based on the lab results?</string>
+    <string name="update_inv_result" translatable="false">Update Investigation Result</string>
+    <string name="add_inv_result" translatable="false">Add Investigation Result</string>
+    <string name="add_height_weight" translatable="false">Add Height/Weight</string>
+    <string name="height_error_45_300" translatable="false">"Please enter height between 45 to 300"</string>
+    <string name="eligibility" translatable="false">Eligibility</string>
+    <string name="history" translatable="false">History</string>
+    <string name="population_type" translatable="false">Population Type</string>
+    <string name="have_you_hiv_tested_before" translatable="false">Have you been tested for HIV before?</string>
+    <string name="how_long_ago_were_you_tested_for_hiv" translatable="false">How long ago were you tested for HIV? (within a week/month/year)</string>
+    <string name="gestational_in_weeks" translatable="false">Gestational In Weeks</string>
+    <string name="expected_date_of_delivery" translatable="false">Expected Date of Delivery</string>
+    <string name="hiv_test" translatable="false">HIV Test</string>
+    <string name="reactive" translatable="false">Reactive</string>
+    <string name="non_reactive" translatable="false">Non Reactive</string>
+    <string name="inconclusive" translatable="false">Inconclusive</string>
+    <string name="a_test_result" translatable="false">A%d Test Results</string>
+    <string name="pre_test_counselling" translatable="false">Pre-test counselling (Checklist / Job Aid)</string>
+    <string name="test_for_hiv" translatable="false">Test for HIV (Rapid Test Kit / Job Aid)</string>
+    <string name="post_test_counselling" translatable="false">Post test counselling (Checklist / Job Aid)</string>
+    <string name="basic_information_about_hiv" translatable="false">Basic information about HIV</string>
+    <string name="the_benefits_of_hiv_testing" translatable="false">The benefits of HIV testing</string>
+    <string name="understanding_test_results" translatable="false">Understanding test results</string>
+    <string name="importance_of_hiv_prevention" translatable="false">Importance of HIV prevention</string>
+    <string name="confidentiality_and_rights" translatable="false">Confidentiality and rights</string>
+    <string name="risk_assessment" translatable="false">Risk Assessment</string>
+    <string name="explain_the_testing_procedure" translatable="false">Explain the testing procedure, including self-testing</string>
+    <string name="addressing_misconceptions" translatable="false">Addressing misconceptions</string>
+    <string name="support_services_for_hiv" translatable="false">Support services for HIV positive diagnosis.</string>
+    <string name="consent_sought_for_the_individual_to_be_tested" translatable="false">Consent sought for the individual to be tested</string>
+    <string name="re_emphasise_hiv_prevention_methods_retesting" translatable="false">Re-emphasise HIV prevention methods &amp; Retesting</string>
+    <string name="for_positive_clients" translatable="false">For Positive Clients: Discuss ,disclosure, partner notification, and index-testing service</string>
+    <string name="offer_prep_for_partners_in_discordant_couples" translatable="false">Offer PrEP for partners in discordant couples.</string>
+    <string name="provide_counselling_risk_reduction_condom_use" translatable="false">Provide counselling on risk reduction, condom use, STI prevention, and screening.</string>
+    <string name="art_and_hiv_care" translatable="false">ART and HIV Care:Explain ART benefits and the risks of delaying treatment.</string>
+    <string name="offer_art_preparatory_counselling" translatable="false">Offer ART preparatory counselling.</string>
+    <string name="post_test_doc_and_link" translatable="false">Post-Test Documentation and Linkage:Complete post-test forms, linkage registers, and HTS documentation.</string>
+    <string name="link_to_art" translatable="false">Link to ART and prevention services.</string>
+    <string name="if_same_day_art" translatable="false">If same-day ART initiation is not possible, schedule a follow-up appointment</string>
+    <string name="provide_ongoing_follow_up" translatable="false">Provide ongoing follow-up to ensure clients access services and care.  </string>
+    <string name="entry_point" translatable="false">Entry Point</string>
+    <string name="a1_test_result" translatable="false">A1 Test Results</string>
+    <string name="a2_test_result" translatable="false">A2 Test Results</string>
+    <string name="a3_test_result" translatable="false">A3 Test Results</string>
+    <string name="hivPopulationType" translatable="false">HivPopulationType</string>
+    <string name="died" translatable="false">Died</string>
+    <string name="pregnancy_bread_feeding_status" translatable="false">Pregnancy/ breastfeeding status</string>
+    <string name="ahd_status_advanced_hiv_status" translatable="false">AHD status (Advanced HIV status)</string>
+    <string name="dsd_status_differetiated_service_delivery_model_assigned" translatable="false">DSD Status (Differetiated Service Delivery Model assigned)</string>
+    <string name="select_model" translatable="false">Select Model</string>
+    <string name="end_date" translatable="false">End Date</string>
+    <string name="no_history" translatable="false"> No History</string>
+    <string name="opportunistic_infections_prophylaxis_and_treatment" translatable="false">Opportunistic Infections Prophylaxis and Treatment</string>
+    <string name="art_code" translatable="false">ART Code</string>
+    <string name="who_clinical_stage" translatable="false">WHO Clinical stage</string>
+    <string name="edit_who_clinical_stage" translatable="false">Edit WHO Clinical stage</string>
+    <string name="add_who_clinical_stage" translatable="false">Add WHO Clinical stage</string>
+    <string name="cd4" translatable="false">CD4</string>
+    <string name="cd4_percentage" translatable="false">CD4 Percentage</string>
+    <string name="view_cd4" translatable="false">View CD4</string>
+    <string name="view_cd4_percentage" translatable="false">View CD4 %</string>
+    <string name="emtct" translatable="false">EMTCT</string>
+    <string name="hiv_syphilis_duo_test" translatable="false">HIV / Syphilis Duo Test</string>
+    <string name="hbsag_test" translatable="false">HBsAg Test</string>
+    <string name="edit_height" translatable="false">Edit Height</string>
+    <string name="edit_weights" translatable="false">Edit Weight</string>
+    <string name="other_type" translatable="false">Other type</string>
+    <string name="enter_type" translatable="false">Enter type</string>
+    <string name="select_patient_type" translatable="false">Select Patient Type</string>
+    <string name="is_the_patient_known_positive" translatable="false">Is the patient known positive?</string>
+    <string name="hbsg_test_result" translatable="false">HBsAg Test Result</string>
+    <string name="hiv_ve_syphilis_ve" translatable="false">HIV -ve; Syphilis -ve</string>
+    <string name="hiv_ve_syphilis_ve_" translatable="false">HIV -ve; Syphilis +ve</string>
+    <string name="hiv_ve_syphilis_ve__" translatable="false">HIV +ve; Syphilis -ve</string>
+    <string name="hiv_ve__syphilis_ve" translatable="false">HIV +ve; Syphilis +ve</string>
+    <string name="viral_load" translatable="false">VIRAL LOAD</string>
+    <string name="collection_date" translatable="false">COLLECTION DATE</string>
+    <string name="gestation_at_collection_date" translatable="false">GESTATION AT COLLECTION DATE</string>
+    <string name="results" translatable="false">RESULTS</string>
+    <string name="cbs_alert" translatable="false">CBS Alert</string>
+    <string name="comorbidities_coinfections" translatable="false">Comorbidities &amp; Coinfections</string>
+    <string name="cd4_percentage_symbol" translatable="false">CD4 %</string>
+    <string name="tb_preventive_treatment" translatable="false">TB Preventive Treatment (TPT)</string>
+    <string name="cotrimoxazole" translatable="false">Cotrimoxazole (CTX)</string>
+    <string name="tb_treatment" translatable="false">TB Treatment</string>
+    <string name="cryptococcal_meningitis" translatable="false">Cryptococcal Meningitis</string>
+    <string name="recommended_investigations_considering" translatable="false">"Considering it has been more than Six Months since the last Viral Load Test "</string>
+    <string name="would_you_like_to_do_a_viral_load_test" translatable="false">would you like to do a Viral Load Test?</string>
+    <string name="viral_load_test" translatable="false">Viral Load Test</string>
+    <string name="household_head" translatable="false">Household Head</string>
+    <string name="tb_status" translatable="false">TB Status</string>
+    <string name="_1st" translatable="false">1st</string>
+    <string name="art_regimen" translatable="false">ART Regimen</string>
+    <string name="regimen" translatable="false">REGIMEN</string>
+    <string name="reasons_for_change" translatable="false">REASONS FOR CHANGE</string>
+    <string name="emtct_enrolment_date" translatable="false">EMTCT Enrolment Date</string>
+    <string name="emtct_visit_status" translatable="false">eMTCT Visit Status</string>
+    <string name="maternal_outcome" translatable="false">Maternal Outcome</string>
+    <string name="current_medication" translatable="false">Current Medication</string>
+    <string name="pregnant_" translatable="false">Pregnant</string>
+    <string name="female_sex_worker_fsw" translatable="false">Female Sex Worker (FSW)</string>
+    <string name="d_dead" translatable="false">D-Dead</string>
+    <string name="consent_form" translatable="false">Consent Form</string>
+    <string name="retest_hts" translatable="false">Retest (HTS)</string>
+    <string name="reason_for_change" translatable="false">Reason for change</string>
+    <string name="write_reason" translatable="false">Write Reason</string>
+    <string name="regimen_line" translatable="false">Regimen Line</string>
+    <string name="men_having_sex_with_men_msm">পুরুষ যারা পুরুষদের সাথে যৌন সম্পর্ক করে (MSM)</string>
+    <string name="ss_name">SS নাম</string>
+</resources>

@@ -4,6 +4,7 @@
       "familyOrder": 0,
       "id": "householdInformation",
       "title": "Household Information",
+      "titleCulture": "পরিবারের তথ্য",
       "viewType": "CardView"
     },
     {
@@ -12,6 +13,7 @@
       "errorMessage": "Please select Union",
       "family": "householdInformation",
       "fieldName": "Union",
+      "titleCulture": "ইউনিয়ন",
       "id": "village_id",
       "isEditable": true,
       "isEnabled": true,
@@ -37,6 +39,7 @@
       "localDataCache": "shasthya_shebika_id",
       "dependentID": "sub_village_id",
       "title": "SS Name",
+      "titleCulture": "স্বাস্থ্য সেবিকা নাম",
       "orderId": 2,
       "viewType": "Spinner",
       "visibility": "visible"
@@ -53,8 +56,8 @@
       "isMandatory": true,
       "isNeededDefault": true,
       "localDataCache": "sub_village_id",
-
       "title": "Village",
+      "titleCulture": "গ্রাম",
       "orderId": 3,
       "viewType": "Spinner",
       "visibility": "visible"
@@ -81,6 +84,7 @@
         }
       ],
       "title": "Household Type",
+      "titleCulture": "পরিবারের ধরন",
       "orderId": 4,
       "viewType": "Spinner",
       "visibility": "visible"
@@ -97,6 +101,7 @@
       "isNotDefault": false,
       "orderId": 5,
       "title": "Household Number",
+      "titleCulture": "পরিবার নম্বর",
       "viewType": "EditText",
       "visibility": "visible"
     },
@@ -104,6 +109,7 @@
       "family": "householdInformation",
       "fieldName": "Total Members",
       "hint": "Enter Total Members",
+      "hintCulture": "মোট সদস্য সংখ্যা লিখুন",
       "id": "total_members",
       "inputType": 3,
       "isEnabled": true,
@@ -115,6 +121,7 @@
       "maxLength": 2,
       "minValue": 0,
       "title": "Total Members",
+      "titleCulture": "মোট সদস্য",
       "viewType": "EditText",
       "visibility": "visible"
     },
@@ -122,6 +129,7 @@
       "family": "householdInformation",
       "fieldName": "Monthly Income",
       "hint": "Enter Monthly Income",
+      "hintCulture": "মাসিক আয় লিখুন",
       "id": "monthly_income",
       "inputType": 3,
       "isEnabled": true,
@@ -133,6 +141,7 @@
       "maxLength": 10,
       "minValue": 0,
       "title": "Monthly Income",
+      "titleCulture": "মাসিক আয়",
       "viewType": "EditText",
       "visibility": "visible"
     }

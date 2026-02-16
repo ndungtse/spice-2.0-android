@@ -54,7 +54,7 @@ android {
         }
         create("sl") {
             dimension = "version"
-            versionName = "2.2.1"
+            versionName = "2.0.3"
             applicationIdSuffix = ".sl"
             versionCode = 12
         }
