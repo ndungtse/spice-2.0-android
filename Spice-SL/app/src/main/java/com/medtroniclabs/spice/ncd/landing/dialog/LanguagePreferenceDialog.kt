@@ -96,6 +96,16 @@ class LanguagePreferenceDialog(private val listener: OnDialogDismissListener) : 
                 ResourceState.LOADING -> showLoading()
                 ResourceState.SUCCESS -> {
                     hideLoading()
+                    val cultureId = viewModel.selectedCultureId
+                        ?: (binding.radioGroup.findViewById<RadioButton>(binding.radioGroup.checkedRadioButtonId)?.tag as? Long)
+                    val culture = viewModel.cultureList.value?.data?.firstOrNull { it.id == cultureId }
+                    culture?.let {
+                        SecuredPreference.setUserPreferenceSync(
+                            it.id,
+                            it.name,
+                            CommonUtils.checkIfTranslationEnabled(it.name)
+                        )
+                    }
                     listener.onDialogDismissListener(true)
                     dismiss()
                 }

@@ -874,8 +874,8 @@
     <string name="please_specify_the_complication">দয়া করে জটিলতা নির্দিষ্ট করুন</string>
     <string name="please_specify_the_comorbidity">দয়া করে সহ-রোগ নির্দিষ্ট করুন</string>
     <string name="complications">জটিলতা</string>
-    <string name="offline_data">OFFLINE DATA</string>
-    <string name="language_preference">LANGUAGE PREFERENCE</string>
+    <string name="offline_data">অফলাইন ডেটা</string>
+    <string name="language_preference">ভাষা পছন্দ</string>
     <string name="assessment_label">মূল্যায়ন</string>
     <string name="upload">আপলোড</string>
     <string name="offline_screened_data">অফলাইন স্ক্রিন করা ডেটা</string>
@@ -1294,7 +1294,7 @@
     <string name="descriptive_result" translatable="false">Descriptive Result</string>
     <string name="test_name_" translatable="false">Test Name</string>
     <string name="please_select_a_valid_value_age_cbs" translatable="false">"Please enter a valid age for a newborn child (must be less than 1 year)." </string>
-    <string name="support_" translatable="false">SUPPORT</string>
+    <string name="support_">সহায়তা</string>
     <string name="newly_Diagnosed" translatable="false">Newly Diagnosed</string>
     <string name="clear_all" translatable="false">Clear All</string>
     <string name="job_aid_contraceptive" translatable="false">Job Aid (Contraceptive)</string>

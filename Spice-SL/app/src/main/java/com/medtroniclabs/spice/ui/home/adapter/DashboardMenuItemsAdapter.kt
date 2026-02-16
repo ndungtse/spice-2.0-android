@@ -13,6 +13,8 @@ import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.MenuSelectionListener
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams
 
 class DashboardMenuItemsAdapter(
     private val roleBasedActivitiesList: List<MenuEntity>,
@@ -37,7 +39,11 @@ class DashboardMenuItemsAdapter(
 
     override fun onBindViewHolder(holder: ActivitiesViewHolder, position: Int) {
         val model = roleBasedActivitiesList[position]
-        holder.binding.tvTitle.text = model.displayValue ?: model.name
+        holder.binding.tvTitle.text = if (CommonUtils.parseUserLocale() == DefinedParams.EN) {
+            model.name
+        } else {
+            model.displayValue ?: model.name
+        }
 
         val imageModel = getResourceActivityId(
             model.menuId,

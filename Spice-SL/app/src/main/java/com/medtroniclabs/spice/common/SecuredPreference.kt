@@ -636,6 +636,24 @@ object SecuredPreference {
         putString(EnvironmentKey.USER_CULTURE.name, culture)
     }
 
+    /**
+     * Saves culture preference synchronously (commit) so it is visible immediately
+     * before navigating to login screen after language change.
+     */
+    fun setUserPreferenceSync(locale: Long, name: String, enabled: Boolean) {
+        val culture = getCulturePreference()
+        val toSave = if (culture == null) {
+            CulturePreference(locale, name, enabled)
+        } else {
+            culture.cultureId = locale
+            culture.name = name
+            culture.isTranslationEnabled = enabled
+            culture
+        }
+        val cultureJson = Gson().toJson(toSave)
+        preferences.edit().putString(EnvironmentKey.USER_CULTURE.name, cultureJson).commit()
+    }
+
     private fun getCulturePreference(): CulturePreference? {
         val userResponseString = getString(EnvironmentKey.USER_CULTURE.name)
         val type: Type = object : TypeToken<CulturePreference>() {}.type

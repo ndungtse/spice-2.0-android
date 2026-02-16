@@ -1359,7 +1359,7 @@
     <string name="descriptive_result" translatable="false">Descriptive Result</string>
     <string name="test_name_" translatable="false">Test Name</string>
     <string name="please_select_a_valid_value_age_cbs" translatable="false">"Please enter a valid age for a newborn child (must be less than 1 year)." </string>
-    <string name="support_" translatable="false">SUPPORT</string>
+    <string name="support_">SUPPORT</string>
     <string name="newly_Diagnosed" translatable="false">Newly Diagnosed</string>
     <string name="clear_all" translatable="false">Clear All</string>
     <string name="job_aid_contraceptive" translatable="false">Job Aid (Contraceptive)</string>
