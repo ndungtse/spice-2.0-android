@@ -17,12 +17,17 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.math.log
 
 
 @HiltViewModel
 open class BaseViewModel @Inject constructor(
     @IoDispatcher open var dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
+
+    init {
+        logViewModelLifecycle("Created")
+    }
 
     @Inject
     lateinit var analyticsRepository: AnalyticsRepository
@@ -87,5 +92,14 @@ open class BaseViewModel @Inject constructor(
         val lastSyncedAt =
             SecuredPreference.getString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
         return lastSyncedAt ?: "--"
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        logViewModelLifecycle("Cleared")
+    }
+
+    private fun logViewModelLifecycle(state: String) {
+        Timber.tag("ViewModelLifecycle").d("${javaClass.simpleName} $state")
     }
 }

@@ -265,7 +265,7 @@ class ContraceptivesFragment : BaseFragment() {
         data: ArrayList<Map<String, Any>>,
         tag: String,
         hashMap: HashMap<String, Any>,
-        callback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)?,
+        callback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)?,
         container: ViewGroup?
     ) {
         SingleSelectionCustomView(binding.root.context).apply {
@@ -282,7 +282,7 @@ class ContraceptivesFragment : BaseFragment() {
         }
     }
 
-    private var clientTypeSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var clientTypeSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[ClientType] = selectedID as String
             if(selectedID.equals(PostPartum, true)){
@@ -317,13 +317,13 @@ class ContraceptivesFragment : BaseFragment() {
         }
     }
 
-    private var postPartumSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var postPartumSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[PostPartum] = selectedID as String
             resultMapChanged()
         }
 
-    private var combinedOralSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var combinedOralSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[CombineOralContraceptive] = selectedID as String
             if(selectedID.equals(OtherOralSpecify, true)){
@@ -336,7 +336,7 @@ class ContraceptivesFragment : BaseFragment() {
             resultMapChanged()
         }
 
-    private var progestinSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var progestinSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[ProgestinOnlyOrals] = selectedID as String
             when(selectedID.lowercase()){
@@ -358,7 +358,7 @@ class ContraceptivesFragment : BaseFragment() {
             resultMapChanged()
         }
 
-    private var injectableSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var injectableSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[Injectables] = selectedID as String
             if(selectedID .equals(OtherInjectablesSpecify, true)){
@@ -371,7 +371,7 @@ class ContraceptivesFragment : BaseFragment() {
             resultMapChanged()
         }
 
-    private var implantsSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var implantsSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[Implants] = selectedID as String
             if(selectedID.equals(OtherImplantSpecify, true)){
@@ -384,19 +384,19 @@ class ContraceptivesFragment : BaseFragment() {
             resultMapChanged()
         }
 
-    private var condomsSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var condomsSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[Condoms] = selectedID as String
             resultMapChanged()
         }
 
-    private var emergencyContraSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var emergencyContraSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[EmergencyContraceptive] = selectedID as String
             resultMapChanged()
         }
 
-    private var permanentMethodSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var permanentMethodSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[PermanentMethod] = selectedID as String
             if (selectedID.equals(OtherFPMethod, true)) {

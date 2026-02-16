@@ -75,7 +75,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         )
 
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, null, this, binding.scrollView,
+            requireContext(), binding.llForm, this, binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled()
         ) { map, id ->
             when (id) {
@@ -204,7 +204,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
     override fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     ) {
     }
@@ -253,7 +253,6 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                         ReferralResultGenerator().calculateTBReferralResult(details)
                     val result = serverData?.let {
                         FormResultComposer().groupValues(
-                            context = requireContext(),
                             serverData = it,
                             details,
                             TB.lowercase()
@@ -297,7 +296,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
 
     }
 

@@ -14,7 +14,6 @@ import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
-import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HouseholdEdit
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.ScreeningCreation
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.addAncEnableOrNot
@@ -341,14 +340,14 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
 
     override fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     ) {
         CheckBoxDialog.newInstance(
             id,
             resultMap
         ) { map ->
-            formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
+            formGenerator.validateCheckboxDialogue(id, formLayout, map)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
@@ -450,7 +449,6 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         map.keys.removeAll(unwantedKeys)
         var result = screeningJSON?.let {
             FormResultComposer().groupValues(
-                context = requireContext(),
                 serverData = it,
                 map,
                 bmiCategoryGroupId = Screening.BioMetrics
@@ -507,7 +505,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
          */
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
 
     }
 

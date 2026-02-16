@@ -206,7 +206,7 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
         data: ArrayList<Map<String, Any>>,
         tag: String,
         hashMap: HashMap<String, Any>,
-        callback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)?,
+        callback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)?,
         container: ViewGroup?
     ) {
         SingleSelectionCustomView(binding.root.context).apply {
@@ -251,19 +251,19 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
     }
 
 
-    private var SyphilisTestCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var SyphilisTestCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             hivViewModel.resultHashMap[HIV_SYPHILIS_DUO_TEST] = selectedID as String
             resultMapChanged()
         }
 
-    private var HBsAgTestCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var HBsAgTestCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             hivViewModel.resultHashMap[HBsAg] = selectedID as String
             testResultVisibility(HBsAg)
             resultMapChanged()
         }
-    private var A1TestCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var A1TestCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             if (!hivViewModel.resultHashMap[HBsAg].toString().isNullOrEmpty() || (binding.forEmtct.visibility != View.VISIBLE)) {
                 hivViewModel.resultHashMap[A1_TEST_RESULT] = selectedID as String
@@ -281,7 +281,7 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                 }
             }
         }
-    private var A2TestCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var A2TestCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             if (hivViewModel.resultHashMap[A1_TEST_RESULT]?.toString().equals(getString(R.string.reactive),true)) {
                 hivViewModel.resultHashMap[A2_TEST_RESULT] = selectedID as String
@@ -296,7 +296,7 @@ class HivTestFragment : BaseFragment(), View.OnClickListener {
                 }
             }
         }
-    private var A3TestCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var A3TestCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             if (hivViewModel.resultHashMap[A2_TEST_RESULT]?.toString().equals(getString(R.string.reactive),true)){
             hivViewModel.resultHashMap[A3_TEST_RESULT] = selectedID as String

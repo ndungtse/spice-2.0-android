@@ -132,12 +132,12 @@ class ExaminationGenerator(
     }
 
     private fun createEditText(
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         questionnairesHolderLayout: FlexboxLayout,
         diseaseName: String
     ) {
         val binding = EdittextLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.tvTitle.tag = id + titleSuffix
             binding.etUserInput.tag = id
@@ -157,7 +157,7 @@ class ExaminationGenerator(
             binding.tvTitle.text =
                 FormSupport.updateTitle(title, translate, titleCulture, unitMeasurement)
 
-            if (serverViewModel.id.contains(MemberRegistration.phoneNumber)) {
+            if (formLayout.id.contains(MemberRegistration.phoneNumber)) {
                 SecuredPreference.getPhoneNumberCode()?.let { phoneNumberCode ->
                     binding.llCountryCode.visibility = View.VISIBLE
                     binding.tvCountryCode.text = phoneNumberCode
@@ -256,11 +256,11 @@ class ExaminationGenerator(
 
 
     private fun createSingleSelectionView(
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         questionnairesHolderLayout: FlexboxLayout,
         diseaseName: String
     ) {
-        serverViewModel.apply {
+        formLayout.apply {
             val binding = LayoutSingleSelectionBinding.inflate(LayoutInflater.from(context))
             binding.root.tag = id + rootSuffix
             binding.tvTitle.tag = id + titleSuffix
@@ -274,7 +274,7 @@ class ExaminationGenerator(
                     translate,
                     getCategorizedMap(resultHashMap, diseaseName),
                     Pair(id, diseaseName),
-                    serverViewModel,
+                    formLayout,
                     singleSelectionCallback
                 )
                 binding.selectionGroup.addView(view)
@@ -299,7 +299,7 @@ class ExaminationGenerator(
         }
     }
 
-    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedId, elementID, _, _ ->
             saveSelectedOptionValue(elementID, selectedId)
         }

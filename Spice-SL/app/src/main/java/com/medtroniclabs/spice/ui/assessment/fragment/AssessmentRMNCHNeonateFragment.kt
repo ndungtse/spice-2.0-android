@@ -5,9 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatSpinner
 import androidx.fragment.app.activityViewModels
-import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
@@ -21,9 +19,7 @@ import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
-import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
-import com.medtroniclabs.spice.mappingkey.MemberRegistration.isValidRelationAge
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
@@ -73,11 +69,11 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
 
     private fun initView() {
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, null, this, binding.scrollView,
+            requireContext(), binding.llForm, this, binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled()
         )
         childFormGenerator = FormGenerator(
-            requireContext(), binding.llChildForm, null, this, binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
+            requireContext(), binding.llChildForm, this, binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
         )
 
         viewModel.setUserJourney(AnalyticsDefinedParams.RMNCHNeonateAssessment)
@@ -272,11 +268,11 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
 
     override fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     ) {
         CheckBoxDialog.newInstance(id, resultMap) { map ->
-            formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
+            formGenerator.validateCheckboxDialogue(id, formLayout, map)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
@@ -360,7 +356,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
         childFormGenerator.handlePregnancyCardBasedOnAge()
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
 
     }
 

@@ -160,7 +160,7 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
 
             R.id.btnOkay -> {
                 val adapter = binding.rvItems.adapter
-                if (adapter != null && adapter is CheckboxDialogAdapter) {
+                if (adapter is CheckboxDialogAdapter) {
                     callback?.invoke(
                         adapter.getSelectedItems()
                     )

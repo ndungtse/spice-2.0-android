@@ -29,7 +29,6 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.followup.fragment.CallResultDialogFragment
-import kotlin.math.ln
 
 class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener {
 
@@ -128,7 +127,7 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
         return ArrayList(options.map { getOptionMap(getString(it), getString(it)) })
     }
 
-    private var callResultSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var callResultSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             val newSelection = selectedID as String
             viewModel.callResultHashMap[DefinedParams.CallResult] = newSelection

@@ -1095,7 +1095,6 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
         try {
             var result = serverData?.let {
                 FormResultComposer().groupValues(
-                    context = requireContext(),
                     serverData = it,
                     map,
                     bmiCategoryGroupId = Screening.bp_log
@@ -1287,11 +1286,11 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
 
     override fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     ) {
         CheckBoxDialog.newInstance(id, resultMap) { map ->
-            formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
+            formGenerator.validateCheckboxDialogue(id, formLayout, map)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
@@ -1334,7 +1333,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     override fun onAgeCheckForPregnancy() {
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
 
     }
 

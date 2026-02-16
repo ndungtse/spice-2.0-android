@@ -276,13 +276,13 @@ class LabourOrDeliveryFragment : BaseFragment() {
         }
     }
 
-    private var timeOfDeliverySingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var timeOfDeliverySingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] = selectedID as String
             viewModel.validateSubmitButtonState()
         }
 
-    private var timeOfLabourOnsetSingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var timeOfLabourOnsetSingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] = selectedID as String
             viewModel.validateSubmitButtonState()

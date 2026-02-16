@@ -204,7 +204,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
     }
 
     override fun onCheckBoxDialogueClicked(
-        id: String, serverViewModel: FormLayout, resultMap: Any?
+        id: String, formLayout: FormLayout, resultMap: Any?
     ) {/*
         Never used
          */
@@ -251,7 +251,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
          */
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
 
     }
 
@@ -309,7 +309,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                 //BP Log Create - API
                 val result = serverData?.let {
                     FormResultComposer().groupValues(
-                        context = this, serverData = it, map
+                        serverData = it, map
                     )
                 }
                 result?.first?.let {
@@ -345,7 +345,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                     //Glucose Log Create - API
                     val result = serverData?.let {
                         FormResultComposer().groupValues(
-                            context = this, serverData = it, map
+                            serverData = it, map
                         )
                     }
                     result?.first?.let {

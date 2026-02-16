@@ -55,8 +55,8 @@ class SingleSelectionCustomView : LinearLayout {
         translate: Boolean,
         resultMap: HashMap<String, Any>?,
         elementID: Pair<String, String?>,
-        serverViewModel: FormLayout,
-        callback: ((SelectedID: Any?, elementID: Pair<String,String?>, serverViewModel: FormLayout, name:String?) -> Unit?)?
+        formLayout: FormLayout,
+        callback: ((selectedID: Any?, elementID: Pair<String,String?>, formLayout: FormLayout, name:String?) -> Unit?)?
     ) {
         removeAllViews()
         this.optionList = optionList
@@ -84,18 +84,18 @@ class SingleSelectionCustomView : LinearLayout {
             getBackgroundDrawable(index, optionList)?.let {
                 textView.background = it
             }
-            serverViewModel.enableSingleSelection?.let { enableStatus ->
+            formLayout.enableSingleSelection?.let { enableStatus ->
                 textView.isEnabled = enableStatus
             }
 
             textView.safeClickListener {
-                callback?.invoke(optionValue[DefinedParams.ID], elementID,serverViewModel,(name as String?))
+                callback?.invoke(optionValue[DefinedParams.ID], elementID,formLayout,(name as String?))
                 addViewElements(
                     optionList,
                     translate,
                     resultMap,
                     elementID,
-                    serverViewModel,
+                    formLayout,
                     callback
                 )
             }

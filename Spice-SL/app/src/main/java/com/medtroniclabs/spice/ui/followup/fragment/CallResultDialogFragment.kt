@@ -99,7 +99,7 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
         binding.btnDone.safeClickListener(this)
     }
 
-    private var callResultSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var callResultSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             val newSelection = selectedID as String
             val lastSelection = viewModel.callResultHashMap[CallResult]
@@ -121,13 +121,13 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
             }
         }
 
-    private var unsuccessfulSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var unsuccessfulSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.unSuccessfulHashMap[UnSuccessful] = selectedID as String
             enableForUnSuccessful()
         }
 
-    private var patientStatusSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var patientStatusSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.patientStatusHashMap[PatientStatus] = selectedID as String
         }

@@ -413,7 +413,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         }
     }
 
-    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultFlowHashMap[TAG] =
                 selectedID as String

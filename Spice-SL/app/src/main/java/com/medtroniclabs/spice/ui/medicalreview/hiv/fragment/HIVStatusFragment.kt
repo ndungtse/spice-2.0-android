@@ -291,7 +291,7 @@ class HIVStatusFragment : BaseFragment() {
         binding.llPregnancyAndBreastFeedingStatus.addView(view)
     }
 
-    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultPregnantStatus[MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name] =
                 selectedID as? String ?: ""
@@ -369,7 +369,7 @@ class HIVStatusFragment : BaseFragment() {
         }
     }
 
-    private var singleSelectionAHDCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionAHDCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultAHD[MedicalReviewTypeEnums.ahdStatus.name] =
                 selectedID as? String ?: ""
@@ -379,7 +379,7 @@ class HIVStatusFragment : BaseFragment() {
             )
         }
 
-    private var singleSelectionDSDCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionDSDCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             val selectedValue = selectedID as? String ?: ""
             val currentValue = viewModel.resultDSD[MedicalReviewTypeEnums.dsdStatus.name] as? String ?: ""

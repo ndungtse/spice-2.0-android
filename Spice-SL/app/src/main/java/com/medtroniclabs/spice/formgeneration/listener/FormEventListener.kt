@@ -10,7 +10,7 @@ interface FormEventListener {
 
     fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     )
 
@@ -29,7 +29,7 @@ interface FormEventListener {
 
     fun onAgeCheckForPregnancy()
 
-    fun handleMandatoryCondition(serverData: FormLayout? = null)
+    fun handleMandatoryCondition(formLayout: FormLayout? = null)
 
     fun onAgeUpdateListener(age: Int, serverData: List<FormLayout?>? = null, resultHashMap: HashMap<String, Any>)
 }

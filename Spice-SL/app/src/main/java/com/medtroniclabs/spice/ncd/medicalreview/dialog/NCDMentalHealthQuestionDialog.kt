@@ -337,7 +337,7 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
 
     override fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     ) {
 
@@ -378,7 +378,7 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
 
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
 
     }
 
@@ -453,7 +453,6 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
         try {
             var result = serverData?.let {
                 FormResultComposer().groupValues(
-                    context = requireContext(),
                     serverData = it,
                     map
                 )

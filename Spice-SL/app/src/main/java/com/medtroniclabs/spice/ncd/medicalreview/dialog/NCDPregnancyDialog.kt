@@ -351,7 +351,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         ).ifBlank { null }
     }
 
-    private var singleSelectionCallbackForDiabetes: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallbackForDiabetes: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultDiabetesHashMap[DIABETES] = selectedID as String
             showViews(
@@ -363,7 +363,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
             showSpinnerView(selectedID)
         }
 
-    private var singleSelectionCallbackForHypertension: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallbackForHypertension: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultHypertensionHashMap[HYPERTENSION] = selectedID as String
             showViews(
@@ -405,7 +405,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         }
     }
 
-    private var singleSelectionCallbackForPregnant: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallbackForPregnant: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             (selectedID as? String?)?.let { pregnantStatus ->
                 val isPregnant = pregnantStatus.equals(PREGNANT, true)

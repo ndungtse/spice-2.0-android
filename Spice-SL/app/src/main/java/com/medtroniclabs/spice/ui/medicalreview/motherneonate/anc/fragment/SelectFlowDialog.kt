@@ -136,7 +136,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
 //        selectType()
     }
 
-    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultANCFlowHashMap[TAG] = selectedID as String
             if (connectivityManager.isNetworkAvailable()) {

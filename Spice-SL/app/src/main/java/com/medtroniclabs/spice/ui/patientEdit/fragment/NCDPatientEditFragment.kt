@@ -67,7 +67,6 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
         formGenerator = FormGenerator(
             requireContext(),
             binding.llForm,
-            resultLauncher,
             this,
             binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled()
@@ -197,7 +196,7 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
          */
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
         /**
          * this method is not used
          */
@@ -227,11 +226,11 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
     override fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     ) {
         CheckBoxDialog.newInstance(id, resultMap) { map ->
-            formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
+            formGenerator.validateCheckboxDialogue(id, formLayout, map)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 

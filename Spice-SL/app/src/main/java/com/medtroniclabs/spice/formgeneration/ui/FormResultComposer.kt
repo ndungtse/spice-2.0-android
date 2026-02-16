@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.formgeneration.ui
 
-import android.content.Context
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.formgeneration.config.ViewType
@@ -12,29 +11,28 @@ class FormResultComposer {
     private var groupedResultMap: HashMap<String, Any> = HashMap()
 
     fun groupValues(
-        context: Context,
         serverData: List<FormLayout?>,
         resultMap: HashMap<String, *>,
         menuType: String? = null,
         bmiCategoryGroupId: String? = null
     ): Pair<String?, HashMap<String, Any>> {
         val customWorkflowList = ArrayList<Pair<String,Double?>>()
-        serverData.forEach { serverViewModel ->
-            if (serverViewModel?.isCustomWorkflow == true) {
-                serverViewModel.id.let { cWorkflowId ->
+        serverData.forEach { formLayout ->
+            if (formLayout?.isCustomWorkflow == true) {
+                formLayout.id.let { cWorkflowId ->
                     if (cWorkflowId.isNotBlank())
-                        customWorkflowList.add(Pair(cWorkflowId, serverViewModel.customizedWorkflowId))
+                        customWorkflowList.add(Pair(cWorkflowId, formLayout.customizedWorkflowId))
                 }
             }
-            when (serverViewModel?.viewType) {
-                ViewType.VIEW_TYPE_FORM_CARD_FAMILY -> createGroup(serverViewModel.id)
+            when (formLayout?.viewType) {
+                ViewType.VIEW_TYPE_FORM_CARD_FAMILY -> createGroup(formLayout.id)
                 else -> {
                     addToGroup(
-                        serverViewModel?.family,
-                        serverViewModel?.id!!,
-                        resultMap[serverViewModel.id]
+                        formLayout?.family,
+                        formLayout?.id!!,
+                        resultMap[formLayout.id]
                     )
-                    resultMap.remove(serverViewModel.id)
+                    resultMap.remove(formLayout.id)
                 }
             }
         }

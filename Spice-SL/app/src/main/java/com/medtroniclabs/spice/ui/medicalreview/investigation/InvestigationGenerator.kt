@@ -365,12 +365,12 @@ class InvestigationGenerator(
     }
 
     private fun createCustomSpinner(
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultContainer: FlexboxLayout,
         investigation: InvestigationModel
     ) {
         val binding = CustomSpinnerLayoutInvestigationBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.etUserInput.tag = id
             binding.tvTitle.tag = id + titleSuffix
@@ -601,12 +601,12 @@ class InvestigationGenerator(
 
 
     private fun createDatePicker(
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultContainer: FlexboxLayout,
         investigation: InvestigationModel
     ) {
         val binding = DatepickerLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.root.minimumWidth = resources.getDimension(R.dimen._328sdp).roundToInt()
             binding.etUserInput.tag = id
@@ -828,17 +828,17 @@ class InvestigationGenerator(
     private fun validateMinMaxLength(
         actualValue: Any?,
         valid: Boolean,
-        serverViewModel: FormLayout
+        formLayout: FormLayout
     ): Boolean {
         var isValid = valid
-        serverViewModel.apply {
+        formLayout.apply {
             if (minLength != null && viewType == VIEW_TYPE_FORM_EDITTEXT
                 && actualValue != null && actualValue is String
                 && actualValue.length < minLength!!
             ) {
                 isValid = false
                 /*requestFocusView(
-                    serverViewModel,
+                    formLayout,
                     getString(
                         R.string.min_char_length_validation,
                         minLength!!.toString()
@@ -851,7 +851,7 @@ class InvestigationGenerator(
                             if (value < minValue!! || value > maxValue!!) {
                                 isValid = false
                                 /*requestFocusView(
-                                    serverViewModel,
+                                    formLayout,
                                     getString(
                                         R.string.general_min_max_validation,
                                         CommonUtils.getDecimalFormatted(
@@ -863,7 +863,7 @@ class InvestigationGenerator(
                                     )
                                 )*/
                             } else {
-                                // hideValidationField(serverViewModel)
+                                // hideValidationField(formLayout)
                             }
                         }
                     } else if (actualValue is Number) {
@@ -871,7 +871,7 @@ class InvestigationGenerator(
                             if (value < minValue!! || value > maxValue!!) {
                                 isValid = false
                                 /*requestFocusView(
-                                    serverViewModel,
+                                    formLayout,
                                     getString(
                                         R.string.general_min_max_validation,
                                         CommonUtils.getDecimalFormatted(
@@ -883,11 +883,11 @@ class InvestigationGenerator(
                                     )
                                 )*/
                             } else {
-                                // hideValidationField(serverViewModel)
+                                // hideValidationField(formLayout)
                             }
                         }
                     } else {
-                        // hideValidationField(serverViewModel)
+                        // hideValidationField(formLayout)
                     }
                 } else if (minValue != null) {
                     if (actualValue is String) {
@@ -895,7 +895,7 @@ class InvestigationGenerator(
                             if (value < minValue!!) {
                                 isValid = false
                                 /*requestFocusView(
-                                    serverViewModel,
+                                    formLayout,
                                     getString(
                                         R.string.general_min_validation,
                                         CommonUtils.getDecimalFormatted(
@@ -904,7 +904,7 @@ class InvestigationGenerator(
                                     )
                                 )*/
                             } else {
-                                // hideValidationField(serverViewModel)
+                                // hideValidationField(formLayout)
                             }
                         }
                     } else if (actualValue is Number) {
@@ -912,7 +912,7 @@ class InvestigationGenerator(
                             if (value < minValue!!) {
                                 isValid = false
                                 /*requestFocusView(
-                                    serverViewModel,
+                                    formLayout,
                                     getString(
                                         R.string.general_min_validation,
                                         CommonUtils.getDecimalFormatted(
@@ -921,11 +921,11 @@ class InvestigationGenerator(
                                     )
                                 )*/
                             } else {
-                                // hideValidationField(serverViewModel)
+                                // hideValidationField(formLayout)
                             }
                         }
                     } else {
-                        // hideValidationField(serverViewModel)
+                        // hideValidationField(formLayout)
                     }
                 } else if (maxValue != null) {
                     if (actualValue is String) {
@@ -933,7 +933,7 @@ class InvestigationGenerator(
                             if (value > maxValue!!.toDouble()) {
                                 isValid = false
                                 /*requestFocusView(
-                                    serverViewModel,
+                                    formLayout,
                                     getString(
                                         R.string.general_max_validation,
                                         CommonUtils.getDecimalFormatted(
@@ -942,7 +942,7 @@ class InvestigationGenerator(
                                     )
                                 )*/
                             } else {
-                                // hideValidationField(serverViewModel)
+                                // hideValidationField(formLayout)
                             }
                         }
                     } else if (actualValue is Number) {
@@ -950,7 +950,7 @@ class InvestigationGenerator(
                             if (value > maxValue!!.toDouble()) {
                                 isValid = false
                                 /*requestFocusView(
-                                    serverViewModel,
+                                    formLayout,
                                     getString(
                                         R.string.general_max_validation,
                                         CommonUtils.getDecimalFormatted(
@@ -959,11 +959,11 @@ class InvestigationGenerator(
                                     )
                                 )*/
                             } else {
-                                //  hideValidationField(serverViewModel)
+                                //  hideValidationField(formLayout)
                             }
                         }
                     } else {
-                        //  hideValidationField(serverViewModel)
+                        //  hideValidationField(formLayout)
                     }
                 }
             } else if (contentLength != null) {
@@ -971,22 +971,22 @@ class InvestigationGenerator(
                     val actualValueString =
                         getDecimalFormatted(actualValue)
                     if (contentLength == actualValueString.length) {
-                        // hideValidationField(serverViewModel)
+                        // hideValidationField(formLayout)
                     } else {
                         isValid = false
-                        //  requestFocusView(serverViewModel)
+                        //  requestFocusView(formLayout)
                     }
                 } else {
                     val actualValueString = actualValue.toString()
                     if (contentLength == actualValueString.length) {
-                        //  hideValidationField(serverViewModel)
+                        //  hideValidationField(formLayout)
                     } else {
                         isValid = false
-                        // requestFocusView(serverViewModel)
+                        // requestFocusView(formLayout)
                     }
                 }
             } else {
-                //  hideValidationField(serverViewModel)
+                //  hideValidationField(formLayout)
             }
         }
         return isValid

@@ -217,7 +217,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         )
         childFragmentManager.executePendingTransactions() // Ensures transaction is complete
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, null, this, binding.scrollView,
+            requireContext(), binding.llForm, this, binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled(),
             callback = { map, id ->
                 when (id) {
@@ -308,11 +308,11 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
 
     override fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     ) {
         CheckBoxDialog.newInstance(id, resultMap) { map ->
-            formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
+            formGenerator.validateCheckboxDialogue(id, formLayout, map)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
@@ -336,7 +336,6 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
             }
             val result = serverData?.let {
                 FormResultComposer().groupValues(
-                    context = requireContext(),
                     serverData = it,
                     details
                 )
@@ -667,7 +666,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     override fun onAgeCheckForPregnancy() {
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
     }
 
     override fun onAgeUpdateListener(

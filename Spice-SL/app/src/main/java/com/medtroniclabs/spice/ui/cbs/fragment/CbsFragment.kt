@@ -89,7 +89,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     private fun initFormView() {
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, null, this, binding.scrollView,
+            requireContext(), binding.llForm, this, binding.scrollView,
             translate = false
         ) { map, id ->
             when (id) {
@@ -290,7 +290,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     override fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     ) {
         val value = if (requireArguments().getBoolean(DeathOfMother, false)) {
@@ -305,7 +305,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                 autoPopulate = value,
                 title = getString(R.string.notifiable_conditions)
             ) { map ->
-                formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
+                formGenerator.validateCheckboxDialogue(id, formLayout, map)
             }.show(childFragmentManager, CheckBoxDialog.TAG)
         } else {
             CheckBoxDialog.newInstance(
@@ -314,7 +314,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                 autoPopulate = value,
                 title = getString(R.string.notifiable_conditions)
             ) { map ->
-                formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
+                formGenerator.validateCheckboxDialogue(id, formLayout, map)
             }.show(childFragmentManager, CheckBoxDialog.TAG)
         }
     }
@@ -335,7 +335,6 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
             val gson = Gson()
             val result = serverData?.let {
                 FormResultComposer().groupValues(
-                    context = requireContext(),
                     serverData = it,
                     details,
                     CBS.lowercase()
@@ -481,7 +480,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
 
     }
 

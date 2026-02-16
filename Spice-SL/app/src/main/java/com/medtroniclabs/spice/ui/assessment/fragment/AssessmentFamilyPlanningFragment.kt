@@ -56,7 +56,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
             tag = BioDataFragment.TAG
         )
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, null, this, binding.scrollView,
+            requireContext(), binding.llForm, this, binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled()
         )
     }
@@ -94,11 +94,11 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
 
     override fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     ) {
         CheckBoxDialog.newInstance(id, resultMap,title = getString(R.string.methods)) { resultMap ->
-            formGenerator.validateCheckboxDialogue(id, serverViewModel, resultMap)
+            formGenerator.validateCheckboxDialogue(id, formLayout, resultMap)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
@@ -117,7 +117,6 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
             val referralResult = ReferralResultGenerator().calculateFamilyPlanningStatus(details)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
-                    context = requireContext(),
                     serverData = it,
                     details,
                     DefinedParams.familyPlanning.lowercase()
@@ -149,7 +148,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
 
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
 
     }
 

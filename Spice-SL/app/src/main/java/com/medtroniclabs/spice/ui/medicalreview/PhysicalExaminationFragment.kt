@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
@@ -100,7 +99,7 @@ class PhysicalExaminationFragment : BaseFragment() {
         }
     }
 
-    private var congenitalDetectSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var congenitalDetectSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.congenitalDefectMap[DefinedParams.CongenitalDetect] = selectedID as String
             val flowValue =
@@ -132,7 +131,7 @@ class PhysicalExaminationFragment : BaseFragment() {
         }
     }
 
-    private var cordExaminationSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var cordExaminationSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.cordExaminationMap[DefinedParams.CordExamination] = selectedID as String
         }
@@ -175,7 +174,7 @@ class PhysicalExaminationFragment : BaseFragment() {
         }
     }
 
-    private var breastConditionSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var breastConditionSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.breastCondition[DefinedParams.BreastCondition] = selectedID as String
             val flowValue =
@@ -214,7 +213,7 @@ class PhysicalExaminationFragment : BaseFragment() {
         }
     }
 
-    private var exclusiveBreastConditionSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var exclusiveBreastConditionSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.exclusiveBreastCondition[DefinedParams.ExclusiveBreastCondition] =
                 selectedID as String

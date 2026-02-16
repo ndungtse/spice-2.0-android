@@ -354,7 +354,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                 isVisitFacilityConditionValid
     }
 
-    private var callResultSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var callResultSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             val newSelection = selectedID as String
             viewModel.callResultHashMap[DefinedParams.CallResult] = newSelection
@@ -402,7 +402,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
         }
     }
 
-    private var unsuccessfulSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var unsuccessfulSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.unSuccessfulHashMap[DefinedParams.UnSuccessful] = selectedID as String
             enableForUnSuccessful()
@@ -543,7 +543,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
         }
     }
 
-    private var patientStatusForSuccessSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var patientStatusForSuccessSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.patientStatusHashMap[DefinedParams.PatientStatus] = selectedID as String
             enableForSuccessFul()

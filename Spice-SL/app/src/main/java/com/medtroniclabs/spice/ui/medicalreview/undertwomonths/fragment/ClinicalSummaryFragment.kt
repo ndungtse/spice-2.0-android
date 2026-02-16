@@ -188,7 +188,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
         data: ArrayList<Map<String, Any>>,
         tag: String,
         hashMap: HashMap<String, Any>,
-        callback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)?,
+        callback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)?,
         container: ViewGroup
     ) {
         SingleSelectionCustomView(binding.root.context).apply {
@@ -205,7 +205,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private val breastFeedingSelectionCallback: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private val breastFeedingSelectionCallback: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultBreastFeedingHashMap[BREAST_FEEDING_TAG] = selectedID as String
             resetSelectionViews(EXCLUSIVE_BREAST_FEED_TAG)
@@ -213,13 +213,13 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             viewModel.updateBreastFeeding()
         }
 
-    private val vitaminAMotherSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private val vitaminAMotherSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultMotherVitaminHashMap[MOTHER_VITAMIN_TAG] = selectedID as String
             viewModel.updateVitaminAForMother()
         }
 
-    private val exclusiveBreastFeedingSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private val exclusiveBreastFeedingSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultExclusiveBreastFeedHashMap[EXCLUSIVE_BREAST_FEED_TAG] = selectedID as String
             viewModel.updateExclusiveBreastFeeding()

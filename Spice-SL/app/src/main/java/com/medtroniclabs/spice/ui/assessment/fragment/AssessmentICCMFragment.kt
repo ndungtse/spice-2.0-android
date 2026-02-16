@@ -260,7 +260,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             tag = BioDataFragment.TAG
         )
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, null, this, binding.scrollView,
+            requireContext(), binding.llForm, this, binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled()
         )
     }
@@ -277,7 +277,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
     override fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     ) {
         val title = if (setOf(
@@ -293,7 +293,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             null
         }
         CheckBoxDialog.newInstance(id, resultMap, title = title) { map ->
-            formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
+            formGenerator.validateCheckboxDialogue(id, formLayout, map)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
@@ -430,7 +430,6 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             val referralResult = ReferralResultGenerator().calculateIccmReferralResult(details, viewModel.memberDetailsLiveData.value?.data)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
-                    context = requireContext(),
                     serverData = it,
                     details,
                     ICCM_MENU_ID
@@ -688,19 +687,19 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
-        if (serverData?.id == muacCode) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
+        if (formLayout?.id == muacCode) {
             viewModel.selectedMemberDob?.let { dateOfBirth ->
                 val visibility = isMandateOrNot(dateOfBirth)
-                serverData.visibility = visibility
-                serverData.isMandatory = (visibility == VISIBLE)
-                serverData.isSummary = (visibility == VISIBLE)
+                formLayout.visibility = visibility
+                formLayout.isMandatory = (visibility == VISIBLE)
+                formLayout.isSummary = (visibility == VISIBLE)
             }
         }
 
-        if (serverData?.id == muacStatus) {
+        if (formLayout?.id == muacStatus) {
             viewModel.selectedMemberDob?.let { dateOfBirth ->
-                serverData.visibility = isMandateOrNot(dateOfBirth)
+                formLayout.visibility = isMandateOrNot(dateOfBirth)
             }
         }
     }

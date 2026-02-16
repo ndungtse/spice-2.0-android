@@ -352,7 +352,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         return yearOfDiagnosis
     }
 
-    private var singleSelectionCallbackForDiabetes: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallbackForDiabetes: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultDiabetesHashMap[NCDPregnancyDialog.DIABETES] = selectedID as String
             showViews(
@@ -364,7 +364,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             showSpinnerView(selectedID)
         }
 
-    private var singleSelectionCallbackForSubstanceUse: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallbackForSubstanceUse: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultSubstanceUseHashMap[SUBSTANCE_USE_STATUS] =
                 selectedID as String
@@ -385,7 +385,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             }
         }
 
-    private var singleSelectionCallbackForMentalHealth: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallbackForMentalHealth: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultMentalHealthHashMap[MENTAL_HEALTH_STATUS] =
                 selectedID as String
@@ -580,7 +580,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         return arguments?.getBoolean(NCDMRUtil.ShowNCD) ?: false
     }
 
-    private var singleSelectionCallbackForHypertension: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallbackForHypertension: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultHypertensionHashMap[NCDPregnancyDialog.HYPERTENSION] =
                 selectedID as String

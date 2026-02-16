@@ -58,7 +58,7 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
             tag = BioDataFragment.TAG
         )
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, null, this, binding.scrollView,
+            requireContext(), binding.llForm, this, binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled()
         ){ map, id ->
             when (id) {
@@ -100,11 +100,11 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
 
     override fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     ) {
         CheckBoxDialog.newInstance(id, resultMap) { resultMap ->
-            formGenerator.validateCheckboxDialogue(id, serverViewModel, resultMap)
+            formGenerator.validateCheckboxDialogue(id, formLayout, resultMap)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
@@ -122,7 +122,6 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
             val referralResult = ReferralResultGenerator().calculateNCDStatus(requireContext(), details)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
-                    context = requireContext(),
                     serverData = it,
                     details,
                     AssessmentDefinedParams.ncd
@@ -162,7 +161,7 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
     override fun onAgeCheckForPregnancy() {
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
     }
 
     override fun onAgeUpdateListener(

@@ -282,7 +282,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         binding.rvCommunitiesStatistics.adapter = communityPopulationAdapter
         formGenerator = FormGenerator(
             requireContext(), binding.llForm,
-            null, this, binding.nestedScrollView, translate = false,callback = {
+            this, binding.nestedScrollView, translate = false,callback = {
                 map,id ->
                 when(id){
                     Market -> {
@@ -340,7 +340,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
 
     override fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     ) {
         CheckBoxDialog.newInstance(
@@ -371,7 +371,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                 }
             }
 
-            formGenerator.validateCheckboxDialogue(id, serverViewModel, resultMap)
+            formGenerator.validateCheckboxDialogue(id, formLayout, resultMap)
             updateValue(id, resultMap)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
@@ -454,7 +454,6 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         resultMap?.let { details ->
             serverData?.let { form ->
                 val result = FormResultComposer().groupValues(
-                    context = requireContext(),
                     serverData = form,
                     resultMap = details
                 )
@@ -604,7 +603,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
 
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
 
     }
 

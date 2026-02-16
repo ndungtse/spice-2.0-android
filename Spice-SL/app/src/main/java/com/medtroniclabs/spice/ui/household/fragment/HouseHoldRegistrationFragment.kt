@@ -5,9 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.Spinner
-import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -16,7 +13,6 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HouseholdCreation
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HouseholdEdit
-import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DefinedParams.VillageId
 import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -28,7 +24,6 @@ import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.householdName
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.noOfPeople
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.totalMembers
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
@@ -109,14 +104,15 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
         }
 
         householdRegistrationViewModel.villageListResponse.observe(viewLifecycleOwner) { resourceState ->
+            fetchFormDetails()
             when (resourceState.state) {
                 ResourceState.SUCCESS -> {
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
 
                         // Auto-select if single village
-                        if (data.response is List<*> && (data.response as List<*>).size == 1) {
-                            val singleItem = (data.response as List<*>)[0]
+                        if (data.response is List<*> && data.response.size == 1) {
+                            val singleItem = data.response[0]
                             if (singleItem is Map<*, *>) {
                                 val id = singleItem[DefinedParams.ID]
                                 formGenerator.getViewByTag(villageId)?.let { view ->
@@ -142,14 +138,15 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
         }
 
         householdRegistrationViewModel.shasthyaShebikaListResponse.observe(viewLifecycleOwner) { resourceState ->
+            fetchFormDetails()
             when (resourceState.state) {
                 ResourceState.SUCCESS -> {
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
 
                         // Auto-select if single shasthya shebika
-                        if (data.response is List<*> && (data.response as List<*>).size == 1) {
-                            val singleItem = (data.response as List<*>)[0]
+                        if (data.response is List<*> && data.response.size == 1) {
+                            val singleItem = data.response[0]
                             if (singleItem is Map<*, *>) {
                                 val id = singleItem[DefinedParams.ID]
                                 formGenerator.getViewByTag(HouseHoldRegistration.shasthyaShebikaId)?.let { view ->
@@ -181,8 +178,8 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                         formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
 
                         // Auto-select if single sub village
-                        if (data.response is List<*> && (data.response as List<*>).size == 1) {
-                            val singleItem = (data.response as List<*>)[0]
+                        if (data.response is List<*> && data.response.size == 1) {
+                            val singleItem = data.response[0]
                             if (singleItem is Map<*, *>) {
                                 val id = singleItem[DefinedParams.ID]
                                 formGenerator.getViewByTag(HouseHoldRegistration.subVillageId)?.let { view ->
@@ -229,9 +226,6 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
     }
 
     private fun autoPopulateFormFields(details: HouseholdEntity) {
-        formGenerator.getViewByTag(householdName)?.let { view ->
-            formGenerator.setValueForView(details.name, view)
-        }
         formGenerator.getViewByTag(villageId)?.let { view ->
             if (details.villageId != 0L) {
                 view.isEnabled = false
@@ -247,15 +241,9 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
         formGenerator.getViewByTag(HouseHoldRegistration.shasthyaShebikaId)?.let { view ->
             val shasthyaShebikaId = details.shasthyaShebikaId
             if (shasthyaShebikaId != null && shasthyaShebikaId != 0L) {
-                formGenerator.setValueForView(shasthyaShebikaId, view)
                 // Store sub village ID to set after list is loaded
                 pendingSubVillageId = details.subVillageId
-                // Load sub villages
-                householdRegistrationViewModel.loadSubVillageDataCacheByType(
-                    HouseHoldRegistration.subVillageId,
-                    "",
-                    shasthyaShebikaId
-                )
+                formGenerator.setValueForView(shasthyaShebikaId, view)
             }
         }
         formGenerator.getViewByTag(HouseHoldRegistration.householdType)?.let { view ->
@@ -276,15 +264,6 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
         }
     }
 
-    private fun singleSelectValueOption(value: String, key: String) {
-        formGenerator.getViewByTag("${value}_${key}")
-            ?.let { view ->
-                if (view is TextView) {
-                    view.performClick()
-                }
-            }
-    }
-
     private fun initializeFormGenerator() {
         if (householdRegistrationViewModel.householdId != -1L) {
             binding.btnNext.text = getString(R.string.submit)
@@ -295,9 +274,25 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
             householdRegistrationViewModel.setUserJourney(HouseholdCreation)
         }
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, null, this, binding.scrollView,
+            requireContext(), binding.llForm, this, binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled()
         )
+    }
+
+    /**
+     * This function checks if both village and ss are fetched
+     * then trigger fetch form details if it is for edit
+     */
+    private fun fetchFormDetails() {
+        if (householdRegistrationViewModel.householdId != -1L) {
+            val villageFetchStatus = householdRegistrationViewModel.villageListResponse.value
+            val ssFetchStatus = householdRegistrationViewModel.shasthyaShebikaListResponse.value
+            if (villageFetchStatus?.state != ResourceState.LOADING && ssFetchStatus?.state != ResourceState.LOADING) {
+                householdRegistrationViewModel.getHouseholdDetailsByID(
+                    householdRegistrationViewModel.householdId
+                )
+            }
+        }
     }
 
 
@@ -362,7 +357,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
 
     override fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     ) {
     }
@@ -394,13 +389,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
     }
 
     override fun onRenderingComplete() {
-        // Load initial data
-        householdRegistrationViewModel.loadDataCacheByType(HouseHoldRegistration.villageId, HouseHoldRegistration.villageId)
-        householdRegistrationViewModel.loadShasthyaShebikaDataCacheByType(HouseHoldRegistration.shasthyaShebikaId, HouseHoldRegistration.shasthyaShebikaId)
-        
-        if (householdRegistrationViewModel.householdId != -1L) {
-            householdRegistrationViewModel.getHouseholdDetailsByID(householdRegistrationViewModel.householdId)
-        }
+
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
@@ -420,7 +409,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
         
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
 
     }
 

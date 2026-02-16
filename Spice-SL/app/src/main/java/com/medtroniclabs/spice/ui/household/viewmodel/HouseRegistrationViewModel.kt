@@ -10,7 +10,6 @@ import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.network.resource.Resource
@@ -20,7 +19,6 @@ import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,7 +43,6 @@ class HouseRegistrationViewModel @Inject constructor(
     var subVillageListResponse = MutableLiveData<Resource<LocalSpinnerResponse>>()
     var memberID: Long = -1L
     private var lastLocation: Location? = null
-    var addNewMember: Boolean = false
     var eventName: String = ""
 
 

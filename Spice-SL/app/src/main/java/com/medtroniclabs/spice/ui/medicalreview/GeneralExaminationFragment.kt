@@ -225,7 +225,7 @@ class GeneralExaminationFragment : BaseFragment() {
         }
     }
 
-    private var breastConditionSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var breastConditionSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.breastConditionMap[DefinedParams.BreastCondition] = selectedID as String
             resetSelectionViews(DefinedParams.BreastCondition)
@@ -239,7 +239,7 @@ class GeneralExaminationFragment : BaseFragment() {
                 binding.specifyConditionGroup.gone()
             }
         }
-    private var uterusSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var uterusSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.uterusConditionMap[DefinedParams.UterusCondition] = selectedID as String
             resetSelectionViews(DefinedParams.UterusCondition)

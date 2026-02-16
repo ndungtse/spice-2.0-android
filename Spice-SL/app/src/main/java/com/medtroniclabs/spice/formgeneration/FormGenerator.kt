@@ -4,7 +4,6 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.DialogInterface
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Point
@@ -30,7 +29,6 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
@@ -44,8 +42,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.isGone
-import com.medtroniclabs.spice.appextensions.isVisible
+import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.displayAge
@@ -139,7 +136,6 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import com.medtroniclabs.spice.mappingkey.RxBuddy
-import com.medtroniclabs.spice.mappingkey.RxBuddy.selectHouseholdMember
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.mappingkey.Screening.DateOfBirth
 import com.medtroniclabs.spice.mappingkey.Screening.Hour
@@ -156,7 +152,6 @@ import java.util.Date
 class FormGenerator(
     var context: Context,
     private val parentLayout: LinearLayout,
-    private val resultLauncher: ActivityResultLauncher<Intent>? = null,
     private val listener: FormEventListener,
     var scrollView: NestedScrollView? = null,
     val translate: Boolean = false,
@@ -183,40 +178,39 @@ class FormGenerator(
     val lastMealTypeDateSuffix  = "Date"
     private var mentalHealthQuestions: HashMap<String, ArrayList<MentalHealthOption>>? = null
     private var mentalHealthEditList: ArrayList<Map<String, Any>>? = null
-    private var EDITSCREEN: Boolean? = null
 
     fun populateViews(
         serverData: List<FormLayout>,
     ) {
         this.serverData = serverData
         parentLayout.removeAllViews()
-        serverData.forEach { serverViewModel ->
-            when (serverViewModel.viewType) {
-                VIEW_TYPE_FORM_CARD_FAMILY -> createCardViewFamily(serverViewModel)
-                VIEW_TYPE_FORM_EDITTEXT -> createEditText(serverViewModel)
-                VIEW_TYPE_FORM_EDITTEXT_AREA -> createEditTextArea(serverViewModel)
-                VIEW_TYPE_FORM_RADIOGROUP -> createRadioGroup(serverViewModel)
-                VIEW_TYPE_SINGLE_SELECTION -> createSingleSelectionView(serverViewModel)
-                VIEW_TYPE_FORM_SPINNER -> createCustomSpinner(serverViewModel)
-                VIEW_TYPE_DIALOG_CHECKBOX -> createCheckboxDialogView(serverViewModel)
-                VIEW_INFORMATION_LABEL -> createInformationLabel(serverViewModel)
-                VIEW_TYPE_INSTRUCTION -> createInstructionView(serverViewModel)
-                VIEW_TYPE_FORM_TEXTLABEL -> createTextLabel(serverViewModel)
-                VIEW_TYPE_METAL_HEALTH -> createMentalHealthView(serverViewModel)
-                VIEW_TYPE_FORM_AGE -> createAgeView(serverViewModel)
-                VIEW_TYPE_NO_OF_DAYS -> createNoOfDaysView(serverViewModel)
-                VIEW_TYPE_FORM_DATEPICKER -> createDatePicker(serverViewModel)
-                VIEW_TYPE_FORM_BP -> createBPView(serverViewModel)
-                VIEW_TYPE_TIME -> createTimeView(serverViewModel)
-                VIEW_TYPE_FORM_MULTISELECT_DATEPICKER -> createMultiSelectDatePicker(serverViewModel)
+        serverData.forEach { formLayout ->
+            when (formLayout.viewType) {
+                VIEW_TYPE_FORM_CARD_FAMILY -> createCardViewFamily(formLayout)
+                VIEW_TYPE_FORM_EDITTEXT -> createEditText(formLayout)
+                VIEW_TYPE_FORM_EDITTEXT_AREA -> createEditTextArea(formLayout)
+                VIEW_TYPE_FORM_RADIOGROUP -> createRadioGroup(formLayout)
+                VIEW_TYPE_SINGLE_SELECTION -> createSingleSelectionView(formLayout)
+                VIEW_TYPE_FORM_SPINNER -> createCustomSpinner(formLayout)
+                VIEW_TYPE_DIALOG_CHECKBOX -> createCheckboxDialogView(formLayout)
+                VIEW_INFORMATION_LABEL -> createInformationLabel(formLayout)
+                VIEW_TYPE_INSTRUCTION -> createInstructionView(formLayout)
+                VIEW_TYPE_FORM_TEXTLABEL -> createTextLabel(formLayout)
+                VIEW_TYPE_METAL_HEALTH -> createMentalHealthView(formLayout)
+                VIEW_TYPE_FORM_AGE -> createAgeView(formLayout)
+                VIEW_TYPE_NO_OF_DAYS -> createNoOfDaysView(formLayout)
+                VIEW_TYPE_FORM_DATEPICKER -> createDatePicker(formLayout)
+                VIEW_TYPE_FORM_BP -> createBPView(formLayout)
+                VIEW_TYPE_TIME -> createTimeView(formLayout)
+                VIEW_TYPE_FORM_MULTISELECT_DATEPICKER -> createMultiSelectDatePicker(formLayout)
             }
         }
         listener.onRenderingComplete()
     }
 
-    private fun createMultiSelectDatePicker(serverViewModel: FormLayout) {
+    private fun createMultiSelectDatePicker(formLayout: FormLayout) {
         val binding = DatepickerLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.etUserInput.tag = id
             hint?.let {
@@ -263,9 +257,9 @@ class FormGenerator(
         }
     }
 
-    private fun createCardViewFamily(serverViewModel: FormLayout) {
+    private fun createCardViewFamily(formLayout: FormLayout) {
         val binding = CardLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             setViewVisibility(visibility, binding.root)
             binding.root.tag = id + rootSuffix
             binding.llFamilyRoot.tag = id
@@ -280,9 +274,9 @@ class FormGenerator(
         }
     }
 
-    private fun createNoOfDaysView(serverViewModel: FormLayout) {
+    private fun createNoOfDaysView(formLayout: FormLayout) {
         val binding = NoOfDaysLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.tvTitle.tag = id + titleSuffix
             binding.etUserInput.tag = id
@@ -305,7 +299,7 @@ class FormGenerator(
                 listener.onInstructionClicked(
                     id,
                     title,
-                    dosageListModel = serverViewModel.dosageListItems
+                    dosageListModel = formLayout.dosageListItems
                 )
             }
 
@@ -359,9 +353,9 @@ class FormGenerator(
     }
 
 
-    private fun createEditText(serverViewModel: FormLayout) {
+    private fun createEditText(formLayout: FormLayout) {
         val binding = EdittextLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.tvTitle.tag = id + titleSuffix
             binding.etUserInput.tag = id
@@ -377,11 +371,11 @@ class FormGenerator(
             }
             binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
 
-            if (serverViewModel.id.contains(Screening.phoneNumber) || serverViewModel.id.contains(phoneNumber)
-                || serverViewModel.id.contains(CommunityDetails.EmergencyContactPhu)
-                || serverViewModel.id.contains(CommunityDetails.EmergencyTransportContactNo)
-                || serverViewModel.id.contains(CommunityDetails.AmbulanceDriverContactNo)
-                || serverViewModel.id.contains(RxBuddy.rxBuddyPhoneNumber)
+            if (formLayout.id.contains(Screening.phoneNumber) || formLayout.id.contains(phoneNumber)
+                || formLayout.id.contains(CommunityDetails.EmergencyContactPhu)
+                || formLayout.id.contains(CommunityDetails.EmergencyTransportContactNo)
+                || formLayout.id.contains(CommunityDetails.AmbulanceDriverContactNo)
+                || formLayout.id.contains(RxBuddy.rxBuddyPhoneNumber)
             ) {
                 SecuredPreference.getPhoneNumberCode()?.let { phoneNumberCode ->
                     binding.llCountryCode.visibility = View.VISIBLE
@@ -483,7 +477,7 @@ class FormGenerator(
                         } else {
                             resultHashMap.remove(id)
                         }
-                        setConditionalVisibility(serverViewModel, null)
+                        setConditionalVisibility(formLayout, null)
                         resultHashMap.remove(id + Screening.unitMeasurement_KEY)
                     }
 
@@ -497,7 +491,7 @@ class FormGenerator(
                             }
                         } else
                             resultHashMap[id] = editable.trim().toString()
-                        setConditionalVisibility(serverViewModel, editable.trim().toString())
+                        setConditionalVisibility(formLayout, editable.trim().toString())
                         unitMeasurement?.let {
                             it.also { resultHashMap[id + Screening.unitMeasurement_KEY] = it }
                         }
@@ -703,9 +697,9 @@ class FormGenerator(
         return true
     }
 
-    private fun createBPView(serverViewModel: FormLayout) {
+    private fun createBPView(formLayout: FormLayout) {
         val binding = BpReadingLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.tvErrorMessage.tag = id + errorSuffix
             binding.tvInstructionBloodPressure.tag = id + titleSuffix
@@ -849,9 +843,9 @@ class FormGenerator(
         }
     }
 
-    private fun createTimeView(serverViewModel: FormLayout) {
+    private fun createTimeView(formLayout: FormLayout) {
         val binding = TimeViewLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.tvTitle.tag = id + titleSuffix
             binding.tvErrorMessage.tag = id + errorSuffix
@@ -868,7 +862,7 @@ class FormGenerator(
                     translate,
                     resultHashMap,
                     Pair(id + lastMealTypeDateSuffix, null),
-                    serverViewModel,
+                    formLayout,
                     singleSelectionCallbackForDate
                 )
                 binding.llDate.addView(view)
@@ -881,7 +875,7 @@ class FormGenerator(
                     translate,
                     resultHashMap,
                     Pair(id + lastMealTypeMeridiem, null),
-                    serverViewModel,
+                    formLayout,
                     singleSelectionCallbackForTime
                 )
                 binding.llTimeGroup.addView(view)
@@ -903,14 +897,14 @@ class FormGenerator(
         }
     }
 
-    private var singleSelectionCallbackForDate: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
-        { selectedId, elementID, serverViewModel, name ->
-            saveSelectedOptionValue(elementID, selectedId, serverViewModel, name)
+    private var singleSelectionCallbackForDate: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
+        { selectedId, elementID, formLayout, name ->
+            saveSelectedOptionValue(elementID, selectedId, formLayout, name)
         }
 
-    private var singleSelectionCallbackForTime: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
-        { selectedId, elementID, serverViewModel, name ->
-            saveSelectedOptionValue(elementID, selectedId, serverViewModel, name)
+    private var singleSelectionCallbackForTime: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
+        { selectedId, elementID, formLayout, name ->
+            saveSelectedOptionValue(elementID, selectedId, formLayout, name)
         }
 
     private fun storeTimeValue(key: String, value: String?, id: String) {
@@ -933,9 +927,9 @@ class FormGenerator(
             }
         }
     }
-    private fun createEditTextArea(serverViewModel: FormLayout) {
+    private fun createEditTextArea(formLayout: FormLayout) {
         val binding = EdittextAreaLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.tvTitle.tag = id + titleSuffix
             binding.etUserInput.tag = id
@@ -1042,7 +1036,7 @@ class FormGenerator(
                         } else {
                             resultHashMap.remove(id)
                         }
-                        setConditionalVisibility(serverViewModel, null)
+                        setConditionalVisibility(formLayout, null)
                     }
 
                     else -> {
@@ -1055,7 +1049,7 @@ class FormGenerator(
                             }
                         } else
                             resultHashMap[id] = editable.trim().toString()
-                        setConditionalVisibility(serverViewModel, editable.trim().toString())
+                        setConditionalVisibility(formLayout, editable.trim().toString())
 
                         val textWatcher = object : TextWatcher {
                             override fun beforeTextChanged(
@@ -1099,8 +1093,8 @@ class FormGenerator(
         }
     }
 
-    private fun checkGenerateAction(serverViewModel: FormLayout, binding: EdittextLayoutBinding) {
-        serverViewModel.apply {
+    private fun checkGenerateAction(formLayout: FormLayout, binding: EdittextLayoutBinding) {
+        formLayout.apply {
             if (isNeedAction) {
                 when (id) {
                     Screening.identityValue -> {
@@ -1130,8 +1124,8 @@ class FormGenerator(
         }
     }
 
-    private fun checkGenerateAction(serverViewModel: FormLayout, binding: EdittextAreaLayoutBinding) {
-        serverViewModel.apply {
+    private fun checkGenerateAction(formLayout: FormLayout, binding: EdittextAreaLayoutBinding) {
+        formLayout.apply {
             if (isNeedAction) {
                 when (id) {
                     Screening.identityValue -> {
@@ -1161,9 +1155,9 @@ class FormGenerator(
         }
     }
 
-    private fun createRadioGroup(serverViewModel: FormLayout) {
+    private fun createRadioGroup(formLayout: FormLayout) {
         val binding = RadioGroupLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.rgGroup.tag = id
             binding.tvTitle.tag = id + titleSuffix
@@ -1230,7 +1224,7 @@ class FormGenerator(
             }
 
             binding.rgGroup.setOnCheckedChangeListener { _, checkedId ->
-                checkRadioGroupId(checkedId, optionsList, id, serverViewModel)
+                checkRadioGroupId(checkedId, optionsList, id, formLayout)
                 changeRadioGroupTypeFace(checkedId, binding.rgGroup)
             }
             setViewVisibility(visibility, binding.root)
@@ -1242,14 +1236,14 @@ class FormGenerator(
         checkedId: Int,
         optionsList: java.util.ArrayList<Map<String, Any>>?,
         id: String,
-        serverViewModel: FormLayout
+        formLayout: FormLayout
     ) {
         if (checkedId >= 0) {
             optionsList?.let {
                 val map = it[checkedId]
                 resultHashMap[id] = map[DefinedParams.ID] as Any
                 setConditionalVisibility(
-                    serverViewModel,
+                    formLayout,
                     it[checkedId][DefinedParams.NAME] as String? ?: ""
                 )
             }
@@ -1277,8 +1271,8 @@ class FormGenerator(
     }
 
 
-    private fun createSingleSelectionView(serverViewModel: FormLayout) {
-        serverViewModel.apply {
+    private fun createSingleSelectionView(formLayout: FormLayout) {
+        formLayout.apply {
             val binding = LayoutSingleSelectionBinding.inflate(LayoutInflater.from(context))
             binding.root.tag = id + rootSuffix
             binding.tvTitle.tag = id + titleSuffix
@@ -1292,7 +1286,7 @@ class FormGenerator(
                     translate,
                     resultHashMap,
                     Pair(id, null),
-                    serverViewModel,
+                    formLayout,
                     singleSelectionCallback
                 )
                 binding.selectionGroup.addView(view)
@@ -1309,7 +1303,7 @@ class FormGenerator(
                 listener.onInstructionClicked(
                     id,
                     title,
-                    dosageListModel = serverViewModel.dosageListItems
+                    dosageListModel = formLayout.dosageListItems
                 )
             }
 
@@ -1321,9 +1315,9 @@ class FormGenerator(
         }
     }
 
-    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
-        { selectedId, elementID, serverViewModel, name ->
-            saveSelectedOptionValue(elementID, selectedId, serverViewModel, name)
+    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
+        { selectedId, elementID, formLayout, name ->
+            saveSelectedOptionValue(elementID, selectedId, formLayout, name)
             if ((selectedId as? String).equals(female, true)) {
                 listener.onAgeCheckForPregnancy()
             }
@@ -1350,27 +1344,27 @@ class FormGenerator(
     private fun saveSelectedOptionValue(
         id: Pair<String, String?>,
         idValue: Any?,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         name: String?
     ) {
         idValue?.let {
             resultHashMap[id.first] = it
             setConditionalVisibility(
-                serverViewModel,
+                formLayout,
                 name
             )
         } ?: kotlin.run {
             setConditionalVisibility(
-                serverViewModel,
+                formLayout,
                 null
             )
         }
     }
 
-    private fun createCustomSpinner(serverViewModel: FormLayout) {
+    private fun createCustomSpinner(formLayout: FormLayout) {
         val binding = CustomSpinnerBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
-            listener.handleMandatoryCondition(serverViewModel)
+        formLayout.apply {
+            listener.handleMandatoryCondition(formLayout)
             binding.root.tag = id + rootSuffix
             binding.etUserInput.tag = id
             binding.tvTitle.tag = id + titleSuffix
@@ -1398,7 +1392,7 @@ class FormGenerator(
                 listener.onInstructionClicked(
                     id,
                     title,
-                    dosageListModel = serverViewModel.dosageListItems
+                    dosageListModel = formLayout.dosageListItems
                 )
             }
             if (id==muacCode ||id== MUAC){
@@ -1422,7 +1416,7 @@ class FormGenerator(
                                 adapter.getData(position = pos),
                                 id,
                                 dependentID,
-                                serverViewModel
+                                formLayout
                             )
                             onPopulateCondition(condition)
                         }
@@ -1454,7 +1448,7 @@ class FormGenerator(
                                 adapter.getData(position = pos),
                                 id,
                                 dependentID,
-                                serverViewModel
+                                formLayout
                             )
                             onPopulateCondition(condition)
                         }
@@ -1503,7 +1497,7 @@ class FormGenerator(
         selectedItem: Map<String, Any>?,
         id: String,
         dependentID: String?,
-        serverViewModel: FormLayout
+        formLayout: FormLayout
     ) {
         selectedItem?.let {
             val selectedId = it[DefinedParams.ID]
@@ -1519,7 +1513,7 @@ class FormGenerator(
                         resultHashMap[id] = ""
                 }
             } else {
-                if (serverViewModel.spinnerAsObject)
+                if (formLayout.spinnerAsObject)
                     resultHashMap[id] = it
                 else
                     resultHashMap[id] =
@@ -1535,7 +1529,7 @@ class FormGenerator(
             }
 
             listener.onUpdateInstruction(id, selectedId)
-            selectedIdVisibility(selectedId, serverViewModel, selectedName)
+            selectedIdVisibility(selectedId, formLayout, selectedName)
         }
     }
 
@@ -1549,13 +1543,13 @@ class FormGenerator(
 
     private fun selectedIdVisibility(
         selectedId: Any?,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         selectedName: Any?
     ) {
         if (selectedId is String)
-            setConditionalVisibility(serverViewModel, selectedId)
+            setConditionalVisibility(formLayout, selectedId)
         else if (selectedId is Long && selectedName is String)
-            setConditionalVisibility(serverViewModel, selectedName)
+            setConditionalVisibility(formLayout, selectedName)
     }
 
     private fun onPopulateCondition(condition: java.util.ArrayList<ConditionalModel>?) {
@@ -1591,9 +1585,9 @@ class FormGenerator(
     }
 
 
-    private fun createCheckboxDialogView(serverViewModel: FormLayout) {
+    private fun createCheckboxDialogView(formLayout: FormLayout) {
         val binding = CheckboxDialogSpinnerLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.etUserInput.tag = id
             binding.tvTitle.tag = id + titleSuffix
@@ -1609,7 +1603,7 @@ class FormGenerator(
             }
 
             binding.etUserInput.safeClickListener {
-                listener.onCheckBoxDialogueClicked(id, serverViewModel, resultHashMap[id])
+                listener.onCheckBoxDialogueClicked(id, formLayout, resultHashMap[id])
             }
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
                 parentLayout.addView(binding.root)
@@ -1622,10 +1616,10 @@ class FormGenerator(
         }
     }
 
-    private fun createInformationLabel(serverViewModel: FormLayout) {
+    private fun createInformationLabel(formLayout: FormLayout) {
         val binding = LayoutInformationLabelBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
-            listener.handleMandatoryCondition(serverViewModel)
+        formLayout.apply {
+            listener.handleMandatoryCondition(formLayout)
             binding.root.tag = id + rootSuffix
             binding.tvValue.tag = id
             binding.tvSubValue.tag = id + infoSuffixText
@@ -1648,8 +1642,8 @@ class FormGenerator(
     }
 
 
-    private fun createInstructionView(serverViewModel: FormLayout) {
-        serverViewModel.apply {
+    private fun createInstructionView(formLayout: FormLayout) {
+        formLayout.apply {
             var instructionsList = instructions
             if (translate && !instructionsCulture.isNullOrEmpty())
                 instructionsList = instructionsCulture
@@ -1664,13 +1658,13 @@ class FormGenerator(
                         id,
                         title,
                         it,
-                        dosageListModel = serverViewModel.dosageListItems
+                        dosageListModel = formLayout.dosageListItems
                     )
                 } ?: kotlin.run {
                     listener.onInstructionClicked(
                         id,
                         title,
-                        dosageListModel = serverViewModel.dosageListItems
+                        dosageListModel = formLayout.dosageListItems
                     )
                 }
             }
@@ -1684,9 +1678,9 @@ class FormGenerator(
     }
 
 
-    private fun createTextLabel(serverViewModel: FormLayout) {
+    private fun createTextLabel(formLayout: FormLayout) {
         val binding = TextLabelLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.tvTitle.tag = id
             if (translate) {
@@ -1720,9 +1714,9 @@ class FormGenerator(
     }
 
 
-    private fun createMentalHealthView(serverViewModel: FormLayout) {
+    private fun createMentalHealthView(formLayout: FormLayout) {
         val binding = MentalHealthLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.tvErrorMessage.tag = id + errorSuffix
             binding.rvMentalHealth.tag = id
@@ -1739,9 +1733,9 @@ class FormGenerator(
         }
     }
 
-    private fun createDatePicker(serverViewModel: FormLayout) {
+    private fun createDatePicker(formLayout: FormLayout) {
         val binding = DatepickerLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.etUserInput.tag = id
             hint?.let {
@@ -1800,9 +1794,9 @@ class FormGenerator(
 
     private lateinit var textWatcher: TextWatcher
     private var isDOBUpdated = false
-    private fun createAgeView(serverViewModel: FormLayout) {
+    private fun createAgeView(formLayout: FormLayout) {
         val binding = AgeDobLayoutBinding.inflate(LayoutInflater.from(context))
-        serverViewModel.apply {
+        formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.etDateOfBirth.tag = id
             binding.etYears.inputType = InputType.TYPE_CLASS_NUMBER
@@ -1848,7 +1842,7 @@ class FormGenerator(
                 val yearMonthWeek = if (binding.etDateOfBirth.text.isNotEmpty()) {
                     DateUtils.getYearMonthAndDate(binding.etDateOfBirth.text.toString())
                 } else null
-                serverViewModel.run {
+                formLayout.run {
                     showDatePicker(
                         context = context,
                         disableFutureDate = disableFutureDate ?: false,
@@ -1890,7 +1884,7 @@ class FormGenerator(
         }
     }
 
-    fun fillDetailsOnDatePickerSet(date: Date, disable: Boolean, id: String = dateOfBirth) {
+    fun fillDetailsOnDatePickerSet(date: Date, isEnabled: Boolean, id: String = dateOfBirth) {
         val yearView = getViewByTag(id + Year)
         val monthView = getViewByTag(id + Month)
         val weekView = getViewByTag(id + Week)
@@ -1908,17 +1902,17 @@ class FormGenerator(
         if (yearView is AppCompatEditText && monthView is AppCompatEditText && weekView is AppCompatEditText) {
             yearMonthWeeks.years.let { year ->
                 yearView.setText(year.toString())
-                yearView.isEnabled = disable
+                yearView.isEnabled = isEnabled
                 resultHashMap[Year] = year
             }
             yearMonthWeeks.months.let { month ->
                 monthView.setText(month.toString())
-                monthView.isEnabled = disable
+                monthView.isEnabled = isEnabled
                 resultHashMap[Month] = month
             }
             yearMonthWeeks.weeks.let { week ->
                 weekView.setText(week.toString())
-                weekView.isEnabled = disable
+                weekView.isEnabled = isEnabled
                 resultHashMap[Week] = week
             }
             listener.onAgeCheckForPregnancy()
@@ -1955,7 +1949,6 @@ class FormGenerator(
         id: String,
         etDateOfBirth: AppCompatTextView
     ) {
-        // removeWatcher(etYears, etMonths, etWeeks)
         if (years == 0 && months == 0 && weeks == 0) {
             etDateOfBirth.text = ""
             removeIfContains(id)
@@ -1976,9 +1969,6 @@ class FormGenerator(
             )
             addOrUpdateDOB(calculatedBirthDate, id)
         }
-
-        //addWatcher(etYears, etMonths, etWeeks)
-
         updateAgeView(id)
     }
 
@@ -2000,32 +1990,6 @@ class FormGenerator(
     fun removeIfContains(key: String) {
         if (resultHashMap.containsKey(key)) {
             resultHashMap.remove(key)
-        }
-    }
-
-    private fun addOrUpdateAgeValue(value: String, key: String) {
-        value.toInt().let {
-            resultHashMap[key] = it
-        }
-    }
-
-    private fun removeDOB(
-        editText: AppCompatTextView,
-        etYears: AppCompatEditText,
-        etMonths: AppCompatEditText,
-        etWeeks: AppCompatEditText
-    ) {
-        val year = resultHashMap[Year] as? Int ?: 0
-        val month = resultHashMap[Month] as? Int ?: 0
-        val weeks = resultHashMap[Week] as? Int ?: 0
-        if (year == 0 && month == 0 && weeks == 0) {
-            etYears.removeTextChangedListener(textWatcher)
-            etMonths.removeTextChangedListener(textWatcher)
-            etWeeks.removeTextChangedListener(textWatcher)
-            editText.text = ""
-            etYears.addTextChangedListener(textWatcher)
-            etMonths.addTextChangedListener(textWatcher)
-            etWeeks.addTextChangedListener(textWatcher)
         }
     }
 
@@ -2127,7 +2091,7 @@ class FormGenerator(
     ) {
         conditionalModel.apply {
             if (targetId != null && targetOption != null) {
-                val targetedView = parentLayout.findViewWithTag<View>(targetOption)
+                val targetedView = parentLayout.findViewWithTag<View>(targetOption) ?: return@apply
                 if (visibility != null) {
                     checkConditionBasedRendering(
                         conditionalModel,
@@ -2148,7 +2112,7 @@ class FormGenerator(
                     )
                 }
             } else if (targetId != null) {
-                val targetedView = parentLayout.findViewWithTag<View>(targetId + rootSuffix)
+                val targetedView = parentLayout.findViewWithTag<View>(targetId + rootSuffix) ?: return@apply
                 visibleEnableConditionRendering(
                     visibility,
                     enabled,
@@ -2168,12 +2132,11 @@ class FormGenerator(
         conditionalModel: ConditionalModel,
         config: ConditionModelConfig,
         actualValue: String?,
-        targetedView: View?,
+        targetedView: View,
         targetOption: String? = null,
         isCheckBox: Boolean
     ) {
         conditionalModel.apply {
-            targetedView ?: return@apply
             if (!eq.isNullOrBlank()) {
                 if (eq == actualValue)
                     handleConfig(true, config, visibility, enabled, targetedView)
@@ -2339,7 +2302,7 @@ class FormGenerator(
         enabled: Boolean?,
         conditionalModel: ConditionalModel,
         actualValue: String?,
-        targetedView: View?,
+        targetedView: View,
         isCheckBox: Boolean
     ) {
         if (visibility != null) {
@@ -2401,19 +2364,19 @@ class FormGenerator(
 
         when (visibility) {
             VISIBLE -> {
-                root.visibility = View.VISIBLE
+                root.visible()
             }
 
             INVISIBLE -> {
-                root.visibility = View.INVISIBLE
+                root.invisible()
             }
 
             GONE -> {
-                root.visibility = View.GONE
+                root.gone()
             }
 
             else -> {
-                root.visibility = View.VISIBLE
+                root.visible()
             }
         }
     }
@@ -2976,28 +2939,28 @@ class FormGenerator(
         return valid
     }
 
-    private fun requestFocusView(serverViewModel: FormLayout, message: String? = null) {
+    private fun requestFocusView(formLayout: FormLayout, message: String? = null) {
         if (focusNeeded == null) {
-            focusNeeded = showValidationMessage(serverViewModel, message)
+            focusNeeded = showValidationMessage(formLayout, message)
         } else {
-            showValidationMessage(serverViewModel, message)
+            showValidationMessage(formLayout, message)
         }
     }
 
     private fun validateMinMaxLength(
         actualValue: Any?,
         valid: Boolean,
-        serverViewModel: FormLayout
+        formLayout: FormLayout
     ): Boolean {
         var isValid = valid
-        serverViewModel.apply {
+        formLayout.apply {
             if (minLength != null && viewType == VIEW_TYPE_FORM_EDITTEXT
                 && actualValue != null && actualValue is String
                 && actualValue.length < minLength!!
             ) {
                 isValid = false
                 requestFocusView(
-                    serverViewModel,
+                    formLayout,
                     getString(
                         R.string.min_char_length_validation,
                         minLength!!.toString()
@@ -3010,7 +2973,7 @@ class FormGenerator(
                             if (value < minValue!! || value > maxValue!!) {
                                 isValid = false
                                 requestFocusView(
-                                    serverViewModel,
+                                    formLayout,
                                     getString(
                                         R.string.general_min_max_validation,
                                         CommonUtils.getDecimalFormatted(
@@ -3022,7 +2985,7 @@ class FormGenerator(
                                     )
                                 )
                             } else {
-                                hideValidationField(serverViewModel)
+                                hideValidationField(formLayout)
                             }
                         }
                     } else if (actualValue is Number) {
@@ -3030,7 +2993,7 @@ class FormGenerator(
                             if (value < minValue!! || value > maxValue!!) {
                                 isValid = false
                                 requestFocusView(
-                                    serverViewModel,
+                                    formLayout,
                                     getString(
                                         R.string.general_min_max_validation,
                                         CommonUtils.getDecimalFormatted(
@@ -3042,11 +3005,11 @@ class FormGenerator(
                                     )
                                 )
                             } else {
-                                hideValidationField(serverViewModel)
+                                hideValidationField(formLayout)
                             }
                         }
                     } else {
-                        hideValidationField(serverViewModel)
+                        hideValidationField(formLayout)
                     }
                 } else if (minValue != null) {
                     if (actualValue is String) {
@@ -3054,7 +3017,7 @@ class FormGenerator(
                             if (value < minValue!!) {
                                 isValid = false
                                 requestFocusView(
-                                    serverViewModel,
+                                    formLayout,
                                     getString(
                                         R.string.general_min_validation,
                                         CommonUtils.getDecimalFormatted(
@@ -3063,7 +3026,7 @@ class FormGenerator(
                                     )
                                 )
                             } else {
-                                hideValidationField(serverViewModel)
+                                hideValidationField(formLayout)
                             }
                         }
                     } else if (actualValue is Number) {
@@ -3071,7 +3034,7 @@ class FormGenerator(
                             if (value < minValue!!) {
                                 isValid = false
                                 requestFocusView(
-                                    serverViewModel,
+                                    formLayout,
                                     getString(
                                         R.string.general_min_validation,
                                         CommonUtils.getDecimalFormatted(
@@ -3080,11 +3043,11 @@ class FormGenerator(
                                     )
                                 )
                             } else {
-                                hideValidationField(serverViewModel)
+                                hideValidationField(formLayout)
                             }
                         }
                     } else {
-                        hideValidationField(serverViewModel)
+                        hideValidationField(formLayout)
                     }
                 } else if (maxValue != null) {
                     if (actualValue is String) {
@@ -3092,7 +3055,7 @@ class FormGenerator(
                             if (value > maxValue!!.toDouble()) {
                                 isValid = false
                                 requestFocusView(
-                                    serverViewModel,
+                                    formLayout,
                                     getString(
                                         R.string.general_max_validation,
                                         CommonUtils.getDecimalFormatted(
@@ -3101,7 +3064,7 @@ class FormGenerator(
                                     )
                                 )
                             } else {
-                                hideValidationField(serverViewModel)
+                                hideValidationField(formLayout)
                             }
                         }
                     } else if (actualValue is Number) {
@@ -3109,7 +3072,7 @@ class FormGenerator(
                             if (value > maxValue!!.toDouble()) {
                                 isValid = false
                                 requestFocusView(
-                                    serverViewModel,
+                                    formLayout,
                                     getString(
                                         R.string.general_max_validation,
                                         CommonUtils.getDecimalFormatted(
@@ -3118,11 +3081,11 @@ class FormGenerator(
                                     )
                                 )
                             } else {
-                                hideValidationField(serverViewModel)
+                                hideValidationField(formLayout)
                             }
                         }
                     } else {
-                        hideValidationField(serverViewModel)
+                        hideValidationField(formLayout)
                     }
                 }
             } else if (contentLength != null) {
@@ -3130,30 +3093,30 @@ class FormGenerator(
                     val actualValueString =
                         CommonUtils.getDecimalFormatted(actualValue)
                     if (contentLength == actualValueString.length) {
-                        hideValidationField(serverViewModel)
+                        hideValidationField(formLayout)
                     } else {
                         isValid = false
-                        requestFocusView(serverViewModel)
+                        requestFocusView(formLayout)
                     }
                 } else {
                     val actualValueString = actualValue.toString()
                     if (contentLength == actualValueString.length) {
-                        hideValidationField(serverViewModel)
+                        hideValidationField(formLayout)
                     } else {
                         isValid = false
-                        requestFocusView(serverViewModel)
+                        requestFocusView(formLayout)
                     }
                 }
             } else {
-                hideValidationField(serverViewModel)
+                hideValidationField(formLayout)
             }
         }
         return isValid
     }
 
-    private fun showValidationMessage(serverViewModel: FormLayout, message: String? = null): View? {
-        serverViewModel.apply {
-            val view = getViewByTag(serverViewModel.id + errorSuffix)
+    private fun showValidationMessage(formLayout: FormLayout, message: String? = null): View? {
+        formLayout.apply {
+            val view = getViewByTag(formLayout.id + errorSuffix)
             if (view is TextView) {
                 view.visibility = View.VISIBLE
                 if (message != null) {
@@ -3161,7 +3124,7 @@ class FormGenerator(
                 } else {
                     view.text = getErrorMessageFromJSON(errorMessage, cultureErrorMessage)
                 }
-                return getViewByTag(serverViewModel.id + titleSuffix)
+                return getViewByTag(formLayout.id + titleSuffix)
             }
         }
         return null
@@ -3179,9 +3142,9 @@ class FormGenerator(
         else getString(R.string.default_user_input_error)
     }
 
-    private fun hideValidationField(serverViewModel: FormLayout) {
-        serverViewModel.apply {
-            val view = getViewByTag(serverViewModel.id + errorSuffix)
+    private fun hideValidationField(formLayout: FormLayout) {
+        formLayout.apply {
+            val view = getViewByTag(formLayout.id + errorSuffix)
             if (view != null && view is TextView && view.visibility == View.VISIBLE) {
                 view.visibility = View.GONE
             }
@@ -3190,7 +3153,7 @@ class FormGenerator(
 
     fun validateCheckboxDialogue(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: ArrayList<HashMap<String, Any>>,
         isListenerEnable: Boolean = true
     ) {
@@ -3212,12 +3175,12 @@ class FormGenerator(
         }
         if (isContainsOther(resultMap)) {
             setConditionalVisibility(
-                serverViewModel,
+                formLayout,
                 DefinedParams.Other
             )
         } else {
             setConditionalVisibility(
-                serverViewModel,
+                formLayout,
                 null
             )
         }
@@ -3311,12 +3274,18 @@ class FormGenerator(
 
     fun setValueForView(value: Any?, view: View) {
         if (view is AppCompatEditText) {
-            if (value is String) {
-                view.setText(value)
-            } else if (value is Int) {
-                view.setText(value.toString())
-            } else {
-                view.setText("")
+            when (value) {
+                is String -> {
+                    view.setText(value)
+                }
+
+                is Int -> {
+                    view.setText(value.toString())
+                }
+
+                else -> {
+                    view.setText("")
+                }
             }
         }
 
@@ -3453,18 +3422,18 @@ class FormGenerator(
     private fun checkOnlyAlphabets(
         actualValue: Any?,
         valid: Boolean,
-        serverViewModel: FormLayout
+        formLayout: FormLayout
     ): Boolean {
         var isValid = valid
-        serverViewModel.apply {
+        formLayout.apply {
             if (viewType == VIEW_TYPE_FORM_EDITTEXT && actualValue is String && actualValue.isNotBlank() && !CommonUtils.isAlphabetsWithSpace(
                     actualValue
                 )
             ) {
                 isValid = false
-                requestFocusView(serverViewModel, getString(R.string.only_alphabets_validation))
+                requestFocusView(formLayout, getString(R.string.only_alphabets_validation))
             } else {
-                hideValidationField(serverViewModel)
+                hideValidationField(formLayout)
             }
         }
         return isValid
@@ -3708,26 +3677,25 @@ class FormGenerator(
         this.mentalHealthEditList = mentalHealthEditList?.let {
             java.util.ArrayList(mentalHealthEditList)
         }
-        EDITSCREEN = true
         parentLayout.removeAllViews()
         addEditableCards(serverData)
-        this.serverData?.forEach { serverViewModel ->
-            when (serverViewModel.viewType) {
-                VIEW_TYPE_FORM_CARD_FAMILY -> createCardViewFamily(serverViewModel)
-                VIEW_TYPE_FORM_EDITTEXT -> createEditText(serverViewModel)
-                VIEW_TYPE_FORM_RADIOGROUP -> createRadioGroup(serverViewModel)
-                VIEW_TYPE_SINGLE_SELECTION -> createSingleSelectionView(serverViewModel)
-                VIEW_TYPE_FORM_SPINNER -> createCustomSpinner(serverViewModel)
-                VIEW_TYPE_DIALOG_CHECKBOX -> createCheckboxDialogView(serverViewModel)
-                VIEW_INFORMATION_LABEL -> createInformationLabel(serverViewModel)
-                VIEW_TYPE_INSTRUCTION -> createInstructionView(serverViewModel)
-                VIEW_TYPE_FORM_TEXTLABEL -> createTextLabel(serverViewModel)
-                VIEW_TYPE_METAL_HEALTH -> createMentalHealthView(serverViewModel)
-                VIEW_TYPE_FORM_AGE -> createAgeView(serverViewModel)
-                VIEW_TYPE_NO_OF_DAYS -> createNoOfDaysView(serverViewModel)
-                VIEW_TYPE_FORM_DATEPICKER -> createDatePicker(serverViewModel)
-                VIEW_TYPE_FORM_BP -> createBPView(serverViewModel)
-                VIEW_TYPE_TIME -> createTimeView(serverViewModel)
+        this.serverData?.forEach { formLayout ->
+            when (formLayout.viewType) {
+                VIEW_TYPE_FORM_CARD_FAMILY -> createCardViewFamily(formLayout)
+                VIEW_TYPE_FORM_EDITTEXT -> createEditText(formLayout)
+                VIEW_TYPE_FORM_RADIOGROUP -> createRadioGroup(formLayout)
+                VIEW_TYPE_SINGLE_SELECTION -> createSingleSelectionView(formLayout)
+                VIEW_TYPE_FORM_SPINNER -> createCustomSpinner(formLayout)
+                VIEW_TYPE_DIALOG_CHECKBOX -> createCheckboxDialogView(formLayout)
+                VIEW_INFORMATION_LABEL -> createInformationLabel(formLayout)
+                VIEW_TYPE_INSTRUCTION -> createInstructionView(formLayout)
+                VIEW_TYPE_FORM_TEXTLABEL -> createTextLabel(formLayout)
+                VIEW_TYPE_METAL_HEALTH -> createMentalHealthView(formLayout)
+                VIEW_TYPE_FORM_AGE -> createAgeView(formLayout)
+                VIEW_TYPE_NO_OF_DAYS -> createNoOfDaysView(formLayout)
+                VIEW_TYPE_FORM_DATEPICKER -> createDatePicker(formLayout)
+                VIEW_TYPE_FORM_BP -> createBPView(formLayout)
+                VIEW_TYPE_TIME -> createTimeView(formLayout)
             }
         }
     }

@@ -351,7 +351,7 @@ class EligibilityFragment : BaseFragment() {
         data: ArrayList<Map<String, Any>>,
         tag: String,
         hashMap: HashMap<String, Any>,
-        callback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)?,
+        callback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)?,
         container: ViewGroup?
     ) {
         SingleSelectionCustomView(binding.root.context).apply {
@@ -375,7 +375,7 @@ class EligibilityFragment : BaseFragment() {
         return flowList
     }
 
-    private var alreadyHIVTestedCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
+    private var alreadyHIVTestedCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             hivViewModel.resultHashMap[HaveYouTakenHivTestBefore] = selectedID as String
             hivViewModel.resultHashMap[HaveYouTakenHivTestBefore]?.let {

@@ -33,10 +33,8 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AlcoholCons
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DiagnosedWithDiabetes
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RegularSmoker
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.WaistCircumference
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ncd
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherConcerningSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.signsAndSymptoms
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.symptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.symptomsDTO
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -90,7 +88,7 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         return flowList
     }
 
-    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.otherAssessmentDetails[AssessmentDefinedParams.IsClinicTaken] = selectedID as String
         }

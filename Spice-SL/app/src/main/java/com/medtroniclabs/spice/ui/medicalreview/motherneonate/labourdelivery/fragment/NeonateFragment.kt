@@ -186,13 +186,13 @@ class NeonateFragment : BaseFragment() {
         }
     }
 
-    private var genderSingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var genderSingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.genderFlow[DefinedParams.Gender] = selectedID as String
             viewModel.validateSubmitButtonState()
         }
 
-    private var stateOfBabySingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var stateOfBabySingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.stateOfBaby[DefinedParams.StateOfBaby] = selectedID as String
             viewModel.validateSubmitButtonState()

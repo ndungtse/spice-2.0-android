@@ -228,13 +228,13 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         }
     }
 
-    private var vitaminAMotherSelectionCallBack: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var vitaminAMotherSelectionCallBack: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultMotherVitaminHashMap[MOTHER_VITAMIN_TAG] = selectedID as String
             viewModel.updateVitaminAForMother()
         }
 
-    private var albendazoleSelectionCallBack: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var albendazoleSelectionCallBack: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.albendazoleHashMap[MedicalReviewDefinedParams.Albendazole] =
                 selectedID as String

@@ -25,16 +25,12 @@ import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.visible
-import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams.DOB
 import com.medtroniclabs.spice.common.DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION
-import com.medtroniclabs.spice.common.DefinedParams.HouseholdHead
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
-import com.medtroniclabs.spice.common.DefinedParams.No
-import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.DefinedParams.male
 import com.medtroniclabs.spice.common.DefinedParams.Other
@@ -45,7 +41,6 @@ import com.medtroniclabs.spice.databinding.FragmentMemberRegistrationBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.titleSuffix
@@ -54,9 +49,7 @@ import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.no
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
@@ -468,7 +461,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
 
     private fun initializeView() {
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, null, this, binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
+            requireContext(), binding.llForm, this, binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
         ) { map, id->
             if (id == DateOfBirth) {
                 val month = map["month"] as? Int
@@ -514,7 +507,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
     }
 
     override fun onCheckBoxDialogueClicked(
-        id: String, serverViewModel: FormLayout, resultMap: Any?
+        id: String, formLayout: FormLayout, resultMap: Any?
     ) {
     }
 
@@ -649,7 +642,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
         formGenerator.handlePregnancyCardBasedOnAgeAndWeeks()
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
 
     }
 

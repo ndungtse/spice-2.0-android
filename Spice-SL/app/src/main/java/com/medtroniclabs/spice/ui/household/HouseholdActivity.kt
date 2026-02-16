@@ -140,11 +140,6 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
         } else {
             launchHouseholdRegistration(Bundle())
         }
-
-
-        /*if (isCreateHouseholdForPhu) {
-            loadFragment(if (!householdRegistrationViewModel.isMemberRegistration) 1 else 2)
-        } else loadFragment(if (householdRegistrationViewModel.isMemberRegistration || (householdRegistrationViewModel.memberID != -1L)) 2 else 1)*/
     }
 
     private fun launchHouseholdRegistration(args: Bundle) {
@@ -247,25 +242,6 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
                 backNavigation()
             }
         }
-
-    private fun phuMemberRegistration() {
-        val isPhuWalkInsFlow=intent.getBooleanExtra(HouseholdDefinedParams.isPhuWalkInsFlow,false)
-        if (isPhuWalkInsFlow) {
-            householdRegistrationViewModel.isMemberRegistration =true
-            val arguments = Bundle().apply {
-                putBoolean(AnalyticsDefinedParams.AddNewMember, true)
-                putBoolean(HouseholdDefinedParams.isPhuWalkInsFlow,true)
-                putLong(MemberID,intent.getLongExtra(MemberID,-1L))
-                putLong(FhirMemberID,intent.getLongExtra(FhirMemberID,-1L))
-            }
-            setTitle(getString(R.string.member_registration))
-            replaceFragmentInId<MemberRegistrationFragment>(
-                binding.fragmentContainer.id,
-                bundle = arguments,
-                tag = MemberRegistrationFragment::class.simpleName
-            )
-    }
-    }
 
     override fun onResume() {
         super.onResume()

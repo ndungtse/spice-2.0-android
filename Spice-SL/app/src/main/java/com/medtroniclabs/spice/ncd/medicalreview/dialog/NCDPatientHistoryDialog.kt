@@ -310,7 +310,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
         }
     }
 
-    private var singleSelectionCallbackForDiabetes: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallbackForDiabetes: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultDiabetesHashMap[Diabetes] = selectedID as String
             showViews(
@@ -322,7 +322,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             showSpinnerView(selectedID)
         }
 
-    private var singleSelectionCallbackForHypertension: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallbackForHypertension: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultHypertensionHashMap[Hypertension] =
                 selectedID as String

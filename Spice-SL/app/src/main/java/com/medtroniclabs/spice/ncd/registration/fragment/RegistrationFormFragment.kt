@@ -63,7 +63,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
 
     private fun initViews() {
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, null, this, binding.scrollView,
+            requireContext(), binding.llForm, this, binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled()
         )
 
@@ -314,7 +314,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
 
     override fun onCheckBoxDialogueClicked(
         id: String,
-        serverViewModel: FormLayout,
+        formLayout: FormLayout,
         resultMap: Any?
     ) {
     }
@@ -396,7 +396,6 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                 map.keys.removeAll(unwantedKeys)
                 val result = serverData?.let {
                     FormResultComposer().groupValues(
-                        context = requireContext(),
                         serverData = it,
                         map
                     )
@@ -442,7 +441,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     override fun onAgeCheckForPregnancy() {
     }
 
-    override fun handleMandatoryCondition(serverData: FormLayout?) {
+    override fun handleMandatoryCondition(formLayout: FormLayout?) {
 
     }
 

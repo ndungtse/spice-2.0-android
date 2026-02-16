@@ -12,7 +12,6 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentPregnancyPastObstetricHistoryBinding
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Other
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
@@ -112,7 +111,7 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
         viewModel.checkSubmitBtn()
     }
 
-    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultFlowHashMap[TAG] = selectedID as String
             val flowValue = viewModel.resultFlowHashMap[TAG] as? String
