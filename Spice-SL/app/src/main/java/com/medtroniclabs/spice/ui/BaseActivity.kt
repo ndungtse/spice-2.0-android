@@ -15,11 +15,11 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -38,6 +38,8 @@ import com.medtroniclabs.spice.appextensions.isGpsEnabled
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setVisible
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.common.LocaleHelper
 import com.medtroniclabs.spice.databinding.ActivityBaseBinding
@@ -47,7 +49,6 @@ import com.medtroniclabs.spice.ncd.medicalreview.prescription.dialog.CommentsAle
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
-import com.medtroniclabs.spice.ui.household.viewmodel.ConsentFormViewModel
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.abs
@@ -63,8 +64,14 @@ open class BaseActivity : SpiceRootActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        UserDetail.startDateTime =
-            com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getCurrentDateTimeInLocalTime()
+        CommonUtils.applyInsets(
+            this,
+            binding.root,
+            binding.fakeStatusBar,
+            binding.fakeNavBar,
+            false
+        )
+        UserDetail.startDateTime = AnalyticsUtils.getCurrentDateTimeInLocalTime()
         setListener()
     }
 
@@ -124,11 +131,6 @@ open class BaseActivity : SpiceRootActivity() {
             }
         }
     }
-
-    /**
-     * Receiver for session expired broadcasts from [Retrofit API].
-     */
-
 
     private fun checkVisibility(isVisible: Boolean): Int {
         return if (isVisible) View.VISIBLE else View.INVISIBLE
@@ -208,7 +210,7 @@ open class BaseActivity : SpiceRootActivity() {
         val binding = ErrorLayoutBinding.inflate(layoutInflater)
         binding.tvErrorMessage.text = text
         snackBar.view.setBackgroundColor(Color.TRANSPARENT)
-        val snackBarLayout = snackBar.view as Snackbar.SnackbarLayout
+        val snackBarLayout = snackBar.view as ViewGroup
         snackBarLayout.setPadding(0, 0, 0, 0)
         snackBarLayout.addView(binding.root)
         durationInMillis?.let {
@@ -252,7 +254,7 @@ open class BaseActivity : SpiceRootActivity() {
                 val reducePx = 2
                 val outRect = Rect()
                 v.getGlobalVisibleRect(outRect)
-                //Bounding box is to big, reduce it just a little bit
+                //Bounding box is too big, reduce it just a little bit
                 outRect.inset(reducePx, reducePx)
                 touchEvent(v, x, y, reducePx, outRect)
             }
@@ -270,7 +272,7 @@ open class BaseActivity : SpiceRootActivity() {
                 if (vi is EditText) {
                     val clickedViewRect = Rect()
                     vi.getGlobalVisibleRect(clickedViewRect)
-                    //Bounding box is to big, reduce it just a little bit
+                    //Bounding box is too big, reduce it just a little bit
                     clickedViewRect.inset(reducePx, reducePx)
                     if (clickedViewRect.contains(x, y)) {
                         touchTargetIsEditText = true
@@ -285,7 +287,7 @@ open class BaseActivity : SpiceRootActivity() {
         }
     }
 
-    fun showTurnOnGPSDialog(isNegativeButtonNeed : Boolean = false) {
+    fun showTurnOnGPSDialog(isNegativeButtonNeed: Boolean = false) {
         showErrorDialogue(
             title = getString(R.string.gps_disabled_title),
             message = getString(R.string.gps_disabled_message),
@@ -380,6 +382,7 @@ open class BaseActivity : SpiceRootActivity() {
             }
         }
     }
+
     inline fun <reified F : Fragment> FragmentActivity.createNewFragmentOnly(
         containerId: Int,
         bundle: Bundle? = null,
@@ -409,6 +412,7 @@ open class BaseActivity : SpiceRootActivity() {
     fun getFragmentById(fragmentManager: FragmentManager, fragmentId: Int): Fragment? {
         return fragmentManager.findFragmentById(fragmentId)
     }
+
     fun withNetworkCheck(
         connectivityManager: ConnectivityManager,
         onNetworkAvailable: () -> Unit,
@@ -486,10 +490,12 @@ open class BaseActivity : SpiceRootActivity() {
             }
         }
     }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.mypatient_menu, menu)
-        return true    }
+        return true
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return super.onOptionsItemSelected(item)
@@ -497,13 +503,13 @@ open class BaseActivity : SpiceRootActivity() {
 
     fun onHomeClick(callbackHome: (() -> Unit?)? = null) {
         binding.ivHome.safeClickListener {
-                if (callbackHome == null) {
-                    redirectToHome()
-                } else {
-                    callbackHome.invoke()
-                }
+            if (callbackHome == null) {
+                redirectToHome()
+            } else {
+                callbackHome.invoke()
             }
         }
+    }
 
     fun hiddenBackButton() {
         binding.ivBack.visibility = checkVisibility(false)
@@ -583,7 +589,10 @@ open class BaseActivity : SpiceRootActivity() {
     override fun attachBaseContext(newBase: Context?) {
         try {
             super.attachBaseContext(newBase?.let {
-                LocaleHelper.onAttach(it, com.medtroniclabs.spice.common.CommonUtils.parseUserLocale())
+                LocaleHelper.onAttach(
+                    it,
+                    com.medtroniclabs.spice.common.CommonUtils.parseUserLocale()
+                )
             })
         } catch (e: Exception) {
             e.printStackTrace()
@@ -599,6 +608,7 @@ open class BaseActivity : SpiceRootActivity() {
                 showTurnOnGPSDialog()
                 onLocationNotAvailable?.invoke()
             }
+
             !isFineAndCoarseLocationPermissionGranted() -> {
                 requestLocationPermissions { permissionsGranted ->
                     if (permissionsGranted) {
@@ -626,6 +636,7 @@ open class BaseActivity : SpiceRootActivity() {
                     }
                 }
             }
+
             else -> onLocationAvailable()
         }
     }

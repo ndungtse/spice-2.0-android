@@ -1,26 +1,15 @@
 package com.medtroniclabs.spice.app.analytics.utils
 
 import com.google.gson.Gson
-import com.google.gson.JsonElement
-import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
 import com.medtroniclabs.spice.app.analytics.model.ScreenDetails
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
 
-object CommonUtils {
-
-    fun stringToJsonElement(jsonString: String): JsonElement {
-        return JsonParser.parseString(jsonString)
-    }
-
-    fun jsonElementToString(jsonElement: JsonElement): String {
-        return Gson().toJson(jsonElement)
-    }
+object AnalyticsUtils {
 
     fun mapToString(map: Map<String, Any?>): String {
         return Gson().toJson(map)
@@ -50,20 +39,6 @@ object CommonUtils {
         strBuilder.append("_")
         strBuilder.append("analytics.json")
         return strBuilder.toString()
-    }
-
-    fun getFileUploadTime(): Long {
-        val currentTime = Calendar.getInstance()
-        val nextUploadTime = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 23)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-            if (currentTime.after(this)) {
-                add(Calendar.DATE, 1)
-            }
-        }
-        return nextUploadTime.timeInMillis - currentTime.timeInMillis
     }
 
     fun createEventParameter(

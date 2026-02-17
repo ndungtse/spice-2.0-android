@@ -12,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.extractNumber
@@ -88,8 +89,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         viewModel.getNearestHealthFacility()
         attachObservers()
         setListener()
-        UserDetail.startDateTime =
-            com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getCurrentDateTimeInLocalTime()
+        UserDetail.startDateTime = AnalyticsUtils.getCurrentDateTimeInLocalTime()
     }
 
     private fun setListener() {

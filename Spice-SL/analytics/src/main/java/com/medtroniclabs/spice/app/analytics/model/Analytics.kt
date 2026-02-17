@@ -2,7 +2,7 @@ package com.medtroniclabs.spice.app.analytics.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getCurrentDateTimeInUTC
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils.getCurrentDateTimeInUTC
 
 @Entity(tableName = "analytics")
 data class Analytics(

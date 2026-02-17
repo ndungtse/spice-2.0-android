@@ -203,13 +203,13 @@ class ApiHelperImpl @Inject constructor(
 
     override suspend fun getMetaDataInformation(): Response<APIResponse<MetaDataResponse>> {
         // Mock data - return JSON from assets
-        val jsonString = CommonUtils.getStringFromAssets("mock_static_data.json", context.assets)
-        val type: Type = object : TypeToken<APIResponse<MetaDataResponse>>() {}.type
-        val mockResponse: APIResponse<MetaDataResponse> = Gson().fromJson(jsonString, type)
-        return Response.success(mockResponse)
-        
+//        val jsonString = CommonUtils.getStringFromAssets("mock_static_data.json", context.assets)
+//        val type: Type = object : TypeToken<APIResponse<MetaDataResponse>>() {}.type
+//        val mockResponse: APIResponse<MetaDataResponse> = Gson().fromJson(jsonString, type)
+//        return Response.success(mockResponse)
+
         // Uncomment below line when backend is ready to use actual API
-        // return apiService.getMetaDataInformation()
+         return apiService.getMetaDataInformation()
     }
 
     override suspend fun getForms(formRequest: FormRequest): Response<APIResponse<FormResponse>> {

@@ -7,6 +7,13 @@
     android:background="@color/white"
     tools:context=".ui.BaseActivity">
 
+    <View
+        android:id="@+id/fake_status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/blue"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -14,7 +21,7 @@
         android:background="@color/blue"
         android:elevation="@dimen/_10sdp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fake_status_bar"
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
@@ -36,7 +43,6 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_bold"
             android:gravity="center"
-            android:paddingEnd="@dimen/_0dp"
             android:textColor="@color/white"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -101,8 +107,8 @@
                 android:contentDescription="@string/more"
                 android:paddingRight="@dimen/_20sdp"
                 android:src="@drawable/ic_more_vertical"
-                android:visibility="gone" />
-
+                android:visibility="gone"
+                tools:ignore="RtlHardcoded,RtlSymmetry" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -113,7 +119,6 @@
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@+id/titleToolbar" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
@@ -122,9 +127,8 @@
         android:layout_height="@dimen/_0dp"
         android:focusable="true"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/fake_nav_bar"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-
 
     <RelativeLayout
         android:id="@+id/loadingProgress"
@@ -147,16 +151,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- <com.airbnb.lottie.LottieAnimationView
-             android:id="@+id/spin_kit"
-             android:layout_width="@dimen/_75sdp"
-             android:layout_height="@dimen/_75sdp"
-             app:lottie_autoPlay="true"
-             app:lottie_loop="true"
-             app:lottie_rawRes="@raw/sample_lottie" />-->
-
-
     </RelativeLayout>
 
+    <View
+        android:id="@+id/fake_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/nav_bar_color"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

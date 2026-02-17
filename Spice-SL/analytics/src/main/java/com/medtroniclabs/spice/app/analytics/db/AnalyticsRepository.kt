@@ -3,7 +3,7 @@ package com.medtroniclabs.spice.app.analytics.db
 import android.content.Context
 import com.medtroniclabs.spice.app.analytics.model.Analytics
 import com.medtroniclabs.spice.app.analytics.model.UserJourneyAnalytics
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 
 class AnalyticsRepository(private val ctx: Context) {
@@ -19,7 +19,7 @@ class AnalyticsRepository(private val ctx: Context) {
             userId = UserDetail.userId,
             role = UserDetail.role,
             eventType = eventType,
-            parameter = CommonUtils.mapToString(parameter),
+            parameter = AnalyticsUtils.mapToString(parameter),
             lastSyncDate = lastSyncDate
         )
     )
@@ -34,7 +34,7 @@ class AnalyticsRepository(private val ctx: Context) {
             userId = userId,
             role = userRole,
             eventType = eventType,
-            parameter = CommonUtils.mapToString(parameter),
+            parameter = AnalyticsUtils.mapToString(parameter),
             lastSyncDate = lastSyncDate
         )
     )

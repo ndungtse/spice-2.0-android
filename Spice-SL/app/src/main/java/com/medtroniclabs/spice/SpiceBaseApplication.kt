@@ -12,7 +12,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils
 import com.medtroniclabs.spice.appextensions.isDebug
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.log.CrashReportingTree
@@ -207,7 +207,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
             )
 
             userAnalytics?.second?.forEach {
-                CommonUtils.setUserJourneyData(
+                AnalyticsUtils.setUserJourneyData(
                     userId = it.value[0].userID,
                     eventName = AnalyticsDefinedParams.SessionTracking,
                     referenceId = it.key,

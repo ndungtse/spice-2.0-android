@@ -1,11 +1,20 @@
 package com.medtroniclabs.spice.common
 
+import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.os.Build
 import android.text.SpannableStringBuilder
+import android.view.View
+import android.view.WindowManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
 import com.medtroniclabs.spice.BuildConfig
@@ -34,15 +43,10 @@ import com.medtroniclabs.spice.data.history.Investigation
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.db.entity.RiskFactorModel
 import com.medtroniclabs.spice.db.entity.VillageEntity
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DAY
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DAYS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.GONE
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTH
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.VISIBLE
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEK
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEKS
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.model.BPModel
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -132,9 +136,11 @@ object CommonUtils {
             }
         }
     }
+
     fun getBooleanFromString(answer: Any): Boolean? {
         return (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
     }
+
     fun getDoubleOrNull(answer: Any?): Double? {
         when (answer) {
             is Double -> return answer
@@ -146,12 +152,15 @@ object CommonUtils {
                     null
                 }
             }
+
             is Int -> {
                 return answer.toDouble()
             }
+
             is Long -> {
                 return answer.toDouble()
             }
+
             else -> {
                 return null
             }
@@ -258,7 +267,9 @@ object CommonUtils {
 
     fun isChwChp(): Boolean {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
-        return userRole?.contains(COMMUNITY_HEALTH_WORKER) == true || userRole?.contains(RoleConstant.COMMUNITY_HEALTH_PROVIDER) == true
+        return userRole?.contains(COMMUNITY_HEALTH_WORKER) == true || userRole?.contains(
+            RoleConstant.COMMUNITY_HEALTH_PROVIDER
+        ) == true
     }
 
     fun isProvider(): Boolean {
@@ -480,12 +491,15 @@ object CommonUtils {
             MedicalReviewTypeEnums.ANC_REVIEW.name, MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name, MedicalReviewTypeEnums.MOTHER_DELIVERY_REVIEW.name -> {
                 MedicalReviewTypeEnums.RMNCH.name
             }
+
             MedicalReviewTypeEnums.TB.name -> {
                 MedicalReviewTypeEnums.TB.name
             }
-            MedicalReviewTypeEnums.FP.name ->{
+
+            MedicalReviewTypeEnums.FP.name -> {
                 MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name
             }
+
             else -> {
                 null
             }
@@ -514,16 +528,16 @@ object CommonUtils {
         context: Context,
         type: Boolean
     ): String? {
-        val maxKeyLength = prescriptions.flatMap { it.keys }.maxOfOrNull { it.length} ?: 0
-        var formattedFirst=""
+        val maxKeyLength = prescriptions.flatMap { it.keys }.maxOfOrNull { it.length } ?: 0
+        var formattedFirst = ""
         return prescriptions.takeIf { it.isNotEmpty() }?.mapIndexed { index, prescription ->
             prescription.entries.joinToString("\n") { (key, pair) ->
-                formattedFirst = if (key.length==maxKeyLength && type){
+                formattedFirst = if (key.length == maxKeyLength && type) {
                     key.plus(":").padEnd(maxKeyLength)
-                }else if(!type){
+                } else if (!type) {
                     key.plus(": ").padEnd(maxKeyLength)
                 } else {
-                    key.plus(":").padEnd((maxKeyLength+6).toInt())
+                    key.plus(":").padEnd((maxKeyLength + 6).toInt())
                 }
                 val formattedPair = if (pair.second == null) {
                     "${index + 1}. $formattedFirst ${pair.first}"
@@ -534,7 +548,6 @@ object CommonUtils {
             }
         }?.joinToString("\n")
     }
-
 
 
     private fun dayPeriod(prescribedDays: Long?, context: Context): String {
@@ -557,12 +570,12 @@ object CommonUtils {
         return if (menstrualPeriod) {
             DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 287)
         } else {
-            if (minDays != null ) {
-                if (minDays > 0){
+            if (minDays != null) {
+                if (minDays > 0) {
                     val calendar = Calendar.getInstance()
                     calendar.add(Calendar.DAY_OF_MONTH, -minDays)
                     return calendar.timeInMillis
-                }else {
+                } else {
                     return null
                 }
             } else {
@@ -589,9 +602,9 @@ object CommonUtils {
         return if (menstrualPeriod) {
             DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 287)
         } else {
-            if (minDays !=null && minDays > 0){
+            if (minDays != null && minDays > 0) {
                 return minDays
-            }else{
+            } else {
                 return null
             }
         }
@@ -607,7 +620,8 @@ object CommonUtils {
                     context.getString(R.string.separator_double_hyphen)
                 }
             }
-            is Boolean -> booleanToYesNo(value,context)
+
+            is Boolean -> booleanToYesNo(value, context)
             null -> context.getString(R.string.separator_double_hyphen)
             else -> context.getString(R.string.separator_double_hyphen)
         }
@@ -655,14 +669,15 @@ object CommonUtils {
     fun extractNumber(input: String): Int {
         return input.split(" ").getOrNull(0)?.toIntOrNull() ?: 0
     }
-    fun birthWeight(kg: Double, context: Context): String{
+
+    fun birthWeight(kg: Double, context: Context): String {
         val grams = (kg * 1000).toInt()
         return when {
             grams < 1000 -> context.getString(R.string.elbw)
             grams < 1500 -> context.getString(R.string.vlbw)
             grams < 2500 -> context.getString(R.string.lbw)
-            grams in 2500..4000 ->  context.getString(R.string.nbw)
-            grams > 4000 ->  context.getString(R.string.hbw)
+            grams in 2500..4000 -> context.getString(R.string.nbw)
+            grams > 4000 -> context.getString(R.string.hbw)
             else -> ""
         }
     }
@@ -802,7 +817,7 @@ object CommonUtils {
         var key = Screening.MentalHealthDetails
         if (type.equals(AssessmentDefinedParams.PHQ9, true))
             key = AssessmentDefinedParams.PHQ9_Mental_Health
-        else if (type.equals(AssessmentDefinedParams.GAD7,true))
+        else if (type.equals(AssessmentDefinedParams.GAD7, true))
             key = AssessmentDefinedParams.GAD7_Mental_Health
         return key
     }
@@ -856,6 +871,7 @@ object CommonUtils {
                 map[Screening.RiskLevel] = getPhQ4RiskLevel(phqScore)
                 map[Screening.MentalHealthDetails] = phqMap
             }
+
             AssessmentDefinedParams.PHQ9 -> {
                 map[AssessmentDefinedParams.PHQ9_Score] = phqScore
                 map[AssessmentDefinedParams.PHQ9_Risk_Level] = getPhQ4RiskLevel(phqScore)
@@ -895,7 +911,7 @@ object CommonUtils {
 
     fun calculateCAGEAIDSCore(map: HashMap<String, Any>, serverData: List<FormLayout?>?) {
         var cageAid = 0
-        if (serverData?.any { it?.id == substanceAbuse || it?.family == substanceAbuse} != true) {
+        if (serverData?.any { it?.id == substanceAbuse || it?.family == substanceAbuse } != true) {
             return
         }
         serverData?.let { dataList ->
@@ -971,7 +987,11 @@ object CommonUtils {
             referredReasonList.add(ReferredReason.pregnancySymptoms)
             status = true
         }
-        if (resultMapPair.second.containsKey(Screening.SuicidalIdeation) && (resultMapPair.second[Screening.SuicidalIdeation] as String).equals(DefinedParams.Yes, true)) {
+        if (resultMapPair.second.containsKey(Screening.SuicidalIdeation) && (resultMapPair.second[Screening.SuicidalIdeation] as String).equals(
+                DefinedParams.Yes,
+                true
+            )
+        ) {
             referredReasonList.add(ReferredReason.SuicidalIdeation)
             status = true
         }
@@ -1003,7 +1023,7 @@ object CommonUtils {
         map: HashMap<String, Any>,
         removeUnwantedKeys: Boolean = false,
         addDateTime: Boolean = false,
-        getRbsFbs: (Pair<Double?,Double?>) -> Unit
+        getRbsFbs: (Pair<Double?, Double?>) -> Unit
     ) {
         if (map.containsKey(Screening.BloodGlucoseID)) {
             val bloodGlucoseString = map[Screening.BloodGlucoseID]
@@ -1057,11 +1077,12 @@ object CommonUtils {
             }
         }
     }
+
     private fun setFBSAndRBSValues(
         map: HashMap<String, Any>,
         bloodGlucoseValue: Double,
         code: Int,
-        getRbsFbs: (Pair<Double?,Double?>) -> Unit
+        getRbsFbs: (Pair<Double?, Double?>) -> Unit
     ) {
         when (code) {
             1 -> {
@@ -1090,6 +1111,7 @@ object CommonUtils {
             }
         }
     }
+
     private fun checkFBS(map: HashMap<String, Any>): Boolean {
         if (map.containsKey(lastMealTime) && map[lastMealTime] is String) {
             val lastMealTimeInMillis =
@@ -1230,30 +1252,30 @@ object CommonUtils {
 
     private fun handleBPLogs(map: HashMap<String, Any>) {
         try {
-                val bpLog = map[Screening.bp_log] as? MutableMap<String, Any>?
-                bpLog?.let { log ->
-                    val logDetail =
-                        log.entries.first { (key, _) -> key == Screening.BPLog_Details }.value as? java.util.ArrayList<*>
-                    val newList = ArrayList<HashMap<String, String>>()
-                    logDetail?.forEachIndexed { _, any ->
-                        (any as? Map<*, *>?)?.let { record ->
-                            val data = HashMap<String, String>()
-                            (record[Screening.Systolic] as? Double?)?.let { sys ->
-                                data[Screening.Systolic] = CommonUtils.parseDouble(sys)
-                            }
-                            (record[Screening.Diastolic] as? Double?)?.let { dia ->
-                                data[Screening.Diastolic] = CommonUtils.parseDouble(dia)
-                            }
-                            (record[Screening.Pulse] as? Double?)?.let { pul ->
-                                data[Screening.Pulse] = CommonUtils.parseDouble(pul)
-                            }
-                            if (data.isNotEmpty())
-                                newList.add(data)
+            val bpLog = map[Screening.bp_log] as? MutableMap<String, Any>?
+            bpLog?.let { log ->
+                val logDetail =
+                    log.entries.first { (key, _) -> key == Screening.BPLog_Details }.value as? java.util.ArrayList<*>
+                val newList = ArrayList<HashMap<String, String>>()
+                logDetail?.forEachIndexed { _, any ->
+                    (any as? Map<*, *>?)?.let { record ->
+                        val data = HashMap<String, String>()
+                        (record[Screening.Systolic] as? Double?)?.let { sys ->
+                            data[Screening.Systolic] = CommonUtils.parseDouble(sys)
                         }
+                        (record[Screening.Diastolic] as? Double?)?.let { dia ->
+                            data[Screening.Diastolic] = CommonUtils.parseDouble(dia)
+                        }
+                        (record[Screening.Pulse] as? Double?)?.let { pul ->
+                            data[Screening.Pulse] = CommonUtils.parseDouble(pul)
+                        }
+                        if (data.isNotEmpty())
+                            newList.add(data)
                     }
-                    if (newList.isNotEmpty())
-                        log[Screening.BPLog_Details] = newList
                 }
+                if (newList.isNotEmpty())
+                    log[Screening.BPLog_Details] = newList
+            }
         } catch (_: Exception) {
             //Catch Block
         }
@@ -1513,6 +1535,7 @@ object CommonUtils {
             MenuConstants.DISPENSE.lowercase(),
             MenuConstants.INVESTIGATION.lowercase(),
             MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> true
+
             else -> false
         }
     }
@@ -1597,7 +1620,7 @@ object CommonUtils {
     }
 
     fun getBMIFormattedText(context: Context, bmi: Double?): Pair<CharSequence?, Int?> {
-        if (bmi == null) return Pair(null,null)
+        if (bmi == null) return Pair(null, null)
         val bioCategoryInfo = getBMIInformation(context, bmi)
         val bmiInfo = getDecimalFormatted(bmi)
 
@@ -1646,7 +1669,7 @@ object CommonUtils {
         return byteArrayOutputStream.toByteArray()
     }
 
-    fun convertByteArrayToBitmap(byteArray: ByteArray?) : Bitmap?{
+    fun convertByteArrayToBitmap(byteArray: ByteArray?): Bitmap? {
         return byteArray?.let { BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size) }
     }
 
@@ -1752,7 +1775,7 @@ object CommonUtils {
     }
 
     fun canShowSort(origin: String?): Boolean {
-        if(isTiberbuUser())
+        if (isTiberbuUser())
             return false
 
         val isFromMyPatients: Boolean =
@@ -1805,6 +1828,7 @@ object CommonUtils {
             else -> false
         }
     }
+
     fun isPhysicianPrescriber(): Boolean {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
         if (userRole != null) {
@@ -2011,7 +2035,6 @@ object CommonUtils {
         val formatter = DateTimeFormatter
             .ofPattern(DateUtils.DATE_ddMMyyyy)
             .withLocale(Locale.ENGLISH)
-
         val birthDate = LocalDate.parse(dob, formatter)
         val currentDate = LocalDate.now()
 
@@ -2024,20 +2047,20 @@ object CommonUtils {
     }
 
     fun isDateHigherThanInput(dateString: String, noOfDayFever: Int): Boolean {
-            // Parse the given date string
-            val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
-                .withLocale(Locale.ENGLISH)
-            val givenDate = LocalDate.parse(dateString, formatter)
+        // Parse the given date string
+        val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+            .withLocale(Locale.ENGLISH)
+        val givenDate = LocalDate.parse(dateString, formatter)
 
-            // Get the current date
-            val currentDate = LocalDate.now()
+        // Get the current date
+        val currentDate = LocalDate.now()
 
-            // Calculate the number of days between the current date and the given date
-            val daysDifference = ChronoUnit.DAYS.between(givenDate, currentDate).toInt()
+        // Calculate the number of days between the current date and the given date
+        val daysDifference = ChronoUnit.DAYS.between(givenDate, currentDate).toInt()
 
-            // Check if the given date is not lesser than the noOfDayFever
-            return daysDifference >= noOfDayFever
-        }
+        // Check if the given date is not lesser than the noOfDayFever
+        return daysDifference >= noOfDayFever
+    }
 
     fun isAfrica(): Boolean {
         return BuildConfig.FLAVOR == BUILD_FLAVOR_AFRICA
@@ -2064,7 +2087,7 @@ object CommonUtils {
 
     fun isPeerSuperVisor(): Boolean {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
-        if (userRole != null){
+        if (userRole != null) {
             return userRole.contains(PEER_SUPERVISOR)
         }
         return false
@@ -2084,6 +2107,77 @@ object CommonUtils {
         return dispensedList.nullIfEmpty()
             ?.mapIndexed { index, item -> "${index + 1}. ${item.capitalizeFirstChar()}" }
             ?.joinToString(separator = "\n") ?: "-"
+    }
+
+    fun applyInsets(
+        activity: Activity,
+        root: View,
+        fakeStatusBar: View? = null,
+        fakeNavBar: View? = null,
+        isLightStatusBar: Boolean = true,
+        isLightNavigationBar: Boolean = true,
+    ) {
+        val window = activity.window
+        val decorView = window.decorView
+        // 1. Enable Edge-to-Edge
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // 2. Status Bar and navigation bar fully transparent
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
+
+        // 4. Disable Contrast Enforcements (Android 10+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isStatusBarContrastEnforced = false
+            window.isNavigationBarContrastEnforced = false
+        }
+
+        // 4. Set status bar and navigation bar colors as per light or dark
+        // Since getting the controller is little delayed,
+        // doing it on post call so that the view is rendered already before accessing
+        decorView.post {
+            val controller = WindowCompat.getInsetsController(window, decorView)
+            controller.isAppearanceLightStatusBars = isLightStatusBar
+            controller.isAppearanceLightNavigationBars = isLightNavigationBar
+        }
+
+        // 5. Notch/Cutout handling (Android 9+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.attributes.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        }
+
+        // 6. Dynamic Sizing Listener
+        ViewCompat.setOnApplyWindowInsetsListener(decorView) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val isImeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+            val displayCutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+
+            // 1. Status Bar always stays the same height
+            fakeStatusBar?.updateLayoutParams {
+                height = systemBars.top
+            }
+
+            // 2. Nav Bar logic:
+            // If keyboard is visible, hide fake nav bar (height = 0)
+            // because the keyboard handles its own padding.
+            fakeNavBar?.updateLayoutParams {
+                // Setting height as 0 to view takes full height for some reason, hence keeping 1
+                height = if (isImeVisible) 1 else systemBars.bottom
+            }
+
+            // 3. Landscape Safety: Apply horizontal padding to the root container
+            // This ensures content doesn't sit under the side-nav-bar or the notch
+            root.setPadding(
+                systemBars.left + displayCutout.left,
+                0,
+                systemBars.right + displayCutout.right,
+                0
+            )
+
+            insets
+        }
     }
 
 }

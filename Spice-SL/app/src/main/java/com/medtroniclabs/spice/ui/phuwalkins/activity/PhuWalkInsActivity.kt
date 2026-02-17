@@ -16,7 +16,6 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWAL
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREENCALLBUTTON
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREENHOUSEHOLDLISTLINK
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.PHUWALKINSCREENLINKBUTTON
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager

@@ -21,7 +21,7 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.AddNewMember
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.EditNewMember
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.visible
@@ -488,10 +488,10 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
         memberRegistrationViewModel.addNewMember =
             arguments?.getBoolean(AddNewMember, false) ?: false
         if (memberRegistrationViewModel.addNewMember) {
-            UserDetail.startDateTime = CommonUtils.getCurrentDateTimeInLocalTime()
+            UserDetail.startDateTime = AnalyticsUtils.getCurrentDateTimeInLocalTime()
             UserDetail.eventName = AddNewMember
         } else {
-            UserDetail.startDateTime = CommonUtils.getCurrentDateTimeInLocalTime()
+            UserDetail.startDateTime = AnalyticsUtils.getCurrentDateTimeInLocalTime()
             UserDetail.eventName = EditNewMember
         }
     }

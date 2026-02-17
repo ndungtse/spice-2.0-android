@@ -36,15 +36,13 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.upload.UploadWorker
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getAppVersion
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.updateUserIdIfEmpty
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils.getAppVersion
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils.updateUserIdIfEmpty
 import com.medtroniclabs.spice.appextensions.cancelAllWorker
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.setError
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
-import com.medtroniclabs.spice.appextensions.syncWorkerName
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.appextensions.workerUniqueName
@@ -143,6 +141,15 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         binding = ActivityLandingBinding.inflate(layoutInflater)
         splashScreen.setKeepOnScreenCondition { false }
         setContentView(binding.root)
+        // Since landing activity is setting content with setContentView,
+        // applying insets separately for this screen only
+        CommonUtils.applyInsets(
+            this,
+            binding.root,
+            binding.fakeStatusBar,
+            binding.fakeNavBar,
+            false
+        )
         if (CommonUtils.isNonCommunity()) {
             languageViewModel.getCultures()
         } else {

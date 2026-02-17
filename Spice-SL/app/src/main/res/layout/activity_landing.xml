@@ -5,10 +5,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <View
+        android:id="@+id/fake_status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/blue"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="@dimen/_0dp"
+        app:layout_constraintBottom_toTopOf="@id/fake_nav_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fake_status_bar"
         tools:openDrawer="end">
 
         <include
@@ -23,7 +34,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="@color/white"
-            android:fitsSystemWindows="true"
             app:drawerLayoutCornerSize="@dimen/_0dp"
             app:headerLayout="@layout/activity_landing_header"
             app:itemBackground="@drawable/divider_nav_menu"
@@ -47,13 +57,13 @@
                 android:layout_height="match_parent" />
 
         </com.google.android.material.navigation.NavigationView>
+
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_notification_view"
             android:layout_width="@dimen/_320sdp"
             android:layout_height="match_parent"
-            android:visibility="gone"
             android:layout_gravity="end"
-            android:fitsSystemWindows="true">
+            android:visibility="gone">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -98,7 +108,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
@@ -141,8 +150,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"/>
-
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
@@ -174,6 +182,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.navigation.NavigationView>
+
     </androidx.drawerlayout.widget.DrawerLayout>
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -181,13 +190,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_18sdp"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:fontFamily="@font/inter_regular"
+        android:text="@string/upload_log"
         android:textColor="@color/white"
         android:textSize="@dimen/_14ssp"
-        android:fontFamily="@font/inter_regular"
-        android:layout_marginEnd="@dimen/_16sdp"
-        android:text="@string/upload_log"
-        app:layout_constraintBottom_toBottomOf="@+id/drawer_layout"
+        app:layout_constraintBottom_toBottomOf="@id/drawer_layout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/drawer_layout"
         app:layout_constraintVertical_bias="0.0" />
+
+    <View
+        android:id="@+id/fake_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/nav_bar_color"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

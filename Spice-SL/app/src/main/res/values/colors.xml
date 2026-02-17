@@ -62,7 +62,6 @@
     <color name="attention_color">#994242</color>
     <color name="green_attention_color">#54CC90</color>
     <color name="gray_bg_site">#EFEFEF</color>
-    <color name="blue_80_percent_alpha">#CC000000</color>
     <color name="purple_blue">#6269DB</color>
     <color name="edit_text_error_color">#ED8860</color>
     <color name="search_background">#F8F8FE</color>

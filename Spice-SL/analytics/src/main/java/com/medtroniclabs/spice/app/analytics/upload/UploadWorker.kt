@@ -13,7 +13,7 @@ import com.medtroniclabs.spice.app.analytics.model.AnalyticsDetail
 import com.medtroniclabs.spice.app.analytics.network.ApiService
 import com.medtroniclabs.spice.app.analytics.network.RetrofitHelper
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -84,7 +84,7 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         getAllAnalyticsData()?.let { analyticsData ->
             try {
                 val ids = analyticsData.userAnalytics.joinToString(separator = "_") { it.id }
-                val fileName = CommonUtils.getAnalyticsFileName(ids)
+                val fileName = AnalyticsUtils.getAnalyticsFileName(ids)
                 applicationContext.openFileOutput(
                     fileName,
                     Context.MODE_PRIVATE

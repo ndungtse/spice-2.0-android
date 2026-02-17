@@ -79,6 +79,9 @@ open class SpiceRootActivity : AppCompatActivity() {
         )
     }
 
+    /**
+     * Receiver for session expired broadcasts from [Retrofit API].
+     */
     inner class SessionExpiredBroadcastReceiver : BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {

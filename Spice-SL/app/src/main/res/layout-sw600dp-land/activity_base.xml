@@ -7,6 +7,13 @@
     android:background="@color/white"
     tools:context=".ui.BaseActivity">
 
+    <View
+        android:id="@+id/fake_status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/blue"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -14,7 +21,7 @@
         android:background="@color/blue"
         android:elevation="@dimen/_10sdp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fake_status_bar"
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
@@ -77,49 +84,6 @@
             app:layout_constraintStart_toEndOf="@id/ivRedAlert"
             app:layout_constraintTop_toTopOf="@id/titleToolbar" />
 
-        <!--        <LinearLayout
-                    android:id="@+id/clTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    app:layout_constraintBottom_toBottomOf="@id/toolbar"
-                    app:layout_constraintEnd_toStartOf="@+id/ivHomeHolder"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/toolbar">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/titleToolbar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/inter_medium"
-                        android:gravity="center"
-                        android:paddingVertical="@dimen/_11sdp"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_16ssp" />
-
-                    <ImageView
-                        android:id="@+id/ivRedAlert"
-                        android:layout_width="@dimen/_24sdp"
-                        android:layout_height="@dimen/_24sdp"
-                        android:layout_marginStart="@dimen/_10sdp"
-                        android:src="@drawable/ic_red_alert"
-                        android:visibility="gone" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvRedAlert"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_5sdp"
-                        android:fontFamily="@font/inter_regular"
-                        android:gravity="center"
-                        android:paddingVertical="@dimen/_11sdp"
-                        android:text="@string/red_alert"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_16ssp"
-                        android:visibility="gone" />
-
-                </LinearLayout>-->
-
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/ivHomeHolder"
             android:layout_width="wrap_content"
@@ -148,8 +112,8 @@
                 android:contentDescription="@string/more"
                 android:paddingRight="@dimen/_30sdp"
                 android:src="@drawable/ic_more_vertical"
-                android:visibility="gone" />
-
+                android:visibility="gone"
+                tools:ignore="RtlHardcoded,RtlSymmetry" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -160,18 +124,14 @@
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@+id/titleToolbar" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
         android:id="@+id/frameBaseLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
-
-    </com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout>
-
+        app:layout_constraintBottom_toTopOf="@id/fake_nav_bar"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <RelativeLayout
         android:id="@+id/loadingProgress"
@@ -194,8 +154,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
     </RelativeLayout>
 
+    <View
+        android:id="@+id/fake_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/nav_bar_color"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
