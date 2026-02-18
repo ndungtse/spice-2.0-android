@@ -2164,7 +2164,7 @@ object CommonUtils {
             // because the keyboard handles its own padding.
             fakeNavBar?.updateLayoutParams {
                 // Setting height as 0 to view takes full height for some reason, hence keeping 1
-                height = if (isImeVisible) 1 else systemBars.bottom
+                height = if (isImeVisible) 0 else systemBars.bottom
             }
 
             // 3. Landscape Safety: Apply horizontal padding to the root container
