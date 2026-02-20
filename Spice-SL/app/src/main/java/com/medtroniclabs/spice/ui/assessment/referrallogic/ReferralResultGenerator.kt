@@ -662,14 +662,18 @@ class ReferralResultGenerator {
     }
 
      fun calculateFamilyPlanningStatus(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
-        val memberUsingAnyFamilyPlanning =
-            map[MemberUsingAnyFamilyPlanning] is Boolean && map[MemberUsingAnyFamilyPlanning] == false
-        val isAnySideEffects = map[IsAnySideEffects] is Boolean && map[IsAnySideEffects] == true
-        val needOfOtherFamilyPlanning =
-            map[NeedOfOtherFamilyPlanning] is Boolean && map[NeedOfOtherFamilyPlanning] == true
-         val condomStatus = map[CondomsStatus] is String && map[CondomsStatus] == Not_Available
-         val contraceptiveStatus = map[Contraceptive] is String && map[Contraceptive] == Not_Available
-        if (memberUsingAnyFamilyPlanning || isAnySideEffects || needOfOtherFamilyPlanning || condomStatus || contraceptiveStatus) {
+        // Check if referral field is set to "referred"
+        val referralValue = map["referral"] as? String
+        val isReferred = referralValue == "referred"
+        
+//        val memberUsingAnyFamilyPlanning =
+//            map[MemberUsingAnyFamilyPlanning] is Boolean && map[MemberUsingAnyFamilyPlanning] == false
+//        val isAnySideEffects = map[IsAnySideEffects] is Boolean && map[IsAnySideEffects] == true
+//        val needOfOtherFamilyPlanning =
+//            map[NeedOfOtherFamilyPlanning] is Boolean && map[NeedOfOtherFamilyPlanning] == true
+//         val condomStatus = map[CondomsStatus] is String && map[CondomsStatus] == Not_Available
+//         val contraceptiveStatus = map[Contraceptive] is String && map[Contraceptive] == Not_Available
+        if (isReferred) {
             addResultMap("Family Planning", ReferralStatus.Referred.name)
             addReferralReason(referralReason, "Family Planning Consult")
         }

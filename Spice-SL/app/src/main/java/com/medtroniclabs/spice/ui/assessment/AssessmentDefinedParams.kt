@@ -178,7 +178,7 @@ object AssessmentDefinedParams {
     const val WaistCircumference = "waistCircumference"
     const val NCDDetails = "ncdDetails"
     const val FamilyPlanningMethods = "familyPlanningMethods"
-    const val FamilyPlanningDetails = "familyPlanningDetails"
+    const val FamilyPlanningDetails = "clientProfileAssessment"
     const val OtherFamilyPlanningMethod= "otherFamilyPlanningMethod"
     const val CondomsStatus = "condomsStatus"
     const val Not_Available = "Not Available"
@@ -193,4 +193,20 @@ object AssessmentDefinedParams {
     const val PostTestCounselling = "postTestCounselling"
     const val TestForHiv = "testForHiv"
     const val otherRelationshipIC = "otherRelationshipIC"
+
+    //Family Planning Field IDs
+    const val NumberOfLivingChildren = "numberOfLivingChildren"
+    const val DesireForChildrenInFuture = "desireForChildrenInFuture"
+    const val ReferralFacilityType = "referralFacilityType"
+    
+    //Family Planning Counselling Message IDs
+    const val CounsellingMessageSarcs = "counsellingMessageSarcs"
+    const val CounsellingMessageLarcs = "counsellingMessageLarcs"
+    const val CounsellingMessagePermanent = "counsellingMessagePermanent"
+    
+    //Family Planning Desire Values
+    const val DesireYesWithin2Yrs = "yesWithin2Yrs"
+    const val DesireYesAfter2Yrs = "yesAfter2Yrs"
+    const val DesireNoMore = "noMoreChildren"
+    const val DesireUnsure = "unsure"
 }

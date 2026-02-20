@@ -1444,6 +1444,7 @@ class FormGenerator(
                             pos: Int,
                             itemId: Long
                         ) {
+                            callback?.invoke(resultHashMap,id)
                             handleSelectedItem(
                                 adapter.getData(position = pos),
                                 id,
@@ -1806,6 +1807,9 @@ class FormGenerator(
             binding.etMonths.tag = id + Month
             binding.etWeeks.tag = id + Week
             binding.ageValue.tag = id + value
+            binding.tvKey.text = title?.let {
+                updateTitle(it, translate, titleCulture, unitMeasurement)
+            } ?: getString(R.string.age)
             binding.tvErrorMessage.tag = id + errorSuffix
             binding.tvDateOfBirth.tag = id + titleSuffix
             textWatcher = object : TextWatcher {
@@ -2072,14 +2076,15 @@ class FormGenerator(
     private fun setConditionalVisibility(
         model: FormLayout,
         actualValue: String?,
-        isCheckBox: Boolean = false
+        isCheckBox: Boolean = false,
+        selectedValues: ArrayList<String>? = null
     ) {
         val conditionList = model.condition
         if (conditionList.isNullOrEmpty())
             return
 
         conditionList.forEach { conditionalModel ->
-            validateConditionModel(conditionalModel, actualValue, isCheckBox)
+            validateConditionModel(conditionalModel, actualValue, isCheckBox, selectedValues)
         }
     }
 
@@ -2087,7 +2092,8 @@ class FormGenerator(
     private fun validateConditionModel(
         conditionalModel: ConditionalModel,
         actualValue: String?,
-        isCheckBox: Boolean
+        isCheckBox: Boolean,
+        selectedValues: ArrayList<String>? = null
     ) {
         conditionalModel.apply {
             if (targetId != null && targetOption != null) {
@@ -2099,7 +2105,8 @@ class FormGenerator(
                         actualValue,
                         targetedView,
                         targetOption,
-                        isCheckBox
+                        isCheckBox,
+                        selectedValues
                     )
                 } else if (enabled != null) {
                     checkConditionBasedRendering(
@@ -2108,7 +2115,8 @@ class FormGenerator(
                         actualValue,
                         targetedView,
                         targetOption,
-                        isCheckBox
+                        isCheckBox,
+                        selectedValues
                     )
                 }
             } else if (targetId != null) {
@@ -2119,7 +2127,8 @@ class FormGenerator(
                     conditionalModel,
                     actualValue,
                     targetedView,
-                    isCheckBox
+                    isCheckBox,
+                    selectedValues
                 )
             } else {
                 return@apply
@@ -2134,14 +2143,24 @@ class FormGenerator(
         actualValue: String?,
         targetedView: View,
         targetOption: String? = null,
-        isCheckBox: Boolean
+        isCheckBox: Boolean,
+        selectedValues: ArrayList<String>? = null
     ) {
         conditionalModel.apply {
             if (!eq.isNullOrBlank()) {
-                if (eq == actualValue)
+                val conditionMatches = if (isCheckBox && !selectedValues.isNullOrEmpty()) {
+                    // For DialogCheckbox: Check if ANY selected value matches eq (OR logic)
+                    selectedValues.any { it == eq }
+                } else {
+                    // For single-value fields: Check if actualValue matches eq
+                    eq == actualValue
+                }
+                
+                if (conditionMatches) {
                     handleConfig(true, config, visibility, enabled, targetedView)
-                else if (!isCheckBox)
+                } else if (!isCheckBox) {
                     handleTargetConfig(serverData, targetId, targetedView, config, targetOption)
+                }
             } else if (lengthGreaterThan != null) {
                 isLengthGreater(
                     conditionalModel,
@@ -2151,11 +2170,40 @@ class FormGenerator(
                     config,
                     isCheckBox
                 )
+            } else if (greaterThanOrEqual != null) {
+                isGreaterThanOrEqual(
+                    conditionalModel,
+                    actualValue,
+                    targetOption,
+                    targetedView,
+                    config,
+                    isCheckBox,
+                    selectedValues
+                )
+            } else if (lessThanOrEqual != null) {
+                isLessThanOrEqual(
+                    conditionalModel,
+                    actualValue,
+                    targetOption,
+                    targetedView,
+                    config,
+                    isCheckBox,
+                    selectedValues
+                )
             } else if (!eqList.isNullOrEmpty()) {
-                if (eqList!!.contains(actualValue))
+                val conditionMatches = if (isCheckBox && !selectedValues.isNullOrEmpty()) {
+                    // For DialogCheckbox: Check if ANY selected value is in eqList (OR logic)
+                    selectedValues.any { selectedValue -> eqList!!.contains(selectedValue) }
+                } else {
+                    // For single-value fields: Check if actualValue is in eqList
+                    eqList!!.contains(actualValue)
+                }
+                
+                if (conditionMatches) {
                     handleConfig(true, config, visibility, enabled, targetedView)
-                else if (!isCheckBox)
+                } else if (!isCheckBox) {
                     handleTargetConfig(serverData, targetId, targetedView, config, targetOption)
+                }
             }
         }
     }
@@ -2173,6 +2221,62 @@ class FormGenerator(
                 handleConfig(false, config, visibility, enabled, targetedView)
             else if (!isCheckBox)
                 handleTargetConfig(serverData, targetId, targetedView, config, targetOption)
+        }
+    }
+
+    private fun isGreaterThanOrEqual(
+        conditionalModel: ConditionalModel,
+        actualValue: String?,
+        targetOption: String?,
+        targetedView: View,
+        config: ConditionModelConfig,
+        isCheckBox: Boolean,
+        selectedValues: ArrayList<String>? = null
+    ) {
+        conditionalModel.apply {
+            val conditionMatches = if (isCheckBox && !selectedValues.isNullOrEmpty()) {
+                // For DialogCheckbox: Check if ANY selected value is >= threshold (OR logic)
+                selectedValues.any { selectedValue ->
+                    selectedValue.toDoubleOrNull()?.let { it >= greaterThanOrEqual!! } ?: false
+                }
+            } else {
+                // For single-value fields: Check if actualValue is >= threshold
+                actualValue?.toDoubleOrNull()?.let { it >= greaterThanOrEqual!! } ?: false
+            }
+            
+            if (conditionMatches) {
+                handleConfig(true, config, visibility, enabled, targetedView)
+            } else if (!isCheckBox) {
+                handleTargetConfig(serverData, targetId, targetedView, config, targetOption)
+            }
+        }
+    }
+
+    private fun isLessThanOrEqual(
+        conditionalModel: ConditionalModel,
+        actualValue: String?,
+        targetOption: String?,
+        targetedView: View,
+        config: ConditionModelConfig,
+        isCheckBox: Boolean,
+        selectedValues: ArrayList<String>? = null
+    ) {
+        conditionalModel.apply {
+            val conditionMatches = if (isCheckBox && !selectedValues.isNullOrEmpty()) {
+                // For DialogCheckbox: Check if ANY selected value is <= threshold (OR logic)
+                selectedValues.any { selectedValue ->
+                    selectedValue.toDoubleOrNull()?.let { it <= lessThanOrEqual!! } ?: false
+                }
+            } else {
+                // For single-value fields: Check if actualValue is <= threshold
+                actualValue?.toDoubleOrNull()?.let { it <= lessThanOrEqual!! } ?: false
+            }
+            
+            if (conditionMatches) {
+                handleConfig(true, config, visibility, enabled, targetedView)
+            } else if (!isCheckBox) {
+                handleTargetConfig(serverData, targetId, targetedView, config, targetOption)
+            }
         }
     }
 
@@ -2303,7 +2407,8 @@ class FormGenerator(
         conditionalModel: ConditionalModel,
         actualValue: String?,
         targetedView: View,
-        isCheckBox: Boolean
+        isCheckBox: Boolean,
+        selectedValues: ArrayList<String>? = null
     ) {
         if (visibility != null) {
             checkConditionBasedRendering(
@@ -2311,7 +2416,8 @@ class FormGenerator(
                 ConditionModelConfig.VISIBILITY,
                 actualValue,
                 targetedView,
-                isCheckBox = isCheckBox
+                isCheckBox = isCheckBox,
+                selectedValues = selectedValues
             )
         } else if (enabled != null) {
             checkConditionBasedRendering(
@@ -2319,7 +2425,8 @@ class FormGenerator(
                 ConditionModelConfig.ENABLED,
                 actualValue,
                 targetedView,
-                isCheckBox = isCheckBox
+                isCheckBox = isCheckBox,
+                selectedValues = selectedValues
             )
         }
     }
@@ -3173,15 +3280,29 @@ class FormGenerator(
                 view.text = setCheckBoxDialogText(resultHashMap, id, checkBoxText)
             }
         }
+        
+        // Extract selected values for condition evaluation
+        // Prioritize 'value' (JSON id) over 'ID' (database id) for condition matching
+        val selectedValues = ArrayList<String>()
+        resultMap.forEach { item ->
+            val selectedId = item[DefinedParams.value]?.toString() 
+                ?: item[DefinedParams.ID]?.toString()
+            selectedId?.let { selectedValues.add(it) }
+        }
+        
         if (isContainsOther(resultMap)) {
             setConditionalVisibility(
                 formLayout,
-                DefinedParams.Other
+                DefinedParams.Other,
+                isCheckBox = true,
+                selectedValues = selectedValues
             )
         } else {
             setConditionalVisibility(
                 formLayout,
-                null
+                null,
+                isCheckBox = true,
+                selectedValues = selectedValues
             )
         }
         if (isListenerEnable) {

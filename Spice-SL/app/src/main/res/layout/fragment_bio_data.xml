@@ -61,7 +61,8 @@
 
                     <include
                         android:id="@+id/patientId"
-                        layout="@layout/summary_layout" />
+                        layout="@layout/summary_layout"
+                        android:visibility="gone" />
 
                     <include
                         android:id="@+id/gender"
@@ -70,6 +71,11 @@
                     <include
                         android:id="@+id/dobAge"
                         layout="@layout/summary_layout" />
+
+                    <include
+                        android:id="@+id/mobileNumber"
+                        layout="@layout/summary_layout"
+                        android:visibility="gone" />
 
                     <include
                         android:id="@+id/pregnancy"

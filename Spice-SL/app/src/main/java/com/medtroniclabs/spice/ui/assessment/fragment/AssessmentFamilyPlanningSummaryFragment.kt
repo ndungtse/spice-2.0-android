@@ -83,21 +83,20 @@ class AssessmentFamilyPlanningSummaryFragment : BaseFragment(), View.OnClickList
     }
 
     private fun updateStatusBar() {
+        // Always hide PHU fields
+        binding.labelPhuReferred.gone()
+        binding.etPhuChange.gone()
+        
         when (viewModel.referralStatus) {
             ReferralStatus.Referred.name -> {
-                viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
-                    loadPhuSitesList(siteList)
-                }
-                binding.labelPhuReferred.visible()
-                binding.etPhuChange.visible()
+                // Load referral_facility_type dropdown in place of PHU field
+                loadReferralFacilityTypeDropdown()
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
                 binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
             }
 
             else -> {
-                binding.labelPhuReferred.gone()
-                binding.etPhuChange.gone()
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.green_attention_color)
                 binding.riskResultLayout.text = getString(R.string.no_refferral_treatment_required)
@@ -105,10 +104,69 @@ class AssessmentFamilyPlanningSummaryFragment : BaseFragment(), View.OnClickList
         }
     }
 
-    private fun loadPhuSitesList(healthFacilityList: ArrayList<Map<String, Any>>) {
+    /**
+     * Loads referral_facility_type dropdown in place of PHU field.
+     * Uses the existing labelPhuReferred and etPhuChange views.
+     */
+    private fun loadReferralFacilityTypeDropdown() {
+        val formLayout = viewModel.formLayoutsLiveData.value?.data?.formLayout?.find { 
+            it.id == AssessmentDefinedParams.ReferralFacilityType 
+        } ?: return
+
+        val optionsList = formLayout.optionsList ?: return
+        
+        // Get current value from assessment data
+        val currentValue = viewModel.assessmentStringLiveData.value?.let { data ->
+            AssessmentCommonUtils.getValueOfKeyFromMap(
+                StringConverter.stringToMap(data),
+                AssessmentDefinedParams.ReferralFacilityType,
+                menuType = familyPlanning.lowercase()
+            )
+        }
+
+        // Create dropdown list from optionsList
+        val dropDownList = ArrayList<Map<String, Any>>()
+        dropDownList.add(
+            hashMapOf<String, Any>(
+                DefinedParams.NAME to getString(R.string.select),
+                DefinedParams.id to DefinedParams.DefaultID
+            )
+        )
+        optionsList.forEach { option ->
+            dropDownList.add(
+                hashMapOf<String, Any>(
+                    DefinedParams.NAME to (option[DefinedParams.NAME] as? String ?: ""),
+                    DefinedParams.id to (option[DefinedParams.id] as? String ?: "")
+                )
+            )
+        }
+
+        // Update label text
+        binding.labelPhuReferred.text = formLayout.titleSummary ?: formLayout.title ?: getString(R.string.separator_hyphen)
+        binding.labelPhuReferred.visible()
+
+        // Setup adapter
         val adapter = CustomSpinnerAdapter(requireContext())
-        adapter.setData(healthFacilityList)
+        adapter.setData(dropDownList)
         binding.etPhuChange.adapter = adapter
+
+        // Set selected value - match by ID from optionsList
+        var defaultPosition = 0
+        currentValue?.let { value ->
+            // Try to match by ID first, then by name
+            dropDownList.forEachIndexed { index, item ->
+                val optionId = item[DefinedParams.id] as? String
+                val optionName = item[DefinedParams.NAME] as? String
+                if (optionId == value || optionName == value) {
+                    defaultPosition = index
+                }
+            }
+        }
+        binding.etPhuChange.post {
+            binding.etPhuChange.setSelection(defaultPosition, false)
+        }
+
+        // Handle selection
         binding.etPhuChange.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -119,22 +177,21 @@ class AssessmentFamilyPlanningSummaryFragment : BaseFragment(), View.OnClickList
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
-                        val selectedId = it[DefinedParams.id] as String?
-                        if (selectedId != DefinedParams.DefaultID) {
-                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] = selectedId.toString()
-                        } else {
-                            if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSiteID))
-                                viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSiteID)
-                        }
+                    val selectedId = it[DefinedParams.id] as? String?
+                    if (selectedId != null && selectedId != DefinedParams.DefaultID) {
+                        viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferralFacilityType] = selectedId
+                    } else {
+                        viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.ReferralFacilityType)
+                    }
                     }
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
-                    /**
-                     * this method is not used
-                     */
+                    // No action needed
                 }
             }
+        
+        binding.etPhuChange.visible()
     }
 
     private fun createSummaryView(
@@ -152,22 +209,65 @@ class AssessmentFamilyPlanningSummaryFragment : BaseFragment(), View.OnClickList
 
     private fun composeSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
         listSummaryData.forEach { item ->
-            item.value?.let {
-                when (item.id) {
-                    AssessmentDefinedParams.FamilyPlanningMethods -> renderDangerSigns(item.title, listSummaryData)
-                    AssessmentDefinedParams.SpecifySideEffects, AssessmentDefinedParams.CondomsStatus, AssessmentDefinedParams.Contraceptive, AssessmentDefinedParams.MemberUsingAnyFamilyPlanning, AssessmentDefinedParams.NeedOfOtherFamilyPlanning, AssessmentDefinedParams.IsAnySideEffects -> bindSummaryView(item.title, it)
+            val fieldId = item.id
+            when (fieldId) {
+                AssessmentDefinedParams.FamilyPlanningMethods -> {
+                    item.value?.let {
+                        renderDangerSigns(item.title, listSummaryData)
+                    }
+                }
+                AssessmentDefinedParams.ReferralFacilityType -> {
+                    // Skip rendering in summary list - it's shown in place of PHU field
+                    // when referral status is "Referred"
+                }
+                AssessmentDefinedParams.DesireForChildrenInFuture -> {
+                    // Convert spinner ID to display name
+                    item.value?.let { value ->
+                        val displayValue = getSpinnerDisplayValue(fieldId, value)
+                        bindSummaryView(item.title, displayValue)
+                    }
+                }
+                AssessmentDefinedParams.SpecifySideEffects, AssessmentDefinedParams.CondomsStatus, AssessmentDefinedParams.Contraceptive, AssessmentDefinedParams.MemberUsingAnyFamilyPlanning, AssessmentDefinedParams.NeedOfOtherFamilyPlanning, AssessmentDefinedParams.IsAnySideEffects -> {
+                    item.value?.let {
+                        bindSummaryView(item.title, it)
+                    }
+                }
+                else -> {
+                    // Handle other fields with values
+                    item.value?.let {
+                        bindSummaryView(item.title, it)
+                    }
                 }
             }
         }
     }
 
-    private fun renderDangerSigns(title: String?, summaryData: MutableList<AssessmentSummaryModel>) {
-        val otherConcernSymptoms = viewModel.assessmentStringLiveData.value?.let {
-            val jsonObject = JSONObject(it)
-            jsonObject.optJSONObject(familyPlanning.lowercase())
-                ?.optJSONObject(AssessmentDefinedParams.FamilyPlanningDetails)
-                ?.optString(AssessmentDefinedParams.OtherFamilyPlanningMethod)
+    /**
+     * Converts spinner field ID to display name using optionsList from formLayout
+     */
+    private fun getSpinnerDisplayValue(fieldId: String, valueId: String): String {
+        val formLayout = viewModel.formLayoutsLiveData.value?.data?.formLayout?.find { 
+            it.id == fieldId 
+        } ?: return valueId
+
+        val optionsList = formLayout.optionsList ?: return valueId
+        optionsList.forEach { option ->
+            val optionId = option[DefinedParams.id] as? String
+            if (optionId == valueId) {
+                return option[DefinedParams.NAME] as? String ?: valueId
+            }
         }
+        
+        return valueId
+    }
+
+    private fun renderDangerSigns(title: String?, summaryData: MutableList<AssessmentSummaryModel>) {
+//        val otherConcernSymptoms = viewModel.assessmentStringLiveData.value?.let {
+//            val jsonObject = JSONObject(it)
+//            jsonObject.optJSONObject(familyPlanning.lowercase())
+//                ?.optJSONObject(AssessmentDefinedParams.FamilyPlanningDetails)
+//                ?.optString(AssessmentDefinedParams.OtherFamilyPlanningMethod)
+//        }
         val symptomsMeta = viewModel.symptomTypeListResponse.value ?: return
         val titleEntities = symptomsMeta.filter { it.isTitle }.sortedBy { it.displayOrder ?: Int.MAX_VALUE }
         val methodEntities = symptomsMeta.filter { !it.isTitle }
@@ -195,9 +295,11 @@ class AssessmentFamilyPlanningSummaryFragment : BaseFragment(), View.OnClickList
                     OtherMethodSpecify
                 }
             }
-            val result = if (!otherConcernSymptoms.isNullOrBlank()) {
-                requireContext().getString(R.string.other_value, formattedResult, otherConcernSymptoms)
-            } else formattedResult
+
+            // val result = if (!otherConcernSymptoms.isNullOrBlank()) {
+            //     requireContext().getString(R.string.other_value, formattedResult, otherConcernSymptoms)
+            // } else formattedResult
+            val result = formattedResult
             bindSummaryView(title, result.ifBlank { getString(R.string.seperator_hyphen) })
         }
     }

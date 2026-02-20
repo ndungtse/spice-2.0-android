@@ -265,6 +265,16 @@ class BioDataFragment : BaseFragment() {
             binding.dobAge.tvValue.text = getAgeValue(
                 age
             )
+            
+            // Show mobile number if it exists
+            if (!phoneNumber.isNullOrBlank()) {
+                binding.mobileNumber.root.visible()
+                binding.mobileNumber.tvKey.text = getString(R.string.mobile_number)
+                binding.mobileNumber.tvValue.text = phoneNumber
+            } else {
+                binding.mobileNumber.root.gone()
+            }
+            
             if (viewModel.menuId.equals(MenuConstants.CBS_MENU_ID, true)) {
                 binding.dateOfOccurrence.root.visible()
                 binding.dateOfOccurrence.tvKey.text = getString(R.string.date_of_occurrence)
