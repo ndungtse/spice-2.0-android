@@ -40,7 +40,7 @@ class NCDCounselorHistoryAdapter : RecyclerView.Adapter<NCDCounselorHistoryAdapt
                         DateUtils.convertDateTimeToDate(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DateUtils.DATE_FORMAT_ddMMMyyyy
+                            DateUtils.DATE_FORMAT_ddMMMyyyy,
                         )
                     }
                     tvRefDate.text = refDate.textOrHyphen()
@@ -51,7 +51,7 @@ class NCDCounselorHistoryAdapter : RecyclerView.Adapter<NCDCounselorHistoryAdapt
                         DateUtils.convertDateTimeToDate(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DateUtils.DATE_FORMAT_ddMMMyyyy
+                            DateUtils.DATE_FORMAT_ddMMMyyyy,
                         )
                     }
                     tvAssessedDate.text = assessedDate.textOrHyphen()
@@ -68,8 +68,9 @@ class NCDCounselorHistoryAdapter : RecyclerView.Adapter<NCDCounselorHistoryAdapt
                 binding.root.id -> {
                     if (layoutPosition < adapterList.size) {
                         val item = adapterList[layoutPosition]
-                        if (item.id.isNullOrBlank()) return
-                        else {
+                        if (item.id.isNullOrBlank()) {
+                            return
+                        } else {
                             adapterList[layoutPosition].let {
                                 it.isExpanded = !it.isExpanded
                             }
@@ -91,23 +92,36 @@ class NCDCounselorHistoryAdapter : RecyclerView.Adapter<NCDCounselorHistoryAdapt
         ivArrow.start()
     }
 
-    private fun getTextColor(context: Context, enteredBy: Any?): Int {
-        return if (enteredBy == null) context.getColor(R.color.disabled_text_color) else context.getColor(
-            R.color.navy_blue
-        )
-    }
+    private fun getTextColor(
+        context: Context,
+        enteredBy: Any?,
+    ): Int =
+        if (enteredBy == null) {
+            context.getColor(R.color.disabled_text_color)
+        } else {
+            context.getColor(
+                R.color.navy_blue,
+            )
+        }
 
     fun getData() = adapterList
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder =
+        ViewHolder(
             ListItemCounselorHistoryBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            )
+                LayoutInflater.from(parent.context),
+                parent,
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         adapterList.let {
             holder.bind(it[position])
         }

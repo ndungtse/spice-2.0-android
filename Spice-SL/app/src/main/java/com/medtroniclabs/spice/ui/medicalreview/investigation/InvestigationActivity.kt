@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import androidx.activity.viewModels
-import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
@@ -32,18 +30,19 @@ import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.LipidsNudge
 import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.MarkAsReviewedConfirmationDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.TbConfirmDiagnosisAndSiteOfDiseaseDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.TbConfirmDiagnosisAndSiteOfDiseaseViewModel
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
-class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
-    InvestigationListener, View.OnClickListener {
-
+class InvestigationActivity :
+    BaseActivity(),
+    AdapterView.OnItemClickListener,
+    InvestigationListener,
+    View.OnClickListener {
     lateinit var binding: ActivityInvestigationBinding
 
     private val investigationViewModel: InvestigationViewModel by viewModels()
 
     private val patientViewModel: PatientDetailViewModel by viewModels()
-    private val diagnosisViewModel : TbConfirmDiagnosisAndSiteOfDiseaseViewModel by viewModels()
+    private val diagnosisViewModel: TbConfirmDiagnosisAndSiteOfDiseaseViewModel by viewModels()
 
     private lateinit var investigationGenerator: InvestigationGenerator
 
@@ -57,11 +56,12 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
             callback = {
                 setResult(RESULT_OK, intent)
                 finish()
-            })
+            },
+        )
         initView()
         setListeners()
         attachObserver()
-        if (CommonUtils.isNonCommunity()){
+        if (CommonUtils.isNonCommunity()) {
             showLabTestNudge()
         }
     }
@@ -94,18 +94,16 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                 }
 
                 else -> {
-                    //else block
+                    // else block
                 }
             }
         }
         investigationViewModel.investigationSearchResponseListLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
-
                 }
 
                 ResourceState.ERROR -> {
-
                 }
 
                 ResourceState.SUCCESS -> {
@@ -133,7 +131,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
 
                 ResourceState.SUCCESS -> {
                     resource.data?.let { data ->
-                        if (data.gender != null){
+                        if (data.gender != null) {
                             investigationGenerator.setPatientGender(data.gender)
                         }
                         data.id?.let {
@@ -179,7 +177,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                         title = getString(R.string.error),
                         message = resource.message
                             ?: getString(R.string.something_went_wrong_try_later),
-                        positiveButtonName = getString(R.string.ok)
+                        positiveButtonName = getString(R.string.ok),
                     ) {}
                 }
 
@@ -192,12 +190,11 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                             val value = map[DefinedParams.EncounterId]
                             if (value is String) {
                                 intent.putExtra(DefinedParams.EncounterId, value)
-                                intent.putExtra(DefinedParams.Investigation,true)
+                                intent.putExtra(DefinedParams.Investigation, true)
                             }
                         }
                         setResult(RESULT_OK, intent)
                         finish()
-
                     } ?: kotlin.run {
                         hideLoading()
                     }
@@ -244,7 +241,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                     patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
                         investigationViewModel.createLabTest(
                             geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation()),
-                            data
+                            data,
                         )
                         patientViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                     }
@@ -263,22 +260,24 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
             data.containsKey(NCDMRUtil.LipidProfile) && data[NCDMRUtil.LipidProfile] != null
         val hasRenalFunctionTest =
             data.containsKey(NCDMRUtil.RenalFunctionTest) && data[NCDMRUtil.RenalFunctionTest] != null
-        if (hasHbA1c)
+        if (hasHbA1c) {
             showHBA1CDialog()
-        else if (hasLipidProfile || hasRenalFunctionTest)
+        } else if (hasLipidProfile || hasRenalFunctionTest) {
             showLipidsDialog()
+        }
     }
 
     private fun showHBA1CDialog() {
-        HBA1CNudgesDialog.newInstance { isClosed ->
-            if (isClosed) {
-                investigationViewModel.labTestPredictionLiveData.value?.data?.let {data ->
-                    (data[NCDMRUtil.RenalFunctionTest] ?: data[NCDMRUtil.LipidProfile])?.let {
-                        showLipidsDialog()
+        HBA1CNudgesDialog
+            .newInstance { isClosed ->
+                if (isClosed) {
+                    investigationViewModel.labTestPredictionLiveData.value?.data?.let { data ->
+                        (data[NCDMRUtil.RenalFunctionTest] ?: data[NCDMRUtil.LipidProfile])?.let {
+                            showLipidsDialog()
+                        }
                     }
                 }
-            }
-        }.show(supportFragmentManager, HBA1CNudgesDialog.TAG)
+            }.show(supportFragmentManager, HBA1CNudgesDialog.TAG)
     }
 
     private fun showLipidsDialog() {
@@ -301,7 +300,6 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
             binding.llInvestigationHolder.gone()
             binding.tvNoInvestigationDataFound.visible()
         }
-
     }
 
     private fun loadAdapter(data: ArrayList<SearchLabTestResponse>) {
@@ -335,14 +333,19 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
             binding.llInvestigationHolder,
             binding.nestedScrollView,
             translate = SecuredPreference.getIsTranslationEnabled(),
-            this
+            this,
         )
         investigationViewModel.patientId?.let { patientId ->
             patientViewModel.getPatients(patientId, origin = investigationViewModel.origin)
         }
     }
 
-    override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+    override fun onItemClick(
+        parent: AdapterView<*>?,
+        view: View?,
+        position: Int,
+        id: Long,
+    ) {
         investigationViewModel.investigationSearchResponseListLiveData.value?.let { resourceState ->
             resourceState.data?.let { investigationList ->
                 val investigationResponse = investigationList[position]
@@ -364,7 +367,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                     investigationViewModel.removeInvestigationModel(investigation)
                 }
             },
-            message = Pair(getString(R.string.delete_confirmation), null)
+            message = Pair(getString(R.string.delete_confirmation), null),
         )
         dialog.show(supportFragmentManager, DeleteReasonDialog.TAG)
     }
@@ -373,7 +376,10 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
         enableDisableSubmitButton()
     }
 
-    override fun markAsReviewed(id: String?, comments: String?) {
+    override fun markAsReviewed(
+        id: String?,
+        comments: String?,
+    ) {
         val dialog = supportFragmentManager.findFragmentByTag(MarkAsReviewedConfirmationDialog.TAG)
         if (dialog == null) {
             val markAsReviewedConfirmationDialog =
@@ -388,7 +394,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                 }
             markAsReviewedConfirmationDialog.show(
                 supportFragmentManager,
-                MarkAsReviewedConfirmationDialog.TAG
+                MarkAsReviewedConfirmationDialog.TAG,
             )
         }
     }
@@ -402,18 +408,18 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                         val resultMap = payload.resultHashMap
 
                         resultMap?.containsKey(MTB_Detected) == true &&
-                                resultMap.containsKey(RIF_Resistance) &&
-                                payload.testName.contains(Gene_Expert, true) &&
-                                (payload.resultHashMap?.get(MTB_Detected)?.equals(RdtPositive) == true)
+                            resultMap.containsKey(RIF_Resistance) &&
+                            payload.testName.contains(Gene_Expert, true) &&
+                            (payload.resultHashMap?.get(MTB_Detected)?.equals(RdtPositive) == true)
                     } == true
 
-                    if (isGeneExpertDetected){
+                    if (isGeneExpertDetected) {
                         showErrorDialogue(
                             getString(R.string.confirm_diagnoses),
                             getString(R.string.tb_diagnosis_reason),
                             isNegativeButtonNeed = true,
                             positiveButtonName = getString(R.string.yes),
-                            cancelBtnName = getString(R.string.no)
+                            cancelBtnName = getString(R.string.no),
                         ) { isPositive ->
                             if (isPositive) {
                                 TbConfirmDiagnosisAndSiteOfDiseaseDialog().show(supportFragmentManager, TbConfirmDiagnosisAndSiteOfDiseaseDialog.TAG)
@@ -423,7 +429,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                         patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
                             investigationViewModel.createLabTest(
                                 geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation()),
-                                data
+                                data,
                             )
                             patientViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                         }
@@ -438,10 +444,8 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
         }
     }
 
-
     private fun geyPayloadForLabTest(resultFromInvestigation: List<InvestigationModel>?): List<InvestigationModel>? {
         val list = resultFromInvestigation?.filter { it.id == null || (it.resultHashMap != null && it.resultHashMap!!.size > 0) }
         return list
     }
-
 }

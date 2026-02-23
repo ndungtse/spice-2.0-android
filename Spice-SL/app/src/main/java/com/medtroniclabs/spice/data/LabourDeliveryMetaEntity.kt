@@ -12,5 +12,5 @@ data class LabourDeliveryMetaEntity(
     var category: String? = null,
     var type: String? = null,
     val displayOrder: Int,
-    val value: String
+    val value: String,
 )

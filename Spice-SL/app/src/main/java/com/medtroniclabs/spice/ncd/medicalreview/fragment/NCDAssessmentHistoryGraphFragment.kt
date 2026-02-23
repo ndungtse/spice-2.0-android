@@ -55,9 +55,11 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.rbs_code
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDBpAndBgViewModel
 import com.medtroniclabs.spice.ui.BaseFragment
 
-class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener,
-    OnChartValueSelectedListener, View.OnClickListener {
-
+class NCDAssessmentHistoryGraphFragment :
+    BaseFragment(),
+    OnChartGestureListener,
+    OnChartValueSelectedListener,
+    View.OnClickListener {
     private var graphType: String? = null
     private var graphDetails: Any? = null
     private var systolicXYValues: ArrayList<Entry>? = null
@@ -70,8 +72,9 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
     private val viewModel: NCDBpAndBgViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentNcdAssessmentHistoryGraphBinding.inflate(inflater, container, false)
@@ -79,11 +82,13 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
     }
 
     companion object {
-        fun newInstance() =
-            NCDAssessmentHistoryGraphFragment()
+        fun newInstance() = NCDAssessmentHistoryGraphFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         graphDetails?.let { details ->
             val bpbgDetails = details as? BPBGListModel
@@ -92,7 +97,8 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
                     binding.lineChart,
                     1,
                     bpDetails = it.takeIf { graphType?.equals(bp, true) == true },
-                    bgDetails = it.takeIf { graphType?.equals(bp, true) != true })
+                    bgDetails = it.takeIf { graphType?.equals(bp, true) != true },
+                )
             }
         }
 
@@ -107,7 +113,7 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
                         binding.lineChart,
                         1,
                         bgDetails = list,
-                        selectedBGDropDown = selectedBG
+                        selectedBGDropDown = selectedBG,
                     )
                 }
             }
@@ -125,7 +131,7 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
             graphDetails = getString(NCDMRUtil.graphDetails)?.let {
                 Gson().fromJson(
                     it,
-                    BPBGListModel::class.java
+                    BPBGListModel::class.java,
                 )
             }
         }
@@ -139,29 +145,29 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
 
     override fun onChartGestureStart(
         me: MotionEvent?,
-        lastPerformedGesture: ChartTouchListener.ChartGesture?
+        lastPerformedGesture: ChartTouchListener.ChartGesture?,
     ) {
         /**
          * this method is not used
          */
     }
 
-    private fun convertDate(bpResponse: BPLogList): String {
-        return DateUtils.convertDateTimeToDate(
-            bpResponse.bpTakenOn,
-            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            DateUtils.DATE_FORMAT_ddMMyy_GRAPH
-        ).ifEmpty { getString(R.string.separator_hyphen) }
-    }
+    private fun convertDate(bpResponse: BPLogList): String =
+        DateUtils
+            .convertDateTimeToDate(
+                bpResponse.bpTakenOn,
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                DateUtils.DATE_FORMAT_ddMMyy_GRAPH,
+            ).ifEmpty { getString(R.string.separator_hyphen) }
 
     private fun getLimitLine(
         lineSetOne: Float,
         lineSetOneTitle: String,
         pos: LimitLine.LimitLabelPosition,
         size: Float = 12F,
-        color: Int
-    ): LimitLine {
-        return LimitLine(lineSetOne, lineSetOneTitle).apply {
+        color: Int,
+    ): LimitLine =
+        LimitLine(lineSetOne, lineSetOneTitle).apply {
             lineWidth = 1f
             enableDashedLine(10f, 10f, 0f)
             labelPosition = pos
@@ -169,14 +175,13 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
             textColor = requireContext().getColor(color)
             lineColor = requireContext().getColor(color)
         }
-    }
 
     private fun setGraphProperty(
         lineChart: LineChart,
         option: Int,
         bpDetails: BPBGListModel? = null,
         bgDetails: BPBGListModel? = null,
-        selectedBGDropDown: Int = 3
+        selectedBGDropDown: Int = 3,
     ) {
         if (!lineChart.isEmpty) { // reset graph when frequency changed
             lineChart.moveViewToX(0f)
@@ -196,7 +201,7 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
         lineChart.setScaleEnabled(true)
 
         lineChart.isScaleXEnabled = true
-        lineChart.setBackgroundColor(Color.parseColor("#ffffff")) //set whatever color you prefer
+        lineChart.setBackgroundColor(Color.parseColor("#ffffff")) // set whatever color you prefer
 
         lineChart.setDrawGridBackground(false) // this is a must
 
@@ -210,8 +215,8 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
         lineChart.setNoDataTextTypeface(
             ResourcesCompat.getFont(
                 requireContext(),
-                R.font.inter_regular
-            )
+                R.font.inter_regular,
+            ),
         )
 
         // set offsets to display label values without clip.
@@ -232,7 +237,7 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
             selectedBGDropDown,
             dateList,
             unitValue,
-            graphType
+            graphType,
         )
         lineChart.marker = markerView
         val xAxis = lineChart.xAxis
@@ -250,8 +255,7 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
         xAxis.isGranularityEnabled = true
         xAxis.granularity = 1f
         binding.lineChart.xAxis.valueFormatter = object : ValueFormatter() {
-            override
-            fun getFormattedValue(value: Float): String {
+            override fun getFormattedValue(value: Float): String {
                 dateList?.let { list ->
                     val containedList = list.filter { it.first.toFloat() == value }
                     return if (containedList.isNotEmpty()) {
@@ -296,8 +300,8 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
         var lineSetTwo = 0f
         var lineSetThree = 0f
         bpDetails?.bpThreshold?.let {
-            lineSetOneTitle = "(Dia: ${it.diastolic} ${mmhg})"
-            lineSetTwoTitle = "(Sys: ${it.systolic} ${mmhg})"
+            lineSetOneTitle = "(Dia: ${it.diastolic} $mmhg)"
+            lineSetTwoTitle = "(Sys: ${it.systolic} $mmhg)"
             lineSetOne = it.diastolic.toFloat()
             lineSetTwo = it.systolic.toFloat()
 
@@ -306,23 +310,23 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
                     lineSetOne,
                     lineSetOneTitle,
                     LimitLine.LimitLabelPosition.LEFT_TOP,
-                    color = R.color.ncd_accent
-                )
+                    color = R.color.ncd_accent,
+                ),
             )
             yAxisLeft.addLimitLine(
                 getLimitLine(
                     lineSetTwo,
                     lineSetTwoTitle,
                     LimitLine.LimitLabelPosition.LEFT_TOP,
-                    color = R.color.primary_medium_blue
-                )
+                    color = R.color.primary_medium_blue,
+                ),
             )
         }
         bgDetails?.glucoseThreshold?.let { thresholdList ->
             bgDetails.glucoseLogList?.find { it.glucoseUnit?.equals(mmoll, true) == true }?.let {
                 thresholdList.find { it.unit.equals(mmoll, true) }?.let { res ->
-                    lineSetOneTitle = "(FBS: ${res.fbs} ${mmoll})"
-                    lineSetTwoTitle = "(RBS: ${res.rbs} ${mmoll})"
+                    lineSetOneTitle = "(FBS: ${res.fbs} $mmoll)"
+                    lineSetTwoTitle = "(RBS: ${res.rbs} $mmoll)"
                     lineSetOne = res.fbs.toFloat()
                     lineSetTwo = res.rbs.toFloat()
 
@@ -331,8 +335,8 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
                             lineSetOne,
                             lineSetOneTitle,
                             LimitLine.LimitLabelPosition.LEFT_TOP,
-                            color = R.color.ncd_accent
-                        )
+                            color = R.color.ncd_accent,
+                        ),
                     )
 
                     yAxisLeft.addLimitLine(
@@ -340,8 +344,8 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
                             lineSetTwo,
                             lineSetTwoTitle,
                             LimitLine.LimitLabelPosition.LEFT_TOP,
-                            color = R.color.primary_medium_blue
-                        )
+                            color = R.color.primary_medium_blue,
+                        ),
                     )
                 }
             }
@@ -357,30 +361,30 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
                             lineSetOne,
                             lineSetOneTitle,
                             LimitLine.LimitLabelPosition.LEFT_TOP,
-                            color = R.color.ncd_accent
-                        )
+                            color = R.color.ncd_accent,
+                        ),
                     )
                     yAxisLeft.addLimitLine(
                         getLimitLine(
                             lineSetTwo,
                             lineSetTwoTitle,
                             LimitLine.LimitLabelPosition.LEFT_TOP,
-                            color = R.color.primary_medium_blue
-                        )
+                            color = R.color.primary_medium_blue,
+                        ),
                     )
                 }
             }
             thresholdList.find { it.unit == percentage }?.let {
                 if (selectedBGDropDown == hba1c_code) {
-                    lineSetThreeTitle = "(HbA1c: ${it.hba1c} ${percentage})"
+                    lineSetThreeTitle = "(HbA1c: ${it.hba1c} $percentage)"
                     lineSetThree = it.hba1c
                     yAxisLeft.addLimitLine(
                         getLimitLine(
                             lineSetThree,
                             lineSetThreeTitle,
                             LimitLine.LimitLabelPosition.LEFT_TOP,
-                            color = R.color.purple_200
-                        )
+                            color = R.color.purple_200,
+                        ),
                     )
                     yAxisLeft.axisMaximum = 50f
                 }
@@ -405,7 +409,7 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
 
     private fun loadChartData(
         bpDetails: BPBGListModel? = null,
-        bgDetails: BPBGListModel? = null
+        bgDetails: BPBGListModel? = null,
     ) {
         diastolicXYValues = ArrayList()
         systolicXYValues = ArrayList()
@@ -417,14 +421,14 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
                 systolicXYValues?.add(
                     Entry(
                         (index + 1).toFloat(),
-                        bpResponse.avgSystolic?.toFloat() ?: 0.0f
-                    )
+                        bpResponse.avgSystolic?.toFloat() ?: 0.0f,
+                    ),
                 )
                 diastolicXYValues?.add(
                     Entry(
                         (index + 1).toFloat(),
-                        bpResponse.avgDiastolic?.toFloat() ?: 0.0f
-                    )
+                        bpResponse.avgDiastolic?.toFloat() ?: 0.0f,
+                    ),
                 )
                 val date = convertDate(bpResponse)
                 dateList?.add(Triple(index + 1, date, Systolic))
@@ -440,7 +444,7 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
                         val date = DateUtils.convertDateTimeToDate(
                             bgResponse.glucoseDateTime,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DateUtils.DATE_FORMAT_ddMMyy_GRAPH
+                            DateUtils.DATE_FORMAT_ddMMyy_GRAPH,
                         )
                         dateList?.add(Triple(index + 1, date, isfbs))
                         unitValue?.add(Pair(index + 1, bgResponse.glucoseUnit))
@@ -450,14 +454,17 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
         }
     }
 
-    private fun populateBgDetails(index: Int, bgResponse: GlucoseLogList) {
+    private fun populateBgDetails(
+        index: Int,
+        bgResponse: GlucoseLogList,
+    ) {
         bgResponse.hba1c?.let { hba1cValue ->
             hbA1CXYValues?.add(
                 Entry(
                     (index + 1).toFloat(),
                     hba1cValue,
-                    bgResponse.encounterId
-                )
+                    bgResponse.encounterId,
+                ),
             )
             val bgDate =
                 if (!bgResponse.hba1cDateTime.isNullOrEmpty()) bgResponse.hba1cDateTime else bgResponse.glucoseDateTime
@@ -465,7 +472,7 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
                 val date = DateUtils.convertDateTimeToDate(
                     bgDate,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    DateUtils.DATE_FORMAT_ddMMyy_GRAPH
+                    DateUtils.DATE_FORMAT_ddMMyy_GRAPH,
                 )
                 dateList?.add(Triple(index + 1, date, HbA1c))
             }
@@ -475,7 +482,7 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
     private fun getGlucoseType(
         bgResponse: GlucoseLogList,
         glucoseValue: Float,
-        index: Int
+        index: Int,
     ): String {
         val type: String
         if (bgResponse.glucoseType?.equals(rbs, true) == true) {
@@ -484,8 +491,8 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
                 Entry(
                     (index + 1).toFloat(),
                     glucoseValue,
-                    bgResponse.encounterId
-                )
+                    bgResponse.encounterId,
+                ),
             )
         } else {
             type = FBS
@@ -493,8 +500,8 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
                 Entry(
                     (index + 1).toFloat(),
                     glucoseValue,
-                    bgResponse.encounterId
-                )
+                    bgResponse.encounterId,
+                ),
             )
         }
         return type
@@ -505,8 +512,9 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
         graphDetails?.let { graph ->
             (graph as? BPBGListModel)?.let { data ->
                 data.glucoseLogList?.filter { it.glucoseUnit?.equals(mgdl, true) == true }?.let {
-                    if (it.isNotEmpty())
+                    if (it.isNotEmpty()) {
                         upperLimit = 600f
+                    }
                 }
             }
         }
@@ -516,7 +524,7 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
     private fun plotGraph(
         bpDetails: BPBGListModel? = null,
         bgDetails: BPBGListModel? = null,
-        selectedBGDropDown: Int
+        selectedBGDropDown: Int,
     ) {
         var dataSetOneTitle = ""
         var dataSetTwoTitle = ""
@@ -534,8 +542,8 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
         val dataSetOne = LineDataSet(systolicXYValues, dataSetOneTitle)
         dataSetOne.color = requireContext().getColor(R.color.primary_medium_blue)
         dataSetOne.lineWidth = 2f
-        //Change color on selction of point , 2. Drawing VerticalLine on selection
-        //Change color on selction of point , 2. Drawing VerticalLine on selection
+        // Change color on selction of point , 2. Drawing VerticalLine on selection
+        // Change color on selction of point , 2. Drawing VerticalLine on selection
         dataSetOne.highLightColor =
             requireContext().getColor(R.color.primary_medium_blue)
         dataSetOne.setDrawHorizontalHighlightIndicator(false)
@@ -543,10 +551,10 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
         dataSetOne.circleRadius = 5f
 
         dataSetOne.setDrawCircleHole(true)
-        //for different circle color around
+        // for different circle color around
         dataSetOne.setCircleColors(requireContext().getColor(R.color.primary_medium_blue))
 
-        //Removing values
+        // Removing values
         dataSetOne.setDrawValues(false)
         dataSetOne.axisDependency = YAxis.AxisDependency.LEFT
         dataSetOne.color = requireContext().getColor(R.color.primary_medium_blue)
@@ -562,16 +570,16 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
         dataSetTwo.color =
             ContextCompat.getColor(requireContext(), R.color.ncd_accent)
         dataSetTwo.lineWidth = 2f
-        //Change color on selction of point , 2. Drawing VerticalLine on selection
-        //Change color on selction of point , 2. Drawing VerticalLine on selection
+        // Change color on selction of point , 2. Drawing VerticalLine on selection
+        // Change color on selction of point , 2. Drawing VerticalLine on selection
         dataSetTwo.highLightColor =
             ContextCompat.getColor(requireContext(), R.color.ncd_accent)
         dataSetTwo.setDrawHorizontalHighlightIndicator(false)
         dataSetTwo.circleRadius = 5f
 
         dataSetTwo.setDrawCircleHole(false)
-        //for different circle color around
-        //for different circle color around
+        // for different circle color around
+        // for different circle color around
         dataSetTwo.setCircleColors(requireContext().getColor(R.color.ncd_accent))
         dataSetTwo.setDrawValues(false)
 
@@ -611,25 +619,28 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
         val data = LineData(lineDataSets)
         // set data
         lineDataSets?.let {
-            if (it.size > 0)
+            if (it.size > 0) {
                 binding.lineChart.data = data
+            }
         }
     }
 
     private fun addLineDataSets(
         dataSetOne: LineDataSet,
         dataSetTwo: LineDataSet,
-        lineDataSets: ArrayList<ILineDataSet>?
+        lineDataSets: ArrayList<ILineDataSet>?,
     ) {
-        if (dataSetOne.entryCount > 0)
+        if (dataSetOne.entryCount > 0) {
             lineDataSets?.add(dataSetOne)
-        if (dataSetTwo.entryCount > 0)
+        }
+        if (dataSetTwo.entryCount > 0) {
             lineDataSets?.add(dataSetTwo)
+        }
     }
 
     override fun onChartGestureEnd(
         me: MotionEvent?,
-        lastPerformedGesture: ChartTouchListener.ChartGesture?
+        lastPerformedGesture: ChartTouchListener.ChartGesture?,
     ) {
         /**
          * this method is not used
@@ -658,26 +669,37 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
         me1: MotionEvent?,
         me2: MotionEvent?,
         velocityX: Float,
-        velocityY: Float
+        velocityY: Float,
     ) {
         /**
          * this method is not used
          */
     }
 
-    override fun onChartScale(me: MotionEvent?, scaleX: Float, scaleY: Float) {
+    override fun onChartScale(
+        me: MotionEvent?,
+        scaleX: Float,
+        scaleY: Float,
+    ) {
         /**
          * this method is not used
          */
     }
 
-    override fun onChartTranslate(me: MotionEvent?, dX: Float, dY: Float) {
+    override fun onChartTranslate(
+        me: MotionEvent?,
+        dX: Float,
+        dY: Float,
+    ) {
         /**
          * this method is not used
          */
     }
 
-    override fun onValueSelected(e: Entry?, h: Highlight?) {
+    override fun onValueSelected(
+        e: Entry?,
+        h: Highlight?,
+    ) {
         val dataSetIndex = binding.lineChart.data.getDataSetForEntry(e)
         val entryIndex = dataSetIndex.getEntryIndex(e)
         when {
@@ -697,40 +719,53 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
                 }
                 when (dropdownSelected) {
                     fbs_rbs_code -> {
-                        (graphDetails as? BPBGListModel?)?.glucoseLogList?.filter {
-                            (it.glucoseType?.equals(
-                                FBS,
-                                ignoreCase = true
-                            ) == true) || (it.glucoseType?.equals(RBS, true) == true)
-                        }?.let { bgList ->
-                            refreshView(bgList, e)
-                        }
+                        (graphDetails as? BPBGListModel?)
+                            ?.glucoseLogList
+                            ?.filter {
+                                (
+                                    it.glucoseType?.equals(
+                                        FBS,
+                                        ignoreCase = true,
+                                    ) == true
+                                ) ||
+                                    (it.glucoseType?.equals(RBS, true) == true)
+                            }?.let { bgList ->
+                                refreshView(bgList, e)
+                            }
                     }
 
                     hba1c_code -> {
-                        (graphDetails as? BPBGListModel?)?.glucoseLogList?.filter { (it.hba1c != null) }
+                        (graphDetails as? BPBGListModel?)
+                            ?.glucoseLogList
+                            ?.filter { (it.hba1c != null) }
                             ?.let { bgList ->
                                 refreshView(bgList, e)
                             }
                     }
 
                     else -> {
-                        (graphDetails as? BPBGListModel?)?.glucoseLogList?.filter {
-                            it.glucoseType.equals(
-                                type,
-                                ignoreCase = true
-                            )
-                        }?.let { bgList ->
-                            if (bgList.isNotEmpty())
-                                refreshView(bgList, e)
-                        }
+                        (graphDetails as? BPBGListModel?)
+                            ?.glucoseLogList
+                            ?.filter {
+                                it.glucoseType.equals(
+                                    type,
+                                    ignoreCase = true,
+                                )
+                            }?.let { bgList ->
+                                if (bgList.isNotEmpty()) {
+                                    refreshView(bgList, e)
+                                }
+                            }
                     }
                 }
             }
         }
     }
 
-    private fun refreshView(bgList: List<GlucoseLogList>, e: Entry?) {
+    private fun refreshView(
+        bgList: List<GlucoseLogList>,
+        e: Entry?,
+    ) {
         e?.data?.let { entryData ->
             entryData as Long
             bgList.indexOfFirst { it.encounterId == entryData }.let {
@@ -742,10 +777,14 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
         }
     }
 
-    private fun onBPValueSelect(list: ArrayList<BPLogList>, entryIndex: Int) {
-        if (entryIndex >= 0 && entryIndex < list.size)
+    private fun onBPValueSelect(
+        list: ArrayList<BPLogList>,
+        entryIndex: Int,
+    ) {
+        if (entryIndex >= 0 && entryIndex < list.size) {
             viewModel.onBPValueSelectedObserver.value =
                 GraphModel(list[entryIndex], null, entryIndex, list.size)
+        }
     }
 
     override fun onNothingSelected() {

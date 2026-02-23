@@ -27,7 +27,6 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
-import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
@@ -39,15 +38,13 @@ fun Context.hideKeyboard(view: View) {
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
-fun EditText.setTextChangeListener(
-    onChanged: (text: String?) -> Unit
-) {
+fun EditText.setTextChangeListener(onChanged: (text: String?) -> Unit) {
     this.addTextChangedListener(object : TextWatcher {
         override fun beforeTextChanged(
             s: CharSequence?,
             start: Int,
             count: Int,
-            after: Int
+            after: Int,
         ) {
             // Not used, implementation can be left empty
         }
@@ -56,7 +53,7 @@ fun EditText.setTextChangeListener(
             s: CharSequence?,
             start: Int,
             before: Int,
-            count: Int
+            count: Int,
         ) {
             // Not used, implementation can be left empty
         }
@@ -79,26 +76,18 @@ fun View.invisible() {
     this.visibility = View.INVISIBLE
 }
 
-fun View.isVisible(): Boolean {
-    return this.visibility == View.VISIBLE
-}
+fun View.isVisible(): Boolean = this.visibility == View.VISIBLE
 
-fun View.isGone(): Boolean {
-    return this.visibility == View.GONE
-}
+fun View.isGone(): Boolean = this.visibility == View.GONE
 
-fun View.isInvisible(): Boolean {
-    return this.visibility == View.INVISIBLE
-}
+fun View.isInvisible(): Boolean = this.visibility == View.INVISIBLE
 
-fun <T> ArrayList<T>.nullIfEmpty(): ArrayList<T>? {
-    return if (this.isEmpty()) {
+fun <T> ArrayList<T>.nullIfEmpty(): ArrayList<T>? =
+    if (this.isEmpty()) {
         null
     } else {
         this
     }
-}
-
 
 fun DialogFragment.setWidth(percentage: Int) {
     val percent = percentage.toFloat() / 100
@@ -108,8 +97,10 @@ fun DialogFragment.setWidth(percentage: Int) {
     dialog?.window?.setLayout(percentWidth.toInt(), LinearLayout.LayoutParams.WRAP_CONTENT)
 }
 
-
-fun ConstraintLayout.setPercentWidth(viewId: Int, percentage: Float) {
+fun ConstraintLayout.setPercentWidth(
+    viewId: Int,
+    percentage: Float,
+) {
     val constraintSet = ConstraintSet()
     constraintSet.clone(this)
     constraintSet.constrainPercentWidth(viewId, percentage)
@@ -129,7 +120,10 @@ fun DialogFragment.setDialogWidthAndHeightAsWrapPercent(widthPercent: Int) {
     dialog?.window?.setLayout(percentWidth.toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
 }
 
-fun DialogFragment.setDialogPercent(width: Int, height: Int = 80) {
+fun DialogFragment.setDialogPercent(
+    width: Int,
+    height: Int = 80,
+) {
     val widthPercentage = width.toFloat() / 100
     val heightPercentage = height.toFloat() / 100
     val dm = Resources.getSystem().displayMetrics
@@ -145,7 +139,7 @@ fun TextView.setExpandableText(
     moreText: String = "…more",
     moreColorResId: Int = R.color.purple_700,
     title: String,
-    activity: BaseActivity? = null
+    activity: BaseActivity? = null,
 ) {
     if (fullText.length <= maxLength) {
         this.text = fullText
@@ -163,7 +157,7 @@ fun TextView.setExpandableText(
                 title = title,
                 message = fullText,
                 isNegativeButtonNeed = false,
-                positiveButtonName = context.getString(R.string.ok)
+                positiveButtonName = context.getString(R.string.ok),
             ) {
             }
         }
@@ -179,13 +173,13 @@ fun TextView.setExpandableText(
         clickableSpan,
         truncatedText.length,
         spannableString.length,
-        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
     )
     spannableString.setSpan(
         ForegroundColorSpan(moreColor),
         truncatedText.length,
         spannableString.length,
-        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
     )
 
     this.text = spannableString
@@ -217,11 +211,12 @@ fun ViewGroup.hideView() {
 }
 
 fun ImageView.loadAsGif(drawable: Int) {
-    Glide.with(this)
+    Glide
+        .with(this)
         .asGif()
         .placeholder(R.drawable.ic_spice_logo)
         .load(drawable)
-        .diskCacheStrategy(DiskCacheStrategy.ALL)  // Cache all versions of the image
+        .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache all versions of the image
         .into(this)
 }
 
@@ -229,21 +224,14 @@ fun ImageView.resetImageView() {
     this.setImageDrawable(null)
 }
 
-fun Int?.takeIfNotNull(default: String = ""): String {
-    return this.takeIf { it != null }?.toString() ?: default
-}
+fun Int?.takeIfNotNull(default: String = ""): String = this.takeIf { it != null }?.toString() ?: default
 
-fun Double?.takeIfNotNull(default: String = ""): String {
-    return this.takeIf { it != null }?.toString() ?: default
-}
+fun Double?.takeIfNotNull(default: String = ""): String = this.takeIf { it != null }?.toString() ?: default
 
-fun Float?.takeIfNotNull(default: String = ""): String {
-    return this.takeIf { it != null }?.toString() ?: default
-}
+fun Float?.takeIfNotNull(default: String = ""): String = this.takeIf { it != null }?.toString() ?: default
 
-fun String?.takeIfNotNull(default: String = ""): String {
-    return this.takeIf { it != null }?.toString() ?: default
-}
+fun String?.takeIfNotNull(default: String = ""): String = this.takeIf { it != null }?.toString() ?: default
+
 fun View.setVisible(isVisible: Boolean) {
     if (isVisible) {
         this.visible() // Assuming `visible()` shows the view
@@ -274,9 +262,8 @@ fun getScreenSizeInInches(context: Context): Double {
     return sqrt(widthInInches * widthInInches + heightInInches * heightInInches)
 }
 
-
-
-fun Context.isTablet(): Boolean {
-    return (resources.configuration.screenLayout and
-            Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE
-}
+fun Context.isTablet(): Boolean =
+    (
+        resources.configuration.screenLayout and
+            Configuration.SCREENLAYOUT_SIZE_MASK
+    ) >= Configuration.SCREENLAYOUT_SIZE_LARGE

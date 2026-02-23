@@ -23,13 +23,12 @@ import javax.inject.Inject
 @HiltViewModel
 class PatientTypeViewModel @Inject constructor(
     private val tbMedicalReviewRepo: TbMedicalReviewRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
-
-    var lastLocation:Location? = null
+    var lastLocation: Location? = null
     val createPatientType = MutableLiveData<Resource<HashMap<String, Any>>>()
     val getPatientType = MutableLiveData<Resource<HashMap<String, Any>>>()
-    var patientTypeChip:ArrayList<ChipViewItemModel> = ArrayList()
+    var patientTypeChip: ArrayList<ChipViewItemModel> = ArrayList()
 
     private val getPatientTypeMeta = MutableLiveData<String>()
     val getPatientTypeLiveData: LiveData<List<MedicalReviewMetaItems>> =

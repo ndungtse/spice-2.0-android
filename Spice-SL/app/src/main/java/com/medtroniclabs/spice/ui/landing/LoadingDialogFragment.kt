@@ -11,11 +11,12 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.FragmentLoadingDialogBinding
 
 class LoadingDialogFragment : DialogFragment() {
-
     private lateinit var binding: FragmentLoadingDialogBinding
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentLoadingDialogBinding.inflate(layoutInflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(R.color.transparent)
@@ -25,8 +26,8 @@ class LoadingDialogFragment : DialogFragment() {
 
     companion object {
         const val TAG = "LoadingDialogFragment"
-        fun newInstance() =
-            LoadingDialogFragment()
+
+        fun newInstance() = LoadingDialogFragment()
     }
 
     override fun onStart() {
@@ -42,7 +43,7 @@ class LoadingDialogFragment : DialogFragment() {
     private fun handleDialogHeight() {
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 }

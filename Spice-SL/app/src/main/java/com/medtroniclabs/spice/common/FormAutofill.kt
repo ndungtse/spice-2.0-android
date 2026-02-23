@@ -18,7 +18,11 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.Screening
 
 object FormAutofill {
-    fun start(context: Context, formGenerator: FormGenerator, values: Any) {
+    fun start(
+        context: Context,
+        formGenerator: FormGenerator,
+        values: Any,
+    ) {
         val resultMap = objectToMap(values)
         resultMap.forEach { map ->
             (map.key as? String?)?.let { key ->
@@ -41,10 +45,11 @@ object FormAutofill {
                         }
 
                         is RecyclerView -> {
-                            if (view.adapter is MentalHealthAdapter)
+                            if (view.adapter is MentalHealthAdapter) {
                                 (map.value as? ArrayList<Map<String, Any>>)?.let { list ->
                                     prefillRecyclerView(context, view, list, key)
                                 }
+                            }
                         }
                     }
                 }
@@ -56,10 +61,10 @@ object FormAutofill {
         context: Context,
         view: RecyclerView,
         list: ArrayList<Map<String, Any>>,
-        key: String
+        key: String,
     ) {
         for (i in 0 until list.size) {
-            //Getting one by one listItem
+            // Getting one by one listItem
             (view.findViewHolderForAdapterPosition(i) as? MentalHealthAdapter.MentalHealthViewHolder)?.let { viewHolder ->
                 val questionView = viewHolder.binding.tvQuestion
                 val inflatedView = viewHolder.binding.llAnswerRoot
@@ -67,11 +72,11 @@ object FormAutofill {
                 val map = list.firstOrNull {
                     (it[Screening.MHQuestion] as? String)?.equals(
                         questionView.tag?.toString(),
-                        true
+                        true,
                     ) == true
                 }
 
-                if (!map.isNullOrEmpty())
+                if (!map.isNullOrEmpty()) {
                     for (j in 0 until inflatedView.childCount) {
                         (inflatedView.getChildAt(j) as? SingleSelectionMHView)?.let { singleSelectionView ->
                             (getTranslatedString(context, map[Screening.MHAnswer] as? String))?.let {
@@ -79,12 +84,16 @@ object FormAutofill {
                             }
                         }
                     }
+                }
             }
         }
     }
 
-    private fun getTranslatedString(context: Context, value: String?): String? {
-        return if (SecuredPreference.getIsTranslationEnabled()) {
+    private fun getTranslatedString(
+        context: Context,
+        value: String?,
+    ): String? =
+        if (SecuredPreference.getIsTranslationEnabled()) {
             when (value) {
                 Screening.NotAtAll -> context.getString(R.string.not_at_all)
                 Screening.SeveralDays -> context.getString(R.string.several_days)
@@ -92,12 +101,15 @@ object FormAutofill {
                 Screening.NearlyEveryDay -> context.getString(R.string.nearly_every_day)
                 else -> value
             }
-        } else
+        } else {
             value
-    }
+        }
 
     private fun setTextView(
-        view: TextView, key: String, value: Any?, formGenerator: FormGenerator
+        view: TextView,
+        key: String,
+        value: Any?,
+        formGenerator: FormGenerator,
     ) {
         if (value is String) {
             if (key.equals(Screening.DateOfBirth, true)) {
@@ -107,39 +119,51 @@ object FormAutofill {
 
                 if (dobString.isNotBlank()) view.text = dobString
 
-                if (dobDate != null) formGenerator.fillDetailsOnDatePickerSet(
-                    dobDate,
-                    false,
-                    id = key
-                )
-            } else view.text = value
+                if (dobDate != null) {
+                    formGenerator.fillDetailsOnDatePickerSet(
+                        dobDate,
+                        false,
+                        id = key,
+                    )
+                }
+            } else {
+                view.text = value
+            }
         }
     }
 
     private fun setSingleSelectionCustomView(
-        view: SingleSelectionCustomView, key: String, value: Any?
+        view: SingleSelectionCustomView,
+        key: String,
+        value: Any?,
     ) {
         val id = "${value}_$key"
         view.singleSelectionAutofill(id)
     }
 
-    private fun setSpinner(view: Spinner, value: Any?) {
+    private fun setSpinner(
+        view: Spinner,
+        value: Any?,
+    ) {
         val adapter = view.adapter
         if (adapter is CustomSpinnerAdapter) {
             when (value) {
                 is String -> {
                     val index = adapter.getIndexOfItemById(value)
-                    if (index > 0)
+                    if (index > 0) {
                         view.setSelection(index)
+                    }
                 }
             }
         }
     }
 
-    private fun setEditText(view: EditText, value: Any?) {
+    private fun setEditText(
+        view: EditText,
+        value: Any?,
+    ) {
         if (value is String) view.setText(value)
     }
-
 
     private fun objectToMap(obj: Any): Map<*, *> {
         val gson = Gson()

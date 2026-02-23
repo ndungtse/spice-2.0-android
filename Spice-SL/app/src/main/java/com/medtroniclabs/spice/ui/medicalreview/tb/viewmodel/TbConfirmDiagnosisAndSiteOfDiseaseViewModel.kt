@@ -20,9 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TbConfirmDiagnosisAndSiteOfDiseaseViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var repository: DiagnosisRepository
+    private var repository: DiagnosisRepository,
 ) : ViewModel() {
-
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 
@@ -31,7 +30,6 @@ class TbConfirmDiagnosisAndSiteOfDiseaseViewModel @Inject constructor(
     val organAffectedMetaList = MutableLiveData<Resource<List<DiseaseCategoryItems>>>()
     val diagnosisDetailsList = MutableLiveData<Resource<ArrayList<DiagnosisDiseaseModel>>>()
     val diagnosisSaveUpdateResponse = MutableLiveData<Resource<ArrayList<DiagnosisDiseaseModel>>>()
-
 
     fun getDiagnosisMetaList(diagnosisType: String) {
         viewModelScope.launch(dispatcherIO) {

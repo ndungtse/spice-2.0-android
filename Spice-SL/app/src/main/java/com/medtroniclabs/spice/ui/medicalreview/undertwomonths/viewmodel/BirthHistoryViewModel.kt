@@ -17,18 +17,21 @@ import javax.inject.Inject
 @HiltViewModel
 class BirthHistoryViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var repository: UnderTwoMonthsRepository
+    private var repository: UnderTwoMonthsRepository,
 ) : ViewModel() {
     val birthHistoryLiveData = MutableLiveData<Resource<BirthHistoryResponse>>()
-    val lowBirthWeight=2.0
+    val lowBirthWeight = 2.0
 
-    fun getBirthHistoryDetails(patientId: String?, memberId: String?) {
+    fun getBirthHistoryDetails(
+        patientId: String?,
+        memberId: String?,
+    ) {
         val birthHistoryRequest =
             BirthHistoryRequest(memberId = memberId, motherPatientId = patientId)
         viewModelScope.launch(dispatcherIO) {
             birthHistoryLiveData.postLoading()
             birthHistoryLiveData.postValue(
-                repository.getBirthHistoryDetailsUnderTwoMonths(birthHistoryRequest)
+                repository.getBirthHistoryDetailsUnderTwoMonths(birthHistoryRequest),
             )
         }
     }

@@ -16,5 +16,5 @@ data class LinkedVillageEntity(
     val districtId: Long? = null,
     var isUserVillage: Boolean = false,
     val chiefdomCode: String? = null,
-    val districtCode: String? = null
+    val districtCode: String? = null,
 )

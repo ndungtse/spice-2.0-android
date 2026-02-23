@@ -10,7 +10,6 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.appextensions.setDialogPercent
-import com.medtroniclabs.spice.appextensions.setDialogPercentForWidth
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.DialogESignatureBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -20,9 +19,9 @@ import com.medtroniclabs.spice.signature.view.SignatureView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ESignatureDialog(private val signatureInterface: SignatureInterface) : DialogFragment(),
+class ESignatureDialog(private val signatureInterface: SignatureInterface) :
+    DialogFragment(),
     View.OnClickListener {
-
     private lateinit var binding: DialogESignatureBinding
     private val viewModel: TermsAndConditionsViewModel by viewModels()
 
@@ -30,15 +29,14 @@ class ESignatureDialog(private val signatureInterface: SignatureInterface) : Dia
 
     companion object {
         const val TAG = "ESignatureDialog"
-        fun newInstance(signatureInterface: SignatureInterface): ESignatureDialog {
-            return ESignatureDialog(signatureInterface)
-        }
+
+        fun newInstance(signatureInterface: SignatureInterface): ESignatureDialog = ESignatureDialog(signatureInterface)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogESignatureBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -46,7 +44,10 @@ class ESignatureDialog(private val signatureInterface: SignatureInterface) : Dia
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         attachObservers()
@@ -71,7 +72,6 @@ class ESignatureDialog(private val signatureInterface: SignatureInterface) : Dia
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         handleConfiguration()
-
     }
 
     override fun onStart() {
@@ -106,7 +106,7 @@ class ESignatureDialog(private val signatureInterface: SignatureInterface) : Dia
                 if (isSigned()) {
                     signatureInterface.applySignature(
                         binding.signatureView.getSignatureBitmap(),
-                        viewModel.patientInitial.value
+                        viewModel.patientInitial.value,
                     )
                     dismiss()
                 } else {

@@ -24,5 +24,4 @@ object ViewType {
     const val VIEW_TYPE_FORM_QR = "QRView"
     const val VIEW_TYPE_SINGLE_SELECTION = "SingleSelectionView"
     const val VIEW_TYPE_NO_OF_DAYS = "NoOfDaysView"
-
 }

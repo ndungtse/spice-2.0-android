@@ -13,16 +13,15 @@ import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 class MultiSelectionNoneSpinner(
     context: Context,
     private val items: List<MultiSelectDropDownModel>,
-    private val selectedItems: ArrayList<MultiSelectDropDownModel>
+    private val selectedItems: ArrayList<MultiSelectDropDownModel>,
 ) : ArrayAdapter<MultiSelectDropDownModel>(context, 0, items) {
-
     private val checkedItems = BooleanArray(items.size)
     private var onItemSelectedListener: OnItemSelectedListener? = null
 
     interface OnItemSelectedListener {
         fun onItemSelected(
             selectedItems: List<MultiSelectDropDownModel>,
-            pos: Int
+            pos: Int,
         )
     }
 
@@ -36,25 +35,29 @@ class MultiSelectionNoneSpinner(
         this.onItemSelectedListener = listener
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return createView(position, convertView, parent, false)
-    }
+    override fun getView(
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup,
+    ): View = createView(position, convertView, parent, false)
 
-    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return createView(position, convertView, parent, true)
-    }
+    override fun getDropDownView(
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup,
+    ): View = createView(position, convertView, parent, true)
 
     private fun createView(
         position: Int,
         convertView: View?,
         parent: ViewGroup,
-        isDropDown: Boolean
+        isDropDown: Boolean,
     ): View {
         val view: View = convertView
             ?: LayoutInflater.from(context).inflate(
                 if (isDropDown) R.layout.custom_spinner_dropdown_item else R.layout.custom_non_select_dropdown,
                 parent,
-                false
+                false,
             )
 
         val textView = view.findViewById<TextView>(R.id.spin_txt)
@@ -105,12 +108,10 @@ class MultiSelectionNoneSpinner(
                 onItemSelectedListener?.onItemSelected(selectedItems, position)
             }
 
-
             itemName.setOnClickListener {
                 val newCheckedState = !checkBox.isChecked
                 checkBox.isChecked = newCheckedState
             }
-
         } else {
             if (selectedItems.isEmpty()) {
                 textView.text = context.getString(R.string.please_select)
@@ -130,15 +131,13 @@ class MultiSelectionNoneSpinner(
         return view
     }
 
-    private fun getSelectedItems(): List<MultiSelectDropDownModel> {
-        return selectedItems
-    }
+    private fun getSelectedItems(): List<MultiSelectDropDownModel> = selectedItems
 
     fun reset() {
         selectedItems.clear()
         checkedItems.fill(false)
 
-        //Update adapter
+        // Update adapter
         notifyDataSetChanged()
         onItemSelectedListener?.onItemSelected(selectedItems, -1)
     }

@@ -136,8 +136,8 @@ object Screening {
     const val identityType = "identityType"
     const val GlucoseUnit = "glucoseUnit"
     const val DateOfBirth = "dateOfBirth"
-    const val lastMealTypeMeridiem  = "Meridiem"
-    const val lastMealTypeDateSuffix  = "Date"
+    const val lastMealTypeMeridiem = "Meridiem"
+    const val lastMealTypeDateSuffix = "Date"
     const val MHAnswer = "answer"
     const val MHQuestion = "question"
     const val diabetes = "diabetes"
@@ -151,7 +151,7 @@ object Screening {
     const val bp_log = "bpLog"
     const val GlucoseLog = "glucoseLog"
     const val YESTERDAY = "YESTERDAY"
-    const val TODAY ="TODAY"
+    const val TODAY = "TODAY"
     const val Facility = "Facility"
     const val Community = "Community"
     const val identityValue = "identityValue"
@@ -163,6 +163,7 @@ object Screening {
     const val Female = "Female"
     const val Male = "Male"
     const val is_regular_smoker = "isRegularSmoker"
+
     // CVD Risks
     const val very_low_risk_limit = 5
     const val low_risk_limit = 10
@@ -184,6 +185,7 @@ object Screening {
     const val Entity = "entity"
     const val PatientDetails = "patientDetails"
     const val SSP16 = 16
+
     fun getEmptyBPReading(size: Int): ArrayList<BPModel> {
         val list = ArrayList<BPModel>()
         for (i in 1..size) {
@@ -191,6 +193,7 @@ object Screening {
         }
         return list
     }
+
     const val DISTRICT_ID = "districtId"
     const val CHIEFDOM_ID = "chiefdomId"
     const val VILLAGE = "village"
@@ -200,5 +203,5 @@ object Screening {
     const val MoreThanHalfTheDays = "More than half the days"
     const val NearlyEveryDay = "Nearly every day"
 
-    const val NoOfNeonates="noOfNeonates"
+    const val NoOfNeonates = "noOfNeonates"
 }

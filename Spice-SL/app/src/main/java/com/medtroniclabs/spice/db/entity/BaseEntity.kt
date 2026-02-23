@@ -7,7 +7,6 @@ import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 
 @Entity
 open class BaseEntity {
-
     @ColumnInfo("fhir_id")
     var fhirId: String? = null
 

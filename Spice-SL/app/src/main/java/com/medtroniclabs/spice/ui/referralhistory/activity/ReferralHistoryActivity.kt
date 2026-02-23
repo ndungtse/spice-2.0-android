@@ -49,13 +49,12 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
         setMainContentView(
             binding.root,
             true,
-            getString(R.string.patient_medical_review)
+            getString(R.string.patient_medical_review),
         )
         initView()
         initializeListener()
         attachObserver()
     }
-
 
     private fun attachObserver() {
         patientDetailViewModel.patientDetailsLiveData.observe(this) { resource ->
@@ -82,12 +81,11 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
                         message = getString(R.string.something_went_wrong_try_later),
                         positiveButtonName = getString(R.string.ok),
                     ) {
-                       finish()
+                        finish()
                     }
                 }
             }
         }
-
 
         viewModel.medicalReviewTicketLiveDataPNC.observe(this) { resource ->
             when (resource.state) {
@@ -103,7 +101,7 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
                         addFragmentIfAbsent(
                             R.id.cardMedicalReviewContainer,
                             MotherPncVisitSummaryHistoryFragment.TAG,
-                            medicalReviewFragmentPNC
+                            medicalReviewFragmentPNC,
                         )
                     }
                     val medicalReviewFragment =
@@ -111,7 +109,7 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
                     addFragmentIfAbsent(
                         R.id.cardMotherNeonateContainer,
                         MedicalReviewHistoryFragment.TAG,
-                        medicalReviewFragment
+                        medicalReviewFragment,
                     )
                 }
 
@@ -130,7 +128,7 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             addFragmentIfAbsent(
                 R.id.cardBirthDetailContainer,
                 BirthDetailsFragment.TAG,
-                birthDetailFragment
+                birthDetailFragment,
             )
         } else {
             binding.cardBirthDetailContainer.gone()
@@ -143,47 +141,47 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
         }
     }
 
-
     private fun initView() {
         binding.cardBirthDetailContainer.gone()
         patientDetailViewModel.origin = intent.extras?.getString(DefinedParams.ORIGIN)
         val patientFragment =
             PatientInfoFragment.newInstance(
                 intent.getStringExtra(DefinedParams.PatientId),
-                isReferredScreen = true
+                isReferredScreen = true,
             )
         patientFragment.setDataCallback(this)
-        supportFragmentManager.beginTransaction()
+        supportFragmentManager
+            .beginTransaction()
             .add(
                 R.id.patientDetailsContainer,
-                patientFragment
+                patientFragment,
             ).commit()
     }
 
-     fun ableToGetLocation(): Boolean {
-        //Check Location service is enabled
+    fun ableToGetLocation(): Boolean {
+        // Check Location service is enabled
         if (!isGpsEnabled()) {
             showTurnOnGPSDialog()
             return false
         }
 
-        //Check Location permission for limit exceed
+        // Check Location permission for limit exceed
         if (ActivityCompat.shouldShowRequestPermissionRationale(
                 this,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION,
             )
         ) {
             showAllowLocationServiceDialog()
             return false
         }
 
-        //Check Location permission
+        // Check Location permission
         if (!isFineAndCoarseLocationPermissionGranted()) {
             requestPermissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                ),
             )
             return false
         }
@@ -193,7 +191,7 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
 
     private val requestPermissionLauncher =
         registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
+            ActivityResultContracts.RequestMultiplePermissions(),
         ) { permissions ->
             val finePermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION]
             val coarsePermission = permissions[Manifest.permission.ACCESS_COARSE_LOCATION]
@@ -210,52 +208,52 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
         }
         intent.putExtra(
             DefinedParams.PatientId,
-            this.intent.getStringExtra(DefinedParams.PatientId)
+            this.intent.getStringExtra(DefinedParams.PatientId),
         )
         intent.putExtra(
             ID,
-            patientDetailViewModel.patientDetailsId
+            patientDetailViewModel.patientDetailsId,
         )
         intent.putExtra(DefinedParams.MemberID, patientDetailViewModel.getPatientMemberId())
         intent.putExtra(
             DefinedParams.Gender,
-            this.intent.getStringExtra(DefinedParams.Gender)
+            this.intent.getStringExtra(DefinedParams.Gender),
         )
         intent.putExtra(
             DefinedParams.DOB,
-            this.intent.getStringExtra(DefinedParams.DOB)
+            this.intent.getStringExtra(DefinedParams.DOB),
         )
         intent.putExtra(
             DefinedParams.ChildPatientId,
-            patientDetailViewModel.childPatientDetails
+            patientDetailViewModel.childPatientDetails,
         )
         intent.putExtra(
             DefinedParams.DateOfDelivery,
-            patientDetailViewModel.dateOfDelivery
+            patientDetailViewModel.dateOfDelivery,
         )
         intent.putExtra(
             DefinedParams.NeonateOutcome,
-           patientDetailViewModel.neonateOutCome
+            patientDetailViewModel.neonateOutCome,
         )
         intent.putExtra(
             DefinedParams.householdId,
-            patientDetailViewModel.getPatientHouseholdId()
+            patientDetailViewModel.getPatientHouseholdId(),
         )
         intent.putExtra(
             DefinedParams.villageId,
-            patientDetailViewModel.getVillageId()
+            patientDetailViewModel.getVillageId(),
         )
         intent.putExtra(
             DefinedParams.isPregnant,
-            patientDetailViewModel.isPregnant()
+            patientDetailViewModel.isPregnant(),
         )
         intent.putExtra(
             DefinedParams.EMTCT,
-            patientDetailViewModel.isEmtctFlow
+            patientDetailViewModel.isEmtctFlow,
         )
         intent.putExtra(
             DefinedParams.hivTestedPositive,
-            patientDetailViewModel.hivTestedPositive
+            patientDetailViewModel.hivTestedPositive,
         )
         startActivity(intent)
     }
@@ -265,33 +263,34 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             val dob = intent.getStringExtra(DefinedParams.DOB)
             dob?.let { DateUtils.calculateAge(dob) } ?: 0
             showLoading()
-            viewModel.patientReference=details.id
+            viewModel.patientReference = details.id
             viewModel.getMedicalReviewHistoryPNC(patientId = details.id)
             val referralTicketFragment =
                 ReferralTicketFragment.newInstance(details.id, details.memberId)
             addFragmentIfAbsent(
                 R.id.cardReferralTicket,
                 ReferralTicketFragment.TAG,
-                referralTicketFragment
+                referralTicketFragment,
             )
 
             val prescriptionFragment = PrescriptionHistoryFragment.newInstance(details.id)
             addFragmentIfAbsent(
                 R.id.cardPrescriptionContainer,
                 PrescriptionHistoryFragment.TAG,
-                prescriptionFragment
+                prescriptionFragment,
             )
 
             val investigationFragment = InvestigationHistoryFragment.newInstance(details.id)
             addFragmentIfAbsent(
                 R.id.cardInvestigationContainer,
                 InvestigationHistoryFragment.TAG,
-                investigationFragment
+                investigationFragment,
             )
 
             binding.btnMedicalReview.safeClickListener {
-                if (ableToGetLocation())
+                if (ableToGetLocation()) {
                     launchToolsActivity()
+                }
             }
             hideLoading()
         }
@@ -300,15 +299,17 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
     private fun addFragmentIfAbsent(
         containerId: Int,
         fragmentTag: String,
-        fragmentInstance: Fragment
+        fragmentInstance: Fragment,
     ) {
         val existingFragment = supportFragmentManager.findFragmentByTag(fragmentTag)
         if (existingFragment == null) {
-            supportFragmentManager.beginTransaction()
+            supportFragmentManager
+                .beginTransaction()
                 .add(containerId, fragmentInstance, fragmentTag)
                 .commit()
         } else {
-            supportFragmentManager.beginTransaction()
+            supportFragmentManager
+                .beginTransaction()
                 .replace(containerId, fragmentInstance, fragmentTag)
                 .commit()
         }
@@ -316,7 +317,7 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
 
     private fun swipeRefresh() {
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
-            if(CommonUtils.isCommunity()) {
+            if (CommonUtils.isCommunity()) {
                 details.patientId?.let { id ->
                     patientDetailViewModel.getPatients(id)
                 }

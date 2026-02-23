@@ -23,14 +23,17 @@ class TBRxBuddyFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentTBTreatmentBinding.inflate(inflater, container, false)
 
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
     }
@@ -44,42 +47,48 @@ class TBRxBuddyFragment : BaseFragment() {
 
     private fun createTreatmentSummaryData(rxBuddyDetails: RxBuddyDetails): List<AssessmentSummaryModel>? {
         val list = mutableListOf<AssessmentSummaryModel>()
-        list.add(AssessmentSummaryModel(
-            title = getString(R.string.rx_buddy_name),
-            value = checkNullValue(rxBuddyDetails.name)
-        ))
+        list.add(
+            AssessmentSummaryModel(
+                title = getString(R.string.rx_buddy_name),
+                value = checkNullValue(rxBuddyDetails.name),
+            ),
+        )
 
-        list.add(AssessmentSummaryModel(
-            title = getString(R.string.relation_ship_with_patient),
-            value = checkNullValue(rxBuddyDetails.relationship)
-        ))
+        list.add(
+            AssessmentSummaryModel(
+                title = getString(R.string.relation_ship_with_patient),
+                value = checkNullValue(rxBuddyDetails.relationship),
+            ),
+        )
 
         rxBuddyDetails.otherRelationship?.let {
-            list.add(AssessmentSummaryModel(
-                title = getString(R.string.other_relationship),
-                value = checkNullValue(it)
-            ))
+            list.add(
+                AssessmentSummaryModel(
+                    title = getString(R.string.other_relationship),
+                    value = checkNullValue(it),
+                ),
+            )
         }
 
-        list.add(AssessmentSummaryModel(
-            title = getString(R.string.contact_no),
-            value = checkNullValue("+${SecuredPreference.getPhoneNumberCode()} ${rxBuddyDetails.phoneNumber}")
-        ))
+        list.add(
+            AssessmentSummaryModel(
+                title = getString(R.string.contact_no),
+                value = checkNullValue("+${SecuredPreference.getPhoneNumberCode()} ${rxBuddyDetails.phoneNumber}"),
+            ),
+        )
 
         list.add(
             AssessmentSummaryModel(
                 title = getString(R.string.rx_buddy_monitoring_sheet_provided),
-                value = capitalizeYesNo(rxBuddyDetails.isMonitorSheetProvider)
-            )
+                value = capitalizeYesNo(rxBuddyDetails.isMonitorSheetProvider),
+            ),
         )
 
         return list
     }
 
-    private fun createSummaryView(
-        listSummaryData: List<AssessmentSummaryModel>?
-    ) {
-        listSummaryData?.let {summaryData ->
+    private fun createSummaryView(listSummaryData: List<AssessmentSummaryModel>?) {
+        listSummaryData?.let { summaryData ->
             binding.emptyErrorMessage.visibility = View.GONE
             binding.llParentLayout.visibility = View.VISIBLE
             binding.llParentLayout.removeAllViews()
@@ -91,7 +100,7 @@ class TBRxBuddyFragment : BaseFragment() {
 
     private fun composeTbSummaryView(listSummaryData: List<AssessmentSummaryModel>) {
         listSummaryData.forEach { item ->
-            bindTbSummaryView(item.title,item.value)
+            bindTbSummaryView(item.title, item.value)
         }
     }
 
@@ -100,26 +109,26 @@ class TBRxBuddyFragment : BaseFragment() {
         binding.llParentLayout.visibility = View.GONE
     }
 
-    private fun bindTbSummaryView(title: String?, value: String?, valueTextColor: Int? = null) {
+    private fun bindTbSummaryView(
+        title: String?,
+        value: String?,
+        valueTextColor: Int? = null,
+    ) {
         binding.llParentLayout.addView(
             AssessmentCommonUtils.addViewSummaryLayout(
                 title,
                 value,
                 valueTextColor,
-                requireContext()
-            )
+                requireContext(),
+            ),
         )
     }
 
-    private fun checkNullValue(input: String?): String {
-        return input ?: "-"
-    }
+    private fun checkNullValue(input: String?): String = input ?: "-"
 
-    private fun capitalizeYesNo(value: Boolean): String {
-        return if (value) getString(R.string.yes) else getString(R.string.no)
-    }
+    private fun capitalizeYesNo(value: Boolean): String = if (value) getString(R.string.yes) else getString(R.string.no)
 
-    companion object{
+    companion object {
         const val TAG = "TBRxBuddyFragment"
     }
 }

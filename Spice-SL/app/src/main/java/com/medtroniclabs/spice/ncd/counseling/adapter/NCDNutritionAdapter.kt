@@ -15,8 +15,8 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.ListItemNutritionistBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.utils.ValidationListener
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 
 class NCDNutritionAdapter(private val listener: ValidationListener) :
     RecyclerView.Adapter<NCDNutritionAdapter.ViewHolder>() {
@@ -46,7 +46,7 @@ class NCDNutritionAdapter(private val listener: ValidationListener) :
                         DateUtils.convertDateTimeToDate(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DateUtils.DATE_FORMAT_ddMMMyyyy
+                            DateUtils.DATE_FORMAT_ddMMMyyyy,
                         )
                     }
                     tvRefDate.text = refDate.textOrHyphen()
@@ -56,10 +56,11 @@ class NCDNutritionAdapter(private val listener: ValidationListener) :
                     etLifestyleAssessment.setText(lifestyleAssessment.textOrEmpty())
                     etLifestyleAssessment.addTextChangedListener { value ->
                         adapterList[layoutPosition].apply {
-                            this.lifestyleAssessment = if (value.isNullOrBlank())
+                            this.lifestyleAssessment = if (value.isNullOrBlank()) {
                                 null
-                            else
+                            } else {
                                 value.toString()
+                            }
                         }
                         listener.validate()
                     }
@@ -67,10 +68,11 @@ class NCDNutritionAdapter(private val listener: ValidationListener) :
                     etOtherNotes.setText(otherNote.textOrEmpty())
                     etOtherNotes.addTextChangedListener { value ->
                         adapterList[layoutPosition].apply {
-                            this.otherNote = if (value.isNullOrBlank())
+                            this.otherNote = if (value.isNullOrBlank()) {
                                 null
-                            else
+                            } else {
                                 value.toString()
+                            }
                         }
                         listener.validate()
                     }
@@ -85,8 +87,9 @@ class NCDNutritionAdapter(private val listener: ValidationListener) :
                 binding.root.id -> {
                     if (layoutPosition < adapterList.size) {
                         val item = adapterList[layoutPosition]
-                        if (item.id.isNullOrBlank()) return
-                        else {
+                        if (item.id.isNullOrBlank()) {
+                            return
+                        } else {
                             adapterList[layoutPosition].let {
                                 it.isExpanded = !it.isExpanded
                             }
@@ -108,23 +111,36 @@ class NCDNutritionAdapter(private val listener: ValidationListener) :
         ivArrow.start()
     }
 
-    private fun getTextColor(context: Context, enteredBy: Any?): Int {
-        return if (enteredBy == null) context.getColor(R.color.disabled_text_color) else context.getColor(
-            R.color.navy_blue
-        )
-    }
+    private fun getTextColor(
+        context: Context,
+        enteredBy: Any?,
+    ): Int =
+        if (enteredBy == null) {
+            context.getColor(R.color.disabled_text_color)
+        } else {
+            context.getColor(
+                R.color.navy_blue,
+            )
+        }
 
     fun getData() = adapterList
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder =
+        ViewHolder(
             ListItemNutritionistBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            )
+                LayoutInflater.from(parent.context),
+                parent,
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         adapterList.let {
             holder.bind(it[position])
         }

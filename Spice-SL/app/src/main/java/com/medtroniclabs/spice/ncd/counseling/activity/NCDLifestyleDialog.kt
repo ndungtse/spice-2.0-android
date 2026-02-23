@@ -18,8 +18,8 @@ import com.medtroniclabs.spice.databinding.DialogNcdLifestyleBinding
 import com.medtroniclabs.spice.formgeneration.extension.hideKeyboard
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
@@ -30,7 +30,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Unit) :
     DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: DialogNcdLifestyleBinding
 
     private val viewModel: CounselingViewModel by viewModels()
@@ -50,7 +49,7 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
             patientReference: String?,
             memberReference: String?,
             encounterReference: String?,
-            callback: (isPositiveResult: Boolean) -> Unit
+            callback: (isPositiveResult: Boolean) -> Unit,
         ): NCDLifestyleDialog {
             val dialog = NCDLifestyleDialog(callback)
             val bundle = Bundle()
@@ -62,14 +61,19 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogNcdLifestyleBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -131,7 +135,7 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
                     name = item.name,
                     cultureValue = item.displayValue,
                     type = item.type,
-                    value = item.value
+                    value = item.value,
                 )
             } as ArrayList<ChipViewItemModel>
             tagListCustomView.addChipItemList(complaintList)
@@ -163,14 +167,15 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
 
             binding.btnSave.id -> {
                 requireContext().hideKeyboard(v)
-                if (connectivityManager.isNetworkAvailable())
+                if (connectivityManager.isNetworkAvailable()) {
                     viewModel.createAssessment(getCreateRequest(), true)
+                }
             }
         }
     }
 
-    private fun getCreateRequest(): NCDCounselingModel {
-        return with(viewModel) {
+    private fun getCreateRequest(): NCDCounselingModel =
+        with(viewModel) {
             NCDCounselingModel(
                 patientReference = patientReference,
                 memberReference = memberReference,
@@ -185,18 +190,18 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
                 assessedBy = NCDMRUtil.currentUserId(),
                 assessedByDisplay = NCDMRUtil.getUserName(),
                 assessedDate = DateUtils.getTodayDateDDMMYYYY(),
-                isNutritionist = nutritionist
+                isNutritionist = nutritionist,
             )
         }
-    }
 
     override fun onStart() {
         super.onStart()
         val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        if (isLandscape)
+        if (isLandscape) {
             setDialogPercent(60, 90)
-        else
+        } else {
             setDialogPercent(90, 60)
+        }
     }
 
     private fun showLoading() {

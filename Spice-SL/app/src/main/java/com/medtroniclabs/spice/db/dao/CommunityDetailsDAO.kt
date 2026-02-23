@@ -8,11 +8,9 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.entity.CommunityProfile
-import com.medtroniclabs.spice.db.entity.HouseholdEntity
 
 @Dao
 interface CommunityDetailsDAO {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCommunity(communityEntity: CommunityProfile): Long
 
@@ -32,13 +30,20 @@ interface CommunityDetailsDAO {
     suspend fun updateCommunity(communityEntity: CommunityProfile)
 
     @Query("UPDATE CommunityProfile SET sync_status =:syncStatus, updated_at =:updatedAt WHERE villageId = :villageId")
-    suspend fun updateSyncStatus(villageId: Long, syncStatus: String, updatedAt: Long = System.currentTimeMillis())
+    suspend fun updateSyncStatus(
+        villageId: Long,
+        syncStatus: String,
+        updatedAt: Long = System.currentTimeMillis(),
+    )
 
     @Query("SELECT * FROM CommunityProfile WHERE sync_status in (:status)")
     suspend fun getUnSyncedCommunityDetails(status: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)): List<CommunityProfile>
 
     @Query("UPDATE CommunityProfile SET sync_status =:syncStatus WHERE villageId IN (:ids)")
-    suspend fun updateInStatus(ids: List<Long>, syncStatus: String)
+    suspend fun updateInStatus(
+        ids: List<Long>,
+        syncStatus: String,
+    )
 
     @Transaction
     suspend fun insertOrUpdateFromBE(entity: CommunityProfile): Long {
@@ -52,5 +57,4 @@ interface CommunityDetailsDAO {
             return existingEntity.id
         }
     }
-
 }

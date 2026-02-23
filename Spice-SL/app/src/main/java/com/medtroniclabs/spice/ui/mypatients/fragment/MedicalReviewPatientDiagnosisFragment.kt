@@ -17,10 +17,8 @@ import com.medtroniclabs.spice.appextensions.changePatientStatus
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.setVisible
-import com.medtroniclabs.spice.appextensions.toCleanString
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
-import com.medtroniclabs.spice.common.CommonUtils.toDoubleOrEmptyString
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Lactating
 import com.medtroniclabs.spice.common.DefinedParams.Postpartum
@@ -36,31 +34,33 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.DiagnosisDialogFragment
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListener
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.calculateBp
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.CD4DialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.WhoClinicalStageFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.WhoClinicalStageViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListenerForTb
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.PATIENT_TYPE_HYPHEN
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.calculateBp
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddBpDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.AddBMIDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.BMIListDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.PatientTypeFragment
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.TbConfirmDiagnosisAndSiteOfDiseaseDialog
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.medicalreview.viewmodel.PatientStatusViewModel
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListener,
-    DialogDismissListener,DialogDismissListenerForTb {
-
+class MedicalReviewPatientDiagnosisFragment :
+    BaseFragment(),
+    View.OnClickListener,
+    DialogDismissListener,
+    DialogDismissListenerForTb {
     private lateinit var binding: FragmentMedicalReviewPatientDiagnosisBinding
     private val viewModel: MotherNeonateBpWeightViewModel by activityViewModels()
     private val statusViewModel: PatientStatusViewModel by activityViewModels()
@@ -70,11 +70,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     private val pregnancyDetailsViewModel: PregnancyDetailsViewModel by activityViewModels()
 
     companion object {
-
         const val TAG: String = "MedicalReviewPatientDiagnosisFragment"
-        fun newInstance(): MedicalReviewPatientDiagnosisFragment {
-            return MedicalReviewPatientDiagnosisFragment()
-        }
+
+        fun newInstance(): MedicalReviewPatientDiagnosisFragment = MedicalReviewPatientDiagnosisFragment()
 
         fun newInstance(
             isAnc: Boolean,
@@ -84,13 +82,13 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             id: String?,
             isTB: Boolean = false,
             isHivImrCmr: Boolean = false,
-            isFp:Boolean = false
+            isFp: Boolean = false,
         ): MedicalReviewPatientDiagnosisFragment {
             val fragment = MedicalReviewPatientDiagnosisFragment()
             fragment.arguments = Bundle().apply {
                 putBoolean(DefinedParams.PregnancyANC, isAnc)
-                putBoolean(DefinedParams.PregnancyPNC,isPnc)
-                putBoolean(DefinedParams.TB,isTB)
+                putBoolean(DefinedParams.PregnancyPNC, isPnc)
+                putBoolean(DefinedParams.TB, isTB)
                 putBoolean(DefinedParams.HIV_IMR_CMR, isHivImrCmr)
                 putString(DefinedParams.PatientId, patientId)
                 putString(DefinedParams.MemberID, memberID)
@@ -102,7 +100,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentMedicalReviewPatientDiagnosisBinding.inflate(inflater, container, false)
         arguments?.let {
@@ -112,15 +112,15 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         return binding.root
     }
 
-    private fun getDiagnosisType(): String {
-        return arguments?.let {
+    private fun getDiagnosisType(): String =
+        arguments?.let {
             if (it.getBoolean(DefinedParams.PregnancyANC)) {
                 MedicalReviewTypeEnums.ANC_REVIEW.name
             } else if (it.getBoolean(DefinedParams.PregnancyPNC)) {
                 MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name
             } else if (isTb()) {
                 MedicalReviewTypeEnums.TB.name
-            } else if (isFp()){
+            } else if (isFp()) {
                 MedicalReviewTypeEnums.FP.name
             } else if (isHivImrCmr()) {
                 MedicalReviewTypeEnums.HIV_REVIEW.name
@@ -128,25 +128,27 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 it.getString(MedicalReviewTypeEnums.DiagnosisType.name)
             }
         } ?: ""
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeViews()
         attachObserver()
         handleFlow()
         initializeListeners()
         attachListeners()
-        if (patientViewModel.getAncVisit() == 1 && diagnosisViewModel.diagnosisType!=MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name ) {
+        if (patientViewModel.getAncVisit() == 1 && diagnosisViewModel.diagnosisType != MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name) {
             binding.tvWeightValue.text = MotherNeonateUtil.convertWeight(
                 pregnancyDetailsViewModel.pregnancyDetailsModel.weight,
-                requireContext()
+                requireContext(),
             )
             binding.tvBpValue.text =
                 calculateBp(
                     pregnancyDetailsViewModel.pregnancyDetailsModel.systolic,
                     pregnancyDetailsViewModel.pregnancyDetailsModel.diastolic,
-                    requireContext()
+                    requireContext(),
                 )
             binding.tvAddWeight.invisible()
             binding.tvAddBp.invisible()
@@ -159,12 +161,42 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     private fun attachListeners() {
         val isTb = isTb()
         val isFp = isFp()
-        val progressBar = if (isTb) binding.tbWeightPageProgress else if(isFp) binding.fpWeightPageProgress else binding.pageProgress
-        val addWeightText = if (isTb) binding.tvTbAddWeight else if(isFp) binding.tvFpAddWeight else binding.tvAddWeight
-        val weightContainer = if (isTb) binding.clTbWeight else if(isFp) binding.clFpWeight else binding.clWeight
+        val progressBar = if (isTb) {
+            binding.tbWeightPageProgress
+        } else if (isFp) {
+            binding.fpWeightPageProgress
+        } else {
+            binding.pageProgress
+        }
+        val addWeightText = if (isTb) {
+            binding.tvTbAddWeight
+        } else if (isFp) {
+            binding.tvFpAddWeight
+        } else {
+            binding.tvAddWeight
+        }
+        val weightContainer = if (isTb) {
+            binding.clTbWeight
+        } else if (isFp) {
+            binding.clFpWeight
+        } else {
+            binding.clWeight
+        }
         val retryButton =
-            if (isTb) binding.retryButtonTbWeight else if(isFp) binding.retryButtonFpWeight else binding.retryButtonWeight
-        val weightTextView = if (isTb) binding.tvTbWeight else if(isFp) binding.tvFpWeight else binding.tvWeightValue
+            if (isTb) {
+                binding.retryButtonTbWeight
+            } else if (isFp) {
+                binding.retryButtonFpWeight
+            } else {
+                binding.retryButtonWeight
+            }
+        val weightTextView = if (isTb) {
+            binding.tvTbWeight
+        } else if (isFp) {
+            binding.tvFpWeight
+        } else {
+            binding.tvWeightValue
+        }
 
         viewModel.getWeight.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
@@ -183,7 +215,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                     addWeightText,
                     weightContainer,
                     retryButton,
-                    weightTextView
+                    weightTextView,
                 )
             }
         }
@@ -194,12 +226,11 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                     resource.data?.let {
                         statusViewModel.getPatientStatusDetails(
                             it,
-                            diagnosisViewModel.diagnosisType
+                            diagnosisViewModel.diagnosisType,
                         )
                     }
                 }
                 else -> {
-
                 }
             }
         }
@@ -207,12 +238,42 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         viewModel.getBloodPressure.observe(viewLifecycleOwner) { resourceState ->
             val isTb = isTb()
             val isFp = isFp()
-            val progressBar = if (isTb) binding.tbBpPageProgress else if(isFp) binding.fpBpPageProgress else binding.pageProgressBp
-            val addBPText = if (isTb) binding.tvTbAddBp else if(isFp) binding.tvFpAddBp else binding.tvAddBp
-            val bpContainer = if (isTb) binding.clTbBp else if(isFp) binding.clFpBp else binding.clBp
+            val progressBar = if (isTb) {
+                binding.tbBpPageProgress
+            } else if (isFp) {
+                binding.fpBpPageProgress
+            } else {
+                binding.pageProgressBp
+            }
+            val addBPText = if (isTb) {
+                binding.tvTbAddBp
+            } else if (isFp) {
+                binding.tvFpAddBp
+            } else {
+                binding.tvAddBp
+            }
+            val bpContainer = if (isTb) {
+                binding.clTbBp
+            } else if (isFp) {
+                binding.clFpBp
+            } else {
+                binding.clBp
+            }
             val retryButton =
-                if (isTb) binding.retryButtonTbBp else if(isFp) binding.retryButtonFpBp else binding.retryButtonBp
-            val bpTextView = if (isTb) binding.tvTbBp else if(isFp) binding.tvFpBp else binding.tvBpValue
+                if (isTb) {
+                    binding.retryButtonTbBp
+                } else if (isFp) {
+                    binding.retryButtonFpBp
+                } else {
+                    binding.retryButtonBp
+                }
+            val bpTextView = if (isTb) {
+                binding.tvTbBp
+            } else if (isFp) {
+                binding.tvFpBp
+            } else {
+                binding.tvBpValue
+            }
 
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -224,7 +285,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                         progressBar,
                         retryButton,
                         bpContainer,
-                        addBPText
+                        addBPText,
                     )
                     resourceState.data?.let {
                         bpTextView.text =
@@ -238,7 +299,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                         addBPText,
                         bpContainer,
                         retryButton,
-                        bpTextView
+                        bpTextView,
                     )
                 }
             }
@@ -251,31 +312,31 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                         handleLoading(
                             binding.fpHeightPageProgress,
                             binding.tvAddHeightFP,
-                            binding.clHeightFP
+                            binding.clHeightFP,
                         )
                     } else {
                         handleLoading(
                             binding.tbHeightPageProgress,
                             binding.tvAddHeight,
-                            binding.clHeight
+                            binding.clHeight,
                         )
                     }
                 }
 
                 ResourceState.SUCCESS -> {
-                    if (isFp()){
+                    if (isFp()) {
                         handleSuccess(
                             binding.fpHeightPageProgress,
                             binding.retryButtonFPHeightConfirm,
                             binding.clHeightFP,
-                            binding.tvAddHeightFP
+                            binding.tvAddHeightFP,
                         )
                         resourceState.data?.let {
                             binding.tvHeightLblFP.text = getString(R.string.height)
                             binding.tvHeightFP.text =
                                 MotherNeonateUtil.convertHeight(
                                     it.height,
-                                    requireContext()
+                                    requireContext(),
                                 )
                         }
                     } else {
@@ -283,27 +344,27 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                             binding.tbHeightPageProgress,
                             binding.retryButtonTbHeightConfirm,
                             binding.clHeight,
-                            binding.tvAddHeight
+                            binding.tvAddHeight,
                         )
                         resourceState.data?.let {
                             binding.tvHeightLbl.text = getString(R.string.height)
                             binding.tvHeight.text =
                                 MotherNeonateUtil.convertHeight(
                                     it.height,
-                                    requireContext()
+                                    requireContext(),
                                 )
                         }
                     }
                 }
 
                 ResourceState.ERROR -> {
-                    if (isFp()){
+                    if (isFp()) {
                         handleError(
                             binding.fpHeightPageProgress,
                             binding.tvAddHeightFP,
                             binding.clHeightFP,
                             binding.retryButtonFPHeightConfirm,
-                            binding.tvHeightFP
+                            binding.tvHeightFP,
                         )
                     } else {
                         handleError(
@@ -311,7 +372,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                             binding.tvAddHeight,
                             binding.clHeight,
                             binding.retryButtonTbHeightConfirm,
-                            binding.tvHeight
+                            binding.tvHeight,
                         )
                     }
                 }
@@ -321,17 +382,17 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         viewModel.getBmi.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
-                    if (isFp()){
+                    if (isFp()) {
                         handleLoading(
                             binding.fpBMIPageProgress,
                             binding.tvFpBmiHistory,
-                            binding.clFpBmi
+                            binding.clFpBmi,
                         )
                     } else {
                         handleLoading(
                             binding.tbBMIPageProgress,
                             binding.tvBmiHistory,
-                            binding.clBmi
+                            binding.clBmi,
                         )
                     }
                 }
@@ -342,14 +403,14 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                             binding.fpBMIPageProgress,
                             binding.retryButtonFpBMI,
                             binding.clFpBmi,
-                            binding.tvFpBmiHistory
+                            binding.tvFpBmiHistory,
                         )
                         resourceState.data?.let {
                             binding.tvFpBmiLbl.text = getString(R.string.bmi)
                             binding.tvFpBmi.text =
                                 MotherNeonateUtil.convertBmi(
                                     it.bmi,
-                                    requireContext()
+                                    requireContext(),
                                 )
                         }
                     } else {
@@ -357,27 +418,27 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                             binding.tbBMIPageProgress,
                             binding.retryButtonTbBMI,
                             binding.clBmi,
-                            binding.tvBmiHistory
+                            binding.tvBmiHistory,
                         )
                         resourceState.data?.let {
                             binding.tvBmiLbl.text = getString(R.string.bmi)
                             binding.tvBmi.text =
                                 MotherNeonateUtil.convertBmi(
                                     it.bmi,
-                                    requireContext()
+                                    requireContext(),
                                 )
                         }
                     }
                 }
 
                 ResourceState.ERROR -> {
-                    if (isFp()){
+                    if (isFp()) {
                         handleError(
                             binding.fpBMIPageProgress,
                             binding.tvFpBmiHistory,
                             binding.clFpBmi,
                             binding.retryButtonFpBMI,
-                            binding.tvFpBmi
+                            binding.tvFpBmi,
                         )
                     } else {
                         handleError(
@@ -385,7 +446,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                             binding.tvBmiHistory,
                             binding.clBmi,
                             binding.retryButtonTbBMI,
-                            binding.tvBmi
+                            binding.tvBmi,
                         )
                     }
                 }
@@ -396,7 +457,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     private fun handleLoading(
         pageProgress: ProgressBar,
         textView: AppCompatTextView,
-        clView: ConstraintLayout
+        clView: ConstraintLayout,
     ) {
 //        pageProgress.visible()
         textView.isEnabled = false
@@ -407,7 +468,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         pageProgress: ProgressBar,
         retryButton: MaterialButton,
         clView: ConstraintLayout,
-        textView: AppCompatTextView
+        textView: AppCompatTextView,
     ) {
         pageProgress.gone()
         retryButton.gone()
@@ -420,7 +481,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         textView: AppCompatTextView,
         clView: ConstraintLayout,
         retryButton: MaterialButton,
-        textViewError: AppCompatTextView
+        textViewError: AppCompatTextView,
     ) {
         pageProgress.gone()
         textView.isEnabled = true
@@ -430,17 +491,11 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             requireContext().getString(R.string.something_went_wrong)
     }
 
-    private fun isTb():Boolean {
-       return arguments?.getBoolean(DefinedParams.TB, false) ?: false
-    }
+    private fun isTb(): Boolean = arguments?.getBoolean(DefinedParams.TB, false) ?: false
 
-    private fun isFp():Boolean {
-        return arguments?.getBoolean(DefinedParams.FP, false) ?: false
-    }
+    private fun isFp(): Boolean = arguments?.getBoolean(DefinedParams.FP, false) ?: false
 
-    private fun isHivImrCmr():Boolean {
-        return arguments?.getBoolean(DefinedParams.HIV_IMR_CMR, false) ?: false
-    }
+    private fun isHivImrCmr(): Boolean = arguments?.getBoolean(DefinedParams.HIV_IMR_CMR, false) ?: false
 
     private fun handleFlow() {
         with(binding) {
@@ -486,7 +541,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 tvBmiHistory.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
             }
             tbLl.setVisible(isTb)
-            if (isFp()){
+            if (isFp()) {
                 commonLl.gone()
                 tbLl.gone()
                 familyPlanningLl.visible()
@@ -510,7 +565,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                     details.id?.let { id ->
                         diagnosisViewModel.getHivVitalsDetails(
                             patientReference = id,
-                            memberId = getMemberId()
+                            memberId = getMemberId(),
                         )
                     }
                 }
@@ -531,7 +586,10 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         }
     }
 
-    private fun ancPncFlow(cardAddWeight: MaterialCardView, cardBloodPressure: MaterialCardView) {
+    private fun ancPncFlow(
+        cardAddWeight: MaterialCardView,
+        cardBloodPressure: MaterialCardView,
+    ) {
         cardAddWeight.visible()
         cardBloodPressure.visible()
         if (connectivityManager.isNetworkAvailable()) {
@@ -541,6 +599,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             }
         }
     }
+
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.tvAddWeight.id, binding.tvTbAddWeight.id, binding.tvFpAddWeight.id -> showAddWeightDialog()
@@ -560,12 +619,15 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         }
     }
 
-    private fun showCD4Dialog(isCd4: Boolean, isCd4Percentage: Boolean) {
+    private fun showCD4Dialog(
+        isCd4: Boolean,
+        isCd4Percentage: Boolean,
+    ) {
         withNetworkAvailability(online = {
             showDialogIfNotPresent(CD4DialogFragment.TAG) {
                 CD4DialogFragment.newInstance(
                     isCD4 = isCd4,
-                    isCD4Percentage = isCd4Percentage
+                    isCD4Percentage = isCd4Percentage,
                 )
             }
         })
@@ -622,38 +684,41 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     private fun showAddHeightDialog() {
         withNetworkAvailability(online = {
             showDialogIfNotPresent(AddBMIDialog.TAG) {
-                AddBMIDialog.newInstance(
-                    patientId = getPatientId(),
-                    villageId = patientViewModel.getVillageId(),
-                    householdId = patientViewModel.getPatientHouseholdId(),
-                    memberId = getMemberId(),
-                    isTb = isTb()
-                ).apply {
-                    listener = this@MedicalReviewPatientDiagnosisFragment
-                }
+                AddBMIDialog
+                    .newInstance(
+                        patientId = getPatientId(),
+                        villageId = patientViewModel.getVillageId(),
+                        householdId = patientViewModel.getPatientHouseholdId(),
+                        memberId = getMemberId(),
+                        isTb = isTb(),
+                    ).apply {
+                        listener = this@MedicalReviewPatientDiagnosisFragment
+                    }
             }
         })
     }
 
     private fun showAddBpOrWeightDialog(isBp: Boolean) {
         val dialog = if (isBp) {
-            AddBpDialog.newInstance(
-                getPatientId(),
-                villageId = patientViewModel.getVillageId(),
-                householdId = patientViewModel.getPatientHouseholdId()
-            ).apply {
-                listener = this@MedicalReviewPatientDiagnosisFragment
-            }
+            AddBpDialog
+                .newInstance(
+                    getPatientId(),
+                    villageId = patientViewModel.getVillageId(),
+                    householdId = patientViewModel.getPatientHouseholdId(),
+                ).apply {
+                    listener = this@MedicalReviewPatientDiagnosisFragment
+                }
         } else {
-            AddBMIDialog.newInstance(
-                patientId = getPatientId(),
-                villageId = patientViewModel.getVillageId(),
-                householdId = patientViewModel.getPatientHouseholdId(),
-                memberId = patientViewModel.getPatientMemberId(),
-                isTb = isTb()
-            ).apply {
-                listener = this@MedicalReviewPatientDiagnosisFragment
-            }
+            AddBMIDialog
+                .newInstance(
+                    patientId = getPatientId(),
+                    villageId = patientViewModel.getVillageId(),
+                    householdId = patientViewModel.getPatientHouseholdId(),
+                    memberId = patientViewModel.getPatientMemberId(),
+                    isTb = isTb(),
+                ).apply {
+                    listener = this@MedicalReviewPatientDiagnosisFragment
+                }
         }
         showDialogIfNotPresent(if (isBp) AddBpDialog.TAG else AddBMIDialog.TAG) {
             dialog
@@ -669,19 +734,19 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             (activity as BaseActivity?)?.showErrorDialogue(
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
+                isNegativeButtonNeed = false,
             ) {
-
             }
         }
     }
 
     private fun showDiagnosisDialog() {
-        if (connectivityManager.isNetworkAvailable()){
+        if (connectivityManager.isNetworkAvailable()) {
             if (isTb()) {
-                TbConfirmDiagnosisAndSiteOfDiseaseDialog().apply {
-                    this.listener = this@MedicalReviewPatientDiagnosisFragment
-                }.show(childFragmentManager, TbConfirmDiagnosisAndSiteOfDiseaseDialog.TAG)
+                TbConfirmDiagnosisAndSiteOfDiseaseDialog()
+                    .apply {
+                        this.listener = this@MedicalReviewPatientDiagnosisFragment
+                    }.show(childFragmentManager, TbConfirmDiagnosisAndSiteOfDiseaseDialog.TAG)
             } else {
                 DiagnosisDialogFragment().show(childFragmentManager, DiagnosisDialogFragment.TAG)
             }
@@ -689,9 +754,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             (activity as BaseActivity?)?.showErrorDialogue(
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
+                isNegativeButtonNeed = false,
             ) {
-
             }
         }
     }
@@ -710,9 +774,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         binding.tvDiagnosisConfirm.safeClickListener(this)
     }
 
-    private fun getPatientId(): String {
-        return arguments?.getString(DefinedParams.PatientId, "") ?: ""
-    }
+    private fun getPatientId(): String = arguments?.getString(DefinedParams.PatientId, "") ?: ""
 
     private fun attachObserver() {
       /*  whoStageViewModel.getWhoStageLiveData.observe(viewLifecycleOwner){
@@ -722,7 +784,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         }*/
 
         viewModel.getPatientTypeLiveData.observe(viewLifecycleOwner) {
-            val type = viewModel.getPatientType.value?.data?.get(PATIENT_TYPE_HYPHEN) as? String
+            val type = viewModel.getPatientType.value
+                ?.data
+                ?.get(PATIENT_TYPE_HYPHEN) as? String
             if (!type.isNullOrBlank()) {
                 val patientType = viewModel.getPatientTypeLiveData.value
                     ?.find { it.value == type }
@@ -764,8 +828,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                                 diagnosisViewModel.getDiagnosisDetails(
                                     CreateUnderTwoMonthsResponse(
                                         patientReference = id,
-                                        type = diagnosisViewModel.diagnosisType
-                                    )
+                                        type = diagnosisViewModel.diagnosisType,
+                                    ),
                                 )
                             }
                         }
@@ -792,18 +856,18 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                         if (isTb()) {
                             updateDiagnosisUI(
                                 diagnosisItems,
-                                list.any { (it.type.equals("TB",true) || it.type.isNullOrBlank() ) },
+                                list.any { (it.type.equals("TB", true) || it.type.isNullOrBlank()) },
                                 binding.tvDiagnosis,
                                 binding.tvDiagnosisConfirm,
-                                diagnosisViewModel.diagnosisMetaList
+                                diagnosisViewModel.diagnosisMetaList,
                             )
                             updateDiagnosisUI(
                                 diagnosisItems,
-                                list.any { it.type.equals("siteOfDisease",true) },
+                                list.any { it.type.equals("siteOfDisease", true) },
                                 binding.tvSiteDisease,
                                 binding.tvAddSiteDisease,
                                 diagnosisViewModel.siteOfDiseaseMetaList,
-                                true
+                                true,
                             )
                         } else {
                             updateDiagnosisUI(
@@ -811,7 +875,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                                 list.isNotEmpty(),
                                 binding.tvDiagnosis,
                                 binding.tvDiagnosisConfirm,
-                                diagnosisViewModel.diagnosisMetaList
+                                diagnosisViewModel.diagnosisMetaList,
                             )
                         }
                     }
@@ -851,8 +915,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             }
         }
 
-        diagnosisViewModel.hivVitalsDetailLiveData.observe(viewLifecycleOwner){resources ->
-            when(resources.state){
+        diagnosisViewModel.hivVitalsDetailLiveData.observe(viewLifecycleOwner) { resources ->
+            when (resources.state) {
                 ResourceState.LOADING -> {
                     showProgress()
                 }
@@ -862,7 +926,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                         binding.tvCd4Value.text = list.cd4 ?: getString(R.string.seperator_hyphen)
                         binding.tvCd4PercentValue.text = list.cd4Percentage ?: getString(R.string.seperator_hyphen)
                         binding.tvWhoValue.text = list.whoClinicalStage ?: getString(R.string.seperator_hyphen)
-                            //getClinicalStageText(list.whoClinicalStage)
+                        // getClinicalStageText(list.whoClinicalStage)
                         binding.tvWho.text = if (list.whoClinicalStage != null) {
                             getString(R.string.edit_who_clinical_stage)
                         } else {
@@ -884,10 +948,10 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
                 ResourceState.SUCCESS -> {
                     hideProgress()
-                    patientViewModel.patientDetailsLiveData.value?.data?.let {details ->
+                    patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
                         diagnosisViewModel.getHivVitalsDetails(
                             patientReference = details.id,
-                            memberId = details.memberId
+                            memberId = details.memberId,
                         )
                     }
                 }
@@ -918,12 +982,17 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         textView: TextView,
         buttonView: TextView,
         metaList: MutableLiveData<Resource<List<DiseaseCategoryItems>>>,
-        isSite: Boolean = false
+        isSite: Boolean = false,
     ) {
         textView.text = if (condition) {
             metaList.value?.data?.let { diagnosisList ->
-                convertListToString(ArrayList(diagnosisList.filter { it.value in diagnosisItems }
-                    .map { it.name }))
+                convertListToString(
+                    ArrayList(
+                        diagnosisList
+                            .filter { it.value in diagnosisItems }
+                            .map { it.name },
+                    ),
+                )
             } ?: getString(R.string.seperator_hyphen)
         } else {
             getString(R.string.hyphen_symbol)
@@ -934,8 +1003,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         } else {
             buttonView.text = if (condition) getString(R.string.edit_disease) else getString(R.string.add_disease)
         }
-
     }
+
     private fun getPatientStatus(status: String): String {
         val formattedString = cleanString(status.lowercase())
         return if (diagnosisViewModel.diagnosisType == MedicalReviewTypeEnums.ANC_REVIEW.name) {
@@ -950,7 +1019,6 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             requireContext().changePatientStatus(status)
         }
     }
-
 
     private fun cleanString(input: String): String {
         val toRemove = listOf(Postpartum.lowercase(), Lactating.lowercase())
@@ -968,27 +1036,28 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
     private fun initializeViews() {
         diagnosisViewModel.getDiagnosisMetaList(diagnosisViewModel.diagnosisType)
-        if (isTb() && patientViewModel.getTbMedicalReviewStatus()){
+        if (isTb() && patientViewModel.getTbMedicalReviewStatus()) {
             diagnosisViewModel.getSiteOfDiseaseMetaList(MotherNeonateUtil.TB_SITE_OF_DISEASE)
         }
         statusViewModel.patientId?.let {
             binding.tvPatientStatusValue.text = requireContext().getString(R.string.hyphen_symbol)
-            if (it.isNotEmpty()){
+            if (it.isNotEmpty()) {
                 diagnosisViewModel.getDiagnosisDetails(
                     CreateUnderTwoMonthsResponse(
                         patientReference = it,
-                        type = diagnosisViewModel.diagnosisType
-                    )
+                        type = diagnosisViewModel.diagnosisType,
+                    ),
                 )
             }
         }
     }
 
-    private fun getMemberId(): String {
-        return arguments?.getString(DefinedParams.MemberID, "") ?: ""
-    }
+    private fun getMemberId(): String = arguments?.getString(DefinedParams.MemberID, "") ?: ""
 
-    override fun onDialogDismissed(isBp: Boolean, isHeight: Boolean) {
+    override fun onDialogDismissed(
+        isBp: Boolean,
+        isHeight: Boolean,
+    ) {
         if (connectivityManager.isNetworkAvailable()) {
             if (isBp && !isHeight) {
                 viewModel.fetchBloodPressure(MotherNeonateAncRequest(memberId = getMemberId()))
@@ -1025,8 +1094,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         }
     }
 
-
-    override fun onDialogDismissedForTb(isPatientType:Boolean) {
+    override fun onDialogDismissedForTb(isPatientType: Boolean) {
         if (isPatientType) {
             fetchPatientType()
         } else {
@@ -1035,8 +1103,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                     diagnosisViewModel.getDiagnosisDetails(
                         CreateUnderTwoMonthsResponse(
                             patientReference = id,
-                            type = diagnosisViewModel.diagnosisType
-                        )
+                            type = diagnosisViewModel.diagnosisType,
+                        ),
                     )
                 }
             }

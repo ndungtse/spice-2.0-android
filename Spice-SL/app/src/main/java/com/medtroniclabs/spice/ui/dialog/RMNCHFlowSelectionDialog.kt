@@ -22,7 +22,6 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
 
 class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentRmnchSelectionDialogBinding
 
     private val viewModel: ToolsViewModel by activityViewModels()
@@ -35,15 +34,13 @@ class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
     companion object {
         const val TAG = "RMNCHFlowSelectionDialog"
 
-        fun newInstance(): RMNCHFlowSelectionDialog {
-            return RMNCHFlowSelectionDialog()
-        }
+        fun newInstance(): RMNCHFlowSelectionDialog = RMNCHFlowSelectionDialog()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentRmnchSelectionDialogBinding.inflate(layoutInflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -54,11 +51,14 @@ class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         setListener()
@@ -73,27 +73,24 @@ class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
                 it,
                 SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultRMNCHFlowHashMap,
-                Pair(TAG,null),
+                Pair(TAG, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                singleSelectionCallback
+                singleSelectionCallback,
             )
             binding.selectionGroup.addView(view)
         }
-
     }
 
     private fun setListener() {
         binding.ivClose.setOnClickListener(this)
     }
 
-    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, formLayout: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             saveSelectedOptionValue(selectedID)
         }
 
-    private fun saveSelectedOptionValue(
-        selectedId: Any?
-    ) {
+    private fun saveSelectedOptionValue(selectedId: Any?) {
         selectedId?.let {
             setFragmentResult(DialogResult, bundleOf(WorkFlowName to it))
             dismiss()
@@ -102,8 +99,8 @@ class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
 
     private fun getRMNCHFlowData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(RMNCH.ANC,getString(R.string.anc)))
-        flowList.add(getOptionMap(RMNCH.PNC,getString(R.string.pnc)))
+        flowList.add(getOptionMap(RMNCH.ANC, getString(R.string.anc)))
+        flowList.add(getOptionMap(RMNCH.PNC, getString(R.string.pnc)))
         return flowList
     }
 
@@ -115,5 +112,4 @@ class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
             }
         }
     }
-
 }

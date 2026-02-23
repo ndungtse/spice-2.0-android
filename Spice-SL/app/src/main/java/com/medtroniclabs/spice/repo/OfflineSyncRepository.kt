@@ -84,18 +84,14 @@ import javax.inject.Inject
 
 class OfflineSyncRepository @Inject constructor(
     private var apiHelper: ApiHelper,
-    private var roomHelper: RoomHelper
+    private var roomHelper: RoomHelper,
 ) {
-
     private val mutex = Mutex()
 
-    private suspend fun getUnSyncedAssessmentByPatientId(hhmId: Long): List<Assessment> {
-        return convertEntityToRequest(roomHelper.getUnSyncedAssessmentByHHMId(hhmId))
-    }
+    private suspend fun getUnSyncedAssessmentByPatientId(hhmId: Long): List<Assessment> = convertEntityToRequest(roomHelper.getUnSyncedAssessmentByHHMId(hhmId))
 
-    private suspend fun getOtherUnSyncedAssessments(addedAssessmentIds: List<String>): List<Assessment> {
-        return convertEntityToRequest(roomHelper.getOtherUnSyncedAssessments(addedAssessmentIds))
-    }
+    private suspend fun getOtherUnSyncedAssessments(addedAssessmentIds: List<String>): List<Assessment> =
+        convertEntityToRequest(roomHelper.getOtherUnSyncedAssessments(addedAssessmentIds))
 
     private fun convertEntityToRequest(list: List<AssessmentDetails>): List<Assessment> {
         val peerSupervisorId = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.PEER_SUPERVISOR_ID.name)
@@ -118,16 +114,16 @@ class OfflineSyncRepository @Inject constructor(
                     provenance = ProvanceDto(modifiedDate = entity.createdAt.convertToUtcDateTime()),
                     latitude = entity.latitude,
                     longitude = entity.longitude,
-                    visitNumber = getVisitNumber(entity.assessmentType, assessmentDetail, entity.neonatePatientId, entity.neonatePatientReferenceId)
+                    visitNumber = getVisitNumber(entity.assessmentType, assessmentDetail, entity.neonatePatientId, entity.neonatePatientReferenceId),
                 ),
                 followUpId = entity.followUpId,
-                updatedAt = entity.createdAt
+                updatedAt = entity.createdAt,
             )
         }
     }
 
     private fun getAssessmentDetails(assessment: AssessmentDetails): JsonElement {
-       val assessmentDetails =  JsonParser.parseString(assessment.assessmentDetails)
+        val assessmentDetails = JsonParser.parseString(assessment.assessmentDetails)
         val followUpDetails = assessment.callResult?.let { JsonParser.parseString(it) }
 
         val assessmentType = assessment.assessmentType.lowercase()
@@ -168,10 +164,14 @@ class OfflineSyncRepository @Inject constructor(
         return assessmentDetails
     }
 
-    private fun updateCbsForRMNCH(assessmentDetails: JsonElement, followUpDetails: JsonElement?, key: String ) {
+    private fun updateCbsForRMNCH(
+        assessmentDetails: JsonElement,
+        followUpDetails: JsonElement?,
+        key: String,
+    ) {
         val mainObject = assessmentDetails.asJsonObject
         val asst = mainObject.get(key).asJsonObject
-        mainObject.get(CBS.lowercase())?.let { 
+        mainObject.get(CBS.lowercase())?.let {
             val cbs = it.asJsonObject
             followUpDetails?.let {
                 cbs.add(FollowUp, followUpDetails)
@@ -182,36 +182,55 @@ class OfflineSyncRepository @Inject constructor(
         }
     }
 
-    private fun getVisitNumber(assessmentType: String, assessmentDetails: JsonElement, neonatePatientId: String?, neonatePatientReferenceId: Long?): Long? {
+    private fun getVisitNumber(
+        assessmentType: String,
+        assessmentDetails: JsonElement,
+        neonatePatientId: String?,
+        neonatePatientReferenceId: Long?,
+    ): Long? {
         when (assessmentType.lowercase()) {
             RMNCH.ANC_MENU.lowercase() -> return getRMNCHVisitNumber(ANC, assessmentDetails)
             RMNCH.pnc_mother_key.lowercase() -> return getRMNCHPNCVisitNumber(PNC, assessmentDetails, neonatePatientId, neonatePatientReferenceId)
             RMNCH.pnc_neonate_key.lowercase() -> return getRMNCHVisitNumber(PNCNeonatal, assessmentDetails)
             RMNCH.CHILD_MENU.lowercase() -> return getRMNCHVisitNumber(
                 ChildHoodVisit,
-                assessmentDetails
+                assessmentDetails,
             )
 
             else -> return null
         }
     }
 
-    private fun getRMNCHVisitNumber(key: String, assessmentDetails: JsonElement): Long {
-        return assessmentDetails.asJsonObject.get(key).asJsonObject.get(visitNo).asLong
-    }
+    private fun getRMNCHVisitNumber(
+        key: String,
+        assessmentDetails: JsonElement,
+    ): Long =
+        assessmentDetails.asJsonObject
+            .get(key)
+            .asJsonObject
+            .get(visitNo)
+            .asLong
 
-    private fun getRMNCHPNCVisitNumber(key: String, assessmentDetails: JsonElement, neonatePatientId: String?, neonatePatientReferenceId: Long?): Long {
+    private fun getRMNCHPNCVisitNumber(
+        key: String,
+        assessmentDetails: JsonElement,
+        neonatePatientId: String?,
+        neonatePatientReferenceId: Long?,
+    ): Long {
         val assessmentObject = assessmentDetails.asJsonObject.get(key).asJsonObject
         assessmentObject.addProperty(NeonatePatientId, neonatePatientId)
         assessmentObject.addProperty(NeonatePatientReferenceId, neonatePatientReferenceId)
         return assessmentObject.get(visitNo).asLong
     }
 
-    suspend fun getSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse> {
-        return apiHelper.getOfflineSyncStatus(request)
-    }
+    suspend fun getSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse> = apiHelper.getOfflineSyncStatus(request)
 
-    private suspend fun updateFhirId(tableName: String, id: String, fhirId: String?, status: String) {
+    private suspend fun updateFhirId(
+        tableName: String,
+        id: String,
+        fhirId: String?,
+        status: String,
+    ) {
         roomHelper.updateFhirId(tableName, id, fhirId, status)
     }
 
@@ -250,7 +269,10 @@ class OfflineSyncRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchSyncedData(villageIds: List<Long> = listOf(), serverLastSyncedAt: String? = null): Boolean {
+    suspend fun fetchSyncedData(
+        villageIds: List<Long> = listOf(),
+        serverLastSyncedAt: String? = null,
+    ): Boolean {
         val syncedResponse = getSyncedEntities(villageIds, serverLastSyncedAt)
         if (syncedResponse.isSuccessful) {
             val response = syncedResponse.body()?.string()
@@ -265,7 +287,6 @@ class OfflineSyncRepository @Inject constructor(
                         saveRequestInitialDownload(responseInitialDownload)
                         return true
                     }
-
                 } catch (e: Exception) {
                     Timber.d("Exception ${e.localizedMessage}")
                     return false
@@ -282,12 +303,11 @@ class OfflineSyncRepository @Inject constructor(
         insertHouseholdMembers(requestInitialDownload.members, hhMapping)
 
         /*
-        * Query to update household no of people mismatch
-        * */
+         * Query to update household no of people mismatch
+         * */
         roomHelper.getHouseholdsWithMemberCountsExceeding().forEach { item ->
             roomHelper.updateHeadCount(item.id, item.hhmCount)
         }
-
 
         // List of changes for Followup incremental
         // 1. Delete All Followup where Followup id is null and SyncStatus is InProgress -> Because it is created from Mobile
@@ -301,7 +321,7 @@ class OfflineSyncRepository @Inject constructor(
         }
         roomHelper.deleteCompletedFollowUp()
 
-        /*Insert Link household member details*/
+        // Insert Link household member details
         requestInitialDownload.householdMemberLinks?.let {
             val insertList = mutableListOf<LinkHouseholdMember>()
             val deleteListIds = mutableListOf<String>()
@@ -316,7 +336,6 @@ class OfflineSyncRepository @Inject constructor(
             roomHelper.insertLinkHouseholdMembers(insertList)
             roomHelper.deleteLinkHouseholdMembersById(deleteListIds)
         }
-
 
         // Insert Pregnancy Information
         requestInitialDownload.pregnancyInfos?.forEach {
@@ -339,12 +358,12 @@ class OfflineSyncRepository @Inject constructor(
             roomHelper.insertOrUpdateFromBE(communityProfileEntity)
         }
 
-        /*Save Treatment details*/
+        // Save Treatment details
         requestInitialDownload.treatmentDetails.let {
             insertOrUpdateTreatmentDetails(it)
         }
 
-        /*Save Rx Buddy Register Details*/
+        // Save Rx Buddy Register Details
         requestInitialDownload.rxBuddies?.let {
             insertOrUpdateRxBuddyData(it)
         }
@@ -357,8 +376,10 @@ class OfflineSyncRepository @Inject constructor(
             SecuredPreference.putFollowUpCriteria(followUpCriteria)
         }
 
-        SecuredPreference.putString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name,
-            requestInitialDownload.lastSyncTime)
+        SecuredPreference.putString(
+            SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name,
+            requestInitialDownload.lastSyncTime,
+        )
     }
 
     private suspend fun insertOrUpdateTreatmentDetails(treatmentDetails: List<TreatmentDetails>?) {
@@ -374,14 +395,14 @@ class OfflineSyncRepository @Inject constructor(
                     diagnoses = treatmentDetail.diagnosis,
                     diagnosedDate = treatmentDetail.dateDiagnosed ?: "",
                     prescriptions = prescriptionList,
-                    tbConfirmationDate = treatmentDetail.tbConfirmationDate
+                    tbConfirmationDate = treatmentDetail.tbConfirmationDate,
                 )
 
                 roomHelper.insertTreatmentDetails(entity)
             }
         }
 
-        /*Only for Testing*/
+        // Only for Testing
         val memberFhirIds = listOf("186564", "186566", "186568", "186570", "186572")
         memberFhirIds.forEach { memberId ->
             val prescriptionList = "[{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Moxifloxacin\",\"prescribedDays\":30},{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Linezolid\",\"prescribedDays\":30},{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Pretomanid\",\"prescribedDays\":30},{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Bedaquiline\",\"prescribedDays\":30},{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Dolo\",\"prescribedDays\":15}]"
@@ -392,13 +413,11 @@ class OfflineSyncRepository @Inject constructor(
                 diagnoses = "Drug Sensitive TB",
                 diagnosedDate = "2025-04-28T07:43:17+00:00",
                 prescriptions = prescriptionList,
-                tbConfirmationDate = "2025-04-28T00:00:00+00:00"
+                tbConfirmationDate = "2025-04-28T00:00:00+00:00",
             )
 
             roomHelper.insertTreatmentDetails(entity)
-
         }
-
     }
 
     private suspend fun insertOrUpdateRxBuddyData(rxBuddies: List<ResponseRxBuddy>) {
@@ -413,7 +432,7 @@ class OfflineSyncRepository @Inject constructor(
                 relationship = registry.relationShip,
                 isMonitorSheetProvider = registry.isMonitorSheetProvided,
                 nextVisitDate = "",
-                otherRelationship = registry.otherRelationship
+                otherRelationship = registry.otherRelationship,
             ).apply {
                 if (item.type == RX_BUDDY_TYPE_HOUSEHOLD_MEMBER && registry.householdMemberId != null) {
                     val hhmWithStatus = roomHelper.getHouseholdMemberIdAndStatusByFhirId(registry.householdMemberId!!)
@@ -464,8 +483,8 @@ class OfflineSyncRepository @Inject constructor(
         households?.forEach { entity ->
             hhMap[entity.id!!] = roomHelper.insertOrUpdateHHFromBE(
                 entity.toHouseholdEntity(
-                    OfflineSyncStatus.Success
-                )
+                    OfflineSyncStatus.Success,
+                ),
             )
         }
 
@@ -474,30 +493,32 @@ class OfflineSyncRepository @Inject constructor(
 
     private suspend fun insertHouseholdMembers(
         householdMembers: List<HouseHoldMember>?,
-        hhIdMap: Map<String, Long>
+        hhIdMap: Map<String, Long>,
     ) {
         householdMembers?.forEach { member ->
             if (hhIdMap.containsKey(member.householdId)) {
-                roomHelper.insertOrUpdateHHMFromBE(member.toHouseholdMemberEntity(
-                    hhIdMap[member.householdId]!!,
-                    OfflineSyncStatus.Success
-                ))
+                roomHelper.insertOrUpdateHHMFromBE(
+                    member.toHouseholdMemberEntity(
+                        hhIdMap[member.householdId]!!,
+                        OfflineSyncStatus.Success,
+                    ),
+                )
             } else {
                 if (member.householdId != null) {
                     roomHelper.getHouseholdIdByFhirId(member.householdId)?.let {
                         roomHelper.insertOrUpdateHHMFromBE(
                             member.toHouseholdMemberEntity(
                                 it,
-                                OfflineSyncStatus.Success
-                            )
+                                OfflineSyncStatus.Success,
+                            ),
                         )
                     }
                 } else {
                     roomHelper.insertOrUpdateHHMFromBE(
                         member.toHouseholdMemberEntity(
                             null,
-                            OfflineSyncStatus.Success
-                        )
+                            OfflineSyncStatus.Success,
+                        ),
                     )
                 }
             }
@@ -506,7 +527,7 @@ class OfflineSyncRepository @Inject constructor(
 
     private suspend fun insertFailedHouseholds(
         households: List<SyncEntityList>?,
-        villageNameId: Map<String, Long>
+        villageNameId: Map<String, Long>,
     ): Map<String, HouseHold> {
         // Response apiReferenceId, Household
         val hhMap = mutableMapOf<String, HouseHold>()
@@ -520,21 +541,21 @@ class OfflineSyncRepository @Inject constructor(
                         roomHelper.updateHousehold(
                             houseHold.toHouseholdEntity(
                                 OfflineSyncStatus.Success,
-                                dbHHId
-                            )
+                                dbHHId,
+                            ),
                         )
                     } else { // Insert Flow
                         dbHHId = roomHelper.saveHouseHoldEntry(
                             houseHold.toHouseholdEntity(
-                                OfflineSyncStatus.Success
-                            )
+                                OfflineSyncStatus.Success,
+                            ),
                         )
                     }
                 } else { // Fhir id is null - Failed
                     dbHHId = roomHelper.saveHouseHoldEntry(
                         houseHold.toHouseholdEntity(
-                            OfflineSyncStatus.Failed
-                        )
+                            OfflineSyncStatus.Failed,
+                        ),
                     )
                 }
 
@@ -547,7 +568,7 @@ class OfflineSyncRepository @Inject constructor(
 
     private suspend fun insertFailedHouseholdMembers(
         householdMemberList: List<SyncEntityList>?,
-        hhMap: Map<String, HouseHold>
+        hhMap: Map<String, HouseHold>,
     ) {
         householdMemberList?.forEach { entity ->
             Gson().fromJson(entity.data, HouseHoldMember::class.java)?.let { member ->
@@ -561,23 +582,23 @@ class OfflineSyncRepository @Inject constructor(
                                 member.toHouseholdMemberEntity(
                                     dbHHId,
                                     OfflineSyncStatus.Success,
-                                    dbHHMId
-                                )
+                                    dbHHMId,
+                                ),
                             )
                         } else { // Insert Flow
                             roomHelper.registerMember(
                                 member.toHouseholdMemberEntity(
                                     dbHHId,
-                                    OfflineSyncStatus.Success
-                                )
+                                    OfflineSyncStatus.Success,
+                                ),
                             )
                         }
                     } else { // Fhir id is null - Failed
                         roomHelper.registerMember(
                             member.toHouseholdMemberEntity(
                                 dbHHId,
-                                OfflineSyncStatus.Failed
-                            )
+                                OfflineSyncStatus.Failed,
+                            ),
                         )
                     }
                 }
@@ -587,7 +608,7 @@ class OfflineSyncRepository @Inject constructor(
 
     private suspend fun getSyncedEntities(
         villageList: List<Long>,
-        lastSyncedAt: String? = null
+        lastSyncedAt: String? = null,
     ): Response<ResponseBody> {
         // Getting village name only. For mapping I have used following code
         val request = RequestAllEntities(villageList, lastSyncedAt)
@@ -599,18 +620,18 @@ class OfflineSyncRepository @Inject constructor(
             userId = SecuredPreference.getUserId(),
             dataRequired = true,
             statuses = listOf(OfflineSyncStatus.InProgress.name, OfflineSyncStatus.Failed.name),
-            types = listOf(EntitiesName.HOUSEHOLD, EntitiesName.HOUSEHOLD_MEMBER)
+            types = listOf(EntitiesName.HOUSEHOLD, EntitiesName.HOUSEHOLD_MEMBER),
         )
 
         return apiHelper.getOfflineSyncStatus(req)
     }
 
-
     suspend fun uploadAllSignatures(): Boolean {
         val hhSignatureDetails = roomHelper.getHHSignatureDetails()
 
-        if (hhSignatureDetails.isEmpty())
+        if (hhSignatureDetails.isEmpty()) {
             return true
+        }
 
         val builder = MultipartBody.Builder()
         builder.setType(MultipartBody.FORM)
@@ -627,16 +648,20 @@ class OfflineSyncRepository @Inject constructor(
 
         return try {
             val response = apiHelper.uploadAllConsentSignatures(builder.build())
-            if (response.isSuccessful)
+            if (response.isSuccessful) {
                 deleteAllSyncedImages()
+            }
             true
         } catch (e: Exception) {
             false
         }
     }
 
-    private fun getRenamedFile(oldFileName: String, newFileName: String): File? {
-        val signatureDirPath = "/data/data/${BuildConfig.APPLICATION_ID}/files/${signatureFolder}"
+    private fun getRenamedFile(
+        oldFileName: String,
+        newFileName: String,
+    ): File? {
+        val signatureDirPath = "/data/data/${BuildConfig.APPLICATION_ID}/files/$signatureFolder"
         val signatureDir = File(signatureDirPath)
 
         if (signatureDir.exists()) {
@@ -654,7 +679,7 @@ class OfflineSyncRepository @Inject constructor(
     }
 
     private fun deleteAllSyncedImages(): Boolean {
-        val imagesDirPath = "/data/data/${BuildConfig.APPLICATION_ID}/files/${signatureFolder}"
+        val imagesDirPath = "/data/data/${BuildConfig.APPLICATION_ID}/files/$signatureFolder"
         val imagesDir = File(imagesDirPath)
         return deleteDirectory(imagesDir)
     }
@@ -673,7 +698,7 @@ class OfflineSyncRepository @Inject constructor(
         return directory.delete()
     }
 
-    private suspend fun getCallRegisterEntityAsRequest(householdLinkCallsMemberIds : MutableList<String>): List<HouseholdMemberLinkCallDetails> {
+    private suspend fun getCallRegisterEntityAsRequest(householdLinkCallsMemberIds: MutableList<String>): List<HouseholdMemberLinkCallDetails> {
         val list = roomHelper.getUnSyncedCallHistoryForHHMLink()
         val callDetails = mutableListOf<HouseholdMemberLinkCallDetails>()
         list.groupBy { it.memberId }.forEach { (key, value) ->
@@ -684,8 +709,8 @@ class OfflineSyncRepository @Inject constructor(
                     memberId = key,
                     patientId = value.first().patientId,
                     villageId = value.first().villageId,
-                    callRegisterDetails = callRegisters
-                )
+                    callRegisterDetails = callRegisters,
+                ),
             )
         }
         return callDetails
@@ -695,8 +720,8 @@ class OfflineSyncRepository @Inject constructor(
         input: List<HouseHoldMember>,
         memberIds: MutableList<String>,
         assessmentIds: MutableList<String>,
-        rxBuddyRegisterIds : MutableList<Long>,
-        rxBuddyFollowUpIds: MutableList<Long>
+        rxBuddyRegisterIds: MutableList<Long>,
+        rxBuddyFollowUpIds: MutableList<Long>,
     ): List<HouseHoldMember> {
         val motherIds = mutableSetOf<String>()
 
@@ -712,7 +737,6 @@ class OfflineSyncRepository @Inject constructor(
             assessmentIds.addAll(hhm.assessments.map { it.referenceId.toString() })
         }
 
-
         val childIds = mutableListOf<String>()
         motherIds.forEach { motherId ->
             val children = input.filter { it.motherReferenceId == motherId && it.id == null }
@@ -721,9 +745,10 @@ class OfflineSyncRepository @Inject constructor(
                 if (mother != null) {
                     mother.children = children
                 } else {
-                   children.forEach {// Un mapped child
-                       memberIds.remove(it.referenceId!!)
-                   }
+                    children.forEach {
+                        // Un mapped child
+                        memberIds.remove(it.referenceId!!)
+                    }
                 }
                 childIds.addAll(children.map { it.referenceId!! })
             }
@@ -752,7 +777,7 @@ class OfflineSyncRepository @Inject constructor(
         rxBuddyFollowUpIds: MutableList<Long>,
         rx: RxBuddyRegisterDetail,
         isForHouseholdMember: Boolean,
-        rxBuddyFhirId: String? = null
+        rxBuddyFhirId: String? = null,
     ): RxBuddy {
         rxBuddyRegisterIds.add(rx.id)
 
@@ -765,7 +790,7 @@ class OfflineSyncRepository @Inject constructor(
             followUpId = rx.followUpId,
             latitude = rx.latitude,
             longitude = rx.longitude,
-            provenance = ProvanceDto(modifiedDate = rx.updatedAt.convertToUtcDateTime())
+            provenance = ProvanceDto(modifiedDate = rx.updatedAt.convertToUtcDateTime()),
         )
 
         if (!isForHouseholdMember) {
@@ -791,8 +816,8 @@ class OfflineSyncRepository @Inject constructor(
                         item.updatedAt,
                         item.followUpId,
                         item.latitude,
-                        item.longitude
-                    )
+                        item.longitude,
+                    ),
                 )
             }
         }
@@ -805,24 +830,24 @@ class OfflineSyncRepository @Inject constructor(
             null,
             rx.id,
             register,
-            followUpList
+            followUpList,
         )
     }
 
-
-    private suspend fun getRxBuddiesRequest(hhmIds: MutableList<String>,
-                                            rxBuddyRegisterIds: MutableList<Long>,
-                                            rxBuddyFollowUpIds: MutableList<Long>): List<RxBuddy> {
-        /*Construct Rx Buddy details*/
+    private suspend fun getRxBuddiesRequest(
+        hhmIds: MutableList<String>,
+        rxBuddyRegisterIds: MutableList<Long>,
+        rxBuddyFollowUpIds: MutableList<Long>,
+    ): List<RxBuddy> {
+        // Construct Rx Buddy details
         /*
-        * 1. Get Un Synced Rx Buddy Register
-        * 2. Construct Register object with member id / new rx buddy details
-        * 3. Get Un Synced Rx Buddy Followup with Rx Buddy Id
-        * */
+         * 1. Get Un Synced Rx Buddy Register
+         * 2. Construct Register object with member id / new rx buddy details
+         * 3. Get Un Synced Rx Buddy Followup with Rx Buddy Id
+         * */
         val rxBuddies = mutableListOf<RxBuddy>()
         val rxBuddyRegisters = roomHelper.getAllUnSyncedRxBuddyRegister()
         for (rx in rxBuddyRegisters) {
-
             // If RxBuddy member doesn't have fhir id skip the item
             var rxBuddyFhirId: String? = null
             if (rx.householdMemberId != null) {
@@ -850,8 +875,8 @@ class OfflineSyncRepository @Inject constructor(
                             item.updatedAt,
                             item.followUpId,
                             item.latitude,
-                            item.longitude
-                        )
+                            item.longitude,
+                        ),
                     )
                 }
             }
@@ -870,7 +895,7 @@ class OfflineSyncRepository @Inject constructor(
         updatedAt: Long,
         followUpId: Long? = null,
         latitude: Double,
-        longitude: Double
+        longitude: Double,
     ): RxBuddyFollowUp {
         val map = StringConverter.stringToMap(strFollowUp)
         return RxBuddyFollowUp(
@@ -883,16 +908,16 @@ class OfflineSyncRepository @Inject constructor(
             followUpId = followUpId,
             latitude = latitude,
             longitude = longitude,
-            provenance = ProvanceDto(modifiedDate = updatedAt.convertToUtcDateTime())
+            provenance = ProvanceDto(modifiedDate = updatedAt.convertToUtcDateTime()),
         )
     }
 
     /*
-    * It will post all un-synced changes from local database and returns List<String>?
-    * 1. list size > 0 -> Posted un-synced local changes and API is success
-    * 2. List size == 0 -> There are no local changes to post
-    * 3. List is null -> Post un-synced local changes and API is failed
-    * */
+     * It will post all un-synced changes from local database and returns List<String>?
+     * 1. list size > 0 -> Posted un-synced local changes and API is success
+     * 2. List size == 0 -> There are no local changes to post
+     * 3. List is null -> Post un-synced local changes and API is failed
+     * */
     private suspend fun postOfflineUnSyncedChanges(syncMode: String): List<String>? {
         val householdIds = mutableListOf<String>()
         val householdMemberIds = mutableListOf<String>()
@@ -904,28 +929,28 @@ class OfflineSyncRepository @Inject constructor(
         val rxBuddyRegisterIds = mutableListOf<Long>()
         val rxBuddyFollowUpIds = mutableListOf<Long>()
 
-        //uploadAllSignatures()
+        // uploadAllSignatures()
         val rxBuddies = getRxBuddiesRequest(householdMemberIds, rxBuddyRegisterIds, rxBuddyFollowUpIds)
 
-        val houseHoldList = roomHelper.getAllUnSyncedHouseHolds(householdIds) /*Hot Fix change - Done*/
+        val houseHoldList = roomHelper.getAllUnSyncedHouseHolds(householdIds) // Hot Fix change - Done
         householdIds.addAll(houseHoldList.map { it.referenceId!! })
         houseHoldList.forEach { householdEntity ->
             val memberList =
-                roomHelper.getAllUnSyncedHouseHoldMembers((householdEntity.referenceId!!.toLong())) /*Hot Fix Change - Need to check*/
+                roomHelper.getAllUnSyncedHouseHoldMembers((householdEntity.referenceId!!.toLong())) // Hot Fix Change - Need to check
 
             householdEntity.householdMembers.addAll(formatMemberForPnc(memberList, householdMemberIds, assessmentIds, rxBuddyRegisterIds, rxBuddyFollowUpIds))
         }
 
-        val members = roomHelper.getOtherHouseholdMembers(householdMemberIds) /*Hot Fix Change - Need to check*/
+        val members = roomHelper.getOtherHouseholdMembers(householdMemberIds) // Hot Fix Change - Need to check
         val otherMembers = formatMemberForPnc(members, householdMemberIds, assessmentIds, rxBuddyRegisterIds, rxBuddyFollowUpIds)
 
         val assignedMemberIds = otherMembers.filter { (it.assignHousehold == 1) && it.id != null }.map { it.id!! }
 
-        //Assessment
-        val otherAssessments = getOtherUnSyncedAssessments(assessmentIds) /*Hot Fix change - Done*/
+        // Assessment
+        val otherAssessments = getOtherUnSyncedAssessments(assessmentIds) // Hot Fix change - Done
         assessmentIds.addAll(otherAssessments.map { it.referenceId.toString() })
 
-        //Followup
+        // Followup
         val allFollowUps = roomHelper.getAllFollowUpRequests()
         allFollowUps.forEach { followUp ->
             followUpIds.add(followUp.referenceId)
@@ -943,7 +968,7 @@ class OfflineSyncRepository @Inject constructor(
         val communityProfilesRequests = mutableListOf<JsonObject>()
         communityProfiles.forEach { community ->
             val provenance = ProvanceDto(modifiedDate = community.updatedAt.convertToUtcDateTime())
-            val json =  JsonParser.parseString(community.payload).asJsonObject
+            val json = JsonParser.parseString(community.payload).asJsonObject
             community.fhirId?.let {
                 json.addProperty(DefinedParams.ID, it)
             }
@@ -951,20 +976,19 @@ class OfflineSyncRepository @Inject constructor(
             json.addProperty(COMMUNITY_REGISTERED_DATE, community.registeredDate)
             json.addProperty(VillageId, community.villageId)
             json.addProperty(ReferenceId, community.id.toString())
-            json.add(Provenance,  Gson().toJsonTree(provenance))
+            json.add(Provenance, Gson().toJsonTree(provenance))
             communityProfilesRequests.add(json)
             communityProfileIds.add(community.villageId)
         }
 
-
         // Nothing to Post anything
-        if (houseHoldList.isEmpty()
-            && otherMembers.isEmpty()
-            && otherAssessments.isEmpty()
-            && allFollowUps.isEmpty()
-            && householdMemberLink.isEmpty()
-            && communityProfilesRequests.isEmpty()
-            && rxBuddies.isEmpty()
+        if (houseHoldList.isEmpty() &&
+            otherMembers.isEmpty() &&
+            otherAssessments.isEmpty() &&
+            allFollowUps.isEmpty() &&
+            householdMemberLink.isEmpty() &&
+            communityProfilesRequests.isEmpty() &&
+            rxBuddies.isEmpty()
         ) {
             return listOf()
         }
@@ -1018,14 +1042,14 @@ class OfflineSyncRepository @Inject constructor(
             if (response.isSuccessful) {
                 var isAllEntitiesSynced = true
                 response.body()?.entityList?.forEach { entity ->
-                    when(entity.status) {
+                    when (entity.status) {
                         OfflineSyncStatus.Success.name -> {
                             if (entity.referenceId != null && (entity.type == COMMUNITY_PROFILE || entity.type != null && entity.fhirId != null)) {
                                 updateFhirId(
                                     entity.type,
                                     entity.referenceId,
                                     entity.fhirId,
-                                    OfflineSyncStatus.Success.name
+                                    OfflineSyncStatus.Success.name,
                                 )
                             }
                         }
@@ -1036,7 +1060,7 @@ class OfflineSyncRepository @Inject constructor(
                                     entity.type,
                                     entity.referenceId,
                                     entity.fhirId,
-                                    OfflineSyncStatus.Failed.name
+                                    OfflineSyncStatus.Failed.name,
                                 )
                             }
                         }
@@ -1055,7 +1079,6 @@ class OfflineSyncRepository @Inject constructor(
             return false
         }
     }
-
 
     suspend fun postOfflineUnSyncedChangesWithMutex(syncMode: String): List<String>? {
         mutex.withLock {

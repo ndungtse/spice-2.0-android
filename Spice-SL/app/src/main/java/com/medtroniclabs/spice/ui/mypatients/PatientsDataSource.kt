@@ -3,7 +3,6 @@ package com.medtroniclabs.spice.ui.mypatients
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.medtroniclabs.spice.common.ApiManager
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams.LIST_LIMIT
 import com.medtroniclabs.spice.common.DefinedParams.PAGE_INDEX
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -16,30 +15,28 @@ import com.medtroniclabs.spice.model.SortModel
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.ui.mypatients.repo.PatientRepository
 
-
 class PatientsDataSource(
     private val apiHelper: ApiHelper,
     private val patientRepository: PatientRepository,
     private val searchText: String,
-    private val filter:MedicalReviewFilterModel?,
+    private val filter: MedicalReviewFilterModel?,
     private val sort: SortModel?,
     private val isPatientListRequired: Boolean,
     private val origin: String?,
-    private val getPatientsCount: (String) -> Unit
+    private val getPatientsCount: (String) -> Unit,
 ) : PagingSource<Int, PatientListRespModel>() {
-
     private var loadedCount: Long = 0
     private var totalCount = 0
     private var villages: List<Long>? = null
     private var districtId: Long? = null
     private var referencePatientId: String? = null
     private var isInitialData: Boolean = false
-    override fun getRefreshKey(state: PagingState<Int, PatientListRespModel>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
+
+    override fun getRefreshKey(state: PagingState<Int, PatientListRespModel>): Int? =
+        state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
-    }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PatientListRespModel> {
         val pageIndex = params.key ?: PAGE_INDEX
@@ -47,8 +44,9 @@ class PatientsDataSource(
         return try {
             if (villages.isNullOrEmpty()) {
                 val userVillages = patientRepository.getUserVillages()
-                if (userVillages.isNotEmpty())
+                if (userVillages.isNotEmpty()) {
                     villages = userVillages.map { it.id }
+                }
             }
 
             districtId = districtId ?: SecuredPreference.getDistrictId()
@@ -63,24 +61,24 @@ class PatientsDataSource(
                 type = origin,
                 siteId = SecuredPreference.getOrganizationFhirId(),
                 countryId = SecuredPreference.getCountryId(),
-                tenantId = SecuredPreference.getTenantId()
+                tenantId = SecuredPreference.getTenantId(),
             )
 
             val response: APIResponse<SearchAndListResponse>? = if (isPatientListRequired && searchText.isBlank()) {
                 apiHelper.getPatients(patientsDataModel)
-            } else if(searchText.isNotBlank()) {
+            } else if (searchText.isNotBlank()) {
                 apiHelper.patientSearch(
                     patientsDataModel.copy(
                         villageIds = null,
                         searchText = searchText.ifEmpty { null },
-                        districtId = districtId
-                    )
+                        districtId = districtId,
+                    ),
                 )
-            } else
+            } else {
                 null
+            }
 
-            /* Request construction - Ends */
-
+            // Request construction - Ends
 
             val patientList: List<PatientListRespModel> = response?.entity?.patientList ?: emptyList()
             referencePatientId = response?.entity?.referencePatientId
@@ -100,8 +98,10 @@ class PatientsDataSource(
                 data = patientList,
                 prevKey = (pageIndex - 1).takeIf { pageIndex > PAGE_INDEX },
                 nextKey = if (searchText.isEmpty()) {
-                    (pageIndex + 1).takeIf { patientList.isNotEmpty()}
-                } else (pageIndex + 1).takeIf { patientList.isNotEmpty() }
+                    (pageIndex + 1).takeIf { patientList.isNotEmpty() }
+                } else {
+                    (pageIndex + 1).takeIf { patientList.isNotEmpty() }
+                },
             )
         } catch (e: Exception) {
             LoadResult.Error(e)

@@ -1,7 +1,5 @@
 package com.medtroniclabs.spice.model
 
-import com.medtroniclabs.spice.common.CommonUtils
-
 data class PatientsDataModel(
     var skip: Long? = null,
     var limit: Int? = null,
@@ -14,7 +12,7 @@ data class PatientsDataModel(
     val sort: SortModel? = null,
     val type: String? = null,
     var countryId: Long? = null,
-    var tenantId: Long? = null
+    var tenantId: Long? = null,
 )
 
 data class MedicalReviewFilterModel(
@@ -35,5 +33,5 @@ data class SortModel(
     val isMedicalReviewDueDate: Boolean? = null,
     val isHighLowBp: Boolean? = null,
     val isHighLowBg: Boolean? = null,
-    val isAssessmentDueDate: Boolean? = null
+    val isAssessmentDueDate: Boolean? = null,
 )

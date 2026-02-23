@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.mappingkey
 
 object UnderFiveYearExaminationKeyMapping {
-
     object DiseaseName {
         const val generalDangerSigns = "General Danger Signs"
         const val cough = "Cough / Difficult Breathing"
@@ -57,6 +56,4 @@ object UnderFiveYearExaminationKeyMapping {
         const val mother = "mother"
         const val child = "child"
     }
-
-
 }

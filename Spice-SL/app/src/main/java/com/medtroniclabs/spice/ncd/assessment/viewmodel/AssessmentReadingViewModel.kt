@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AssessmentReadingViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
     var formTypeId: String? = null
     var patientDetails: PatientListRespModel? = null

@@ -9,8 +9,8 @@ import com.medtroniclabs.spice.data.history.NCDMedicalReviewHistory
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.ReferredDate
-import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
 import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
+import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import com.medtroniclabs.spice.network.resource.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,9 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDMedicalReviewCMRViewModel @Inject constructor(
     private var ncdMedicalReviewRepo: NCDMedicalReviewRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
-
     // prescription
     var prescriptionReferralDates = MutableLiveData<List<ReferredDate>>()
     val prescriptionTicketLiveData = MutableLiveData<Resource<HistoryEntity>>()
@@ -34,13 +33,17 @@ class NCDMedicalReviewCMRViewModel @Inject constructor(
     val medicalReviewTicketLiveData = MutableLiveData<Resource<NCDMedicalReviewHistory>>()
     var medicalVisitId: String? = null
 
-    //Investigation
+    // Investigation
     var investigationReferralDates = MutableLiveData<List<ReferredDate>>()
     val investigationTicketLiveData = MutableLiveData<Resource<HistoryEntity>>()
     var investigationVisitId: String? = null
 
     val lifeStyleResponse = MutableLiveData<Resource<ArrayList<LifeStyleResponse>>>()
-    fun getPrescriptionHistory(patientId: String? = null, patientVisitId: String? = null) {
+
+    fun getPrescriptionHistory(
+        patientId: String? = null,
+        patientVisitId: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             prescriptionTicketLiveData.postLoading()
             prescriptionTicketLiveData.postValue(
@@ -48,13 +51,16 @@ class NCDMedicalReviewCMRViewModel @Inject constructor(
                     ReferralDetailRequest(
                         patientReference = patientId,
                         patientVisitId = patientVisitId,
-                    )
-                )
+                    ),
+                ),
             )
         }
     }
 
-    fun getMedicalReviewHistory(patientId: String? = null, medicalVisitId: String? = null) {
+    fun getMedicalReviewHistory(
+        patientId: String? = null,
+        medicalVisitId: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             medicalReviewTicketLiveData.postLoading()
             medicalReviewTicketLiveData.postValue(
@@ -62,15 +68,17 @@ class NCDMedicalReviewCMRViewModel @Inject constructor(
                     ReferralDetailRequest(
                         patientReference = patientId,
                         patientVisitId = medicalVisitId,
-                        requestFrom = null
-                    )
-                )
+                        requestFrom = null,
+                    ),
+                ),
             )
         }
     }
 
-
-    fun getInvestigationHistory(patientReference: String? = null, investigationVisitId: String? = null) {
+    fun getInvestigationHistory(
+        patientReference: String? = null,
+        investigationVisitId: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             investigationTicketLiveData.postLoading()
             investigationTicketLiveData.postValue(
@@ -78,8 +86,8 @@ class NCDMedicalReviewCMRViewModel @Inject constructor(
                     ReferralDetailRequest(
                         patientReference = patientReference,
                         patientVisitId = investigationVisitId,
-                    )
-                )
+                    ),
+                ),
             )
         }
     }
@@ -92,4 +100,3 @@ class NCDMedicalReviewCMRViewModel @Inject constructor(
         }
     }
 }
-

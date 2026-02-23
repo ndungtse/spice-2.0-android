@@ -20,29 +20,24 @@ import javax.inject.Inject
 class TbViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
     private val tbRepo: TbMedicalReviewRepo,
-    private val summaryRepository: MedicalReviewSummaryRepository
+    private val summaryRepository: MedicalReviewSummaryRepository,
 ) : ViewModel() {
     var lastLocation: Location? = null
     var patientId: String? = null
     var memberId: String? = null
     val tbMetaResponse = MutableLiveData<Resource<Boolean>>()
     val tbCreateResponse = MutableLiveData<Resource<PatientEncounterResponse>>()
-    val summaryCreateResponse = MutableLiveData<Resource<HashMap<String,Any>>>()
+    val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
 
-    fun getSubmitCreateId(): String? {
-        return tbCreateResponse.value?.data?.encounterId
-    }
+    fun getSubmitCreateId(): String? = tbCreateResponse.value?.data?.encounterId
 
-    fun getPatientReference(): String? {
-        return tbCreateResponse.value?.data?.patientReference
-    }
+    fun getPatientReference(): String? = tbCreateResponse.value?.data?.patientReference
+
     fun getTbStaticData() {
         viewModelScope.launch(dispatcherIO) {
             tbRepo.getTbStaticData(tbMetaResponse)
         }
     }
-
-
 
     fun tbCreate(request: TbMedicalReviewCreateRequest) {
         viewModelScope.launch(dispatcherIO) {
@@ -67,11 +62,11 @@ class TbViewModel @Inject constructor(
         patientId: String?,
         assessmentName: String,
         treatmentOutComes: String?,
-        tbIMRCompleted:Boolean
+        tbIMRCompleted: Boolean,
     ) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
-            if (patientId != null && memberId != null && patientStatus != null  && villageId != null && patientReference != null && submitCreateId != null) {
+            if (patientId != null && memberId != null && patientStatus != null && villageId != null && patientReference != null && submitCreateId != null) {
                 val response = summaryRepository.createSummarySubmit(
                     patientId = patientId,
                     patientReference = patientReference,
@@ -84,7 +79,7 @@ class TbViewModel @Inject constructor(
                     householdId = householdId,
                     villageId = villageId,
                     treatmentOutComes = treatmentOutComes,
-                    tbIMRCompleted = tbIMRCompleted
+                    tbIMRCompleted = tbIMRCompleted,
                 )
                 summaryCreateResponse.postValue(response)
             }

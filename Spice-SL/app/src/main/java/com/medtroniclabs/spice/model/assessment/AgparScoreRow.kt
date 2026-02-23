@@ -7,5 +7,5 @@ data class AgparScoreRow(
     val indicatorName: Int,
     val oneMinute: String? = null,
     val fiveMinute: String? = null,
-    val tenMinute: String? = null
+    val tenMinute: String? = null,
 )

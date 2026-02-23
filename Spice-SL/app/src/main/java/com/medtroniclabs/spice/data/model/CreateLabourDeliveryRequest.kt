@@ -17,7 +17,7 @@ data class Child(
     val motherPatientId: String?,
     val dateOfBirth: String?,
     val patientId: String?,
-    val gender: String?=null,
+    val gender: String? = null,
     val provenance: ProvanceDto,
     val phoneNumber: String?,
     val phoneNumberCategory: String?,
@@ -25,7 +25,7 @@ data class Child(
     val isChild: Boolean,
     val householdHeadRelationship: String?,
     val latitude: Double? = 0.0,
-    val longitude: Double? = 0.0
+    val longitude: Double? = 0.0,
 )
 
 data class LabourDTO(
@@ -34,11 +34,11 @@ data class LabourDTO(
     val deliveryAt: String?,
     val deliveryBy: String?,
     val deliveryStatus: String?,
-    val deliveryByOther:String?,
+    val deliveryByOther: String?,
     val deliveryType: String?,
     val noOfNeoNates: Int?,
-    val deliveryAtOther: String?
-    )
+    val deliveryAtOther: String?,
+)
 
 data class MotherDTO(
     val id: String?,
@@ -53,13 +53,13 @@ data class MotherDTO(
     val ttDoseTaken: Int?,
     val prescriptions: List<Prescription>? = null,
     val investigations: List<Investigation>? = null,
-    val neonateOutcome: String?=null,
+    val neonateOutcome: String? = null,
 )
 
 data class NeonateDTO(
     val birthWeight: String?,
     val encounter: MedicalReviewEncounter?,
-    val gender: String?=null,
+    val gender: String? = null,
     val neonateOutcome: String?,
     val signs: List<String>?,
     val stateOfBaby: String?,
@@ -67,7 +67,7 @@ data class NeonateDTO(
     val apgarScoreOneMinuteDTO: ApgarScoreOneMinuteDTO?,
     val apgarScoreFiveMinuteDTO: ApgarScoreFiveMinuteDTO?,
     val apgarScoreTenMinuteDTO: ApgarScoreTenMinuteDTO?,
-    val total: String? = null
+    val total: String? = null,
 )
 
 data class ApgarScoreOneMinuteDTO(
@@ -76,7 +76,7 @@ data class ApgarScoreOneMinuteDTO(
     val grimace: Int?,
     val appearance: Int?,
     val respiration: Int?,
-    val oneMinuteTotalScore: Int?
+    val oneMinuteTotalScore: Int?,
 )
 
 data class ApgarScoreFiveMinuteDTO(
@@ -85,7 +85,7 @@ data class ApgarScoreFiveMinuteDTO(
     val grimace: Int?,
     val appearance: Int?,
     val respiration: Int?,
-    val fiveMinuteTotalScore: Int?
+    val fiveMinuteTotalScore: Int?,
 )
 
 data class ApgarScoreTenMinuteDTO(
@@ -94,12 +94,12 @@ data class ApgarScoreTenMinuteDTO(
     val grimace: Int?,
     val appearance: Int?,
     val respiration: Int?,
-    val tenMinuteTotalScore: Int?
+    val tenMinuteTotalScore: Int?,
 )
 
 data class LabourDeliverySummaryDetails(
-    val motherId:String? ,
-    val patientReference: String? ,
-    val neonateId: String? ,
-    val childPatientReference: String?
+    val motherId: String?,
+    val patientReference: String?,
+    val neonateId: String?,
+    val childPatientReference: String?,
 )

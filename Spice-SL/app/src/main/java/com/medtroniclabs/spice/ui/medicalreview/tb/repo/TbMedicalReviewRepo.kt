@@ -25,9 +25,8 @@ import javax.inject.Inject
 
 class TbMedicalReviewRepo @Inject constructor(
     private var apiHelper: ApiHelper,
-    private var roomHelper: RoomHelper
+    private var roomHelper: RoomHelper,
 ) {
-
     suspend fun getTbStaticData(tbMetaResponse: MutableLiveData<Resource<Boolean>>) {
         try {
             tbMetaResponse.postLoading()
@@ -43,8 +42,8 @@ class TbMedicalReviewRepo @Inject constructor(
                                 data.comorbidities,
                                 data.patientStatus,
                                 data.patientType,
-                                data.treatmentOutcome
-                            )
+                                data.treatmentOutcome,
+                            ),
                         )
                         roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.TB.name)
                         roomHelper.deleteDiagnosisList(TB_SITE_OF_DISEASE)
@@ -71,26 +70,30 @@ class TbMedicalReviewRepo @Inject constructor(
         comorbidities: List<MedicalReviewMetaItems>,
         patientStatus: List<MedicalReviewMetaItems>,
         patientType: List<MedicalReviewMetaItems>,
-        treatmentOutcome: List<MedicalReviewMetaItems>
+        treatmentOutcome: List<MedicalReviewMetaItems>,
     ): List<MedicalReviewMetaItems> {
         val chipItemList = mutableListOf<MedicalReviewMetaItems>()
-        chipItemList.addAll(presentingComplaints.map {
-            it.apply {
-                category = MedicalReviewTypeEnums.PresentingComplaints.name
-            }
-        })
-        chipItemList.addAll(systemicExaminations.map {
-            it.apply {
-                category = MedicalReviewTypeEnums.SystemicExaminations.name
-            }
-        })
+        chipItemList.addAll(
+            presentingComplaints.map {
+                it.apply {
+                    category = MedicalReviewTypeEnums.PresentingComplaints.name
+                }
+            },
+        )
+        chipItemList.addAll(
+            systemicExaminations.map {
+                it.apply {
+                    category = MedicalReviewTypeEnums.SystemicExaminations.name
+                }
+            },
+        )
         chipItemList.addAll(
             comorbidities.map {
                 it.apply {
                     type = MedicalReviewTypeEnums.TB.name
                     category = MedicalReviewTypeEnums.comorbidities.name
                 }
-            }
+            },
         )
         chipItemList.addAll(
             patientStatus.map {
@@ -98,27 +101,27 @@ class TbMedicalReviewRepo @Inject constructor(
                     type = MedicalReviewTypeEnums.TB.name
                     category = MedicalReviewTypeEnums.patient_status.name
                 }
-            }
+            },
         )
         chipItemList.addAll(
             patientType.map {
                 it.apply {
                     category = MedicalReviewTypeEnums.patient_type.name
                 }
-            }
+            },
         )
         chipItemList.addAll(
             treatmentOutcome.map {
                 it.apply {
                     category = MedicalReviewTypeEnums.treatment_outcome.name
                 }
-            }
+            },
         )
         return chipItemList
     }
 
-    suspend fun fetchHeight(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<BpAndWeightResponse> {
-        return try {
+    suspend fun fetchHeight(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<BpAndWeightResponse> =
+        try {
             val response = apiHelper.fetchHeight(motherNeonateAncRequest)
             if (response.isSuccessful) {
                 val res = response.body()
@@ -133,11 +136,9 @@ class TbMedicalReviewRepo @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-
-    suspend fun createHeight(bpAndWeightRequestModel: BpAndWeightRequestModel): Resource<HashMap<String, Any>> {
-        return try {
+    suspend fun createHeight(bpAndWeightRequestModel: BpAndWeightRequestModel): Resource<HashMap<String, Any>> =
+        try {
             val response = apiHelper.createHeight(bpAndWeightRequestModel)
             if (response.isSuccessful) {
                 val res = response.body()
@@ -152,10 +153,9 @@ class TbMedicalReviewRepo @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun fetchBmi(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<BpAndWeightResponse> {
-        return try {
+    suspend fun fetchBmi(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<BpAndWeightResponse> =
+        try {
             val response = apiHelper.fetchBmi(motherNeonateAncRequest)
             if (response.isSuccessful) {
                 val res = response.body()
@@ -170,10 +170,9 @@ class TbMedicalReviewRepo @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun fetchBmiList(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<List<BpAndWeightResponse>> {
-        return try {
+    suspend fun fetchBmiList(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<List<BpAndWeightResponse>> =
+        try {
             apiHelper.fetchList(motherNeonateAncRequest).let { response ->
                 if (response.isSuccessful) {
                     response.body()?.let { body ->
@@ -190,10 +189,9 @@ class TbMedicalReviewRepo @Inject constructor(
         } catch (e: Exception) {
             Resource(ResourceState.ERROR)
         }
-    }
 
-    suspend fun fetchTbAssessmentDetails(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<TbHistory> {
-        return try {
+    suspend fun fetchTbAssessmentDetails(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<TbHistory> =
+        try {
             apiHelper.fetchTbAssessmentDetails(motherNeonateAncRequest).let { response ->
                 if (response.isSuccessful) {
                     response.body()?.let { body ->
@@ -210,12 +208,9 @@ class TbMedicalReviewRepo @Inject constructor(
         } catch (e: Exception) {
             Resource(ResourceState.ERROR)
         }
-    }
 
-    suspend fun saveTbMedicalReview(
-        request: TbMedicalReviewCreateRequest
-    ): Resource<PatientEncounterResponse> {
-        return try {
+    suspend fun saveTbMedicalReview(request: TbMedicalReviewCreateRequest): Resource<PatientEncounterResponse> =
+        try {
             val response = apiHelper.saveTbMedicalReview(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
@@ -226,10 +221,9 @@ class TbMedicalReviewRepo @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun createPatientType(request: PatientTypeCreateRequest): Resource<HashMap<String, Any>> {
-        return try {
+    suspend fun createPatientType(request: PatientTypeCreateRequest): Resource<HashMap<String, Any>> =
+        try {
             val response = apiHelper.createPatientType(request)
             if (response.isSuccessful) {
                 val res = response.body()
@@ -244,10 +238,9 @@ class TbMedicalReviewRepo @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getPatientType(request: MotherNeonateAncRequest): Resource<HashMap<String, Any>> {
-        return try {
+    suspend fun getPatientType(request: MotherNeonateAncRequest): Resource<HashMap<String, Any>> =
+        try {
             val response = apiHelper.getPatientType(request)
             if (response.isSuccessful) {
                 val res = response.body()
@@ -262,17 +255,14 @@ class TbMedicalReviewRepo @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     fun getExaminationsComplaints(
         category: String,
-        type: String
-    ): LiveData<List<MedicalReviewMetaItems>> {
-        return roomHelper.getExaminationsComplaintsForAnc(category, type)
-    }
+        type: String,
+    ): LiveData<List<MedicalReviewMetaItems>> = roomHelper.getExaminationsComplaintsForAnc(category, type)
 
-    suspend fun createBMI(bpAndWeightRequestModel: BpAndWeightRequestModel): Resource<HashMap<String, Any>> {
-        return try {
+    suspend fun createBMI(bpAndWeightRequestModel: BpAndWeightRequestModel): Resource<HashMap<String, Any>> =
+        try {
             val response = apiHelper.createBMI(bpAndWeightRequestModel)
             if (response.isSuccessful) {
                 val res = response.body()
@@ -287,5 +277,4 @@ class TbMedicalReviewRepo @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 }

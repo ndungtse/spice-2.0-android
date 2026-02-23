@@ -4,5 +4,5 @@ enum class AssessmentsReferredBy {
     PHYSICIAN_PRESCRIBER,
     PROVIDER,
     NUTRITIONIST,
-    PSYCHOLOGIST
+    PSYCHOLOGIST,
 }

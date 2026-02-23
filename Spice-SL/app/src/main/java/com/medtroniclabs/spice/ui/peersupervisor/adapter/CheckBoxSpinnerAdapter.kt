@@ -16,17 +16,17 @@ import com.medtroniclabs.spice.data.performance.CheckBoxSpinnerData
 class CheckBoxSpinnerAdapter(
     context: Context,
     private val items: MutableList<CheckBoxSpinnerData>,
-    private val listener: OnCheckBoxSpinnerListener
+    private val listener: OnCheckBoxSpinnerListener,
 ) : ArrayAdapter<CheckBoxSpinnerData>(context, 0, items) {
-
     fun updateData(list: List<CheckBoxSpinnerData>) {
         items.clear()
         items.addAll(list)
 
         val selectedSize = list.filter { it.isSelected }
 
-        if (items.size > 1)
+        if (items.size > 1) {
             items.add(0, CheckBoxSpinnerData(0L, "All", selectedSize.size == list.size))
+        }
 
         notifyDataSetChanged()
     }
@@ -54,34 +54,36 @@ class CheckBoxSpinnerAdapter(
         notifyDataSetChanged()
     }
 
+    override fun getCount(): Int = if (items.isEmpty()) 1 else super.getCount()
 
-    override fun getCount(): Int {
-        return if (items.isEmpty()) 1 else super.getCount()
-    }
+    override fun getItem(position: Int): CheckBoxSpinnerData? =
+        if (items.isEmpty()) CheckBoxSpinnerData(-1L, DefaultIDLabel, false) else super.getItem(position)
 
-    override fun getItem(position: Int): CheckBoxSpinnerData? {
-        return if (items.isEmpty()) CheckBoxSpinnerData(-1L, DefaultIDLabel,false) else super.getItem(position)
-    }
+    override fun isEnabled(position: Int): Boolean = false
 
-    override fun isEnabled(position: Int): Boolean {
-        return false
-    }
+    override fun getView(
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup,
+    ): View = createView(position, convertView, parent, false)
 
+    override fun getDropDownView(
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup,
+    ): View = createView(position, convertView, parent, true)
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return createView(position, convertView, parent, false)
-    }
-
-    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return createView(position, convertView, parent, true)
-    }
-
-    private fun createView(position: Int, convertView: View?, parent: ViewGroup, isDropDown: Boolean): View {
+    private fun createView(
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup,
+        isDropDown: Boolean,
+    ): View {
         val view: View = convertView
             ?: LayoutInflater.from(context).inflate(
                 if (isDropDown) R.layout.checkbox_spinner_dropdown_item else R.layout.custom_non_select_dropdown,
                 parent,
-                false
+                false,
             )
 
         if (isDropDown) {
@@ -121,11 +123,12 @@ class CheckBoxSpinnerAdapter(
         return view
     }
 
-    fun getSelectedItems(): List<CheckBoxSpinnerData> {
-        return items.filter { it.isSelected }.toList()
-    }
+    fun getSelectedItems(): List<CheckBoxSpinnerData> = items.filter { it.isSelected }.toList()
 
-    private fun updateList(position: Int, status: Boolean) {
+    private fun updateList(
+        position: Int,
+        status: Boolean,
+    ) {
         if (items.size > 1) { // With All
             if (position == 0) { // All item clicked
                 items.forEach {
@@ -144,5 +147,4 @@ class CheckBoxSpinnerAdapter(
     interface OnCheckBoxSpinnerListener {
         fun onCheckBoxSpinnerItemClick(selectedItems: List<CheckBoxSpinnerData>)
     }
-
 }

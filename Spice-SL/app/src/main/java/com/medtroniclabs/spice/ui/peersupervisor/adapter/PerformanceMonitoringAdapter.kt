@@ -13,9 +13,8 @@ import com.medtroniclabs.spice.databinding.RowPerformanceMonitoringBinding
 
 class PerformanceMonitoringAdapter :
     PagingDataAdapter<CHWPerformanceMonitoring, PerformanceMonitoringAdapter.PerformanceMonitoringViewHolder>(
-        PerformanceMonitorComparator
+        PerformanceMonitorComparator,
     ) {
-
     inner class PerformanceMonitoringViewHolder(val binding: RowPerformanceMonitoringBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
@@ -23,16 +22,20 @@ class PerformanceMonitoringAdapter :
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
-    ): PerformanceMonitoringViewHolder {
-        return PerformanceMonitoringViewHolder(
+        viewType: Int,
+    ): PerformanceMonitoringViewHolder =
+        PerformanceMonitoringViewHolder(
             RowPerformanceMonitoringBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            )
+                LayoutInflater.from(parent.context),
+                parent,
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: PerformanceMonitoringViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: PerformanceMonitoringViewHolder,
+        position: Int,
+    ) {
         val performanceDetails = getItem(position)
         val binding = holder.binding
 
@@ -40,15 +43,15 @@ class PerformanceMonitoringAdapter :
             binding.clRowPerformanceMonitoringRoot.setBackgroundColor(
                 ContextCompat.getColor(
                     holder.context,
-                    R.color.white
-                )
+                    R.color.white,
+                ),
             )
         } else {
             binding.clRowPerformanceMonitoringRoot.setBackgroundColor(
                 ContextCompat.getColor(
                     holder.context,
-                    R.color.table_row_color
-                )
+                    R.color.table_row_color,
+                ),
             )
         }
 
@@ -73,17 +76,12 @@ class PerformanceMonitoringAdapter :
     object PerformanceMonitorComparator : DiffUtil.ItemCallback<CHWPerformanceMonitoring>() {
         override fun areItemsTheSame(
             oldItem: CHWPerformanceMonitoring,
-            newItem: CHWPerformanceMonitoring
-        ): Boolean {
-            return false
-        }
+            newItem: CHWPerformanceMonitoring,
+        ): Boolean = false
 
         override fun areContentsTheSame(
             oldItem: CHWPerformanceMonitoring,
-            newItem: CHWPerformanceMonitoring
-        ): Boolean {
-            return false
-        }
+            newItem: CHWPerformanceMonitoring,
+        ): Boolean = false
     }
 }
-

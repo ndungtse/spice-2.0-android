@@ -19,23 +19,26 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ClinicalNotesFragment : BaseFragment() {
-
     private lateinit var binding: FragmentClinicalNotesBinding
-    private val viewModel : ClinicalNotesViewModel by activityViewModels()
+    private val viewModel: ClinicalNotesViewModel by activityViewModels()
 
-    companion object{
+    companion object {
         const val TAG = "ClinicalNotesFragment"
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentClinicalNotesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeViews()
     }
@@ -47,19 +50,24 @@ class ClinicalNotesFragment : BaseFragment() {
                 viewModel.enteredClinicalNotes = it.toString()
                 viewModel.handleSubmitButtonState()
                 setFragmentResult(
-                    MedicalReviewDefinedParams.CLINICAL_NOTES, bundleOf(
-                        MedicalReviewDefinedParams.Notes to true)
+                    MedicalReviewDefinedParams.CLINICAL_NOTES,
+                    bundleOf(
+                        MedicalReviewDefinedParams.Notes to true,
+                    ),
                 )
             }
         }
-        if (viewModel.isMotherPnc){
+        if (viewModel.isMotherPnc) {
             binding.etClinicalNotes.setText(viewModel.enteredClinicalNotes)
         }
-
     }
 
-    fun validateInput():Boolean {
-        if (binding.etClinicalNotes.text?.trim().toString().isBlank()) {
+    fun validateInput(): Boolean {
+        if (binding.etClinicalNotes.text
+                ?.trim()
+                .toString()
+                .isBlank()
+        ) {
             binding.tvClinicalNoteErrorMessage.visible()
             binding.etClinicalNotes.requestFocus()
             return false
@@ -67,13 +75,17 @@ class ClinicalNotesFragment : BaseFragment() {
         binding.tvClinicalNoteErrorMessage.gone()
         return true
     }
+
     fun refreshFragment() {
         binding.etClinicalNotes.text?.clear()
         setFragmentResult(
-            MedicalReviewDefinedParams.CLINICAL_NOTES, bundleOf(
-                MedicalReviewDefinedParams.Notes to false)
+            MedicalReviewDefinedParams.CLINICAL_NOTES,
+            bundleOf(
+                MedicalReviewDefinedParams.Notes to false,
+            ),
         )
     }
+
     fun reloadFragment(value: String) {
         binding.etClinicalNotes.setText(value)
     }

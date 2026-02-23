@@ -9,8 +9,8 @@ data class RequestFollowUp(
     val attempts: Int,
     val successfulAttempts: Int,
     val unsuccessfulAttempts: Int,
-    val currentPatientStatus: String?
+    val currentPatientStatus: String?,
 ) {
     @Ignore
-    var followUpDetails : List<FollowUpCall> = listOf()
+    var followUpDetails: List<FollowUpCall> = listOf()
 }

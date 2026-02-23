@@ -25,9 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ReferralHistoryViewModel @Inject constructor(
     private val referralHistoryRepository: ReferralHistoryRepository,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
-
     @Inject
     lateinit var connectivityManager: ConnectivityManager
     val referralTicketLiveData = MutableLiveData<Resource<ReferralData>>()
@@ -44,10 +43,13 @@ class ReferralHistoryViewModel @Inject constructor(
     var prescriptionTicketId: String? = null
     var investigationTicketId: String? = null
     var medicalTicketId: String? = null
-    var patientReference:String?=null
-    var memberId:String?=null
+    var patientReference: String? = null
+    var memberId: String? = null
 
-    fun getReferralTicket(patientId: String? = null, ticketId: String? = null) {
+    fun getReferralTicket(
+        patientId: String? = null,
+        ticketId: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             referralTicketLiveData.postLoading()
             referralTicketLiveData.postValue(
@@ -56,14 +58,17 @@ class ReferralHistoryViewModel @Inject constructor(
                         patientId = patientId,
                         ticketId = ticketId,
                         type = MedicalReviewTypeEnums.medicalReview.name,
-                        memberId = memberId
-                    )
-                )
+                        memberId = memberId,
+                    ),
+                ),
             )
         }
     }
 
-    fun getPrescriptionHistory(patientId: String? = null, prescriptionTicketId: String? = null) {
+    fun getPrescriptionHistory(
+        patientId: String? = null,
+        prescriptionTicketId: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             prescriptionTicketLiveData.postLoading()
             prescriptionTicketLiveData.postValue(
@@ -71,13 +76,16 @@ class ReferralHistoryViewModel @Inject constructor(
                     ReferralDetailRequest(
                         patientReference = patientId,
                         encounterId = prescriptionTicketId,
-                    )
-                )
+                    ),
+                ),
             )
         }
     }
 
-    fun getMedicalReviewHistory(patientId: String? = null, medicalTicketId: String? = null) {
+    fun getMedicalReviewHistory(
+        patientId: String? = null,
+        medicalTicketId: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             medicalReviewTicketLiveData.postLoading()
             medicalReviewTicketLiveData.postValue(
@@ -85,12 +93,16 @@ class ReferralHistoryViewModel @Inject constructor(
                     ReferralDetailRequest(
                         patientReference = patientId,
                         encounterId = medicalTicketId,
-                    )
-                )
+                    ),
+                ),
             )
         }
     }
-    fun getMedicalReviewHistoryPNC(patientId: String? = null, medicalTicketId: String? = null) {
+
+    fun getMedicalReviewHistoryPNC(
+        patientId: String? = null,
+        medicalTicketId: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             medicalReviewTicketLiveDataPNC.postLoading()
             medicalReviewTicketLiveDataPNC.postValue(
@@ -98,13 +110,16 @@ class ReferralHistoryViewModel @Inject constructor(
                     ReferralDetailRequest(
                         patientReference = patientId,
                         encounterId = medicalTicketId,
-                    )
-                )
+                    ),
+                ),
             )
         }
     }
 
-    fun getBirthDetails(memberId: String? = null, patientReference: String? = null) {
+    fun getBirthDetails(
+        memberId: String? = null,
+        patientReference: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             birthDetailsLiveData.postLoading()
             birthDetailsLiveData.postValue(
@@ -112,13 +127,16 @@ class ReferralHistoryViewModel @Inject constructor(
                     RequestBirthDetails(
                         patientReference = patientReference,
                         memberId = memberId,
-                    )
-                )
+                    ),
+                ),
             )
         }
     }
 
-    fun getInvestigationHistory(patientId: String? = null, investigationTicketId: String? = null) {
+    fun getInvestigationHistory(
+        patientId: String? = null,
+        investigationTicketId: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             investigationTicketLiveData.postLoading()
             investigationTicketLiveData.postValue(
@@ -126,8 +144,8 @@ class ReferralHistoryViewModel @Inject constructor(
                     ReferralDetailRequest(
                         patientReference = patientId,
                         encounterId = investigationTicketId,
-                    )
-                )
+                    ),
+                ),
             )
         }
     }

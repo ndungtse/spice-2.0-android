@@ -16,7 +16,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AssessmentToolsActivity : BaseActivity() {
-
     private lateinit var binding: ActivityToolsBinding
 
     private val toolsViewModel: ToolsViewModel by viewModels()
@@ -35,7 +34,7 @@ class AssessmentToolsActivity : BaseActivity() {
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 startActivity(intent)
                 finish()
-            }
+            },
         )
         initializeView()
     }
@@ -46,7 +45,7 @@ class AssessmentToolsActivity : BaseActivity() {
     }
 
     private fun initializeView() {
-        toolsViewModel.selectedHouseholdId = intent.getLongExtra(DefinedParams.HouseholdId,-1)
+        toolsViewModel.selectedHouseholdId = intent.getLongExtra(DefinedParams.HouseholdId, -1)
         toolsViewModel.selectedHouseholdMemberID = intent.getLongExtra(DefinedParams.MemberID, -1)
         toolsViewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
         toolsViewModel.followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1)
@@ -55,8 +54,8 @@ class AssessmentToolsActivity : BaseActivity() {
         bundle.putString(DefinedParams.FhirId, intent.getStringExtra(DefinedParams.FhirId))
         bundle.putString(DefinedParams.ORIGIN, intent.getStringExtra(DefinedParams.ORIGIN))
         bundle.putString(DefinedParams.Gender, intent.getStringExtra(DefinedParams.Gender))
-        bundle.putBoolean(MenuConstants.FOLLOW_UP, intent.getBooleanExtra(MenuConstants.FOLLOW_UP,false))
-        bundle.putBoolean(DefinedParams.IsDeepLink,isDeepLink)
+        bundle.putBoolean(MenuConstants.FOLLOW_UP, intent.getBooleanExtra(MenuConstants.FOLLOW_UP, false))
+        bundle.putBoolean(DefinedParams.IsDeepLink, isDeepLink)
         // only for Africa encounterReference is visit id(Support landscape )
         intent.getStringExtra(EncounterReference)?.let { encounterReference ->
             bundle.putString(EncounterReference, encounterReference)
@@ -74,7 +73,8 @@ class AssessmentToolsActivity : BaseActivity() {
         if (fragment == null) {
             fragment = ToolsMenuFragment.newInstance()
             fragment.arguments = bundle
-            supportFragmentManager.beginTransaction()
+            supportFragmentManager
+                .beginTransaction()
                 .add(R.id.menuItemsFragment, fragment, fragmentTag)
                 .commit()
         }

@@ -37,6 +37,7 @@ class NCDHrioBaseActivity : BaseActivity() {
     private val patientViewModel: PatientDetailViewModel by viewModels()
     private val patientDeleteViewModel: NCDPatientDeleteViewModel by viewModels()
     private val hrioViewModel: HrioViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNcdhrioBaseBinding.inflate(layoutInflater)
@@ -45,7 +46,7 @@ class NCDHrioBaseActivity : BaseActivity() {
             true,
             getString(R.string.patient_details),
             homeAndBackVisibility = Pair(false, true),
-            homeIcon = ContextCompat.getDrawable(this, R.drawable.ic_more_vertical)
+            homeIcon = ContextCompat.getDrawable(this, R.drawable.ic_more_vertical),
         )
         init()
         attachObservers()
@@ -57,7 +58,7 @@ class NCDHrioBaseActivity : BaseActivity() {
             getPatientId()?.let { id ->
                 patientViewModel.getPatients(
                     id,
-                    origin = getMenuOrigin()
+                    origin = getMenuOrigin(),
                 )
             }
         })
@@ -100,7 +101,7 @@ class NCDHrioBaseActivity : BaseActivity() {
                 intent.putExtra(NCDMRUtil.PATIENT_REFERENCE, patientViewModel.getPatientId())
                 intent.putExtra(
                     NCDMRUtil.MEMBER_REFERENCE,
-                    patientViewModel.getPatientFHIRId()
+                    patientViewModel.getPatientFHIRId(),
                 )
                 intent.putExtra(DefinedParams.ORIGIN, patientViewModel.origin)
                 patientEditLauncher.launch(intent)
@@ -114,16 +115,18 @@ class NCDHrioBaseActivity : BaseActivity() {
 
     private val patientEditLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK)
+            if (result.resultCode == Activity.RESULT_OK) {
                 init()
+            }
         }
 
     private fun displayScheduleDialog() {
-        NCDScheduleDialog.newInstance(
-            patientViewModel.getPatientId(),
-            patientViewModel.getPatientFHIRId(),
-            patientViewModel.getPatientVillageId()
-        ).show(supportFragmentManager, NCDScheduleDialog.TAG)
+        NCDScheduleDialog
+            .newInstance(
+                patientViewModel.getPatientId(),
+                patientViewModel.getPatientFHIRId(),
+                patientViewModel.getPatientVillageId(),
+            ).show(supportFragmentManager, NCDScheduleDialog.TAG)
     }
 
     private fun patientDeleteCreate() {
@@ -133,25 +136,25 @@ class NCDHrioBaseActivity : BaseActivity() {
                 getString(
                     R.string.patient_delete_confirmation,
                     model.firstName,
-                    model.lastName
+                    model.lastName,
                 ),
                 { _, reason, otherReason ->
                     val request = NCDPatientRemoveRequest(
                         patientId = model.patientId.toString(),
                         reason = reason,
                         otherReason = otherReason,
-                        memberId = model.id
+                        memberId = model.id,
                     )
                     patientDeleteViewModel.ncdPatientRemove(request)
                 },
                 this,
                 true,
                 okayButton = getString(R.string.yes),
-                cancelButton = getString(R.string.no)
+                cancelButton = getString(R.string.no),
             )
             deleteConfirmationDialog.show(
                 supportFragmentManager,
-                NCDDeleteConfirmationDialog.TAG
+                NCDDeleteConfirmationDialog.TAG,
             )
         }
     }
@@ -183,11 +186,13 @@ class NCDHrioBaseActivity : BaseActivity() {
             when (resourceState.state) {
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    GeneralSuccessDialog.newInstance(
-                        title = getString(R.string.delete),
-                        message = getString(R.string.patient_delete_message),
-                        okayButton = getString(R.string.done)
-                    ) { redirectToHome() }.show(supportFragmentManager, GeneralSuccessDialog.TAG)
+                    GeneralSuccessDialog
+                        .newInstance(
+                            title = getString(R.string.delete),
+                            message = getString(R.string.patient_delete_message),
+                            okayButton = getString(R.string.done),
+                        ) { redirectToHome() }
+                        .show(supportFragmentManager, GeneralSuccessDialog.TAG)
                 }
 
                 ResourceState.LOADING -> {
@@ -205,32 +210,35 @@ class NCDHrioBaseActivity : BaseActivity() {
     }
 
     private fun loadData(patientListRespModel: PatientListRespModel) {
-
         binding.patientName.tvKey.text = getString(R.string.name)
-        binding.patientName.tvValue.text = patientListRespModel.name.takeUnless { it.isNullOrBlank() }?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
+        binding.patientName.tvValue.text =
+            patientListRespModel.name.takeUnless { it.isNullOrBlank() }?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
 
         binding.mobileNumber.tvKey.text = getString(R.string.mobile_number)
         binding.mobileNumber.tvValue.text = patientListRespModel.phoneNumber.takeUnless { it.isNullOrBlank() } ?: getString(R.string.hyphen_symbol)
 
         binding.mobileCategory.tvKey.text = getString(R.string.mobile_category)
-        binding.mobileCategory.tvValue.text = patientListRespModel.phoneNumberCategory.takeUnless { it.isNullOrBlank() }?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
+        binding.mobileCategory.tvValue.text =
+            patientListRespModel.phoneNumberCategory.takeUnless { it.isNullOrBlank() }?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
 
         binding.landmark.tvKey.text = getString(R.string.landmark)
-        binding.landmark.tvValue.text = patientListRespModel.landmark.takeUnless { it.isNullOrBlank() }?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
+        binding.landmark.tvValue.text =
+            patientListRespModel.landmark.takeUnless { it.isNullOrBlank() }?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
 
         binding.occupation.tvKey.text = getString(R.string.occupation)
-        binding.occupation.tvValue.text = patientListRespModel.occupation.takeUnless { it.isNullOrBlank() }?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
+        binding.occupation.tvValue.text =
+            patientListRespModel.occupation.takeUnless { it.isNullOrBlank() }?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
 
         binding.healthStatus.tvKey.text = getString(R.string.health_insurance_status)
         binding.healthStatus.tvValue.text = patientListRespModel.insuranceStatus.toYesNoOrDefault(
             getString(R.string.hyphen_symbol),
             getString(R.string.yes),
-            getString(R.string.no)
+            getString(R.string.no),
         )
 
         binding.healthType.tvKey.text = getString(R.string.health_insurance_type)
-        binding.healthType.tvValue.text =  patientListRespModel.insuranceType ?: getString(R.string.hyphen_symbol)
-        binding.healthType.tvValue.text = if (patientListRespModel.insuranceType.equals(Other,true)) {
+        binding.healthType.tvValue.text = patientListRespModel.insuranceType ?: getString(R.string.hyphen_symbol)
+        binding.healthType.tvValue.text = if (patientListRespModel.insuranceType.equals(Other, true)) {
             "$Other${patientListRespModel.otherInsurance?.takeIf { it.isNotBlank() }?.let { " - $it" } ?: ""}"
         } else {
             patientListRespModel.insuranceType ?: getString(R.string.hyphen_symbol)
@@ -241,11 +249,12 @@ class NCDHrioBaseActivity : BaseActivity() {
 
         binding.nextVisit.tvKey.text = getString(R.string.next_medical_review_date)
         binding.nextVisit.tvValue.text = patientListRespModel.nextMedicalReviewDate?.let {
-            DateUtils.convertDateFormat(
-                it,
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                DateUtils.DATE_FORMAT_ddMMMyyyy
-            ).takeIf { it.isNotBlank() } ?: getString(R.string.hyphen_symbol)
+            DateUtils
+                .convertDateFormat(
+                    it,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    DateUtils.DATE_FORMAT_ddMMMyyyy,
+                ).takeIf { it.isNotBlank() } ?: getString(R.string.hyphen_symbol)
         } ?: getString(R.string.hyphen_symbol)
     }
 
@@ -265,11 +274,7 @@ class NCDHrioBaseActivity : BaseActivity() {
         this@NCDHrioBaseActivity.finish()
     }
 
-    private fun getMenuOrigin(): String? {
-        return intent.getStringExtra(DefinedParams.ORIGIN)
-    }
+    private fun getMenuOrigin(): String? = intent.getStringExtra(DefinedParams.ORIGIN)
 
-    private fun getPatientId(): String? {
-        return intent.getStringExtra(DefinedParams.FhirId)
-    }
+    private fun getPatientId(): String? = intent.getStringExtra(DefinedParams.FhirId)
 }

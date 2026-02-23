@@ -43,7 +43,6 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
-
 class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentMotherNeonarePncSummaryBinding
     var adapter: CustomSpinnerAdapter? = null
@@ -51,10 +50,10 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
     val viewModel: MotherNeonatePncSummaryViewModel by activityViewModels()
     private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentMotherNeonarePncSummaryBinding.inflate(inflater, container, false)
         return binding.root
@@ -62,12 +61,14 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
 
     companion object {
         const val TAG = "MotherNeonateSummary"
-        fun newInstance(isShowNeonate: Boolean): MotherNeonatePncSummaryFragment {
-            return MotherNeonatePncSummaryFragment(isShowNeonate)
-        }
+
+        fun newInstance(isShowNeonate: Boolean): MotherNeonatePncSummaryFragment = MotherNeonatePncSummaryFragment(isShowNeonate)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         patientDetailViewModel.setUserJourney(AnalyticsDefinedParams.MOTHERNEONATEPNCSUMMARY)
         getPncSummaryDetails()
@@ -79,19 +80,22 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
 
     private fun showNeonateSummary() {
         if (isShowNeonate) {
-           if (patientDetailViewModel.patientDetailsNeonateLiveData.value?.data?.isActive==false)
-           {
-               binding.neonateSummary.cardSummary.gone()
-           }else{
-            binding.neonateSummary.cardSummary.visible()
+            if (patientDetailViewModel.patientDetailsNeonateLiveData.value
+                    ?.data
+                    ?.isActive == false
+            ) {
+                binding.neonateSummary.cardSummary.gone()
+            } else {
+                binding.neonateSummary.cardSummary.visible()
             }
         } else {
             binding.neonateSummary.cardSummary.gone()
         }
     }
+
     private fun getPncSummaryDetails() = viewModel.getPncSummaryDetails()
-    private fun getPncPatientStatus(category: String) =
-        viewModel.setPncReqToGetMetaForPatientStatus(category = category)
+
+    private fun getPncPatientStatus(category: String) = viewModel.setPncReqToGetMetaForPatientStatus(category = category)
 
     private fun clickListener() {
         binding.motherSummary.tvPatientStatus.markMandatory()
@@ -101,7 +105,6 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
     }
 
     private fun attachObservers() {
-
         viewModel.pncSummaryResponse.observe(viewLifecycleOwner) { resource ->
             handleResourceState(resource) {
                 initializeMotherSummaryDetails(resource.data)
@@ -114,20 +117,20 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
             SecuredPreference.getUserDetails()?.firstName,
-            SecuredPreference.getUserDetails()?.lastName
+            SecuredPreference.getUserDetails()?.lastName,
         )
         binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
             DateUtils.getTodayDateDDMMYYYY(),
             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            DateUtils.DATE_ddMMyyyy
+            DateUtils.DATE_ddMMyyyy,
         )
         if (viewModel.motherNeonateAlive) {
-                viewModel.pncMotherPatientStatus = resource
-                viewModel.pncMotherPatientStatus?.let {
-                    initializePatientStatus(it, binding.motherSummary)
-                }
-                getPncPatientStatus(MedicalReviewTypeEnums.PNC_CHILD_REVIEW.name)
-                    } else {
+            viewModel.pncMotherPatientStatus = resource
+            viewModel.pncMotherPatientStatus?.let {
+                initializePatientStatus(it, binding.motherSummary)
+            }
+            getPncPatientStatus(MedicalReviewTypeEnums.PNC_CHILD_REVIEW.name)
+        } else {
             binding.motherSummary.tvNextMedicalReviewLabel.gone()
             binding.motherSummary.tvNextMedicalReviewSeparator.gone()
             binding.motherSummary.tvNextMedicalReviewLabelText.gone()
@@ -137,7 +140,6 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
             notAliveFlow()
         }
     }
-
 
     private fun initializeMotherSummaryDetails(data: MotherNeonatePncSummaryResponse?) {
         patientStatusBasedOnType(data?.pncMother?.summaryStatus)
@@ -149,20 +151,20 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
             val presentingComplaintsText = combineText(
                 data?.pncMother?.presentingComplaints,
                 data?.pncMother?.presentingComplaintsNotes,
-                getString(R.string.hyphen_symbol)
+                getString(R.string.hyphen_symbol),
             )
             tvPresentingComplaintsText.setExpandableText(
                 fullText = presentingComplaintsText,
                 moreColorResId = R.color.purple_700,
                 title = tvPresentingComplaintsLabel.text.toString(),
-                activity = (requireActivity() as BaseActivity)
+                activity = (requireActivity() as BaseActivity),
             )
 
             tvClinicalNotesText.setExpandableText(
                 fullText = (data?.pncMother?.clinicalNotes) ?: getString(R.string.hyphen_symbol),
                 moreColorResId = R.color.purple_700,
                 title = tvClinicalNotesLabel.text.toString(),
-                activity = (requireActivity() as BaseActivity)
+                activity = (requireActivity() as BaseActivity),
             )
             val list = mutableListOf<HashMap<String, Pair<String?, Any?>>>()
             data?.pncMother?.breastCondition?.let { breastCondition ->
@@ -171,9 +173,9 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
                         hashMapOf(
                             getString(R.string.breast_condition) to Pair(
                                 breastCondition,
-                                breastConditionNotes
-                            )
-                        )
+                                breastConditionNotes,
+                            ),
+                        ),
                     )
                 }
             }
@@ -183,27 +185,34 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
                         hashMapOf(
                             getString(R.string.involutions_of_the_nuterus_summary) to Pair(
                                 involutionsOfTheUterus,
-                                involutionsOfTheUterusNotes
-                            )
-                        )
+                                involutionsOfTheUterusNotes,
+                            ),
+                        ),
                     )
                 }
             }
             tvExaminationsText.text =
-                list.let { CommonUtils.createMotherNeonateExamination(it, requireContext(), true) }
+                list
+                    .let { CommonUtils.createMotherNeonateExamination(it, requireContext(), true) }
                     ?.takeIf { it.isNotEmpty() }
                     ?: requireContext().getString(R.string.hyphen_symbol)
 
-
-            tvPrescriptionsText.text = data?.pncMother?.prescriptions.let {
-                CommonUtils.createPrescription(
-                    it,
-                    requireContext()
-                )
-            }?.takeIf { it.isNotEmpty() }
+            tvPrescriptionsText.text = data
+                ?.pncMother
+                ?.prescriptions
+                .let {
+                    CommonUtils.createPrescription(
+                        it,
+                        requireContext(),
+                    )
+                }?.takeIf { it.isNotEmpty() }
                 ?: requireContext().getString(R.string.hyphen_symbol)
 
-            tvInvestigationText.text = data?.pncMother?.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+            tvInvestigationText.text = data
+                ?.pncMother
+                ?.investigations
+                ?.let { createInvestigation(it, requireContext()) }
+                ?.takeIf { it.isNotEmpty() }
                 ?: requireContext().getString(R.string.hyphen_symbol)
 
             tvAncVisitText.text =
@@ -212,33 +221,33 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
                         binding.motherSummary.tvAncVisitText.setTextColor(
                             ContextCompat.getColor(
                                 requireContext(),
-                                R.color.a_red_error
-                            )
+                                R.color.a_red_error,
+                            ),
                         )
                     }
                     convertListToString(
-                        ArrayList(list.filter { it.diseaseCategory.lowercase() != DefinedParams.OtherNotes.lowercase() }.map { it.diseaseCategory }.distinct())
+                        ArrayList(list.filter { it.diseaseCategory.lowercase() != DefinedParams.OtherNotes.lowercase() }.map { it.diseaseCategory }.distinct()),
                     )
                 } ?: requireContext().getString(R.string.empty__)
-
         }
-       patientDetailViewModel.dateOfDelivery?.let {
-            DateUtils.convertStringToDate(
-                it,
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-            )?.let { deliveryDate ->
-                RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
-                    binding.motherSummary.tvNextMedicalReviewLabelText.text = DateUtils.getDateStringFromDate(
-                        visitDate, DateUtils.DATE_ddMMyyyy
-                    )
-                    viewModel.nextFollowupDate= binding.motherSummary.tvNextMedicalReviewLabelText.text.toString()
-                    summaryListener()
+        patientDetailViewModel.dateOfDelivery?.let {
+            DateUtils
+                .convertStringToDate(
+                    it,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                )?.let { deliveryDate ->
+                    RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
+                        binding.motherSummary.tvNextMedicalReviewLabelText.text = DateUtils.getDateStringFromDate(
+                            visitDate,
+                            DateUtils.DATE_ddMMyyyy,
+                        )
+                        viewModel.nextFollowupDate = binding.motherSummary.tvNextMedicalReviewLabelText.text
+                            .toString()
+                        summaryListener()
+                    }
                 }
-            }
         }
-
     }
-
 
     private fun initializeNeonateSummaryDetails(data: MotherNeonatePncSummaryResponse?) {
         binding.neonateSummary.neonateflow.gone()
@@ -249,20 +258,20 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
             val presentingComplaintsText = combineText(
                 data?.pncChild?.presentingComplaints,
                 data?.pncChild?.presentingComplaintsNotes,
-                getString(R.string.hyphen_symbol)
+                getString(R.string.hyphen_symbol),
             )
             tvPresentingComplaintsText.setExpandableText(
                 fullText = presentingComplaintsText,
                 moreColorResId = R.color.purple_700,
                 title = tvPresentingComplaintsLabel.text.toString(),
-                activity = (requireActivity() as BaseActivity)
+                activity = (requireActivity() as BaseActivity),
             )
 
             tvClinicalNotesText.setExpandableText(
                 fullText = (data?.pncChild?.clinicalNotes) ?: getString(R.string.hyphen_symbol),
                 moreColorResId = R.color.purple_700,
                 title = tvClinicalNotesLabel.text.toString(),
-                activity = (requireActivity() as BaseActivity)
+                activity = (requireActivity() as BaseActivity),
             )
             val list = mutableListOf<HashMap<String, Pair<String?, Any?>>>()
             data?.pncChild?.congenitalDetect?.let { congenitalDetect ->
@@ -270,9 +279,9 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
                     hashMapOf(
                         getString(R.string.congenital_detect) to Pair(
                             getBooleanAsString(congenitalDetect.toBoolean()).capitalizeFirstChar(),
-                            null
-                        )
-                    )
+                            null,
+                        ),
+                    ),
                 )
             }
             data?.pncChild?.cordExamination?.let { cordExamination ->
@@ -280,27 +289,28 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
                     hashMapOf(
                         getString(R.string.cord_examination) to Pair(
                             cordExamination,
-                            null
-                        )
-                    )
+                            null,
+                        ),
+                    ),
                 )
             }
             tvExaminationsLabel.text = getString(R.string.physical_examinations)
 
-            tvExaminationsText.text = list.let {
-                CommonUtils.createMotherNeonateExamination(
-                    it,
-                    requireContext(),
-                    false
-                )
-            }?.takeIf { it.isNotEmpty() }
+            tvExaminationsText.text = list
+                .let {
+                    CommonUtils.createMotherNeonateExamination(
+                        it,
+                        requireContext(),
+                        false,
+                    )
+                }?.takeIf { it.isNotEmpty() }
                 ?: requireContext().getString(R.string.hyphen_symbol)
         }
     }
 
     private fun initializePatientStatus(
         pncMotherPatientStatus: List<PatientStatus>,
-        patientStatusBinding: MotherNeonatePncSummaryLayoutBinding
+        patientStatusBinding: MotherNeonatePncSummaryLayoutBinding,
     ) {
         val dropDownList = ArrayList<Map<String, Any>>()
 
@@ -309,8 +319,8 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to
                         item.name,
-                    DefinedParams.Value to item.value
-                )
+                    DefinedParams.Value to item.value,
+                ),
             )
         }
         val adapter = CustomSpinnerAdapter(requireContext())
@@ -319,7 +329,7 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
         for ((index, patientStatus) in dropDownList.withIndex()) {
             if ((patientStatus[DefinedParams.Value] as? String).equals(
                     ReferralStatus.OnTreatment.name,
-                    true
+                    true,
                 )
             ) {
                 defaultPosition = index
@@ -335,7 +345,7 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
                     adapterView: AdapterView<*>?,
                     view: View?,
                     pos: Int,
-                    itemId: Long
+                    itemId: Long,
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
@@ -360,13 +370,17 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
 
     private fun summaryListener() {
         setFragmentResult(
-            MedicalReviewDefinedParams.SUMMARY_ITEM, bundleOf(
-                MedicalReviewDefinedParams.SUMMARY_ITEM to true
-            )
+            MedicalReviewDefinedParams.SUMMARY_ITEM,
+            bundleOf(
+                MedicalReviewDefinedParams.SUMMARY_ITEM to true,
+            ),
         )
     }
 
-    private inline fun handleResourceState(resource: Resource<*>, onSuccessBlock: () -> Unit = {}) {
+    private inline fun handleResourceState(
+        resource: Resource<*>,
+        onSuccessBlock: () -> Unit = {},
+    ) {
         when (resource.state) {
             ResourceState.LOADING -> showProgress()
             ResourceState.SUCCESS -> {
@@ -386,50 +400,56 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
 
     private fun showDatePickerDialog() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (!binding.motherSummary.tvNextMedicalReviewLabelText.text.isNullOrBlank())
+        if (!binding.motherSummary.tvNextMedicalReviewLabelText.text
+                .isNullOrBlank()
+        ) {
             yearMonthDate =
-                DateUtils.convertedMMMToddMM(binding.motherSummary.tvNextMedicalReviewLabelText.text.toString())
+                DateUtils.convertedMMMToddMM(
+                    binding.motherSummary.tvNextMedicalReviewLabelText.text
+                        .toString(),
+                )
+        }
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
                 minDate = DateUtils.getTomorrowDate(),
                 date = yearMonthDate,
-                cancelCallBack = { datePickerDialog = null }
+                cancelCallBack = { datePickerDialog = null },
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 binding.motherSummary.tvNextMedicalReviewLabelText.text =
                     DateUtils.convertDateTimeToDate(
                         stringDate,
                         DateUtils.DATE_FORMAT_ddMMyyyy,
-                        DateUtils.DATE_ddMMyyyy
+                        DateUtils.DATE_ddMMyyyy,
                     )
                 viewModel.nextFollowupDate =
-                    binding.motherSummary.tvNextMedicalReviewLabelText.text.toString()
+                    binding.motherSummary.tvNextMedicalReviewLabelText.text
+                        .toString()
                 datePickerDialog = null
                 summaryListener()
             }
         }
     }
 
-
     private fun updateNextFollowUpDate() {
         binding.motherSummary.tvNextMedicalReviewLabelText.isEnabled = true
+    }
 
-}
-
-override fun onClick(v: View?) {
-    when (v?.id) {
-        binding.motherSummary.tvNextMedicalReviewLabelText.id -> {
-            showDatePickerDialog()
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            binding.motherSummary.tvNextMedicalReviewLabelText.id -> {
+                showDatePickerDialog()
+            }
         }
     }
-}
+
     private fun notAliveFlow() {
         setFragmentResult(
-            MedicalReviewDefinedParams.NOT_ALIVE, bundleOf(
-                MedicalReviewDefinedParams.NOT_ALIVE to true
-            )
+            MedicalReviewDefinedParams.NOT_ALIVE,
+            bundleOf(
+                MedicalReviewDefinedParams.NOT_ALIVE to true,
+            ),
         )
     }
 }
-

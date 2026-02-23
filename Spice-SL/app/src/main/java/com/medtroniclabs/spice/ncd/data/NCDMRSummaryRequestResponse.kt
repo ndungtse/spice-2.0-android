@@ -12,5 +12,5 @@ data class NCDMRSummaryRequestResponse(
     val patientVisitId: String? = null,
     val enrollmentType: String? = null,
     val identityValue: String? = null,
-    val diagnosisType: List<String>? = null
+    val diagnosisType: List<String>? = null,
 )

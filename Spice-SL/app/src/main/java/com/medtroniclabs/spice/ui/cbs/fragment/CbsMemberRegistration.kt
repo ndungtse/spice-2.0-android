@@ -25,15 +25,18 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
+class CbsMemberRegistration :
+    BaseFragment(),
+    View.OnClickListener,
     FormEventListener {
     private lateinit var binding: FragmentMemberRegistrationBinding
     private lateinit var childFormGenerator: FormGenerator
     private val viewModel: AssessmentViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentMemberRegistrationBinding.inflate(inflater, container, false)
         return binding.root
@@ -41,11 +44,14 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
 
     companion object {
         const val TAG = "CbsMemberRegistration"
-        fun newInstance() =
-            CbsMemberRegistration()
+
+        fun newInstance() = CbsMemberRegistration()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
@@ -61,10 +67,10 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
             binding.llForm,
             this,
             binding.scrollView,
-            translate = SecuredPreference.getIsTranslationEnabled()
+            translate = SecuredPreference.getIsTranslationEnabled(),
         )
         viewModel.getFormDataCbs(
-            DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION
+            DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION,
         )
     }
 
@@ -89,7 +95,6 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
             }
         }
     }
-
 
 //    private fun removeHouseHoldHeadMemberRelationShip() {
 //        val spinnerTitle =
@@ -123,10 +128,14 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
         }
     }
 
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+    override fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
         resultMap?.let { map ->
             // Hide Error message
-            childFormGenerator.getViewByTag(AssessmentDefinedParams.DateOfBirth + AssessmentDefinedParams.errorSuffix)
+            childFormGenerator
+                .getViewByTag(AssessmentDefinedParams.DateOfBirth + AssessmentDefinedParams.errorSuffix)
                 ?.apply {
                     visibility = View.GONE
                 }
@@ -151,23 +160,29 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
                     resultMap,
                     householdId = it.householdLocalId,
                     it.id,
-                    viewModel.lastLocation
+                    viewModel.lastLocation,
                 )
             }
         }
     }
 
     private fun showInValidDob(message: String) {
-        childFormGenerator.getViewByTag(AssessmentDefinedParams.DateOfBirth + AssessmentDefinedParams.errorSuffix)
+        childFormGenerator
+            .getViewByTag(AssessmentDefinedParams.DateOfBirth + AssessmentDefinedParams.errorSuffix)
             ?.apply {
                 visibility = View.VISIBLE
-            }.takeIf { it is TextView }?.let { textView ->
+            }.takeIf { it is TextView }
+            ?.let { textView ->
                 (textView as TextView).text =
                     message
             }
     }
 
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
     }
 
     override fun onPopulate(targetId: String) {
@@ -176,7 +191,7 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
     override fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     ) {
     }
 
@@ -185,7 +200,7 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {
     }
 
@@ -199,14 +214,14 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
                 DefinedParams.BOY.lowercase() -> {
                     singleSelectValueOption(
                         DefinedParams.male,
-                        MemberRegistration.gender
+                        MemberRegistration.gender,
                     )
                 }
 
                 DefinedParams.GIRL.lowercase() -> {
                     singleSelectValueOption(
                         DefinedParams.female,
-                        MemberRegistration.gender
+                        MemberRegistration.gender,
                     )
                 }
 
@@ -216,8 +231,12 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
         }
     }
 
-    private fun singleSelectValueOption(value: String, key: String) {
-        childFormGenerator.getViewByTag("${value}_${key}")
+    private fun singleSelectValueOption(
+        value: String,
+        key: String,
+    ) {
+        childFormGenerator
+            .getViewByTag("${value}_$key")
             ?.let { view ->
                 if (view is TextView) {
                     view.isSelected = true
@@ -226,14 +245,17 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
             }
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
     }
 
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,
         enteredDays: Int?,
-        resultMap: HashMap<String, Any>?
+        resultMap: HashMap<String, Any>?,
     ) {
     }
 
@@ -246,11 +268,9 @@ class CbsMemberRegistration : BaseFragment(), View.OnClickListener,
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
     }
 
-    fun getCurrentAnsweredStatus(): Boolean {
-        return childFormGenerator.getResultMap().isNotEmpty()
-    }
+    fun getCurrentAnsweredStatus(): Boolean = childFormGenerator.getResultMap().isNotEmpty()
 }

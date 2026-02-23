@@ -26,11 +26,11 @@ import javax.inject.Inject
 class FamilyPlanViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
     private val familyPlanningRepository: FamilyPlanningRepository,
-    private var summaryRepository: MedicalReviewSummaryRepository
-): ViewModel(){
+    private var summaryRepository: MedicalReviewSummaryRepository,
+) : ViewModel() {
     var patientId: String? = null
     var memberId: String? = null
-    var isFamilyPlanSummary:Boolean = false
+    var isFamilyPlanSummary: Boolean = false
     val familyPlanningCreateLiveData = MutableLiveData<Resource<FamilyPlanningCreateResponse>>()
     val familyPlanningMetaLiveData = MutableLiveData<Resource<Boolean>>()
     var lastLocation: Location? = null
@@ -38,11 +38,11 @@ class FamilyPlanViewModel @Inject constructor(
     val summaryDetailsLiveData = MutableLiveData<Resource<FamilyPlanningSummaryResponse>>()
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
 
-    fun getFamilyPlanStaticData(menuType: String){
-        viewModelScope.launch (dispatcherIO){
+    fun getFamilyPlanStaticData(menuType: String) {
+        viewModelScope.launch(dispatcherIO) {
             familyPlanningMetaLiveData.postLoading()
             familyPlanningMetaLiveData.postValue(
-                familyPlanningRepository.getStaticMetaData(menuType)
+                familyPlanningRepository.getStaticMetaData(menuType),
             )
         }
     }
@@ -53,7 +53,7 @@ class FamilyPlanViewModel @Inject constructor(
         occupation: String?,
         maritalStatus: String?,
         encounterId: String?,
-        notes: String?
+        notes: String?,
     ) {
         viewModelScope.launch(dispatcherIO) {
             familyPlanningCreateLiveData.postLoading()
@@ -65,8 +65,8 @@ class FamilyPlanViewModel @Inject constructor(
                     maritalStatus,
                     encounterId,
                     lastLocation,
-                    notes
-                )
+                    notes,
+                ),
             )
         }
     }
@@ -81,7 +81,7 @@ class FamilyPlanViewModel @Inject constructor(
     fun familyPlanningSummaryCreate(
         details: PatientListRespModel,
         submitEncounterId: String,
-        submitPatientReferenceId: String
+        submitPatientReferenceId: String,
     ) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
@@ -95,7 +95,7 @@ class FamilyPlanViewModel @Inject constructor(
                     nextFollowupDate,
                     DateUtils.DATE_ddMMyyyy,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    inUTC = true
+                    inUTC = true,
                 )
 
                 val response = summaryRepository.createSummarySubmit(
@@ -108,7 +108,7 @@ class FamilyPlanViewModel @Inject constructor(
                     assessmentName = MedicalReviewTypeEnums.FAMILY_PLANNING_REVIEW.name,
                     householdId = houseHoldId,
                     villageId = villageId,
-                    patientStatus = ReferralStatus.Recovered.name
+                    patientStatus = ReferralStatus.Recovered.name,
                 )
                 summaryCreateResponse.postValue(response)
             }

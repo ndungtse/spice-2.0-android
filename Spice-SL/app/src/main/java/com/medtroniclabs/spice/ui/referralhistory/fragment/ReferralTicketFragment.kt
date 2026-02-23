@@ -33,7 +33,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
-
     lateinit var binding: FragmentReferralTicketBinding
     private var listPopupWindow: PopupWindow? = null
     private lateinit var dateListAdapter: DateListAdapter
@@ -41,8 +40,9 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
     val viewModel: ReferralHistoryViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentReferralTicketBinding.inflate(inflater, container, false)
         return binding.root
@@ -50,11 +50,13 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "ReferralTicketFragment"
-        fun newInstance(): ReferralTicketFragment {
-            return ReferralTicketFragment()
-        }
 
-        fun newInstance(patientId: String?, memberId: String?): ReferralTicketFragment {
+        fun newInstance(): ReferralTicketFragment = ReferralTicketFragment()
+
+        fun newInstance(
+            patientId: String?,
+            memberId: String?,
+        ): ReferralTicketFragment {
             val fragment = ReferralTicketFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.FhirId, patientId)
@@ -64,22 +66,23 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
     }
 
-    private fun getPatientId(): String? {
-        return arguments?.getString(DefinedParams.FhirId, "")
-    }
+    private fun getPatientId(): String? = arguments?.getString(DefinedParams.FhirId, "")
 
-    private fun getMemberId(): String? {
-        return arguments?.getString(DefinedParams.MemberID, "")
-    }
+    private fun getMemberId(): String? = arguments?.getString(DefinedParams.MemberID, "")
+
     private fun getInitialReferralTickets() {
         viewModel.getReferralTicket(patientId = getPatientId())
     }
+
     private fun initView() {
         viewModel.memberId = getMemberId()
         binding.tvNoHistory.visible()
@@ -103,21 +106,21 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
         recyclerView.addItemDecoration(
             DividerItemDecoration(
                 recyclerView.context,
-                DividerItemDecoration.VERTICAL
-            )
+                DividerItemDecoration.VERTICAL,
+            ),
         )
         dateListAdapter =
             DateListAdapter { referred ->
                 if (connectivityManager.isNetworkAvailable()) {
                     viewModel.getReferralTicket(
                         patientId = getPatientId(),
-                        ticketId = referred.id
+                        ticketId = referred.id,
                     )
                     viewModel.ticketId = referred.id
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
                 listPopupWindow?.dismiss()
@@ -126,7 +129,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
         listPopupWindow = PopupWindow(
             view,
             LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
+            LinearLayout.LayoutParams.WRAP_CONTENT,
         )
     }
 
@@ -195,48 +198,50 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
                 referredBy = requireContext().getString(
                     R.string.referral_by_phone_number,
                     referredBy,
-                    getContactNumber(number)
+                    getContactNumber(number),
                 )
             }
-            adapters.updateList(listOf(
-                mapOf(
-                    label to requireContext().getString(R.string.patient_status),
-                    this.Value to referralData.patientStatus
+            adapters.updateList(
+                listOf(
+                    mapOf(
+                        label to requireContext().getString(R.string.patient_status),
+                        this.Value to referralData.patientStatus,
+                    ),
+                    mapOf(
+                        label to requireContext().getString(R.string.referral_by),
+                        this.Value to referredBy,
+                    ),
+                    mapOf(
+                        label to requireContext().getString(R.string.referral_to),
+                        this.Value to referralData.referredTo,
+                    ),
+                    mapOf(
+                        label to requireContext().getString(R.string.referral_reason),
+                        this.Value to getReferralReason(referralData.referredReason),
+                        valueColor to R.color.red_risk_moderate,
+                    ),
+                    mapOf(
+                        label to requireContext().getString(R.string.date_of_onset),
+                        this.Value to referralData.dateOfOnset?.let {
+                            DateUtils.convertDateFormat(
+                                it,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                DateUtils.DATE_ddMMyyyy,
+                            )
+                        },
+                    ),
+                    mapOf(
+                        label to requireContext().getString(R.string.referral_date),
+                        this.Value to referralData.referredDate?.let {
+                            DateUtils.convertDateFormat(
+                                it,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                DateUtils.DATE_ddMMyyyy,
+                            )
+                        },
+                    ),
                 ),
-                mapOf(
-                    label to requireContext().getString(R.string.referral_by),
-                    this.Value to referredBy
-                ),
-                mapOf(
-                    label to requireContext().getString(R.string.referral_to),
-                    this.Value to referralData.referredTo
-                ),
-                mapOf(
-                    label to requireContext().getString(R.string.referral_reason),
-                    this.Value to getReferralReason(referralData.referredReason),
-                    valueColor to R.color.red_risk_moderate
-                ),
-                mapOf(
-                    label to requireContext().getString(R.string.date_of_onset),
-                    this.Value to referralData.dateOfOnset?.let {
-                        DateUtils.convertDateFormat(
-                            it,
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DateUtils.DATE_ddMMyyyy
-                        )
-                    }
-                ),
-                mapOf(
-                    label to requireContext().getString(R.string.referral_date),
-                    this.Value to referralData.referredDate?.let {
-                        DateUtils.convertDateFormat(
-                            it,
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DateUtils.DATE_ddMMyyyy
-                        )
-                    }
-                )
-            ))
+            )
         }
         adjustGuideline()
         binding.rvHistory.layoutManager = LinearLayoutManager(requireContext())
@@ -245,8 +250,8 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun getReferralReason(referredReason: String?): String {
-        fun getSingleReferralReason(reason: String?): String {
-            return when (reason) {
+        fun getSingleReferralReason(reason: String?): String =
+            when (reason) {
                 ReferralReasons.ANCSigns.name -> requireContext().getString(R.string.ancSigns)
                 ReferralReasons.GeneralDangerSigns.name -> requireContext().getString(R.string.general_danger_signs)
                 ReferralReasons.PNCMotherSigns.name -> requireContext().getString(R.string.pncMotherSigns)
@@ -254,12 +259,10 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
                 ReferralReasons.childhoodVisitSigns.name -> requireContext().getString(R.string.childhoodVisitSigns)
                 else -> reason ?: requireContext().getString(R.string.hyphen_symbol)
             }
-        }
 
         return referredReason?.split(",")?.joinToString(", ") { getSingleReferralReason(it.trim()) }
             ?: requireContext().getString(R.string.hyphen_symbol)
     }
-
 
     private fun adjustGuideline() {
         val params = binding.centerGuideline.layoutParams as ConstraintLayout.LayoutParams
@@ -273,14 +276,17 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
         binding.llHistoryAction.ivNext.isEnabled = checkNextItem() != -1
     }
 
-    private fun setReferralDates(referredDates: List<ReferredDate>?, id: String?) {
+    private fun setReferralDates(
+        referredDates: List<ReferredDate>?,
+        id: String?,
+    ) {
         if (referredDates != null) {
             if (viewModel.ticketId == null) {
                 viewModel.ticketId = id
                 viewModel.referralDates.value = referredDates
             }
-            viewModel.referralDates.value?.let {list ->
-                if (referredDates.size > list.size){
+            viewModel.referralDates.value?.let { list ->
+                if (referredDates.size > list.size) {
                     viewModel.ticketId = id
                     viewModel.referralDates.value = referredDates
                 }
@@ -306,7 +312,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
             }
@@ -317,12 +323,12 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
             }
             binding.retryButtonBp.id -> {
-              handleRetry()
+                handleRetry()
             }
         }
     }
@@ -332,7 +338,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
             if (!viewModel.ticketId.isNullOrBlank()) {
                 viewModel.getReferralTicket(
                     patientId = getPatientId(),
-                    ticketId = viewModel.ticketId
+                    ticketId = viewModel.ticketId,
                 )
             } else {
                 getInitialReferralTickets()
@@ -385,5 +391,4 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
             }
         }
     }
-
 }

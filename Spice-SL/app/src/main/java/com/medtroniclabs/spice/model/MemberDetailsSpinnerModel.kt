@@ -5,5 +5,5 @@ data class MemberDetailsSpinnerModel(
     var name: String,
     var age: String? = null,
     var gender: String? = null,
-    var dob: String? = null
+    var dob: String? = null,
 )

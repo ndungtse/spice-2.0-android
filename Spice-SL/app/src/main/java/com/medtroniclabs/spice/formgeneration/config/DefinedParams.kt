@@ -1,14 +1,12 @@
 package com.medtroniclabs.spice.formgeneration.config
 
 object DefinedParams {
-
     const val NAME = "name"
     const val ID = "id"
     const val Value = "value"
     const val cultureValue = "cultureValue"
     const val displayValue = "displayValue"
     const val DefaultIDLabel = "--Select--"
-
 
     // visibility related values
     const val VISIBLE = "visible"
@@ -37,7 +35,7 @@ object DefinedParams {
     const val DAY = "Day"
     const val DAYS = "Days"
     const val NoSymptoms = "No symptoms"
-    const val Information= "information"
+    const val Information = "information"
     const val HouseholdHeadRelationship = "household_head_relationship"
     const val Title = "Title"
     const val titleSuffix = "titleTextView"

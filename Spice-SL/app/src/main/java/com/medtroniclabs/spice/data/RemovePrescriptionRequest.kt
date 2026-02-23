@@ -9,5 +9,5 @@ data class RemovePrescriptionRequest(
     val regimenLine: Int? = null,
     val reasonsForChange: String? = null,
     val requestFrom: String? = null,
-    val encounter: EncounterDetails ? = null
+    val encounter: EncounterDetails? = null,
 )

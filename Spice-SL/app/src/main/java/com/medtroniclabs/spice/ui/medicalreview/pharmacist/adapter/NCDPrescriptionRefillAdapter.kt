@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.medicalreview.pharmacist.adapter
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.text.Editable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -20,13 +19,16 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 
 class NCDPrescriptionRefillAdapter :
     RecyclerView.Adapter<NCDPrescriptionRefillAdapter.PrescriptionRefillViewHolder>() {
-
     var list = ArrayList<DispensePrescriptionResponse>()
 
     inner class PrescriptionRefillViewHolder(val binding: LayoutPrescriptionRefillAdapterBinding) :
         RecyclerView.ViewHolder(binding.root) {
-            private val rootContext: Context = binding.root.context
-        fun bind(pos: Int, model: DispensePrescriptionResponse) {
+        private val rootContext: Context = binding.root.context
+
+        fun bind(
+            pos: Int,
+            model: DispensePrescriptionResponse,
+        ) {
             binding.tvMedicationName.text = model.medicationName.textOrHyphen()
             binding.tvDosage.text = model.dosageUnitValue?.let { getDosageValue(it, model.dosageUnitName) }
             binding.tvFrequency.text = model.dosageFrequencyName.textOrHyphen()
@@ -35,21 +37,27 @@ class NCDPrescriptionRefillAdapter :
                 model.dosageFormName?.let {
                     getFormDosage(
                         it,
-                        rootContext
+                        rootContext,
                     )
-                }
+                },
             )
             binding.ivDosageFrom.setImageDrawable(
                 model.dosageFormName?.let {
                     getFormDosage(
                         it,
-                        rootContext
+                        rootContext,
                     )
-                }
+                },
             )
 
             val daysFilled =
-                if (model.prescriptionFilledDays == 0 || model.prescriptionFilledDays == null) rootContext.getString(R.string.empty) else "${model.prescriptionFilledDays}"
+                if (model.prescriptionFilledDays == 0 ||
+                    model.prescriptionFilledDays == null
+                ) {
+                    rootContext.getString(R.string.empty)
+                } else {
+                    "${model.prescriptionFilledDays}"
+                }
             binding.tvDaysFilled.setText(daysFilled)
             binding.ivDropDown.safeClickListener {
                 list[layoutPosition].let {
@@ -72,38 +80,38 @@ class NCDPrescriptionRefillAdapter :
                 binding.ivDropDown.setImageDrawable(
                     ContextCompat.getDrawable(
                         rootContext,
-                        R.drawable.ic_drop_down_medium_blue
-                    )
+                        R.drawable.ic_drop_down_medium_blue,
+                    ),
                 )
                 binding.prescriptionDropDown.visible()
                 binding.tvMedicationName.setTextColor(
                     ContextCompat.getColor(
                         rootContext,
-                        R.color.blue
-                    )
+                        R.color.blue,
+                    ),
                 )
             } else {
                 binding.ivDropDown.setImageDrawable(
                     ContextCompat.getDrawable(
                         rootContext,
-                        R.drawable.ic_drop_down_grey
-                    )
+                        R.drawable.ic_drop_down_grey,
+                    ),
                 )
                 binding.prescriptionDropDown.gone()
                 binding.tvMedicationName.setTextColor(
                     ContextCompat.getColor(
                         rootContext,
-                        R.color.black
-                    )
+                        R.color.black,
+                    ),
                 )
             }
 
             binding.tvPrescribedDate.text =
                 DateUtils.convertDateTimeToDate(
-                model.prescribedSince,
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                DateUtils.DATE_FORMAT_ddMMMyyyy
-            )
+                    model.prescribedSince,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    DateUtils.DATE_FORMAT_ddMMMyyyy,
+                )
 
             binding.tvDosageForm.text = model.dosageFormName.textOrHyphen()
             binding.tvBrand.text = model.brandName.textOrHyphen()
@@ -114,25 +122,29 @@ class NCDPrescriptionRefillAdapter :
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
-    ): PrescriptionRefillViewHolder {
-        return PrescriptionRefillViewHolder(
+        viewType: Int,
+    ): PrescriptionRefillViewHolder =
+        PrescriptionRefillViewHolder(
             LayoutPrescriptionRefillAdapterBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: PrescriptionRefillViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: PrescriptionRefillViewHolder,
+        position: Int,
+    ) {
         list.let {
             holder.bind(position, it[position])
         }
     }
 
-    fun getFormDosage(dosageFormName: String, context: Context): Drawable? {
-
+    fun getFormDosage(
+        dosageFormName: String,
+        context: Context,
+    ): Drawable? {
         when (dosageFormName) {
             NCDMRUtil.Injection_Injectable_Solution -> {
                 return ContextCompat.getDrawable(context, R.drawable.ic_injection_form)
@@ -152,11 +164,13 @@ class NCDPrescriptionRefillAdapter :
         }
         return null
     }
-    fun getDosageValue(dosageUnitValue: String, dosageUnitName: String?) = dosageUnitValue + (dosageUnitName ?: "")
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
+    fun getDosageValue(
+        dosageUnitValue: String,
+        dosageUnitName: String?,
+    ) = dosageUnitValue + (dosageUnitName ?: "")
+
+    override fun getItemCount(): Int = list.size
 
     fun setData(list: ArrayList<DispensePrescriptionResponse>) {
         this.list = list

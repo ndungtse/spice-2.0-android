@@ -17,13 +17,13 @@ import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils
 import com.medtroniclabs.spice.ncd.followup.viewmodel.NCDFollowUpViewModel
 
 class NCDFollowUpSortDialog : DialogFragment() {
-
     private lateinit var binding: FragmentNcdFollowUpSortDialogBinding
     private val viewModel: NCDFollowUpViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentNcdFollowUpSortDialogBinding.inflate(inflater, container, false)
@@ -35,6 +35,7 @@ class NCDFollowUpSortDialog : DialogFragment() {
 
     companion object {
         const val TAG = "NCDFollowUpSortDialog"
+
         fun newInstance() =
             NCDFollowUpSortDialog().apply {
             }
@@ -44,11 +45,14 @@ class NCDFollowUpSortDialog : DialogFragment() {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initUI()
         initListeners()
@@ -68,8 +72,8 @@ class NCDFollowUpSortDialog : DialogFragment() {
                 }
                 enableResetBtn(
                     rbScreeningLatestDueDate.isChecked ||
-                            rbAssessmentOldestDueDate.isChecked ||
-                            rbMrOldestDueDate.isChecked
+                        rbAssessmentOldestDueDate.isChecked ||
+                        rbMrOldestDueDate.isChecked,
                 )
             }
         } ?: run {
@@ -84,7 +88,12 @@ class NCDFollowUpSortDialog : DialogFragment() {
 
     private fun enableDoneBtn() {
         binding.btnDone.isEnabled =
-            viewModel.sortModel != null && (viewModel.sortModel?.isScreeningDueDate == true || viewModel.sortModel?.isAssessmentDueDate == true || viewModel.sortModel?.isMedicalReviewDueDate == true)
+            viewModel.sortModel != null &&
+            (
+                viewModel.sortModel?.isScreeningDueDate == true ||
+                    viewModel.sortModel?.isAssessmentDueDate == true ||
+                    viewModel.sortModel?.isMedicalReviewDueDate == true
+            )
     }
 
     private fun initListeners() {
@@ -92,10 +101,10 @@ class NCDFollowUpSortDialog : DialogFragment() {
         binding.apply {
             rbScreeningLatestDueDate.setVisible(viewModel.typeOffline == NCDFollowUpUtils.SCREENED)
             rbAssessmentOldestDueDate.setVisible(
-                viewModel.typeOffline in listOf(NCDFollowUpUtils.Assessment_Type, NCDFollowUpUtils.LTFU_Type)
+                viewModel.typeOffline in listOf(NCDFollowUpUtils.Assessment_Type, NCDFollowUpUtils.LTFU_Type),
             )
             rbMrOldestDueDate.setVisible(
-                viewModel.typeOffline in listOf(NCDFollowUpUtils.Defaulters_Type, NCDFollowUpUtils.LTFU_Type)
+                viewModel.typeOffline in listOf(NCDFollowUpUtils.Defaulters_Type, NCDFollowUpUtils.LTFU_Type),
             )
             rgSortCondition.setOnCheckedChangeListener { _, checkedId ->
                 enableResetBtn(true)

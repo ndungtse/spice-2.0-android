@@ -25,10 +25,12 @@ import javax.inject.Inject
 
 class FollowUpRepository @Inject constructor(
     private val apiHelper: ApiHelper,
-    private val roomHelper: RoomHelper
+    private val roomHelper: RoomHelper,
 ) {
-
-    fun getFollowUpListLiveData(filter: FollowUpFilter, referralLimit: Int): LiveData<List<FollowUpPatientModel>> {
+    fun getFollowUpListLiveData(
+        filter: FollowUpFilter,
+        referralLimit: Int,
+    ): LiveData<List<FollowUpPatientModel>> {
         val villageIds = if (filter.selectedVillages.isNullOrEmpty()) {
             filter.villages
         } else {
@@ -42,7 +44,7 @@ class FollowUpRepository @Inject constructor(
             filter.search,
             villageIds,
             fromAndToDate.first,
-            fromAndToDate.second
+            fromAndToDate.second,
         )
 
         val reasons = if (filter.type == FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW) {
@@ -52,13 +54,17 @@ class FollowUpRepository @Inject constructor(
         }
 
         return result.map { items ->
-            items.filter { item ->
-                reasons.isEmpty() || reasons.any { reason -> item.reason?.contains(reason, true) ?: true }
-            }.sortedBy { it.updatedAt }
+            items
+                .filter { item ->
+                    reasons.isEmpty() || reasons.any { reason -> item.reason?.contains(reason, true) ?: true }
+                }.sortedBy { it.updatedAt }
         }
     }
 
-    private fun getFromDateAndToDate(filter: FollowUpFilter, referralLimit: Int): Pair<String, String> {
+    private fun getFromDateAndToDate(
+        filter: FollowUpFilter,
+        referralLimit: Int,
+    ): Pair<String, String> {
         if (filter.selectedDateRange.isNullOrEmpty()) {
             return Pair("", "")
         }
@@ -80,27 +86,38 @@ class FollowUpRepository @Inject constructor(
         return Pair("", "")
     }
 
-    private fun getTodayDateString(type: String, referralLimit: Int) : String {
+    private fun getTodayDateString(
+        type: String,
+        referralLimit: Int,
+    ): String {
         val format = DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMdd)
         var today = LocalDate.now().atStartOfDay()
 
-        if (type == FollowUpDefinedParams.FU_TYPE_REFERRED)
+        if (type == FollowUpDefinedParams.FU_TYPE_REFERRED) {
             today = today.minusDays(referralLimit.toLong())
+        }
 
         return today.format(format)
     }
 
-    private fun getTomorrowDateString(type: String, referralLimit: Int): String {
+    private fun getTomorrowDateString(
+        type: String,
+        referralLimit: Int,
+    ): String {
         val format = DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMdd)
         var tomorrow = LocalDate.now().atStartOfDay().plusDays(1)
 
-        if (type == FollowUpDefinedParams.FU_TYPE_REFERRED)
+        if (type == FollowUpDefinedParams.FU_TYPE_REFERRED) {
             tomorrow = tomorrow.minusDays(referralLimit.toLong())
+        }
 
         return tomorrow.format(format)
     }
 
-    private fun getDateRange(filter: FollowUpFilter, referralLimit: Int): Pair<String, String> {
+    private fun getDateRange(
+        filter: FollowUpFilter,
+        referralLimit: Int,
+    ): Pair<String, String> {
         val outputFormat = DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMdd)
         val inputFormat = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)
         var fromDate = LocalDate.parse(filter.fromDate, inputFormat)
@@ -114,13 +131,9 @@ class FollowUpRepository @Inject constructor(
         return Pair(fromDate.format(outputFormat), toDate.format(outputFormat))
     }
 
-    suspend fun getVillageIds(): List<VillageEntity> {
-        return roomHelper.getAllVillageEntity()
-    }
+    suspend fun getVillageIds(): List<VillageEntity> = roomHelper.getAllVillageEntity()
 
-    suspend fun getUnSyncedFollowUpCount(): Int {
-        return roomHelper.getUnSyncedFollowUpCount()
-    }
+    suspend fun getUnSyncedFollowUpCount(): Int = roomHelper.getUnSyncedFollowUpCount()
 
     suspend fun addCallHistory(
         maxSuccessfulCallLimit: Int,
@@ -129,7 +142,7 @@ class FollowUpRepository @Inject constructor(
         followUpId: Long,
         callStatus: FollowUpCallStatus,
         patientStatus: String? = null,
-        reason: String? = null
+        reason: String? = null,
     ) {
         val followUp = roomHelper.getFollowUpById(followUpId)
         followUp.syncStatus = OfflineSyncStatus.NotSynced
@@ -142,12 +155,12 @@ class FollowUpRepository @Inject constructor(
             followUpId = followUpId,
             callDate = System.currentTimeMillis().convertToUtcDateTime(),
             duration = 0,
-            attempts =  followUp.attempts,
+            attempts = followUp.attempts,
             status = callStatus,
             patientStatus = patientStatus,
             reason = reason,
             latitude = lat,
-            longitude = lng
+            longitude = lng,
         )
 
         var newFollowUp: FollowUp? = null
@@ -160,7 +173,13 @@ class FollowUpRepository @Inject constructor(
         roomHelper.addCallHistory(followUp, callDetail, newFollowUp)
     }
 
-    private suspend fun handleSuccessCall(id: Long,followUp: FollowUp, call: FollowUpCall, maxSuccessfulCallLimit: Int, informedCallAttempts: Int ): FollowUp? {
+    private suspend fun handleSuccessCall(
+        id: Long,
+        followUp: FollowUp,
+        call: FollowUpCall,
+        maxSuccessfulCallLimit: Int,
+        informedCallAttempts: Int,
+    ): FollowUp? {
         // Get All other followup with same reason
         call.patientStatus?.let {
             updatePatientStatus(it, id, followUp)
@@ -179,12 +198,14 @@ class FollowUpRepository @Inject constructor(
             }
         }
 
-
-
         return null
     }
 
-    private suspend fun updatePatientStatus(status: String, id: Long, followUp: FollowUp) {
+    private suspend fun updatePatientStatus(
+        status: String,
+        id: Long,
+        followUp: FollowUp,
+    ) {
         followUp.currentPatientStatus = status
         val currentTime = System.currentTimeMillis()
         followUp.updatedAt = currentTime
@@ -209,7 +230,12 @@ class FollowUpRepository @Inject constructor(
         }
     }
 
-    private suspend fun handleUnSuccessfulCall(followUpId: Long, followUp: FollowUp, call: FollowUpCall, maxUnSuccessfulCallLimit: Int) {
+    private suspend fun handleUnSuccessfulCall(
+        followUpId: Long,
+        followUp: FollowUp,
+        call: FollowUpCall,
+        maxUnSuccessfulCallLimit: Int,
+    ) {
         followUp.unsuccessfulAttempts = followUp.unsuccessfulAttempts + 1
         if (followUp.unsuccessfulAttempts >= maxUnSuccessfulCallLimit) {
             followUp.isCompleted = true
@@ -221,5 +247,4 @@ class FollowUpRepository @Inject constructor(
             roomHelper.updateOtherFollowUpForWrongNumber(followUpId, followUp.memberId)
         }
     }
-
 }

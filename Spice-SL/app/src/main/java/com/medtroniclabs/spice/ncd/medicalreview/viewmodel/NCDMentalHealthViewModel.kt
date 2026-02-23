@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ncd.medicalreview.viewmodel
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonObject
@@ -24,9 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDMentalHealthViewModel @Inject constructor(
     private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
-
     var patientStatusId: String? = null
     var id: String? = null
     var mentalHealthStatusId: String? = null
@@ -36,20 +34,20 @@ class NCDMentalHealthViewModel @Inject constructor(
     var encounterId: String? = null
     var questionarieId: String? = null
     var observationId: String? = null
-    var yearForDiabetes :String? = null
-    var yearForHypertension :String? = null
-    var yearForMentalHealth :Int? = null
-    var yearForSubstanceUse :Int? = null
-    var mentalHealthComments:String? = null
+    var yearForDiabetes: String? = null
+    var yearForHypertension: String? = null
+    var yearForMentalHealth: Int? = null
+    var yearForSubstanceUse: Int? = null
+    var mentalHealthComments: String? = null
     var substanceUseComments: String? = null
     val resultHypertensionHashMap = HashMap<String, Any>()
     val resultMentalHealthHashMap = HashMap<String, Any>()
     val resultSubstanceUseHashMap = HashMap<String, Any>()
-    private val getSymptomListByTypeForNCD = MutableLiveData<Triple<String,String,Boolean>>()
-    private val getSymptomListByTypeForNCDMentalHealth = MutableLiveData<Triple<String,String,Boolean>>()
-    private val getSymptomListByTypeForNCDSubstanceAbuse = MutableLiveData<Triple<String,String,Boolean>>()
-    var selectedMentalHealthListItem  = ArrayList<MultiSelectDropDownModel>()
-    var selectedSubstanceListItem  = ArrayList<MultiSelectDropDownModel>()
+    private val getSymptomListByTypeForNCD = MutableLiveData<Triple<String, String, Boolean>>()
+    private val getSymptomListByTypeForNCDMentalHealth = MutableLiveData<Triple<String, String, Boolean>>()
+    private val getSymptomListByTypeForNCDSubstanceAbuse = MutableLiveData<Triple<String, String, Boolean>>()
+    var selectedMentalHealthListItem = ArrayList<MultiSelectDropDownModel>()
+    var selectedSubstanceListItem = ArrayList<MultiSelectDropDownModel>()
     val createMentalHealthStatus = MutableLiveData<Resource<HashMap<String, Any>>>()
     val assessmentMentalHealth =
         SingleLiveEvent<Resource<String>>()
@@ -59,7 +57,11 @@ class NCDMentalHealthViewModel @Inject constructor(
         ncdMedicalReviewRepository.getNCDDiagnosisList(listOf(it.first), it.second, it.third)
     }
 
-    fun getSymptoms(type: String, gender: String, isPregnant: Boolean) {
+    fun getSymptoms(
+        type: String,
+        gender: String,
+        isPregnant: Boolean,
+    ) {
         getSymptomListByTypeForNCD.value = Triple(type, gender, isPregnant)
     }
 
@@ -71,10 +73,19 @@ class NCDMentalHealthViewModel @Inject constructor(
         ncdMedicalReviewRepository.getNCDDiagnosisList(listOf(it.first), it.second, it.third)
     }
 
-    fun getMH(type: String, gender: String, isPregnant: Boolean) {
+    fun getMH(
+        type: String,
+        gender: String,
+        isPregnant: Boolean,
+    ) {
         getSymptomListByTypeForNCDMentalHealth.value = Triple(type, gender, isPregnant)
     }
-    fun getSubstanceAbuse(type: String, gender: String, isPregnant: Boolean) {
+
+    fun getSubstanceAbuse(
+        type: String,
+        gender: String,
+        isPregnant: Boolean,
+    ) {
         getSymptomListByTypeForNCDSubstanceAbuse.value = Triple(type, gender, isPregnant)
     }
 
@@ -84,34 +95,38 @@ class NCDMentalHealthViewModel @Inject constructor(
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDPatientHistoryCreationForMentalHealth,
-                isCompleted = true
+                isCompleted = true,
             )
             createMentalHealthStatus.postValue(ncdMedicalReviewRepository.createMentalHealthStatus(request))
         }
     }
 
-    fun ncdMentalHealthMedicalReviewCreate(request: JsonObject, isAssessment: Boolean) {
+    fun ncdMentalHealthMedicalReviewCreate(
+        request: JsonObject,
+        isAssessment: Boolean,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             assessmentMentalHealth.postLoading()
             assessmentMentalHealth.postValue(
                 ncdMedicalReviewRepository.ncdMentalHealthMedicalReviewCreate(
-                    request, isAssessment
-                )
+                    request,
+                    isAssessment,
+                ),
             )
         }
     }
 
     fun ncdMentalHealthMedicalReviewDetails(
         request: NCDMentalHealthMedicalReviewDetails,
-        isAssessment: Boolean
+        isAssessment: Boolean,
     ) {
         viewModelScope.launch(dispatcherIO) {
             mentalHealthDetails.postLoading()
             mentalHealthDetails.postValue(
                 ncdMedicalReviewRepository.ncdMentalHealthMedicalReviewDetails(
                     request,
-                    isAssessment
-                )
+                    isAssessment,
+                ),
             )
         }
     }

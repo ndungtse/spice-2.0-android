@@ -20,13 +20,13 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.counseling.adapter.NCDNutritionAdapter
 import com.medtroniclabs.spice.ncd.counseling.adapter.NCDNutritionHistoryAdapter
-import com.medtroniclabs.spice.ncd.data.AssessmentResultModel
-import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
-import com.medtroniclabs.spice.ncd.data.ResultModel
 import com.medtroniclabs.spice.ncd.counseling.utils.ValidationListener
 import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
+import com.medtroniclabs.spice.ncd.data.AssessmentResultModel
 import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
 import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
+import com.medtroniclabs.spice.ncd.data.ResultModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewCMRViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
@@ -36,7 +36,6 @@ import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
-
     private lateinit var binding: ActivityNcdNutritionistBinding
 
     private val viewModel: CounselingViewModel by viewModels()
@@ -57,7 +56,7 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
             },
             callbackHome = {
                 backHandelFlow()
-            }
+            },
         )
         saveIntentValues()
         attachObservers()
@@ -78,12 +77,13 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
             showErrorDialogue(
                 getString(R.string.alert),
                 getString(R.string.exit_reason_message),
-                isNegativeButtonNeed = true
+                isNegativeButtonNeed = true,
             ) {
                 if (it) finish()
             }
-        } else
+        } else {
             finish()
+        }
     }
 
     private fun getPatientDetails() {
@@ -166,7 +166,7 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
                     resourceState?.data?.message?.let { message ->
                         showSuccessDialogue(
                             title = getString(R.string.lifestyle_assessment),
-                            message = message
+                            message = message,
                         ) { refreshPage() }
                     } ?: run { refreshPage() }
                 }
@@ -206,15 +206,17 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
         it.forEachIndexed { _, lifeStyle ->
             binding.apply {
                 when (lifeStyle.lifestyleType) {
-                    NCDMRUtil.SMOKING -> tvSmokingStatus.text =
-                        lifeStyle.lifestyleAnswer.textOrHyphen()
+                    NCDMRUtil.SMOKING ->
+                        tvSmokingStatus.text =
+                            lifeStyle.lifestyleAnswer.textOrHyphen()
 
-                    NCDMRUtil.ALCOHOL -> tvAlcoholStatus.text =
-                        lifeStyle.lifestyleAnswer.textOrHyphen()
+                    NCDMRUtil.ALCOHOL ->
+                        tvAlcoholStatus.text =
+                            lifeStyle.lifestyleAnswer.textOrHyphen()
 
-                    NCDMRUtil.DIET_NUTRITION -> tvDietNutrition.text =
-                        lifeStyle.lifestyleAnswer.textOrHyphen()
-
+                    NCDMRUtil.DIET_NUTRITION ->
+                        tvDietNutrition.text =
+                            lifeStyle.lifestyleAnswer.textOrHyphen()
 
                     NCDMRUtil.PHYSICAL_ACTIVITY -> {
                         val answer = lifeStyle.lifestyleAnswer.textOrHyphen() + " hrs/week"
@@ -233,11 +235,13 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
                 tvPatientRisk.text = StringConverter.appendTexts(it, "", separator = "-")
                 tvPatientRisk.setTextColor(
                     CommonUtils.cvdRiskColorCode(
-                        data.cvdRiskScore?.toLong() ?: 0, this@NCDNutritionistActivity
-                    )
+                        data.cvdRiskScore?.toLong() ?: 0,
+                        this@NCDNutritionistActivity,
+                    ),
                 )
             }
-            CommonUtils.getBMIFormattedText(this@NCDNutritionistActivity, data.bmi)
+            CommonUtils
+                .getBMIFormattedText(this@NCDNutritionistActivity, data.bmi)
                 .let { formattedBmi ->
                     tvBMI.text = formattedBmi.first?.toString().textOrHyphen()
                     formattedBmi.second?.let { bmiColor -> tvBMI.setTextColor(bmiColor) }
@@ -250,8 +254,8 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
                     firstText = text,
                     data.age.toString(),
                     data.gender?.capitalizeFirstChar(),
-                    separator = "-"
-                )
+                    separator = "-",
+                ),
             )
         }
         viewModel.patientReference = data.patientId
@@ -272,7 +276,7 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
         val ncdLifestyleDialog = NCDLifestyleDialog.newInstance(
             viewModel.patientReference,
             viewModel.memberReference,
-            viewModel.encounterReference
+            viewModel.encounterReference,
         ) {
             getLifestyleList()
         }
@@ -281,7 +285,9 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
 
     private fun loadLifestyleList() {
         binding.btnDone.isEnabled = false
-        val lifestyleList = viewModel.assessmentListLiveData.value?.data?.entityList
+        val lifestyleList = viewModel.assessmentListLiveData.value
+            ?.data
+            ?.entityList
         if (lifestyleList.isNullOrEmpty()) {
             lifestyles(false)
             historyLifestyles(false)
@@ -300,8 +306,9 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
             binding.rvHistoryLifestyleList.adapter = adapter
             adapter.submitData(lifestyleList)
             historyLifestyles(true)
-        } else
+        } else {
             historyLifestyles(false)
+        }
     }
 
     private fun loadList(lifestyleHistoryList: java.util.ArrayList<NCDCounselingModel>) {
@@ -312,14 +319,19 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
             binding.rvPatientLifestyleList.adapter = adapter
             adapter.submitData(lifestyleHistoryList)
             lifestyles(true)
-        } else
+        } else {
             lifestyles(false)
+        }
     }
 
     private val validation = object : ValidationListener {
         override fun validate() {
             binding.btnDone.isEnabled =
-                viewModel.assessmentListLiveData.value?.data?.entityList?.firstOrNull { it.assessedBy.isNullOrBlank() && !it.lifestyleAssessment.isNullOrBlank() } != null
+                viewModel.assessmentListLiveData.value
+                    ?.data
+                    ?.entityList
+                    ?.firstOrNull { it.assessedBy.isNullOrBlank() && !it.lifestyleAssessment.isNullOrBlank() } !=
+                null
         }
     }
 
@@ -327,7 +339,7 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
         val request = NCDCounselingModel(
             patientReference = viewModel.patientReference,
             memberReference = viewModel.memberReference,
-            visitId = viewModel.encounterReference
+            visitId = viewModel.encounterReference,
         )
         viewModel.getAssessmentList(request, true)
     }
@@ -349,9 +361,9 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view?.id) {
             binding.btnAdd.id -> {
-                if (NCDMRUtil.isNCDMRMetaLoaded())
+                if (NCDMRUtil.isNCDMRMetaLoaded()) {
                     openDialog()
-                else {
+                } else {
                     withNetworkAvailability(online = {
                         mrViewModel.getStaticMetaData()
                     })
@@ -376,10 +388,13 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
 
     private fun updateLifestyles() {
         val lifestyles =
-            viewModel.assessmentListLiveData.value?.data?.entityList?.filter { it.assessedBy.isNullOrBlank() && !it.lifestyleAssessment.isNullOrBlank() }
-        if (lifestyles.isNullOrEmpty())
+            viewModel.assessmentListLiveData.value
+                ?.data
+                ?.entityList
+                ?.filter { it.assessedBy.isNullOrBlank() && !it.lifestyleAssessment.isNullOrBlank() }
+        if (lifestyles.isNullOrEmpty()) {
             return
-        else {
+        } else {
             val items = ArrayList<ResultModel>()
             lifestyles.forEach {
                 items.add(
@@ -387,18 +402,19 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
                         id = it.id,
                         referredBy = it.referredBy,
                         lifestyleAssessment = it.lifestyleAssessment,
-                        otherNote = it.otherNote
-                    )
+                        otherNote = it.otherNote,
+                    ),
                 )
             }
             val request = AssessmentResultModel(
-                lifestyles = items, patientReference = viewModel.patientReference,
+                lifestyles = items,
+                patientReference = viewModel.patientReference,
                 memberReference = viewModel.memberReference,
                 visitId = viewModel.encounterReference,
                 patientVisitId = viewModel.encounterReference,
                 assessedBy = NCDMRUtil.currentUserId(),
                 assessedByDisplay = NCDMRUtil.getUserName(),
-                assessedDate = DateUtils.getTodayDateDDMMYYYY()
+                assessedDate = DateUtils.getTodayDateDDMMYYYY(),
             )
             viewModel.updateAssessment(request, true)
         }

@@ -16,9 +16,8 @@ class MultiSelectDatePickerDialog(
     private val initialSelectedDates: List<Long>,
     private val minDate: Long? = null,
     private val maxDate: Long? = null,
-    private val onDateSelected: (List<Long>) -> Unit
+    private val onDateSelected: (List<Long>) -> Unit,
 ) : Dialog(context) {
-
     private lateinit var binding: DialogMultiDatePickerBinding
 
     private val selectedDates = initialSelectedDates.toMutableSet()
@@ -58,7 +57,6 @@ class MultiSelectDatePickerDialog(
         updateButtonsState()
     }
 
-
     private fun updateUI(isClear: Boolean = false) {
         binding.monthYearTextView.text = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(calendar.time)
         binding.calendarRecyclerView.adapter = MultiSelectDatePickerAdapter(context, calendar, selectedDates, minDate, maxDate) {
@@ -82,5 +80,4 @@ class MultiSelectDatePickerDialog(
         binding.okButton.setTextColor(if (hasSelectedDates) enabledColor else disabledColor)
         binding.clearAllBtn.setTextColor(if (hasSelectedDates) enabledColor else disabledColor)
     }
-
 }

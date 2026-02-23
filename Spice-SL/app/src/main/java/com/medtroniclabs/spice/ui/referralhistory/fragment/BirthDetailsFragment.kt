@@ -20,15 +20,15 @@ import com.medtroniclabs.spice.ui.referralhistory.viewmodel.ReferralHistoryViewM
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BirthDetailsFragment: BaseFragment(), View.OnClickListener  {
-
+class BirthDetailsFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentBirthDetailsBinding
     private lateinit var adapters: ReferralHistoryAdapter
     val viewModel: ReferralHistoryViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentBirthDetailsBinding.inflate(inflater, container, false)
         return binding.root
@@ -36,11 +36,13 @@ class BirthDetailsFragment: BaseFragment(), View.OnClickListener  {
 
     companion object {
         const val TAG = "BirthDetailsFragment"
-        fun newInstance(): BirthDetailsFragment {
-            return BirthDetailsFragment()
-        }
 
-        fun newInstance(memberId: String?, patientReference: String?): BirthDetailsFragment {
+        fun newInstance(): BirthDetailsFragment = BirthDetailsFragment()
+
+        fun newInstance(
+            memberId: String?,
+            patientReference: String?,
+        ): BirthDetailsFragment {
             val fragment = BirthDetailsFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.MemberID, memberId)
@@ -50,20 +52,20 @@ class BirthDetailsFragment: BaseFragment(), View.OnClickListener  {
         }
     }
 
-    private fun getMemberId(): String? {
-        return arguments?.getString(DefinedParams.MemberID, "")
-    }
+    private fun getMemberId(): String? = arguments?.getString(DefinedParams.MemberID, "")
 
-    private fun getPatientReference(): String? {
-        return arguments?.getString(DefinedParams.PatientReference, null)
-    }
+    private fun getPatientReference(): String? = arguments?.getString(DefinedParams.PatientReference, null)
 
     private fun getInitialReferralTickets() {
-        getMemberId()?.takeIf { it.isNotBlank() }
+        getMemberId()
+            ?.takeIf { it.isNotBlank() }
             ?.let { viewModel.getBirthDetails(memberId = it, patientReference = getPatientReference()) }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -83,7 +85,6 @@ class BirthDetailsFragment: BaseFragment(), View.OnClickListener  {
     }
 
     private fun setupClickListeners() {
-
     }
 
     private fun attachObservers() {
@@ -116,31 +117,27 @@ class BirthDetailsFragment: BaseFragment(), View.OnClickListener  {
         binding.retryButtonBp.gone()
         binding.tvErrorLabel.gone()
         binding.tvNoHistory.gone()
-
     }
 
     private fun handleSuccess() {
-
         binding.clLoaderProgress.gone()
-
     }
 
     private fun handleError() {
         binding.clLoaderProgress.visible()
         binding.retryButtonBp.visible()
         binding.tvErrorLabel.visible()
-
     }
 
     private fun setReferralTicket(birthDetails: BirthDetails) {
         binding.tvNoHistory.gone()
         adapters.updateList(
-            createMedicalReview(birthDetails)
+            createMedicalReview(birthDetails),
         )
-        //adjustGuideline()
+        // adjustGuideline()
         binding.rvHistory.layoutManager = LinearLayoutManager(requireContext())
         binding.rvHistory.adapter = adapters
-       /// setReferralDates(medicalReviewHistory.history, medicalReviewHistory.id)
+        // / setReferralDates(medicalReviewHistory.history, medicalReviewHistory.id)
     }
 
     override fun onClick(v: View?) {
@@ -163,44 +160,54 @@ class BirthDetailsFragment: BaseFragment(), View.OnClickListener  {
         val history = listOf(
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.neonate_outcome),
-                DefinedParams.Value to (birthDetails.neonateOutcome?.takeIf { it.isNotBlank() }
-                    ?: getString(R.string.separator_double_hyphen))),
-
+                DefinedParams.Value to (
+                    birthDetails.neonateOutcome?.takeIf { it.isNotBlank() }
+                        ?: getString(R.string.separator_double_hyphen)
+                ),
+            ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.birth_weight),
-                DefinedParams.Value to (birthDetails.birthWeight?.let { "$it "+requireContext().getString(R.string.kg) }
-                    ?: getString(R.string.separator_double_hyphen))
+                DefinedParams.Value to (
+                    birthDetails.birthWeight?.let { "$it " + requireContext().getString(R.string.kg) }
+                        ?: getString(R.string.separator_double_hyphen)
+                ),
             ),
-
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.stateOfBaby),
-                DefinedParams.Value to (birthDetails.stateOfBaby?.takeIf { it.isNotBlank() }
-                    ?: getString(R.string.separator_double_hyphen))
+                DefinedParams.Value to (
+                    birthDetails.stateOfBaby?.takeIf { it.isNotBlank() }
+                        ?: getString(R.string.separator_double_hyphen)
+                ),
             ),
-
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.gestational_period),
-                DefinedParams.Value to (birthDetails.gestationalAge?.let { it +" "+ requireContext().getString(R.string.weeks) }
-                    ?: getString(R.string.separator_double_hyphen))
+                DefinedParams.Value to (
+                    birthDetails.gestationalAge?.let { it + " " + requireContext().getString(R.string.weeks) }
+                        ?: getString(R.string.separator_double_hyphen)
+                ),
             ),
-
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.apgar_score),
-                DefinedParams.Value to (birthDetails.apgarScoreFiveMinuteDTO?.fiveMinuteTotalScore?.let { "$it" +requireContext().getString(R.string.five_minutes)  }
-                    ?: getString(R.string.separator_double_hyphen))
+                DefinedParams.Value to
+                    (
+                        birthDetails.apgarScoreFiveMinuteDTO?.fiveMinuteTotalScore?.let { "$it" + requireContext().getString(R.string.five_minutes) }
+                            ?: getString(R.string.separator_double_hyphen)
+                    ),
             ),
-
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.signs_symptoms_observed),
-                DefinedParams.Value to (birthDetails.signs?.joinToString(", ")
-                    ?: getString(R.string.separator_double_hyphen))
+                DefinedParams.Value to (
+                    birthDetails.signs?.joinToString(", ")
+                        ?: getString(R.string.separator_double_hyphen)
+                ),
             ),
-
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.patient_status),
-                DefinedParams.Value to (birthDetails.patientStatus?.takeIf { it.isNotBlank() }
-                    ?: getString(R.string.separator_double_hyphen))
-            )
+                DefinedParams.Value to (
+                    birthDetails.patientStatus?.takeIf { it.isNotBlank() }
+                        ?: getString(R.string.separator_double_hyphen)
+                ),
+            ),
         )
         return history
     }

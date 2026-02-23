@@ -36,7 +36,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
-
     private lateinit var binding: FragmentAssessmentOtherSymptomsBinding
     private lateinit var formGenerator: FormGenerator
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -44,13 +43,16 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentAssessmentOtherSymptomsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getMemberDetailsById()
         initViews()
@@ -64,7 +66,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     private fun initViews() {
         replaceFragmentInId<BioDataFragment>(
             binding.bioDataFragmentContainer.id,
-            tag = BioDataFragment.TAG
+            tag = BioDataFragment.TAG,
         )
     }
 
@@ -100,27 +102,33 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
 
     private fun initializeFormGenerator() {
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, this, binding.scrollView,
-            translate = SecuredPreference.getIsTranslationEnabled()
+            requireContext(),
+            binding.llForm,
+            this,
+            binding.scrollView,
+            translate = SecuredPreference.getIsTranslationEnabled(),
         )
     }
 
-
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
     }
 
     override fun onPopulate(targetId: String) {
-        
     }
 
     override fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     ) {
-        CheckBoxDialog.newInstance(id, resultMap) { resultMap ->
-            formGenerator.validateCheckboxDialogue(id, formLayout, resultMap)
-        }.show(childFragmentManager, CheckBoxDialog.TAG)
+        CheckBoxDialog
+            .newInstance(id, resultMap) { resultMap ->
+                formGenerator.validateCheckboxDialogue(id, formLayout, resultMap)
+            }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
     override fun onInstructionClicked(
@@ -128,7 +136,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {
         viewModel.instructionId = id
         viewModel.dosageListModel = dosageListModel
@@ -139,23 +147,27 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
         val titleById = getTitleById(id)
         when (id) {
             AssessmentDefinedParams.ACT.lowercase() -> {
-                RecommendedDosageFragment.newInstance(id, titleById)
+                RecommendedDosageFragment
+                    .newInstance(id, titleById)
                     .show(childFragmentManager, RecommendedDosageFragment.TAG)
 
                 viewModel.setUserJourney(AnalyticsDefinedParams.ACTINFORMATIONDIALOUGE)
             }
 
             AssessmentDefinedParams.rdtTest -> {
-                InformationLayoutFragment.newInstance(id, titleById)
+                InformationLayoutFragment
+                    .newInstance(id, titleById)
                     .show(childFragmentManager, InformationLayoutFragment.TAG)
 
                 viewModel.setUserJourney(AnalyticsDefinedParams.RDTTESTINFORMATIONDIALOUGE)
-
             }
         }
     }
 
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+    override fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
         resultMap?.let { details ->
             val referralResult =
                 ReferralResultGenerator().calculateOtherSymptomsReferralResult(details)
@@ -163,7 +175,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
                 FormResultComposer().groupValues(
                     serverData = it,
                     details,
-                    OTHER_SYMPTOMS
+                    OTHER_SYMPTOMS,
                 )
             }
 
@@ -174,15 +186,17 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
         viewModel.setAnalyticsData(
             UserDetail.startDateTime,
             eventType = AnalyticsDefinedParams.OtherSymptoms,
-            eventName = AnalyticsDefinedParams.AssessmentCreation
+            eventName = AnalyticsDefinedParams.AssessmentCreation,
         )
     }
 
     override fun onRenderingComplete() {
-
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
         when (id) {
             AssessmentDefinedParams.hasFever -> {
                 renderDosageDetails()
@@ -205,22 +219,25 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
                 it.text = requireContext().getString(R.string.act_6)
             }
         }
-        formGenerator.getViewByTag(AssessmentDefinedParams.ACTStatus + AssessmentDefinedParams.infoSuffixText)
+        formGenerator
+            .getViewByTag(AssessmentDefinedParams.ACTStatus + AssessmentDefinedParams.infoSuffixText)
             ?.let {
                 if (it is TextView) {
                     it.text =
-                        getACTSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
-                            CommonUtils.convertStringDobToMonths(
-                                dob
-                            )
-                        })
+                        getACTSuffixText(
+                            viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
+                                CommonUtils.convertStringDobToMonths(
+                                    dob,
+                                )
+                            },
+                        )
                     it.visibility = View.VISIBLE
                 }
             }
     }
 
-    private fun getTitleById(id: String): String {
-        return when (id) {
+    private fun getTitleById(id: String): String =
+        when (id) {
             AssessmentDefinedParams.muacCode -> getString(R.string.measuring_muac)
             AssessmentDefinedParams.hasOedemaOfBothFeet -> getString(R.string.checking_for_oedema)
             AssessmentDefinedParams.chestInDrawing -> getString(R.string.chest_in_drawing)
@@ -229,10 +246,9 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
                 id
             }
         }
-    }
 
-    private fun getACTSuffixText(age: Int?): String {
-        return when (age) {
+    private fun getACTSuffixText(age: Int?): String =
+        when (age) {
             in 6..36 -> {
                 requireContext().getString(R.string.no_of_tablets_no_of_days, 2, 3)
             }
@@ -249,16 +265,17 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
                 requireContext().getString(R.string.no_of_tablets_no_of_days, 8, 3)
             }
         }
-    }
 
     override fun onInformationHandling(
-        id: String, noOfDays: Int, enteredDays: Int?,
-        resultMap: HashMap<String, Any>?
+        id: String,
+        noOfDays: Int,
+        enteredDays: Int?,
+        resultMap: HashMap<String, Any>?,
     ) {
         if (enteredDays != null && enteredDays > noOfDays) {
             updateColorCode(
                 id,
-                ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color)
+                ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color),
             )
             displayDaysInformation(id, View.VISIBLE)
         } else {
@@ -267,31 +284,37 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
         }
     }
 
-    private fun displayDaysInformation(id: String, viewVisibility: Int) {
-        formGenerator.getViewByTag(id + DefinedParams.Information)
+    private fun displayDaysInformation(
+        id: String,
+        viewVisibility: Int,
+    ) {
+        formGenerator
+            .getViewByTag(id + DefinedParams.Information)
             ?.apply { visibility = viewVisibility }
     }
 
     override fun onAgeCheckForPregnancy() {
-        
     }
 
     override fun handleMandatoryCondition(formLayout: FormLayout?) {
-
     }
 
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
         /*
        Never used
-        */
+         */
     }
 
-    private fun updateColorCode(id: String, colorCode: Int) {
-        formGenerator.getViewByTag(id + DefinedParams.Information)
+    private fun updateColorCode(
+        id: String,
+        colorCode: Int,
+    ) {
+        formGenerator
+            .getViewByTag(id + DefinedParams.Information)
             ?.let { view ->
                 if (view is TextView) {
                     view.setTextColor(colorCode)
@@ -327,7 +350,5 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
         }
     }
 
-    fun getCurrentAnsweredStatus(): Boolean {
-        return formGenerator.getResultMap().isNotEmpty()
-    }
+    fun getCurrentAnsweredStatus(): Boolean = formGenerator.getResultMap().isNotEmpty()
 }

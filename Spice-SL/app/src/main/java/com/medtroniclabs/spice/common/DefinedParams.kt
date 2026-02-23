@@ -45,18 +45,18 @@ object DefinedParams {
     const val EnrollmentType = "EnrollmentType"
     const val MenuTitle = "MenuTitle"
     const val PatientId = "PatientId"
-    const val ChildPatientId="childPatientId"
+    const val ChildPatientId = "childPatientId"
     const val TimeOfDelivery = "timeOfDelivery"
     const val TimeOfLabourOnset = "timeOfLabourOnset"
     const val HouseholdHead = "HouseholdHead"
-    const val DateOfDelivery="DateOfDelivery"
+    const val DateOfDelivery = "DateOfDelivery"
     const val CHIEF_DOM_CODE_LENGTH = 3
     const val VILLAGE_CODE_LENGTH = 4
     const val PATIENT_NUMBER_LENGTH = 4
     const val StateOfPerineum = "stateOfPerineum"
     const val Tear = "tear"
-    const val Episiotomy ="episiotomy"
-    const val None ="none"
+    const val Episiotomy = "episiotomy"
+    const val None = "none"
     const val Gender = "gender"
     const val StateOfBaby = "stateOfBaby"
     const val iccm = "ICCM"
@@ -66,7 +66,7 @@ object DefinedParams {
     const val UnSuccessful = "UnSuccessful"
     const val SUCCESSFUL = "successful"
     const val UNSUCCESSFUL = "unSuccessful"
-    const val BaseUrl="base_url"
+    const val BaseUrl = "base_url"
 
     const val OnTreatment = "On Treatment"
     const val OnHold = "on-hold"
@@ -75,12 +75,12 @@ object DefinedParams {
     const val PregnancyPNC = "PregnancyPNC"
     const val EncounterId = "encounterId"
     const val ChildEncounterId = "childEncounterId"
-    const val IsNeonate="isNeonate"
+    const val IsNeonate = "isNeonate"
     const val True = "true"
 
     const val ExclusiveBreastCondition = "ExclusiveBreastCondition"
     const val BreastCondition = "BreastCondition"
-    const val UterusCondition ="UterusCondition"
+    const val UterusCondition = "UterusCondition"
     const val CordExamination = "CordExamination"
     const val CongenitalDetect = "CongenitalDetect"
 
@@ -105,7 +105,7 @@ object DefinedParams {
     const val valueColor = "color"
     const val Above5MedicalReview = "Above5MedicalReview"
     const val Neonate_Birth_Review = "NEONATE_BIRTH_REVIEW"
-    const val MotherDeliveryReview="MOTHER_DELIVERY_REVIEW"
+    const val MotherDeliveryReview = "MOTHER_DELIVERY_REVIEW"
     const val Immunization = "Immunization"
     const val ICCMUNDER2MONTHS = "iccm-under-2M"
     const val ICCM_ABOVE_2M_5Y = "iccm-2M-5Y"
@@ -130,33 +130,32 @@ object DefinedParams {
     const val SearchLength = 2
     const val SearchLengthPrescription = 1
     const val OtherNotes = "otherNotes"
-    const val Postnatal="Postnatal"
+    const val Postnatal = "Postnatal"
 
     const val TestedOn = "TestedOn"
     const val Unit = "_unit"
-    const val PostNatal="Post Natal"
-    const val Neonate="Neonate"
-    const val PncHistory="PncHistory"
+    const val PostNatal = "Post Natal"
+    const val Neonate = "Neonate"
+    const val PncHistory = "PncHistory"
 
     val changeFacility = "changeFacility"
     const val VillageList = "VillageList"
 
     const val passwordRegexPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{6,64}$"
 
-
-    const val LowBirthWeight=  2.0
-    const val Others_Specify="others"
+    const val LowBirthWeight = 2.0
+    const val Others_Specify = "others"
 
     const val KeySignature = "KeySignature"
     const val KeyInitial = "KeyInitial"
 
     const val LastSyncDate = "lastSyncDate"
-    const val FollowUpStartTiming= "followUpStartTiming"
+    const val FollowUpStartTiming = "followUpStartTiming"
 
     const val houseHoldLinkStartTiming = "houseHoldLinkStartTiming"
 
-    const val BuildConfigs="BuildConfiguration"
-    const val HosueHoldHead="HouseholdHead"
+    const val BuildConfigs = "BuildConfiguration"
+    const val HosueHoldHead = "HouseholdHead"
 
     const val Assigned = "Assigned"
     const val UnAssigned = "Unassigned"
@@ -215,7 +214,6 @@ object DefinedParams {
     const val Nutritionlifestyle = "nutritionlifestyle"
     const val Investigation = "investigation"
 
-
     const val RedRiskLow = "Low"
     const val RedRiskModerate = "Moderate"
     const val RedRiskHigh = "High"
@@ -239,13 +237,12 @@ object DefinedParams {
     const val COMMUNITY = "COMMUNITY"
     const val NON_COMMUNITY = "NON_COMMUNITY"
     const val DirectPNCFlow = "DirectPNCFlow"
-    const val LabourDeliveryData="LabourDeliveryData"
+    const val LabourDeliveryData = "LabourDeliveryData"
     const val NeonateOutcome = "NeonateOutcome"
     const val Status = "status"
     const val Comments = "comments"
     const val YearOfDiagnosis = "yearOfDiagnosis"
     const val MentalHealthDisorder = "mentalHealthDisorder"
-
 
     const val Others = "Others"
 
@@ -275,7 +272,7 @@ object DefinedParams {
     const val VILLAGE_ID = "villageId"
     const val MARKET_DAYS = "marketDays"
     const val NEAREST_PHU = "nearestPHU"
-    const val COMMUNITY_REGISTERED ="community_registered"
+    const val COMMUNITY_REGISTERED = "community_registered"
     const val CBS = "CBS"
     const val isDefault = "isDefault"
     const val phoneNumber = "phoneNumber"
@@ -337,8 +334,8 @@ object DefinedParams {
     const val SymptomsFollowUp = "SymptomsFollowUp"
     const val MedicationFollowUp = "MedicationFollowUp"
     const val isRxBuddyFollowUp = "isRxBuddyFollowUp"
-    const val DrugSensitiveTB =  "drugSensitiveTB"
-    const val ExtraPulmonary =  "extraPulmonary"
+    const val DrugSensitiveTB = "drugSensitiveTB"
+    const val ExtraPulmonary = "extraPulmonary"
     const val SiteOfDisease = "siteOfDisease"
     const val OrganAffected = "organAffected"
     const val IsSummary = "isSummary"
@@ -371,7 +368,7 @@ object DefinedParams {
     const val EMTCT_HIV_MEDICAL_REVIEW = "EMTCT_HIV_MEDICAL_REVIEW"
     const val HIV_MEDICAL_SCREENING = "HIV_MEDICAL_SCREENING"
     const val EMTCT = "EMTCT"
-    const val EMTCTMR =  "EMTCTMR"
+    const val EMTCTMR = "EMTCTMR"
     const val EMTCT_SUMMARY = "EMTCT_SUMMARY"
     const val isPregnant = "isPregnant"
     const val VIRAL_LOAD = "VIRAL_LOAD"
@@ -384,7 +381,7 @@ object DefinedParams {
     const val CD4_Percentage = "CD4 Percentage"
     const val hivTestedPositive = "hivTestedPositive"
     const val no = "no"
-    const val not_applicable= "not-applicable"
+    const val not_applicable = "not-applicable"
     const val Medications = "medications"
     const val Regimen = "regimen"
     const val PrescribedMedicine = "PrescribedMedicine"

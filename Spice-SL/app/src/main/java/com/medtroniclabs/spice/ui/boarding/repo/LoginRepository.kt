@@ -18,11 +18,14 @@ import javax.inject.Inject
 
 class LoginRepository @Inject constructor(
     private var apiHelper: ApiHelper,
-    private var roomHelper: RoomHelper
+    private var roomHelper: RoomHelper,
 ) {
-
-    suspend fun doLogin(username: String, password: String, deviceDetails: DeviceDetails): Resource<LoginResponse> {
-        return try {
+    suspend fun doLogin(
+        username: String,
+        password: String,
+        deviceDetails: DeviceDetails,
+    ): Resource<LoginResponse> =
+        try {
             val securePassword = EncryptionUtil.getSecurePassword(password)
             val builder = MultipartBody.Builder()
             builder.setType(MultipartBody.FORM)
@@ -45,7 +48,7 @@ class LoginRepository @Inject constructor(
                                     SecuredPreference.putUserDetails(it)
                                     SecuredPreference.putBoolean(
                                         SecuredPreference.EnvironmentKey.IS_TERMS_AND_CONDITIONS_APPROVED.name,
-                                        it.isTermsAndConditionsAccepted == true
+                                        it.isTermsAndConditionsAccepted == true,
                                     )
                                     it.culture?.let { culture ->
                                         val isEnabled =
@@ -53,44 +56,48 @@ class LoginRepository @Inject constructor(
                                         SecuredPreference.setUserPreference(
                                             culture.id,
                                             culture.name,
-                                            isEnabled
+                                            isEnabled,
                                         )
                                     }
                                     saveUserNameAndPassword(username, securePassword)
                                 }
                                 Resource(state = ResourceState.SUCCESS, data = response.body())
-                            } else
+                            } else {
                                 Resource(state = ResourceState.ERROR)
-                        } else
+                            }
+                        } else {
                             Resource(
                                 state = ResourceState.ERROR,
-                                message = getErrorMessage(response.errorBody())
+                                message = getErrorMessage(response.errorBody()),
                             )
-                    } else
+                        }
+                    } else {
                         Resource(
                             state = ResourceState.ERROR,
                             message = appVersionResponse?.message,
-                            optionalData = true //Show update app alert dialog
+                            optionalData = true, // Show update app alert dialog
                         )
-                } else
+                    }
+                } else {
                     Resource(
                         state = ResourceState.ERROR,
-                        message = getErrorMessage(response.errorBody())
+                        message = getErrorMessage(response.errorBody()),
                     )
+                }
             } else {
                 Resource(
                     state = ResourceState.ERROR,
-                    message = getErrorMessage(response.errorBody())
+                    message = getErrorMessage(response.errorBody()),
                 )
             }
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     private fun getErrorMessage(errorBody: ResponseBody?): String? {
-        if (errorBody == null)
+        if (errorBody == null) {
             return null
+        }
         return try {
             val errorResponse = Gson().fromJson(errorBody.string(), ErrorResponse::class.java)
             return errorResponse.message
@@ -99,41 +106,47 @@ class LoginRepository @Inject constructor(
         }
     }
 
-    private fun saveUserNameAndPassword(userName: String, password: String) {
+    private fun saveUserNameAndPassword(
+        userName: String,
+        password: String,
+    ) {
         SecuredPreference.putString(
             SecuredPreference.EnvironmentKey.PASSWORD.name,
-            password
+            password,
         )
         SecuredPreference.putBoolean(
             SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
-            true
+            true,
         )
     }
 
     private fun saveTokenInformation(headers: Map<String, List<String>>) {
-        if (headers.containsKey(DefinedParams.Authorization)
-            && (headers[DefinedParams.Authorization]?.size
-                ?: 0) > 0
+        if (headers.containsKey(DefinedParams.Authorization) &&
+            (
+                headers[DefinedParams.Authorization]?.size
+                    ?: 0
+            ) > 0
         ) {
             headers[DefinedParams.Authorization]?.get(0)?.let { token ->
                 SecuredPreference.putString(
                     SecuredPreference.EnvironmentKey.TOKEN.name,
-                    token
+                    token,
                 )
             }
         }
 
-        if (headers.containsKey(DefinedParams.TenantId)
-            && (headers[DefinedParams.TenantId]?.size
-                ?: 0) > 0
+        if (headers.containsKey(DefinedParams.TenantId) &&
+            (
+                headers[DefinedParams.TenantId]?.size
+                    ?: 0
+            ) > 0
         ) {
             headers[DefinedParams.TenantId]?.get(0)?.let { token ->
                 SecuredPreference.putString(
                     SecuredPreference.EnvironmentKey.TENANT_ID.name,
-                    token
+                    token,
                 )
             }
         }
     }
-
 }

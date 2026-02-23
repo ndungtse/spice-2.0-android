@@ -17,7 +17,6 @@ import com.medtroniclabs.spice.model.followup.FollowUpFilter
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.FollowUpRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
-import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_HH_VISIT
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW
@@ -30,9 +29,8 @@ import javax.inject.Inject
 @HiltViewModel
 class FollowUpViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private val followUpRepository: FollowUpRepository
+    private val followUpRepository: FollowUpRepository,
 ) : BaseViewModel(dispatcherIO) {
-
     val callResultHashMap = HashMap<String, Any>()
     val patientStatusHashMap = HashMap<String, Any>()
     val unSuccessfulHashMap = HashMap<String, Any>()
@@ -79,22 +77,21 @@ class FollowUpViewModel @Inject constructor(
         selectedDateRange: List<ChipViewItemModel>? = null,
         selectedReasons: List<ChipViewItemModel>? = null,
         fromDate: String? = null,
-        toDate: String? = null
+        toDate: String? = null,
     ) {
         val filter = filterLiveData.value ?: FollowUpFilter()
         filter.apply {
-
-            //Update Page
+            // Update Page
             pageType?.let {
                 this.type = getFollowUpType(it)
             }
 
-            //Update search
+            // Update search
             search?.let {
                 this.search = it
             }
 
-            //Update Village Ids
+            // Update Village Ids
             selectedVillages?.let {
                 this.selectedVillages = it
             }
@@ -109,7 +106,7 @@ class FollowUpViewModel @Inject constructor(
                 this.selectedReasons = it
             }
 
-            //Update Date Filter
+            // Update Date Filter
             fromDate?.let {
                 this.fromDate = it
             }
@@ -122,36 +119,28 @@ class FollowUpViewModel @Inject constructor(
         }
     }
 
-    private fun getFollowUpType(type: Int): String {
-        return when (type) {
+    private fun getFollowUpType(type: Int): String =
+        when (type) {
             1 -> FU_TYPE_REFERRED
             2 -> FU_TYPE_MEDICAL_REVIEW
             else -> FU_TYPE_HH_VISIT
         }
-    }
 
-    fun getVillages(): List<VillageEntity> {
-        return villages
-    }
+    fun getVillages(): List<VillageEntity> = villages
 
-    fun getFilterData(): FollowUpFilter? {
-        return filterLiveData.value
-    }
+    fun getFilterData(): FollowUpFilter? = filterLiveData.value
 
-    fun getFilterDataLiveData(): LiveData<FollowUpFilter> {
-        return filterLiveData
-    }
+    fun getFilterDataLiveData(): LiveData<FollowUpFilter> = filterLiveData
 
-    fun getDateRange(): List<String> {
-        return listOf(
+    fun getDateRange(): List<String> =
+        listOf(
             FollowUpDefinedParams.FilterToday,
             FollowUpDefinedParams.FilterTomorrow,
-            FollowUpDefinedParams.FilterCustomize
+            FollowUpDefinedParams.FilterCustomize,
         )
-    }
 
-    fun getReferralReasons(): List<String> {
-        return listOf(
+    fun getReferralReasons(): List<String> =
+        listOf(
             FollowUpDefinedParams.FilterMalaria,
             FollowUpDefinedParams.FilterFever,
             FollowUpDefinedParams.FilterDiarrhoea,
@@ -163,9 +152,8 @@ class FollowUpViewModel @Inject constructor(
             FollowUpDefinedParams.FilterMUAC,
             FollowUpDefinedParams.FilterTBSymptoms,
             FollowUpDefinedParams.FilterNCD,
-            FollowUpDefinedParams.FilterFPConsult
+            FollowUpDefinedParams.FilterFPConsult,
         )
-    }
 
     fun addCallHistory() {
         viewModelScope.launch(dispatcherIO) {
@@ -173,8 +161,8 @@ class FollowUpViewModel @Inject constructor(
                 addCallHistoryLiveData.postLoading()
                 val callStatus =
                     getCallStatus(callResultHashMap[DefinedParams.CallResult] as String)
-                val patientStatus=getPatientStatus(callStatus)
-                val unSuccessfulReason= getUnSuccessfulReason(callStatus)
+                val patientStatus = getPatientStatus(callStatus)
+                val unSuccessfulReason = getUnSuccessfulReason(callStatus)
                 followUpRepository.addCallHistory(
                     maxSuccessfulCallLimit,
                     maxUnSuccessfulCallLimit,
@@ -182,19 +170,25 @@ class FollowUpViewModel @Inject constructor(
                     it.id,
                     callStatus,
                     patientStatus,
-                    unSuccessfulReason
+                    unSuccessfulReason,
                 )
-                setAnalyticsFollowUpData(it.id,it.patientId,callStatus,patientStatus,
-                    unSuccessfulReason,SecuredPreference.getString(DefinedParams.FollowUpStartTiming)
+                setAnalyticsFollowUpData(
+                    it.id,
+                    it.patientId,
+                    callStatus,
+                    patientStatus,
+                    unSuccessfulReason,
+                    SecuredPreference.getString(DefinedParams.FollowUpStartTiming),
                 )
                 addCallHistoryLiveData.postSuccess(true)
             }
         }
     }
 
-    private fun getCallStatus(status: String) : FollowUpCallStatus {
-        if (status == FollowUpCallStatus.SUCCESSFUL.name)
+    private fun getCallStatus(status: String): FollowUpCallStatus {
+        if (status == FollowUpCallStatus.SUCCESSFUL.name) {
             return FollowUpCallStatus.SUCCESSFUL
+        }
         return FollowUpCallStatus.UNSUCCESSFUL
     }
 

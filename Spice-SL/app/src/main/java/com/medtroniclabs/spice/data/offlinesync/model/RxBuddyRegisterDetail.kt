@@ -21,7 +21,6 @@ data class RxBuddyRegisterDetail(
     var longitude: Double = 0.0,
     val createdBy: Long = SecuredPreference.getUserId(),
     var updatedAt: Long = System.currentTimeMillis(),
-
     val patientId: String?,
     val villageId: String?,
     val householdId: String? = null,

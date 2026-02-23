@@ -12,10 +12,10 @@ import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.ActivityNcdLifestyleBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.counseling.adapter.NCDLifestyleAdapter
-import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.utils.CounselingInterface
 import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
 import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -23,7 +23,6 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.TagListCustomView
 
 class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInterface {
-
     private lateinit var binding: ActivityNcdLifestyleBinding
 
     private val viewModel: CounselingViewModel by viewModels()
@@ -40,7 +39,7 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
             title = getString(R.string.lifestyle_management),
             callback = {
                 backHandelFlow()
-            }
+            },
         )
         saveIntentValues()
         initializeView()
@@ -112,7 +111,7 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
                     name = item.name,
                     cultureValue = item.displayValue,
                     type = item.type,
-                    value = item.value
+                    value = item.value,
                 )
             } as ArrayList<ChipViewItemModel>
             tagListCustomView.addChipItemList(complaintList)
@@ -183,8 +182,8 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
         mrViewModel.updateBadgeNotifications(
             BadgeNotificationModel(
                 patientReference = viewModel.patientReference,
-                menuName = NCDMRUtil.LifestyleResults
-            )
+                menuName = NCDMRUtil.LifestyleResults,
+            ),
         )
     }
 
@@ -196,9 +195,12 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
     }
 
     private fun loadLifestyleList() {
-        val lifestyleList = viewModel.assessmentListLiveData.value?.data?.entityList
-        if (lifestyleList.isNullOrEmpty()) hideRecyclerView()
-        else {
+        val lifestyleList = viewModel.assessmentListLiveData.value
+            ?.data
+            ?.entityList
+        if (lifestyleList.isNullOrEmpty()) {
+            hideRecyclerView()
+        } else {
             val adapter = NCDLifestyleAdapter(this)
             binding.rvList.layoutManager = LinearLayoutManager(binding.rvList.context ?: this)
             binding.rvList.adapter = adapter
@@ -208,13 +210,16 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
     }
 
     private fun backHandelFlow() {
-        if (viewModel.lifestyles.isNullOrEmpty()) closePage()
-        else showErrorDialogue(
-            getString(R.string.alert),
-            getString(R.string.exit_reason_message),
-            isNegativeButtonNeed = true
-        ) {
-            if (it) closePage()
+        if (viewModel.lifestyles.isNullOrEmpty()) {
+            closePage()
+        } else {
+            showErrorDialogue(
+                getString(R.string.alert),
+                getString(R.string.exit_reason_message),
+                isNegativeButtonNeed = true,
+            ) {
+                if (it) closePage()
+            }
         }
     }
 
@@ -236,13 +241,18 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
     override fun onClick(mView: View?) {
         when (mView?.id) {
             binding.bottomSheet.btnNext.id -> {
-                if (connectivityManager.isNetworkAvailable()) viewModel.createAssessment(
-                    getCreateRequest(),
-                    true
-                )
-                else showErrorDialogue(
-                    getString(R.string.error), getString(R.string.no_internet_error), false
-                ) {}
+                if (connectivityManager.isNetworkAvailable()) {
+                    viewModel.createAssessment(
+                        getCreateRequest(),
+                        true,
+                    )
+                } else {
+                    showErrorDialogue(
+                        getString(R.string.error),
+                        getString(R.string.no_internet_error),
+                        false,
+                    ) {}
+                }
             }
 
             binding.bottomSheet.btnBack.id -> backHandelFlow()
@@ -258,8 +268,8 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
         }
     }
 
-    private fun getCreateRequest(): NCDCounselingModel {
-        return with(viewModel) {
+    private fun getCreateRequest(): NCDCounselingModel =
+        with(viewModel) {
             NCDCounselingModel(
                 patientReference = patientReference,
                 memberReference = memberReference,
@@ -270,16 +280,15 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
                 referredBy = NCDMRUtil.currentUserId(),
                 referredByDisplay = NCDMRUtil.getUserName(),
                 referredDate = DateUtils.getTodayDateDDMMYYYY(),
-                isNutritionist = nutritionist
+                isNutritionist = nutritionist,
             )
         }
-    }
 
     private fun getLifestyleList() {
         val request = NCDCounselingModel(
             patientReference = viewModel.patientReference,
             memberReference = viewModel.memberReference,
-            visitId = viewModel.encounterReference
+            visitId = viewModel.encounterReference,
         )
         viewModel.getAssessmentList(request, true)
     }

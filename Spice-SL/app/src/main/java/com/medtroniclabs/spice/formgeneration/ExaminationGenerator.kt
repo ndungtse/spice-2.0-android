@@ -26,7 +26,6 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 
 class ExaminationGenerator(
@@ -34,9 +33,8 @@ class ExaminationGenerator(
     private val parentLayout: LinearLayout,
     val listener: ExaminationListener,
     var scrollView: NestedScrollView? = null,
-    val translate: Boolean = false
+    val translate: Boolean = false,
 ) : ContextWrapper(context) {
-
     private val rootSuffix = "rootView"
     private val titleSuffix = "titleTextView"
     private val errorSuffix = "errorMessageView"
@@ -60,7 +58,8 @@ class ExaminationGenerator(
                 }
             }
             val layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
             )
             layoutParams.setMargins(10, 10, 10, 10)
             binding.root.layoutParams = layoutParams
@@ -72,26 +71,26 @@ class ExaminationGenerator(
     private fun renderAccordionView(
         questionnaires: ArrayList<FormLayout>,
         questionnairesHolderLayout: FlexboxLayout,
-        diseaseName: String
+        diseaseName: String,
     ) {
         questionnaires.forEach { formLayout ->
             when (formLayout.viewType) {
                 ViewType.VIEW_TYPE_SINGLE_SELECTION -> createSingleSelectionView(
                     formLayout,
                     questionnairesHolderLayout,
-                    diseaseName
+                    diseaseName,
                 )
 
                 ViewType.VIEW_TYPE_FORM_EDITTEXT -> createEditText(
                     formLayout,
                     questionnairesHolderLayout,
-                    diseaseName
+                    diseaseName,
                 )
 
                 ViewType.VIEW_TYPE_DIALOG_CHECKBOX -> createCheckboxDialogView(
                     formLayout,
                     questionnairesHolderLayout,
-                    diseaseName
+                    diseaseName,
                 )
             }
         }
@@ -100,7 +99,7 @@ class ExaminationGenerator(
     private fun createCheckboxDialogView(
         formLayout: FormLayout,
         questionnairesHolderLayout: FlexboxLayout,
-        diseaseName: String
+        diseaseName: String,
     ) {
         val binding = CheckboxDialogSpinnerLayoutBinding.inflate(LayoutInflater.from(context))
         formLayout.apply {
@@ -109,7 +108,7 @@ class ExaminationGenerator(
             binding.tvTitle.tag = id + titleSuffix
             binding.tvErrorMessage.tag = id + errorSuffix
             binding.tvTitle.text = FormSupport.translateTitle(titleCulture, title, false)
-            binding.parentLayout.minimumWidth =  dpToPx(520)
+            binding.parentLayout.minimumWidth = dpToPx(520)
             hint?.let {
                 binding.etUserInput.hint = it
             }
@@ -123,18 +122,17 @@ class ExaminationGenerator(
                     id,
                     formLayout,
                     getCategorizedMap(resultHashMap, diseaseName)[id],
-                    diseaseName
+                    diseaseName,
                 )
             }
             questionnairesHolderLayout.addView(binding.root)
         }
-
     }
 
     private fun createEditText(
         formLayout: FormLayout,
         questionnairesHolderLayout: FlexboxLayout,
-        diseaseName: String
+        diseaseName: String,
     ) {
         val binding = EdittextLayoutBinding.inflate(LayoutInflater.from(context))
         formLayout.apply {
@@ -151,7 +149,7 @@ class ExaminationGenerator(
                 leftRightPadding,
                 topBottomPadding,
                 leftRightPadding,
-                topBottomPadding
+                topBottomPadding,
             )
             binding.bgLastMeal.tag = id + rootSummary
             binding.tvTitle.text =
@@ -184,7 +182,6 @@ class ExaminationGenerator(
                 }
             }
 
-
             isEnabled?.let {
                 binding.etUserInput.isEnabled = it
             }
@@ -198,8 +195,9 @@ class ExaminationGenerator(
                 inputFilter.add(InputFilter.LengthFilter(it))
             }
 
-            if (applyDecimalFilter == true)
+            if (applyDecimalFilter == true) {
                 inputFilter.add(DigitsInputFilter())
+            }
 
             if (id == DefinedParams.NationalId) {
                 inputFilter.add(InputFilter.AllCaps())
@@ -209,17 +207,19 @@ class ExaminationGenerator(
                 try {
                     binding.etUserInput.filters = inputFilter.toTypedArray()
                 } catch (_: Exception) {
-                    //Exception - Catch block
+                    // Exception - Catch block
                 }
             }
 
             inputType?.let {
                 when (it) {
-                    InputType.TYPE_CLASS_PHONE, InputType.TYPE_CLASS_NUMBER -> binding.etUserInput.inputType =
-                        InputType.TYPE_CLASS_NUMBER
+                    InputType.TYPE_CLASS_PHONE, InputType.TYPE_CLASS_NUMBER ->
+                        binding.etUserInput.inputType =
+                            InputType.TYPE_CLASS_NUMBER
 
-                    InputType.TYPE_NUMBER_FLAG_DECIMAL -> binding.etUserInput.inputType =
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                    InputType.TYPE_NUMBER_FLAG_DECIMAL ->
+                        binding.etUserInput.inputType =
+                            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
 
                     else -> {
                         binding.etUserInput.inputType = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
@@ -236,16 +236,22 @@ class ExaminationGenerator(
                     }
 
                     else -> {
-                        if ((inputType != null && (inputType == InputType.TYPE_CLASS_NUMBER ||
-                                    inputType == InputType.TYPE_NUMBER_FLAG_DECIMAL))
+                        if ((
+                                inputType != null &&
+                                    (
+                                        inputType == InputType.TYPE_CLASS_NUMBER ||
+                                            inputType == InputType.TYPE_NUMBER_FLAG_DECIMAL
+                                    )
+                            )
                         ) {
                             val resultValue = editable.trim().toString().toDoubleOrNull()
                             resultValue?.let {
                                 getCategorizedMap(resultHashMap, diseaseName)[id] = resultValue
                             }
-                        } else
+                        } else {
                             getCategorizedMap(resultHashMap, diseaseName)[id] =
                                 editable.trim().toString()
+                        }
                     }
                 }
 
@@ -254,11 +260,10 @@ class ExaminationGenerator(
         }
     }
 
-
     private fun createSingleSelectionView(
         formLayout: FormLayout,
         questionnairesHolderLayout: FlexboxLayout,
-        diseaseName: String
+        diseaseName: String,
     ) {
         formLayout.apply {
             val binding = LayoutSingleSelectionBinding.inflate(LayoutInflater.from(context))
@@ -275,12 +280,13 @@ class ExaminationGenerator(
                     getCategorizedMap(resultHashMap, diseaseName),
                     Pair(id, diseaseName),
                     formLayout,
-                    singleSelectionCallback
+                    singleSelectionCallback,
                 )
                 binding.selectionGroup.addView(view)
             }
-            if (isMandatory)
+            if (isMandatory) {
                 binding.tvTitle.markMandatory()
+            }
 
             questionnairesHolderLayout.addView(binding.root)
         }
@@ -288,7 +294,7 @@ class ExaminationGenerator(
 
     private fun getCategorizedMap(
         resultHashMap: HashMap<String, Any>,
-        diseaseName: String
+        diseaseName: String,
     ): HashMap<String, Any> {
         if (resultHashMap.containsKey(diseaseName) && resultHashMap[diseaseName] is Map<*, *>) {
             return resultHashMap[diseaseName] as HashMap<String, Any>
@@ -306,7 +312,7 @@ class ExaminationGenerator(
 
     private fun saveSelectedOptionValue(
         elementId: Pair<String, String?>,
-        idValue: Any?
+        idValue: Any?,
     ) {
         idValue?.let {
             if (resultHashMap.containsKey(elementId.second) && resultHashMap[elementId.second] is Map<*, *>) {
@@ -324,11 +330,10 @@ class ExaminationGenerator(
         }
     }
 
-
     fun validateCheckboxDialogue(
         id: String,
         resultMap: ArrayList<HashMap<String, Any>>,
-        diseaseName: String
+        diseaseName: String,
     ) {
         if (resultMap.isEmpty()) {
             if (getCategorizedMap(resultHashMap, diseaseName).containsKey(id)) {
@@ -339,7 +344,7 @@ class ExaminationGenerator(
         }
         getViewByTag(id)?.let { view ->
             if (view is AppCompatTextView) {
-                view.text = setCheckBoxDialogText(getCategorizedMap(resultHashMap,diseaseName), id)
+                view.text = setCheckBoxDialogText(getCategorizedMap(resultHashMap, diseaseName), id)
             }
         }
         listener.setResultHashMap(resultHashMap)
@@ -347,7 +352,7 @@ class ExaminationGenerator(
 
     private fun setCheckBoxDialogText(
         resultHashMap: HashMap<String, Any>,
-        id: String
+        id: String,
     ): String {
         var text = ""
         if (resultHashMap.containsKey(id)) {
@@ -371,8 +376,8 @@ class ExaminationGenerator(
         return text
     }
 
-    private fun setDialogText(mapList: java.util.ArrayList<*>): String {
-        return if (isContainsOther(mapList)) {
+    private fun setDialogText(mapList: java.util.ArrayList<*>): String =
+        if (isContainsOther(mapList)) {
             "${DefinedParams.Other} ${
                 getString(R.string.symptoms_selected)
             }"
@@ -381,7 +386,6 @@ class ExaminationGenerator(
         } else {
             "${mapList.size} ${getString(R.string.symptoms_selected)}"
         }
-    }
 
     private fun isContainsOther(mapList: ArrayList<*>): Boolean {
         var status = false
@@ -411,11 +415,7 @@ class ExaminationGenerator(
         return status
     }
 
-    private fun getViewByTag(tag: Any): View? {
-        return parentLayout.findViewWithTag(tag)
-    }
+    private fun getViewByTag(tag: Any): View? = parentLayout.findViewWithTag(tag)
 
-    private fun dpToPx(dp: Int): Int {
-        return (dp * resources.displayMetrics.density).toInt()
-    }
+    private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
 }

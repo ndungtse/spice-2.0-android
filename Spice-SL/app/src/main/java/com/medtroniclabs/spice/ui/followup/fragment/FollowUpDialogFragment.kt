@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.ui.followup.fragment
 
-import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -25,9 +24,9 @@ import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_REFERRE
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
 
 class FollowUpDialogFragment : DialogFragment() {
-
     interface FollowUpClickListener {
         fun onCallClicked()
+
         fun onLaunchAssessment()
     }
 
@@ -37,6 +36,7 @@ class FollowUpDialogFragment : DialogFragment() {
 
     companion object {
         const val TAG = "FollowUpDialogFragment"
+
         fun newInstance(listener: FollowUpClickListener): FollowUpDialogFragment {
             val frag = FollowUpDialogFragment()
             frag.listener = listener
@@ -45,8 +45,9 @@ class FollowUpDialogFragment : DialogFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentFollowUpDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -59,7 +60,10 @@ class FollowUpDialogFragment : DialogFragment() {
         applyOrientationChange()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
     }
@@ -97,7 +101,7 @@ class FollowUpDialogFragment : DialogFragment() {
                     details.encounterDate,
                     DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                     DATE_ddMMyyyy,
-                    inUTC = true
+                    inUTC = true,
                 )
 
                 when (details.type) {
@@ -138,18 +142,17 @@ class FollowUpDialogFragment : DialogFragment() {
     private fun getPatientName(
         name: String?,
         dob: String?,
-        gender: String?
-    ): String {
-        return getString(
+        gender: String?,
+    ): String =
+        getString(
             R.string.household_summary_member_info,
             name,
             CommonUtils.getAgeFromDOB(
                 dob,
-                requireContext()
+                requireContext(),
             ),
-            CommonUtils.getGenderText(gender, requireContext())
+            CommonUtils.getGenderText(gender, requireContext()),
         )
-    }
 
     private fun applyOrientationChange() {
         val tabletSize =
@@ -159,10 +162,12 @@ class FollowUpDialogFragment : DialogFragment() {
         } else {
             forPhoneAndTab(65, 90)
         }
-
     }
 
-    private fun forPhoneAndTab(landscape: Int, portrait: Int) {
+    private fun forPhoneAndTab(
+        landscape: Int,
+        portrait: Int,
+    ) {
         when (resources.configuration.orientation) {
             Configuration.ORIENTATION_LANDSCAPE -> {
                 setDialogWidthAndHeightAsWrapPercent(landscape)

@@ -18,7 +18,6 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class CommentsAlertDialog() : DialogFragment(), View.OnClickListener {
-
     var callback: ((isPositiveResult: Boolean, comments: String?) -> Unit)? = null
 
     constructor(callback: (isPositiveResult: Boolean, comments: String?) -> Unit) : this() {
@@ -28,7 +27,6 @@ class CommentsAlertDialog() : DialogFragment(), View.OnClickListener {
     var isNegativeButtonNeed: Boolean = false
 
     companion object {
-
         const val TAG = "CommentsAlertDialog"
 
         private const val KEY_TITLE = "KEY_TITLE"
@@ -45,13 +43,12 @@ class CommentsAlertDialog() : DialogFragment(), View.OnClickListener {
             isNegativeButtonNeed: Boolean,
             buttonText: Pair<String, String> = Pair(
                 context.getString(R.string.ok),
-                context.getString(R.string.cancel)
+                context.getString(R.string.cancel),
             ),
             showComment: Boolean = true,
             callback: ((isPositiveResult: Boolean, comments: String?) -> Unit),
             message: Pair<String?, String?> = Pair(null, null),
         ): CommentsAlertDialog {
-
             val args = Bundle()
             args.putString(KEY_TITLE, title)
             args.putString(KEY_MESSAGE, message.first)
@@ -71,7 +68,7 @@ class CommentsAlertDialog() : DialogFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = CommentsAlertDialogBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -95,7 +92,10 @@ class CommentsAlertDialog() : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = true
         readArguments()
@@ -110,7 +110,6 @@ class CommentsAlertDialog() : DialogFragment(), View.OnClickListener {
     }
 
     private fun setupView() {
-
         binding.tvTitle.text = requireArguments().getString(KEY_TITLE)
         binding.tvSubTitle.text = requireArguments().getString(KEY_MESSAGE)
         binding.btnOkay.text = requireArguments().getString(KEY_OKAY_BUTTON)
@@ -139,21 +138,21 @@ class CommentsAlertDialog() : DialogFragment(), View.OnClickListener {
                 dismiss()
             }
             binding.btnOkay.id -> {
-                if(binding.commentsGroup.visibility == View.VISIBLE)
-                {
-                    if (!binding.etComments.text?.toString().isNullOrBlank()) {
+                if (binding.commentsGroup.visibility == View.VISIBLE) {
+                    if (!binding.etComments.text
+                            ?.toString()
+                            .isNullOrBlank()
+                    ) {
                         binding.tvErrorMessage.visibility = View.GONE
                         callback?.invoke(true, binding.etComments.fetchString())
                         dismiss()
-                    } else
+                    } else {
                         binding.tvErrorMessage.visibility = View.VISIBLE
-                }
-                else
-                {
+                    }
+                } else {
                     callback?.invoke(true, binding.etComments.fetchString())
                     dismiss()
                 }
-
             }
             binding.btnCancel.id -> {
                 dismiss()

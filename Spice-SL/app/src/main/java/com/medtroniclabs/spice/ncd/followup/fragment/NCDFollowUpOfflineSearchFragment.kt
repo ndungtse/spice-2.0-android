@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ncd.followup.fragment
 
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -9,8 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.GridLayoutManager
-import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.visible
@@ -32,20 +29,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class NCDFollowUpOfflineSearchFragment : BaseFragment(),
+class NCDFollowUpOfflineSearchFragment :
+    BaseFragment(),
     PatientSelectionListenerForFollowUpOffline {
-
     private lateinit var binding: FragmentNcdFollowUpOfflineSearchBinding
     private val viewModel: NCDFollowUpViewModel by activityViewModels()
     private val followUpAdapter: NCDFollowUpOfflineListAdapter by lazy {
         NCDFollowUpOfflineListAdapter(
-            this
+            this,
         )
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNcdFollowUpOfflineSearchBinding.inflate(inflater, container, false)
         return binding.root
@@ -60,13 +58,14 @@ class NCDFollowUpOfflineSearchFragment : BaseFragment(),
             }
     }
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
     }
-
 
     private fun hideProgressAfterDelay() {
         CoroutineScope(Dispatchers.Main).launch {
@@ -77,7 +76,8 @@ class NCDFollowUpOfflineSearchFragment : BaseFragment(),
 
     private fun attachObserver() {
         viewModel.getFollowUpData.observe(viewLifecycleOwner) { data ->
-            val villages = viewModel.filterByVillage.map { it.id?.toString().orEmpty() }
+            val villages = viewModel.filterByVillage
+                .map { it.id?.toString().orEmpty() }
                 .takeIf { it.any(String::isNotBlank) } ?: emptyList()
             val displayData = if (villages.isEmpty()) data else data.filter { it.villageId in villages }
 
@@ -95,7 +95,7 @@ class NCDFollowUpOfflineSearchFragment : BaseFragment(),
         viewModel.updateCallLiveData.observe(viewLifecycleOwner) { resources ->
             when (resources.state) {
                 ResourceState.LOADING -> {
-                  showProgress()
+                    showProgress()
                 }
 
                 ResourceState.SUCCESS -> {
@@ -105,9 +105,9 @@ class NCDFollowUpOfflineSearchFragment : BaseFragment(),
                             val intent = Intent(Intent.ACTION_DIAL).apply {
                                 SecuredPreference.putBoolean(
                                     SecuredPreference.EnvironmentKey.INITIAL_CALL.name,
-                                    true
+                                    true,
                                 )
-                                this.data = Uri.parse("tel:${phoneNumber}")
+                                this.data = Uri.parse("tel:$phoneNumber")
                             }
                             startActivity(intent)
                         }
@@ -129,7 +129,7 @@ class NCDFollowUpOfflineSearchFragment : BaseFragment(),
             viewModel,
             binding = binding,
             context = requireContext(),
-            followUpAdapter = followUpAdapter
+            followUpAdapter = followUpAdapter,
         )
     }
 
@@ -139,8 +139,8 @@ class NCDFollowUpOfflineSearchFragment : BaseFragment(),
                 item.copy(
                     isInitiated = true,
                     retryAttempts = item.retryAttempts?.minus(1) ?: 0,
-                    isCompleted = item.retryAttempts == 1L
-                )
+                    isCompleted = item.retryAttempts == 1L,
+                ),
             )
         } else {
             showCallDialError()
@@ -162,12 +162,12 @@ class NCDFollowUpOfflineSearchFragment : BaseFragment(),
         startActivity(intent)
     }
 
-
     override fun onSelectedPatientCard(item: NCDFollowUp) {
         viewModel.selectedFollowUpPatient = item
         val fragment = childFragmentManager.findFragmentByTag(NCDFollowUpDialogFragment.TAG)
         if (fragment == null) {
-            NCDFollowUpDialogFragment.newInstance(this)
+            NCDFollowUpDialogFragment
+                .newInstance(this)
                 .show(childFragmentManager, NCDFollowUpDialogFragment.TAG)
         }
     }
@@ -177,7 +177,7 @@ class NCDFollowUpOfflineSearchFragment : BaseFragment(),
         showProgress()
         followUpAdapter.submitData(listOf())
         viewModel.searchLiveDataForOffline(
-            if (viewModel.searchTextOffline.isNotBlank()) viewModel.searchTextOffline else ""
+            if (viewModel.searchTextOffline.isNotBlank()) viewModel.searchTextOffline else "",
         )
         if (SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.INITIAL_CALL.name)) {
             viewModel.getInitial()

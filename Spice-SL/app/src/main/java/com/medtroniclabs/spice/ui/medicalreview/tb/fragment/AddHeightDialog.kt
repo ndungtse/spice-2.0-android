@@ -43,15 +43,15 @@ class AddHeightDialog : DialogFragment(), View.OnClickListener {
     lateinit var connectivityManager: ConnectivityManager
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentAddWeightDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         isCancelable = false
         return binding.root
     }
-
 
     private fun getCurrentLocation() {
         val locationManager = SpiceLocationManager(requireContext())
@@ -62,7 +62,13 @@ class AddHeightDialog : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "AddHeightDialog"
-        fun newInstance(patientId: String?= null, memberId: String?= null,villageId:String?, householdId:String?): AddHeightDialog {
+
+        fun newInstance(
+            patientId: String? = null,
+            memberId: String? = null,
+            villageId: String?,
+            householdId: String?,
+        ): AddHeightDialog {
             val fragment = AddHeightDialog()
             fragment.arguments = Bundle().apply {
                 putString(DefinedParams.PatientId, patientId)
@@ -74,7 +80,10 @@ class AddHeightDialog : DialogFragment(), View.OnClickListener {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         getCurrentLocation()
@@ -97,7 +106,6 @@ class AddHeightDialog : DialogFragment(), View.OnClickListener {
 
                 ResourceState.ERROR -> {
                     binding.loader.gone()
-
                 }
             }
         }
@@ -133,16 +141,18 @@ class AddHeightDialog : DialogFragment(), View.OnClickListener {
             (activity as BaseActivity?)?.showErrorDialogue(
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
+                isNegativeButtonNeed = false,
             ) {
-
             }
         }
     }
 
-    private fun createBpAndWeightRequestModel(): BpAndWeightRequestModel {
-        return BpAndWeightRequestModel(
-            height = binding.etWeight.text?.trim().toString().toDoubleOrNull(),
+    private fun createBpAndWeightRequestModel(): BpAndWeightRequestModel =
+        BpAndWeightRequestModel(
+            height = binding.etWeight.text
+                ?.trim()
+                .toString()
+                .toDoubleOrNull(),
             encounter = MedicalReviewEncounter(
                 provenance = ProvanceDto(),
                 latitude = viewModel.lastLocation?.latitude,
@@ -152,29 +162,37 @@ class AddHeightDialog : DialogFragment(), View.OnClickListener {
                 startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
                 endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
                 villageId = arguments?.getString(DefinedParams.villageId),
-                householdId = arguments?.getString(DefinedParams.householdId)
-            )
+                householdId = arguments?.getString(DefinedParams.householdId),
+            ),
         )
-    }
 
-    private fun isHeightValid(): Boolean {
-        return MotherNeonateUtil.isValidInput(
+    private fun isHeightValid(): Boolean =
+        MotherNeonateUtil.isValidInput(
             binding.etWeight.text.toString(),
             binding.etWeight,
             binding.tvWeightErrorLabel,
             10.0..500.0,
             R.string.height_error,
             false,
-            requireContext()
+            requireContext(),
         )
-    }
 
     private val textWatcher = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        override fun beforeTextChanged(
+            s: CharSequence?,
+            start: Int,
+            count: Int,
+            after: Int,
+        ) {
             // Not needed for your use case
         }
 
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        override fun onTextChanged(
+            s: CharSequence?,
+            start: Int,
+            before: Int,
+            count: Int,
+        ) {
             // Not needed for your use case
         }
 

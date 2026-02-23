@@ -1,18 +1,8 @@
 package com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel
 
-import com.medtroniclabs.spice.model.medicalreview.BreastfeedingProblem
-import com.medtroniclabs.spice.model.medicalreview.ClinicalSummaryAndSigns
-import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
-import com.medtroniclabs.spice.model.medicalreview.Diarrhoea
-import com.medtroniclabs.spice.model.medicalreview.Examination
-import com.medtroniclabs.spice.model.medicalreview.Hiv
-import com.medtroniclabs.spice.model.medicalreview.Jaundice
-import com.medtroniclabs.spice.model.medicalreview.NonBreastfeedingProblem
-import com.medtroniclabs.spice.model.medicalreview.VerySevereDisease
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
@@ -22,7 +12,16 @@ import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.mappingkey.UnderTwoExaminationKeyMapping
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.model.medicalreview.BreastfeedingProblem
+import com.medtroniclabs.spice.model.medicalreview.ClinicalSummaryAndSigns
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
+import com.medtroniclabs.spice.model.medicalreview.Diarrhoea
+import com.medtroniclabs.spice.model.medicalreview.Examination
+import com.medtroniclabs.spice.model.medicalreview.Hiv
+import com.medtroniclabs.spice.model.medicalreview.Jaundice
+import com.medtroniclabs.spice.model.medicalreview.NonBreastfeedingProblem
+import com.medtroniclabs.spice.model.medicalreview.VerySevereDisease
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.MedicalReviewSummaryRepository
@@ -38,8 +37,8 @@ import javax.inject.Inject
 class UnderTwoMonthViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private var repository: UnderTwoMonthsRepository,
-    private var summaryRepository: MedicalReviewSummaryRepository
-) : BaseViewModel(dispatcherIO){
+    private var summaryRepository: MedicalReviewSummaryRepository,
+) : BaseViewModel(dispatcherIO) {
     @Inject
     lateinit var connectivityManager: ConnectivityManager
     var memberId: String? = null
@@ -51,9 +50,10 @@ class UnderTwoMonthViewModel @Inject constructor(
     var patientId: String? = null
     var lastLocation: Location? = null
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
-    var isRefresh: Boolean=false
-    var encounterId:String?=null
-    var patientReference:String?=null
+    var isRefresh: Boolean = false
+    var encounterId: String? = null
+    var patientReference: String? = null
+
     fun getStaticMetaData() {
         viewModelScope.launch(dispatcherIO) {
             underTwoMonthsMetaLiveData.postLoading()
@@ -67,7 +67,7 @@ class UnderTwoMonthViewModel @Inject constructor(
         examinationResultHashMap: HashMap<String, Any>,
         clinicalNotes: String,
         presentingComplaints: String,
-        prescriptionEncounterId: String?
+        prescriptionEncounterId: String?,
     ) {
         details.houseHoldId.let { hhId ->
             details.memberId?.let { memberId ->
@@ -80,12 +80,18 @@ class UnderTwoMonthViewModel @Inject constructor(
                             clinicalSummaryAndSigns = clinicalSummaryAndSigns.takeIf { it.isNotEmpty() },
                             examination = examination,
                             presentingComplaints = presentingComplaints.takeIf { it.isNotEmpty() },
-                            encounter = createUnderTwoMonthsEncounter(hhId, selectedPatientId, memberId,prescriptionEncounterId,villageId = details.villageId)
+                            encounter = createUnderTwoMonthsEncounter(
+                                hhId,
+                                selectedPatientId,
+                                memberId,
+                                prescriptionEncounterId,
+                                villageId = details.villageId,
+                            ),
                         )
 
                         createUnderTwoMonthsMedicalReviewLiveData.postLoading()
                         createUnderTwoMonthsMedicalReviewLiveData.postValue(
-                            repository.createMedicalReviewForUnderTwoMonths(underTwoMedicalReviewRequest)
+                            repository.createMedicalReviewForUnderTwoMonths(underTwoMedicalReviewRequest),
                         )
                     }
                 }
@@ -98,7 +104,7 @@ class UnderTwoMonthViewModel @Inject constructor(
         patientId: String,
         memberId: String,
         prescriptionEncounterId: String?,
-        villageId:String?
+        villageId: String?,
     ): MedicalReviewEncounter {
         val currentTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
         return MedicalReviewEncounter(
@@ -112,7 +118,7 @@ class UnderTwoMonthViewModel @Inject constructor(
             memberId = memberId,
             referred = true,
             provenance = ProvanceDto(),
-            villageId = villageId
+            villageId = villageId,
         )
     }
 
@@ -132,7 +138,7 @@ class UnderTwoMonthViewModel @Inject constructor(
             jaundice = jaundice,
             nonBreastfeedingProblem = nonBreastFeeding,
             breastfeedingProblem = breastFeeding,
-            hivInfection = hiv
+            hivInfection = hiv,
         )
     }
 
@@ -144,27 +150,35 @@ class UnderTwoMonthViewModel @Inject constructor(
                 var hiv = Hiv()
                 if (hivHashMap.containsKey(UnderTwoExaminationKeyMapping.Hiv.hasPositiveVirologicalTestForInfant)) {
                     hiv = hiv.copy(
-                        hasPositiveVirologicalTestForInfant = mapStringToBoolean(hivHashMap[UnderTwoExaminationKeyMapping.Hiv.hasPositiveVirologicalTestForInfant] as String)
+                        hasPositiveVirologicalTestForInfant = mapStringToBoolean(
+                            hivHashMap[UnderTwoExaminationKeyMapping.Hiv.hasPositiveVirologicalTestForInfant] as String,
+                        ),
                     )
                 }
                 if (hivHashMap.containsKey(UnderTwoExaminationKeyMapping.Hiv.isMotherPostiveAndChildNegative)) {
                     hiv = hiv.copy(
-                        isMotherPostiveAndChildNegative = mapStringToBoolean(hivHashMap[UnderTwoExaminationKeyMapping.Hiv.isMotherPostiveAndChildNegative] as String)
+                        isMotherPostiveAndChildNegative = mapStringToBoolean(
+                            hivHashMap[UnderTwoExaminationKeyMapping.Hiv.isMotherPostiveAndChildNegative] as String,
+                        ),
                     )
                 }
                 if (hivHashMap.containsKey(UnderTwoExaminationKeyMapping.Hiv.hasPositiveAntibodyTestForInfant)) {
                     hiv = hiv.copy(
-                        hasPositiveAntibodyTestForInfant = mapStringToBoolean(hivHashMap[UnderTwoExaminationKeyMapping.Hiv.hasPositiveAntibodyTestForInfant] as String)
+                        hasPositiveAntibodyTestForInfant = mapStringToBoolean(
+                            hivHashMap[UnderTwoExaminationKeyMapping.Hiv.hasPositiveAntibodyTestForInfant] as String,
+                        ),
                     )
                 }
                 if (hivHashMap.containsKey(UnderTwoExaminationKeyMapping.Hiv.isMotherPostiveAndInfantNotTested)) {
                     hiv = hiv.copy(
-                        isMotherPostiveAndInfantNotTested = mapStringToBoolean(hivHashMap[UnderTwoExaminationKeyMapping.Hiv.isMotherPostiveAndInfantNotTested] as String)
+                        isMotherPostiveAndInfantNotTested = mapStringToBoolean(
+                            hivHashMap[UnderTwoExaminationKeyMapping.Hiv.isMotherPostiveAndInfantNotTested] as String,
+                        ),
                     )
                 }
                 if (hivHashMap.containsKey(UnderTwoExaminationKeyMapping.Hiv.hasNegativeForMotherAndChild)) {
                     hiv = hiv.copy(
-                        hasNegativeForMotherAndChild = mapStringToBoolean(hivHashMap[UnderTwoExaminationKeyMapping.Hiv.hasNegativeForMotherAndChild] as String)
+                        hasNegativeForMotherAndChild = mapStringToBoolean(hivHashMap[UnderTwoExaminationKeyMapping.Hiv.hasNegativeForMotherAndChild] as String),
                     )
                 }
                 return hiv
@@ -181,58 +195,70 @@ class UnderTwoMonthViewModel @Inject constructor(
                 var breastfeedingProblem = BreastfeedingProblem()
                 if (breastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.BreastFeedingProblem.anyBreastfeedingDifficulty)) {
                     breastfeedingProblem = breastfeedingProblem.copy(
-                        anyBreastfeedingDifficulty = mapStringToBoolean(breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.anyBreastfeedingDifficulty] as String)
+                        anyBreastfeedingDifficulty = mapStringToBoolean(
+                            breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.anyBreastfeedingDifficulty] as String,
+                        ),
                     )
                 }
                 if (breastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.BreastFeedingProblem.lessThan8BreastfeedIn24hrs)) {
                     breastfeedingProblem = breastfeedingProblem.copy(
-                        lessThan8BreastfeedIn24hrs = mapStringToBoolean(breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.lessThan8BreastfeedIn24hrs] as String)
+                        lessThan8BreastfeedIn24hrs = mapStringToBoolean(
+                            breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.lessThan8BreastfeedIn24hrs] as String,
+                        ),
                     )
                 }
                 if (breastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.BreastFeedingProblem.switchingBreastFrequently)) {
                     breastfeedingProblem = breastfeedingProblem.copy(
-                        switchingBreastFrequently = mapStringToBoolean(breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.switchingBreastFrequently] as String)
+                        switchingBreastFrequently = mapStringToBoolean(
+                            breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.switchingBreastFrequently] as String,
+                        ),
                     )
                 }
                 if (breastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.BreastFeedingProblem.notIncreasingBFInIllness)) {
                     breastfeedingProblem = breastfeedingProblem.copy(
-                        notIncreasingBFInIllness = mapStringToBoolean(breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.notIncreasingBFInIllness] as String)
+                        notIncreasingBFInIllness = mapStringToBoolean(
+                            breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.notIncreasingBFInIllness] as String,
+                        ),
                     )
                 }
                 if (breastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.BreastFeedingProblem.receivesOtherFoodsOrDrinks)) {
                     breastfeedingProblem = breastfeedingProblem.copy(
-                        receivesOtherFoodsOrDrinks = mapStringToBoolean(breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.receivesOtherFoodsOrDrinks] as String)
+                        receivesOtherFoodsOrDrinks = mapStringToBoolean(
+                            breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.receivesOtherFoodsOrDrinks] as String,
+                        ),
                     )
                 }
 
                 if (breastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.BreastFeedingProblem.mouthUlcersOrThrush)) {
                     breastfeedingProblem = breastfeedingProblem.copy(
-                        mouthUlcersOrThrush = mapStringToBoolean(breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.mouthUlcersOrThrush] as String)
+                        mouthUlcersOrThrush = mapStringToBoolean(
+                            breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.mouthUlcersOrThrush] as String,
+                        ),
                     )
                 }
                 if (breastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.BreastFeedingProblem.underweight)) {
                     breastfeedingProblem = breastfeedingProblem.copy(
-                        underweight = mapStringToBoolean(breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.underweight] as String)
+                        underweight = mapStringToBoolean(breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.underweight] as String),
                     )
                 }
                 if (breastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.BreastFeedingProblem.positioning)) {
                     breastfeedingProblem = breastfeedingProblem.copy(
-                        positioning = breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.positioning] as String
+                        positioning = breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.positioning] as String,
                     )
                 }
                 if (breastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.BreastFeedingProblem.attachment)) {
                     breastfeedingProblem = breastfeedingProblem.copy(
-                        attachment = breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.attachment] as String
+                        attachment = breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.attachment] as String,
                     )
                 }
                 if (breastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.BreastFeedingProblem.suckling)) {
                     breastfeedingProblem = breastfeedingProblem.copy(
-                        suckling = breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.suckling] as String
+                        suckling = breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.suckling] as String,
                     )
                 }
                 if (breastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.BreastFeedingProblem.noFeedingProblem)) {
                     breastfeedingProblem = breastfeedingProblem.copy(
-                        noFeedingProblem = breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.noFeedingProblem] as String
+                        noFeedingProblem = breastfeedingHashMap[UnderTwoExaminationKeyMapping.BreastFeedingProblem.noFeedingProblem] as String,
                     )
                 }
                 return breastfeedingProblem
@@ -249,43 +275,57 @@ class UnderTwoMonthViewModel @Inject constructor(
                 var nonBreastfeedingProblem = NonBreastfeedingProblem()
                 if (nonBreastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.inappropriateReplacementFeeds)) {
                     nonBreastfeedingProblem = nonBreastfeedingProblem.copy(
-                        inappropriateReplacementFeeds = mapStringToBoolean(nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.inappropriateReplacementFeeds] as String)
+                        inappropriateReplacementFeeds = mapStringToBoolean(
+                            nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.inappropriateReplacementFeeds] as String,
+                        ),
                     )
                 }
                 if (nonBreastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.insufficientReplacementFeeds)) {
                     nonBreastfeedingProblem = nonBreastfeedingProblem.copy(
-                        insufficientReplacementFeeds = mapStringToBoolean(nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.insufficientReplacementFeeds] as String)
+                        insufficientReplacementFeeds = mapStringToBoolean(
+                            nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.insufficientReplacementFeeds] as String,
+                        ),
                     )
                 }
                 if (nonBreastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.incorrectlyPreparedMilk)) {
                     nonBreastfeedingProblem = nonBreastfeedingProblem.copy(
-                        incorrectlyPreparedMilk = mapStringToBoolean(nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.incorrectlyPreparedMilk] as String)
+                        incorrectlyPreparedMilk = mapStringToBoolean(
+                            nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.incorrectlyPreparedMilk] as String,
+                        ),
                     )
                 }
                 if (nonBreastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.useOfFeedingBottle)) {
                     nonBreastfeedingProblem = nonBreastfeedingProblem.copy(
-                        useOfFeedingBottle = mapStringToBoolean(nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.useOfFeedingBottle] as String)
+                        useOfFeedingBottle = mapStringToBoolean(
+                            nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.useOfFeedingBottle] as String,
+                        ),
                     )
                 }
                 if (nonBreastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.feedFormHIVPositiveMother)) {
                     nonBreastfeedingProblem = nonBreastfeedingProblem.copy(
-                        feedFormHIVPositiveMother = mapStringToBoolean(nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.feedFormHIVPositiveMother] as String)
+                        feedFormHIVPositiveMother = mapStringToBoolean(
+                            nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.feedFormHIVPositiveMother] as String,
+                        ),
                     )
                 }
 
                 if (nonBreastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.bottleFeeding)) {
                     nonBreastfeedingProblem = nonBreastfeedingProblem.copy(
-                        bottleFeeding = mapStringToBoolean(nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.bottleFeeding] as String)
+                        bottleFeeding = mapStringToBoolean(
+                            nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.bottleFeeding] as String,
+                        ),
                     )
                 }
                 if (nonBreastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.lowWeightForAge)) {
                     nonBreastfeedingProblem = nonBreastfeedingProblem.copy(
-                        lowWeightForAge = mapStringToBoolean(nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.lowWeightForAge] as String)
+                        lowWeightForAge = mapStringToBoolean(
+                            nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.lowWeightForAge] as String,
+                        ),
                     )
                 }
                 if (nonBreastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.thrush)) {
                     nonBreastfeedingProblem = nonBreastfeedingProblem.copy(
-                        thrush = nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.thrush] as String
+                        thrush = nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.thrush] as String,
                     )
                 }
                 return nonBreastfeedingProblem
@@ -302,27 +342,31 @@ class UnderTwoMonthViewModel @Inject constructor(
                 var jaundice = Jaundice()
                 if (verySevereDiseaseHashMap.containsKey(UnderTwoExaminationKeyMapping.Jaundice.yellowSkinLessThan24hrs)) {
                     jaundice = jaundice.copy(
-                        yellowSkinLessThan24hrs = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.Jaundice.yellowSkinLessThan24hrs] as String)
+                        yellowSkinLessThan24hrs = mapStringToBoolean(
+                            verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.Jaundice.yellowSkinLessThan24hrs] as String,
+                        ),
                     )
                 }
                 if (verySevereDiseaseHashMap.containsKey(UnderTwoExaminationKeyMapping.Jaundice.yellowPalmsAndSoles)) {
                     jaundice = jaundice.copy(
-                        yellowPalmsAndSoles = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.Jaundice.yellowPalmsAndSoles] as String)
+                        yellowPalmsAndSoles = mapStringToBoolean(
+                            verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.Jaundice.yellowPalmsAndSoles] as String,
+                        ),
                     )
                 }
                 if (verySevereDiseaseHashMap.containsKey(UnderTwoExaminationKeyMapping.Jaundice.jaundiceAppearing)) {
                     jaundice = jaundice.copy(
-                        jaundiceAppearing = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.Jaundice.jaundiceAppearing] as String)
+                        jaundiceAppearing = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.Jaundice.jaundiceAppearing] as String),
                     )
                 }
                 if (verySevereDiseaseHashMap.containsKey(UnderTwoExaminationKeyMapping.Jaundice.solesNotYellow)) {
                     jaundice = jaundice.copy(
-                        solesNotYellow = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.Jaundice.solesNotYellow] as String)
+                        solesNotYellow = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.Jaundice.solesNotYellow] as String),
                     )
                 }
                 if (verySevereDiseaseHashMap.containsKey(UnderTwoExaminationKeyMapping.Jaundice.noJaundice)) {
                     jaundice = jaundice.copy(
-                        noJaundice = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.Jaundice.noJaundice] as String)
+                        noJaundice = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.Jaundice.noJaundice] as String),
                     )
                 }
                 return jaundice
@@ -339,37 +383,45 @@ class UnderTwoMonthViewModel @Inject constructor(
                 var verySevereDisease = VerySevereDisease()
                 if (verySevereDiseaseHashMap.containsKey(UnderTwoExaminationKeyMapping.VerySevereDisease.stoppedFeeding)) {
                     verySevereDisease = verySevereDisease.copy(
-                        stoppedFeeding = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.VerySevereDisease.stoppedFeeding] as String)
+                        stoppedFeeding = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.VerySevereDisease.stoppedFeeding] as String),
                     )
                 }
                 if (verySevereDiseaseHashMap.containsKey(UnderTwoExaminationKeyMapping.VerySevereDisease.convulsion)) {
                     verySevereDisease = verySevereDisease.copy(
-                        convulsions = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.VerySevereDisease.convulsion] as String)
+                        convulsions = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.VerySevereDisease.convulsion] as String),
                     )
                 }
                 if (verySevereDiseaseHashMap.containsKey(UnderTwoExaminationKeyMapping.VerySevereDisease.movementOnStimulation)) {
                     verySevereDisease = verySevereDisease.copy(
-                        movementOnStimulation = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.VerySevereDisease.movementOnStimulation] as String)
+                        movementOnStimulation = mapStringToBoolean(
+                            verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.VerySevereDisease.movementOnStimulation] as String,
+                        ),
                     )
                 }
                 if (verySevereDiseaseHashMap.containsKey(UnderTwoExaminationKeyMapping.VerySevereDisease.severeChestIndrawing)) {
                     verySevereDisease = verySevereDisease.copy(
-                        severeChestIndrawing = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.VerySevereDisease.severeChestIndrawing] as String)
+                        severeChestIndrawing = mapStringToBoolean(
+                            verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.VerySevereDisease.severeChestIndrawing] as String,
+                        ),
                     )
                 }
                 if (verySevereDiseaseHashMap.containsKey(UnderTwoExaminationKeyMapping.VerySevereDisease.lowBodyTemperature)) {
                     verySevereDisease = verySevereDisease.copy(
-                        lowBodyTemperature = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.VerySevereDisease.lowBodyTemperature] as String)
+                        lowBodyTemperature = mapStringToBoolean(
+                            verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.VerySevereDisease.lowBodyTemperature] as String,
+                        ),
                     )
                 }
                 if (verySevereDiseaseHashMap.containsKey(UnderTwoExaminationKeyMapping.VerySevereDisease.skinPustules)) {
                     verySevereDisease = verySevereDisease.copy(
-                        skinPustules = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.VerySevereDisease.skinPustules] as String)
+                        skinPustules = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.VerySevereDisease.skinPustules] as String),
                     )
                 }
                 if (verySevereDiseaseHashMap.containsKey(UnderTwoExaminationKeyMapping.VerySevereDisease.umbilicusRedOrDrainingPus)) {
                     verySevereDisease = verySevereDisease.copy(
-                        umbilicusRedOrDrainingPus = mapStringToBoolean(verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.VerySevereDisease.umbilicusRedOrDrainingPus] as String)
+                        umbilicusRedOrDrainingPus = mapStringToBoolean(
+                            verySevereDiseaseHashMap[UnderTwoExaminationKeyMapping.VerySevereDisease.umbilicusRedOrDrainingPus] as String,
+                        ),
                     )
                 }
                 return verySevereDisease
@@ -394,19 +446,29 @@ class UnderTwoMonthViewModel @Inject constructor(
                 }
                 if (diarrhoeaHashMap.containsKey(UnderTwoExaminationKeyMapping.Diarrhoea.movementOnStimulation)) {
                     diarrhoea =
-                        diarrhoea.copy(movementOnStimulation = mapStringToBoolean(diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.movementOnStimulation] as String))
+                        diarrhoea.copy(
+                            movementOnStimulation = mapStringToBoolean(
+                                diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.movementOnStimulation] as String,
+                            ),
+                        )
                 }
                 if (diarrhoeaHashMap.containsKey(UnderTwoExaminationKeyMapping.Diarrhoea.noMovementOnStimulation)) {
                     diarrhoea =
-                        diarrhoea.copy(noMovementOnStimulation = mapStringToBoolean(diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.noMovementOnStimulation] as String))
+                        diarrhoea.copy(
+                            noMovementOnStimulation = mapStringToBoolean(
+                                diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.noMovementOnStimulation] as String,
+                            ),
+                        )
                 }
                 if (diarrhoeaHashMap.containsKey(UnderTwoExaminationKeyMapping.Diarrhoea.restlessOrIrritable)) {
                     diarrhoea =
-                        diarrhoea.copy(restlessOrIrritable = (diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.restlessOrIrritable] as? String)?.let {
-                            mapStringToBoolean(
-                                it
-                            )
-                        })
+                        diarrhoea.copy(
+                            restlessOrIrritable = (diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.restlessOrIrritable] as? String)?.let {
+                                mapStringToBoolean(
+                                    it,
+                                )
+                            },
+                        )
                 }
                 if (diarrhoeaHashMap.containsKey(UnderTwoExaminationKeyMapping.Diarrhoea.sunkenEyes)) {
                     diarrhoea =
@@ -422,16 +484,14 @@ class UnderTwoMonthViewModel @Inject constructor(
         return null
     }
 
-    private fun mapStringToBoolean(value: String): Boolean {
-        return value == DefinedParams.Yes
-    }
+    private fun mapStringToBoolean(value: String): Boolean = value == DefinedParams.Yes
 
     fun underTwoMonthsSummaryCreate(
         details: PatientListRespModel,
         submitCreateId: String,
         nextVisitDate: String?,
         selectedPatientStatus: String?,
-        submitCreatePatientReference: String
+        submitCreatePatientReference: String,
     ) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
@@ -441,12 +501,12 @@ class UnderTwoMonthViewModel @Inject constructor(
             val householdId = details.houseHoldId
             val villageId = details.villageId
 
-            if (patientId != null && memberId != null  && villageId != null) {
+            if (patientId != null && memberId != null && villageId != null) {
                 val convertedNextVisitDate = DateUtils.convertDateTimeToDate(
                     nextVisitDate,
                     DateUtils.DATE_ddMMyyyy,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    inUTC = true
+                    inUTC = true,
                 )
 
                 val response = summaryRepository.createSummarySubmit(
@@ -459,7 +519,7 @@ class UnderTwoMonthViewModel @Inject constructor(
                     referralTicketType = MedicalReviewTypeEnums.ICCM.name,
                     assessmentName = MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name,
                     householdId = householdId,
-                    villageId = villageId
+                    villageId = villageId,
                 )
 
                 summaryCreateResponse.postValue(response)

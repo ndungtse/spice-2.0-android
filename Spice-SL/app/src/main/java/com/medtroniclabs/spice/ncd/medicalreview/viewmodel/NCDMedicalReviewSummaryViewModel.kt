@@ -20,27 +20,31 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDMedicalReviewSummaryViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
+    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
 ) : BaseViewModel(dispatcherIO) {
     val summaryResponse = MutableLiveData<Resource<MRSummaryResponse>>()
     val createNCDMRSummaryCreate = MutableLiveData<Resource<HashMap<String, Any>>>()
     var nextFollowupDate: String? = null
+
     fun fetchSummaryResponse(request: MedicalReviewResponse) {
         viewModelScope.launch(dispatcherIO) {
             summaryResponse.postLoading()
             summaryResponse.postValue(
-                ncdMedicalReviewRepository.fetchNCDMRSummary(request)
+                ncdMedicalReviewRepository.fetchNCDMRSummary(request),
             )
         }
     }
 
-    fun createNCDMRSummaryCreate(request: NCDMRSummaryRequestResponse, menuId: String? = null) {
+    fun createNCDMRSummaryCreate(
+        request: NCDMRSummaryRequestResponse,
+        menuId: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             createNCDMRSummaryCreate.postLoading()
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDMedicalReviewSummaryCreation + " " + menuId,
-                isCompleted = true
+                isCompleted = true,
             )
             createNCDMRSummaryCreate.postValue(ncdMedicalReviewRepository.createNCDMRSummaryCreate(request))
         }

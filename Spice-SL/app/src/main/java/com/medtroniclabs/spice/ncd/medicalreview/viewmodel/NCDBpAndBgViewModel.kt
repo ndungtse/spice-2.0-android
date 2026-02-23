@@ -31,6 +31,7 @@ class NCDBpAndBgViewModel @Inject constructor(
     var glucoseLogListResponseLiveData = MutableLiveData<Resource<BPBGListModel>>()
     val onBPValueSelectedObserver = MutableLiveData<GraphModel>()
     val onBGValueSelectedObserver = MutableLiveData<GraphModel>()
+
     fun bpLogList(request: BPBGListModel) {
         viewModelScope.launch(dispatcherIO) {
             bpLogListResponseLiveData.postLoading()
@@ -38,7 +39,10 @@ class NCDBpAndBgViewModel @Inject constructor(
         }
     }
 
-    fun glucoseLogList(request: BPBGListModel,forward: Boolean? = null) {
+    fun glucoseLogList(
+        request: BPBGListModel,
+        forward: Boolean? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             glucoseLogListResponseLiveData.postLoading()
             glucoseLogListResponseLiveData.postValue(glucoseRepo.glucoseLogList(request))

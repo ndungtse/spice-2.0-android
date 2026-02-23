@@ -38,14 +38,18 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
     private lateinit var cgCalender: TagListCustomView
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentDashboardBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         clickListeners()
         attachObservers()
@@ -54,8 +58,9 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
 
     private fun attachObservers() {
         viewModel.menuListLiveData.observe(viewLifecycleOwner) { menus ->
-            if (!menus.isNullOrEmpty())
+            if (!menus.isNullOrEmpty()) {
                 initializeChipItem()
+            }
         }
         viewModel.userDashboardDetails.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
@@ -88,7 +93,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         cgCalender = TagListCustomView(
             requireContext(),
             binding.cgCalender,
-            isSelectionRequired = true
+            isSelectionRequired = true,
         ) { _, _, isChecked ->
             if (isChecked) {
                 val isVisible =
@@ -111,7 +116,9 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun resetCounts() {
-        viewModel.userDashboardDetails.value?.data?.let { showView(true, it) }
+        viewModel.userDashboardDetails.value
+            ?.data
+            ?.let { showView(true, it) }
     }
 
     fun getChip(): ArrayList<ChipViewItemModel> {
@@ -121,45 +128,48 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                 id = 1,
                 name = CommonEnums.TODAY.title,
                 cultureValue = getString(CommonEnums.TODAY.cultureValue),
-                value = CommonEnums.TODAY.value
-            )
+                value = CommonEnums.TODAY.value,
+            ),
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 2,
                 name = CommonEnums.YESTERDAY.title,
                 cultureValue = getString(CommonEnums.YESTERDAY.cultureValue),
-                value = CommonEnums.YESTERDAY.value
-            )
+                value = CommonEnums.YESTERDAY.value,
+            ),
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 3,
                 name = CommonEnums.WEEK.title,
                 cultureValue = getString(CommonEnums.WEEK.cultureValue),
-                value = CommonEnums.WEEK.value
-            )
+                value = CommonEnums.WEEK.value,
+            ),
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 4,
                 name = CommonEnums.MONTH.title,
                 cultureValue = getString(CommonEnums.MONTH.cultureValue),
-                value = CommonEnums.MONTH.value
-            )
+                value = CommonEnums.MONTH.value,
+            ),
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 5,
                 name = CommonEnums.CUSTOMISE.title,
                 cultureValue = getString(CommonEnums.CUSTOMISE.cultureValue),
-                value = CommonEnums.CUSTOMISE.value
-            )
+                value = CommonEnums.CUSTOMISE.value,
+            ),
         )
         return chipItemList
     }
 
-    private fun showView(customize: Boolean, entity: NCDUserDashboardResponse) {
+    private fun showView(
+        customize: Boolean,
+        entity: NCDUserDashboardResponse,
+    ) {
         viewModel.menuListLiveData.value?.let { menus ->
             if (menus.isNotEmpty()) {
                 val userDashboardList = ArrayList<Triple<String, Int, Int>>()
@@ -170,8 +180,8 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                                 Triple(
                                     getString(R.string.screened),
                                     screenedCount,
-                                    R.drawable.ic_screening
-                                )
+                                    R.drawable.ic_screening,
+                                ),
                             )
                         }
                         it.referred?.let { referredCount ->
@@ -179,8 +189,8 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                                 Triple(
                                     getString(R.string.referred),
                                     referredCount,
-                                    R.drawable.ic_referred
-                                )
+                                    R.drawable.ic_referred,
+                                ),
                             )
                         }
                     }
@@ -190,8 +200,8 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                                 Triple(
                                     getString(R.string.registered),
                                     registeredCount,
-                                    R.drawable.ic_registration
-                                )
+                                    R.drawable.ic_registration,
+                                ),
                             )
                         }
                     }
@@ -201,8 +211,8 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                                 Triple(
                                     getString(R.string.assessed),
                                     assessedCount,
-                                    R.drawable.ic_assessment
-                                )
+                                    R.drawable.ic_assessment,
+                                ),
                             )
                         }
                     }
@@ -212,8 +222,8 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                                 Triple(
                                     getString(R.string.prescriptions_dispensed),
                                     screenedCount,
-                                    R.drawable.ic_dispense
-                                )
+                                    R.drawable.ic_dispense,
+                                ),
                             )
                         }
                     }
@@ -223,8 +233,8 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                                 Triple(
                                     getString(R.string.investigations_conducted),
                                     assessedCount,
-                                    R.drawable.ic_investigation
-                                )
+                                    R.drawable.ic_investigation,
+                                ),
                             )
                         }
                     }
@@ -234,8 +244,8 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                                 Triple(
                                     getString(R.string.reviews_conducted),
                                     registeredCount,
-                                    R.drawable.ic_lifestyle
-                                )
+                                    R.drawable.ic_lifestyle,
+                                ),
                             )
                         }
                     }
@@ -245,8 +255,8 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                                 Triple(
                                     getString(R.string.counsellings_conducted),
                                     referredCount,
-                                    R.drawable.ic_psycological_menu
-                                )
+                                    R.drawable.ic_psycological_menu,
+                                ),
                             )
                         }
                     }
@@ -255,7 +265,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                     layoutManager =
                         GridLayoutManager(
                             requireContext(),
-                            if (requireContext().isTablet()) 3 else 1
+                            if (requireContext().isTablet()) 3 else 1,
                         )
                     adapter = UserDashboardAdapter(customize, userDashboardList)
                 }
@@ -263,37 +273,47 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun showDatePickerDialog(isFromDate: Boolean, text: String?) {
+    private fun showDatePickerDialog(
+        isFromDate: Boolean,
+        text: String?,
+    ) {
         var date: Triple<Int?, Int?, Int?>? = null
-        if (!text.isNullOrBlank())
+        if (!text.isNullOrBlank()) {
             date = DateUtils.convertedMMMToddMM(text)
+        }
 
         val fromDate = binding.etFromDate.text?.toString()
 
         val datePickerDialog = ViewUtils.showDatePicker(
             context = requireContext(),
             date = date,
-            minDate = if (isFromDate) null else DateUtils.convertDateToLong(
-                fromDate,
-                DATE_ddMMyyyy
-            ),
-            maxDate = System.currentTimeMillis()
+            minDate = if (isFromDate) {
+                null
+            } else {
+                DateUtils.convertDateToLong(
+                    fromDate,
+                    DATE_ddMMyyyy,
+                )
+            },
+            maxDate = System.currentTimeMillis(),
         ) { _, year, month, dayOfMonth ->
-            DateUtils.convertDateTimeToDate(
-                "$dayOfMonth-$month-$year",
-                DateUtils.DATE_FORMAT_ddMMyyyy,
-                DATE_ddMMyyyy
-            ).let { stringDate ->
-                if (isFromDate) {
-                    resetCounts()
-                    binding.etFromDate.text = stringDate
-                    binding.etToDate.text = getString(R.string.empty)
-                } else {
-                    binding.etToDate.text = stringDate
+            DateUtils
+                .convertDateTimeToDate(
+                    "$dayOfMonth-$month-$year",
+                    DateUtils.DATE_FORMAT_ddMMyyyy,
+                    DATE_ddMMyyyy,
+                ).let { stringDate ->
+                    if (isFromDate) {
+                        resetCounts()
+                        binding.etFromDate.text = stringDate
+                        binding.etToDate.text = getString(R.string.empty)
+                    } else {
+                        binding.etToDate.text = stringDate
+                    }
                 }
-            }
-            if (!binding.etFromDate.text.isNullOrEmpty() && !binding.etToDate.text.isNullOrEmpty())
+            if (!binding.etFromDate.text.isNullOrEmpty() && !binding.etToDate.text.isNullOrEmpty()) {
                 getDashboardList(true)
+            }
         }
         datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay)) { dg, _ ->
             datePickerDialog.onClick(dg, DialogInterface.BUTTON_POSITIVE)
@@ -316,7 +336,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                         hideDatePicker()
                         val request = NCDUserDashboardRequest(
                             sortField = model.value,
-                            userId = SecuredPreference.getUserFhirId()
+                            userId = SecuredPreference.getUserFhirId(),
                         )
                         constructRequest(request)
                     }
@@ -331,15 +351,15 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                         binding.etFromDate.text.toString(),
                         DATE_ddMMyyyy,
                         DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        inUTC = true
+                        inUTC = true,
                     ),
                     endDate = DateUtils.getEndDate(
                         endDate,
                         DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        inUTC = true
-                    )
+                        inUTC = true,
+                    ),
                 ),
-                userId = SecuredPreference.getUserFhirId()
+                userId = SecuredPreference.getUserFhirId(),
             )
             constructRequest(request)
         }
@@ -368,7 +388,10 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
             }
 
             binding.etToDate.id -> {
-                if (binding.etFromDate.text.toString().isNotEmpty()) {
+                if (binding.etFromDate.text
+                        .toString()
+                        .isNotEmpty()
+                ) {
                     showDatePickerDialog(false, binding.etToDate.text.toString())
                 }
             }
@@ -377,8 +400,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "DashboardFragment"
-        fun newInstance(): DashboardFragment {
-            return DashboardFragment()
-        }
+
+        fun newInstance(): DashboardFragment = DashboardFragment()
     }
 }

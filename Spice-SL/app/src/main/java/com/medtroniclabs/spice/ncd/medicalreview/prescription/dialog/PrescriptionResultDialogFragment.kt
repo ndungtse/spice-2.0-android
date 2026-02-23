@@ -51,14 +51,14 @@ import com.medtroniclabs.spice.ncd.data.PrescriptionResults
 import com.medtroniclabs.spice.ncd.data.RecentBGLogs
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.viewmodel.NCDPrescriptionViewModel
 
-
 class PrescriptionResultDialogFragment : DialogFragment() {
-
     lateinit var binding: FragmentPrescriptionResultDialogBinding
     private val prescriptionViewModel: NCDPrescriptionViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPrescriptionResultDialogBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -71,16 +71,18 @@ class PrescriptionResultDialogFragment : DialogFragment() {
         isCancelable = false
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         attachObserver()
     }
 
     companion object {
         const val TAG = "PrescriptionResultDialogFragment"
-        fun newInstance(): PrescriptionResultDialogFragment {
-            return PrescriptionResultDialogFragment()
-        }
+
+        fun newInstance(): PrescriptionResultDialogFragment = PrescriptionResultDialogFragment()
     }
 
     private fun attachObserver() {
@@ -90,7 +92,7 @@ class PrescriptionResultDialogFragment : DialogFragment() {
                     MedicationNudgeDialogueView(
                         Modifier,
                         bloodGlucoseList,
-                        resourceState.prescriptionResults
+                        resourceState.prescriptionResults,
                     )
                 }
             }
@@ -101,7 +103,7 @@ class PrescriptionResultDialogFragment : DialogFragment() {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
@@ -109,15 +111,18 @@ class PrescriptionResultDialogFragment : DialogFragment() {
     fun MedicationNudgeDialogueView(
         modifier: Modifier,
         bloodGlucoseList: ArrayList<RecentBGLogs>,
-        prescriptionResults: ArrayList<PrescriptionResults>
+        prescriptionResults: ArrayList<PrescriptionResults>,
     ) {
         Surface(
             modifier = modifier,
-            shape = MaterialTheme.shapes.medium.copy(androidx.compose.foundation.shape.CornerSize(8.dp)),
-            color = colorResource(id = R.color.white)
+            shape = MaterialTheme.shapes.medium.copy(
+                androidx.compose.foundation.shape
+                    .CornerSize(8.dp),
+            ),
+            color = colorResource(id = R.color.white),
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 TitleDialogueView(stringResource(id = R.string.treatment_intensification))
                 CardContentView(Modifier, bloodGlucoseList)
@@ -126,11 +131,10 @@ class PrescriptionResultDialogFragment : DialogFragment() {
                 Divider(thickness = (0.5).dp, color = colorResource(id = R.color.gray_bg_site))
                 CardBottomView(
                     Modifier
-                        .align(Alignment.End)
+                        .align(Alignment.End),
                 )
             }
         }
-
     }
 
     @Composable
@@ -139,12 +143,14 @@ class PrescriptionResultDialogFragment : DialogFragment() {
             modifier = modifier
                 .padding(16.dp),
         ) {
-            Button(shape = RoundedCornerShape(4.dp),
+            Button(
+                shape = RoundedCornerShape(4.dp),
                 contentPadding = PaddingValues(horizontal = 48.dp, vertical = 16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.cobalt_blue)),
                 onClick = {
                     onDoneClicked()
-                }) {
+                },
+            ) {
                 Text(text = stringResource(id = R.string.ok))
             }
         }
@@ -159,12 +165,15 @@ class PrescriptionResultDialogFragment : DialogFragment() {
         prescriptionResult.forEach { result ->
             result.apply {
                 var name = ""
-                if (medicationName != null)
+                if (medicationName != null) {
                     name += medicationName
-                if (dosageUnitValue != null && dosageUnitName != null)
+                }
+                if (dosageUnitValue != null && dosageUnitName != null) {
                     name = "$name ( $dosageUnitValue $dosageUnitName )"
-                if (dosageFrequencyName != null)
+                }
+                if (dosageFrequencyName != null) {
                     name = "$name $dosageFrequencyName"
+                }
                 medicationNameList.add(name)
             }
         }
@@ -176,46 +185,55 @@ class PrescriptionResultDialogFragment : DialogFragment() {
     }
 
     @Composable
-    private fun PrescriptionDetailView(modifier: Modifier, medicationNameDetails: String?) {
+    private fun PrescriptionDetailView(
+        modifier: Modifier,
+        medicationNameDetails: String?,
+    ) {
         Row(modifier = modifier.padding(horizontal = 24.dp, vertical = 10.dp)) {
             Text(
                 text = stringResource(id = R.string.presciption_since_last_3),
                 fontFamily = FontFamily(Font(R.font.inter_regular)),
                 fontSize = TextUnit(16f, TextUnitType.Sp),
-                color = colorResource(id = R.color.table_title)
+                color = colorResource(id = R.color.table_title),
             )
             Spacer(
                 modifier = Modifier
-                    .width(8.dp)
+                    .width(8.dp),
             )
             Text(
                 text = medicationNameDetails ?: stringResource(id = R.string.hyphen_symbol),
                 fontFamily = FontFamily(Font(R.font.inter_regular)),
                 fontSize = TextUnit(16f, TextUnitType.Sp),
-                color = colorResource(id = R.color.secondary_black)
+                color = colorResource(id = R.color.secondary_black),
             )
         }
     }
 
     @Composable
-    fun CardContentView(modifier: Modifier, bgList: ArrayList<RecentBGLogs>) {
+    fun CardContentView(
+        modifier: Modifier,
+        bgList: ArrayList<RecentBGLogs>,
+    ) {
         Column(modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
             HeaderCardContent(
                 stringResource(id = R.string.medication_nudege_card_header_text_prefix),
-                stringResource(id = R.string.medication_nudege_card_header_text_sufix)
+                stringResource(id = R.string.medication_nudege_card_header_text_sufix),
             )
             MedicationNudgeTable(Modifier, bgList)
         }
     }
 
     @Composable
-    fun MedicationNudgeTable(modifier: Modifier, bgList: ArrayList<RecentBGLogs>) {
+    fun MedicationNudgeTable(
+        modifier: Modifier,
+        bgList: ArrayList<RecentBGLogs>,
+    ) {
         Column(
             modifier = modifier.border(
                 width = (0.5).dp,
                 color = colorResource(id = R.color.border_color_medication),
-                shape = RoundedCornerShape(8.dp)
-            )
+                shape = RoundedCornerShape(8.dp),
+            ),
         ) {
             MedicationNudgeTableRow(
                 stringResource(id = R.string.glucose_fbs),
@@ -223,12 +241,12 @@ class PrescriptionResultDialogFragment : DialogFragment() {
                 stringResource(id = R.string.glucose_hba1c),
                 stringResource(id = R.string.review_date),
                 colorResource(id = R.color.table_title),
-                TextUnit(16f, TextUnitType.Sp)
+                TextUnit(16f, TextUnitType.Sp),
             )
             Divider(
                 modifier = Modifier,
                 color = colorResource(id = R.color.border_color_medication),
-                thickness = (0.5).dp
+                thickness = (0.5).dp,
             )
             LazyColumn {
                 itemsIndexed(bgList) { index, recentBg ->
@@ -237,17 +255,17 @@ class PrescriptionResultDialogFragment : DialogFragment() {
                             MedicationNudgeTableRow(
                                 fbs = getGlucoseValue(
                                     recentBg.glucoseValue,
-                                    recentBg.glucoseUnit
+                                    recentBg.glucoseUnit,
                                 ),
                                 rbs = stringResource(id = R.string.hyphen_symbol),
                                 hba1c = getGlucoseValue(
                                     recentBg.hba1c,
-                                    recentBg.hba1cUnit
+                                    recentBg.hba1cUnit,
                                 ),
                                 reviewDate = getReviewDate(recentBg.glucoseDateTime)
                                     ?: stringResource(id = R.string.hyphen_symbol),
                                 colorResource = colorResource(id = R.color.secondary_black),
-                                textUnit = TextUnit(16f, TextUnitType.Sp)
+                                textUnit = TextUnit(16f, TextUnitType.Sp),
                             )
                         }
 
@@ -256,14 +274,16 @@ class PrescriptionResultDialogFragment : DialogFragment() {
                                 fbs = stringResource(id = R.string.hyphen_symbol),
                                 rbs = getGlucoseValue(
                                     recentBg.glucoseValue,
-                                    recentBg.glucoseUnit
+                                    recentBg.glucoseUnit,
                                 ),
-                                hba1c = getGlucoseValue(recentBg.hba1c,
-                                    recentBg.hba1cUnit),
+                                hba1c = getGlucoseValue(
+                                    recentBg.hba1c,
+                                    recentBg.hba1cUnit,
+                                ),
                                 reviewDate = getReviewDate(recentBg.glucoseDateTime)
                                     ?: stringResource(id = R.string.hyphen_symbol),
                                 colorResource = colorResource(id = R.color.secondary_black),
-                                textUnit = TextUnit(16f, TextUnitType.Sp)
+                                textUnit = TextUnit(16f, TextUnitType.Sp),
                             )
                         }
 
@@ -271,11 +291,13 @@ class PrescriptionResultDialogFragment : DialogFragment() {
                             MedicationNudgeTableRow(
                                 fbs = stringResource(id = R.string.hyphen_symbol),
                                 rbs = stringResource(id = R.string.hyphen_symbol),
-                                hba1c = getGlucoseValue(recentBg.hba1c,
-                                    recentBg.hba1cUnit),
+                                hba1c = getGlucoseValue(
+                                    recentBg.hba1c,
+                                    recentBg.hba1cUnit,
+                                ),
                                 reviewDate = getReviewDate(recentBg.glucoseDateTime),
                                 colorResource = colorResource(id = R.color.secondary_black),
-                                textUnit = TextUnit(16f, TextUnitType.Sp)
+                                textUnit = TextUnit(16f, TextUnitType.Sp),
                             )
                         }
                     }
@@ -283,7 +305,7 @@ class PrescriptionResultDialogFragment : DialogFragment() {
                         Divider(
                             modifier = Modifier,
                             color = colorResource(id = R.color.border_color_medication),
-                            thickness = (0.5).dp
+                            thickness = (0.5).dp,
                         )
                     }
                 }
@@ -291,8 +313,11 @@ class PrescriptionResultDialogFragment : DialogFragment() {
         }
     }
 
-    private fun getGlucoseValue(glucoseValue: Double?, glucoseUnit: String?): String {
-        return glucoseValue?.let { value ->
+    private fun getGlucoseValue(
+        glucoseValue: Double?,
+        glucoseUnit: String?,
+    ): String =
+        glucoseValue?.let { value ->
             val formattedValue = CommonUtils.getDecimalFormatted(value)
             if (glucoseUnit != null) {
                 "$formattedValue $glucoseUnit"
@@ -300,16 +325,13 @@ class PrescriptionResultDialogFragment : DialogFragment() {
                 formattedValue
             }
         } ?: getString(R.string.hyphen_symbol)
-    }
 
     private fun getReviewDate(bgTakenOn: String?): String {
-
         if (bgTakenOn != null) {
-
             return DateUtils.convertDateTimeToDate(
                 bgTakenOn,
                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                DateUtils.DATE_FORMAT_ddMMMyyyy
+                DateUtils.DATE_FORMAT_ddMMMyyyy,
             )
         }
 
@@ -323,12 +345,12 @@ class PrescriptionResultDialogFragment : DialogFragment() {
         hba1c: String,
         reviewDate: String,
         colorResource: Color,
-        textUnit: TextUnit
+        textUnit: TextUnit,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(8.dp),
         ) {
             RowValueText(modifier = Modifier.weight(1f), text = fbs, colorResource, textUnit)
             RowValueText(modifier = Modifier.weight(1f), text = rbs, colorResource, textUnit)
@@ -337,9 +359,13 @@ class PrescriptionResultDialogFragment : DialogFragment() {
         }
     }
 
-
     @Composable
-    fun RowValueText(modifier: Modifier, text: String, colorResource: Color, textUnit: TextUnit) {
+    fun RowValueText(
+        modifier: Modifier,
+        text: String,
+        colorResource: Color,
+        textUnit: TextUnit,
+    ) {
         Text(
             modifier = modifier,
             text = text,
@@ -350,9 +376,11 @@ class PrescriptionResultDialogFragment : DialogFragment() {
         )
     }
 
-
     @Composable
-    fun HeaderCardContent(titlePrefix: String, titleSuffix: String) {
+    fun HeaderCardContent(
+        titlePrefix: String,
+        titleSuffix: String,
+    ) {
         val annotatedString = buildAnnotatedString {
             append(titlePrefix)
             withStyle(style = SpanStyle(colorResource(id = R.color.a_red_error))) {
@@ -363,7 +391,7 @@ class PrescriptionResultDialogFragment : DialogFragment() {
             Text(
                 text = annotatedString,
                 fontFamily = FontFamily(Font(R.font.inter_bold, FontWeight(700))),
-                fontSize = TextUnit(16f, TextUnitType.Sp)
+                fontSize = TextUnit(16f, TextUnitType.Sp),
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -372,20 +400,20 @@ class PrescriptionResultDialogFragment : DialogFragment() {
     @Composable
     fun TitleDialogueView(title: String) {
         Surface(
-            modifier = Modifier.fillMaxWidth(), color = colorResource(id = R.color.gray_bg_site)
+            modifier = Modifier.fillMaxWidth(),
+            color = colorResource(id = R.color.gray_bg_site),
         ) {
             Surface(
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
-                color = Color.Unspecified
+                color = Color.Unspecified,
             ) {
                 Text(
                     text = title,
                     color = colorResource(id = R.color.secondary_black),
                     fontFamily = FontFamily(Font(R.font.inter_bold)),
-                    fontSize = TextUnit(16f, TextUnitType.Sp)
+                    fontSize = TextUnit(16f, TextUnitType.Sp),
                 )
             }
         }
     }
-
 }

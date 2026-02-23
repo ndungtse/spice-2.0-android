@@ -8,11 +8,13 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDFollowUpLostViewModel @Inject constructor() : ViewModel() {
     var triggerGetStatus = MutableLiveData<Boolean>()
+
     fun triggerGetStatus() {
         triggerGetStatus.postValue(true)
     }
 
     var searchLiveData = MutableLiveData<Boolean>()
+
     fun searchLiveData() {
         searchLiveData.postValue(true)
     }

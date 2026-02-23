@@ -5,5 +5,5 @@ data class NCDSiteRoleModel(
     val skip: Int? = null,
     val roleName: String? = null,
     val tenantId: Long? = null,
-    val searchTerm: String? = null
+    val searchTerm: String? = null,
 )

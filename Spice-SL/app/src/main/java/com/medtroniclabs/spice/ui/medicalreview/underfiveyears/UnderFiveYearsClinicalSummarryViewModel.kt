@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.underfiveyears
 
 import android.content.Context
-import com.medtroniclabs.spice.model.medicalreview.ClinicalSummaryAndSigns
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +10,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.MeasurementDefinedParams
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.model.medicalreview.ClinicalSummaryAndSigns
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreRequest
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
 import com.medtroniclabs.spice.network.resource.Resource
@@ -25,9 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UnderFiveYearsClinicalSummaryViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var repository: UnderFiveYearsRepository
+    private var repository: UnderFiveYearsRepository,
 ) : ViewModel() {
-
     val resultMotherVitaminHashMap = HashMap<String, Any>()
     val albendazoleHashMap = HashMap<String, Any>()
     var selectedImmunisationStatus: String? = null
@@ -35,7 +34,6 @@ class UnderFiveYearsClinicalSummaryViewModel @Inject constructor(
     val summaryMetaListItems = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
     val summaryMuacMetaItems = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
     val wazWhzScoreResponseLiveData = MutableLiveData<Resource<WazWhzScoreResponse>>()
-
 
     fun updateWeight(weight: String) {
         val isEmpty = weight.isEmpty()
@@ -91,13 +89,15 @@ class UnderFiveYearsClinicalSummaryViewModel @Inject constructor(
 
     fun updateTemperature(temperature: String) {
         val temperatureGiven = temperature.isEmpty()
-        val temperatureInt = if (temperatureGiven) null else {
+        val temperatureInt = if (temperatureGiven) {
+            null
+        } else {
             temperature.toIntOrNull()
         }
         val temperatureUnit = if (temperatureGiven) null else MeasurementDefinedParams.Celsius
         clinicalSummaryAndSigns = clinicalSummaryAndSigns.copy(
             temperature = temperatureInt,
-            temperatureUnit = temperatureUnit
+            temperatureUnit = temperatureUnit,
         )
     }
 
@@ -106,23 +106,33 @@ class UnderFiveYearsClinicalSummaryViewModel @Inject constructor(
             clinicalSummaryAndSigns.copy(immunisationStatus = selectedImmunisationStatus)
     }
 
-    fun updateRespiratoryRate(rate: String, repeatRate: String) {
+    fun updateRespiratoryRate(
+        rate: String,
+        repeatRate: String,
+    ) {
         val rateInpData = rate.toIntOrNull()
         val repeatInpData = repeatRate.toIntOrNull()
         clinicalSummaryAndSigns = clinicalSummaryAndSigns.copy(
-            respirationRate = listOfNotNull(rateInpData, repeatInpData)
+            respirationRate = listOfNotNull(rateInpData, repeatInpData),
         )
     }
 
-    fun updateMuac(muac: Double, context: Context) {
+    fun updateMuac(
+        muac: Double,
+        context: Context,
+    ) {
         val muacStatus = getMuacStatus(muac, context)
         clinicalSummaryAndSigns = clinicalSummaryAndSigns.copy(
             muacInCentimeter = muac,
-            muacStatus = muacStatus
+            muacStatus = muacStatus,
         )
     }
-    private fun getMuacStatus(muacValue: Double, context: Context): String? {
-        return if (muacValue <= DefinedParams.RED_MAX_MUAC) {
+
+    private fun getMuacStatus(
+        muacValue: Double,
+        context: Context,
+    ): String? =
+        if (muacValue <= DefinedParams.RED_MAX_MUAC) {
             context.getString(R.string.red)
         } else if (muacValue > DefinedParams.RED_MAX_MUAC && muacValue <= DefinedParams.YELLOW_MAX_MUAC) {
             context.getString(R.string.yellow)
@@ -131,15 +141,14 @@ class UnderFiveYearsClinicalSummaryViewModel @Inject constructor(
         } else {
             null
         }
-    }
 
     fun getImmunisationStatusMetaItems() {
         viewModelScope.launch(dispatcherIO) {
             summaryMetaListItems.postLoading()
             summaryMetaListItems.postValue(
                 repository.getImmunisationStatusMetaItems(
-                    MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name
-                )
+                    MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name,
+                ),
             )
         }
     }
@@ -149,19 +158,18 @@ class UnderFiveYearsClinicalSummaryViewModel @Inject constructor(
             summaryMuacMetaItems.postLoading()
             summaryMuacMetaItems.postValue(
                 repository.getMuAcStatusMetaItems(
-                    MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name
-                )
+                    MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name,
+                ),
             )
         }
     }
+
     fun getWazWhzScore(request: WazWhzScoreRequest) {
         viewModelScope.launch(dispatcherIO) {
             wazWhzScoreResponseLiveData.postLoading()
             wazWhzScoreResponseLiveData.postValue(
-                repository.getWazWhzScore(request)
+                repository.getWazWhzScore(request),
             )
         }
     }
-
-
 }

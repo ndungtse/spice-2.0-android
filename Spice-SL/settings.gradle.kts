@@ -22,4 +22,3 @@ dependencyResolutionManagement {
 rootProject.name = "spice_sl_mobile"
 include(":app")
 include(":analytics")
- 

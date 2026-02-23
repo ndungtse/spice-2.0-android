@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.labTechnician
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -17,7 +16,6 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.CodeDetailsObject
 import com.medtroniclabs.spice.data.EncounterDetails
-import com.medtroniclabs.spice.data.Role
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.config.ViewType
@@ -31,7 +29,6 @@ import com.medtroniclabs.spice.model.LabTestResultObject
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
-import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,9 +39,8 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDLabTestViewModel @Inject constructor(
     private val labTestRepository: NCDLabTestRepository,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
-
     val labTestListLiveData = MutableLiveData<Resource<ArrayList<LabTestListResponse>>>()
     val investigationListLiveData = MutableLiveData<ArrayList<InvestigationModel>>()
     val createLabTestLiveData = MutableLiveData<Resource<APIResponse<Map<String, Any>>>>()
@@ -52,7 +48,7 @@ class NCDLabTestViewModel @Inject constructor(
 
     fun getLabTestList(data: PatientListRespModel) {
         viewModelScope.launch(dispatcherIO) {
-            val patientId = if (CommonUtils.isNonCommunity() ) data.patientId else data.id
+            val patientId = if (CommonUtils.isNonCommunity()) data.patientId else data.id
             patientId?.let { id ->
                 labTestListLiveData.postLoading()
                 val response = labTestRepository.getLabTestList(LabTestListRequest(id, roleName = roleName()))
@@ -65,13 +61,12 @@ class NCDLabTestViewModel @Inject constructor(
         }
     }
 
-    private fun roleName(): String? {
-        return when {
+    private fun roleName(): String? =
+        when {
             CommonUtils.isNCDProvider() -> RoleConstant.PROVIDER
             CommonUtils.isLabTechnician() -> RoleConstant.LAB_TECHNICIAN
             else -> null
         }
-    }
 
     fun addExistingLabTestListToUI(list: ArrayList<LabTestListResponse>) {
         viewModelScope.launch(dispatcherIO) {
@@ -87,8 +82,8 @@ class NCDLabTestViewModel @Inject constructor(
                         id = investigationExisting.id,
                         resultList = getInvestigationModelWithResult(investigationExisting.labTestCustomization),
                         dropdownState = false,
-                        isReview = investigationExisting.isReview
-                    )
+                        isReview = investigationExisting.isReview,
+                    ),
                 )
             }
             investigationListLiveData.postValue(investigationList)
@@ -111,7 +106,7 @@ class NCDLabTestViewModel @Inject constructor(
 
     fun updateLabTest(
         resultFromInvestigation: List<InvestigationModel>?,
-        patientDetail: PatientListRespModel
+        patientDetail: PatientListRespModel,
     ) {
         viewModelScope.launch(dispatcherIO) {
             try {
@@ -125,7 +120,7 @@ class NCDLabTestViewModel @Inject constructor(
                         recommendedName = data.recommendedByName,
                         codeDetails = data.codeDetails,
                         labTestResults = getResultListObject(data),
-                        id = data.id
+                        id = data.id,
                     )
                     labTestList.add(detail)
                 }
@@ -133,17 +128,17 @@ class NCDLabTestViewModel @Inject constructor(
                 val request = LabTestCreateRequest(
                     EncounterDetails(
                         id = encounterId,
-                        patientReference = if (CommonUtils.isNonCommunity() ) patientDetail.patientId.orEmpty() else patientDetail.id.orEmpty(),
-                        patientId = if (CommonUtils.isNonCommunity() ) null else patientDetail.patientId.orEmpty(),
-                        memberId = if (!CommonUtils.isNonCommunity() ) patientDetail.memberId.orEmpty() else patientDetail.id.orEmpty(),
+                        patientReference = if (CommonUtils.isNonCommunity()) patientDetail.patientId.orEmpty() else patientDetail.id.orEmpty(),
+                        patientId = if (CommonUtils.isNonCommunity()) null else patientDetail.patientId.orEmpty(),
+                        memberId = if (!CommonUtils.isNonCommunity()) patientDetail.memberId.orEmpty() else patientDetail.id.orEmpty(),
                         provenance = ProvanceDto(),
                     ),
-                    labTestList
+                    labTestList,
                 )
                 setAnalyticsData(
                     UserDetail.startDateTime,
                     eventName = AnalyticsDefinedParams.NCDInvestigationResultCreation,
-                    isCompleted = true
+                    isCompleted = true,
                 )
                 createLabTestLiveData.postLoading()
                 createLabTestLiveData.postValue(labTestRepository.updateLabTest(request))
@@ -160,7 +155,9 @@ class NCDLabTestViewModel @Inject constructor(
             if (map.containsKey(DefinedParams.TestedOn) && map[DefinedParams.TestedOn] is String) {
                 testedOn = map[DefinedParams.TestedOn] as String
             }
-            data.resultList?.formLayout?.filter { it.viewType != ViewType.VIEW_TYPE_FORM_CARD_FAMILY && it.id != DefinedParams.TestedOn }
+            data.resultList
+                ?.formLayout
+                ?.filter { it.viewType != ViewType.VIEW_TYPE_FORM_CARD_FAMILY && it.id != DefinedParams.TestedOn }
                 ?.let { formLayoutList ->
                     getValidResultObject(formLayoutList, map, testedOn)?.let {
                         labTestResultObjectList.addAll(it)
@@ -178,7 +175,7 @@ class NCDLabTestViewModel @Inject constructor(
     private fun getValidResultObject(
         formLayoutList: List<FormLayout>,
         resultMap: HashMap<String, Any>,
-        testedOn: String?
+        testedOn: String?,
     ): ArrayList<LabTestResultObject>? {
         val list = ArrayList<LabTestResultObject>()
         var validResultList = true
@@ -200,7 +197,7 @@ class NCDLabTestViewModel @Inject constructor(
                         getCodeDetailsObject(formData),
                         testedOn = testedOn,
                         resource = formData.resource,
-                        unitValue
+                        unitValue,
                     )
                     list.add(resultObject)
                 }
@@ -221,5 +218,4 @@ class NCDLabTestViewModel @Inject constructor(
         }
         return null
     }
-
 }

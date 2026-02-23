@@ -33,7 +33,6 @@ import com.medtroniclabs.spice.ui.phuwalkins.adapter.PhuHouseHoldListAdapter
 import com.medtroniclabs.spice.ui.phuwalkins.listener.PhuLinkCallback
 import com.medtroniclabs.spice.ui.phuwalkins.viewmodel.PhuWalkInsViewModel
 
-
 class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssignedHouseholdMemberDetail) :
     BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentPhuLinkedHosueHoldListBinding
@@ -46,20 +45,24 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
 
     companion object {
         const val TAG = "PhuLinkedHouseHoldListFragment"
-        fun newInstance(patientLinkedDetails: UnAssignedHouseholdMemberDetail): PhuLinkedHouseHoldListFragment {
-            return PhuLinkedHouseHoldListFragment(patientLinkedDetails)
-        }
+
+        fun newInstance(patientLinkedDetails: UnAssignedHouseholdMemberDetail): PhuLinkedHouseHoldListFragment =
+            PhuLinkedHouseHoldListFragment(patientLinkedDetails)
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentPhuLinkedHosueHoldListBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setHouseholdLinkedDetails()
         initObserver()
@@ -74,13 +77,16 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
     }
 
     private fun initObserver() {
-        viewModel.getFilteredHouseholdsLiveData(patientLinkedDetails.villageId)
+        viewModel
+            .getFilteredHouseholdsLiveData(patientLinkedDetails.villageId)
             .observe(viewLifecycleOwner) {
                 val householdList = it
 
                 listVisibility(householdList.isEmpty())
                 binding.tvHPatientCount.text =
-                    householdList.size.toString().plus(getString(R.string.households_in))
+                    householdList.size
+                        .toString()
+                        .plus(getString(R.string.households_in))
                         .plus(patientLinkedDetails.villageName)
                 // Set adapter
                 binding.rcLinkPatientList.layoutManager = LinearLayoutManager(requireContext())
@@ -105,7 +111,7 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
         binding.searchView.safeClickListener(this)
         binding.searchView.setTextChangeListener {
             val input = it?.trim().toString()
-            searchHouseHoldList(input,patientLinkedDetails.villageId)
+            searchHouseHoldList(input, patientLinkedDetails.villageId)
         }
         binding.btnAddHousehold.safeClickListener(this)
     }
@@ -116,7 +122,6 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
                 viewModel.saveCallHistory()
             }
         }
-
 
     private fun setHouseholdLinkedDetails() {
         binding.includedHousehold.apply {
@@ -131,25 +136,26 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
             patientNameAgeGender.text =
                 formatPatientDemographics(requireContext(), patientLinkedDetails)
             patientVillage.text = patientLinkedDetails.villageName
-            val phoneNumberCode=SecuredPreference.getPhoneNumberCode()
+            val phoneNumberCode = SecuredPreference.getPhoneNumberCode()
             patientMobile.text = "+$phoneNumberCode ${patientLinkedDetails.phoneNumber}"
         }
     }
 
     private fun formatPatientDemographics(
         context: Context,
-        patient: UnAssignedHouseholdMemberDetail
-    ): String {
-        return viewModel.getPatientName(context, patient.name, patient.dateOfBirth, patient.gender)
-    }
+        patient: UnAssignedHouseholdMemberDetail,
+    ): String = viewModel.getPatientName(context, patient.name, patient.dateOfBirth, patient.gender)
 
     var isNavigated = false
+
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.searchView -> {
                 searchHouseHoldList(
-                    binding.searchView.text.trim().toString(),
-                    patientLinkedDetails.villageId
+                    binding.searchView.text
+                        .trim()
+                        .toString(),
+                    patientLinkedDetails.villageId,
                 )
             }
             R.id.btnAddHousehold -> {
@@ -157,7 +163,7 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
                     val intent = Intent(requireContext(), ConsentFormActivity::class.java)
                     intent.putExtra(VillageId, patientLinkedDetails.villageId)
                     intent.putExtra(isPhuWalkInsFlow, true)
-                    intent.putExtra(isCreateHouseholdForPhu,true)
+                    intent.putExtra(isCreateHouseholdForPhu, true)
                     intent.putExtra(MemberID, patientLinkedDetails.lMemberId.toLongOrNull())
                     intent.putExtra(FhirMemberID, patientLinkedDetails.memberId.toLongOrNull())
                     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
@@ -167,23 +173,29 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
         }
     }
 
-    private fun searchHouseHoldList(input: String, villageId: Long) {
-        viewModel.getSearchHouseholdsLiveData(
-            if (input.isNotEmpty() && ((input[0].isLetter() && input.length >= 3) || input[0].isDigit())) {
-                input
-            } else {
-                ""
-            },villageId
-        ).observe(viewLifecycleOwner) {
-            listVisibility(it.isNullOrEmpty() || it.size == 0)
-            binding.tvHPatientCount.text =
-                it.size.toString().plus(getString(R.string.households_in))
-                    .plus(patientLinkedDetails.villageName)
-            // Set adapter
-            binding.rcLinkPatientList.layoutManager = LinearLayoutManager(requireContext())
-            binding.rcLinkPatientList.adapter =
-                PhuHouseHoldListAdapter(it, activity as PhuLinkCallback)
-        }
+    private fun searchHouseHoldList(
+        input: String,
+        villageId: Long,
+    ) {
+        viewModel
+            .getSearchHouseholdsLiveData(
+                if (input.isNotEmpty() && ((input[0].isLetter() && input.length >= 3) || input[0].isDigit())) {
+                    input
+                } else {
+                    ""
+                },
+                villageId,
+            ).observe(viewLifecycleOwner) {
+                listVisibility(it.isNullOrEmpty() || it.size == 0)
+                binding.tvHPatientCount.text =
+                    it.size
+                        .toString()
+                        .plus(getString(R.string.households_in))
+                        .plus(patientLinkedDetails.villageName)
+                // Set adapter
+                binding.rcLinkPatientList.layoutManager = LinearLayoutManager(requireContext())
+                binding.rcLinkPatientList.adapter =
+                    PhuHouseHoldListAdapter(it, activity as PhuLinkCallback)
+            }
     }
-
 }

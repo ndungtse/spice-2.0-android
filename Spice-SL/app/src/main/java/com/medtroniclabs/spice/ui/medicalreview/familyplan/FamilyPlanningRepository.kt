@@ -4,9 +4,7 @@ import android.location.Location
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
-import com.medtroniclabs.spice.data.EncounterDetails
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.data.model.Contraceptive
@@ -27,7 +25,6 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.EmergencyContraceptive
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.Implants
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.Injectables
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.Microlut
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.MicrolutQuantity
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherImplantComments
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherInjectableComments
@@ -41,42 +38,36 @@ import javax.inject.Inject
 
 class FamilyPlanningRepository @Inject constructor(
     private var roomHelper: RoomHelper,
-    private var apiHelper: ApiHelper
+    private var apiHelper: ApiHelper,
 ) {
-
-    suspend fun getStaticMetaData(
-        menuType: String
-    ): Resource<Boolean> {
-        return try {
+    suspend fun getStaticMetaData(menuType: String): Resource<Boolean> =
+        try {
             val response = apiHelper.getFamilyPlanningStaticData()
             if (response.isSuccessful) {
                 response.body()?.entity?.apply {
                     roomHelper.deleteExaminationsComplaints(menuType)
                     roomHelper.insertExaminationsComplaint(
                         generateChipItemByType(
-                            familyPlanning
-                        )
+                            familyPlanning,
+                        ),
                     )
                 }
                 SecuredPreference.putBoolean(
                     SecuredPreference.EnvironmentKey.IS_FAMILY_PLANNING_LOADED.name,
-                    true
+                    true,
                 )
                 Resource(state = ResourceState.SUCCESS, true)
             } else {
                 Resource(state = ResourceState.ERROR)
             }
-
         } catch (e: Exception) {
             e.printStackTrace()
             SecuredPreference.putBoolean(
                 SecuredPreference.EnvironmentKey.IS_FAMILY_PLANNING_LOADED.name,
-                false
+                false,
             )
             Resource(state = ResourceState.ERROR)
         }
-
-    }
 
     private fun generateChipItemByType(familyPlanning: List<MedicalReviewMetaItems>): List<MedicalReviewMetaItems> {
         val chipItemList = ArrayList<MedicalReviewMetaItems>()
@@ -87,7 +78,7 @@ class FamilyPlanningRepository @Inject constructor(
                 type = item.type,
                 category = item.category,
                 displayOrder = item.displayOrder,
-                value = item.value
+                value = item.value,
             )
             chipItemList.add(chipItem)
         }
@@ -102,8 +93,8 @@ class FamilyPlanningRepository @Inject constructor(
         encounterId: String?,
         lastLocation: Location?,
         notes: String?,
-    ): Resource<FamilyPlanningCreateResponse> {
-        return try {
+    ): Resource<FamilyPlanningCreateResponse> =
+        try {
             val response = apiHelper.createFamilyPlanningMR(
                 composeSubmitRequest(
                     details,
@@ -112,8 +103,8 @@ class FamilyPlanningRepository @Inject constructor(
                     maritalStatus,
                     encounterId,
                     lastLocation,
-                    notes
-                )
+                    notes,
+                ),
             )
             if (response.isSuccessful) {
                 val res = response.body()
@@ -129,7 +120,6 @@ class FamilyPlanningRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     private fun composeSubmitRequest(
         details: PatientListRespModel,
@@ -155,13 +145,13 @@ class FamilyPlanningRepository @Inject constructor(
                 householdId = details.houseHoldId,
                 memberId = details.memberId,
                 startTime = DateUtils.getCurrentDateAndTime(
-                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                 ),
                 endTime = DateUtils.getCurrentDateAndTime(
-                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                 ),
                 referred = true,
-                villageId = details.villageId
+                villageId = details.villageId,
             ),
             contraceptive = Contraceptive(
                 occupation = occupation?.takeIf { it.isNotBlank() },
@@ -172,7 +162,7 @@ class FamilyPlanningRepository @Inject constructor(
                 otherCombinedOralContraceptive = (resultMap[CombinedOralContraceptiveComments] as? String)?.takeIf { it.isNotEmpty() },
                 progestinOnlyOrals = (resultMap[ProgestinOnlyOrals] as? String)?.takeIf { it.isNotEmpty() },
                 otherProgestinOnlyOrals = (resultMap[OtherProgestinOnlyOralsComments] as? String)?.takeIf { it.isNotEmpty() },
-                microlutQuantity = (resultMap[MicrolutQuantity]as? Long)?.takeIf { it!=-1L },
+                microlutQuantity = (resultMap[MicrolutQuantity]as? Long)?.takeIf { it != -1L },
                 injectables = (resultMap[Injectables] as? String)?.takeIf { it.isNotEmpty() },
                 otherInjectables = (resultMap[OtherInjectableComments] as? String)?.takeIf { it.isNotEmpty() },
                 iucd = resultPair.second.mapNotNull { it.value },
@@ -181,24 +171,21 @@ class FamilyPlanningRepository @Inject constructor(
                 condoms = (resultMap[Condoms] as? String)?.takeIf { it.isNotEmpty() },
                 emergencyContraceptive = (resultMap[EmergencyContraceptive] as? String)?.takeIf { it.isNotEmpty() },
                 permanentMethod = (resultMap[PermanentMethod] as? String)?.takeIf { it.isNotEmpty() },
-                otherPermanentMethod = (resultMap[OtherPermanentMethodComments] as? String)?.takeIf { it.isNotEmpty() }
-            )
+                otherPermanentMethod = (resultMap[OtherPermanentMethodComments] as? String)?.takeIf { it.isNotEmpty() },
+            ),
         )
     }
 
-    suspend fun getMetaListByType(type: String): Resource<List<MedicalReviewMetaItems>> {
-        return try {
+    suspend fun getMetaListByType(type: String): Resource<List<MedicalReviewMetaItems>> =
+        try {
             val response = roomHelper.getExaminationsComplaintByType(type)
             Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getFamilyPlanningSummaryDetails(
-        request: AboveFiveYearsSummaryRequest
-    ): Resource<FamilyPlanningSummaryResponse> {
-        return try {
+    suspend fun getFamilyPlanningSummaryDetails(request: AboveFiveYearsSummaryRequest): Resource<FamilyPlanningSummaryResponse> =
+        try {
             val response = apiHelper.getFamilyPlanningMRSummaryDetails(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
@@ -208,5 +195,4 @@ class FamilyPlanningRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 }

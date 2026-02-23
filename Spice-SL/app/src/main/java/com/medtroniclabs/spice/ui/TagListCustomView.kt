@@ -26,25 +26,27 @@ class TagListCustomView(
     val otherSingleSelect: Boolean? = null,
     val isSelectionRequired: Boolean? = null,
     val otherCallBack: ((name: String, isChecked: Boolean) -> Unit)? = null,
-    val callBack: ((name: String?, isEmpty: Boolean, isChecked: Boolean) -> Unit)? = null
+    val callBack: ((name: String?, isEmpty: Boolean, isChecked: Boolean) -> Unit)? = null,
 ) {
     private var isOtherNotStartWith: Boolean = false
 
-    fun setIsOtherNotStartWith(isOtherNotStartWith:Boolean) {
+    fun setIsOtherNotStartWith(isOtherNotStartWith: Boolean) {
         this.isOtherNotStartWith = isOtherNotStartWith
     }
+
     fun addChipItemList(
         chipItemList: List<ChipViewItemModel>,
         selectedChipItemList: List<ChipViewItemModel>? = null,
-        singleSelectionTypeMap: HashMap<String, MutableList<ChipViewItemModel>>? = null
+        singleSelectionTypeMap: HashMap<String, MutableList<ChipViewItemModel>>? = null,
     ) {
         chipGroup.removeAllViews()
         chipItemList.forEach { data ->
             getChipText(data)?.let { chipData ->
-                if (!isOtherNotStartWith && chipData.second.startsWith(Other, ignoreCase = true))
+                if (!isOtherNotStartWith && chipData.second.startsWith(Other, ignoreCase = true)) {
                     otherChipBinding(data, chipData, selectedChipItemList)
-                else
+                } else {
                     chipBinding(data, chipData, selectedChipItemList, singleSelectionTypeMap)
+                }
             }
         }
     }
@@ -53,14 +55,14 @@ class TagListCustomView(
         data: Any,
         chipData: Pair<String?, String>,
         selectedChipItemList: List<ChipViewItemModel>?,
-        singleSelectionTypeMap: HashMap<String, MutableList<ChipViewItemModel>>?
+        singleSelectionTypeMap: HashMap<String, MutableList<ChipViewItemModel>>?,
     ) {
         val binding = CustomLayoutTagviewComponentBinding.inflate(LayoutInflater.from(context))
         val chip = binding.root
         chip.chipBackgroundColor =
             getColorStateList(
                 context.getColor(R.color.primary_medium_blue),
-                context.getColor(R.color.white)
+                context.getColor(R.color.white),
             )
         chip.tag = data
         chip.text = getChipViewText(chipData)
@@ -70,12 +72,12 @@ class TagListCustomView(
         chip.setTextColor(
             getColorStateList(
                 context.getColor(R.color.white),
-                context.getColor(R.color.grey_black)
-            )
+                context.getColor(R.color.grey_black),
+            ),
         )
         chip.chipStrokeColor = getColorStateList(
             context.getColor(R.color.primary_medium_blue),
-            context.getColor(R.color.mild_gray)
+            context.getColor(R.color.mild_gray),
         )
         chip.setOnCheckedChangeListener { _, isChecked ->
             validateOtherSingleSelection(isChecked, chipData)
@@ -90,8 +92,8 @@ class TagListCustomView(
                             NCDMRUtil.DIABETES,
                             NCDMRUtil.HIV,
                             NCDMRUtil.PREGNANCY,
-                            MedicalReviewTypeEnums.HIV_REVIEW.name
-                        )
+                            MedicalReviewTypeEnums.HIV_REVIEW.name,
+                        ),
                     )
                 }
                 chip.typeface = ResourcesCompat.getFont(context, R.font.inter_bold)
@@ -99,33 +101,41 @@ class TagListCustomView(
             } else {
                 validateSelectionRequired(chip)
             }
-            if (otherCallBack != null)
+            if (otherCallBack != null) {
                 otherCallBack.invoke(chipData.second, isChecked)
-            else
+            } else {
                 callBack?.invoke(chipData.second, chipGroup.checkedChipIds.isEmpty(), isChecked)
+            }
 
             if (chipData.second.equals(context.getString(R.string.none), ignoreCase = true)) {
-                if (isChecked)
+                if (isChecked) {
                     onNoneSelected()
-            } else if (isChecked)
+                }
+            } else if (isChecked) {
                 resetNone()
+            }
         }
 
-        if (otherSingleSelect == true)
+        if (otherSingleSelect == true) {
             chipGroup.isSingleSelection = true
+        }
         chipGroup.addView(binding.root)
 
-        if (isSelectionRequired == true)
+        if (isSelectionRequired == true) {
             chipGroup.isSelectionRequired = isSelectionRequired
+        }
 
         autoPopulateChip(selectedChipItemList, data, chip)
     }
 
-    private fun getChipViewText(chipData: Pair<String?, String>): CharSequence? {
-        return if(SecuredPreference.getIsTranslationEnabled()) chipData.first else chipData.second
-    }
+    private fun getChipViewText(chipData: Pair<String?, String>): CharSequence? =
+        if (SecuredPreference.getIsTranslationEnabled()) chipData.first else chipData.second
 
-    private fun autoPopulateChip(selectedChipItemList: List<ChipViewItemModel>?, data: Any, chip: Chip) {
+    private fun autoPopulateChip(
+        selectedChipItemList: List<ChipViewItemModel>?,
+        data: Any,
+        chip: Chip,
+    ) {
         selectedChipItemList?.let { chipItemList ->
             val dataValue = getChipText(data)
             dataValue?.second?.let { chipItem ->
@@ -141,7 +151,7 @@ class TagListCustomView(
         chipGroup: ChipGroup,
         chipList: List<ChipViewItemModel>,
         data: String,
-        callBack: () -> Unit
+        callBack: () -> Unit,
     ) {
         val tag = chipList.firstOrNull { it.name.equals(data, true) }
         chipGroup.findViewWithTag<Chip>(tag)?.let {
@@ -172,10 +182,12 @@ class TagListCustomView(
         for (chipId in chipGroup.checkedChipIds) {
             val chip = chipGroup.findViewById<Chip>(chipId)
             var chipActualText: String? = getActualNameOfChip(chip.tag)
-            if (chip != null && chipActualText.equals(
+            if (chip != null &&
+                chipActualText.equals(
                     context.getString(R.string.none),
-                    true
-                ) && chip.isChecked
+                    true,
+                ) &&
+                chip.isChecked
             ) {
                 chip.isChecked = false
                 break
@@ -199,7 +211,7 @@ class TagListCustomView(
         singleSelectionTypeMap: HashMap<String, MutableList<ChipViewItemModel>>,
         chipGroup: ChipGroup,
         selectedChip: String,
-        keys: List<String>? = null
+        keys: List<String>? = null,
     ) {
         var groupKey: String? = null
         singleSelectionTypeMap.forEach { (key, value) ->
@@ -221,7 +233,7 @@ class TagListCustomView(
     private fun applyChip(
         groupValues: MutableList<ChipViewItemModel>,
         chipGroup: ChipGroup,
-        selectedChip: String
+        selectedChip: String,
     ) {
         for (j in 0 until chipGroup.childCount) {
             for (i in groupValues.indices) {
@@ -236,9 +248,13 @@ class TagListCustomView(
         }
     }
 
-    private fun validateOtherSingleSelection(isChecked: Boolean, chipData: Pair<String?, String>) {
-        if (otherSingleSelect == true && isChecked)
+    private fun validateOtherSingleSelection(
+        isChecked: Boolean,
+        chipData: Pair<String?, String>,
+    ) {
+        if (otherSingleSelect == true && isChecked) {
             uncheckOtherChip(chipData)
+        }
     }
 
     private fun uncheckOtherChip(chipData: Pair<String?, String>) {
@@ -256,13 +272,14 @@ class TagListCustomView(
     private fun otherChipBinding(
         data: Any,
         chipData: Pair<String?, String>,
-        selectedChipItemList: List<ChipViewItemModel>?
+        selectedChipItemList: List<ChipViewItemModel>?,
     ) {
         val binding = OtherChipLayoutBinding.inflate(LayoutInflater.from(context))
         binding.root.tag = Other
         binding.tvOther.text = getChipViewText(chipData)
         binding.tvOther.tag = data
-        binding.tvOther.setOnClickListener { //Don't change it to safeClickListener
+        binding.tvOther.setOnClickListener {
+            // Don't change it to safeClickListener
             otherOnClick(binding.tvOther, binding.tagView, chipData)
         }
         chipGroup.addView(binding.root)
@@ -275,7 +292,7 @@ class TagListCustomView(
         selectedChipItemList?.let { chipItemList ->
             val dataValue = getChipText(data)
             dataValue?.second?.let { chipItem ->
-                if (!isOtherNotStartWith && chipItem.startsWith(Other)){
+                if (!isOtherNotStartWith && chipItem.startsWith(Other)) {
                     val isAlreadySelected = chipItemList.any { it.name == chipItem }
                     if (isAlreadySelected) {
                         binding.tvOther.performClick()
@@ -288,7 +305,7 @@ class TagListCustomView(
     private fun otherOnClick(
         tvOther: AppCompatTextView,
         tagView: View,
-        chipData: Pair<String?, String>
+        chipData: Pair<String?, String>,
     ) {
         if (tagView.tag == null) {
             tagView.tag = ENABLED
@@ -299,12 +316,13 @@ class TagListCustomView(
             tvOther.setTextColor(
                 ContextCompat.getColor(
                     context,
-                    R.color.white
-                )
+                    R.color.white,
+                ),
             )
             resetNone()
-            if(otherSingleSelect == true)
+            if (otherSingleSelect == true) {
                 resetOtherChip()
+            }
         } else {
             tagView.tag = null
             tvOther.typeface =
@@ -314,19 +332,20 @@ class TagListCustomView(
             tvOther.setTextColor(
                 ContextCompat.getColor(
                     context,
-                    R.color.primary_medium_blue
-                )
+                    R.color.primary_medium_blue,
+                ),
             )
         }
-        if (otherCallBack != null)
+        if (otherCallBack != null) {
             otherCallBack.invoke(Other, tagView.tag != null)
-        else
-            callBack?.invoke(chipData.second ,chipGroup.checkedChipIds.isEmpty(), tagView.tag != null)
+        } else {
+            callBack?.invoke(chipData.second, chipGroup.checkedChipIds.isEmpty(), tagView.tag != null)
+        }
     }
 
     private fun getColorStateList(
         selectedColor: Int,
-        unSelectedColor: Int
+        unSelectedColor: Int,
     ): ColorStateList {
         val states = arrayOf(
             intArrayOf(android.R.attr.state_checked),
@@ -338,7 +357,7 @@ class TagListCustomView(
             selectedColor,
             unSelectedColor,
             selectedColor,
-            unSelectedColor
+            unSelectedColor,
         )
         return ColorStateList(states, colors)
     }
@@ -372,14 +391,13 @@ class TagListCustomView(
         chipGroup.clearCheck()
     }
 
-    private fun getChipText(data: Any): Pair<String?, String>? {
-        return when (data) {
+    private fun getChipText(data: Any): Pair<String?, String>? =
+        when (data) {
             is ChipViewItemModel -> {
                 Pair(data.cultureValue ?: data.name, data.name)
             }
             else -> null
         }
-    }
 
     private fun getActualNameOfChip(data: Any): String? {
         return when (data) {
@@ -397,5 +415,4 @@ class TagListCustomView(
     fun clearOtherChip() {
         onNoneSelected()
     }
-
 }

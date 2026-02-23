@@ -14,7 +14,7 @@ class DigitsInputFilter : InputFilter {
         end: Int,
         dest: Spanned,
         dstart: Int,
-        dend: Int
+        dend: Int,
     ): String? {
         val matcher: Matcher = pattern.matcher(dest)
         return if (!matcher.matches()) "" else null

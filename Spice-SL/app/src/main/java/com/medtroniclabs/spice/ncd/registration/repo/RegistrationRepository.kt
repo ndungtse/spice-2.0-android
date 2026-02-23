@@ -18,16 +18,12 @@ import javax.inject.Inject
 
 class RegistrationRepository @Inject constructor(
     private var apiHelper: ApiHelper,
-    private var roomHelper: RoomHelper
+    private var roomHelper: RoomHelper,
 ) {
-    fun fetchConsentForm(formType: String): LiveData<String> {
-        return roomHelper.getConsent(formType)
-    }
+    fun fetchConsentForm(formType: String): LiveData<String> = roomHelper.getConsent(formType)
 
-    fun getCountries(
-        tag: String
-    ): Resource<LocalSpinnerResponse> {
-        return try {
+    fun getCountries(tag: String): Resource<LocalSpinnerResponse> =
+        try {
             val countryList = ArrayList<CountryModel>()
             SecuredPreference.getUserDetails()?.country?.let { country ->
                 countryList.add(country)
@@ -38,60 +34,53 @@ class RegistrationRepository @Inject constructor(
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     suspend fun getCounties(
         tag: String,
-        selectedParent: Long
-    ): Resource<LocalSpinnerResponse> {
-        return try {
+        selectedParent: Long,
+    ): Resource<LocalSpinnerResponse> =
+        try {
             val response = roomHelper.getDistricts(selectedParent)
             Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     suspend fun getSubCounties(
         tag: String,
-        selectedParent: Long
-    ): Resource<LocalSpinnerResponse> {
-        return try {
+        selectedParent: Long,
+    ): Resource<LocalSpinnerResponse> =
+        try {
             val response = roomHelper.getChiefDoms(selectedParent)
             Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     suspend fun getAllVillages(
         tag: String,
-        selectedParent: Long
-    ): Resource<LocalSpinnerResponse> {
-        return try {
+        selectedParent: Long,
+    ): Resource<LocalSpinnerResponse> =
+        try {
             val response = roomHelper.getVillagesByChiefDom(selectedParent)
             Resource(
                 state = ResourceState.SUCCESS,
-                LocalSpinnerResponse(tag, CommonUtils.getModifiedResponse(response))
+                LocalSpinnerResponse(tag, CommonUtils.getModifiedResponse(response)),
             )
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getAllPrograms(
-        tag: String
-    ): Resource<LocalSpinnerResponse> {
-        return try {
+    suspend fun getAllPrograms(tag: String): Resource<LocalSpinnerResponse> =
+        try {
             val response = roomHelper.getPrograms().filter { it.healthFacilityIds.contains(SecuredPreference.getOrganizationId()) }
             Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun registerPatient(hashMap: RequestBody): Resource<RegistrationResponse> {
-        return try {
+    suspend fun registerPatient(hashMap: RequestBody): Resource<RegistrationResponse> =
+        try {
             val response = apiHelper.registerPatient(hashMap)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
@@ -101,39 +90,37 @@ class RegistrationRepository @Inject constructor(
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     suspend fun validatePatient(
         requestMap: HashMap<String, Any>,
-        patientCreateReq: Pair<HashMap<String, Any>, List<FormLayout?>?>
-    ): Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>> {
-        return try {
-
+        patientCreateReq: Pair<HashMap<String, Any>, List<FormLayout?>?>,
+    ): Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>> =
+        try {
             val response = apiHelper.validatePatient(CommonUtils.validationRequest(requestMap))
 
             if (response.isSuccessful && response.body()?.status == true) {
-                //Not a duplicate patient
+                // Not a duplicate patient
                 Resource(state = ResourceState.SUCCESS, data = patientCreateReq)
             } else if (response.code() == AppConstants.CONFLICT_ERROR_CODE) {
-                //Duplicate patient found
+                // Duplicate patient found
                 val duplicateEntity = StringConverter.getDuplicatePatientMap(response.errorBody())
 
-                if (duplicateEntity.isNullOrEmpty())
+                if (duplicateEntity.isNullOrEmpty()) {
                     Resource(state = ResourceState.ERROR)
-                else
+                } else {
                     Resource(
                         state = ResourceState.ERROR,
-                        data = Pair(duplicateEntity, null)
+                        data = Pair(duplicateEntity, null),
                     )
+                }
             } else {
-                //Error returned on Patient Validate API
+                // Error returned on Patient Validate API
                 Resource(
                     state = ResourceState.ERROR,
-                    message = CommonUtils.getErrorMessage(response.errorBody())
+                    message = CommonUtils.getErrorMessage(response.errorBody()),
                 )
             }
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 }

@@ -7,7 +7,6 @@ import com.medtroniclabs.spice.common.DefinedParams.PAGE_INDEX
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
-import com.medtroniclabs.spice.model.SortModel
 import com.medtroniclabs.spice.ncd.data.CustomDate
 import com.medtroniclabs.spice.ncd.data.FollowUpRequest
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
@@ -24,19 +23,18 @@ class NCDFollowUpDataSource(
     private val customDate: CustomDate?,
     private val dateRange: String?,
     private val type: String,
-    private val remainingAttempts :List<Long>?,
-    private val getPatientsCount: (Int) -> Unit
+    private val remainingAttempts: List<Long>?,
+    private val getPatientsCount: (Int) -> Unit,
 ) : PagingSource<Int, PatientFollowUpEntity>() {
-
     private var loadedCount: Long = 0
     private var totalCount = 0
     private var isInitialData: Boolean = false
-    override fun getRefreshKey(state: PagingState<Int, PatientFollowUpEntity>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
+
+    override fun getRefreshKey(state: PagingState<Int, PatientFollowUpEntity>): Int? =
+        state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
-    }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PatientFollowUpEntity> {
         val pageIndex = params.key ?: PAGE_INDEX
@@ -49,7 +47,7 @@ class NCDFollowUpDataSource(
                 customDate = customDate,
                 searchText = searchText.takeIf { it.isNotBlank() },
                 remainingAttempts = remainingAttempts?.takeIf { it.isNotEmpty() && it.any { attempt -> attempt != null } },
-                siteId = SecuredPreference.getString(SecuredPreference.EnvironmentKey.IS_DEFAULT_SITE_ID.name)
+                siteId = SecuredPreference.getString(SecuredPreference.EnvironmentKey.IS_DEFAULT_SITE_ID.name),
             )
             val response: APIResponse<List<PatientFollowUpEntity>> =
                 apiHelper.ncdFollowUpList(request)
@@ -70,7 +68,9 @@ class NCDFollowUpDataSource(
                 prevKey = (pageIndex - 1).takeIf { pageIndex > PAGE_INDEX },
                 nextKey = if (searchText.isEmpty()) {
                     (pageIndex + 1).takeIf { patientList.isNotEmpty() }
-                } else (pageIndex + 1).takeIf { patientList.isNotEmpty() }
+                } else {
+                    (pageIndex + 1).takeIf { patientList.isNotEmpty() }
+                },
             )
         } catch (e: Exception) {
             LoadResult.Error(e)

@@ -11,6 +11,5 @@ data class ShortageReasonEntity(
     val type: String,
     val displayOrder: Int,
     val displayValue: String,
-    val value: String ?= null
+    val value: String? = null,
 )
-

@@ -54,9 +54,11 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialogDismissListener,
+class UnderTwoMonthsBaseActivity :
+    BaseActivity(),
+    View.OnClickListener,
+    OnDialogDismissListener,
     AncVisitCallBack {
-
     private lateinit var binding: ActivityUnderTwoMonthsBaseBinding
     private val viewModel: UnderTwoMonthViewModel by viewModels()
     private val summaryViewModel: UnderTwoMonthsTreatmentSummaryViewModel by viewModels()
@@ -66,7 +68,6 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     private val examinationCardViewModel: ExaminationCardViewModel by viewModels()
     private val patientDetailViewModel: PatientDetailViewModel by viewModels()
     private val referPatientViewModel: ReferPatientViewModel by viewModels()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,15 +83,16 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             },
             callbackHome = {
                 backNavigationToHome()
-            }
+            },
         )
-        withNetworkCheck(connectivityManager,::initializeViews,::onBackPressPopStack)
+        withNetworkCheck(connectivityManager, ::initializeViews, ::onBackPressPopStack)
         attachObserver()
         initializeListeners()
         setAnalytics()
     }
-    private fun setAnalytics(){
-        UserDetail.eventName= AnalyticsDefinedParams.MedicalReviewCreation
+
+    private fun setAnalytics() {
+        UserDetail.eventName = AnalyticsDefinedParams.MedicalReviewCreation
         viewModel.setUserJourney(AnalyticsDefinedParams.UnderTwoMonths)
     }
 
@@ -100,28 +102,29 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 backNavigation()
             }
         }
-    private fun swipeRefresh() {
-            supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer)
-                .let { currentFragment ->
-                    viewModel.isRefresh = true
-                    if (currentFragment is ClinicalSummaryFragment) {
-                        patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                            details.patientId?.let { id ->
-                                patientDetailViewModel.getPatients(id)
-                            }
-                        }
-                    } else {
-                        val createUnderTwoMonthsResponse = CreateUnderTwoMonthsResponse(
-                            encounterId = viewModel.encounterId,
-                            patientReference = viewModel.patientReference
-                        )
-                        summaryViewModel.getUnderTwoMonthsSummaryDetails(
-                            createUnderTwoMonthsResponse
-                        )
-                        setRefresh(false)
-                    }
-                }
 
+    private fun swipeRefresh() {
+        supportFragmentManager
+            .findFragmentById(R.id.clinicalSummaryContainer)
+            .let { currentFragment ->
+                viewModel.isRefresh = true
+                if (currentFragment is ClinicalSummaryFragment) {
+                    patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                        details.patientId?.let { id ->
+                            patientDetailViewModel.getPatients(id)
+                        }
+                    }
+                } else {
+                    val createUnderTwoMonthsResponse = CreateUnderTwoMonthsResponse(
+                        encounterId = viewModel.encounterId,
+                        patientReference = viewModel.patientReference,
+                    )
+                    summaryViewModel.getUnderTwoMonthsSummaryDetails(
+                        createUnderTwoMonthsResponse,
+                    )
+                    setRefresh(false)
+                }
+            }
     }
 
     private fun attachObserver() {
@@ -138,9 +141,9 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                     fragment?.dismiss()
                     MedicalReviewSuccessDialogFragment.newInstance().show(
                         supportFragmentManager,
-                        MedicalReviewSuccessDialogFragment.TAG
+                        MedicalReviewSuccessDialogFragment.TAG,
                     )
-                }
+                },
             )
         }
 
@@ -151,22 +154,21 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                     viewModel.encounterId = data.encounterId
                     viewModel.patientReference = data.patientReference
                     showUnderTwoMonthsReviewSummary()
-                }
+                },
             )
         }
 
         viewModel.underTwoMonthsMetaLiveData.observe(this) { resourceState ->
             handleResourceState(
                 resourceState = resourceState,
-                onSuccess =::initializePatientDetailsFragments
-
+                onSuccess = ::initializePatientDetailsFragments,
             )
         }
 
         viewModel.summaryCreateResponse.observe(this) { resourceState ->
             handleResourceState(
                 resourceState = resourceState,
-                onSuccess = ::successSummaryDialog
+                onSuccess = ::successSummaryDialog,
             )
         }
         summaryViewModel.checkSubmitBtn.observe(this) {
@@ -174,15 +176,17 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         }
     }
 
-private fun successSummaryDialog() {
-    MedicalReviewSuccessDialogFragment.newInstance().show(
-        supportFragmentManager,
-        MedicalReviewSuccessDialogFragment.TAG
-    )
-}
+    private fun successSummaryDialog() {
+        MedicalReviewSuccessDialogFragment.newInstance().show(
+            supportFragmentManager,
+            MedicalReviewSuccessDialogFragment.TAG,
+        )
+    }
+
     private fun summaryValidation() {
         binding.underTwoSummaryBottomView.btnDone.isEnabled =
-            summaryViewModel.nextVisitDate?.isNotBlank() == true || summaryViewModel.selectedPatientStatus?.isNotBlank() == true
+            summaryViewModel.nextVisitDate?.isNotBlank() == true ||
+            summaryViewModel.selectedPatientStatus?.isNotBlank() == true
     }
 
     private fun showUnderTwoMonthsReviewSummary() {
@@ -210,7 +214,7 @@ private fun successSummaryDialog() {
         replaceFragmentInId<UnderTwoMonthsTreatmentSummaryFragment>(
             binding.clinicalSummaryContainer.id,
             bundle,
-            tag = UnderTwoMonthsTreatmentSummaryFragment.TAG
+            tag = UnderTwoMonthsTreatmentSummaryFragment.TAG,
         )
     }
 
@@ -229,10 +233,11 @@ private fun successSummaryDialog() {
         val fragmentManager = supportFragmentManager
         val fragment =
             PatientInfoFragment.newInstance(
-                intent.getStringExtra(DefinedParams.PatientId)
+                intent.getStringExtra(DefinedParams.PatientId),
             )
         fragment.setDataCallback(this)
-        fragmentManager.beginTransaction()
+        fragmentManager
+            .beginTransaction()
             .add(R.id.patientDetailFragment, fragment)
             .commit()
     }
@@ -242,7 +247,7 @@ private fun successSummaryDialog() {
         replaceFragmentInId<MedicalReviewPatientDiagnosisFragment>(
             binding.patientDiagnosisContainer.id,
             bundle = initializeBundle(),
-            tag = MedicalReviewPatientDiagnosisFragment.TAG
+            tag = MedicalReviewPatientDiagnosisFragment.TAG,
         )
         binding.patientDiagnosisContainer.visible()
     }
@@ -251,59 +256,63 @@ private fun successSummaryDialog() {
         replaceFragmentInId<BirthHistoryFragment>(
             binding.birthHistoryContainer.id,
             bundle = initializeBundle(),
-            tag = BirthHistoryFragment.TAG
+            tag = BirthHistoryFragment.TAG,
         )
     }
 
-    private fun initializeBundle(): Bundle=Bundle().apply {
+    private fun initializeBundle(): Bundle =
+        Bundle().apply {
             putString(
                 MedicalReviewTypeEnums.PresentingComplaints.name,
-                MedicalReviewDefinedParams.PC_5YEARS
+                MedicalReviewDefinedParams.PC_5YEARS,
             )
             putString(
                 MedicalReviewTypeEnums.SystemicExaminations.name,
-                MedicalReviewDefinedParams.PC_5YEARS
+                MedicalReviewDefinedParams.PC_5YEARS,
             )
             putString(
                 MedicalReviewTypeEnums.DiagnosisType.name,
-                MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name
+                MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name,
             )
             putString(
                 DefinedParams.PatientId,
-                intent.getStringExtra(DefinedParams.PatientId)
+                intent.getStringExtra(DefinedParams.PatientId),
             )
             putString(
                 DefinedParams.MemberID,
-                viewModel.memberId
+                viewModel.memberId,
             )
             putString(
                 DefinedParams.ID,
-                intent.getStringExtra(DefinedParams.ID)
+                intent.getStringExtra(DefinedParams.ID),
             )
-    }
+        }
 
     private fun initializeFragments(details: PatientListRespModel) {
         showLoading()
         initializeDiagnosisFragments()
         initializeBirthHistoryFragments()
-        val ageInMonth =details.birthDate?.let { DateUtils.calculateAgeInMonths(it) }
+        val ageInMonth = details.birthDate?.let { DateUtils.calculateAgeInMonths(it) }
         val bundle = Bundle().apply {
             putString(DefinedParams.Gender, details.gender)
             ageInMonth?.first?.let { putInt(DefinedParams.Age, it) }
         }
-        replaceFragment<ClinicalSummaryFragment>(binding.clinicalSummaryContainer.id,tag=ClinicalSummaryFragment.TAG, bundle = bundle)
-        replaceFragment<ExaminationCardFragment>(binding.examinationsContainer.id,tag=ExaminationCardFragment.TAG)
-        replaceFragment<PresentingComplaintsFragment>(binding.presentingComplaintsContainer.id, initializeBundle(),tag=PresentingComplaintsFragment.TAG)
+        replaceFragment<ClinicalSummaryFragment>(binding.clinicalSummaryContainer.id, tag = ClinicalSummaryFragment.TAG, bundle = bundle)
+        replaceFragment<ExaminationCardFragment>(binding.examinationsContainer.id, tag = ExaminationCardFragment.TAG)
+        replaceFragment<PresentingComplaintsFragment>(binding.presentingComplaintsContainer.id, initializeBundle(), tag = PresentingComplaintsFragment.TAG)
         replaceFragment<ClinicalNotesFragment>(binding.clinicalNotesContainer.id, initializeBundle(), tag = ClinicalNotesFragment.TAG)
         supportFragmentManager.setFragmentResultListener(MedicalReviewDefinedParams.SUMMARY_ITEM, this) { _, _ ->
             enableReferralDoneBtn()
         }
     }
 
-    private inline fun <reified T : Fragment> replaceFragment(containerId: Int, bundle: Bundle? = null,tag: String? = null) {
+    private inline fun <reified T : Fragment> replaceFragment(
+        containerId: Int,
+        bundle: Bundle? = null,
+        tag: String? = null,
+    ) {
         replaceFragmentInId<T>(containerId, bundle = bundle, tag = tag)
     }
-
 
     private fun initializeListeners() {
         binding.btnSubmit.safeClickListener(this)
@@ -313,8 +322,11 @@ private fun successSummaryDialog() {
         binding.underTwoSummaryBottomView.btnDone.safeClickListener(this)
         binding.underTwoSummaryBottomView.btnRefer.safeClickListener(this)
         binding.refreshLayout.setOnRefreshListener {
-            withNetworkCheck(connectivityManager, ::swipeRefresh,
-                onNetworkNotAvailable = { setRefresh(false) })
+            withNetworkCheck(
+                connectivityManager,
+                ::swipeRefresh,
+                onNetworkNotAvailable = { setRefresh(false) },
+            )
         }
     }
 
@@ -324,11 +336,11 @@ private fun successSummaryDialog() {
             R.id.btnDone -> handleButtonDone()
             binding.ivPrescription.id -> handlePrescriptionClick()
             R.id.btnRefer -> handleButtonRefer()
-            binding.ivInvestigation.id  -> {
+            binding.ivInvestigation.id -> {
                 patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
                     val intent = Intent(this, InvestigationActivity::class.java)
                     intent.putExtra(DefinedParams.PatientId, data.patientId)
-                    intent.putExtra(DefinedParams.EncounterId,patientDetailViewModel.encounterId)
+                    intent.putExtra(DefinedParams.EncounterId, patientDetailViewModel.encounterId)
                     getResult.launch(intent)
                 }
             }
@@ -341,9 +353,7 @@ private fun successSummaryDialog() {
         }
     }
 
-    private fun handleButtonDone() =
-        withLocationCheck({ withNetworkCheck(connectivityManager, ::summaryDoneDetails) })
-
+    private fun handleButtonDone() = withLocationCheck({ withNetworkCheck(connectivityManager, ::summaryDoneDetails) })
 
     private fun handlePrescriptionClick() {
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
@@ -357,32 +367,34 @@ private fun successSummaryDialog() {
 
     private fun handleButtonRefer() {
         viewModel.createUnderTwoMonthsMedicalReview.value?.data?.let {
-            ReferPatientFragment.newInstance(
-                MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name,
-                it.patientReference,
-                it.encounterId
-            ).show(supportFragmentManager, ReferPatientFragment.TAG)
+            ReferPatientFragment
+                .newInstance(
+                    MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name,
+                    it.patientReference,
+                    it.encounterId,
+                ).show(supportFragmentManager, ReferPatientFragment.TAG)
         }
     }
 
-
     private fun submitDetails() {
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                viewModel.createMedicalReviewForUnderTwoMonths(
-                    details,
-                    clinicalSummaryAndSigns = clinicalSummaryViewModel.clinicalSummaryAndSigns,
-                    examinationResultHashMap = examinationCardViewModel.examinationResultHashMap,
-                    clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
-                    presentingComplaints = presentingComplaintsViewModel.enteredComplaintNotes,
-                    patientDetailViewModel.encounterId
-                )
+            viewModel.createMedicalReviewForUnderTwoMonths(
+                details,
+                clinicalSummaryAndSigns = clinicalSummaryViewModel.clinicalSummaryAndSigns,
+                examinationResultHashMap = examinationCardViewModel.examinationResultHashMap,
+                clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
+                presentingComplaints = presentingComplaintsViewModel.enteredComplaintNotes,
+                patientDetailViewModel.encounterId,
+            )
         }
     }
 
     private fun summaryDoneDetails() {
         binding.underTwoSummaryBottomView.btnDone.isEnabled = true
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
-            viewModel.createUnderTwoMonthsMedicalReview.value?.data?.encounterId
+            viewModel.createUnderTwoMonthsMedicalReview.value
+                ?.data
+                ?.encounterId
                 ?.let { submitCreateId ->
                     viewModel.createUnderTwoMonthsMedicalReview.value?.data?.patientReference?.let { submitCreatePatientReference ->
                         viewModel.underTwoMonthsSummaryCreate(
@@ -390,7 +402,7 @@ private fun successSummaryDialog() {
                             submitCreateId,
                             summaryViewModel.nextVisitDate,
                             summaryViewModel.selectedPatientStatus,
-                            submitCreatePatientReference
+                            submitCreatePatientReference,
                         )
                     }
                 }
@@ -413,12 +425,15 @@ private fun successSummaryDialog() {
         val isPresentingComplaintsValid = presentingComplaintsFragment?.validate()
         val isClinicalSummaryValid = clinicalSummaryFragment?.validateEditFields()
         val isClinicalNotesValid = clinicalNotesFragment?.validateInput()
-        autoScrollError(isClinicalSummaryValid,isClinicalNotesValid)
-        return (isClinicalSummaryValid==true && isPresentingComplaintsValid == true&& isClinicalNotesValid==true)
+        autoScrollError(isClinicalSummaryValid, isClinicalNotesValid)
+        return (isClinicalSummaryValid == true && isPresentingComplaintsValid == true && isClinicalNotesValid == true)
     }
 
-    private fun autoScrollError(isClinicalSummaryValid: Boolean?, isClinicalNotesValid: Boolean?) {
-        if (isClinicalSummaryValid!=true && isClinicalNotesValid==true){
+    private fun autoScrollError(
+        isClinicalSummaryValid: Boolean?,
+        isClinicalNotesValid: Boolean?,
+    ) {
+        if (isClinicalSummaryValid != true && isClinicalNotesValid == true) {
             val nestedScrollView = findViewById<NestedScrollView>(R.id.nestedScrollViewID)
             val clinicalSummaryContainer = findViewById<FloatingDetectorFrameLayout>(R.id.clinicalSummaryContainer)
             val y = clinicalSummaryContainer.top
@@ -434,19 +449,21 @@ private fun successSummaryDialog() {
         binding.underTwoSummaryBottomView.btnDone.isEnabled = getSummaryStatus()
     }
 
-    private fun getSummaryStatus(): Boolean {
-        return ((summaryViewModel.selectedPatientStatus == ReferralStatus.Recovered.name && summaryViewModel.nextVisitDate == null)
-                || (summaryViewModel.selectedPatientStatus != ReferralStatus.Recovered.name && summaryViewModel.nextVisitDate != null))
-    }
+    private fun getSummaryStatus(): Boolean =
+        (
+            (summaryViewModel.selectedPatientStatus == ReferralStatus.Recovered.name && summaryViewModel.nextVisitDate == null) ||
+                (summaryViewModel.selectedPatientStatus != ReferralStatus.Recovered.name && summaryViewModel.nextVisitDate != null)
+        )
 
     private fun backNavigation() {
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (isPositive) {
-                supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer)
+                supportFragmentManager
+                    .findFragmentById(R.id.clinicalSummaryContainer)
                     .let { currentFragment ->
                         if (currentFragment !is UnderTwoMonthsTreatmentSummaryFragment) {
                             viewModel.setAnalyticsData(
@@ -454,7 +471,7 @@ private fun successSummaryDialog() {
                                 eventType = AnalyticsDefinedParams.UnderTwoMonths,
                                 eventName = UserDetail.eventName,
                                 exitReason = AnalyticsDefinedParams.BackButtonClicked,
-                                isCompleted = false
+                                isCompleted = false,
                             )
                         }
                     }
@@ -488,13 +505,12 @@ private fun successSummaryDialog() {
             }
         }
 
-    private fun setRefresh(isRefresh: Boolean) =
-        with(binding.refreshLayout) { isRefreshing = isRefresh }
+    private fun setRefresh(isRefresh: Boolean) = with(binding.refreshLayout) { isRefreshing = isRefresh }
 
     private fun <T> handleResourceState(
         resourceState: Resource<T>,
-        onSuccess: () -> Unit={},
-        onSuccessParam: (T) -> Unit={},
+        onSuccess: () -> Unit = {},
+        onSuccessParam: (T) -> Unit = {},
         onError: () -> Unit = {
             showErrorDialogue(
                 title = getString(R.string.alert),
@@ -505,7 +521,7 @@ private fun successSummaryDialog() {
                     onBackPressPopStack()
                 }
             }
-        }
+        },
     ) {
         when (resourceState.state) {
             ResourceState.LOADING -> {
@@ -522,14 +538,16 @@ private fun successSummaryDialog() {
             }
         }
     }
+
     private fun backNavigationToHome() {
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (isPositive) {
-                supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer)
+                supportFragmentManager
+                    .findFragmentById(R.id.clinicalSummaryContainer)
                     .let { currentFragment ->
                         if (currentFragment !is UnderTwoMonthsTreatmentSummaryFragment) {
                             viewModel.setAnalyticsData(
@@ -537,7 +555,7 @@ private fun successSummaryDialog() {
                                 eventType = AnalyticsDefinedParams.UnderTwoMonths,
                                 eventName = UserDetail.eventName,
                                 exitReason = AnalyticsDefinedParams.HomeButtonClicked,
-                                isCompleted = false
+                                isCompleted = false,
                             )
                         }
                     }
@@ -545,6 +563,7 @@ private fun successSummaryDialog() {
             }
         }
     }
+
     private fun getCurrentLocation() {
         SpiceLocationManager(this).getCurrentLocation {
             viewModel.lastLocation = it

@@ -14,5 +14,5 @@ data class NCDDiagnosisEntity(
     @ColumnInfo(name = "culture_value")
     val displayValue: String? = null,
     var type: String? = null,
-    var gender: String? = null
+    var gender: String? = null,
 )

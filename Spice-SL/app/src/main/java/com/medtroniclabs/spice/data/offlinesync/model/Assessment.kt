@@ -14,5 +14,5 @@ data class Assessment(
     val peerSupervisorId: Long,
     val encounter: AssessmentEncounter,
     val followUpId: Long? = null,
-    val updatedAt: Long
+    val updatedAt: Long,
 )

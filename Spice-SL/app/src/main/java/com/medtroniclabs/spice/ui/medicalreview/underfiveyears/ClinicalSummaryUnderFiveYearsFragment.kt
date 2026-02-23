@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.ui.medicalreview.underfiveyears
 
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,8 +18,8 @@ import com.medtroniclabs.spice.common.DefinedParams.GREEN_MAX_MUAC
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.NAME
 import com.medtroniclabs.spice.common.DefinedParams.RED_MAX_MUAC
-import com.medtroniclabs.spice.common.DefinedParams.YELLOW_MAX_MUAC
 import com.medtroniclabs.spice.common.DefinedParams.Value
+import com.medtroniclabs.spice.common.DefinedParams.YELLOW_MAX_MUAC
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.databinding.FragmentUnderFiveYearClinicalSummarryBinding
@@ -46,13 +45,18 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentUnderFiveYearClinicalSummarryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initListeners()
@@ -71,13 +75,19 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         }
         initTextWatcherForString(binding.etRespirationRate) {
             viewModel.updateRespiratoryRate(
-                it, binding.etRepeat.text?.trim().toString()
+                it,
+                binding.etRepeat.text
+                    ?.trim()
+                    .toString(),
             )
             showHideRepeatField(it.toDoubleOrNull())
         }
         initTextWatcherForString(binding.etRepeat) {
             viewModel.updateRespiratoryRate(
-                binding.etRespirationRate.text?.trim().toString(), it
+                binding.etRespirationRate.text
+                    ?.trim()
+                    .toString(),
+                it,
             )
         }
         initTextWatcherForString(binding.etWAZ) {
@@ -101,16 +111,17 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         val dropDownList = ArrayList<Map<String, Any>>()
         dropDownList.add(
             hashMapOf<String, Any>(
-                NAME to DefaultIDLabel, ID to DefaultID
-            )
+                NAME to DefaultIDLabel,
+                ID to DefaultID,
+            ),
         )
         for (item in list) {
             dropDownList.add(
                 hashMapOf<String, Any>(
                     NAME to item.name,
                     DefinedParams.id to item.id.toString(),
-                    Value to (item.value ?: item.name)
-                )
+                    Value to (item.value ?: item.name),
+                ),
             )
         }
         setImmunisationStatus(dropDownList)
@@ -124,7 +135,10 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         binding.etImmunisation.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long,
                 ) {
                     val selectedItem = adapter.getData(position = position)
                     selectedItem?.let {
@@ -159,7 +173,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                 viewModel.resultMotherVitaminHashMap,
                 Pair(MOTHER_VITAMIN_TAG, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                vitaminAMotherSelectionCallBack
+                vitaminAMotherSelectionCallBack,
             )
             binding.etVitaminAForMother.addView(view)
         }
@@ -172,16 +186,19 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                     viewModel.albendazoleHashMap,
                     Pair(MedicalReviewDefinedParams.Albendazole, null),
                     FormLayout(
-                        viewType = "", id = "", title = "", visibility = "", optionsList = null
+                        viewType = "",
+                        id = "",
+                        title = "",
+                        visibility = "",
+                        optionsList = null,
                     ),
-                    albendazoleSelectionCallBack
+                    albendazoleSelectionCallBack,
                 )
             }
             binding.llAlbendazoleStatus.addView(view)
         }
 
         viewModel.getImmunisationStatusMetaItems()
-
     }
 
     private fun attachObserver() {
@@ -195,7 +212,6 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                     hideProgress()
                     resourceState.data?.let { list ->
                         initializeImmunisationStatus(list)
-
                     }
                 }
 
@@ -204,8 +220,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                 }
             }
         }
-        viewModel.wazWhzScoreResponseLiveData.observe(viewLifecycleOwner) {
-                resourceState ->
+        viewModel.wazWhzScoreResponseLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
                     showProgress()
@@ -260,101 +275,91 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         return weight && height && temperature && respirationRate && repeat && muac
     }
 
-    private fun whzValidate(): Boolean {
-        return isBasicValid(
+    private fun whzValidate(): Boolean =
+        isBasicValid(
             binding.etWHZ.text.toString(),
             binding.tvWHZError,
             0,
             getString(R.string.error_label),
             context = requireContext(),
-            isMandatory = true
+            isMandatory = true,
         )
-    }
 
-    private fun muacValidate(): Boolean {
-        return isValidInput(
+    private fun muacValidate(): Boolean =
+        isValidInput(
             binding.etMUACStatus.text.toString(),
             binding.etMUACStatus,
             binding.tvMUACError,
             0.0..26.5,
             (R.string.please_enter_muac_between_0_to_26),
             false,
-            requireContext()
+            requireContext(),
         )
-    }
 
-
-    private fun wazValidate(): Boolean {
-        return isBasicValid(
+    private fun wazValidate(): Boolean =
+        isBasicValid(
             binding.etWAZ.text.toString(),
             binding.tvWAZError,
             0,
             getString(R.string.error_label),
             context = requireContext(),
-            isMandatory = true
+            isMandatory = true,
         )
-    }
 
-
-    private fun heightValidate(): Boolean {
-        return isValidInput(
+    private fun heightValidate(): Boolean =
+        isValidInput(
             binding.etHeight.text.toString(),
             binding.etHeight,
             binding.tvHeightError,
             45.0..120.0,
             R.string.please_enter_valid_value_between_45_to_120,
             true,
-            requireContext()
+            requireContext(),
         )
-    }
 
-    private fun respirationRateValidate(): Boolean {
-        return isValidInput(
+    private fun respirationRateValidate(): Boolean =
+        isValidInput(
             binding.etRespirationRate.text.toString(),
             binding.etRespirationRate,
             binding.tvRespirationRateError,
             1.0..99.9,
             (R.string.respiratory_error),
             false,
-            requireContext()
+            requireContext(),
         )
-    }
 
-    private fun repeatValidate(): Boolean {
-        return isValidInput(
+    private fun repeatValidate(): Boolean =
+        isValidInput(
             binding.etRepeat.text.toString(),
             binding.etRepeat,
             binding.tvRepeatError,
             1.0..99.9,
             (R.string.please_enter_repeat_between_0_to_100),
             false,
-            requireContext()
+            requireContext(),
         )
-    }
 
-    private fun temperatureValidate(): Boolean {
-        return isValidInput(
+    private fun temperatureValidate(): Boolean =
+        isValidInput(
             binding.etTemperature.text.toString(),
             binding.etTemperature,
             binding.tvTemperatureLabelError,
             10.0..200.0,
             (R.string.please_enter_temperature_between_10_to_200),
             false,
-            requireContext()
+            requireContext(),
         )
-    }
 
-    private fun weightValidate(): Boolean {
-        return isValidInput(
+    private fun weightValidate(): Boolean =
+        isValidInput(
             binding.etWeight.text.toString(),
             binding.etWeight,
             binding.tvWeightError,
             0.1..400.0,
             R.string.weight_error_0_400,
             true,
-            requireContext()
+            requireContext(),
         )
-    }
 
     private fun setMuacStatus(muacValue: Double) {
         val muacText: String
@@ -386,6 +391,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
             binding.repeatGroup.invisible()
         }
     }
+
     private fun wazPopulateScore() {
         binding.apply {
             etWAZ.isEnabled = false
@@ -402,14 +408,14 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                             gender = gender,
                             ageInMonths = age,
                             weight = if (weight.isNullOrEmpty()) null else weight,
-                            height = if (height.isNullOrEmpty()) null else height
+                            height = if (height.isNullOrEmpty()) null else height,
                         )
                         val heightText = etHeight.text.toString()
                         val heightInt = heightText.toIntOrNull()
 
                         val isHeightValid = heightInt == null || (heightInt in 45..120)
 
-                        if (weight.isNullOrEmpty() || weight=="0") {
+                        if (weight.isNullOrEmpty() || weight == "0") {
                             etWAZ.setText("")
                             etWHZ.setText("")
                             tvHeightError.visibility = if (isHeightValid) View.GONE else View.VISIBLE
@@ -421,12 +427,10 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                                 etWHZ.setText("")
                             }
                         }
-
                     }
                 }
                 etWeight.onFocusChangeListener = onFocusChangeListener
                 etHeight.onFocusChangeListener = onFocusChangeListener
-
             } else {
                 etWAZ.setText("0")
                 etWHZ.setText("0")
@@ -434,11 +438,8 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         }
     }
 
-
     override fun onResume() {
         super.onResume()
         wazPopulateScore()
     }
-
-
 }

@@ -25,7 +25,7 @@ data class NCDCounselingModel(
     val assessedDate: String? = null,
     val assessedBy: String? = null,
     val assessedByDisplay: String? = null,
-    var isExpanded: Boolean = false
+    var isExpanded: Boolean = false,
 )
 
 data class AssessmentResultModel(
@@ -42,7 +42,7 @@ data class AssessmentResultModel(
     val assessedBy: String? = null,
     val assessedByDisplay: String? = null,
     val provenance: ProvanceDto = ProvanceDto(),
-    val isNutritionist: Boolean = CommonUtils.isNonCommunity() && CommonUtils.isNutritionist()
+    val isNutritionist: Boolean = CommonUtils.isNonCommunity() && CommonUtils.isNutritionist(),
 )
 
 data class ResultModel(
@@ -50,5 +50,5 @@ data class ResultModel(
     val referredBy: String? = null,
     val lifestyleAssessment: String? = null,
     val counselorAssessment: String? = null,
-    val otherNote: String? = null
+    val otherNote: String? = null,
 )

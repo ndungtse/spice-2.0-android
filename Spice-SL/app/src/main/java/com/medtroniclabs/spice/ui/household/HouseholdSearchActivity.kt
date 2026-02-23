@@ -27,7 +27,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
-
     private lateinit var binding: ActivityHouseholdSearchBinding
     private val householdListViewModel: HouseholdListViewModel by viewModels()
     private lateinit var householdListAdapter: HouseholdListAdapter
@@ -38,20 +37,18 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
         setMainContentView(
             binding.root,
             isToolbarVisible = true,
-            title = getString(R.string.households)
+            title = getString(R.string.households),
         )
         showLoading()
         initViews()
         setListeners()
         attachObserver()
-     }
+    }
 
     override fun onResume() {
         super.onResume()
         householdListViewModel.setUserJourney(HOUSEHOLDS)
     }
-
-
 
     private fun initViews() {
         binding.llFilter.btnFilter.text = getString(R.string.filter)
@@ -73,12 +70,11 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
             startActivity(intent)
         }
 
-
         binding.rvHouseholdList.apply {
             layoutManager =
                 GridLayoutManager(
                     this@HouseholdSearchActivity,
-                    DefinedParams.span_count_1
+                    DefinedParams.span_count_1,
                 )
             adapter = householdListAdapter
         }
@@ -91,7 +87,8 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
         binding.llExactSearch.etSearchTerm.setTextChangeListener {
             val input = it?.trim().toString()
             binding.llExactSearch.btnSearch.isEnabled =
-                input.isNotEmpty() && ((input[0].isLetter() && input.length >= 3) || input[0].isDigit())
+                input.isNotEmpty() &&
+                ((input[0].isLetter() && input.length >= 3) || input[0].isDigit())
 
             if (input.isEmpty()) {
                 householdListViewModel.setFilterLiveData(search = "")
@@ -102,12 +99,15 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
     private fun attachObserver() {
         householdListViewModel.getFilterLiveData().observe(this) {
             var count = 0
-            if (it.filterByVillage.isNotEmpty())
+            if (it.filterByVillage.isNotEmpty()) {
                 count++
-            if (it.filterBySs.isNotEmpty())
+            }
+            if (it.filterBySs.isNotEmpty()) {
                 count++
-            if (it.filterByStatus.isNotEmpty())
+            }
+            if (it.filterByStatus.isNotEmpty()) {
                 count++
+            }
 
             if (count > 0) {
                 binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)
@@ -126,9 +126,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
-    private fun setHouseholdListAdapter(
-        householdList: List<HouseHoldEntityWithMemberCount>
-    ) {
+    private fun setHouseholdListAdapter(householdList: List<HouseHoldEntityWithMemberCount>) {
         binding.tvHouseHoldCount.text = setLabelValue(householdList.size)
         if (householdList.isNotEmpty()) {
             binding.llFilter.btnFilter.visible()
@@ -141,12 +139,12 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
-    private fun setLabelValue(size: Int): CharSequence {
-        return if (size > 1)
+    private fun setLabelValue(size: Int): CharSequence =
+        if (size > 1) {
             "$size ${getString(R.string.households)}"
-        else
+        } else {
             "$size ${getString(R.string.household)}"
-    }
+        }
 
     override fun onClick(view: View) {
         when (view.id) {
@@ -160,7 +158,8 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
             R.id.btnSearch -> {
                 withLocationCheck({
                     householdListViewModel.setUserJourney(HOUSEHOLDLISTSEARCHTRIGGERED)
-                    val searchTerm = binding.llExactSearch.etSearchTerm.text.toString()
+                    val searchTerm = binding.llExactSearch.etSearchTerm.text
+                        .toString()
                     householdListViewModel.setFilterLiveData(search = searchTerm)
 //                if (!searchTerm.isNullOrBlank()) {
 //                    householdListViewModel.searchByHouseholdNameOrNo(searchTerm.toString())
@@ -170,7 +169,8 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
 
             R.id.btnFilter -> {
                 withLocationCheck({
-                    FilterBottomSheetDialogFragment.newInstance()
+                    FilterBottomSheetDialogFragment
+                        .newInstance()
                         .show(supportFragmentManager, FilterBottomSheetDialogFragment.TAG)
                 })
             }
@@ -182,5 +182,4 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
         intent.putExtra(isHouseHold, true)
         startActivity(intent)
     }
-
 }

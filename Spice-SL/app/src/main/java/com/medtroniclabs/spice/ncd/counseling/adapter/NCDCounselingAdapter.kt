@@ -13,8 +13,8 @@ import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.AdapterNcdCounselingBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.utils.CounselingInterface
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ui.BaseActivity
 
 class NCDCounselingAdapter(private val counselingInterface: CounselingInterface) :
@@ -49,19 +49,21 @@ class NCDCounselingAdapter(private val counselingInterface: CounselingInterface)
                             tvKey.text = context.getString(R.string.counselor_notes)
                             tvValue.text = counselorAssessment.textOrHyphen()
                         }
-                    } else
+                    } else {
                         counselorNotes.root.visibility = View.GONE
+                    }
 
                     tvReferredFor.text = clinicianNotes?.joinToString(separator = ", ")
                         ?: clinicianNote.textOrHyphen()
 
-                    tvRefDate.text = referredDate?.let {
-                        DateUtils.convertDateTimeToDate(
-                            it,
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DateUtils.DATE_FORMAT_ddMMMyyyy
-                        )
-                    }.textOrHyphen()
+                    tvRefDate.text = referredDate
+                        ?.let {
+                            DateUtils.convertDateTimeToDate(
+                                it,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                DateUtils.DATE_FORMAT_ddMMMyyyy,
+                            )
+                        }.textOrHyphen()
 
                     tvRefBy.text = referredByDisplay.textOrHyphen()
 
@@ -70,7 +72,7 @@ class NCDCounselingAdapter(private val counselingInterface: CounselingInterface)
                             DateUtils.convertDateTimeToDate(
                                 it,
                                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                DateUtils.DATE_FORMAT_ddMMMyyyy
+                                DateUtils.DATE_FORMAT_ddMMMyyyy,
                             )
                         } ?: run {
                             context.getString(R.string.not_assessed)
@@ -106,10 +108,11 @@ class NCDCounselingAdapter(private val counselingInterface: CounselingInterface)
                 binding.ivRemove.id, binding.ivDelete.id -> {
                     if (layoutPosition < adapterList.size) {
                         adapterList[layoutPosition].let { item ->
-                            if (item.id == null)
+                            if (item.id == null) {
                                 counselingInterface.removeElement(item)
-                            else
+                            } else {
                                 showMessage(context, item)
+                            }
                         }
                     }
                 }
@@ -117,9 +120,9 @@ class NCDCounselingAdapter(private val counselingInterface: CounselingInterface)
                 binding.root.id -> {
                     if (layoutPosition < adapterList.size) {
                         val item = adapterList[layoutPosition]
-                        if (item.id.isNullOrBlank() || item.counselorAssessment.isNullOrBlank())
+                        if (item.id.isNullOrBlank() || item.counselorAssessment.isNullOrBlank()) {
                             return
-                        else {
+                        } else {
                             adapterList[layoutPosition].let {
                                 it.isExpanded = !it.isExpanded
                             }
@@ -131,16 +134,20 @@ class NCDCounselingAdapter(private val counselingInterface: CounselingInterface)
         }
     }
 
-    private fun showMessage(context: Context, item: NCDCounselingModel) {
+    private fun showMessage(
+        context: Context,
+        item: NCDCounselingModel,
+    ) {
         if ((context as BaseActivity).connectivityManager.isNetworkAvailable()) {
             context.showErrorDialogue(
                 title = context.getString(R.string.confirmation),
                 message = context.getString(R.string.delete_confirmation),
                 isNegativeButtonNeed = true,
-                positiveButtonName = context.getString(R.string.yes)
+                positiveButtonName = context.getString(R.string.yes),
             ) { isPositiveResult ->
-                if (isPositiveResult)
+                if (isPositiveResult) {
                     counselingInterface.removeElement(item)
+                }
             }
         } else {
             context.showErrorDialogue(
@@ -161,25 +168,36 @@ class NCDCounselingAdapter(private val counselingInterface: CounselingInterface)
         ivArrow.start()
     }
 
-    private fun getTextColor(context: Context, enteredBy: Any?): Int {
-        return if (enteredBy == null) context.getColor(R.color.disabled_text_color) else context.getColor(
-            R.color.navy_blue
-        )
-    }
+    private fun getTextColor(
+        context: Context,
+        enteredBy: Any?,
+    ): Int =
+        if (enteredBy == null) {
+            context.getColor(R.color.disabled_text_color)
+        } else {
+            context.getColor(
+                R.color.navy_blue,
+            )
+        }
 
     fun getData() = adapterList
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder =
+        ViewHolder(
             AdapterNcdCounselingBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         adapterList.let {
             holder.bind(it[position])
         }

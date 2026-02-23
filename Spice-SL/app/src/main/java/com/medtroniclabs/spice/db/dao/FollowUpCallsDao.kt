@@ -7,7 +7,6 @@ import com.medtroniclabs.spice.db.entity.FollowUpCall
 
 @Dao
 interface FollowUpCallsDao {
-
     @Insert
     suspend fun insertFollowUpCall(followUpCall: FollowUpCall)
 

@@ -16,7 +16,7 @@ data class PatientListRespModel(
     val programId: String? = null,
     val cvdRiskLevel: String? = null,
     val cvdRiskScore: Double? = null,
-    val cvdRiskScoreDisplay:String? = null,
+    val cvdRiskScoreDisplay: String? = null,
     val bmi: Double? = null,
     val gender: String? = null,
     val age: Int? = null,
@@ -28,8 +28,8 @@ data class PatientListRespModel(
     val phoneNumber: String? = null,
     val memberId: String? = null,
     val neonateMemberId: String? = null,
-    val occupation:String? =null,
-    val landmark:String? = null,
+    val occupation: String? = null,
+    val landmark: String? = null,
     val fhirUrl: String? = null,
     val performer: String? = null,
     val chwName: String? = null,
@@ -37,7 +37,7 @@ data class PatientListRespModel(
     val maritalStatus: String? = null,
     val houseHoldId: String? = null,
     val houseHoldNumber: Long? = null,
-    val dateOfOnset:String? = null,
+    val dateOfOnset: String? = null,
     var isPregnant: Boolean? = null,
     var isPregnancyRisk: Boolean? = null,
     var riskPatient: Boolean = false,
@@ -45,10 +45,10 @@ data class PatientListRespModel(
     var isRedRiskPatient: Boolean = false,
     var riskColor: String? = null,
     val pregnancyDetails: PregnancyDetails? = null,
-    val prescribedDetails : PrescribedDetails? = null,
-    val villageId:String? = null,
-    val relationship:String? = null,
-    val phoneNumberCategory:String? = null,
+    val prescribedDetails: PrescribedDetails? = null,
+    val villageId: String? = null,
+    val relationship: String? = null,
+    val phoneNumberCategory: String? = null,
     val diagnosis: List<DiseaseInfo>? = null,
     val confirmDiagnosis: NCDDiagnosisGetResponse? = null,
     val provisionalDiagnosis: ArrayList<String>? = null,
@@ -69,15 +69,15 @@ data class PatientListRespModel(
     val isGad7: Boolean? = false,
     val mentalHealthLevels: List<String>? = null,
     val dateOfBirth: String? = null,
-    val patientReference : String? =null,
-    val encounterId : String? = null,
-    val insuranceId : String? = null,
-    val insuranceStatus : Boolean? = null,
-    val insuranceType : String? = null,
-    val suicidalIdeation : String? = null,
-    val otherInsurance : String? = null,
-    val cageAid : String? = null,
-    var isActive:Boolean?=null,
+    val patientReference: String? = null,
+    val encounterId: String? = null,
+    val insuranceId: String? = null,
+    val insuranceStatus: Boolean? = null,
+    val insuranceType: String? = null,
+    val suicidalIdeation: String? = null,
+    val otherInsurance: String? = null,
+    val cageAid: String? = null,
+    var isActive: Boolean? = null,
     val nextMedicalReviewDate: String? = null,
     val phq4score: String? = null,
     val gad7Score: String? = null,
@@ -92,8 +92,8 @@ data class PatientListRespModel(
     val populationTypes: List<String>? = null,
     val emtctEnrollDate: String? = null,
     val entryPoint: String? = null,
-    val isEmtctFlow:Boolean? = null,
-    val otherEntryPoint:String? = null
+    val isEmtctFlow: Boolean? = null,
+    val otherEntryPoint: String? = null,
 ) : Serializable
 
 data class PregnancyDetails(
@@ -111,22 +111,23 @@ data class PregnancyDetails(
     val gestationalAge: String? = null,
     val noOfFetus: Int? = null,
     val gravida: Int? = null,
-    val neonatePatientId:String? = null,
+    val neonatePatientId: String? = null,
     val parity: Int? = null,
     val patientBloodGroup: String? = null,
     val bmi: Double? = null,
     val pregnant: Boolean? = null,
-    val ancVisit:String? = null,
+    val ancVisit: String? = null,
     val villageId: String? = null,
-    val dateOfDelivery:String?=null,
+    val dateOfDelivery: String? = null,
     val isPregnancyRisk: Boolean? = null,
     var isDangerSymptoms: Boolean? = null,
-    val neonatalOutcomes:String? = null
+    val neonatalOutcomes: String? = null,
 ) : Serializable
+
 data class SearchAndListResponse(
     val patientList: List<PatientListRespModel> = emptyList(),
     val referencePatientId: String? = null,
-    val totalCount: Int? = null
+    val totalCount: Int? = null,
 ) : Serializable
 
 data class PrescribedDetails(
@@ -137,9 +138,9 @@ data class PrescribedDetails(
     var createdAt: String? = null,
     var updatedAt: String? = null,
     var lastRefillDate: String? = null,
-    var lastRefillVisitId: String? = null
+    var lastRefillVisitId: String? = null,
 ) : Serializable
 
-data class NeoNateListModel(var isActive:Boolean?=null)
+data class NeoNateListModel(var isActive: Boolean? = null)
 
 data class PregnancySummaryRequest(var patientReference: String? = null)

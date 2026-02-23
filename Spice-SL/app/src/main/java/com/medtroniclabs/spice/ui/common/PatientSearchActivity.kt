@@ -7,7 +7,6 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientSearchFragment
 
 class PatientSearchActivity : BaseActivity() {
-
     private lateinit var binding: ActivityPatientSearchBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,7 +14,9 @@ class PatientSearchActivity : BaseActivity() {
 
         binding = ActivityPatientSearchBinding.inflate(layoutInflater)
         setMainContentView(
-            binding.root, isToolbarVisible = true, title = getString(R.string.search_patient)
+            binding.root,
+            isToolbarVisible = true,
+            title = getString(R.string.search_patient),
         )
 
         loadSearchFragment()
@@ -25,7 +26,7 @@ class PatientSearchActivity : BaseActivity() {
         replaceFragmentInId<PatientSearchFragment>(
             R.id.fragmentContainerView,
             bundle = intent.extras,
-            tag = PatientSearchFragment.TAG
+            tag = PatientSearchFragment.TAG,
         )
     }
 }

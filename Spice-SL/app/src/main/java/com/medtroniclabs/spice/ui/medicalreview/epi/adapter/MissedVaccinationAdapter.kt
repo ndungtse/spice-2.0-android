@@ -11,68 +11,76 @@ import com.medtroniclabs.spice.databinding.RowMissedVaccinationItemHeaderBinding
 import com.medtroniclabs.spice.model.medicalreview.VaccinationDetail
 
 class MissedVaccinationAdapter(private val list: List<VaccinationDetail>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
     inner class HeaderViewHolder(val binding: RowMissedVaccinationItemHeaderBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     inner class ItemViewHolder(val binding: RowMissedVaccinationItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-            val context: Context = binding.root.context
-        }
-
-    override fun getItemViewType(position: Int): Int {
-        return position
+        val context: Context = binding.root.context
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun getItemViewType(position: Int): Int = position
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): RecyclerView.ViewHolder {
         if (viewType == 0) {
-            return HeaderViewHolder(RowMissedVaccinationItemHeaderBinding.inflate(
-                LayoutInflater.from(
-                parent.context
-            ), parent, false))
+            return HeaderViewHolder(
+                RowMissedVaccinationItemHeaderBinding.inflate(
+                    LayoutInflater.from(
+                        parent.context,
+                    ),
+                    parent,
+                    false,
+                ),
+            )
         } else {
-            return ItemViewHolder(RowMissedVaccinationItemBinding.inflate(
-                LayoutInflater.from(
-                    parent.context
-                ), parent, false))
+            return ItemViewHolder(
+                RowMissedVaccinationItemBinding.inflate(
+                    LayoutInflater.from(
+                        parent.context,
+                    ),
+                    parent,
+                    false,
+                ),
+            )
         }
     }
 
-    override fun getItemCount(): Int {
-        return list.size
+    override fun getItemCount(): Int = list.size
+
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+    ) {
+        if (position != 0) {
+            val itemHolder = holder as ItemViewHolder
+
+            if (position % 2 == 0) {
+                itemHolder.binding.clRootMissedVaccineItem.setBackgroundColor(
+                    ContextCompat.getColor(
+                        holder.context,
+                        R.color.table_row_color,
+                    ),
+                )
+            } else {
+                itemHolder.binding.clRootMissedVaccineItem.setBackgroundColor(
+                    ContextCompat.getColor(
+                        holder.context,
+                        R.color.white,
+                    ),
+                )
+            }
+
+            val vaccinationDetail = list[position]
+            itemHolder.binding.tvVaccinationName.text = vaccinationDetail.vaccineName
+
+            if (vaccinationDetail.vaccinatedDate != null) {
+                itemHolder.binding.ivStatus.setImageResource(R.drawable.success_icon)
+            } else {
+                itemHolder.binding.ivStatus.setImageResource(R.drawable.missed_icon)
+            }
+        }
     }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-         if (position != 0) {
-             val itemHolder = holder as ItemViewHolder
-
-             if (position % 2 == 0) {
-                 itemHolder.binding.clRootMissedVaccineItem.setBackgroundColor(
-                     ContextCompat.getColor(
-                         holder.context,
-                         R.color.table_row_color
-                     )
-                 )
-             } else {
-                 itemHolder.binding.clRootMissedVaccineItem.setBackgroundColor(
-                     ContextCompat.getColor(
-                         holder.context,
-                         R.color.white
-                     )
-                 )
-             }
-
-
-             val vaccinationDetail = list[position]
-             itemHolder.binding.tvVaccinationName.text = vaccinationDetail.vaccineName
-
-             if (vaccinationDetail.vaccinatedDate != null) {
-                 itemHolder.binding.ivStatus.setImageResource(R.drawable.success_icon)
-             } else {
-                 itemHolder.binding.ivStatus.setImageResource(R.drawable.missed_icon)
-             }
-         }
-    }
-
-
 }

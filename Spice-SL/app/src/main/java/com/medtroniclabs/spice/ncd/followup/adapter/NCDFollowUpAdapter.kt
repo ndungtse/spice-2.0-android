@@ -17,11 +17,9 @@ import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpScreenedFragment
 
 class NCDFollowUpAdapter(
     fragmentManager: FragmentManager,
-    lifecycle: Lifecycle
+    lifecycle: Lifecycle,
 ) : FragmentStateAdapter(fragmentManager, lifecycle) {
-    override fun getItemCount(): Int {
-        return 4
-    }
+    override fun getItemCount(): Int = 4
 
     override fun createFragment(position: Int): Fragment {
         val type = when (position) {

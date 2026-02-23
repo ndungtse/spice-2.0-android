@@ -1,7 +1,11 @@
 package com.medtroniclabs.spice.formgeneration.utility
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,13 +20,13 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
     private var callback: ((result: ArrayList<HashMap<String, Any>>) -> Unit)? = null
     var resultMap: Any? = null
-    var title : String? = null
-    var autoPopulate:List<Pair<String,Boolean>> = emptyList()
+    var title: String? = null
+    var autoPopulate: List<Pair<String, Boolean>> = emptyList()
     constructor(
         callback: (result: ArrayList<HashMap<String, Any>>) -> Unit,
         resultMap: Any?,
-        title:String?,
-        autoPopulate:List<Pair<String,Boolean>> = emptyList()
+        title: String?,
+        autoPopulate: List<Pair<String, Boolean>> = emptyList(),
     ) : this() {
         this.callback = callback
         this.resultMap = resultMap
@@ -36,16 +40,17 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
     companion object {
         const val TAG = "CheckBoxDialogComponent"
         private const val KEY_TYPE = "KEY_TYPE"
+
         fun newInstance(
             key: String,
             resultMap: Any?,
-            title:String?=null,
-            autoPopulate:List<Pair<String,Boolean>> = emptyList(),
-            callback: (result: ArrayList<HashMap<String, Any>>) -> Unit
+            title: String? = null,
+            autoPopulate: List<Pair<String, Boolean>> = emptyList(),
+            callback: (result: ArrayList<HashMap<String, Any>>) -> Unit,
         ): CheckBoxDialog {
             val args = Bundle()
             args.putString(KEY_TYPE, key)
-            val fragment = CheckBoxDialog(callback, resultMap,title,autoPopulate)
+            val fragment = CheckBoxDialog(callback, resultMap, title, autoPopulate)
             fragment.arguments = args
             return fragment
         }
@@ -54,7 +59,7 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = CheckboxDialogLayoutBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -67,7 +72,10 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
         isCancelable = false
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeView()
         getRespectiveList(requireArguments().getString(KEY_TYPE))
@@ -97,18 +105,20 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
 
             val adapterList = if (resultMap != null && resultMap is ArrayList<*>) {
                 getSelectedSymptomList(list, resultMap as ArrayList<*>)
-            } else list
+            } else {
+                list
+            }
 
             binding.rvItems.adapter = CheckboxDialogAdapter(
                 adapterList,
-                translate = SecuredPreference.getIsTranslationEnabled()
+                translate = SecuredPreference.getIsTranslationEnabled(),
             )
         }
     }
 
     private fun getSelectedSymptomList(
         list: List<SignsAndSymptomsEntity>,
-        resultMap: ArrayList<*>
+        resultMap: ArrayList<*>,
     ): List<SignsAndSymptomsEntity> {
         var value = emptyList<SignsAndSymptomsEntity>()
         if (resultMap.isNotEmpty()) {
@@ -148,7 +158,7 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
@@ -162,7 +172,7 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
                 val adapter = binding.rvItems.adapter
                 if (adapter is CheckboxDialogAdapter) {
                     callback?.invoke(
-                        adapter.getSelectedItems()
+                        adapter.getSelectedItems(),
                     )
                     dismiss()
                 }

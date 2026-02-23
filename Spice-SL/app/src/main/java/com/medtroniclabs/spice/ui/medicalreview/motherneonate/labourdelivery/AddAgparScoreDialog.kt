@@ -17,7 +17,6 @@ import com.medtroniclabs.spice.databinding.FragmentAddAgparScoreBinding
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 
 class AddAgparScoreDialog : DialogFragment() {
-
     private var _binding: FragmentAddAgparScoreBinding? = null
     private val viewModel: LabourDeliveryViewModel by activityViewModels()
 
@@ -26,15 +25,14 @@ class AddAgparScoreDialog : DialogFragment() {
 
     companion object {
         const val TAG = "AgparScoreDialog"
-        fun newInstance(): AddAgparScoreDialog {
-            return AddAgparScoreDialog()
-        }
+
+        fun newInstance(): AddAgparScoreDialog = AddAgparScoreDialog()
     }
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentAddAgparScoreBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -42,7 +40,10 @@ class AddAgparScoreDialog : DialogFragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initUI()
         initListeners()
@@ -68,9 +69,7 @@ class AddAgparScoreDialog : DialogFragment() {
         setWidth(width)
     }
 
-
     private fun initListeners() {
-
         binding.etAgparScore.doAfterTextChanged { editable ->
             editable?.toString()?.toIntOrNull()?.let { score ->
                 binding.apply {
@@ -88,7 +87,6 @@ class AddAgparScoreDialog : DialogFragment() {
             }
         }
 
-
         binding.btnOkay.setOnClickListener {
             viewModel.updateAgparScore(binding.etAgparScore.text.toString())
             viewModel.validateSubmitButtonState()
@@ -104,9 +102,7 @@ class AddAgparScoreDialog : DialogFragment() {
         }
     }
 
-
     private fun initUI() {
-
         viewModel.agparSelectedScore?.let {
             binding.etAgparScore.setText(it)
         }
@@ -114,16 +110,14 @@ class AddAgparScoreDialog : DialogFragment() {
         val rowName = viewModel.getAgparRowName()
         val columnName = viewModel.getAgparColumnName()
 
-        val rowDislayName = if(rowName != null) getString(rowName) else getString(R.string.separator_double_hyphen)
-        val columnDisplayName = if(columnName != null) getString(columnName) else getString(R.string.separator_double_hyphen)
+        val rowDislayName = if (rowName != null) getString(rowName) else getString(R.string.separator_double_hyphen)
+        val columnDisplayName = if (columnName != null) getString(columnName) else getString(R.string.separator_double_hyphen)
 
         binding.tvAgparIndicatorLabel.text = "$rowDislayName - $columnDisplayName"
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
 }

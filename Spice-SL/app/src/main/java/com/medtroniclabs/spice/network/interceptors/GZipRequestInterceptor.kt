@@ -10,13 +10,19 @@ import okio.GzipSink
 import okio.buffer
 
 class GZipRequestInterceptor : Interceptor {
-
     private val gZIPHeaderKey = "Content-Encoding"
     private val gZIPHeaderValue = "gzip"
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
-        if (chain.request().url.toString().contains(NetworkConstants.OFFLINE_SYNC_CREATE)) {
-            val compressedRequest = originalRequest.newBuilder()
+        if (chain
+                .request()
+                .url
+                .toString()
+                .contains(NetworkConstants.OFFLINE_SYNC_CREATE)
+        ) {
+            val compressedRequest = originalRequest
+                .newBuilder()
                 .header(gZIPHeaderKey, gZIPHeaderValue)
                 .method(originalRequest.method, gzip(originalRequest.body))
                 .build()
@@ -25,11 +31,9 @@ class GZipRequestInterceptor : Interceptor {
         return chain.proceed(originalRequest)
     }
 
-    private fun gzip(body: RequestBody?): RequestBody {
-        return object : RequestBody() {
-            override fun contentType(): MediaType? {
-                return body?.contentType()
-            }
+    private fun gzip(body: RequestBody?): RequestBody =
+        object : RequestBody() {
+            override fun contentType(): MediaType? = body?.contentType()
 
             override fun writeTo(sink: BufferedSink) {
                 val gzipSink = GzipSink(sink).buffer()
@@ -37,5 +41,4 @@ class GZipRequestInterceptor : Interceptor {
                 gzipSink.close()
             }
         }
-    }
 }

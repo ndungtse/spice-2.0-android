@@ -18,11 +18,10 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class MotherNeonateSummaryViewModel @Inject constructor(
     private val motherNeonateANCRepo: MotherNeonateANCRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
     var nextFollowupDate: String? = null
     var patientStatus: String? = null
@@ -43,13 +42,16 @@ class MotherNeonateSummaryViewModel @Inject constructor(
         checkSubmitBtn.value = true
     }
 
-    fun fetchMotherNeonateSummary(encounterId: String?,fhirId: String?) {
+    fun fetchMotherNeonateSummary(
+        encounterId: String?,
+        fhirId: String?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             motherNeonateAncSummary.postLoading()
             motherNeonateAncSummary.postValue(
                 motherNeonateANCRepo.fetchSummary(
-                    MotherNeonateAncRequest(id = encounterId, patientReference = fhirId)
-                )
+                    MotherNeonateAncRequest(id = encounterId, patientReference = fhirId),
+                ),
             )
         }
     }

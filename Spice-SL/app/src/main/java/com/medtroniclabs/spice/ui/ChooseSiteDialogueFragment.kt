@@ -21,15 +21,16 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.boarding.ResourceLoadingScreen
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 
-class ChooseSiteDialogueFragment : DialogFragment(),
+class ChooseSiteDialogueFragment :
+    DialogFragment(),
     View.OnClickListener {
-
     private val viewModel: LandingViewModel by activityViewModels()
 
     lateinit var binding: FragmentChooseSiteBinding
 
     companion object {
         const val TAG = "ChooseSiteDialog"
+
         fun newInstance(): ChooseSiteDialogueFragment {
             val fragment = ChooseSiteDialogueFragment()
             val args = Bundle()
@@ -37,7 +38,6 @@ class ChooseSiteDialogueFragment : DialogFragment(),
             return fragment
         }
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +47,7 @@ class ChooseSiteDialogueFragment : DialogFragment(),
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentChooseSiteBinding.inflate(inflater, container, false)
         binding.btnConfirm.safeClickListener(this)
@@ -57,24 +57,30 @@ class ChooseSiteDialogueFragment : DialogFragment(),
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getUserHealthFacility()
         attachObserver()
     }
 
     private fun loadAdapter(healthFacilityEntities: ArrayList<HealthFacilityEntity>) {
-       val defaultSiteId = SecuredPreference.getTenantId()
+        val defaultSiteId = SecuredPreference.getTenantId()
         binding.rvSiteList.layoutManager = LinearLayoutManager(binding.root.context)
        /* binding.rvSiteList.addItemDecoration(
             DividerNCDItemDecoration(activity, R.drawable.divider)
         )*/
-        binding.rvSiteList.adapter = SiteAdapter(healthFacilityEntities,defaultSiteId) {
-            enableConfirm(it,healthFacilityEntities.size!=1)
+        binding.rvSiteList.adapter = SiteAdapter(healthFacilityEntities, defaultSiteId) {
+            enableConfirm(it, healthFacilityEntities.size != 1)
         }
     }
 
-    private fun enableConfirm(siteEntity: HealthFacilityEntity, listCount: Boolean) {
+    private fun enableConfirm(
+        siteEntity: HealthFacilityEntity,
+        listCount: Boolean,
+    ) {
         viewModel.selectedSiteEntity = siteEntity
         binding.btnConfirm.isEnabled = listCount
     }
@@ -87,12 +93,11 @@ class ChooseSiteDialogueFragment : DialogFragment(),
         }
     }
 
-
     override fun onStart() {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
@@ -108,57 +113,58 @@ class ChooseSiteDialogueFragment : DialogFragment(),
                         viewModel.selectedSiteEntity?.let {
                             SecuredPreference.putBoolean(
                                 SecuredPreference.EnvironmentKey.ISMETALOADED.name,
-                                false
+                                false,
                             )
                             SecuredPreference.putBoolean(
                                 SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
-                                false
+                                false,
                             )
                             SecuredPreference.putLong(
                                 SecuredPreference.EnvironmentKey.TENANT_ID.name,
-                                it.tenantId
+                                it.tenantId,
                             )
                             SecuredPreference.putLong(
                                 SecuredPreference.EnvironmentKey.ORGANIZATION_ID.name,
-                                it.id
+                                it.id,
                             )
                             SecuredPreference.putString(
                                 SecuredPreference.EnvironmentKey.ORGANIZATION_FHIR_ID.name,
-                                it.fhirId
+                                it.fhirId,
                             )
                             SecuredPreference.putLong(
                                 SecuredPreference.EnvironmentKey.DISTRICT_ID.name,
-                                it.districtId
+                                it.districtId,
                             )
 
                             SecuredPreference.putLong(
                                 SecuredPreference.EnvironmentKey.CHIEFDOM_ID.name,
-                                it.chiefdomId
+                                it.chiefdomId,
                             )
                             triggerResourceLoading()
                             viewModel.setAnalyticsData(
                                 UserDetail.startDateTime,
                                 eventName = AnalyticsDefinedParams.NCDChangeFacility,
-                                isCompleted = true
+                                isCompleted = true,
                             )
                             dismiss()
                         }
-                    }, offline = {
+                    },
+                    offline = {
                         dismiss()
-                    }
+                    },
                 )
             }
         }
     }
 
     private fun triggerResourceLoading() {
-       if (requireActivity() is BaseActivity) {
-           val intent =  Intent(
-               requireActivity(), ResourceLoadingScreen::class.java
-           )
-           intent.putExtra(DefinedParams.changeFacility,true)
-           (requireActivity() as BaseActivity).startAsNewActivity(intent)
-       }
+        if (requireActivity() is BaseActivity) {
+            val intent = Intent(
+                requireActivity(),
+                ResourceLoadingScreen::class.java,
+            )
+            intent.putExtra(DefinedParams.changeFacility, true)
+            (requireActivity() as BaseActivity).startAsNewActivity(intent)
+        }
     }
-
 }

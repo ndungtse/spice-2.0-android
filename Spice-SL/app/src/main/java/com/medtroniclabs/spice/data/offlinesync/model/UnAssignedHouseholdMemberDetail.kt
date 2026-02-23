@@ -8,5 +8,5 @@ data class UnAssignedHouseholdMemberDetail(
     val gender: String,
     val villageId: Long,
     val villageName: String,
-    val lMemberId:String
+    val lMemberId: String,
 )

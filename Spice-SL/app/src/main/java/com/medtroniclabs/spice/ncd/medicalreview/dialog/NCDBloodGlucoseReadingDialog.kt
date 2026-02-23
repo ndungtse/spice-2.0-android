@@ -27,30 +27,25 @@ import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentNcdBloodGlucoseReadingDialogBinding
-import com.medtroniclabs.spice.formgeneration.extension.DecimalDigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.utility.DecimalInputFilter
-import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
-import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewCMRActivity
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDBloodPressureVitalsViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
-import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentNcdBloodGlucoseReadingDialogBinding
     private lateinit var tagListCustomView: TagListCustomView
     private var datePickerDialog: DatePickerDialog? = null
@@ -59,9 +54,11 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNcdBloodGlucoseReadingDialogBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -71,11 +68,14 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
 
     companion object {
         const val TAG = "NCDBloodGlucoseReadingDialog"
-        fun newInstance(callback: () -> Unit) =
-            NCDBloodGlucoseReadingDialog(callback)
+
+        fun newInstance(callback: () -> Unit) = NCDBloodGlucoseReadingDialog(callback)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         viewModel.getNcdFormData(DefinedParams.Assessment, NCDMRUtil.NCD.lowercase())
@@ -101,13 +101,9 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
         binding.tvSelectType.markMandatory()
     }
 
-    private fun setHint(formData: FormLayout): CharSequence? {
-        return (formData.hint)
-    }
+    private fun setHint(formData: FormLayout): CharSequence? = (formData.hint)
 
-    private fun setTitle(formData: FormLayout): CharSequence {
-        return (formData.title) + " (${formData.unitMeasurement})"
-    }
+    private fun setTitle(formData: FormLayout): CharSequence = (formData.title) + " (${formData.unitMeasurement})"
 
     private fun initializeTagView() {
         tagListCustomView =
@@ -117,7 +113,7 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
                 callBack = { _, _, _ ->
                     viewModel.selectedChips =
                         ArrayList(tagListCustomView.getSelectedTags())
-                }
+                },
             )
         tagListCustomView.addChipItemList(getChip(), viewModel.selectedChips)
     }
@@ -129,8 +125,8 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
                 id = 1,
                 name = NCDMRUtil.FBS,
                 cultureValue = getString(R.string.fbs),
-                value = NCDMRUtil.FBS
-            )
+                value = NCDMRUtil.FBS,
+            ),
         )
         chipItemList.add(
             ChipViewItemModel(
@@ -138,7 +134,7 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
                 name = NCDMRUtil.RBS,
                 cultureValue = getString(R.string.rbs),
                 value = NCDMRUtil.RBS,
-            )
+            ),
         )
         return chipItemList
     }
@@ -166,15 +162,16 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
 
     private fun showDatePickerDialog() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (!binding.etAssessmentDate.text.isNullOrBlank())
+        if (!binding.etAssessmentDate.text.isNullOrBlank()) {
             yearMonthDate = DateUtils.getYearMonthAndDate(binding.etAssessmentDate.text.toString())
+        }
 
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
                 maxDate = System.currentTimeMillis(),
                 date = yearMonthDate,
-                cancelCallBack = { datePickerDialog = null }
+                cancelCallBack = { datePickerDialog = null },
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 if (DateUtils.validateForSameDate(year, month, dayOfMonth)) {
@@ -197,7 +194,7 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
             DateUtils.convertDateTimeToDate(
                 stringDate,
                 DateUtils.DATE_FORMAT_ddMMyyyy,
-                DateUtils.DATE_ddMMyyyy
+                DateUtils.DATE_ddMMyyyy,
             )
     }
 
@@ -211,34 +208,40 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
             isValid = false
             binding.tvAssessmentDateErrorMessage.visible()
             binding.tvAssessmentDateErrorMessage.text = getString(R.string.valid_assessment_date)
-        } else
+        } else {
             binding.tvAssessmentDateErrorMessage.gone()
+        }
 
         if (bgValue.isNullOrBlank()) {
             isValid = false
             binding.tvBloodGlucoseErrorMessage.visible()
             binding.tvBloodGlucoseErrorMessage.text = getString(
-                R.string.validation_error, getString(
-                    R.string.glucose_value
-                )
+                R.string.validation_error,
+                getString(
+                    R.string.glucose_value,
+                ),
             )
         } else {
             isValid = setErrorView(
-                binding.etBloodGlucose.text.toString().toDouble(),
+                binding.etBloodGlucose.text
+                    .toString()
+                    .toDouble(),
                 viewModel.bloodGlucose?.minValue,
                 viewModel.bloodGlucose?.maxValue,
                 binding.tvBloodGlucoseErrorMessage,
-                isValid
+                isValid,
             )
         }
 
         if (!binding.etHbA1c.text.isNullOrBlank()) {
             isValid = setErrorView(
-                binding.etHbA1c.text.toString().toDouble(),
+                binding.etHbA1c.text
+                    .toString()
+                    .toDouble(),
                 viewModel.hbA1c?.minValue,
                 viewModel.hbA1c?.maxValue,
                 binding.tvHbA1cErrorMessage,
-                isValid
+                isValid,
             )
         }
 
@@ -246,8 +249,9 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
             isValid = false
             binding.tvSelectTypeErrorMessage.visible()
             binding.tvSelectTypeErrorMessage.text = getString(R.string.bg_select_type)
-        } else
+        } else {
             binding.tvSelectTypeErrorMessage.gone()
+        }
 
         if (isValid) {
             processResultandProceed()
@@ -262,7 +266,7 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
         val assessmentDate = DateUtils.getDateStringInFormat(
             binding.etAssessmentDate.text.toString(),
             DateUtils.DATE_ddMMyyyy,
-            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
         )
 
         patientViewModel.patientDetailsLiveData.value?.data?.let { patientData ->
@@ -275,33 +279,42 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
                         AssessmentDefinedParams.assessmentType to DefinedParams.Assessment,
                         DefinedParams.AssessmentOrganizationId to SecuredPreference.getOrganizationFhirId(),
                         AssessmentDefinedParams.assessmentProcessType to CommonUtils.requestFrom(),
-                        AssessmentDefinedParams.assessmentTakenOn to assessmentDate
-                    )
+                        AssessmentDefinedParams.assessmentTakenOn to assessmentDate,
+                    ),
                 )
                 patientViewModel.getPatientId()?.let {
                     put(AssessmentDefinedParams.patientReference, it)
                 }
                 patientViewModel.getPatientFHIRId()?.let {
                     put(AssessmentDefinedParams.memberReference, it)
-
                 }
             }
         }
 
         val hbA1cValue =
-            binding.etHbA1c.text?.trim()?.toString()?.takeIf { it.isNotBlank() }?.toDoubleOrNull()
-        val bgValue = binding.etBloodGlucose.text?.trim()?.toString()?.takeIf { it.isNotBlank() }
+            binding.etHbA1c.text
+                ?.trim()
+                ?.toString()
+                ?.takeIf { it.isNotBlank() }
+                ?.toDoubleOrNull()
+        val bgValue = binding.etBloodGlucose.text
+            ?.trim()
+            ?.toString()
+            ?.takeIf { it.isNotBlank() }
             ?.toDoubleOrNull()
 
         if (bgValue != null) {
             result[DefinedParams.GLUCOSE_LOG] = hashMapOf<String, Any?>(
                 AssessmentDefinedParams.HBA1CUnit to viewModel.hbA1c?.unitMeasurement,
                 Screening.Glucose_Value to bgValue,
-                Screening.Glucose_Type to tagListCustomView.getSelectedTags()
-                    .firstOrNull()?.name?.lowercase(),
+                Screening.Glucose_Type to tagListCustomView
+                    .getSelectedTags()
+                    .firstOrNull()
+                    ?.name
+                    ?.lowercase(),
                 AssessmentDefinedParams.Glucose_Date_Time to assessmentDate,
                 Screening.GlucoseUnit to viewModel.bloodGlucose?.unitMeasurement,
-                AssessmentDefinedParams.hba1c to hbA1cValue
+                AssessmentDefinedParams.hba1c to hbA1cValue,
             )
         }
 
@@ -312,7 +325,7 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
             (activity as BaseActivity).showErrorDialogue(
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
-                false
+                false,
             ) {}
         }
     }
@@ -334,7 +347,7 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
                         getString(
                             R.string.general_min_max_validation,
                             CommonUtils.getDecimalFormatted(minValue),
-                            CommonUtils.getDecimalFormatted(maxValue)
+                            CommonUtils.getDecimalFormatted(maxValue),
                         )
                 } else {
                     tvErrorMessage.gone()
@@ -355,7 +368,7 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
         minOrMaxValue: Double,
         minMaxFlg: Int,
         validOrNot: Boolean,
-        tvErrorMessage: AppCompatTextView
+        tvErrorMessage: AppCompatTextView,
     ): Boolean {
         var isValid = validOrNot
         if (minMaxFlg == 0) {
@@ -365,7 +378,7 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
                 tvErrorMessage.text =
                     getString(
                         R.string.general_min_validation,
-                        CommonUtils.getDecimalFormatted(minOrMaxValue)
+                        CommonUtils.getDecimalFormatted(minOrMaxValue),
                     )
             } else {
                 tvErrorMessage.gone()
@@ -376,7 +389,7 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
                 tvErrorMessage.visible()
                 tvErrorMessage.text = getString(
                     R.string.general_max_validation,
-                    CommonUtils.getDecimalFormatted(minOrMaxValue)
+                    CommonUtils.getDecimalFormatted(minOrMaxValue),
                 )
             } else {
                 tvErrorMessage.gone()
@@ -411,7 +424,7 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
                         (activity as BaseActivity).showErrorDialogue(
                             getString(R.string.error),
                             message,
-                            false
+                            false,
                         ) {}
                     }
                 }

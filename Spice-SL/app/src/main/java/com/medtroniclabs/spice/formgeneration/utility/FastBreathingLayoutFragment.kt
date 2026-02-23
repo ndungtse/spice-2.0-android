@@ -16,23 +16,25 @@ class FastBreathingLayoutFragment : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "FastBreathingLayoutFragment"
-        fun newInstance(): FastBreathingLayoutFragment {
-            return FastBreathingLayoutFragment()
-        }
+
+        fun newInstance(): FastBreathingLayoutFragment = FastBreathingLayoutFragment()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentFastBreathingLayoutBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
         window?.setBackgroundDrawableResource(android.R.color.transparent)
-        return  binding.root
+        return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         initializeViews()
@@ -42,7 +44,7 @@ class FastBreathingLayoutFragment : DialogFragment(), View.OnClickListener {
     private fun initializeViews() {
         binding.rvInfoList.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter  = DosageInstructionAdapter(InformationUtils().getFastBreathingInstructions(requireContext()))
+            adapter = DosageInstructionAdapter(InformationUtils().getFastBreathingInstructions(requireContext()))
         }
     }
 
@@ -52,7 +54,7 @@ class FastBreathingLayoutFragment : DialogFragment(), View.OnClickListener {
     }
 
     override fun onClick(view: View) {
-        when(view.id){
+        when (view.id) {
             binding.ivClose.id, binding.btnClose.id -> {
                 dismiss()
             }
@@ -63,8 +65,7 @@ class FastBreathingLayoutFragment : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
-
 }

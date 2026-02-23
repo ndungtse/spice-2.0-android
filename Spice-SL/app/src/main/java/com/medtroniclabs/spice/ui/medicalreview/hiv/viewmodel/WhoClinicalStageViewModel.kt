@@ -24,14 +24,12 @@ import javax.inject.Inject
 @HiltViewModel
 class WhoClinicalStageViewModel @Inject constructor(
     private val hivMedicalReviewRepo: HivMedicalReviewRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
-
     var lastLocation: Location? = null
     var whoStageChip: ArrayList<ChipViewItemModel> = ArrayList()
     val whoStageCreateLiveData = MutableLiveData<Resource<HivClinicalInfoResponse>>()
-    val whoValue :String? = null
-
+    val whoValue: String? = null
 
     private val getMeta = MutableLiveData<String>()
     val getWhoStageLiveData: LiveData<List<MedicalReviewMetaItems>> =
@@ -51,8 +49,8 @@ class WhoClinicalStageViewModel @Inject constructor(
                     WhoClinicalStageCreateRequest(
                         encounter = encounter,
                         stringValue = whoStageChip[0].value ?: "",
-                    )
-                )
+                    ),
+                ),
             )
         }
     }

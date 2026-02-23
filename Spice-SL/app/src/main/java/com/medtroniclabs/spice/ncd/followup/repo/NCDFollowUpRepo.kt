@@ -14,12 +14,12 @@ import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineUtils
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
-import com.medtroniclabs.spice.db.entity.ResponseNCDFollowUp
 import com.medtroniclabs.spice.db.entity.NCDCallDetails
 import com.medtroniclabs.spice.db.entity.NCDFollowUp
 import com.medtroniclabs.spice.db.entity.NCDFollowUpDownload
 import com.medtroniclabs.spice.db.entity.NCDFollowUpRequestCreate
 import com.medtroniclabs.spice.db.entity.NCDPatientDetailsEntity
+import com.medtroniclabs.spice.db.entity.ResponseNCDFollowUp
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
@@ -35,10 +35,10 @@ import javax.inject.Inject
 
 class NCDFollowUpRepo @Inject constructor(
     private var apiHelper: ApiHelper,
-    private var roomHelper: RoomHelper
+    private var roomHelper: RoomHelper,
 ) {
-    suspend fun getPatientCallRegister(): Resource<RegisterCallResponse> {
-        return try {
+    suspend fun getPatientCallRegister(): Resource<RegisterCallResponse> =
+        try {
             val response = apiHelper.getPatientCallRegister()
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, response.body()?.entity)
@@ -49,10 +49,9 @@ class NCDFollowUpRepo @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun updatePatientCallRegister(request: FollowUpUpdateRequest): Resource<HashMap<String, Any>> {
-        return try {
+    suspend fun updatePatientCallRegister(request: FollowUpUpdateRequest): Resource<HashMap<String, Any>> =
+        try {
             val response = apiHelper.updatePatientCallRegister(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, response.body()?.entity)
@@ -63,13 +62,12 @@ class NCDFollowUpRepo @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     suspend fun fetchSyncNcdFollowUpData(
         villageIds: List<Long> = emptyList(),
-        serverLastSyncedAt: String? = null
-    ): Boolean {
-        return try {
+        serverLastSyncedAt: String? = null,
+    ): Boolean =
+        try {
             val syncedResponse = getSyncedNcdFollowUpEntities(villageIds, serverLastSyncedAt)
             if (syncedResponse.isSuccessful) {
                 syncedResponse.body()?.string()?.let { response ->
@@ -86,7 +84,7 @@ class NCDFollowUpRepo @Inject constructor(
             Timber.d("Exception: ${e.localizedMessage}")
             false
         }
-    }
+
     suspend fun getNcdFollowUpData(liveData: MutableLiveData<Resource<Boolean>>) {
         // Retrieve all village IDs from the local database
         val prefKey = SecuredPreference.EnvironmentKey.LINKED_VILLAGE_IDS.name
@@ -114,13 +112,12 @@ class NCDFollowUpRepo @Inject constructor(
         }
     }
 
-
-    private suspend fun saveNcdFollowUpData(responseInitialDownload: NCDFollowUpDownload): Boolean {
-        return try {
+    private suspend fun saveNcdFollowUpData(responseInitialDownload: NCDFollowUpDownload): Boolean =
+        try {
             if (SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.LINKED_VILLAGE_IDS_ALTER.name)) {
                 roomHelper.deleteAllNCDFollowUp()
                 roomHelper.deleteAllNCDPatientDetails()
-                SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.LINKED_VILLAGE_IDS_ALTER.name,false)
+                SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.LINKED_VILLAGE_IDS_ALTER.name, false)
             }
             // Save follow-up data if it is not empty
             responseInitialDownload.patientDetails?.let {
@@ -128,7 +125,7 @@ class NCDFollowUpRepo @Inject constructor(
                     val request = data.id?.let { id ->
                         NCDPatientDetailsEntity(
                             id = id,
-                            patientDetails = Gson().toJson(data)
+                            patientDetails = Gson().toJson(data),
                         )
                     }
                     if (request != null) {
@@ -141,28 +138,28 @@ class NCDFollowUpRepo @Inject constructor(
                 mappedFollowUps.forEach { roomHelper.insertNCDFollowUp(it) }
                 SecuredPreference.putString(
                     SecuredPreference.EnvironmentKey.NCD_FOLLOW_UP_LAST_SYNCED.name,
-                    responseInitialDownload.lastSyncTime
+                    responseInitialDownload.lastSyncTime,
                 )
                 responseInitialDownload.followUpCriteria?.let {
                     SecuredPreference.putInt(
                         SecuredPreference.EnvironmentKey.NCD_FOLLOW_UP_ATTEMPTS.name,
-                        it.followupAttempts ?: 5
+                        it.followupAttempts ?: 5,
                     )
                     SecuredPreference.putInt(
                         SecuredPreference.EnvironmentKey.NCD_FOLLOW_UP_SCREENING_REMAINING_DAYS.name,
-                        it.screeningFollowupRemainingDays ?: 5
+                        it.screeningFollowupRemainingDays ?: 5,
                     )
                     SecuredPreference.putInt(
                         SecuredPreference.EnvironmentKey.NCD_FOLLOW_UP_ASSESSMENT_REMAINING_DAYS.name,
-                        it.assessmentFollowupRemainingDays ?: 7
+                        it.assessmentFollowupRemainingDays ?: 7,
                     )
                     SecuredPreference.putInt(
                         SecuredPreference.EnvironmentKey.NCD_FOLLOW_UP_MEDICAL_REVIEW_REMAINING_DAYS.name,
-                        it.medicalReviewFollowupRemainingDays ?: 30
+                        it.medicalReviewFollowupRemainingDays ?: 30,
                     )
                     SecuredPreference.putInt(
                         SecuredPreference.EnvironmentKey.NCD_FOLLOW_UP_LOST_REMAINING_DAYS.name,
-                        it.lostToFollowupRemainingDays ?: 90
+                        it.lostToFollowupRemainingDays ?: 90,
                     )
                 }
                 true
@@ -171,10 +168,9 @@ class NCDFollowUpRepo @Inject constructor(
             Timber.d("Exception while saving data: ${e.localizedMessage}")
             false
         }
-    }
 
-    private fun ResponseNCDFollowUp.toNCDFollowUp(): NCDFollowUp {
-        return NCDFollowUp(
+    private fun ResponseNCDFollowUp.toNCDFollowUp(): NCDFollowUp =
+        NCDFollowUp(
             id = this.id,
             deleted = this.deleted,
             isCompleted = this.isCompleted,
@@ -203,13 +199,12 @@ class NCDFollowUpRepo @Inject constructor(
             createdBy = this.createdBy,
             updatedBy = this.updatedBy,
             createdAt = this.createdAt,
-            updatedAt = this.updatedAt
+            updatedAt = this.updatedAt,
         )
-    }
 
     private suspend fun getSyncedNcdFollowUpEntities(
         villageList: List<Long>,
-        lastSyncedAt: String? = null
+        lastSyncedAt: String? = null,
     ): Response<ResponseBody> {
         // Build the request for fetching synced entities
         val request = RequestAllEntities(villageList, lastSyncedAt)
@@ -227,7 +222,7 @@ class NCDFollowUpRepo @Inject constructor(
                 if (apiResponse.isSuccessful) {
                     SecuredPreference.saveStringArray(
                         SecuredPreference.EnvironmentKey.OFFLINE_FOLLOW_UP_SYNC_REQUEST_ID.name,
-                        arrayOf(request[OfflineConstant.REQUEST_ID] as String)
+                        arrayOf(request[OfflineConstant.REQUEST_ID] as String),
                     )
                 }
                 true
@@ -239,8 +234,8 @@ class NCDFollowUpRepo @Inject constructor(
         }
     }
 
-    private fun convertToNCDFollowUpRequestCreate(callDetailsList: List<NCDCallDetails>): List<NCDFollowUpRequestCreate> {
-        return callDetailsList
+    private fun convertToNCDFollowUpRequestCreate(callDetailsList: List<NCDCallDetails>): List<NCDFollowUpRequestCreate> =
+        callDetailsList
             .groupBy { it.id } // Group by the `id` field
             .map { (id, details) ->
                 val firstDetail = details.firstOrNull() // Take the first element as a base
@@ -254,42 +249,40 @@ class NCDFollowUpRepo @Inject constructor(
                     createdBy = firstDetail?.createdBy,
                     updatedBy = firstDetail?.updatedBy,
                     isInitiated = false, // Default value as per the class definition
-                    followUpDetails = details // Use all grouped elements as `followUpDetails`
+                    followUpDetails = details, // Use all grouped elements as `followUpDetails`
                 )
             }
-    }
 
     fun getNCDFollowUpData(
         type: String,
         searchText: String,
         dateBasedOnChip: Pair<Long?, Long?>?,
         isScreened: Boolean?,
-        reason:String?
+        reason: String?,
     ): LiveData<List<NCDFollowUp>> =
         roomHelper.getNCDFollowUpData(
-            type, searchText, dateBasedOnChip, isScreened,
-            reason
+            type,
+            searchText,
+            dateBasedOnChip,
+            isScreened,
+            reason,
         )
 
     suspend fun updatedCallInitiatedCall(id: NCDFollowUp) = roomHelper.updatedCallInitiatedCall(id)
 
-    suspend fun getNCDInitiatedCallFollowUp() =
-        roomHelper.getNCDInitiatedCallFollowUp()
+    suspend fun getNCDInitiatedCallFollowUp() = roomHelper.getNCDInitiatedCallFollowUp()
 
-    suspend fun insertNCDCallDetails(followUp: NCDCallDetails):  NCDCallDetails? {
-        return roomHelper.insertNCDCallDetails(followUp)
-    }
+    suspend fun insertNCDCallDetails(followUp: NCDCallDetails): NCDCallDetails? = roomHelper.insertNCDCallDetails(followUp)
 
-    suspend fun updateRetryAttempts(id: Long, retryAttempts: Long) {
-        return roomHelper.updateRetryAttempts(id, retryAttempts)
-    }
+    suspend fun updateRetryAttempts(
+        id: Long,
+        retryAttempts: Long,
+    ) = roomHelper.updateRetryAttempts(id, retryAttempts)
 
-    suspend fun getAttemptsById(id: Long): Long? {
-        return roomHelper.getAttemptsById(id)
-    }
-    suspend fun getNCDFollowUpById(id: Long): NCDFollowUp {
-        return roomHelper.getNCDFollowUpById(id)
-    }
+    suspend fun getAttemptsById(id: Long): Long? = roomHelper.getAttemptsById(id)
+
+    suspend fun getNCDFollowUpById(id: Long): NCDFollowUp = roomHelper.getNCDFollowUpById(id)
+
     suspend fun getAllVillagesName(): Resource<List<VillageEntity>> {
         val response = roomHelper.getUserVillages()
         return Resource(state = ResourceState.SUCCESS, data = response)
@@ -323,7 +316,5 @@ class NCDFollowUpRepo @Inject constructor(
         }
     }
 
-    private suspend fun getSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse> {
-        return apiHelper.getOfflineSyncStatus(request)
-    }
+    private suspend fun getSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse> = apiHelper.getOfflineSyncStatus(request)
 }

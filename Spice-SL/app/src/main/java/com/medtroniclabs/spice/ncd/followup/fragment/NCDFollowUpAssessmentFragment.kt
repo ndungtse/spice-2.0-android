@@ -20,9 +20,9 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListenerForFollowUp
 
 class NCDFollowUpAssessmentFragment : BaseFragment(), PatientSelectionListenerForFollowUp {
-
     companion object {
         const val TAG = "NCDFollowUpAssessmentFragment"
+
         fun newInstance(type: String) =
             NCDFollowUpAssessmentFragment().apply {
                 arguments = Bundle().apply {
@@ -34,7 +34,7 @@ class NCDFollowUpAssessmentFragment : BaseFragment(), PatientSelectionListenerFo
     private lateinit var binding: FragmentFollowUpSearchBinding
     private val followUpAdapter: NCDPatientFollowUPListAdapter by lazy {
         NCDPatientFollowUPListAdapter(
-            this
+            this,
         )
     }
 
@@ -42,15 +42,19 @@ class NCDFollowUpAssessmentFragment : BaseFragment(), PatientSelectionListenerFo
     private val followUpViewModel: NCDFollowUpAssessmentViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentFollowUpSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -73,7 +77,7 @@ class NCDFollowUpAssessmentFragment : BaseFragment(), PatientSelectionListenerFo
             viewModel,
             binding = binding,
             context = requireContext(),
-            followUpAdapter = followUpAdapter
+            followUpAdapter = followUpAdapter,
         )
     }
 
@@ -88,7 +92,7 @@ class NCDFollowUpAssessmentFragment : BaseFragment(), PatientSelectionListenerFo
             showError = { title, message ->
                 showErrorDialog(title = title, message = message)
             },
-            postError = { viewModel.totalPatientCount.postValue(null) }
+            postError = { viewModel.totalPatientCount.postValue(null) },
         )
     }
 
@@ -105,7 +109,7 @@ class NCDFollowUpAssessmentFragment : BaseFragment(), PatientSelectionListenerFo
                     memberId = item.memberId,
                     isInitiated = true,
                     phoneNumber = item.phoneNumber,
-                    provenance = ProvanceDto()
+                    provenance = ProvanceDto(),
                 )
                 withNetworkAvailability(online = {
                     viewModel.updatePatientCallRegister(request)
@@ -132,7 +136,7 @@ class NCDFollowUpAssessmentFragment : BaseFragment(), PatientSelectionListenerFo
         NCDFollowUpUtils.collectPagedData(
             lifecycleOwner = viewLifecycleOwner,
             pagingDataFlow = viewModel.patientsDataSource,
-            adapter = followUpAdapter
+            adapter = followUpAdapter,
         )
     }
 }

@@ -4,17 +4,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Active
 import com.medtroniclabs.spice.common.DefinedParams.LIST_LIMIT
-import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.common.DefinedParams.OnHold
 import com.medtroniclabs.spice.common.DefinedParams.OnTreatment
 import com.medtroniclabs.spice.common.DefinedParams.REFERRED
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
+import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.MedicalReviewFilterModel
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.SortModel
@@ -35,10 +34,9 @@ import javax.inject.Inject
 class PatientListViewModel @Inject constructor(
     private val patientRepository: PatientRepository,
     private val apiHelper: ApiHelper,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
-    ) : BaseViewModel(dispatcherIO) {
-
-    //Patient list - Grid count
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
+) : BaseViewModel(dispatcherIO) {
+    // Patient list - Grid count
     var spanCount: Int = DefinedParams.span_count_1
     var totalPatientCount = MutableLiveData<String>()
     var searchText = ""
@@ -57,7 +55,7 @@ class PatientListViewModel @Inject constructor(
     val patientVisitLiveData = MutableLiveData<Resource<PatientVisitResponse>>()
     val isTiberbuUser = CommonUtils.isTiberbuUser()
 
-    //Sort
+    // Sort
     var isRedRisk: Boolean? = null
     var isLatestAssessment: Boolean? = null
     var isMedicalReviewDueDate: Boolean? = null
@@ -71,27 +69,34 @@ class PatientListViewModel @Inject constructor(
                 apiHelper = apiHelper,
                 patientRepository = patientRepository,
                 searchText = searchText,
-                filter = if (isTiberbuUser) null else if (CommonUtils.isCommunity()) getFilter() else myFilter(),
+                filter = if (isTiberbuUser) {
+                    null
+                } else if (CommonUtils.isCommunity()) {
+                    getFilter()
+                } else {
+                    myFilter()
+                },
                 sort = if (isTiberbuUser) null else mySort(),
                 origin = getFormattedOrigin(origin),
-                isPatientListRequired = CommonUtils.isPatientListRequired(origin?.lowercase())
+                isPatientListRequired = CommonUtils.isPatientListRequired(origin?.lowercase()),
             ) { getPatientsCount ->
                 totalPatientCount.postValue(getPatientsCount)
             }
         }).flow
 
-    private fun mySort(): SortModel? {
-        return if (CommonUtils.canShowSort(origin)) getSort() else null
-    }
+    private fun mySort(): SortModel? = if (CommonUtils.canShowSort(origin)) getSort() else null
 
-    private fun myFilter(): MedicalReviewFilterModel? {
-        return if (CommonUtils.canShowFilter(origin)) getFilter()
-        else if (CommonUtils.isHRIO()) MedicalReviewFilterModel(enrollmentStatus = DefinedParams.ENROLLED)
-        else null
-    }
+    private fun myFilter(): MedicalReviewFilterModel? =
+        if (CommonUtils.canShowFilter(origin)) {
+            getFilter()
+        } else if (CommonUtils.isHRIO()) {
+            MedicalReviewFilterModel(enrollmentStatus = DefinedParams.ENROLLED)
+        } else {
+            null
+        }
 
-    private fun getFormattedOrigin(origin: String?): String? {
-        return when (origin?.lowercase()) {
+    private fun getFormattedOrigin(origin: String?): String? =
+        when (origin?.lowercase()) {
             MenuConstants.SCREENING.lowercase() -> DefinedParams.Screening
             MenuConstants.REGISTRATION.lowercase() -> DefinedParams.Registration
             MenuConstants.ASSESSMENT.lowercase() -> DefinedParams.Assessment
@@ -100,7 +105,6 @@ class PatientListViewModel @Inject constructor(
             MenuConstants.INVESTIGATION.lowercase() -> DefinedParams.Investigation
             else -> null
         }
-    }
 
     fun setFilter(trigger: Boolean) {
         filterLiveData.value = trigger
@@ -110,27 +114,27 @@ class PatientListViewModel @Inject constructor(
         sortLiveData.value = trigger
     }
 
-    private fun getSort(): SortModel {
-        return if (allAreNull()) SortModel(isRedRisk = true)
-        else
+    private fun getSort(): SortModel =
+        if (allAreNull()) {
+            SortModel(isRedRisk = true)
+        } else {
             SortModel(
                 isRedRisk = isRedRisk,
                 isLatestAssessment = isLatestAssessment,
                 isMedicalReviewDueDate = isMedicalReviewDueDate,
                 isHighLowBp = isHighLowBp,
                 isHighLowBg = isHighLowBg,
-                isAssessmentDueDate = isAssessmentDueDate
+                isAssessmentDueDate = isAssessmentDueDate,
             )
-    }
+        }
 
-    private fun allAreNull(): Boolean {
-        return isRedRisk == null &&
-                isLatestAssessment == null &&
-                isMedicalReviewDueDate == null &&
-                isHighLowBp == null &&
-                isHighLowBg == null &&
-                isAssessmentDueDate == null
-    }
+    private fun allAreNull(): Boolean =
+        isRedRisk == null &&
+            isLatestAssessment == null &&
+            isMedicalReviewDueDate == null &&
+            isHighLowBp == null &&
+            isHighLowBg == null &&
+            isAssessmentDueDate == null
 
     private fun getFilter(): MedicalReviewFilterModel? {
         val isPharmacist: Boolean = CommonUtils.isPharmacist()
@@ -145,13 +149,17 @@ class PatientListViewModel @Inject constructor(
         ) {
             MedicalReviewFilterModel(
                 patientStatus = patientStatusTag?.map {
-                    if (it.name.equals(OnTreatment, true)) OnHold else if (it.value.equals(
+                    if (it.name.equals(OnTreatment, true)) {
+                        OnHold
+                    } else if (it.value.equals(
                             REFERRED,
-                            true
+                            true,
                         )
                     ) {
                         Active
-                    } else ""
+                    } else {
+                        ""
+                    }
                 },
                 visitDate = medicalReviewDueTag?.mapNotNull { it.value },
                 labTestReferredOn = if (isPharmacist) null else getReferredOn(),
@@ -160,24 +168,22 @@ class PatientListViewModel @Inject constructor(
                 enrollmentStatus = ncdRegistrationTag?.mapNotNull { it.value }?.get(0),
                 isRedRiskPatient = redRisk(),
                 cvdRiskLevel = ncdCvdRiskTag?.mapNotNull { it.value }?.get(0),
-                assessmentDate = ncdAssessmentTag?.mapNotNull { it.value }?.get(0)
+                assessmentDate = ncdAssessmentTag?.mapNotNull { it.value }?.get(0),
             )
         } else {
             null
         }
     }
 
-    private fun getReferredOn(): String? {
-        return ncdReferredForTag?.mapNotNull { it.value }?.get(0)
-    }
+    private fun getReferredOn(): String? = ncdReferredForTag?.mapNotNull { it.value }?.get(0)
 
     private fun redRisk(): Boolean? {
         val noRedRisk = ncdRedRiskTag?.mapNotNull { it.value }.isNullOrEmpty()
         return if (noRedRisk) null else true
     }
 
-    fun filterCount(): Int {
-        return listOf(
+    fun filterCount(): Int =
+        listOf(
             patientStatusTag,
             ncdReferredForTag,
             medicalReviewDueTag,
@@ -185,17 +191,16 @@ class PatientListViewModel @Inject constructor(
             ncdRedRiskTag,
             ncdRegistrationTag,
             ncdCvdRiskTag,
-            ncdAssessmentTag
+            ncdAssessmentTag,
         ).count { !it.isNullOrEmpty() }
-    }
 
     fun sortCount(): Int {
         val hasSort = isRedRisk != null ||
-                isLatestAssessment != null ||
-                isMedicalReviewDueDate != null ||
-                isHighLowBp != null ||
-                isHighLowBg != null ||
-                isAssessmentDueDate != null
+            isLatestAssessment != null ||
+            isMedicalReviewDueDate != null ||
+            isHighLowBp != null ||
+            isHighLowBg != null ||
+            isAssessmentDueDate != null
         return if (hasSort) 1 else 0
     }
 
@@ -203,9 +208,8 @@ class PatientListViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             patientVisitLiveData.postLoading()
             patientVisitLiveData.postValue(
-                patientRepository.createPatientVisit(request)
+                patientRepository.createPatientVisit(request),
             )
         }
     }
 }
-

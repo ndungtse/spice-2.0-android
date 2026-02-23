@@ -1,12 +1,12 @@
 package com.medtroniclabs.spice.repo
 
-import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.BirthHistoryRequest
 import com.medtroniclabs.spice.data.BirthHistoryResponse
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreRequest
@@ -19,11 +19,10 @@ import javax.inject.Inject
 
 class UnderTwoMonthsRepository @Inject constructor(
     private val roomHelper: RoomHelper,
-    private val apiHelper: ApiHelper
+    private val apiHelper: ApiHelper,
 ) {
-
-    suspend fun getStaticMetaData(): Resource<Boolean> {
-        return try {
+    suspend fun getStaticMetaData(): Resource<Boolean> =
+        try {
             val response = apiHelper.getUnderTwoMonthsMetaData()
             if (response.isSuccessful) {
                 response.body()?.entity?.apply {
@@ -35,14 +34,13 @@ class UnderTwoMonthsRepository @Inject constructor(
                     roomHelper.insertExaminationsComplaint(
                         generateChipItemByType(
                             patientStatus,
-                            immunisationStatus
-
-                        )
+                            immunisationStatus,
+                        ),
                     )
                 }
                 SecuredPreference.putBoolean(
                     SecuredPreference.EnvironmentKey.IS_UNDER_TWO_MONTHS_LOADED.name,
-                    true
+                    true,
                 )
                 Resource(state = ResourceState.SUCCESS, true)
             } else {
@@ -52,14 +50,13 @@ class UnderTwoMonthsRepository @Inject constructor(
             e.printStackTrace()
             SecuredPreference.putBoolean(
                 SecuredPreference.EnvironmentKey.IS_UNDER_TWO_MONTHS_LOADED.name,
-                false
+                false,
             )
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun createMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsRequest): Resource<CreateUnderTwoMonthsResponse> {
-        return try {
+    suspend fun createMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsRequest): Resource<CreateUnderTwoMonthsResponse> =
+        try {
             val response = apiHelper.createMedicalReviewForUnderTwoMonths(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
@@ -71,10 +68,9 @@ class UnderTwoMonthsRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getBirthHistoryDetailsUnderTwoMonths(request: BirthHistoryRequest): Resource<BirthHistoryResponse> {
-        return try {
+    suspend fun getBirthHistoryDetailsUnderTwoMonths(request: BirthHistoryRequest): Resource<BirthHistoryResponse> =
+        try {
             val response = apiHelper.getBirthHistoryDetails(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
@@ -87,13 +83,8 @@ class UnderTwoMonthsRepository @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
 
-
-    }
-
-    suspend fun getSummaryDetailMetaItems(
-        type: String
-    ): Resource<List<MedicalReviewMetaItems>> {
-        return try {
+    suspend fun getSummaryDetailMetaItems(type: String): Resource<List<MedicalReviewMetaItems>> =
+        try {
             val response = roomHelper.getSummaryDetailMetaItems(type)
             val filteredAndSortedResponse = response
                 .filter { item -> item.category == MedicalReviewTypeEnums.patient_status.name }
@@ -102,11 +93,9 @@ class UnderTwoMonthsRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
-    suspend fun getImmunisationStatusMetaItems(
-        type: String
-    ): Resource<List<MedicalReviewMetaItems>> {
-        return try {
+
+    suspend fun getImmunisationStatusMetaItems(type: String): Resource<List<MedicalReviewMetaItems>> =
+        try {
             val response = roomHelper.getSummaryDetailMetaItems(type)
             val filteredAndSortedResponse = response
                 .filter { item -> item.category == MedicalReviewTypeEnums.immunisation_status.name }
@@ -115,11 +104,10 @@ class UnderTwoMonthsRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     private fun generateChipItemByType(
         patientStatus: List<MedicalReviewMetaItems>,
-        immunisationStatus: ArrayList<MedicalReviewMetaItems>
+        immunisationStatus: ArrayList<MedicalReviewMetaItems>,
     ): List<MedicalReviewMetaItems> {
         val chipItemList = ArrayList<MedicalReviewMetaItems>()
         patientStatus.forEach { it.type = MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name }
@@ -130,8 +118,8 @@ class UnderTwoMonthsRepository @Inject constructor(
         return chipItemList
     }
 
-    suspend fun getMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsResponse): Resource<SummaryDetails> {
-        return try {
+    suspend fun getMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsResponse): Resource<SummaryDetails> =
+        try {
             val response =
                 apiHelper.getMedicalReviewForUnderTwoMonths(request)
             if (response.isSuccessful) {
@@ -144,9 +132,9 @@ class UnderTwoMonthsRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
-    suspend fun getWazWhzScore(request: WazWhzScoreRequest): Resource<WazWhzScoreResponse> {
-        return try {
+
+    suspend fun getWazWhzScore(request: WazWhzScoreRequest): Resource<WazWhzScoreResponse> =
+        try {
             val response = apiHelper.getWazWhzScore(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
@@ -158,6 +146,4 @@ class UnderTwoMonthsRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 }
-

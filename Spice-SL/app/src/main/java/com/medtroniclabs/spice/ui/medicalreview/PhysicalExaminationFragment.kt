@@ -27,19 +27,23 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PhysicalExaminationFragment : BaseFragment() {
-
     private lateinit var binding: FragmentPhysicalExaminationBinding
     private val viewModel: PhysicalExaminationViewModel by activityViewModels()
     private lateinit var examinationsTagView: TagListCustomView
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPhysicalExaminationBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeViews()
         attachObserver()
@@ -52,7 +56,8 @@ class PhysicalExaminationFragment : BaseFragment() {
     private fun attachObserver() {
         viewModel.systemicExaminationListLiveData.observe(viewLifecycleOwner) { list ->
             val chipItemList = ArrayList<ChipViewItemModel>()
-            list.filter { it.category == MedicalReviewTypeEnums.ObstetricExaminations.name }
+            list
+                .filter { it.category == MedicalReviewTypeEnums.ObstetricExaminations.name }
                 .forEach {
                     chipItemList.add(
                         ChipViewItemModel(
@@ -60,8 +65,8 @@ class PhysicalExaminationFragment : BaseFragment() {
                             name = it.name,
                             cultureValue = it.displayValue,
                             type = it.type,
-                            value = it.value
-                        )
+                            value = it.value,
+                        ),
                     )
                 }
             examinationsTagView.addChipItemList(chipItemList, null)
@@ -70,14 +75,16 @@ class PhysicalExaminationFragment : BaseFragment() {
 
     private fun initializeViews() {
         examinationsTagView = TagListCustomView(
-            binding.root.context, binding.tagPhysicalExamination
+            binding.root.context,
+            binding.tagPhysicalExamination,
         ) { _, _, _ ->
             viewModel.selectedSystemicExaminations =
                 ArrayList(examinationsTagView.getSelectedTags())
             setFragmentResult(
-                MedicalReviewDefinedParams.SE_ITEM, bundleOf(
-                    MedicalReviewDefinedParams.CHIP_ITEMS to true
-                )
+                MedicalReviewDefinedParams.SE_ITEM,
+                bundleOf(
+                    MedicalReviewDefinedParams.CHIP_ITEMS to true,
+                ),
             )
         }
         viewModel.setType(MedicalReviewTypeEnums.PNC_CHILD_REVIEW.name)
@@ -93,7 +100,7 @@ class PhysicalExaminationFragment : BaseFragment() {
                 viewModel.congenitalDefectMap,
                 Pair(DefinedParams.CongenitalDetect, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                congenitalDetectSelectionCallback
+                congenitalDetectSelectionCallback,
             )
             binding.congenitalDetectSelector.addView(view)
         }
@@ -125,7 +132,7 @@ class PhysicalExaminationFragment : BaseFragment() {
                 viewModel.cordExaminationMap,
                 Pair(DefinedParams.CordExamination, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                cordExaminationSelectionCallback
+                cordExaminationSelectionCallback,
             )
             binding.cordExaminationSelector.addView(view)
         }
@@ -141,22 +148,23 @@ class PhysicalExaminationFragment : BaseFragment() {
         flowList.add(
             CommonUtils.getOptionMap(
                 getString(R.string.healing_satisfactorily),
-                getString(R.string.healing_satisfactorily)
-            )
+                getString(R.string.healing_satisfactorily),
+            ),
         )
         flowList.add(
             CommonUtils.getOptionMap(
-                getString(R.string.poor_healing), getString(R.string.poor_healing)
-            )
+                getString(R.string.poor_healing),
+                getString(R.string.poor_healing),
+            ),
         )
         flowList.add(
             CommonUtils.getOptionMap(
-                getString(R.string.infected), getString(R.string.infected)
-            )
+                getString(R.string.infected),
+                getString(R.string.infected),
+            ),
         )
         return flowList
     }
-
 
     private fun initializeBreastCondition() {
         getBreastConditionFlowData().let {
@@ -168,7 +176,7 @@ class PhysicalExaminationFragment : BaseFragment() {
                 viewModel.breastCondition,
                 Pair(DefinedParams.BreastCondition, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                breastConditionSelectionCallback
+                breastConditionSelectionCallback,
             )
             binding.breastFeedingSelector.addView(view)
         }
@@ -187,7 +195,6 @@ class PhysicalExaminationFragment : BaseFragment() {
                 binding.BreastFeedingGroup.gone()
                 resetSelectionViews(DefinedParams.ExclusiveBreastCondition)
             }
-
         }
 
     private fun getBreastConditionFlowData(): ArrayList<Map<String, Any>> {
@@ -207,13 +214,14 @@ class PhysicalExaminationFragment : BaseFragment() {
                 viewModel.exclusiveBreastCondition,
                 Pair(DefinedParams.ExclusiveBreastCondition, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                exclusiveBreastConditionSelectionCallback
+                exclusiveBreastConditionSelectionCallback,
             )
             binding.exclusiveBreastFeedingSelector.addView(view)
         }
     }
 
-    private var exclusiveBreastConditionSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
+    private var exclusiveBreastConditionSelectionCallback:
+        ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.exclusiveBreastCondition[DefinedParams.ExclusiveBreastCondition] =
                 selectedID as String
@@ -236,20 +244,18 @@ class PhysicalExaminationFragment : BaseFragment() {
             view?.resetSingleSelectionChildViews()
         }
     }
+
     fun refreshFragment() {
         examinationsTagView.clearSelection()
         examinationsTagView.clearOtherChip()
-        viewModel.breastFeeding=null
-        viewModel.exclusiveBreastFeeding=null
-        viewModel.congenitalDefect=null
+        viewModel.breastFeeding = null
+        viewModel.exclusiveBreastFeeding = null
+        viewModel.congenitalDefect = null
         viewModel.cordExaminationMap.clear()
         resetSelectionViews(DefinedParams.CongenitalDetect)
         resetSelectionViews(DefinedParams.CordExamination)
         resetSelectionViews(DefinedParams.ExclusiveBreastCondition)
         resetSelectionViews(DefinedParams.BreastCondition)
         binding.BreastFeedingGroup.gone()
-
     }
-
-
 }

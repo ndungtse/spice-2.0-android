@@ -7,17 +7,16 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.RowAgparFooterBinding
 import com.medtroniclabs.spice.databinding.RowAgparHeaderBinding
 import com.medtroniclabs.spice.databinding.RowAgparScoreBinding
-import com.medtroniclabs.spice.model.assessment.ApgarScore
 import com.medtroniclabs.spice.model.assessment.AgparScoreFooter
 import com.medtroniclabs.spice.model.assessment.AgparScoreHeader
 import com.medtroniclabs.spice.model.assessment.AgparScoreRow
+import com.medtroniclabs.spice.model.assessment.ApgarScore
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparColumnIdentifierType
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparItemViewType
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparRowIdentifierType
 
 class AgparScoreAdapter(val onClick: (rowType: AgparRowIdentifierType, columnType: AgparColumnIdentifierType, score: String?) -> Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
     private var apgarScores = mutableListOf<ApgarScore>()
 
     inner class AgparHeaderViewHolder(val binding: RowAgparHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -28,14 +27,12 @@ class AgparScoreAdapter(val onClick: (rowType: AgparRowIdentifierType, columnTyp
                 binding.tvHeaderThree.text = getString(header.headerThree)
                 binding.tvHeaderFour.text = getString(header.headerFour)
             }
-
         }
     }
 
     inner class AgparFooterViewHolder(val binding: RowAgparFooterBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(footer: AgparScoreFooter) {
             with(binding.root.context) {
-
                 binding.tvTotal.text = getString(footer.indicatorName)
                 binding.tvOneMinuteTotal.text =
                     footer.oneMinuteTotal ?: getString(R.string.separator_double_hyphen)
@@ -44,7 +41,6 @@ class AgparScoreAdapter(val onClick: (rowType: AgparRowIdentifierType, columnTyp
                 binding.tvTenMinuteTotal.text =
                     footer.tenMinuteTotal ?: getString(R.string.separator_double_hyphen)
             }
-
         }
     }
 
@@ -60,51 +56,53 @@ class AgparScoreAdapter(val onClick: (rowType: AgparRowIdentifierType, columnTyp
                     onClick.invoke(
                         item.indicatorType,
                         AgparColumnIdentifierType.ONE_MINUTE,
-                        item.oneMinute
+                        item.oneMinute,
                     )
                 }
                 binding.tvFiveMinute.setOnClickListener {
                     onClick.invoke(
                         item.indicatorType,
                         AgparColumnIdentifierType.FIVE_MINUTES,
-                        item.fiveMinute
+                        item.fiveMinute,
                     )
                 }
                 binding.tvTenMinute.setOnClickListener {
                     onClick.invoke(
                         item.indicatorType,
                         AgparColumnIdentifierType.TEN_MINUTES,
-                        item.tenMinute
+                        item.tenMinute,
                     )
                 }
             }
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return when (apgarScores[position].viewType) {
+    override fun getItemViewType(position: Int): Int =
+        when (apgarScores[position].viewType) {
             AgparItemViewType.HEADER -> 0
             AgparItemViewType.ROW -> 1
             AgparItemViewType.FOOTER -> 2
         }
-    }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            0 -> AgparHeaderViewHolder(RowAgparHeaderBinding.inflate(inflater, parent,false))
+            0 -> AgparHeaderViewHolder(RowAgparHeaderBinding.inflate(inflater, parent, false))
             1 -> AgparItemViewHolder(RowAgparScoreBinding.inflate(inflater, parent, false))
             2 -> AgparFooterViewHolder(RowAgparFooterBinding.inflate(inflater, parent, false))
             else -> AgparItemViewHolder(RowAgparScoreBinding.inflate(inflater, parent, false))
         }
     }
 
-    override fun getItemCount(): Int {
-        return apgarScores.size
-    }
+    override fun getItemCount(): Int = apgarScores.size
 
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+    ) {
         when (holder) {
             is AgparHeaderViewHolder -> {
                 apgarScores[position].header?.let { holder.bind(it) }

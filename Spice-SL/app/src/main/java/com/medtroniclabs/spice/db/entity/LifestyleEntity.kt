@@ -21,7 +21,7 @@ data class LifeStyleAnswer(
     @SerializedName("is_answer_dependent")
     val isAnswerDependent: Boolean,
     val displayValue: String? = null,
-    val value: String? = null
+    val value: String? = null,
 )
 
 data class LifeStyleUIModel(
@@ -35,9 +35,8 @@ data class LifeStyleUIModel(
     val lifestyleType: String,
     @SerializedName("culture_question_value")
     val cultureQuestionValue: String? = null,
-    val value: String? = null
+    val value: String? = null,
 )
-
 
 data class LifeStyleAnswerUIModel(
     val question: String? = null,
@@ -47,6 +46,6 @@ data class LifeStyleAnswerUIModel(
     val isAnswerDependent: Boolean,
     var comments: String? = null,
     @SerializedName("culture_answer_value")
-    val cultureAnswerValue:String?= null,
-    val value: String? = null
+    val cultureAnswerValue: String? = null,
+    val value: String? = null,
 )

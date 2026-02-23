@@ -7,6 +7,5 @@ data class NCDMedicalReviewUpdateModel(
     val villageId: String? = null,
     val nextMedicalReviewDate: String? = null,
     val patientReference: String? = null,
-    val provenance: ProvanceDto? = null
+    val provenance: ProvanceDto? = null,
 )
-

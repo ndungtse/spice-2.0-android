@@ -30,13 +30,10 @@ import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListenerForFollowUp
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-
 @AndroidEntryPoint
-open class BaseFragment : Fragment(){
-
+open class BaseFragment : Fragment() {
     @Inject
     lateinit var connectivityManager: ConnectivityManager
-
 
     fun showProgress() {
         if (activity is BaseActivity) {
@@ -53,14 +50,14 @@ open class BaseFragment : Fragment(){
     inline fun <reified fragment : Fragment> replaceFragmentInId(
         id: Int,
         bundle: Bundle? = null,
-        tag: String? = null
+        tag: String? = null,
     ) {
         childFragmentManager.commit {
             setReorderingAllowed(true)
             replace<fragment>(
                 id,
                 args = bundle,
-                tag = tag
+                tag = tag,
             )
         }
     }
@@ -69,19 +66,22 @@ open class BaseFragment : Fragment(){
         (activity as? BaseActivity)?.setTitle(title)
     }
 
-    fun getTitle() :String? {
-       return (activity as? BaseActivity)?.getString()
-    }
+    fun getTitle(): String? = (activity as? BaseActivity)?.getString()
 
-    fun showSuccessDialogue(title: String, message: String) {
+    fun showSuccessDialogue(
+        title: String,
+        message: String,
+    ) {
         (requireActivity() as BaseActivity).showSuccessDialogue(
             title = title,
             message = message,
         ) {}
     }
 
-
-    fun showErrorDialog(title: String, message: String) {
+    fun showErrorDialog(
+        title: String,
+        message: String,
+    ) {
         (requireActivity() as BaseActivity).showErrorDialogue(
             title,
             message,
@@ -92,7 +92,7 @@ open class BaseFragment : Fragment(){
     fun withNetworkAvailability(
         online: () -> Unit,
         offline: () -> Unit = {},
-        requireErrorDialog: Boolean = true
+        requireErrorDialog: Boolean = true,
     ) {
         connectivityManager.isNullableNetworkAvailable()?.let { isNetworkAvailable ->
             if (isNetworkAvailable) {
@@ -109,7 +109,7 @@ open class BaseFragment : Fragment(){
     inline fun <reified F : Fragment> replaceFragmentIfExists(
         id: Int,
         bundle: Bundle? = null,
-        tag: String? = null
+        tag: String? = null,
     ) {
         val existingFragment = parentFragmentManager.findFragmentByTag(tag)
 
@@ -127,7 +127,7 @@ open class BaseFragment : Fragment(){
 
     fun showCallDialError(isActivityFinish: Boolean = true) {
         (activity as BaseActivity).showErrorDialogue(
-            message = getString(R.string.device_phone_info)
+            message = getString(R.string.device_phone_info),
         ) {
             if (isActivityFinish) {
                 requireActivity().finish()
@@ -140,7 +140,10 @@ open class BaseFragment : Fragment(){
         return packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)
     }
 
-    fun launchAssessment(item: PatientFollowUpEntity, context: Context) {
+    fun launchAssessment(
+        item: PatientFollowUpEntity,
+        context: Context,
+    ) {
         val intent = Intent(requireContext(), AssessmentToolsActivity::class.java)
         intent.putExtra(DefinedParams.FhirId, item.memberId)
         intent.putExtra(DefinedParams.PatientId, item.patientId)
@@ -152,20 +155,26 @@ open class BaseFragment : Fragment(){
     fun launchPatientDetailsDialog(listener: PatientSelectionListenerForFollowUp) {
         val fragment = childFragmentManager.findFragmentByTag(NCDFollowUpDialogFragment.TAG)
         if (fragment == null) {
-            NCDFollowUpDialogFragment.newInstance(listener)
+            NCDFollowUpDialogFragment
+                .newInstance(listener)
                 .show(childFragmentManager, NCDFollowUpDialogFragment.TAG)
         }
     }
 
-    fun handleChipType(type: String?, isFemalePregnant: Boolean): String? {
-        return if (type.equals(
+    fun handleChipType(
+        type: String?,
+        isFemalePregnant: Boolean,
+    ): String? =
+        if (type.equals(
                 DefinedParams.PregnancyANC,
-                true
-            ) && !isFemalePregnant
-        ) NCDMRUtil.NCD.lowercase() else type
-    }
-
-
+                true,
+            ) &&
+            !isFemalePregnant
+        ) {
+            NCDMRUtil.NCD.lowercase()
+        } else {
+            type
+        }
 
     fun withLocationCheck(
         onLocationAvailable: () -> Unit,
@@ -184,8 +193,9 @@ open class BaseFragment : Fragment(){
                         val locationManager = SpiceLocationManager(requireContext())
                         locationManager.getCurrentLocation {
                             onLocationAvailable()
-                            if (shouldHideProgress)
+                            if (shouldHideProgress) {
                                 hideProgress()
+                            }
                         }
                     } else {
                         showErrorDialogue(
@@ -199,7 +209,7 @@ open class BaseFragment : Fragment(){
                                 val uri = Uri.fromParts(
                                     "package",
                                     BuildConfig.APPLICATION_ID,
-                                    null
+                                    null,
                                 )
                                 intent.data = uri
                                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -221,8 +231,8 @@ open class BaseFragment : Fragment(){
         requestPermissionLauncher.launch(
             arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            ),
         )
     }
 
@@ -234,6 +244,7 @@ open class BaseFragment : Fragment(){
 
             locationPermissionResultCallback?.invoke(finePermission && coarsePermission)
         }
+
     fun showTurnOnGPSDialog() {
         showErrorDialogue(
             title = getString(R.string.gps_disabled_title),
@@ -246,6 +257,7 @@ open class BaseFragment : Fragment(){
             }
         }
     }
+
     fun showErrorDialogue(
         title: String = getString(R.string.error),
         message: String,
@@ -253,7 +265,7 @@ open class BaseFragment : Fragment(){
         positiveButtonName: String? = null,
         okayBtnEnable: Boolean? = null,
         cancelBtnName: String? = null,
-        callback: ((isPositiveResult: Boolean) -> Unit)
+        callback: ((isPositiveResult: Boolean) -> Unit),
     ) {
         val generalErrorDialog =
             GeneralErrorDialog.newInstance(
@@ -263,18 +275,19 @@ open class BaseFragment : Fragment(){
                 isNegativeButtonNeed ?: false,
                 okayButton = positiveButtonName ?: getString(R.string.ok),
                 cancelButton = cancelBtnName ?: getString(R.string.cancel),
-                messageBtnData = Pair(message, okayBtnEnable ?: true)
+                messageBtnData = Pair(message, okayBtnEnable ?: true),
             )
         val errorFragment = childFragmentManager.findFragmentByTag(GeneralErrorDialog.TAG)
-        if (errorFragment == null)
+        if (errorFragment == null) {
             generalErrorDialog.show(childFragmentManager, GeneralErrorDialog.TAG)
+        }
     }
 
-    fun showHomeIcon(){
+    fun showHomeIcon() {
         (activity as? BaseActivity)?.hideHomeButton(false)
     }
 
-    fun hideHomeIcon(){
+    fun hideHomeIcon() {
         (activity as? BaseActivity)?.hideHomeButton(true)
     }
 
@@ -285,12 +298,11 @@ open class BaseFragment : Fragment(){
 
     inline fun <reified T : DialogFragment> Fragment.showDialogIfNotPresent(
         tag: String,
-        dialogProvider: () -> T
+        dialogProvider: () -> T,
     ) {
         val existingFragment = childFragmentManager.findFragmentByTag(tag)
         if (existingFragment == null) {
             dialogProvider().show(childFragmentManager, tag)
         }
     }
-
 }

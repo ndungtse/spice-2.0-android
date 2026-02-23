@@ -8,5 +8,5 @@ data class CulturesEntity(
     @PrimaryKey
     val id: Long,
     val name: String,
-    val code: String = ""
+    val code: String = "",
 )

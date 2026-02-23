@@ -21,7 +21,6 @@ import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseholdListViewModel
 
 class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentFilterBottomSheetDialogBinding
     private lateinit var villageListTagView: TagListCustomView
     private lateinit var ssListTagView: TagListCustomView
@@ -30,14 +29,11 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
 
     companion object {
         const val TAG = "FilterBottomSheetDialogFragment"
-        fun newInstance(): FilterBottomSheetDialogFragment {
-            return FilterBottomSheetDialogFragment()
-        }
+
+        fun newInstance(): FilterBottomSheetDialogFragment = FilterBottomSheetDialogFragment()
     }
 
-    override fun getTheme(): Int {
-        return R.style.DialogStyle
-    }
+    override fun getTheme(): Int = R.style.DialogStyle
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         BottomSheetDialog(requireContext(), theme).apply {
@@ -45,14 +41,18 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
         }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentFilterBottomSheetDialogBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initializeListeners()
@@ -85,22 +85,22 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
                         val villageList = data.villageList.map {
                             ChipViewItemModel(
                                 id = it.id,
-                                name = it.name
+                                name = it.name,
                             )
                         }
                         val ssList = data.ssList.map {
                             ChipViewItemModel(
                                 id = it.id,
-                                name = it.name
+                                name = it.name,
                             )
                         }
                         villageListTagView.addChipItemList(
                             villageList,
-                            householdListViewModel.getFilterLiveData().value?.filterByVillage
+                            householdListViewModel.getFilterLiveData().value?.filterByVillage,
                         )
                         ssListTagView.addChipItemList(
                             ssList,
-                            householdListViewModel.getFilterLiveData().value?.filterBySs
+                            householdListViewModel.getFilterLiveData().value?.filterBySs,
                         )
                     }
                 }
@@ -126,7 +126,7 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
         statusListTagView =
             TagListCustomView(
                 binding.root.context,
-                binding.registrationStatusChipGroup
+                binding.registrationStatusChipGroup,
             ) { _, _, _ ->
                 enableConfirm()
             }
@@ -137,21 +137,20 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
         binding.etToDate.safeClickListener(this)
     }
 
-
     private fun composeStatusListChipView() {
         val itemList = arrayListOf(
             HouseholdDefinedParams.Pending,
-            HouseholdDefinedParams.Finished
+            HouseholdDefinedParams.Finished,
         )
         val statusList = ArrayList<ChipViewItemModel>()
         itemList.forEach {
             statusList.add(
-                ChipViewItemModel(name = it)
+                ChipViewItemModel(name = it),
             )
         }
         statusListTagView.addChipItemList(
             statusList,
-            householdListViewModel.getFilterLiveData().value?.filterByStatus
+            householdListViewModel.getFilterLiveData().value?.filterByStatus,
         )
     }
 
@@ -165,7 +164,7 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
                 householdListViewModel.setUserJourney(AnalyticsDefinedParams.HOUSEHOLDFILTERCANCELTRIGGERED)
                 householdListViewModel.setFilterLiveData(
                     villageFilter = listOf(),
-                    statusFilter = listOf()
+                    statusFilter = listOf(),
                 )
                 villageListTagView.clearSelection()
                 ssListTagView.clearSelection()
@@ -180,7 +179,7 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
         householdListViewModel.setFilterLiveData(
             villageFilter = villageListTagView.getSelectedTags(),
             ssFilter = ssListTagView.getSelectedTags(),
-            statusFilter = statusListTagView.getSelectedTags()
+            statusFilter = statusListTagView.getSelectedTags(),
         )
         dismiss()
     }

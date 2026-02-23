@@ -14,8 +14,8 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.AdapterNcdLifestyleBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.utils.CounselingInterface
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ui.BaseActivity
 
 class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
@@ -63,13 +63,13 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
 
                     tvReferredFor.text = cultureLifestyles?.joinToString(separator = ", ")
                         ?: lifestyles?.joinToString(separator = ", ")
-                                ?: run { displayHyphen(context) }
+                        ?: run { displayHyphen(context) }
 
                     tvRefDate.text = referredDate?.let {
                         DateUtils.convertDateTimeToDate(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DateUtils.DATE_FORMAT_ddMMMyyyy
+                            DateUtils.DATE_FORMAT_ddMMMyyyy,
                         )
                     } ?: run {
                         displayHyphen(context)
@@ -82,7 +82,7 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
                             DateUtils.convertDateTimeToDate(
                                 it,
                                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                DateUtils.DATE_FORMAT_ddMMMyyyy
+                                DateUtils.DATE_FORMAT_ddMMMyyyy,
                             )
                         } ?: run {
                             context.getString(R.string.not_assessed)
@@ -117,10 +117,11 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
                 binding.ivRemove.id, binding.ivDelete.id -> {
                     if (layoutPosition < adapterList.size) {
                         adapterList[layoutPosition].let { item ->
-                            if (item.id == null)
+                            if (item.id == null) {
                                 lifeStyleInterface.removeElement(item)
-                            else
+                            } else {
                                 showMessage(context, item)
+                            }
                         }
                     }
                 }
@@ -128,9 +129,9 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
                 binding.root.id -> {
                     if (layoutPosition < adapterList.size) {
                         val item = adapterList[layoutPosition]
-                        if (item.id.isNullOrBlank())
+                        if (item.id.isNullOrBlank()) {
                             return
-                        else {
+                        } else {
                             adapterList[layoutPosition].let {
                                 it.isExpanded = !it.isExpanded
                             }
@@ -142,20 +143,22 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
         }
     }
 
-    private fun displayHyphen(context: Context): String {
-        return context.getString(R.string.hyphen_symbol)
-    }
+    private fun displayHyphen(context: Context): String = context.getString(R.string.hyphen_symbol)
 
-    private fun showMessage(context: Context, item: NCDCounselingModel) {
+    private fun showMessage(
+        context: Context,
+        item: NCDCounselingModel,
+    ) {
         if ((context as BaseActivity).connectivityManager.isNetworkAvailable()) {
             context.showErrorDialogue(
                 title = context.getString(R.string.confirmation),
                 message = context.getString(R.string.delete_confirmation),
                 isNegativeButtonNeed = true,
-                positiveButtonName = context.getString(R.string.yes)
+                positiveButtonName = context.getString(R.string.yes),
             ) { isPositiveResult ->
-                if (isPositiveResult)
+                if (isPositiveResult) {
                     lifeStyleInterface.removeElement(item)
+                }
             }
         } else {
             context.showErrorDialogue(
@@ -176,25 +179,36 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
         ivArrow.start()
     }
 
-    private fun getTextColor(context: Context, enteredBy: Any?): Int {
-        return if (enteredBy == null) context.getColor(R.color.disabled_text_color) else context.getColor(
-            R.color.navy_blue
-        )
-    }
+    private fun getTextColor(
+        context: Context,
+        enteredBy: Any?,
+    ): Int =
+        if (enteredBy == null) {
+            context.getColor(R.color.disabled_text_color)
+        } else {
+            context.getColor(
+                R.color.navy_blue,
+            )
+        }
 
     fun getData() = adapterList
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder =
+        ViewHolder(
             AdapterNcdLifestyleBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         adapterList.let {
             holder.bind(it[position])
         }

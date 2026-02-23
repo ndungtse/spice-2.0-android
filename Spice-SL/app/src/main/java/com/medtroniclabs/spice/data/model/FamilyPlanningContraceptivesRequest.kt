@@ -1,13 +1,12 @@
 package com.medtroniclabs.spice.data.model
 
-
 data class FamilyPlanningContraceptivesRequest(
     val id: String? = null,
     val clinicalNotes: String? = null,
     val patientId: String? = null,
     val assessmentName: String? = null,
     val encounter: MedicalReviewEncounter? = null,
-    val contraceptive: Contraceptive? = null
+    val contraceptive: Contraceptive? = null,
 )
 
 data class Contraceptive(
@@ -28,17 +27,15 @@ data class Contraceptive(
     val condoms: String? = null,
     val emergencyContraceptive: String? = null,
     val permanentMethod: String? = null,
-    val otherPermanentMethod: String? = null
+    val otherPermanentMethod: String? = null,
 )
 
 data class FamilyPlanningSummaryResponse(
     val clinicalNotes: String? = null,
-    val contraceptive: Contraceptive? = null
+    val contraceptive: Contraceptive? = null,
 )
 
 data class FamilyPlanningCreateResponse(
     val patientReference: String? = null,
-    val encounterId: String? = null
+    val encounterId: String? = null,
 )
-
-

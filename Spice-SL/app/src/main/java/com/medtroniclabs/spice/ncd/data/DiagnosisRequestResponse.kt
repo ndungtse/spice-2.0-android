@@ -10,19 +10,19 @@ data class NCDDiagnosisRequestResponse(
     val diagnosisNotes: String? = null,
     val patientReference: String? = null,
     val memberReference: String? = null,
-    val type: String? = null
+    val type: String? = null,
 )
 
 data class NCDDiagnosisItem(
     val type: String? = null,
     val value: String? = null,
-    val name: String? = null
-)  : Serializable
+    val name: String? = null,
+) : Serializable
 
 data class NCDDiagnosisGetRequest(
     val patientReference: String? = null,
     val memberReference: String? = null,
-    val diagnosisType: List<String>? = null
+    val diagnosisType: List<String>? = null,
 )
 
 data class NCDDiagnosisGetResponse(

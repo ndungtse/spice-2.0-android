@@ -17,11 +17,11 @@ import javax.inject.Inject
 @HiltViewModel
 class AddHeightViewModel @Inject constructor(
     private val tbMedicalReviewRepo: TbMedicalReviewRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
-
     val saveHeight = MutableLiveData<Resource<HashMap<String, Any>>>()
     var lastLocation: Location? = null
+
     fun saveHeight(bpAndWeightRequestModel: BpAndWeightRequestModel) {
         viewModelScope.launch(dispatcherIO) {
             saveHeight.postLoading()

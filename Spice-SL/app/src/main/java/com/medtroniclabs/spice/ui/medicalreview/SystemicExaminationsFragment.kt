@@ -27,7 +27,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SystemicExaminationsFragment : BaseFragment() {
-
     private lateinit var binding: FragmentSystemicExaminationsBinding
     private lateinit var examinationsTagView: TagListCustomView
     private val viewModel: SystemicExaminationViewModel by activityViewModels()
@@ -35,6 +34,7 @@ class SystemicExaminationsFragment : BaseFragment() {
     companion object {
         const val TAG = "SystemicExaminationsFragment"
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -46,13 +46,16 @@ class SystemicExaminationsFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSystemicExaminationsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeViews()
         attachObserver()
@@ -64,9 +67,10 @@ class SystemicExaminationsFragment : BaseFragment() {
             it?.let {
                 viewModel.enteredExaminationNotes = it.trim().toString()
                 setFragmentResult(
-                    MedicalReviewDefinedParams.SE_ITEM, bundleOf(
-                        MedicalReviewDefinedParams.CHIP_ITEMS to true
-                    )
+                    MedicalReviewDefinedParams.SE_ITEM,
+                    bundleOf(
+                        MedicalReviewDefinedParams.CHIP_ITEMS to true,
+                    ),
                 )
             }
         }
@@ -75,9 +79,10 @@ class SystemicExaminationsFragment : BaseFragment() {
                 val value = it.trim().toString()
                 viewModel.fundalHeight = if (value.isNotBlank()) value.toDoubleOrNull() else null
                 setFragmentResult(
-                    MedicalReviewDefinedParams.SE_ITEM, bundleOf(
-                        MedicalReviewDefinedParams.CHIP_ITEMS to true
-                    )
+                    MedicalReviewDefinedParams.SE_ITEM,
+                    bundleOf(
+                        MedicalReviewDefinedParams.CHIP_ITEMS to true,
+                    ),
                 )
             }
         }
@@ -87,9 +92,10 @@ class SystemicExaminationsFragment : BaseFragment() {
                 val value = it.trim().toString()
                 viewModel.respiratoryNotes = value.ifBlank { null }
                 setFragmentResult(
-                    MedicalReviewDefinedParams.SE_ITEM, bundleOf(
-                        MedicalReviewDefinedParams.CHIP_ITEMS to true
-                    )
+                    MedicalReviewDefinedParams.SE_ITEM,
+                    bundleOf(
+                        MedicalReviewDefinedParams.CHIP_ITEMS to true,
+                    ),
                 )
             }
         }
@@ -99,9 +105,10 @@ class SystemicExaminationsFragment : BaseFragment() {
                 val value = it.trim().toString()
                 viewModel.fetalHeartRate = if (value.isNotBlank()) value.toDoubleOrNull() else null
                 setFragmentResult(
-                    MedicalReviewDefinedParams.SE_ITEM, bundleOf(
-                        MedicalReviewDefinedParams.CHIP_ITEMS to true
-                    )
+                    MedicalReviewDefinedParams.SE_ITEM,
+                    bundleOf(
+                        MedicalReviewDefinedParams.CHIP_ITEMS to true,
+                    ),
                 )
             }
         }
@@ -118,19 +125,29 @@ class SystemicExaminationsFragment : BaseFragment() {
                     resource.data?.let { listItems ->
                         val chipItemList = ArrayList<ChipViewItemModel>()
                         val category =
-                            if (viewModel.systemicExaminationsType == MedicalReviewTypeEnums.ANC_REVIEW.name) {MedicalReviewTypeEnums.ObstetricExaminations.name }else if (viewModel.systemicExaminationsType == MedicalReviewTypeEnums.HIV.name){MedicalReviewTypeEnums.obstetricExaminations.name}  else MedicalReviewTypeEnums.SystemicExaminations.name
+                            if (viewModel.systemicExaminationsType ==
+                                MedicalReviewTypeEnums.ANC_REVIEW.name
+                            ) {
+                                MedicalReviewTypeEnums.ObstetricExaminations.name
+                            } else if (viewModel.systemicExaminationsType ==
+                                MedicalReviewTypeEnums.HIV.name
+                            ) {
+                                MedicalReviewTypeEnums.obstetricExaminations.name
+                            } else {
+                                MedicalReviewTypeEnums.SystemicExaminations.name
+                            }
                         listItems.filter { it.category == category }.forEach {
                             chipItemList.add(
                                 ChipViewItemModel(
                                     id = it.id,
                                     name = it.name,
-                                    value = it.value
-                                )
+                                    value = it.value,
+                                ),
                             )
                         }
                         examinationsTagView.addChipItemList(
                             chipItemList,
-                            viewModel.selectedSystemicExaminations
+                            viewModel.selectedSystemicExaminations,
                         )
                     }
                     hideProgress()
@@ -145,18 +162,20 @@ class SystemicExaminationsFragment : BaseFragment() {
 
     private fun initializeViews() {
         val (titleResId, showObstetricGroup) = when (viewModel.systemicExaminationsType) {
-            MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name -> {Pair(R.string.systemic_examinations, true)}
-            MedicalReviewTypeEnums.ANC_REVIEW.name,MedicalReviewTypeEnums.HIV.name -> Pair(R.string.obstetric_examination, true)
+            MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name -> {
+                Pair(R.string.systemic_examinations, true)
+            }
+            MedicalReviewTypeEnums.ANC_REVIEW.name, MedicalReviewTypeEnums.HIV.name -> Pair(R.string.obstetric_examination, true)
             MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name -> Pair(
                 R.string.systemic_examinations,
-                false
+                false,
             )
 
             MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name -> Pair(
                 R.string.systemic_examinations,
-                false
+                false,
             )
-            MedicalReviewTypeEnums.TB.name,MedicalReviewTypeEnums.HIV.name -> {
+            MedicalReviewTypeEnums.TB.name, MedicalReviewTypeEnums.HIV.name -> {
                 binding.etPhysicalExaminationComments.gone()
                 Pair(R.string.general_systemic_examinations, false)
             }
@@ -184,9 +203,10 @@ class SystemicExaminationsFragment : BaseFragment() {
                     ArrayList(examinationsTagView.getSelectedTags())
                 showRespiratory()
                 setFragmentResult(
-                    MedicalReviewDefinedParams.SE_ITEM, bundleOf(
-                        MedicalReviewDefinedParams.CHIP_ITEMS to true
-                    )
+                    MedicalReviewDefinedParams.SE_ITEM,
+                    bundleOf(
+                        MedicalReviewDefinedParams.CHIP_ITEMS to true,
+                    ),
                 )
             }
         viewModel.getSystemicExaminationList(viewModel.systemicExaminationsType)
@@ -212,7 +232,7 @@ class SystemicExaminationsFragment : BaseFragment() {
                 binding.tvFundalHeightError,
                 50,
                 binding.etFundalHeight,
-                requireContext()
+                requireContext(),
             )
         val isFetalHeartRateValid =
             isDataValid(
@@ -220,14 +240,14 @@ class SystemicExaminationsFragment : BaseFragment() {
                 binding.tvFetalHeartRateError,
                 200,
                 binding.etFetalHeartRate,
-                requireContext()
+                requireContext(),
             )
         return isFundalHeightValid && isFetalHeartRateValid
     }
+
     fun refreshFragment() {
         examinationsTagView.clearSelection()
         examinationsTagView.clearOtherChip()
         binding.etPhysicalExaminationComments.text?.clear()
     }
-
 }

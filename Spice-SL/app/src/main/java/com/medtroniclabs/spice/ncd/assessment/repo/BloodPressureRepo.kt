@@ -10,12 +10,12 @@ import javax.inject.Inject
 
 class BloodPressureRepo @Inject constructor(
     private val apiHelper: ApiHelper,
-    private val roomHelper: RoomHelper
+    private val roomHelper: RoomHelper,
 ) {
     fun riskFactorListing() = roomHelper.getRiskFactorEntity()
 
-    suspend fun createBpLog(hashMap: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> {
-        return try {
+    suspend fun createBpLog(hashMap: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> =
+        try {
             val response = apiHelper.bpLogCreate(hashMap)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body())
@@ -25,10 +25,9 @@ class BloodPressureRepo @Inject constructor(
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun bpLogList(request: BPBGListModel): Resource<BPBGListModel> {
-        return try {
+    suspend fun bpLogList(request: BPBGListModel): Resource<BPBGListModel> =
+        try {
             val response = apiHelper.bpLogList(request)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
@@ -38,10 +37,9 @@ class BloodPressureRepo @Inject constructor(
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun createBpLogForNurse(hashMap: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> {
-        return try {
+    suspend fun createBpLogForNurse(hashMap: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> =
+        try {
             val response = apiHelper.bpLogCreateForNurse(hashMap)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body())
@@ -51,5 +49,4 @@ class BloodPressureRepo @Inject constructor(
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 }

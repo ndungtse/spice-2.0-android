@@ -13,8 +13,6 @@ import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
-import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
-import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryResponse
 import com.medtroniclabs.spice.data.model.HivRequestData
 import com.medtroniclabs.spice.data.model.HivScreeningRequest
 import com.medtroniclabs.spice.data.model.HivScreeningResponse
@@ -36,7 +34,6 @@ import com.medtroniclabs.spice.model.medicalreview.EMTCTVisitStatusResponse
 import com.medtroniclabs.spice.model.medicalreview.HivVitalsRequest
 import com.medtroniclabs.spice.model.medicalreview.HivVitalsResponse
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.repo.DiagnosisRepository
 import com.medtroniclabs.spice.ui.medicalreview.hiv.repo.HivMedicalReviewRepo
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,10 +45,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HivViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var repository: HivMedicalReviewRepo
+    private var repository: HivMedicalReviewRepo,
 ) : ViewModel() {
-
-
     var patientId: String? = null
     var memberId: String? = null
     var isHivSummary: Boolean = false
@@ -66,14 +61,14 @@ class HivViewModel @Inject constructor(
     var selectedEntryPoint: String? = null
     val createHivScreeningLiveData = MutableLiveData<Resource<HivScreeningResponse>>()
     val hivScreeningDetailsLiveData = MutableLiveData<Resource<HivCreateScreeningSummaryResponse>>()
-    var encounterId : String? = null
-    var patientReference : String? = null
-    var nextVisitDate : String? = null
+    var encounterId: String? = null
+    var patientReference: String? = null
+    var nextVisitDate: String? = null
     val createHivMedicalReviewSummaryLiveData = MutableLiveData<Resource<HashMap<String, Any>>>()
-    var id : String? = null
-    var villageId : String? = null
+    var id: String? = null
+    var villageId: String? = null
     var selectedPatientStatus: String? = null
-    var isSummary : Boolean = false
+    var isSummary: Boolean = false
     val getHivPatientStatusMeta = MutableLiveData<String>()
     val getHivEmtctStatusMeta = MutableLiveData<String>()
     val createEMTCTVistStatusLiveData = MutableLiveData<Resource<EMTCTVisitStatusResponse>>()
@@ -89,19 +84,19 @@ class HivViewModel @Inject constructor(
     val getViralLoadLiveData = MutableLiveData<Resource<List<ViralLoadResponse>>>()
     val getARTLiveData = MutableLiveData<Resource<List<ARTResponse>>>()
     val hivCreateResponse = MutableLiveData<Resource<PatientEncounterResponse>>()
-    var isEMTCTMR =  false
+    var isEMTCTMR = false
     val getPatientSummaryDetails = MutableLiveData<Resource<PregnancyDetailsModel>>()
     var cd4Value: String? = null
     var whovalue: String? = null
     var emtctVisitStatus: String? = null
     var ancVisit = -1
-    var otherEntryPoint :String? = null
+    var otherEntryPoint: String? = null
 
     fun getHivMetaData() {
         viewModelScope.launch(dispatcherIO) {
             hivMetaResponseLiveData.postLoading()
             hivMetaResponseLiveData.postValue(
-                repository.getStaticMetaData()
+                repository.getStaticMetaData(),
             )
         }
     }
@@ -113,7 +108,6 @@ class HivViewModel @Inject constructor(
         }
     }
 
-
     fun createHivRequestModel(
         patientListRespModel: PatientListRespModel,
         selectedEligibilityPair: Pair<List<String?>, List<String?>>,
@@ -124,8 +118,8 @@ class HivViewModel @Inject constructor(
         clinicalNotes: String,
         encounterId: String?,
         isConsentGiven: Boolean,
-        weight :Double?,
-        height :Double?
+        weight: Double?,
+        height: Double?,
     ) {
         viewModelScope.launch(dispatcherIO) {
             val currentTime =
@@ -159,14 +153,14 @@ class HivViewModel @Inject constructor(
                         expectedDateOfDelivery = expectedDateOfDelivery,
                         hivSyphilisDuoTest = hivEmtctResult.first,
                         hbsAGTest = hivEmtctResult.second,
-                        screeningType = if(isEMTCT) DefinedParams.EMTCT_HIV_MEDICAL_SCREENING else DefinedParams.HIV_MEDICAL_SCREENING,
-                        clinicalNotes =  clinicalNotes,
+                        screeningType = if (isEMTCT) DefinedParams.EMTCT_HIV_MEDICAL_SCREENING else DefinedParams.HIV_MEDICAL_SCREENING,
+                        clinicalNotes = clinicalNotes,
                         id = encounterId,
                         isConsentGiven = isConsentGiven,
                         weight = weight,
                         height = height,
-                    )
-                )
+                    ),
+                ),
             )
         }
     }
@@ -183,7 +177,6 @@ class HivViewModel @Inject constructor(
             createHivMedicalReviewSummaryLiveData.postLoading()
             createHivMedicalReviewSummaryLiveData.postValue(repository.createHivSummary(request))
         }
-
     }
 
     fun getHivPatientStatusByCategory(category: String) {
@@ -195,7 +188,6 @@ class HivViewModel @Inject constructor(
             repository.getHivPatientStatus(it, MedicalReviewTypeEnums.HIV.name)
         }
 
-
     fun getHivEmtctVistStatusByCategory(category: String) {
         getHivEmtctStatusMeta.value = category
     }
@@ -204,7 +196,6 @@ class HivViewModel @Inject constructor(
         getHivEmtctStatusMeta.switchMap {
             repository.getHivPatientStatus(it, MedicalReviewTypeEnums.HIV.name)
         }
-
 
     fun createEMTCT(request: EMTCTVisitStatusRequest) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -227,8 +218,11 @@ class HivViewModel @Inject constructor(
         }
     }
 
-
-    fun getHivCD4Details(patientReference: String?, isCD4: Boolean, isCD4Percentage: Boolean) {
+    fun getHivCD4Details(
+        patientReference: String?,
+        isCD4: Boolean,
+        isCD4Percentage: Boolean,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             hivCD4DetailLiveData.postLoading()
             hivCD4DetailLiveData.postValue(
@@ -236,29 +230,33 @@ class HivViewModel @Inject constructor(
                     CD4DetailsRequest(
                         patientReference = patientReference,
                         isCD4 = isCD4,
-                        isCD4Percentage = isCD4Percentage
-                    )
-                )
+                        isCD4Percentage = isCD4Percentage,
+                    ),
+                ),
             )
         }
     }
 
-    fun getViralLoadData(patientReference: String?, memberReference: String?) {
+    fun getViralLoadData(
+        patientReference: String?,
+        memberReference: String?,
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
             getViralLoadLiveData.postLoading()
             val request = ViralLoadRequest(
                 patientReference = patientReference,
-                memberReference = memberReference
+                memberReference = memberReference,
             )
             getViralLoadLiveData.postValue(repository.getViralLoadData(request))
         }
     }
+
     fun getARTData(
         patientReference: String?,
         isActive: Boolean,
         limit: Int,
         category: String,
-        memberId: String?
+        memberId: String?,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             getARTLiveData.postLoading()
@@ -267,11 +265,12 @@ class HivViewModel @Inject constructor(
                 isActive = isActive,
                 limit = limit,
                 category = category,
-                memberReference = memberId
+                memberReference = memberId,
             )
             getARTLiveData.postValue(repository.getARTData(request))
         }
     }
+
     fun hivCreate(request: HivRequestData) {
         viewModelScope.launch(dispatcherIO) {
             try {
@@ -282,23 +281,18 @@ class HivViewModel @Inject constructor(
             }
         }
     }
+
     fun getPatientSummaryDetails(patientReference: String?) {
         viewModelScope.launch(Dispatchers.IO) {
             getPatientSummaryDetails.postLoading()
-            var pregnancySummaryReq= PregnancySummaryRequest(patientReference)
+            var pregnancySummaryReq = PregnancySummaryRequest(patientReference)
             getPatientSummaryDetails.postValue(
                 repository.getPatientSummaryDetails(
-                    pregnancySummaryReq
-                )
+                    pregnancySummaryReq,
+                ),
             )
         }
     }
 
-
-    fun getSubmitCreateId(): String? {
-        return createHivScreeningLiveData.value?.data?.encounterId
-    }
-
-
-
+    fun getSubmitCreateId(): String? = createHivScreeningLiveData.value?.data?.encounterId
 }

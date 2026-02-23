@@ -10,7 +10,6 @@ import com.medtroniclabs.spice.db.entity.PregnancyDetail
 
 @Dao
 interface PregnancyDetailDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun savePregnancyDetail(details: PregnancyDetail): Long
 
@@ -18,7 +17,7 @@ interface PregnancyDetailDao {
     suspend fun insertPregnancyDetails(list: List<PregnancyDetail>)
 
     @Query("DELETE FROM PregnancyDetail WHERE householdMemberLocalId = :hhmLocalId")
-    suspend fun updatePregnancyAnc(hhmLocalId: Long )
+    suspend fun updatePregnancyAnc(hhmLocalId: Long)
 
     @Query("SELECT patientId, ancVisitNo as visitCount, lastMenstrualPeriod as clinicalDate FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
     suspend fun getAncDetail(hhmLocalId: Long): MemberClinicalEntity?
@@ -39,7 +38,10 @@ interface PregnancyDetailDao {
     suspend fun getHHMLocalIDByPatientId(patientId: String): Long
 
     @Query("UPDATE PregnancyDetail SET neonateHouseholdMemberLocalId = :neonateId WHERE householdMemberLocalId = :hhmLocalId")
-    suspend fun updateNeonatePatientId(hhmLocalId: Long, neonateId: Long)
+    suspend fun updateNeonatePatientId(
+        hhmLocalId: Long,
+        neonateId: Long,
+    )
 
     @Transaction
     suspend fun insertOrUpdateFromBE(entity: PregnancyDetail): Long {
@@ -77,15 +79,8 @@ interface PregnancyDetailDao {
     @Query("DELETE from PregnancyDetail")
     suspend fun deleteAllPregnancyDetails()
 
-    /*###################################################################*/
-
-
-
-
-
+    // ###################################################################
 
     @Query("SELECT neonateHouseholdMemberLocalId FROM PregnancyDetail where householdMemberLocalId =:parentId")
     suspend fun getChildPatientId(parentId: Long): Long?
-
-
 }

@@ -25,16 +25,16 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 class UpdateVaccinationStatusFragment(
-    private val vaccinationItem: VaccinationDetail
+    private val vaccinationItem: VaccinationDetail,
 ) : BaseDialogFragment() {
-
     private lateinit var binding: DialogUpdateVaccinationStatusBinding
     private val viewModel: ImmunisationViewModel by activityViewModels()
     private val displayFormatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogUpdateVaccinationStatusBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(R.drawable.bg_rounded_rect_white)
@@ -46,11 +46,14 @@ class UpdateVaccinationStatusFragment(
         super.onStart()
         dialog?.window?.setLayout(
             (600 * resources.displayMetrics.density).toInt(),
-            ViewGroup.LayoutParams.WRAP_CONTENT
+            ViewGroup.LayoutParams.WRAP_CONTENT,
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         clickListener()
@@ -78,17 +81,18 @@ class UpdateVaccinationStatusFragment(
         } else {
             shouldEnableUpdate(true)
             binding.tvVaccinationDate.text = LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
-            //binding.tvVaccinationDate.text = vaccinationItem.updatedScheduleDate!!.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
+            // binding.tvVaccinationDate.text = vaccinationItem.updatedScheduleDate!!.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
         }
     }
 
     private fun shouldEnableUpdate(flag: Boolean) {
         binding.tvVaccinationDate.isEnabled = flag
         binding.btnVaccinatoinDone.isEnabled = flag
-        if (flag)
+        if (flag) {
             binding.ivDatePicker.visible()
-        else
+        } else {
             binding.ivDatePicker.gone()
+        }
     }
 
     private fun clickListener() {
@@ -122,23 +126,26 @@ class UpdateVaccinationStatusFragment(
 
     private fun showDatePicker() {
         val selectedDate = DateUtils.convertedMMMToddMM(binding.tvVaccinationDate.text.toString())
-        val minDate = vaccinationItem.updatedScheduleDate?.atStartOfDay(ZoneOffset.UTC)?.toInstant()
+        val minDate = vaccinationItem.updatedScheduleDate
+            ?.atStartOfDay(ZoneOffset.UTC)
+            ?.toInstant()
             ?.toEpochMilli() ?: vaccinationItem.scheduledDate.getLongDate(
-            DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+            DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
         )
         ViewUtils.showDatePicker(
             context = requireContext(),
             disableFutureDate = true,
             date = selectedDate,
-            minDate = minDate
+            minDate = minDate,
         ) { _, year, month, dayOfMonth ->
-            DateUtils.convertDateTimeToDate(
-                "$dayOfMonth-$month-$year",
-                DateUtils.DATE_FORMAT_ddMMyyyy, DATE_ddMMyyyy
-            ).let { stringDate ->
-                binding.tvVaccinationDate.text = stringDate
-            }
+            DateUtils
+                .convertDateTimeToDate(
+                    "$dayOfMonth-$month-$year",
+                    DateUtils.DATE_FORMAT_ddMMyyyy,
+                    DATE_ddMMyyyy,
+                ).let { stringDate ->
+                    binding.tvVaccinationDate.text = stringDate
+                }
         }
     }
-
 }

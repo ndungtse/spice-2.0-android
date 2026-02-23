@@ -38,7 +38,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddBMIDialog : DialogFragment(), View.OnClickListener {
-
     var listener: DialogDismissListener? = null
     private lateinit var binding: FragmentAddBpDialogBinding
     private val viewModel: BmiViewModel by activityViewModels()
@@ -47,8 +46,9 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
     lateinit var connectivityManager: ConnectivityManager
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentAddBpDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -63,8 +63,8 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
             patientId: String?,
             villageId: String?,
             householdId: String?,
-            memberId:String?,
-            isTb: Boolean = false
+            memberId: String?,
+            isTb: Boolean = false,
         ): AddBMIDialog {
             val fragment = AddBMIDialog()
             fragment.arguments = Bundle().apply {
@@ -88,7 +88,10 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
         setWidth(width)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -119,15 +122,12 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
 
                 ResourceState.ERROR -> {
                     binding.loader.gone()
-
                 }
             }
         }
     }
 
-    private fun isTb():Boolean {
-        return arguments?.getBoolean(DefinedParams.TB, false) ?: false
-    }
+    private fun isTb(): Boolean = arguments?.getBoolean(DefinedParams.TB, false) ?: false
 
     private fun initView() {
         with(binding) {
@@ -158,11 +158,21 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
     }
 
     private val textWatcher = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        override fun beforeTextChanged(
+            s: CharSequence?,
+            start: Int,
+            count: Int,
+            after: Int,
+        ) {
             // Not needed for your use case
         }
 
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        override fun onTextChanged(
+            s: CharSequence?,
+            start: Int,
+            before: Int,
+            count: Int,
+        ) {
             // Not needed for your use case
         }
 
@@ -176,7 +186,6 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
             // Enable the button if only one EditText field is filled
             binding.btnOkay.isEnabled = onlyOneFilled
         }
-
     }
 
     override fun onStart() {
@@ -213,7 +222,7 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
             range,
             errorMessage,
             false,
-            requireContext()
+            requireContext(),
         )
     }
 
@@ -235,7 +244,7 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
             range,
             errorMessage,
             false,
-            requireContext()
+            requireContext(),
         )
     }
 
@@ -243,7 +252,7 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
         when (v?.id) {
             binding.btnOkay.id -> handleOkayClick()
             binding.btnCancel.id, binding.ivClose.id -> {
-              viewModel.setUserJourney(AnalyticsDefinedParams.CANCELBUTTONTRIGGERED)
+                viewModel.setUserJourney(AnalyticsDefinedParams.CANCELBUTTONTRIGGERED)
                 dismiss()
             }
         }
@@ -259,23 +268,27 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
             (activity as BaseActivity?)?.showErrorDialogue(
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
+                isNegativeButtonNeed = false,
             ) {
-
             }
         }
     }
 
-    private fun createHeightAndWeightRequestModel(): BpAndWeightRequestModel {
-        return BpAndWeightRequestModel(
-            height = binding.etSystolic.text?.trim().toString().toDoubleOrNull(),
-            weight = binding.etDiastolic.text?.trim().toString().toDoubleOrNull(),
-            encounter = createMedicalReviewEncounter()
+    private fun createHeightAndWeightRequestModel(): BpAndWeightRequestModel =
+        BpAndWeightRequestModel(
+            height = binding.etSystolic.text
+                ?.trim()
+                .toString()
+                .toDoubleOrNull(),
+            weight = binding.etDiastolic.text
+                ?.trim()
+                .toString()
+                .toDoubleOrNull(),
+            encounter = createMedicalReviewEncounter(),
         )
-    }
 
-    private fun createMedicalReviewEncounter(): MedicalReviewEncounter {
-        return MedicalReviewEncounter(
+    private fun createMedicalReviewEncounter(): MedicalReviewEncounter =
+        MedicalReviewEncounter(
             provenance = ProvanceDto(),
             latitude = viewModel.lastLocation?.latitude,
             longitude = viewModel.lastLocation?.longitude,
@@ -284,7 +297,6 @@ class AddBMIDialog : DialogFragment(), View.OnClickListener {
             endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
             villageId = arguments?.getString(DefinedParams.villageId),
             householdId = arguments?.getString(DefinedParams.householdId),
-            memberId = arguments?.getString(DefinedParams.MemberID, "")
+            memberId = arguments?.getString(DefinedParams.MemberID, ""),
         )
-    }
 }

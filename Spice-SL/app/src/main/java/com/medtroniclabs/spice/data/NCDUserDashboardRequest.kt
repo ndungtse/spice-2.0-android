@@ -3,7 +3,7 @@ package com.medtroniclabs.spice.data
 data class NCDUserDashboardRequest(
     val sortField: String? = null,
     val customDate: CustomDateModel? = null,
-    val userId: String? = null
+    val userId: String? = null,
 )
 
 data class CustomDateModel(val startDate: String? = null, val endDate: String? = null)
@@ -16,11 +16,11 @@ data class NCDUserDashboardResponse(
     val dispensed: Int? = null,
     val investigated: Int? = null,
     val nutritionistLifestyleCount: Int? = null,
-    val psychologicalNotesCount: Int? = null
+    val psychologicalNotesCount: Int? = null,
 )
 
 data class ActivityModel(
     val key: String,
     val title: String,
-    val fieldName: String
+    val fieldName: String,
 )

@@ -9,12 +9,11 @@ data class ReferralData(
     val referredReason: String? = null,
     val dateOfOnset: String? = null,
     val referredDate: String? = null,
-    val referredDates: List<ReferredDate>? = null
+    val referredDates: List<ReferredDate>? = null,
 )
 
 data class ReferredDate(
     val id: String? = null,
     val date: String? = null,
-    val type: String? = null
+    val type: String? = null,
 )
-

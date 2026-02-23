@@ -35,15 +35,15 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
-
     private lateinit var binding: FragmentOpportunisticInfectionsTreatmentBinding
     private val viewModel: OpportunisticInfectionViewModel by activityViewModels()
     private var datePickerDialog: DatePickerDialog? = null
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding =
@@ -53,12 +53,14 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
 
     companion object {
         const val TAG = "OpportunisticInfectionsTreatmentFragment"
-        fun newInstance(): OpportunisticInfectionsTreatmentFragment {
-            return OpportunisticInfectionsTreatmentFragment()
-        }
+
+        fun newInstance(): OpportunisticInfectionsTreatmentFragment = OpportunisticInfectionsTreatmentFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getOpportunisticInfection(memberId = patientViewModel.getPatientMemberId(), patientReference = patientViewModel.getPatientFHIRId())
         initView()
@@ -84,17 +86,17 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
                                         DateUtils.convertDateTimeToDate(
                                             startDate,
                                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                            DateUtils.DATE_ddMMyyyy
+                                            DateUtils.DATE_ddMMyyyy,
                                         )
 
                                     if (valueMap.containsKey(endDate)) {
                                         val endDate = valueMap[endDate]
-                                        if (!endDate.isNullOrBlank()){
+                                        if (!endDate.isNullOrBlank()) {
                                             formattedMap[MedicalReviewDefinedParams.endDate] =
                                                 DateUtils.convertDateTimeToDate(
                                                     endDate,
                                                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                                    DateUtils.DATE_ddMMyyyy
+                                                    DateUtils.DATE_ddMMyyyy,
                                                 )
                                         }
                                     }
@@ -119,20 +121,20 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
         val treatmentList = listOf(
             TreatmentItem(
                 requireContext().getString(R.string.tb_preventive_treatment),
-                value = tbPreventiveDateRange
+                value = tbPreventiveDateRange,
             ),
             TreatmentItem(
                 requireContext().getString(R.string.cotrimoxazole),
-                value = cotrimoxazoleDateRange
+                value = cotrimoxazoleDateRange,
             ),
             TreatmentItem(
                 requireContext().getString(R.string.tb_treatment),
-                value = tbTreatmentDateRange
+                value = tbTreatmentDateRange,
             ),
             TreatmentItem(
                 requireContext().getString(R.string.cryptococcal_meningitis),
-                value = cryptococcalMeningitisDateRange
-            )
+                value = cryptococcalMeningitisDateRange,
+            ),
         )
         treatmentList.forEachIndexed { index, treatment ->
             val trimmedName = treatment.value.trim()
@@ -165,8 +167,8 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
                     tvEndDate.setBackgroundColor(
                         ContextCompat.getColor(
                             requireContext(),
-                            R.color.grey_bg
-                        )
+                            R.color.grey_bg,
+                        ),
                     )
                 }
             }
@@ -175,7 +177,11 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
         }
     }
 
-    private fun showDatePickerDialog(tvDate: MaterialTextView, key: String, isStart: Boolean) {
+    private fun showDatePickerDialog(
+        tvDate: MaterialTextView,
+        key: String,
+        isStart: Boolean,
+    ) {
         val initialDate: Triple<Int?, Int?, Int?>? =
             tvDate.text?.takeIf { it.isNotBlank() }?.let {
                 DateUtils.convertedMMMToddMM(it.toString())
@@ -185,7 +191,9 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
             viewModel.resultHashMap[key]?.get(startDate)?.takeIf { it.isNotBlank() }?.let {
                 DateUtils.convertToMillis(it, DateUtils.DATE_ddMMyyyy)
             }
-        } else null
+        } else {
+            null
+        }
 
         if (datePickerDialog != null) return
 
@@ -194,12 +202,12 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
             minDate = minDate,
             date = initialDate,
             disableFutureDate = true,
-            cancelCallBack = { datePickerDialog = null }
+            cancelCallBack = { datePickerDialog = null },
         ) { _, year, month, day ->
             val formattedDate = DateUtils.convertDateTimeToDate(
                 "$day-$month-$year",
                 DateUtils.DATE_FORMAT_ddMMyyyy,
-                DateUtils.DATE_ddMMyyyy
+                DateUtils.DATE_ddMMyyyy,
             )
 
             tvDate.text = formattedDate
@@ -217,36 +225,38 @@ class OpportunisticInfectionsTreatmentFragment : BaseFragment() {
                 result[endDate] = formattedDate
             }
             setFragmentResult(
-                MedicalReviewDefinedParams.HIV_STATUS, bundleOf(
-                    MedicalReviewDefinedParams.CHIP_ITEMS to true
-                )
+                MedicalReviewDefinedParams.HIV_STATUS,
+                bundleOf(
+                    MedicalReviewDefinedParams.CHIP_ITEMS to true,
+                ),
             )
             datePickerDialog = null
         }
     }
 
-    private fun updateEndDateViewState(view: MaterialTextView?, isEnabled: Boolean) {
+    private fun updateEndDateViewState(
+        view: MaterialTextView?,
+        isEnabled: Boolean,
+    ) {
         view?.apply {
             this.isEnabled = isEnabled
             text = context.getString(R.string.separator_double_hyphen)
             setTextColor(
                 ContextCompat.getColor(
                     context,
-                    if (isEnabled) R.color.black else R.color.grey_bg
-                )
+                    if (isEnabled) R.color.black else R.color.grey_bg,
+                ),
             )
             setBackgroundColor(
                 ContextCompat.getColor(
                     requireContext(),
-                    R.color.white
-                )
+                    R.color.white,
+                ),
             )
         }
     }
 
-    fun validateInput(): Boolean {
-        return hasAnyStartOrEndDateFilled(viewModel.resultHashMap)
-    }
+    fun validateInput(): Boolean = hasAnyStartOrEndDateFilled(viewModel.resultHashMap)
 
     private fun hasAnyStartOrEndDateFilled(resultMap: HashMap<String, HashMap<String, String>>): Boolean {
         for ((_, dateMap) in resultMap) {

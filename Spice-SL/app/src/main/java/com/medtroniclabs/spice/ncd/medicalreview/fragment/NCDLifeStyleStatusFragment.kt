@@ -18,8 +18,8 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.databinding.FragmentNcdLifeStyleStatusBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
 import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
+import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewCMRViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -27,16 +27,17 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class NCDLifeStyleStatusFragment : BaseFragment(), View.OnClickListener {
-
     private var popupWindow: PopupWindow? = null
 
     private val viewModel: NCDMedicalReviewCMRViewModel by activityViewModels()
 
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
     private lateinit var binding: FragmentNcdLifeStyleStatusBinding
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNcdLifeStyleStatusBinding.inflate(layoutInflater, container, false)
         return binding.root
@@ -44,11 +45,14 @@ class NCDLifeStyleStatusFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "NCDLifeStyleStatusFragment"
-        fun newInstance() =
-            NCDLifeStyleStatusFragment()
+
+        fun newInstance() = NCDLifeStyleStatusFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         attachObserver()
         initView()
@@ -70,8 +74,8 @@ class NCDLifeStyleStatusFragment : BaseFragment(), View.OnClickListener {
         patientViewModel.getPatientId()?.let {
             viewModel.getNcdLifeStyleDetails(
                 LifeStyleRequest(
-                    it
-                )
+                    it,
+                ),
             )
         } ?: kotlin.run {
             binding.ivRefresh.gone()
@@ -111,15 +115,19 @@ class NCDLifeStyleStatusFragment : BaseFragment(), View.OnClickListener {
     private fun loadLifeStyleData(it: ArrayList<LifeStyleResponse>) {
         it.forEachIndexed { _, lifeStyle ->
             val answer: String =
-                if (lifeStyle.lifestyleAnswer.isNullOrBlank()) getString(R.string.separator_hyphen) else lifeStyle.lifestyleAnswer
-                    ?: ""
+                if (lifeStyle.lifestyleAnswer.isNullOrBlank()) {
+                    getString(R.string.separator_hyphen)
+                } else {
+                    lifeStyle.lifestyleAnswer
+                        ?: ""
+                }
 
             binding.apply {
                 when (lifeStyle.lifestyleType) {
                     NCDMRUtil.SMOKING -> {
                         val s = getString(R.string.lifestyle_smoking).replace(
                             getString(R.string.separator_hyphen),
-                            answer
+                            answer,
                         )
                         tvSmoking.text = s
                     }
@@ -127,7 +135,7 @@ class NCDLifeStyleStatusFragment : BaseFragment(), View.OnClickListener {
                     NCDMRUtil.ALCOHOL -> {
                         val s = getString(R.string.lifestyle_alcohol).replace(
                             getString(R.string.separator_hyphen),
-                            answer
+                            answer,
                         )
                         tvAlcohol.text = s
                     }
@@ -135,7 +143,7 @@ class NCDLifeStyleStatusFragment : BaseFragment(), View.OnClickListener {
                     NCDMRUtil.DIET_NUTRITION -> {
                         val s = getString(R.string.lifestyle_diet_nutrition).replace(
                             getString(R.string.separator_hyphen),
-                            answer
+                            answer,
                         )
                         tvDietNutrition.text = s
                     }
@@ -143,7 +151,7 @@ class NCDLifeStyleStatusFragment : BaseFragment(), View.OnClickListener {
                     NCDMRUtil.PHYSICAL_ACTIVITY -> {
                         val s = getString(R.string.lifestyle_physical_activity).replace(
                             getString(R.string.separator_hyphen),
-                            answer
+                            answer,
                         )
                         tvPhysicalActivity.text = s
                     }
@@ -161,7 +169,7 @@ class NCDLifeStyleStatusFragment : BaseFragment(), View.OnClickListener {
             binding.tvDietNutrition.id -> {
                 showPopup(
                     binding.tvDietNutrition,
-                    NCDMRUtil.DIET_NUTRITION
+                    NCDMRUtil.DIET_NUTRITION,
                 )
             }
 
@@ -175,7 +183,10 @@ class NCDLifeStyleStatusFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun showPopup(popUpView: View, type: String) {
+    private fun showPopup(
+        popUpView: View,
+        type: String,
+    ) {
         viewModel.lifeStyleResponse.value?.data?.let { list ->
             if (list.isNotEmpty()) {
                 list.firstOrNull { it.lifestyleType == type }?.let {
@@ -193,8 +204,8 @@ class NCDLifeStyleStatusFragment : BaseFragment(), View.OnClickListener {
                         setBackgroundDrawable(
                             ContextCompat.getDrawable(
                                 requireContext(),
-                                R.drawable.bg_popup_window
-                            )
+                                R.drawable.bg_popup_window,
+                            ),
                         )
                     }
                     val tvPatientLifeStyleTitle =
@@ -206,7 +217,7 @@ class NCDLifeStyleStatusFragment : BaseFragment(), View.OnClickListener {
                     tvPatientLifestyleDesc.text = it.comments
                     val size = Size(
                         popupWindow?.contentView?.measuredWidth!!,
-                        popupWindow?.contentView?.measuredHeight!!
+                        popupWindow?.contentView?.measuredHeight!!,
                     )
                     val location = IntArray(2)
                     popUpView.getLocationOnScreen(location)
@@ -215,7 +226,7 @@ class NCDLifeStyleStatusFragment : BaseFragment(), View.OnClickListener {
                             popUpView,
                             Gravity.TOP or Gravity.START,
                             location[0] - -(size.width - popUpView.width) / 2,
-                            location[1] - size.height
+                            location[1] - size.height,
                         )
                     }
                 }

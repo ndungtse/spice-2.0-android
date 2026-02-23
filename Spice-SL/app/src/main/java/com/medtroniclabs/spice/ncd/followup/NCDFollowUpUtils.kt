@@ -36,9 +36,7 @@ object NCDFollowUpUtils {
     const val REASON_CONSTANT = "FOLLOW_UP"
     const val medical_review = "medical review"
 
-    fun getDaysString(it: Long): Int {
-        return if (it == 1L) R.string.day_due else R.string.days_due
-    }
+    fun getDaysString(it: Long): Int = if (it == 1L) R.string.day_due else R.string.days_due
 
     fun hasTelephonyFeature(context: Context): Boolean {
         val packageManager = context.packageManager
@@ -53,7 +51,7 @@ object NCDFollowUpUtils {
         spanCountForPhone: Int = DefinedParams.span_count_1,
         binding: FragmentNcdFollowUpOfflineSearchBinding,
         context: Context,
-        followUpAdapter: NCDFollowUpOfflineListAdapter
+        followUpAdapter: NCDFollowUpOfflineListAdapter,
     ) {
         val isTablet =
             resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)
@@ -79,7 +77,7 @@ object NCDFollowUpUtils {
         spanCountForPhone: Int = DefinedParams.span_count_1,
         binding: FragmentFollowUpSearchBinding,
         context: Context,
-        followUpAdapter: NCDPatientFollowUPListAdapter
+        followUpAdapter: NCDPatientFollowUPListAdapter,
     ) {
         val isTablet =
             resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)
@@ -105,7 +103,7 @@ object NCDFollowUpUtils {
         showPageProgress: () -> Unit,
         hidePageProgress: () -> Unit,
         showError: (String, String) -> Unit,
-        postError: () -> Unit
+        postError: () -> Unit,
     ) {
         adapter.addLoadStateListener { loadState ->
             val isLoading = loadState.refresh is LoadState.Loading
@@ -128,7 +126,7 @@ object NCDFollowUpUtils {
             errorState?.let {
                 showError(
                     context.getString(R.string.alert),
-                    context.getString(R.string.something_went_wrong_try_later)
+                    context.getString(R.string.something_went_wrong_try_later),
                 )
                 postError()
             }
@@ -137,7 +135,7 @@ object NCDFollowUpUtils {
 
     fun <T : Any> submitEmptyList(
         adapter: PagingDataAdapter<T, *>,
-        lifecycleOwner: LifecycleOwner
+        lifecycleOwner: LifecycleOwner,
     ) {
         adapter.submitData(lifecycleOwner.lifecycle, PagingData.empty())
     }
@@ -145,7 +143,7 @@ object NCDFollowUpUtils {
     fun <T : Any> collectPagedData(
         lifecycleOwner: LifecycleOwner,
         pagingDataFlow: kotlinx.coroutines.flow.Flow<PagingData<T>>,
-        adapter: PagingDataAdapter<T, *>
+        adapter: PagingDataAdapter<T, *>,
     ) {
         lifecycleOwner.lifecycleScope.launch {
             pagingDataFlow.collectLatest { pagedData ->

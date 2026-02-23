@@ -16,15 +16,21 @@ import javax.inject.Inject
 @HiltViewModel
 class OpportunisticInfectionViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var hivMedicalReviewRepo: HivMedicalReviewRepo
+    private var hivMedicalReviewRepo: HivMedicalReviewRepo,
 ) : ViewModel() {
     val resultHashMap = hashMapOf<String, HashMap<String, String>>()
 
     val getOpportunisticInfection = MutableLiveData<Resource<HashMap<String, HashMap<String, String>?>>>()
-    fun getOpportunisticInfection(memberId: String?, patientReference: String?) {
+
+    fun getOpportunisticInfection(
+        memberId: String?,
+        patientReference: String?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             getOpportunisticInfection.postLoading()
-            getOpportunisticInfection.postValue(hivMedicalReviewRepo.getOpportunisticInfection(MotherNeonateAncRequest(memberId = memberId, patientReference = patientReference)))
+            getOpportunisticInfection.postValue(
+                hivMedicalReviewRepo.getOpportunisticInfection(MotherNeonateAncRequest(memberId = memberId, patientReference = patientReference)),
+            )
         }
     }
 }

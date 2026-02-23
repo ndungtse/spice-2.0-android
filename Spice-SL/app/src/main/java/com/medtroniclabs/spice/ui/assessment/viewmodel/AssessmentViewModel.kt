@@ -135,9 +135,8 @@ class AssessmentViewModel @Inject constructor(
     private val metaRepository: MetaRepository,
     private val houseHoldRepository: HouseHoldRepository,
     private val rxBuddyRepository: RxBuddyRepository,
-    private val treatmentDetailsRepository: TreatmentDetailsRepository
+    private val treatmentDetailsRepository: TreatmentDetailsRepository,
 ) : BaseViewModel(dispatcherIO) {
-
     var selectedHouseholdMemberId = -1L
     var memberFhirId: String? = null
     var selectedHouseholdId = -1L
@@ -238,12 +237,11 @@ class AssessmentViewModel @Inject constructor(
     var isDeathOfNewborn = false
     var nameOfDangerSignClicked: String? = null
 
-
     fun getPNCChildInfoByParentId(parentId: Long) {
         viewModelScope.launch(dispatcherIO) {
             assessmentRepository.getChildPatientId(parentId)?.let { childLocalId ->
                 pncChildMemberDetailsLiveData.postValue(
-                    memberRegistrationRepository.getMemberDetails(childLocalId)
+                    memberRegistrationRepository.getMemberDetails(childLocalId),
                 )
             }
         }
@@ -257,18 +255,17 @@ class AssessmentViewModel @Inject constructor(
             memberDetailsLiveData.postLoading()
             memberDetailsLiveData.postValue(
                 memberRegistrationRepository.getAssessmentMemberDetails(
-                    selectedHouseholdMemberId
-                )
+                    selectedHouseholdMemberId,
+                ),
             )
         }
     }
-
 
     fun saveTbAssessment(
         assessmentMap: HashMap<String, Any>,
         referralResult: Pair<String?, ArrayList<String>>?,
         tbType: String,
-        menuId: String?
+        menuId: String?,
     ) {
         when (tbType) {
             TBScreening -> {
@@ -329,7 +326,7 @@ class AssessmentViewModel @Inject constructor(
                     otherRelationShip,
                     isSheetProvider,
                     nextVisitDate,
-                    followUpId = followUpId
+                    followUpId = followUpId,
                 )
 
                 val assessmentDetail = StringConverter.convertGivenMapToString(resultMap) ?: ""
@@ -338,7 +335,6 @@ class AssessmentViewModel @Inject constructor(
             }
         }
     }
-
 
     fun saveAssessment(
         assessmentMap: HashMap<String, Any>,
@@ -365,8 +361,8 @@ class AssessmentViewModel @Inject constructor(
                         menuId,
                         referralResult,
                         otherDetails,
-                        followUpId = followUpId
-                    )
+                        followUpId = followUpId,
+                    ),
                 )
             }
         }
@@ -375,7 +371,7 @@ class AssessmentViewModel @Inject constructor(
     fun saveCallResult(
         assessmentEntity: AssessmentEntity,
         assessmentMap: HashMap<String, Any>? = null,
-        memberId: Long? = null
+        memberId: Long? = null,
     ) {
         viewModelScope.launch(dispatcherIO) {
             assessmentMap?.let {
@@ -389,8 +385,8 @@ class AssessmentViewModel @Inject constructor(
                     getUpdatedPregnancyDetail(
                         memberId,
                         pregnancyDetail,
-                        true
-                    )
+                        true,
+                    ),
                 )
             }
             callResultSaveLiveData.postValue(assessmentRepository.saveCallResult(assessmentEntity))
@@ -405,7 +401,7 @@ class AssessmentViewModel @Inject constructor(
 
     private fun calculatePNCOtherDetails(
         assessmentMap: HashMap<Any, Any>,
-        referralStatus: String?
+        referralStatus: String?,
     ): HashMap<String, Any>? {
         val otherDetails = HashMap<String, Any>()
         if (referralStatus != null && referralStatus == ReferralStatus.Referred.name) {
@@ -418,21 +414,23 @@ class AssessmentViewModel @Inject constructor(
             if (map.containsKey(RMNCH.DateOfDelivery)) {
                 val dateOfDelivery = map[RMNCH.DateOfDelivery] as String
                 if (dateOfDelivery != null && dateOfDelivery.isNotEmpty()) {
-                    DateUtils.convertStringToDate(
-                        dateOfDelivery,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                    )?.let { deliveryDate ->
-                        RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
-                            otherDetails[AssessmentDefinedParams.NextFollowupDate] =
-                                DateUtils.convertDateTimeToDate(
-                                    DateUtils.getDateStringFromDate(
-                                        visitDate, DateUtils.DATE_ddMMyyyy
-                                    ),
-                                    DateUtils.DATE_ddMMyyyy,
-                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                )
+                    DateUtils
+                        .convertStringToDate(
+                            dateOfDelivery,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        )?.let { deliveryDate ->
+                            RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
+                                otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                                    DateUtils.convertDateTimeToDate(
+                                        DateUtils.getDateStringFromDate(
+                                            visitDate,
+                                            DateUtils.DATE_ddMMyyyy,
+                                        ),
+                                        DateUtils.DATE_ddMMyyyy,
+                                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                    )
+                            }
                         }
-                    }
                 }
             }
         }
@@ -443,7 +441,7 @@ class AssessmentViewModel @Inject constructor(
     private fun calculateOtherDetails(
         assessmentMap: HashMap<String, Any>,
         referralStatus: String?,
-        menuId: String?
+        menuId: String?,
     ): HashMap<String, Any>? {
         var otherDetails = HashMap<String, Any>()
 
@@ -458,11 +456,14 @@ class AssessmentViewModel @Inject constructor(
         } else if (referralStatus != null && referralStatus == ReferralStatus.OnTreatment.name) {
             otherDetails[AssessmentDefinedParams.NextFollowupDate] =
                 DateUtils.convertDateTimeToDate(
-                    DateUtils.getDateAfterDays(referralReason?.mapNotNull { treatmentDays[it] }
-                        ?.minOrNull() ?: 3),
+                    DateUtils.getDateAfterDays(
+                        referralReason
+                            ?.mapNotNull { treatmentDays[it] }
+                            ?.minOrNull() ?: 3,
+                    ),
                     DateUtils.DATE_ddMMyyyy,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    inUTC = true
+                    inUTC = true,
                 )
         }
 
@@ -480,23 +481,26 @@ class AssessmentViewModel @Inject constructor(
 
                 if (!deathOfMother && !miscarriageValue && ancMap.containsKey(lastMenstrualPeriod)) {
                     val lmp = ancMap[lastMenstrualPeriod] as String
-                    DateUtils.convertStringToDate(
-                        lmp,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                    )?.let { lmpDate ->
-                        RMNCH.calculateNextANCVisitDate(
-                            lmpDate
-                        )?.let { visitDate ->
-                            otherDetails[AssessmentDefinedParams.NextFollowupDate] =
-                                DateUtils.convertDateTimeToDate(
-                                    DateUtils.getDateStringFromDate(
-                                        visitDate, DateUtils.DATE_ddMMyyyy
-                                    ),
-                                    DateUtils.DATE_ddMMyyyy,
-                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                )
+                    DateUtils
+                        .convertStringToDate(
+                            lmp,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        )?.let { lmpDate ->
+                            RMNCH
+                                .calculateNextANCVisitDate(
+                                    lmpDate,
+                                )?.let { visitDate ->
+                                    otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                                        DateUtils.convertDateTimeToDate(
+                                            DateUtils.getDateStringFromDate(
+                                                visitDate,
+                                                DateUtils.DATE_ddMMyyyy,
+                                            ),
+                                            DateUtils.DATE_ddMMyyyy,
+                                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                        )
+                                }
                         }
-                    }
                 }
             }
         } else if (menuId == RMNCH.CHILD_MENU.uppercase(Locale.getDefault())) {
@@ -506,19 +510,21 @@ class AssessmentViewModel @Inject constructor(
                 if (!deathOfBaby) {
                     DateUtils.calculateAgeInMonths(it)?.let { pair ->
                         if (pair.first <= RMNCH.childHoodVisitMaxMonth) {
-                            RMNCH.calculateNextChildHoodVisitDate(
-                                age = pair.first,
-                                birthDate = pair.second
-                            )?.let { visitDate ->
-                                otherDetails[AssessmentDefinedParams.NextFollowupDate] =
-                                    DateUtils.convertDateTimeToDate(
-                                        DateUtils.getDateStringFromDate(
-                                            visitDate, DateUtils.DATE_ddMMyyyy
-                                        ),
-                                        DateUtils.DATE_ddMMyyyy,
-                                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                    )
-                            }
+                            RMNCH
+                                .calculateNextChildHoodVisitDate(
+                                    age = pair.first,
+                                    birthDate = pair.second,
+                                )?.let { visitDate ->
+                                    otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                                        DateUtils.convertDateTimeToDate(
+                                            DateUtils.getDateStringFromDate(
+                                                visitDate,
+                                                DateUtils.DATE_ddMMyyyy,
+                                            ),
+                                            DateUtils.DATE_ddMMyyyy,
+                                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                        )
+                                }
                         }
                     }
                 }
@@ -586,9 +592,7 @@ class AssessmentViewModel @Inject constructor(
         return Triple(assessmentDetail, motherMapString ?: "", childMapString ?: "")
     }
 
-    private fun getAssessmentDetails(
-        map: HashMap<Any, Any>
-    ): Pair<String, String> {
+    private fun getAssessmentDetails(map: HashMap<Any, Any>): Pair<String, String> {
         val assessmentDetail = StringConverter.convertGivenMapToString(map) ?: ""
 
         // Request modification for syncing ICCM to Backend
@@ -779,8 +783,8 @@ class AssessmentViewModel @Inject constructor(
                         conditions.addAll(
                             getFormatedNotifiableCondition(
                                 value,
-                                CbsNotifiableCondition
-                            )
+                                CbsNotifiableCondition,
+                            ),
                         )
                     }
 
@@ -788,8 +792,8 @@ class AssessmentViewModel @Inject constructor(
                         conditions.addAll(
                             getFormatedNotifiableCondition(
                                 value,
-                                RmnchNotifiableCondition
-                            )
+                                RmnchNotifiableCondition,
+                            ),
                         )
                     }
 
@@ -823,8 +827,10 @@ class AssessmentViewModel @Inject constructor(
         return Pair(assessmentDetail, assessmentDetailBE)
     }
 
-
-    fun getFormatedNotifiableCondition(map: HashMap<*, *>, key: String): List<String> {
+    fun getFormatedNotifiableCondition(
+        map: HashMap<*, *>,
+        key: String,
+    ): List<String> {
         val conditions = mutableListOf<String>()
         val list = map[key] as List<*>
         list.forEach { condition ->
@@ -845,8 +851,8 @@ class AssessmentViewModel @Inject constructor(
                 assessmentRepository.updateOtherAssessmentDetails(
                     assessmentSaveLiveData.value?.data,
                     otherAssessmentDetails,
-                    lastLocation
-                )
+                    lastLocation,
+                ),
             )
         }
     }
@@ -857,7 +863,10 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun getFormData(formType: String, tbType: String? = null) {
+    fun getFormData(
+        formType: String,
+        tbType: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             formLayoutsLiveData.postLoading()
             formLayoutsLiveData.postValue(assessmentRepository.getFormData(formType, tbType))
@@ -868,15 +877,16 @@ class AssessmentViewModel @Inject constructor(
         formType: String,
         isContactTracking: Boolean?,
         isTbPatient: Boolean?,
-        isRxBuddy: Boolean
+        isRxBuddy: Boolean,
     ) {
         viewModelScope.launch(dispatcherIO) {
             formLayoutsLiveData.postLoading()
             val formData = assessmentRepository.getFormData(formType)
-            if (isContactTracking == true)
+            if (isContactTracking == true) {
                 updateFieldViewStatus(formData)
-            else if (isTbPatient == true)
+            } else if (isTbPatient == true) {
                 updateRxBuddyFieldViewStatus(formData, isRxBuddy)
+            }
 
             formLayoutsLiveData.postValue(formData)
         }
@@ -895,7 +905,7 @@ class AssessmentViewModel @Inject constructor(
 
     private fun updateRxBuddyFieldViewStatus(
         formResponse: Resource<FormResponse>,
-        isRxBuddy: Boolean
+        isRxBuddy: Boolean,
     ) {
         formResponse.data?.formLayout?.forEach { field ->
             when (field.id) {
@@ -915,7 +925,8 @@ class AssessmentViewModel @Inject constructor(
 
                 rxBuddy, selectHouseholdMember,
                 relationshipToPatient,
-                hasProvidedMonitoringSheet -> {
+                hasProvidedMonitoringSheet,
+                -> {
                     field.visibility = if (isRxBuddy) "gone" else "visible"
                 }
             }
@@ -932,43 +943,46 @@ class AssessmentViewModel @Inject constructor(
         this.lastLocation = location
     }
 
-    fun getCurrentLocation(): Location? {
-        return this.lastLocation
-    }
+    fun getCurrentLocation(): Location? = this.lastLocation
 
-    fun loadDataCacheByType(type: String, tag: String) {
+    fun loadDataCacheByType(
+        type: String,
+        tag: String,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             when (type) {
                 RMNCH.PlaceOfDelivery -> {
                     facilitySpinnerLiveData.postLoading()
                     facilitySpinnerLiveData.postValue(
                         assessmentRepository.getNearestHealthFacility(
-                            tag
-                        )
+                            tag,
+                        ),
                     )
                 }
             }
         }
     }
 
-    fun getPatientVisitCountByType(type: String, hhmLocalId: Long) {
+    fun getPatientVisitCountByType(
+        type: String,
+        hhmLocalId: Long,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             memberClinicalLiveData.postValue(
                 memberRegistrationRepository.getPatientVisitCountByType(
                     type,
-                    hhmLocalId
-                )
+                    hhmLocalId,
+                ),
             )
         }
     }
-
 
     fun handlePregnancy(
         details: HashMap<String, Any>,
         workflowName: String,
         memberDetail: AssessmentMemberDetails,
         memberClinicalEntity: MemberClinicalEntity?,
-        childDetailsMap: HashMap<String, Any>? = null
+        childDetailsMap: HashMap<String, Any>? = null,
     ) {
         memberDetail.apply {
             if (details.containsKey(workflowName) && details[workflowName] is Map<*, *>) {
@@ -980,18 +994,20 @@ class AssessmentViewModel @Inject constructor(
                     workflowName,
                     pregnancyDetail,
                     memberDetail,
-                    childDetailsMap
+                    childDetailsMap,
                 )
                 savePatientClinicalInformation(pregnancyDetail)
 
                 /*memberClinicalEntity?.let { memberClinicalEntity ->
-                    *//*map[RMNCH.visitNo] = memberClinicalEntity.visitCount + 1
+                 */
+                /*map[RMNCH.visitNo] = memberClinicalEntity.visitCount + 1
                     memberClinicalEntity.clinicalDate?.let { date ->
                         getClinicalDateKey()?.let {
                             map[it] = date
                         }
                     }
-                    map[RMNCH.NoOfNeonate] = memberClinicalEntity.numberOfNeonate ?: 0L*//*
+                    map[RMNCH.NoOfNeonate] = memberClinicalEntity.numberOfNeonate ?: 0L*/
+                /*
                     savePatientClinicalInformation(
                         patientId,
                         workflowName,
@@ -1018,14 +1034,11 @@ class AssessmentViewModel @Inject constructor(
         return null
     }
 
-    fun savePatientClinicalInformation(
-        pregnancyDetail: PregnancyDetail,
-    ) {
+    fun savePatientClinicalInformation(pregnancyDetail: PregnancyDetail) {
         viewModelScope.launch(dispatcherIO) {
             memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
         }
     }
-
 
     fun getPregnancyDetailInformation() {
         viewModelScope.launch(dispatcherIO) {
@@ -1036,13 +1049,12 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-
     private fun getClinicalDateAndVisitCount(
         details: HashMap<String, Any>,
         workflowName: String,
         pregnancyDetail: PregnancyDetail,
         memberDetail: AssessmentMemberDetails,
-        childDetailsMap: HashMap<String, Any>?
+        childDetailsMap: HashMap<String, Any>?,
     ) {
         when (workflowName) {
             ANC -> {
@@ -1050,7 +1062,7 @@ class AssessmentViewModel @Inject constructor(
                     getVisitNumber(pregnancyDetail.ancVisitNo)
                 pregnancyDetail.lastMenstrualPeriod = getClinicalDate(
                     pregnancyDetail.lastMenstrualPeriod,
-                    details[lastMenstrualPeriod]
+                    details[lastMenstrualPeriod],
                 )
                 details[RMNCH.visitNo] = pregnancyDetail.ancVisitNo ?: 0L
                 details[lastMenstrualPeriod] = pregnancyDetail.lastMenstrualPeriod ?: ""
@@ -1098,43 +1110,54 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    private fun getVisitNumber(existingCount: Long?, visitNo: Long = 1): Long {
+    private fun getVisitNumber(
+        existingCount: Long?,
+        visitNo: Long = 1,
+    ): Long {
         existingCount?.let { return (it + 1) } ?: return visitNo.let { it }
     }
 
-    private fun getClinicalDate(existingDate: String?, date: Any?): String? {
+    private fun getClinicalDate(
+        existingDate: String?,
+        date: Any?,
+    ): String? {
         existingDate?.let { return it } ?: return date?.let { it as String }
     }
 
-    private fun getNumberOfNeonates(existingCount: Int?, noOfNeonate: Any?): Int? {
-        return existingCount ?: when (noOfNeonate) {
+    private fun getNumberOfNeonates(
+        existingCount: Int?,
+        noOfNeonate: Any?,
+    ): Int? =
+        existingCount ?: when (noOfNeonate) {
             is Int -> noOfNeonate
             is String -> noOfNeonate.toIntOrNull()
             else -> null
         }
-    }
-
 
     fun updateMemberClinicalData(
         hhmLocalId: Long,
         visitCount: Long,
-        clinicalDate: String?
+        clinicalDate: String?,
     ) {
         viewModelScope.launch(dispatcherIO) {
             assessmentRepository.updatePregnancyAncDetail(
                 hhmLocalId,
                 visitCount,
-                clinicalDate
+                clinicalDate,
             )
         }
     }
 
-    fun updateMemberDeceasedStatus(id: Long, status: Boolean, deceasedReason: String? = null) {
+    fun updateMemberDeceasedStatus(
+        id: Long,
+        status: Boolean,
+        deceasedReason: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             memberRegistrationRepository.updateMemberDeceasedReason(
                 id,
                 status,
-                deceasedReason
+                deceasedReason,
             )
         }
     }
@@ -1156,11 +1179,11 @@ class AssessmentViewModel @Inject constructor(
             try {
                 medicationChildComplianceResponse.postValue(
                     assessmentRepository.getMedicationChildComplianceList(
-                        parentId
-                    )
+                        parentId,
+                    ),
                 )
             } catch (_: Exception) {
-                //Exception - Catch block
+                // Exception - Catch block
             }
         }
     }
@@ -1169,37 +1192,36 @@ class AssessmentViewModel @Inject constructor(
         request: String,
         uploadStatus: Boolean,
         isRecursion: Boolean,
-        onlineSaveResponse: HashMap<String, Any>? = null
+        onlineSaveResponse: HashMap<String, Any>? = null,
     ) {
-        viewModelScope.launch(dispatcherIO)
-        {
+        viewModelScope.launch(dispatcherIO) {
             assessmentSaveResponse.postLoading()
             try {
                 if (!isRecursion && connectivityManager.isNetworkAvailable()) {
                     val reqMap = StringConverter.convertStringToMap(request)
                     val response = assessmentRepository.createAssessmentNCD(
                         StringConverter.getJsonObject(
-                            Gson().toJson(reqMap)
-                        )
+                            Gson().toJson(reqMap),
+                        ),
                     )
                     val success = response.isSuccessful
                     saveAssessmentInformation(
                         request,
                         uploadStatus = success,
                         isRecursion = true,
-                        onlineSaveResponse = if (success) response.body() else null
+                        onlineSaveResponse = if (success) response.body() else null,
                     )
                 } else {
                     val assessmentEntity = AssessmentNCDEntity(
                         assessmentDetails = request,
                         uploadStatus = uploadStatus,
-                        userId = SecuredPreference.getUserId()
+                        userId = SecuredPreference.getUserId(),
                     )
                     val rowId = assessmentRepository.saveAssessmentInformation(assessmentEntity)
                     setAnalyticsData(
                         UserDetail.startDateTime,
                         eventName = AnalyticsDefinedParams.NCDAssessmentCreation + " " + menuId,
-                        isCompleted = true
+                        isCompleted = true,
                     )
                     assessmentSaveResponse.postSuccess(Pair(rowId, onlineSaveResponse))
                 }
@@ -1218,13 +1240,9 @@ class AssessmentViewModel @Inject constructor(
         rbsBloodGlucose = glucose
     }
 
-    fun getFbsBloodGlucose(): Double {
-        return fbsBloodGlucose ?: 0.0
-    }
+    fun getFbsBloodGlucose(): Double = fbsBloodGlucose ?: 0.0
 
-    fun getRbsBloodGlucose(): Double {
-        return rbsBloodGlucose ?: 0.0
-    }
+    fun getRbsBloodGlucose(): Double = rbsBloodGlucose ?: 0.0
 
     fun fetchMentalHealthQuestions(type: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -1236,22 +1254,23 @@ class AssessmentViewModel @Inject constructor(
                     assessmentRepository.getMentalQuestion(type = AssessmentDefinedParams.PHQ9)
                 val gad7Questions =
                     assessmentRepository.getMentalQuestion(type = AssessmentDefinedParams.GAD7)
-                if (mhResponse == null)
+                if (mhResponse == null) {
                     mhResponse = HashMap()
+                }
                 mhResponse[Screening.PHQ4] =
                     LocalSpinnerResponse(
                         tag = Screening.MentalHealthDetails,
-                        response = phq4Questions
+                        response = phq4Questions,
                     )
                 mhResponse[AssessmentDefinedParams.PHQ9] =
                     LocalSpinnerResponse(
                         tag = AssessmentDefinedParams.PHQ9_Mental_Health,
-                        response = phq9Questions
+                        response = phq9Questions,
                     )
                 mhResponse[AssessmentDefinedParams.GAD7] =
                     LocalSpinnerResponse(
                         tag = AssessmentDefinedParams.GAD7_Mental_Health,
-                        response = gad7Questions
+                        response = gad7Questions,
                     )
 
                 mentalHealthQuestions.postValue(Resource(ResourceState.SUCCESS, mhResponse))
@@ -1265,9 +1284,7 @@ class AssessmentViewModel @Inject constructor(
         this.phQ4Score = phQ4Score
     }
 
-    fun getPhQ4Score(): Int? {
-        return phQ4Score
-    }
+    fun getPhQ4Score(): Int? = phQ4Score
 
     fun savePNCDetails(
         motherDetailMap: HashMap<String, Any>,
@@ -1275,11 +1292,10 @@ class AssessmentViewModel @Inject constructor(
         childMemberId: Long,
         childFhirId: String? = null,
         followUpId: Long? = null,
-        deathOfNewborn: Boolean?
+        deathOfNewborn: Boolean?,
     ) {
-
         viewModelScope.launch(dispatcherIO) {
-            //Update Mother member details to NotSynced for PNC Flow
+            // Update Mother member details to NotSynced for PNC Flow
             if (childFhirId == null) {
                 memberRegistrationRepository.changeMemberDetailsToNotSynced(memberDetail.id)
             }
@@ -1304,8 +1320,8 @@ class AssessmentViewModel @Inject constructor(
                     getCurrentLocation(),
                     otherDetails,
                     Triple(childMemberId, followUpId, deathOfNewborn),
-                    childReferralResult
-                )
+                    childReferralResult,
+                ),
             )
         }
     }
@@ -1328,18 +1344,20 @@ class AssessmentViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             patientHealthFacility.postValue(
                 assessmentRepository.getHealthFacilityBasedOnVillageId(
-                    villageId = villageId
-                )
+                    villageId = villageId,
+                ),
             )
         }
     }
 
     val triggerGetForm = MutableLiveData<Boolean>()
+
     fun triggerGetForm() {
         triggerGetForm.value = true
     }
 
     val formLayoutsCbsLiveData = MutableLiveData<Resource<FormResponse>>()
+
     fun getFormDataCbs(formType: String) {
         viewModelScope.launch(dispatcherIO) {
             formLayoutsCbsLiveData.postLoading()
@@ -1357,7 +1375,7 @@ class AssessmentViewModel @Inject constructor(
         referralResult: Pair<String?, ArrayList<String>>,
         birth: String,
         isDelete: Boolean,
-        memberId: Long? = null
+        memberId: Long? = null,
     ) {
         this.assessmentMap = resultValue
         this.referralResult = referralResult
@@ -1370,7 +1388,7 @@ class AssessmentViewModel @Inject constructor(
     fun getUpdatedPregnancyDetail(
         memberId: Long,
         pregnancyDetail: PregnancyDetail?,
-        isResetPregnancy: Boolean = false
+        isResetPregnancy: Boolean = false,
     ): PregnancyDetail {
         if (isResetPregnancy) {
             updatePregnantStatus(memberId, false)
@@ -1391,11 +1409,12 @@ class AssessmentViewModel @Inject constructor(
     }
 
     val memberCbsDetailsLiveData = MutableLiveData<Resource<AssessmentMemberDetails>>()
+
     fun saveMember(
         memberMap: HashMap<String, Any>,
         householdId: Long,
         motherID: Long,
-        location: Location?
+        location: Location?,
     ) {
         viewModelScope.launch(dispatcherIO) {
             val id = memberRegistrationRepository.registerMember(
@@ -1403,15 +1422,15 @@ class AssessmentViewModel @Inject constructor(
                 householdId,
                 null,
                 motherID,
-                location = location
+                location = location,
             )
-            //Update Mother member details to NotSynced for PNC Flow
+            // Update Mother member details to NotSynced for PNC Flow
             memberRegistrationRepository.changeMemberDetailsToNotSynced(motherID)
             id?.let {
                 memberCbsDetailsLiveData.postValue(
                     memberRegistrationRepository.getAssessmentMemberDetails(
-                        id
-                    )
+                        id,
+                    ),
                 )
             }
         }
@@ -1424,7 +1443,7 @@ class AssessmentViewModel @Inject constructor(
         data: AssessmentEntity,
         resultValue: HashMap<String, Any>,
         birth: String,
-        memberId: Long? = null
+        memberId: Long? = null,
     ) {
         this.assessment = data
         this.resultValue = resultValue
@@ -1433,18 +1452,21 @@ class AssessmentViewModel @Inject constructor(
                 getUpdatedPregnancyDetail(
                     memberId,
                     pregnancyDetail,
-                    true
-                )
+                    true,
+                ),
             )
         }
         birthLiveData.postValue(Resource(ResourceState.SUCCESS, Triple(birth, false, false)))
     }
 
-    fun updateTBContactTraceStatus(hhmId: Long, tbContactTracingStatus: Int) {
+    fun updateTBContactTraceStatus(
+        hhmId: Long,
+        tbContactTracingStatus: Int,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             houseHoldRepository.updateHouseholdMemberTbContactTraceStatus(
                 hhmId,
-                tbContactTracingStatus
+                tbContactTracingStatus,
             )
         }
     }
@@ -1452,7 +1474,7 @@ class AssessmentViewModel @Inject constructor(
     fun renderBMIValue(
         context: Context,
         formGenerator: FormGenerator,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
         val bmiView = formGenerator.getViewByTag(Screening.BMI) as? AppCompatTextView
         bmiView?.let { view ->
@@ -1460,8 +1482,9 @@ class AssessmentViewModel @Inject constructor(
                 view.text = context.getString(R.string.hyphen_symbol)
                 formGenerator.removeIfContains(Screening.BMI)
             } else {
-                if (resultHashMap.containsKey(Screening.Weight) && resultHashMap.containsKey(
-                        Screening.Height
+                if (resultHashMap.containsKey(Screening.Weight) &&
+                    resultHashMap.containsKey(
+                        Screening.Height,
                     )
                 ) {
                     val weight = resultHashMap[Screening.Weight] as? Double
@@ -1471,7 +1494,8 @@ class AssessmentViewModel @Inject constructor(
                         view.text = context.getString(R.string.hyphen_symbol)
                     } else {
                         val bmi = CommonUtils.getBMIForNcd(height, weight)
-                        CommonUtils.getBMIInformation(context, bmi?.toDoubleOrNull())
+                        CommonUtils
+                            .getBMIInformation(context, bmi?.toDoubleOrNull())
                             ?.let { info ->
                                 bmi?.toDoubleOrNull()?.let {
                                     resultHashMap[Screening.BMI] = it
@@ -1481,7 +1505,8 @@ class AssessmentViewModel @Inject constructor(
                                 val bmiWithInfoSpannableStringBuilder = if (bmi == null) {
                                     context.getString(R.string.hyphen_symbol)
                                 } else {
-                                    SpannableStringBuilder().append(bmi)
+                                    SpannableStringBuilder()
+                                        .append(bmi)
                                         .color(context.getColor(info.second)) {
                                             append(" (${info.first})")
                                         }
@@ -1503,7 +1528,10 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun updatePregnantStatus(memberId: Long, isPregnant: Boolean) {
+    fun updatePregnantStatus(
+        memberId: Long,
+        isPregnant: Boolean,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             memberRegistrationRepository.updatePregnantStatus(memberId, isPregnant)
         }
@@ -1522,14 +1550,18 @@ class AssessmentViewModel @Inject constructor(
             if (memberId != null && householdId != null) {
                 otherHouseholdMemberLiveData.postValue(
                     rxBuddyRepository.getOtherHouseholdMembersExcludeTBPatient(
-                        householdId, memberId
-                    )
+                        householdId,
+                        memberId,
+                    ),
                 )
             }
         }
     }
 
-    fun getTbType(memberId: Long, isContactTracking: Boolean?) {
+    fun getTbType(
+        memberId: Long,
+        isContactTracking: Boolean?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             formLayoutsLiveData.postLoading()
             memberDetailsLiveData.postLoading()
@@ -1538,7 +1570,7 @@ class AssessmentViewModel @Inject constructor(
             memberDetailsLiveData.postValue(assessmentMemberDetails)
 
             assessmentMemberDetails.data?.memberId?.let { memberId ->
-                //1. Get Treatment details
+                // 1. Get Treatment details
                 treatmentDetailsRepository.getTreatmentDetails(memberId)?.let { treatmentDetail ->
                     // 1.1. Treatment details not null. Proceed with Rx Buddy
                     treatmentDetailsLiveData.postValue(treatmentDetail)
@@ -1560,19 +1592,21 @@ class AssessmentViewModel @Inject constructor(
                     }
                 } ?: run {
                     // 1.2. Treatment details null. Proceed with TB Screening or Contact Tracing
-                    if (isContactTracking == true || assessmentMemberDetails.data.contactTracingStatus == 0)
+                    if (isContactTracking == true || assessmentMemberDetails.data.contactTracingStatus == 0) {
                         assessmentTBType.postValue(TBContactTracing)
-                    else
+                    } else {
                         assessmentTBType.postValue(TBScreening)
+                    }
                 }
-            } ?: run { // If Fhir id not available for member proceed with TB Screening or Contact Tracing
-                    if (isContactTracking == true || assessmentMemberDetails.data?.contactTracingStatus == 0)
-                        assessmentTBType.postValue(TBContactTracing)
-                    else
-                        assessmentTBType.postValue(TBScreening)
+            } ?: run {
+                // If Fhir id not available for member proceed with TB Screening or Contact Tracing
+                if (isContactTracking == true || assessmentMemberDetails.data?.contactTracingStatus == 0) {
+                    assessmentTBType.postValue(TBContactTracing)
+                } else {
+                    assessmentTBType.postValue(TBScreening)
                 }
+            }
         }
-
     }
 
     private fun insertRxBuddyFollowUp(map: HashMap<String, Any>) {
@@ -1590,7 +1624,7 @@ class AssessmentViewModel @Inject constructor(
                         DateUtils.getDateString(
                             date,
                             inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
-                            outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                            outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                         )
                     }
 
@@ -1612,8 +1646,8 @@ class AssessmentViewModel @Inject constructor(
                         patientMemberId = patientMemberId,
                         map = rxBuddyFollowUp,
                         nextVisitDate = nextVisitDate,
-                        followUpId = followUpId
-                    )
+                        followUpId = followUpId,
+                    ),
                 )
             }
             val assessmentDetail = StringConverter.convertGivenMapToString(map) ?: ""
@@ -1621,24 +1655,30 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun updateNextVisitDateForRxBuddyRegister(nextVisitDate: String, id: Long) {
+    fun updateNextVisitDateForRxBuddyRegister(
+        nextVisitDate: String,
+        id: Long,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             assessmentUpdateLiveData.postValue(
                 rxBuddyRepository.updateNextVisitDateRxBuddyRegister(
                     nextVisitDate,
-                    id
-                )
+                    id,
+                ),
             )
         }
     }
 
-    fun updateNextVisitDateForRxBuddyFollowUp(nextVisitDate: String, id: Long) {
+    fun updateNextVisitDateForRxBuddyFollowUp(
+        nextVisitDate: String,
+        id: Long,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             assessmentUpdateLiveData.postValue(
                 rxBuddyRepository.updateNextVisitDateRxBuddyFollowUp(
                     nextVisitDate,
-                    id
-                )
+                    id,
+                ),
             )
         }
     }
@@ -1661,8 +1701,8 @@ class AssessmentViewModel @Inject constructor(
         return LocalDate.now().plusDays(1)
     }
 
-    private fun getTBNextVisitSchedule(): List<Pair<Long, Long>> {
-        return listOf(
+    private fun getTBNextVisitSchedule(): List<Pair<Long, Long>> =
+        listOf(
             Pair(0, 1), // 1st Month, 1st Week
             Pair(0, 3), // 1st Month, 3rd Week
             Pair(1, 1), // 2nd Month, 1st Week
@@ -1672,6 +1712,4 @@ class AssessmentViewModel @Inject constructor(
             Pair(4, 4), // 5th Month, 4th Week
             Pair(5, 1), // 6th Month, 1st Week
         )
-    }
-
 }

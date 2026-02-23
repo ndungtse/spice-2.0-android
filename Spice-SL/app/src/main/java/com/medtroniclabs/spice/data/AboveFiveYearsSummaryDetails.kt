@@ -15,5 +15,5 @@ data class AboveFiveYearsSummaryDetails(
     val patientReference: String? = null,
     val prescriptions: List<Prescription>? = null,
     val investigations: List<Investigation>? = null,
-    val summaryStatus:List<PatientStatus>?=null
+    val summaryStatus: List<PatientStatus>? = null,
 )

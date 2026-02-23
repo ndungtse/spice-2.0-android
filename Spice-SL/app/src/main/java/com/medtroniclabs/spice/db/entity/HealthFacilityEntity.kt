@@ -14,5 +14,5 @@ data class HealthFacilityEntity(
     val fhirId: String? = null,
     val isDefault: Boolean = false,
     val isUserSite: Boolean = false,
-    val phoneNumber: String? = null
+    val phoneNumber: String? = null,
 )

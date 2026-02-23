@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.investigation
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -46,9 +45,8 @@ import javax.inject.Inject
 class InvestigationViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val connectivityManager: ConnectivityManager,
-    private val investigationRepository: InvestigationRepository
+    private val investigationRepository: InvestigationRepository,
 ) : BaseViewModel(dispatcherIO) {
-
     var patientId: String? = null
     var patientReference: String? = null
     var encounterId: String? = null
@@ -103,9 +101,8 @@ class InvestigationViewModel @Inject constructor(
                             investigationResponse.codeDetails,
                             dropdownState = true,
                             labTestId = investigationResponse.id,
-                        )
+                        ),
                     )
-
                 } catch (e: Exception) {
                     e.printStackTrace()
                 } finally {
@@ -139,7 +136,7 @@ class InvestigationViewModel @Inject constructor(
                     setAnalyticsData(
                         UserDetail.startDateTime,
                         eventName = AnalyticsDefinedParams.NCDInvestigationDelete,
-                        isCompleted = true
+                        isCompleted = true,
                     )
                     val resourceState =
                         investigationRepository.removeLabTest(RemoveLabTestRequest(investigation.id))
@@ -169,10 +166,9 @@ class InvestigationViewModel @Inject constructor(
         }
     }
 
-
     fun createLabTest(
         resultFromInvestigation: List<InvestigationModel>?,
-        patientDetail: PatientListRespModel
+        patientDetail: PatientListRespModel,
     ) {
         viewModelScope.launch(dispatcherIO) {
             try {
@@ -187,7 +183,7 @@ class InvestigationViewModel @Inject constructor(
                         codeDetails = data.codeDetails,
                         labTestResults = getResultListObject(data),
                         id = data.id,
-                        labTestId = data.labTestId
+                        labTestId = data.labTestId,
                     )
                     labTestList.add(detail)
                 }
@@ -195,20 +191,20 @@ class InvestigationViewModel @Inject constructor(
                 val request = LabTestCreateRequest(
                     EncounterDetails(
                         id = encounterId,
-                        patientReference = if (CommonUtils.isNonCommunity() ) patientDetail.patientId.orEmpty() else patientDetail.id,
-                        patientId = if (CommonUtils.isNonCommunity() ) null else patientDetail.patientId.orEmpty(),
-                        memberId = if (!CommonUtils.isNonCommunity() ) patientDetail.memberId.orEmpty() else patientDetail.id.orEmpty(),
+                        patientReference = if (CommonUtils.isNonCommunity()) patientDetail.patientId.orEmpty() else patientDetail.id,
+                        patientId = if (CommonUtils.isNonCommunity()) null else patientDetail.patientId.orEmpty(),
+                        memberId = if (!CommonUtils.isNonCommunity()) patientDetail.memberId.orEmpty() else patientDetail.id.orEmpty(),
                         provenance = ProvanceDto(),
-                        visitId = visitId
+                        visitId = visitId,
                     ),
                     labTestList,
                     enrollmentType = patientDetail.enrollmentType,
-                    identityValue = patientDetail.identityValue
+                    identityValue = patientDetail.identityValue,
                 )
                 setAnalyticsData(
                     UserDetail.startDateTime,
                     eventName = AnalyticsDefinedParams.NCDInvestigationCreation,
-                    isCompleted = true
+                    isCompleted = true,
                 )
                 createLabTestLiveData.postValue(investigationRepository.createLabTest(request))
             } catch (e: Exception) {
@@ -224,7 +220,9 @@ class InvestigationViewModel @Inject constructor(
             if (map.containsKey(DefinedParams.TestedOn) && map[DefinedParams.TestedOn] is String) {
                 testedOn = map[DefinedParams.TestedOn] as String
             }
-            data.resultList?.formLayout?.filter { it.viewType != ViewType.VIEW_TYPE_FORM_CARD_FAMILY && it.id != DefinedParams.TestedOn }
+            data.resultList
+                ?.formLayout
+                ?.filter { it.viewType != ViewType.VIEW_TYPE_FORM_CARD_FAMILY && it.id != DefinedParams.TestedOn }
                 ?.let { formLayoutList ->
                     getValidResultObject(formLayoutList, map, testedOn)?.let {
                         labTestResultObjectList.addAll(it)
@@ -242,7 +240,7 @@ class InvestigationViewModel @Inject constructor(
     private fun getValidResultObject(
         formLayoutList: List<FormLayout>,
         resultMap: HashMap<String, Any>,
-        testedOn: String?
+        testedOn: String?,
     ): ArrayList<LabTestResultObject>? {
         val list = ArrayList<LabTestResultObject>()
         var validResultList = true
@@ -264,7 +262,7 @@ class InvestigationViewModel @Inject constructor(
                         getCodeDetailsObject(formData),
                         testedOn = testedOn,
                         resource = formData.resource,
-                        unitValue
+                        unitValue,
                     )
                     list.add(resultObject)
                 }
@@ -286,10 +284,9 @@ class InvestigationViewModel @Inject constructor(
         return null
     }
 
-
     fun getLabTestList(data: PatientListRespModel) {
         viewModelScope.launch(dispatcherIO) {
-            val patientId = if (CommonUtils.isNonCommunity() ) data.patientId else data.id
+            val patientId = if (CommonUtils.isNonCommunity()) data.patientId else data.id
             patientId?.let { id ->
                 labTestListLiveData.postLoading()
                 val response = investigationRepository.getLabTestList(LabTestListRequest(id))
@@ -301,7 +298,6 @@ class InvestigationViewModel @Inject constructor(
             }
         }
     }
-
 
     fun addExistingLabTestListToUI(list: ArrayList<LabTestListResponse>) {
         viewModelScope.launch(dispatcherIO) {
@@ -321,8 +317,8 @@ class InvestigationViewModel @Inject constructor(
                         components = investigationExisting.components,
                         comments = investigationExisting.comments,
                         descriptiveResult = investigationExisting.descriptiveResult,
-                        labTestId = investigationExisting.labTestCustomization.id
-                    )
+                        labTestId = investigationExisting.labTestCustomization.id,
+                    ),
                 )
             }
             investigationListLiveData.postValue(investigationList)
@@ -339,9 +335,9 @@ class InvestigationViewModel @Inject constructor(
             labTestPredictionLiveData.postValue(
                 investigationRepository.getLabTestNudgeList(
                     predictionRequest = PredictionRequest(
-                        patientReference = patientReference
-                    )
-                )
+                        patientReference = patientReference,
+                    ),
+                ),
             )
         }
     }

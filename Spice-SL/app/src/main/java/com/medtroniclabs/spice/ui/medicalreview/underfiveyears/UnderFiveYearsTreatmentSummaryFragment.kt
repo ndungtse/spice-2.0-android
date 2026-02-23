@@ -13,7 +13,6 @@ import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -43,7 +42,6 @@ import com.medtroniclabs.spice.ui.mypatients.adapter.ExaminationSummaryAdapter
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentUnderFiveYearsTreatmentSummarryBinding
     private var datePickerDialog: DatePickerDialog? = null
     private val summaryViewModel: UnderFiveYearTreatmentSummaryViewModel by activityViewModels()
@@ -51,7 +49,9 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     private lateinit var examinationSummaryAdapter: ExaminationSummaryAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentUnderFiveYearsTreatmentSummarryBinding.inflate(inflater, container, false)
         return binding.root
@@ -59,10 +59,12 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
     companion object {
         const val TAG = "UnderFiveYearsTreatmentSummaryFragment"
+
         fun newInstance() = UnderFiveYearsTreatmentSummaryFragment()
 
         fun newInstance(
-            encounterId: String?, patientReference: String?
+            encounterId: String?,
+            patientReference: String?,
         ): UnderFiveYearsTreatmentSummaryFragment {
             val fragment = UnderFiveYearsTreatmentSummaryFragment()
             val bundle = Bundle()
@@ -71,10 +73,12 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             fragment.arguments = bundle
             return fragment
         }
-
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         setListeners()
@@ -86,8 +90,8 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         summaryViewModel.getUnderFiveYearsSummaryDetails(
             CreateUnderTwoMonthsResponse(
                 encounterId = arguments?.getString(DefinedParams.EncounterId) ?: "",
-                patientReference = arguments?.getString(DefinedParams.PatientReference) ?: ""
-            )
+                patientReference = arguments?.getString(DefinedParams.PatientReference) ?: "",
+            ),
         )
         binding.tvNextVisitTimeLabel.markMandatory()
         binding.tvPatientStatusLabel.markMandatory()
@@ -97,7 +101,6 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     fun attachObserver() {
-
         summaryViewModel.summaryDetailsLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -134,8 +137,8 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 statusList.add(
                     hashMapOf<String, Any>(
                         DefinedParams.NAME to item.name,
-                        DefinedParams.Value to item.value
-                    )
+                        DefinedParams.Value to item.value,
+                    ),
                 )
             }
         }
@@ -149,28 +152,32 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
             SecuredPreference.getUserDetails()?.firstName,
-            SecuredPreference.getUserDetails()?.lastName
+            SecuredPreference.getUserDetails()?.lastName,
         )
         binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
             DateUtils.getTodayDateDDMMYYYY(),
             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            DateUtils.DATE_ddMMyyyy
+            DateUtils.DATE_ddMMyyyy,
         )
         binding.tvDiagnosis.text =
-            details.diagnosis?.let {list ->
-                if (list.isNotEmpty()){
+            details.diagnosis?.let { list ->
+                if (list.isNotEmpty()) {
                     binding.tvDiagnosis.setTextColor(ContextCompat.getColor(requireContext(), R.color.a_red_error))
                 }
                 convertListToString(
-                    ArrayList(list.filter { it.diseaseCategory.lowercase() != OtherNotes.lowercase() }
-                        .map { it.diseaseCategory }.distinct())
+                    ArrayList(
+                        list
+                            .filter { it.diseaseCategory.lowercase() != OtherNotes.lowercase() }
+                            .map { it.diseaseCategory }
+                            .distinct(),
+                    ),
                 )
             } ?: requireContext().getString(R.string.empty__)
 
-        binding.tvPrescription.text= details.prescriptions.let { CommonUtils.createPrescription(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+        binding.tvPrescription.text = details.prescriptions.let { CommonUtils.createPrescription(it, requireContext()) }?.takeIf { it.isNotEmpty() }
             ?: requireContext().getString(R.string.empty__)
 
-        binding.tvInvestigation.text = details.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+        binding.tvInvestigation.text = details.investigations?.let { createInvestigation(it, requireContext()) }?.takeIf { it.isNotEmpty() }
             ?: requireContext().getString(R.string.hyphen_symbol)
 
         examinationList(details)
@@ -187,7 +194,7 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     "${result.index}. $matchingName"
                 } else {
                     result.symptomsTitle
-                }
+                },
             )
         }
         updatedExaminationResults.let { examinationSummaryAdapter.updateData(it) }
@@ -200,34 +207,41 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         }
     }
 
-    private fun convertExaminationDetailsToString(details: List<ExaminationDetail>): List<String> {
-        return details.map { detail ->
+    private fun convertExaminationDetailsToString(details: List<ExaminationDetail>): List<String> =
+        details.map { detail ->
             val title = detail.title ?: ""
-            val value = convertAnyToString(detail.value,requireContext())
+            val value = convertAnyToString(detail.value, requireContext())
             "$title : $value"
         }
-    }
 
     private fun setListeners() {
         binding.etNextVisitDate.safeClickListener(this)
     }
 
-
     private fun showDatePickerDialog() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (!binding.etNextVisitDate.text.isNullOrBlank()) yearMonthDate =
-            DateUtils.convertedMMMToddMM(binding.etNextVisitDate.text.toString())
+        if (!binding.etNextVisitDate.text.isNullOrBlank()) {
+            yearMonthDate =
+                DateUtils.convertedMMMToddMM(binding.etNextVisitDate.text.toString())
+        }
         if (datePickerDialog == null) {
-            datePickerDialog = ViewUtils.showDatePicker(context = requireContext(),
+            datePickerDialog = ViewUtils.showDatePicker(
+                context = requireContext(),
                 minDate = DateUtils.getTomorrowDate(),
                 date = yearMonthDate,
-                cancelCallBack = { datePickerDialog = null }) { _, year, month, dayOfMonth ->
+                cancelCallBack = { datePickerDialog = null },
+            ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 binding.etNextVisitDate.text = DateUtils.convertDateTimeToDate(
-                    stringDate, DateUtils.DATE_FORMAT_ddMMyyyy, DateUtils.DATE_ddMMyyyy
+                    stringDate,
+                    DateUtils.DATE_FORMAT_ddMMyyyy,
+                    DateUtils.DATE_ddMMyyyy,
                 )
                 summaryViewModel.nextVisitDate =
-                    binding.etNextVisitDate.text.toString().trim().ifBlank { null }
+                    binding.etNextVisitDate.text
+                        .toString()
+                        .trim()
+                        .ifBlank { null }
                 datePickerDialog = null
                 summaryListener()
             }
@@ -244,21 +258,21 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
     private fun summaryListener() {
         setFragmentResult(
-            MedicalReviewDefinedParams.SUMMARY_ITEM, bundleOf(
-                MedicalReviewDefinedParams.SUMMARY_ITEM to true
-            )
+            MedicalReviewDefinedParams.SUMMARY_ITEM,
+            bundleOf(
+                MedicalReviewDefinedParams.SUMMARY_ITEM to true,
+            ),
         )
     }
 
     private fun setListenerToDeliveryStatus(list: ArrayList<Map<String, Any>>) {
-
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(list)
         var defaultPosition = 0
         for ((index, patientStatus) in list.withIndex()) {
             if ((patientStatus[DefinedParams.Value] as? String).equals(
                     ReferralStatus.OnTreatment.name,
-                    true
+                    true,
                 )
             ) {
                 defaultPosition = index
@@ -271,7 +285,10 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         binding.patientStatusSpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long,
                 ) {
                     val selectedItem = adapter.getData(position = position)
                     selectedItem?.let {
@@ -289,7 +306,6 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                      * this method is not used
                      */
                 }
-
             }
     }
 
@@ -307,5 +323,3 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         }
     }
 }
-
-

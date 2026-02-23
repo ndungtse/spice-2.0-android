@@ -9,18 +9,17 @@ import com.medtroniclabs.spice.databinding.ItemCommunityPopulationBinding
 
 class CommunityPopulationAdapter :
     RecyclerView.Adapter<CommunityPopulationAdapter.CommunityPopulationViewHolder>() {
-
     private val communityPopulationList = mutableListOf<CommunityPopulation>()
 
     inner class CommunityPopulationViewHolder(
-        private val binding: ItemCommunityPopulationBinding
+        private val binding: ItemCommunityPopulationBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(population: CommunityPopulation) {
             binding.tvCategory.text = population.title
             binding.tvCount.text = population.count.toString()
-            if(bindingAdapterPosition == communityPopulationList.size - 1){
+            if (bindingAdapterPosition == communityPopulationList.size - 1) {
                 binding.viewBottomDivider.visibility = View.GONE
-            }else{
+            } else {
                 binding.viewBottomDivider.visibility = View.VISIBLE
             }
         }
@@ -36,22 +35,22 @@ class CommunityPopulationAdapter :
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
-    ): CommunityPopulationViewHolder {
-        return CommunityPopulationViewHolder(
+        viewType: Int,
+    ): CommunityPopulationViewHolder =
+        CommunityPopulationViewHolder(
             ItemCommunityPopulationBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-    override fun getItemCount(): Int {
-        return communityPopulationList.size
-    }
+    override fun getItemCount(): Int = communityPopulationList.size
 
-    override fun onBindViewHolder(holder: CommunityPopulationViewHolder, position: Int) {
-       holder.bind(communityPopulationList[position])
+    override fun onBindViewHolder(
+        holder: CommunityPopulationViewHolder,
+        position: Int,
+    ) {
+        holder.bind(communityPopulationList[position])
     }
 }

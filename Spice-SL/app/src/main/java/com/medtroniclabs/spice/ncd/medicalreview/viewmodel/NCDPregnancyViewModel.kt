@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ncd.medicalreview.viewmodel
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
@@ -25,7 +24,7 @@ import javax.inject.Inject
 class NCDPregnancyViewModel @Inject constructor(
     private val ncdPregnancyRepo: NCDPregnancyRepo,
     private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
     var id: String? = null
     var isPregnancyAncEnabledSite: Boolean = false
@@ -37,10 +36,10 @@ class NCDPregnancyViewModel @Inject constructor(
     val ncdPregnancyCreateResponse = MutableLiveData<Resource<APIResponse<HashMap<String, Any>>>>()
     val ncdPregnancyDetailsResponse = MutableLiveData<Resource<PregnancyDetailsModel>>()
 
-    private val getSymptomListByTypeForNCD = MutableLiveData<Triple<String,String,Boolean>>()
+    private val getSymptomListByTypeForNCD = MutableLiveData<Triple<String, String, Boolean>>()
     var value: String? = null
-    var yearForDiabetes :String? = null
-    var yearForHypertension :String? = null
+    var yearForDiabetes: String? = null
+    var yearForHypertension: String? = null
 
     var relatedPersonFhirId: String? = null
 
@@ -56,7 +55,7 @@ class NCDPregnancyViewModel @Inject constructor(
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDPatientHistoryCreationForMaternalHealth,
-                isCompleted = true
+                isCompleted = true,
             )
             ncdPregnancyCreateResponse.postValue(ncdPregnancyRepo.ncdPregnancyCreate(requestModel))
         }
@@ -69,7 +68,7 @@ class NCDPregnancyViewModel @Inject constructor(
             }
             ncdPregnancyDetailsResponse.postLoading()
             ncdPregnancyDetailsResponse.postValue(
-                ncdPregnancyRepo.ncdPregnancyDetails(request)
+                ncdPregnancyRepo.ncdPregnancyDetails(request),
             )
         }
     }
@@ -77,7 +76,12 @@ class NCDPregnancyViewModel @Inject constructor(
     val getSymptomListByTypeForNCDLiveData = getSymptomListByTypeForNCD.switchMap {
         ncdMedicalReviewRepository.getNCDDiagnosisList(listOf(it.first), it.second, it.third)
     }
-    fun getSymptoms(type: String, gender: String, isPregnant: Boolean) {
+
+    fun getSymptoms(
+        type: String,
+        gender: String,
+        isPregnant: Boolean,
+    ) {
         getSymptomListByTypeForNCD.value = Triple(type, gender, isPregnant)
     }
 }

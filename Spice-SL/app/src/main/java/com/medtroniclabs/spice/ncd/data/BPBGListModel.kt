@@ -9,23 +9,24 @@ data class BPBGListModel(
     var sortOrder: Int? = null,
     var memberId: String? = null,
     var latestRequired: Boolean? = null,
-    val latestBpLog: BPLogList?= null,
-    val latestGlucoseLog: GlucoseLogList?= null,
+    val latestBpLog: BPLogList? = null,
+    val latestGlucoseLog: GlucoseLogList? = null,
     var bpLogList: ArrayList<BPLogList>? = null,
     var glucoseLogList: ArrayList<GlucoseLogList>? = null,
     var bpThreshold: BPThreshold? = null,
-    var glucoseThreshold: List<GlucoseThreshold>? = null
+    var glucoseThreshold: List<GlucoseThreshold>? = null,
 )
 
 data class GlucoseThreshold(
     var fbs: Int,
     var rbs: Int,
     var hba1c: Float,
-    val unit: String
+    val unit: String,
 ) : Serializable
+
 data class BPThreshold(
     var systolic: Int,
-    var diastolic: Int
+    var diastolic: Int,
 ) : Serializable
 
 data class BPLogList(
@@ -35,7 +36,7 @@ data class BPLogList(
     val avgDiastolic: Long? = null,
     val avgPulse: Long? = null,
     val createdAt: String,
-    val symptoms: ArrayList<String>? = null
+    val symptoms: ArrayList<String>? = null,
 )
 
 data class GraphModel(
@@ -43,7 +44,7 @@ data class GraphModel(
     var bgResponse: GlucoseLogList? = null,
     var index: Int,
     var size: Int,
-    var isForward: Boolean? = null
+    var isForward: Boolean? = null,
 )
 
 data class GlucoseLogList(
@@ -55,6 +56,6 @@ data class GlucoseLogList(
     val createdAt: String? = null,
     val hba1c: Float? = null,
     val hba1cUnit: String? = null,
-    val hba1cDateTime:String? = null,
+    val hba1cDateTime: String? = null,
     val symptoms: ArrayList<String>? = null,
 )

@@ -12,12 +12,12 @@ data class MedicalReviewSummarySubmitRequest(
     val medicalSupplies: List<String>? = null,
     val patientStatus: String? = null,
     val nextVisitDate: String? = null,
-    val category:String? = null,
+    val category: String? = null,
     val encounterType: String? = null,
     val householdId: String? = null,
     val villageId: String? = null,
     val tbIMRCompleted: Boolean? = null,
     val treatmentOutcome: String? = null,
-    val maternalOutcome:String? = null,
-    val emtctVisitStatus:String? = null
+    val maternalOutcome: String? = null,
+    val emtctVisitStatus: String? = null,
 )

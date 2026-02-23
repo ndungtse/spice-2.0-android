@@ -17,9 +17,10 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDMedicalReviewDiagnosisCardViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
+    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
 ) : ViewModel() {
     val getConfirmDiagonsis = MutableLiveData<Resource<NCDDiagnosisGetResponse>>()
+
     fun getConfirmDiagonsis(request: NCDDiagnosisGetRequest) {
         viewModelScope.launch(dispatcherIO) {
             getConfirmDiagonsis.postLoading()

@@ -26,11 +26,10 @@ import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.getDaysString
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListenerForFollowUp
 
 class NCDPatientFollowUPListAdapter(
-    val listener: PatientSelectionListenerForFollowUp
+    val listener: PatientSelectionListenerForFollowUp,
 ) : PagingDataAdapter<PatientFollowUpEntity, NCDPatientFollowUPListAdapter.NCDPatientFollowUPListViewHolder>(
-    PatientListComparator
-) {
-
+        PatientListComparator,
+    ) {
     inner class NCDPatientFollowUPListViewHolder(val binding: FollowUpListItemPatientsBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
@@ -46,20 +45,21 @@ class NCDPatientFollowUPListAdapter(
                 R.string.household_summary_member_info,
                 name,
                 age,
-                CommonUtils.translatedGender(context, gender)
+                CommonUtils.translatedGender(context, gender),
             )
             binding.tvPatientName.text = patientInfo
             binding.tvDueInformation.setTextColor(Color.parseColor("#994242"))
             binding.tvLabelReason.gone()
             if (item.type.equals(SCREENED, true)) {
                 val referredReasonsText =
-                    item.referredReasons?.filterNot { it.isBlank() }
+                    item.referredReasons
+                        ?.filterNot { it.isBlank() }
                         ?.joinToString(", ") { it.trim() }
                 updateReasonSection(
                     label = context.getString(R.string.reason),
                     text = referredReasonsText,
                     context = context,
-                    binding = binding
+                    binding = binding,
                 )
             }
             if (item.type.equals(LTFU_Type, true)) {
@@ -71,7 +71,7 @@ class NCDPatientFollowUPListAdapter(
                     label = context.getString(R.string.overdue),
                     text = overDueCategoriesText,
                     context = context,
-                    binding = binding
+                    binding = binding,
                 )
             }
             item.referredDateSince?.let {
@@ -80,7 +80,7 @@ class NCDPatientFollowUPListAdapter(
                     binding.tvDueInformation.text =
                         context.getString(
                             getDaysString(item.referredDateSince),
-                            item.referredDateSince
+                            item.referredDateSince,
                         )
                 } else {
                     binding.tvDueInformation.gone()
@@ -114,7 +114,7 @@ class NCDPatientFollowUPListAdapter(
         label: String,
         text: String?,
         context: Context,
-        binding: FollowUpListItemPatientsBinding // Replace with the actual type of your binding
+        binding: FollowUpListItemPatientsBinding, // Replace with the actual type of your binding
     ) {
         if (!text.isNullOrEmpty()) {
             binding.tvLabelReason.text = context.getString(R.string.label_with_text, label, text)
@@ -126,19 +126,20 @@ class NCDPatientFollowUPListAdapter(
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
-    ): NCDPatientFollowUPListViewHolder {
-        return NCDPatientFollowUPListViewHolder(
+        viewType: Int,
+    ): NCDPatientFollowUPListViewHolder =
+        NCDPatientFollowUPListViewHolder(
             FollowUpListItemPatientsBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-
-    override fun onBindViewHolder(holder: NCDPatientFollowUPListViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: NCDPatientFollowUPListViewHolder,
+        position: Int,
+    ) {
         getItem(position)?.let { item ->
             holder.bind(item)
         }
@@ -147,20 +148,19 @@ class NCDPatientFollowUPListAdapter(
     object PatientListComparator : DiffUtil.ItemCallback<PatientFollowUpEntity>() {
         override fun areItemsTheSame(
             oldItem: PatientFollowUpEntity,
-            newItem: PatientFollowUpEntity
-        ): Boolean {
-            return oldItem.id == newItem.id
-        }
+            newItem: PatientFollowUpEntity,
+        ): Boolean = oldItem.id == newItem.id
 
         override fun areContentsTheSame(
             oldItem: PatientFollowUpEntity,
-            newItem: PatientFollowUpEntity
-        ): Boolean {
-            return oldItem.id == newItem.id
-        }
+            newItem: PatientFollowUpEntity,
+        ): Boolean = oldItem.id == newItem.id
     }
 
-    fun getDrawable(view: ConstraintLayout, colorCode: String) {
+    fun getDrawable(
+        view: ConstraintLayout,
+        colorCode: String,
+    ) {
         if (view.background != null) {
             val drawable = view.background as GradientDrawable
             drawable.mutate()

@@ -11,7 +11,6 @@ import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.TbHistory
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.medicalreview.tb.repo.TbMedicalReviewRepo
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TbSummaryViewModel @Inject constructor(
     private val tbMedicalReviewRepo: TbMedicalReviewRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
     var nextFollowupDate: String? = null
     var patientStatus: String? = null
@@ -39,13 +38,16 @@ class TbSummaryViewModel @Inject constructor(
             tbMedicalReviewRepo.getExaminationsComplaints(it, MedicalReviewTypeEnums.TB.name)
         }
 
-    fun fetchTbAssessmentDetails(encounterId: String?, fhirId: String?) {
+    fun fetchTbAssessmentDetails(
+        encounterId: String?,
+        fhirId: String?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             tbSummary.postLoading()
             tbSummary.postValue(
                 tbMedicalReviewRepo.fetchTbAssessmentDetails(
-                    MotherNeonateAncRequest(id = encounterId, patientReference = fhirId)
-                )
+                    MotherNeonateAncRequest(id = encounterId, patientReference = fhirId),
+                ),
             )
         }
     }

@@ -9,7 +9,6 @@ import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 
 @Dao
 interface RiskFactorDAO {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRiskFactor(riskFactorEntity: RiskFactorEntity)
 
@@ -18,5 +17,4 @@ interface RiskFactorDAO {
 
     @Query("Delete from RiskFactorEntity")
     suspend fun deleteRiskFactor()
-
 }

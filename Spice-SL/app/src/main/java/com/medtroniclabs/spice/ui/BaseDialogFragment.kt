@@ -8,13 +8,12 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 open class BaseDialogFragment : DialogFragment() {
-
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 
     fun withNetworkAvailability(
         online: () -> Unit,
-        offline: () -> Unit = {}
+        offline: () -> Unit = {},
     ) {
         connectivityManager.isNullableNetworkAvailable()?.let { isNetworkAvailable ->
             if (isNetworkAvailable) {
@@ -23,7 +22,7 @@ open class BaseDialogFragment : DialogFragment() {
                 (requireActivity() as BaseActivity).showErrorDialogue(
                     getString(R.string.error),
                     getString(R.string.no_internet_error),
-                    isNegativeButtonNeed = false
+                    isNegativeButtonNeed = false,
                 ) {
                     if (it) {
                         offline()
@@ -35,6 +34,10 @@ open class BaseDialogFragment : DialogFragment() {
     }
 
     fun finishFragment() {
-        activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
+        activity
+            ?.supportFragmentManager
+            ?.beginTransaction()
+            ?.remove(this)
+            ?.commit()
     }
 }

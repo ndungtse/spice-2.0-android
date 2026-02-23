@@ -41,9 +41,8 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListener {
     companion object {
         const val TAG = "AboveFiveYearsTreatmentSummaryFragment"
-        fun newInstance(): AboveFiveYearsTreatmentSummaryFragment {
-            return AboveFiveYearsTreatmentSummaryFragment()
-        }
+
+        fun newInstance(): AboveFiveYearsTreatmentSummaryFragment = AboveFiveYearsTreatmentSummaryFragment()
     }
 
     private lateinit var binding: FragmentMedicalReviewTreatmentPlanSummaryBinding
@@ -54,15 +53,19 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     private var datePickerDialog: DatePickerDialog? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding =
             FragmentMedicalReviewTreatmentPlanSummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initializeListener()
@@ -83,10 +86,16 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resourceState.data?.let { list ->
-                     initializeCostItem(list.filter { item -> item.category == MedicalReviewTypeEnums.cost.name }
-                            .sortedBy { it.displayOrder })
-                        initializeMedicalSupplies(list.filter { item -> item.category == MedicalReviewTypeEnums.medical_supplies.name }
-                            .sortedBy { it.displayOrder })
+                        initializeCostItem(
+                            list
+                                .filter { item -> item.category == MedicalReviewTypeEnums.cost.name }
+                                .sortedBy { it.displayOrder },
+                        )
+                        initializeMedicalSupplies(
+                            list
+                                .filter { item -> item.category == MedicalReviewTypeEnums.medical_supplies.name }
+                                .sortedBy { it.displayOrder },
+                        )
                     }
                 }
 
@@ -124,48 +133,57 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     private fun renderSummaryDetails(details: AboveFiveYearsSummaryDetails) {
         initializePatientStatus(details.summaryStatus)
         binding.tvDiagnosisText.text =
-            details.diagnosis?.let {list ->
-                if (list.isNotEmpty()){
+            details.diagnosis?.let { list ->
+                if (list.isNotEmpty()) {
                     binding.tvDiagnosisText.setTextColor(ContextCompat.getColor(requireContext(), R.color.a_red_error))
                 }
                 convertListToString(
-                    ArrayList(list.filter { it.diseaseCategory.lowercase() != OtherNotes.lowercase() }.map { it.diseaseCategory }.distinct())
+                    ArrayList(list.filter { it.diseaseCategory.lowercase() != OtherNotes.lowercase() }.map { it.diseaseCategory }.distinct()),
                 )
             } ?: requireContext().getString(R.string.hyphen_symbol)
         binding.tvPresentingComplaintsText.text = presentingComplaintsViewModel.selectedPresentingComplaints.map { it.name }.let {
             combineText(
-                it, details.presentingComplaintsNotes, getString(R.string.hyphen_symbol)
+                it,
+                details.presentingComplaintsNotes,
+                getString(R.string.hyphen_symbol),
             )
         }
         binding.tvDiseaseCategoryText.text =
             details.diagnosis?.let { list ->
                 convertListToString(
-                    ArrayList(list.filter { it.diseaseCategory.lowercase() != OtherNotes.lowercase() }
-                        .map { it.diseaseCategory }.distinct())
+                    ArrayList(
+                        list
+                            .filter { it.diseaseCategory.lowercase() != OtherNotes.lowercase() }
+                            .map { it.diseaseCategory }
+                            .distinct(),
+                    ),
                 )
             } ?: requireContext().getString(R.string.hyphen_symbol)
         binding.tvDiseaseConditionText.text =
             details.diagnosis?.let { list ->
                 convertListToString(
-                    ArrayList(list.filter { it.diseaseCategory.lowercase() != OtherNotes.lowercase() }
-                        .mapNotNull { it.diseaseCondition })
+                    ArrayList(
+                        list
+                            .filter { it.diseaseCategory.lowercase() != OtherNotes.lowercase() }
+                            .mapNotNull { it.diseaseCondition },
+                    ),
                 )
             } ?: requireContext().getString(R.string.hyphen_symbol)
         binding.tvClinicalNotesText.text = chipItemViewModel.enteredClinicalNotes
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
             SecuredPreference.getUserDetails()?.firstName,
-            SecuredPreference.getUserDetails()?.lastName
+            SecuredPreference.getUserDetails()?.lastName,
         )
         binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
             DateUtils.getTodayDateDDMMYYYY(),
             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            DateUtils.DATE_ddMMyyyy
+            DateUtils.DATE_ddMMyyyy,
         )
         binding.tvPrescriptionsText.text = details.prescriptions?.let { createPrescription(it, requireContext()) }?.takeIf { it.isNotEmpty() }
             ?: requireContext().getString(R.string.hyphen_symbol)
 
-        binding.tvInvestigationText.text = details.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+        binding.tvInvestigationText.text = details.investigations?.let { createInvestigation(it, requireContext()) }?.takeIf { it.isNotEmpty() }
             ?: requireContext().getString(R.string.hyphen_symbol)
     }
 
@@ -183,8 +201,8 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 dropDownList.add(
                     hashMapOf<String, Any>(
                         DefinedParams.NAME to item.name,
-                        DefinedParams.Value to item.value
-                    )
+                        DefinedParams.Value to item.value,
+                    ),
                 )
             }
         }
@@ -194,14 +212,14 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         for ((index, patientStatus) in dropDownList.withIndex()) {
             if ((patientStatus[DefinedParams.Value] as? String).equals(
                     ReferralStatus.OnTreatment.name,
-                    true
+                    true,
                 )
             ) {
                 defaultPosition = index
             }
         }
         binding.tvPatientStatusSpinner.post {
-                binding.tvPatientStatusSpinner.setSelection(defaultPosition, false)
+            binding.tvPatientStatusSpinner.setSelection(defaultPosition, false)
         }
         binding.tvPatientStatusSpinner.adapter = adapter
         binding.tvPatientStatusSpinner.onItemSelectedListener =
@@ -210,7 +228,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     adapterView: AdapterView<*>?,
                     view: View?,
                     pos: Int,
-                    itemId: Long
+                    itemId: Long,
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
@@ -239,7 +257,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             }
             binding.tvNextMedicalReviewLabelText.isEnabled = false
         } else {
-            if(!binding.tvNextMedicalReviewLabelText.isEnabled){
+            if (!binding.tvNextMedicalReviewLabelText.isEnabled) {
                 binding.tvNextMedicalReviewLabelText.isEnabled = true
             }
         }
@@ -251,16 +269,16 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
                 DefinedParams.id to DefinedParams.DefaultID,
-                DefinedParams.Value to DefinedParams.DefaultIDLabel
-            )
+                DefinedParams.Value to DefinedParams.DefaultIDLabel,
+            ),
         )
         for (item in costList) {
             dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to item.name,
                     DefinedParams.id to item.id.toString(),
-                    DefinedParams.Value to (item.value ?: item.name)
-                )
+                    DefinedParams.Value to (item.value ?: item.name),
+                ),
             )
         }
         val adapter = CustomSpinnerAdapter(requireContext())
@@ -273,13 +291,13 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     adapterView: AdapterView<*>?,
                     view: View?,
                     pos: Int,
-                    itemId: Long
+                    itemId: Long,
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
                         val selectedName = it[DefinedParams.NAME] as String?
                         if (selectedName != DefinedParams.DefaultIDLabel) {
-                                viewModel.selectedCostItem = it[DefinedParams.Value] as String
+                            viewModel.selectedCostItem = it[DefinedParams.Value] as String
                         } else {
                             viewModel.selectedCostItem = null
                         }
@@ -302,24 +320,25 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 MultiSelectDropDownModel(
                     id = item.id,
                     name = item.name,
-                    value = item.value
-                )
+                    value = item.value,
+                ),
             )
         }
         val adapter = MultiSelectSpinnerAdapter(requireContext(), dropDownList, viewModel.selectedMedicalSupplyListItem)
         binding.tvMedicalSupplySpinner.adapter = adapter
-        adapter.setOnItemSelectedListener(object :
-            MultiSelectSpinnerAdapter.OnItemSelectedListener {
-            override fun onItemSelected(
-                selectedItems: List<MultiSelectDropDownModel>,
-                pos: Int,
-            ) {
-                if (selectedItems.isNotEmpty()){
-                    viewModel.selectedMedicalSupplyListItem = ArrayList(selectedItems)
+        adapter.setOnItemSelectedListener(
+            object :
+                MultiSelectSpinnerAdapter.OnItemSelectedListener {
+                override fun onItemSelected(
+                    selectedItems: List<MultiSelectDropDownModel>,
+                    pos: Int,
+                ) {
+                    if (selectedItems.isNotEmpty()) {
+                        viewModel.selectedMedicalSupplyListItem = ArrayList(selectedItems)
+                    }
+                    summaryListener()
                 }
-                summaryListener()
-            }
-        }
+            },
         )
     }
 
@@ -333,23 +352,24 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
     private fun showDatePickerDialog() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (!binding.tvNextMedicalReviewLabelText.text.isNullOrBlank())
+        if (!binding.tvNextMedicalReviewLabelText.text.isNullOrBlank()) {
             yearMonthDate =
                 DateUtils.convertedMMMToddMM(binding.tvNextMedicalReviewLabelText.text.toString())
+        }
 
         if (datePickerDialog == null) {
             datePickerDialog = showDatePicker(
                 context = requireContext(),
                 minDate = DateUtils.getTomorrowDate(),
                 date = yearMonthDate,
-                cancelCallBack = { datePickerDialog = null }
+                cancelCallBack = { datePickerDialog = null },
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 binding.tvNextMedicalReviewLabelText.text =
                     DateUtils.convertDateTimeToDate(
                         stringDate,
                         DateUtils.DATE_FORMAT_ddMMyyyy,
-                        DateUtils.DATE_ddMMyyyy
+                        DateUtils.DATE_ddMMyyyy,
                     )
                 viewModel.nextFollowupDate = binding.tvNextMedicalReviewLabelText.text.toString()
                 datePickerDialog = null
@@ -360,9 +380,10 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
     private fun summaryListener() {
         setFragmentResult(
-            MedicalReviewDefinedParams.SUMMARY_ITEM, bundleOf(
-                MedicalReviewDefinedParams.SUMMARY_ITEM to true
-            )
+            MedicalReviewDefinedParams.SUMMARY_ITEM,
+            bundleOf(
+                MedicalReviewDefinedParams.SUMMARY_ITEM to true,
+            ),
         )
     }
 }

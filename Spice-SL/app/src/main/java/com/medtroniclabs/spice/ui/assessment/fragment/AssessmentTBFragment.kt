@@ -37,7 +37,6 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerat
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickListener {
-
     private lateinit var binding: FragmentAssessmentTBBinding
     private lateinit var formGenerator: FormGenerator
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -49,16 +48,20 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         isContactTracing = arguments?.getBoolean(DefinedParams.CONTACT_TRACING, false)
         isTBPatient = arguments?.getBoolean(DefinedParams.isTbPatient, false)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentAssessmentTBBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getTbType(viewModel.selectedHouseholdMemberId, isContactTracing)
         showBioDataFragment()
@@ -71,25 +74,34 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
     private fun showBioDataFragment() {
         replaceFragmentInId<BioDataFragment>(
             binding.bioDataFragmentContainer.id,
-            tag = BioDataFragment.TAG
+            tag = BioDataFragment.TAG,
         )
 
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, this, binding.scrollView,
-            translate = SecuredPreference.getIsTranslationEnabled()
+            requireContext(),
+            binding.llForm,
+            this,
+            binding.scrollView,
+            translate = SecuredPreference.getIsTranslationEnabled(),
         ) { map, id ->
             when (id) {
                 DateOfOnset -> {
                     formGenerator.getViewByTag(id)?.let {
-                        val dob = viewModel.memberDetailsLiveData.value?.data?.dateOfBirth
+                        val dob = viewModel.memberDetailsLiveData.value
+                            ?.data
+                            ?.dateOfBirth
                         if (!dob.isNullOrEmpty() && map.containsKey(id)) {
                             val selectedDate = map[id].toString()
                             val isValid = DateUtils.compareDates(dob, selectedDate)
-                            formGenerator.getViewByTag(id + AssessmentDefinedParams.errorSuffix)?.apply {
-                                visibility = if (isValid) View.GONE else View.VISIBLE
-                            }.takeIf { it is TextView }?.let { textView->(textView as TextView).text=
-                                getString(R.string.the_day_s_should_be_less_than_age)
-                            }
+                            formGenerator
+                                .getViewByTag(id + AssessmentDefinedParams.errorSuffix)
+                                ?.apply {
+                                    visibility = if (isValid) View.GONE else View.VISIBLE
+                                }.takeIf { it is TextView }
+                                ?.let { textView ->
+                                    (textView as TextView).text =
+                                        getString(R.string.the_day_s_should_be_less_than_age)
+                                }
                         }
                     }
                 }
@@ -103,7 +115,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         }
         replaceFragmentInId<TBRxBuddyFragment>(
             binding.rxBuddyDetailsFragmentContainer.id,
-            tag = TBRxBuddyFragment.TAG
+            tag = TBRxBuddyFragment.TAG,
         )
     }
 
@@ -113,7 +125,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         }
         replaceFragmentInId<TBTreatmentFragment>(
             binding.treatmentDetailsFragmentContainer.id,
-            tag = TBTreatmentFragment.TAG
+            tag = TBTreatmentFragment.TAG,
         )
     }
 
@@ -141,21 +153,20 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                         viewModel.setAnalyticsData(
                             UserDetail.startDateTime,
                             eventType = AnalyticsDefinedParams.TBAssessement,
-                            eventName = AnalyticsDefinedParams.AssessmentCreation
+                            eventName = AnalyticsDefinedParams.AssessmentCreation,
                         )
                     }
                 }
 
                 ResourceState.ERROR -> {
-                   hideProgress()
+                    hideProgress()
                 }
             }
         }
 
-        viewModel.otherHouseholdMemberLiveData.observe(viewLifecycleOwner){ resourceState ->
-            when(resourceState.state){
+        viewModel.otherHouseholdMemberLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
                 ResourceState.LOADING -> {
-
                 }
                 ResourceState.SUCCESS -> {
                     val members = resourceState.data ?: arrayListOf()
@@ -163,8 +174,8 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                         0,
                         hashMapOf<String, Any>(
                             NAME to getString(R.string.please_select),
-                            ID to DefaultID
-                        )
+                            ID to DefaultID,
+                        ),
                     )
 
                     val view =
@@ -174,7 +185,6 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                     }
                 }
                 ResourceState.ERROR -> {
-
                 }
             }
         }
@@ -185,7 +195,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
             }
         }
 
-        viewModel.rxBuddyDetailsLiveData.observe(viewLifecycleOwner){
+        viewModel.rxBuddyDetailsLiveData.observe(viewLifecycleOwner) {
             it?.let {
                 showRxBuddyCard()
             }
@@ -196,7 +206,11 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         const val TAG = "AssessmentTBFragment"
     }
 
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
     }
 
     override fun onPopulate(targetId: String) {
@@ -205,7 +219,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
     override fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     ) {
     }
 
@@ -214,11 +228,16 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {}
 
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
-        val dob = viewModel.memberDetailsLiveData.value?.data?.dateOfBirth
+    override fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
+        val dob = viewModel.memberDetailsLiveData.value
+            ?.data
+            ?.dateOfBirth
         serverData?.forEach { view ->
             if (view?.id == SleepLocation) {
                 val option = view.optionsList
@@ -241,12 +260,15 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                 } else {
                     true
                 }
-                formGenerator.getViewByTag("${DateOfOnset}${AssessmentDefinedParams.errorSuffix}")?.apply {
-                    visibility = if (isValid) View.GONE else View.VISIBLE
-                }.takeIf { it is TextView }?.let { textView ->
-                    (textView as TextView).text =
-                        getString(R.string.the_day_s_should_be_less_than_age)
-                }
+                formGenerator
+                    .getViewByTag("${DateOfOnset}${AssessmentDefinedParams.errorSuffix}")
+                    ?.apply {
+                        visibility = if (isValid) View.GONE else View.VISIBLE
+                    }.takeIf { it is TextView }
+                    ?.let { textView ->
+                        (textView as TextView).text =
+                            getString(R.string.the_day_s_should_be_less_than_age)
+                    }
 
                 if (isValid) {
                     val referralResult =
@@ -255,7 +277,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                         FormResultComposer().groupValues(
                             serverData = it,
                             details,
-                            TB.lowercase()
+                            TB.lowercase(),
                         )
                     }
                     result?.second?.let {
@@ -280,34 +302,34 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         viewModel.getOtherHouseholdMemberExcludeTBPatient()
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {
-
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
     }
 
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,
         enteredDays: Int?,
-        resultMap: HashMap<String, Any>?
+        resultMap: HashMap<String, Any>?,
     ) {
     }
 
     override fun onAgeCheckForPregnancy() {
-
     }
 
     override fun handleMandatoryCondition(formLayout: FormLayout?) {
-
     }
 
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
         /*
        Never used
-        */
+         */
     }
 
     override fun onClick(view: View) {
@@ -321,7 +343,5 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         }
     }
 
-    fun getCurrentAnsweredStatus(): Boolean {
-        return formGenerator.getResultMap().isNotEmpty()
-    }
+    fun getCurrentAnsweredStatus(): Boolean = formGenerator.getResultMap().isNotEmpty()
 }

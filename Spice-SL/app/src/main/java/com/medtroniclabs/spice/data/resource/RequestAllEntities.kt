@@ -11,5 +11,5 @@ data class RequestAllEntities(
     val appVersionName: String = BuildConfig.VERSION_NAME,
     val appVersionCode: Int = BuildConfig.VERSION_CODE,
     val deviceId: String? = SecuredPreference.getDeviceId(),
-    val appType: String = CommonUtils.isCommunityOrNot()
+    val appType: String = CommonUtils.isCommunityOrNot(),
 )

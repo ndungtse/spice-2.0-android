@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HouseholdCreation
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HouseholdEdit
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.VillageId
 import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -27,7 +28,6 @@ import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.noOfPeople
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.totalMembers
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -38,7 +38,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, FormEventListener {
-
     lateinit var binding: FragmentHouseHoldRegistrationBinding
     private lateinit var formGenerator: FormGenerator
     private var onDismissListener: OnDialogDismissListener? = null
@@ -53,13 +52,16 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentHouseHoldRegistrationBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         householdRegistrationViewModel.getFormData(REGISTRATION)
         initializeFormGenerator()
@@ -132,7 +134,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                     }
                 }
                 else -> {
-                    //Invoked if response state is not success
+                    // Invoked if response state is not success
                 }
             }
         }
@@ -152,12 +154,13 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                                 formGenerator.getViewByTag(HouseHoldRegistration.shasthyaShebikaId)?.let { view ->
                                     formGenerator.setValueForView(id, view)
                                     // Trigger sub-village loading
-                                    val shasthyaShebikaIdLong = com.medtroniclabs.spice.common.CommonUtils.getLongOrNull(id) ?: 0L
+                                    val shasthyaShebikaIdLong = com.medtroniclabs.spice.common.CommonUtils
+                                        .getLongOrNull(id) ?: 0L
                                     if (shasthyaShebikaIdLong != 0L) {
                                         householdRegistrationViewModel.loadSubVillageDataCacheByType(
                                             HouseHoldRegistration.subVillageId,
                                             "",
-                                            shasthyaShebikaIdLong
+                                            shasthyaShebikaIdLong,
                                         )
                                     }
                                 }
@@ -166,7 +169,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                     }
                 }
                 else -> {
-                    //Invoked if response state is not success
+                    // Invoked if response state is not success
                 }
             }
         }
@@ -187,7 +190,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                                 }
                             }
                         }
-                        
+
                         // Set pending sub village ID if available (for edit mode)
                         pendingSubVillageId?.let { subVillageId ->
                             if (subVillageId != 0L) {
@@ -200,7 +203,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                     }
                 }
                 else -> {
-                    //Invoked if response state is not success
+                    // Invoked if response state is not success
                 }
             }
         }
@@ -274,8 +277,11 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
             householdRegistrationViewModel.setUserJourney(HouseholdCreation)
         }
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, this, binding.scrollView,
-            translate = SecuredPreference.getIsTranslationEnabled()
+            requireContext(),
+            binding.llForm,
+            this,
+            binding.scrollView,
+            translate = SecuredPreference.getIsTranslationEnabled(),
         )
     }
 
@@ -289,12 +295,11 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
             val ssFetchStatus = householdRegistrationViewModel.shasthyaShebikaListResponse.value
             if (villageFetchStatus?.state != ResourceState.LOADING && ssFetchStatus?.state != ResourceState.LOADING) {
                 householdRegistrationViewModel.getHouseholdDetailsByID(
-                    householdRegistrationViewModel.householdId
+                    householdRegistrationViewModel.householdId,
                 )
             }
         }
     }
-
 
     private fun setListeners() {
         binding.btnNext.setOnClickListener(this)
@@ -317,14 +322,18 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                     UserDetail.startDateTime,
                     eventName = if (householdRegistrationViewModel.householdId != -1L) HouseholdEdit else HouseholdCreation,
                     exitReason = AnalyticsDefinedParams.CancelButtonClicked,
-                    isCompleted = false
+                    isCompleted = false,
                 )
                 onDismissListener?.onDialogDismissListener()
             }
         }
     }
 
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
         if (localDataCache is String) {
             when (id) {
                 HouseHoldRegistration.villageId -> {
@@ -358,7 +367,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
     override fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     ) {
     }
 
@@ -367,17 +376,20 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {
     }
 
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+    override fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
         resultMap?.let { map ->
             if (householdRegistrationViewModel.householdId != -1L) {
                 householdRegistrationViewModel.setAnalyticsData(
                     UserDetail.startDateTime,
                     eventName = HouseholdEdit,
-                    isCompleted = true
+                    isCompleted = true,
                 )
                 householdRegistrationViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                 householdRegistrationViewModel.updateHousehold(map)
@@ -389,41 +401,37 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
     }
 
     override fun onRenderingComplete() {
-
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {
-
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
     }
 
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,
         enteredDays: Int?,
-        resultMap: HashMap<String, Any>?
+        resultMap: HashMap<String, Any>?,
     ) {
-
     }
 
     override fun onAgeCheckForPregnancy() {
-        
     }
 
     override fun handleMandatoryCondition(formLayout: FormLayout?) {
-
     }
 
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
         /*
        Never used
-        */
+         */
     }
 
-    fun getHouseHoldEnteredInputs(): Boolean {
-        return formGenerator.getResultMap().isNotEmpty()
-    }
+    fun getHouseHoldEnteredInputs(): Boolean = formGenerator.getResultMap().isNotEmpty()
 }

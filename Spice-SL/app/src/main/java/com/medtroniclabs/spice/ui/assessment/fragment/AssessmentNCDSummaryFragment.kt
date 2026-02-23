@@ -15,7 +15,6 @@ import androidx.fragment.app.activityViewModels
 import com.google.gson.internal.LinkedTreeMap
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.takeIfNotNull
-import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -45,7 +44,6 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentAssessmentNCDSummaryBinding
     private val viewModel: AssessmentViewModel by activityViewModels()
     private val ncdFormViewModel: NCDFormViewModel by activityViewModels()
@@ -53,14 +51,18 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
     private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentAssessmentNCDSummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
@@ -111,27 +113,30 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                     formSummaryReporter.populateAssessmentSummary(
                         form,
                         map,
-                        false
+                        false,
                     )
                     calculateOtherMetrics(form, map)
                 }
 
                 it.second?.let { onlineResponseMap ->
-                    if (onlineResponseMap.containsKey(DefinedParams.RiskLevel) && onlineResponseMap.containsKey(
-                            DefinedParams.RiskMessage
+                    if (onlineResponseMap.containsKey(DefinedParams.RiskLevel) &&
+                        onlineResponseMap.containsKey(
+                            DefinedParams.RiskMessage,
                         )
-                    )
+                    ) {
                         updateRedRiskCodes(
                             onlineResponseMap[DefinedParams.RiskColorCode]?.toString(),
-                            onlineResponseMap[DefinedParams.RiskMessage]?.toString()
+                            onlineResponseMap[DefinedParams.RiskMessage]?.toString(),
                         )
+                    }
 
                     if (onlineResponseMap.containsKey(DefinedParams.ProvisionalTreatmentPlan)) {
                         onlineResponseMap[DefinedParams.ProvisionalTreatmentPlan]?.let { treatmentPlanMap ->
                             if (treatmentPlanMap is Map<*, *> && treatmentPlanMap.containsKey(DefinedParams.TreatmentPlan)) {
                                 treatmentPlanMap[DefinedParams.TreatmentPlan]?.let { list ->
-                                    if (list is ArrayList<*>)
+                                    if (list is ArrayList<*>) {
                                         addCardView(list)
+                                    }
                                 }
                             }
                         }
@@ -155,18 +160,22 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                     layout.addView(
                         inflateChildView(
                             it[DefinedParams.label].toString(),
-                            it[DefinedParams.Value].toString()
-                        )
+                            it[DefinedParams.Value].toString(),
+                        ),
                     )
                 }
             }
         }
 
-        if (cardBinding.llFamilyRoot.childCount > 0)
+        if (cardBinding.llFamilyRoot.childCount > 0) {
             binding.llFamilyRoot.addView(cardBinding.root)
+        }
     }
 
-    private fun inflateChildView(labelKey: String, value: String): View {
+    private fun inflateChildView(
+        labelKey: String,
+        value: String,
+    ): View {
         val summaryBinding = SummaryLayoutBinding.inflate(layoutInflater)
         summaryBinding.apply {
             tvKey.text = labelKey
@@ -178,7 +187,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun calculateOtherMetrics(
         serverData: List<FormLayout>,
-        map: Map<String, Any>
+        map: Map<String, Any>,
     ) {
         showBloodPressure(map)
         showBloodGlucoseValue(serverData, map)
@@ -204,8 +213,8 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                 getString(
                     R.string.average_mmhg_string,
                     CommonUtils.getDecimalFormatted(systolic),
-                    CommonUtils.getDecimalFormatted(diastolic)
-                )
+                    CommonUtils.getDecimalFormatted(diastolic),
+                ),
             )
         }
     }
@@ -216,19 +225,19 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                 screeningDetailsModel.isPregnant?.let { isPregnant ->
                     showBindingValue(
                         getString(R.string.pregnancy_status),
-                        isPregnantOrNot(isPregnant)
+                        isPregnantOrNot(isPregnant),
                     )
                 }
                 screeningDetailsModel.pregnancyDetails?.lastMenstrualPeriod?.let { lastMenstrualPeriod ->
                     showBindingValue(
                         getString(R.string.gestational_period),
-                        gestationalWeeks(lastMenstrualPeriod)
+                        gestationalWeeks(lastMenstrualPeriod),
                     )
                 }
             }
             showBindingValue(
                 getString(R.string.pregnancy_signs),
-                getPregnancySymptoms(map)
+                getPregnancySymptoms(map),
             )
         }
     }
@@ -248,7 +257,10 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         return getString(R.string.separator_hyphen)
     }
 
-    private fun getDialogValue(value: Any?, otherSymptoms: String? = null): String {
+    private fun getDialogValue(
+        value: Any?,
+        otherSymptoms: String? = null,
+    ): String {
         val result = StringBuilder()
         if (value is ArrayList<*>) {
             value.forEach { map ->
@@ -260,7 +272,10 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         }
         if (result.isNotEmpty()) {
             otherSymptoms?.let {
-                return result.delete(result.length - 2, result.length).append(getString(R.string.separator_hyphen_space)).append(it)
+                return result
+                    .delete(result.length - 2, result.length)
+                    .append(getString(R.string.separator_hyphen_space))
+                    .append(it)
                     .toString()
             }
             return result.delete(result.length - 2, result.length).toString()
@@ -282,15 +297,17 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun isPregnantOrNot(isPregnant: Boolean?): String {
-        return if (isPregnant == true) {
+    private fun isPregnantOrNot(isPregnant: Boolean?): String =
+        if (isPregnant == true) {
             getString(R.string.positive)
         } else {
             getString(R.string.negative)
         }
-    }
 
-    private fun showPHQ9Score(serverData: List<FormLayout>, map: Map<String, Any>) {
+    private fun showPHQ9Score(
+        serverData: List<FormLayout>,
+        map: Map<String, Any>,
+    ) {
         if (map.containsKey(AssessmentDefinedParams.PHQ9.lowercase())) {
             val subMap = map[AssessmentDefinedParams.PHQ9.lowercase()] as Map<String, Any>
             if (subMap.isNotEmpty()) {
@@ -301,8 +318,8 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                             getString(R.string.phq9_score),
                             StringConverter.getPHQ9ReadableName(
                                 score = phq9Score.toInt(),
-                                requireContext()
-                            )
+                                requireContext(),
+                            ),
                         )
                     }
                 }
@@ -310,7 +327,10 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun showGAD7Score(serverData: List<FormLayout>, map: Map<String, Any>) {
+    private fun showGAD7Score(
+        serverData: List<FormLayout>,
+        map: Map<String, Any>,
+    ) {
         if (map.containsKey(AssessmentDefinedParams.GAD7.lowercase())) {
             val subMap = map[AssessmentDefinedParams.GAD7.lowercase()] as Map<String, Any>
             if (subMap.isNotEmpty()) {
@@ -321,8 +341,8 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                             getString(R.string.gad7_score),
                             StringConverter.getGAD7ReadableName(
                                 score = gad7Score.toInt(),
-                                requireContext()
-                            )
+                                requireContext(),
+                            ),
                         )
                     }
                 }
@@ -332,9 +352,10 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun showMedicalCompliance(map: Map<String, Any>) {
         if (map.containsKey(AssessmentDefinedParams.compliance)) {
-            val linkedTreeMapList: List<ArrayList<LinkedTreeMap<String, String>>> = map.filter {
-                it.key.equals(AssessmentDefinedParams.compliance, true)
-            }.map { it.value as ArrayList<LinkedTreeMap<String, String>> }
+            val linkedTreeMapList: List<ArrayList<LinkedTreeMap<String, String>>> = map
+                .filter {
+                    it.key.equals(AssessmentDefinedParams.compliance, true)
+                }.map { it.value as ArrayList<LinkedTreeMap<String, String>> }
             val symptomResponseList: ArrayList<MedicalComplianceResponse> = arrayListOf()
             linkedTreeMapList.flatten().forEach { linkedTreeMap ->
                 val name = linkedTreeMap[DefinedParams.NAME] as? String ?: getString(R.string.empty_space)
@@ -344,21 +365,22 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                 val complianceResponse = MedicalComplianceResponse(
                     name = name,
                     otherCompliance = otherCompliance,
-                    cultureValue = culture
+                    cultureValue = culture,
                 )
                 symptomResponseList.add(complianceResponse)
             }
             showBindingValue(
                 getString(R.string.medical_adherence),
-                getSelectedMedicalComplianceText(symptomResponseList)
+                getSelectedMedicalComplianceText(symptomResponseList),
             )
         }
     }
 
     private fun showSymptoms(map: Map<String, Any>) {
-        val linkedTreeMapList: List<ArrayList<LinkedTreeMap<String, String>>> = map.filter {
-            it.key.equals(AssessmentDefinedParams.symptomsDTO, true)
-        }.map { it.value as ArrayList<LinkedTreeMap<String, String>> }
+        val linkedTreeMapList: List<ArrayList<LinkedTreeMap<String, String>>> = map
+            .filter {
+                it.key.equals(AssessmentDefinedParams.symptomsDTO, true)
+            }.map { it.value as ArrayList<LinkedTreeMap<String, String>> }
         val symptomResponseList: ArrayList<SymptomResponse> = arrayListOf()
 
         linkedTreeMapList.flatten().forEach { linkedTreeMap ->
@@ -371,13 +393,13 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                 name = name,
                 type = type,
                 otherSymptom = otherSymptom,
-                cultureValue = culture
+                cultureValue = culture,
             )
             symptomResponseList.add(symptomResponse)
         }
         showBindingValue(
             getString(R.string.symptoms),
-            getSelectedSymptomsText(symptomResponseList)
+            getSelectedSymptomsText(symptomResponseList),
         )
     }
 
@@ -385,7 +407,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         val resultString = StringBuilder()
         list.forEachIndexed { index, medicalComplianceResponse ->
             resultString.append(
-                medicalComplianceResponse.cultureValue ?: medicalComplianceResponse.name
+                medicalComplianceResponse.cultureValue ?: medicalComplianceResponse.name,
             )
             if (list.size > 1 && index == 0) {
                 resultString.append(getString(R.string.empty_space))
@@ -397,7 +419,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                 resultString.append(getString(R.string.separator_hyphen))
                 resultString.append(getString(R.string.empty_space))
                 resultString.append(
-                    medicalComplianceResponse.otherCompliance.trim().capitalizeFirstChar()
+                    medicalComplianceResponse.otherCompliance.trim().capitalizeFirstChar(),
                 )
             }
             if (index > 0 && index != list.size - 1) {
@@ -419,8 +441,9 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                 resultString.append(symptomResponse.otherSymptom.trim().capitalizeFirstChar())
             } else if (symptomResponse.name.startsWith(
                     AssessmentDefinedParams.NoSymptoms,
-                    true
-                ) && !symptomResponse.type.isNullOrBlank()
+                    true,
+                ) &&
+                !symptomResponse.type.isNullOrBlank()
             ) {
                 resultString.append(getString(R.string.empty_space))
                 resultString.append(getString(R.string.separator_hyphen))
@@ -445,8 +468,8 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                         "$cvdRiskScoreDisplay",
                         CommonUtils.cvdRiskColorCode(
                             cvdRiskScore,
-                            context = requireContext()
-                        )
+                            context = requireContext(),
+                        ),
                     )
                 }
             }
@@ -478,7 +501,10 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         binding.riskResultLayout.text = text
     }
 
-    private fun showBMIValue(serverData: List<FormLayout>, map: Map<String, Any>) {
+    private fun showBMIValue(
+        serverData: List<FormLayout>,
+        map: Map<String, Any>,
+    ) {
         val subMap = map[Screening.BioMetrics] as Map<String, Any>
         if (subMap.containsKey(Screening.BMI)) {
             val bmiValue = subMap[Screening.BMI]
@@ -489,25 +515,28 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                 if (bmiInfo == null) {
                     showBindingValue(
                         getString(R.string.bmi),
-                        bmiFormattedValue
+                        bmiFormattedValue,
                     )
                 } else {
                     val spannableStringBuilder =
-                        SpannableStringBuilder().append(bmiFormattedValue)
+                        SpannableStringBuilder()
+                            .append(bmiFormattedValue)
                             .color(ContextCompat.getColor(requireContext(), bmiInfo.second)) {
                                 append(" (${bmiInfo.first})")
                             }
                     showBindingValue(
                         getString(R.string.bmi),
-                        spannableStringBuilder
+                        spannableStringBuilder,
                     )
                 }
             }
         }
     }
 
-    private fun showBloodGlucoseValue(serverData: List<FormLayout>, map: Map<String, Any>) {
-
+    private fun showBloodGlucoseValue(
+        serverData: List<FormLayout>,
+        map: Map<String, Any>,
+    ) {
         FormResultComposer.findGroupIdForNCD(serverData, Screening.Glucose_Type)?.let {
             (map[it] as? Map<*, *>?)?.let { subMap ->
                 if (subMap.containsKey(Screening.Glucose_Type)) {
@@ -527,9 +556,9 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                             "${CommonUtils.getDecimalFormatted(glucoseValue)} ${
                                 CommonUtils.getGlucoseUnit(
                                     unitType,
-                                    true
+                                    true,
                                 )
-                            }"
+                            }",
                         )
                     } else if (type.lowercase().equals(Screening.fbs, true)) {
                         showBindingValue(
@@ -537,9 +566,9 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                             "${CommonUtils.getDecimalFormatted(glucoseValue)} ${
                                 CommonUtils.getGlucoseUnit(
                                     unitType,
-                                    true
+                                    true,
                                 )
-                            }"
+                            }",
                         )
                     }
                 }
@@ -550,7 +579,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun showBindingValue(
         title: String,
         value: SpannableStringBuilder,
-        valueTextColor: Int? = null
+        valueTextColor: Int? = null,
     ) {
         val summaryBinding = SummaryLayoutBinding.inflate(layoutInflater)
         summaryBinding.tvKey.text = title
@@ -558,11 +587,15 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         valueTextColor?.let {
             summaryBinding.tvValue.setTextColor(it)
         }
-        binding.root.findViewWithTag<LinearLayout>(formSummaryReporter.getFormResultView())
+        binding.root
+            .findViewWithTag<LinearLayout>(formSummaryReporter.getFormResultView())
             ?.addView(summaryBinding.root)
     }
 
-    private fun showPHQ4Score(serverData: List<FormLayout>, map: Map<String, Any>) {
+    private fun showPHQ4Score(
+        serverData: List<FormLayout>,
+        map: Map<String, Any>,
+    ) {
         if (map.containsKey(Screening.PHQ4.lowercase())) {
             FormResultComposer.findGroupIdForNCD(serverData, Screening.PHQ4_Score)?.let {
                 val subMap = map[it] as Map<String, Any>
@@ -573,8 +606,8 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                             getString(R.string.phq4_score),
                             StringConverter.getPHQ4ReadableName(
                                 score = phq4Score.toInt(),
-                                requireContext()
-                            )
+                                requireContext(),
+                            ),
                         )
                     }
                 }
@@ -582,21 +615,29 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun showBindingValue(title: String, value: String, valueTextColor: Int? = null) {
+    private fun showBindingValue(
+        title: String,
+        value: String,
+        valueTextColor: Int? = null,
+    ) {
         val summaryBinding = SummaryLayoutBinding.inflate(layoutInflater)
         summaryBinding.tvKey.text = title
         summaryBinding.tvValue.text = value
         valueTextColor?.let {
             summaryBinding.tvValue.setTextColor(it)
         }
-        binding.root.findViewWithTag<LinearLayout>(formSummaryReporter.getFormResultView())
+        binding.root
+            .findViewWithTag<LinearLayout>(formSummaryReporter.getFormResultView())
             ?.addView(summaryBinding.root)
     }
 
-    private fun updateRedRiskCodes(riskCode: String?, riskMessage: String?) {
-        if (riskMessage.isNullOrBlank())
+    private fun updateRedRiskCodes(
+        riskCode: String?,
+        riskMessage: String?,
+    ) {
+        if (riskMessage.isNullOrBlank()) {
             binding.clRedRisk.visibility = View.GONE
-        else {
+        } else {
             binding.clRedRisk.visibility = View.VISIBLE
             val color = Color.parseColor(riskCode ?: "#E4CC76")
             binding.clRedRisk.backgroundTintList =
@@ -604,8 +645,8 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.tvRedRiskStatus.setTextColor(
                 ContextCompat.getColor(
                     requireContext(),
-                    R.color.white
-                )
+                    R.color.white,
+                ),
             )
             binding.tvRedRiskStatus.gravity = Gravity.CENTER
             binding.ivRedRisk.visibility = View.GONE
@@ -613,7 +654,10 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun updateRedRiskDetails(riskLevel: String?, riskMessage: String?) {
+    private fun updateRedRiskDetails(
+        riskLevel: String?,
+        riskMessage: String?,
+    ) {
         binding.clRedRisk.visibility =
             if (riskMessage.isNullOrBlank() || riskLevel.isNullOrBlank()) View.GONE else View.VISIBLE
         binding.tvRedRiskStatus.text = riskMessage ?: ""
@@ -640,9 +684,8 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "AssessmentNCDSummaryFragment"
-        fun newInstance(): AssessmentNCDSummaryFragment {
-            return AssessmentNCDSummaryFragment()
-        }
+
+        fun newInstance(): AssessmentNCDSummaryFragment = AssessmentNCDSummaryFragment()
     }
 
     override fun onClick(v: View?) {

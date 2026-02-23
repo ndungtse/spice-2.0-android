@@ -7,16 +7,15 @@ import com.medtroniclabs.spice.common.AppConstants.ANDROID
 import com.medtroniclabs.spice.ncd.data.DeviceDetails
 
 object DeviceInformation {
-    fun getDeviceDetails(context: Context): DeviceDetails {
-        return DeviceDetails(
+    fun getDeviceDetails(context: Context): DeviceDetails =
+        DeviceDetails(
             deviceId = Settings.Secure.getString(
                 context.contentResolver,
-                Settings.Secure.ANDROID_ID
+                Settings.Secure.ANDROID_ID,
             ),
             name = Build.MANUFACTURER,
             model = Build.MODEL,
             type = ANDROID,
-            version = Build.VERSION.RELEASE
+            version = Build.VERSION.RELEASE,
         )
-    }
 }

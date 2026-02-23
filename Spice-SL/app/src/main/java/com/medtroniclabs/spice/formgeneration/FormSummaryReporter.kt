@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.formgeneration
 
-
 import android.content.Context
 import android.content.ContextWrapper
 import android.view.LayoutInflater
@@ -22,7 +21,6 @@ class FormSummaryReporter(
     var context: Context,
     private val parentLayout: LinearLayout,
 ) : ContextWrapper(context) {
-
     private val rootSuffix = "rootView"
     private val resultRootSuffix = "resultRootView"
     private val bioDataRootSuffix = "bioRootView"
@@ -32,7 +30,7 @@ class FormSummaryReporter(
     fun populateSummary(
         serverData: List<FormLayout>,
         resultMap: Map<String, Any>,
-        translate: Boolean = false
+        translate: Boolean = false,
     ) {
         parentLayout.removeAllViews()
         parentLayout.addView(initialCardLayout(getString(R.string.bio_data), bioDataRootSuffix))
@@ -45,13 +43,13 @@ class FormSummaryReporter(
                             VIEW_TYPE_FORM_AGE -> createAgeSummaryView(
                                 serverData,
                                 formLayout,
-                                resultMap
+                                resultMap,
                             )
 
                             VIEW_TYPE_FORM_BP -> createBPSummaryView(
                                 serverData,
                                 formLayout,
-                                resultMap
+                                resultMap,
                             )
 
                             else -> createSummaryView(formLayout, resultMap, translate)
@@ -65,7 +63,7 @@ class FormSummaryReporter(
     fun populateAssessmentSummary(
         serverData: List<FormLayout>,
         resultMap: Map<String, Any>,
-        translate: Boolean = false
+        translate: Boolean = false,
     ) {
         parentLayout.removeAllViews()
         parentLayout.addView(initialCardLayout(getString(R.string.result), resultRootSuffix))
@@ -79,7 +77,7 @@ class FormSummaryReporter(
     private fun createBPSummaryView(
         serverData: List<FormLayout>,
         formLayout: FormLayout,
-        resultMap: Map<String, Any>
+        resultMap: Map<String, Any>,
     ) {
         formLayout.apply {
             calculateAverageBloodPressure(serverData, id, resultMap)
@@ -90,9 +88,10 @@ class FormSummaryReporter(
                 getString(
                     R.string.average_mmhg_string,
                     systolicAverageSummary.toString(),
-                    diastolicAverageSummary.toString()
+                    diastolicAverageSummary.toString(),
                 )
-            parentLayout.findViewWithTag<LinearLayout>(getFormResultView())
+            parentLayout
+                .findViewWithTag<LinearLayout>(getFormResultView())
                 ?.addView(binding.root)
         }
     }
@@ -100,7 +99,7 @@ class FormSummaryReporter(
     private fun calculateAverageBloodPressure(
         serverData: List<FormLayout>,
         id: String,
-        resultMap: Map<String, Any>
+        resultMap: Map<String, Any>,
     ) {
         var systolic = 0.0
         var diastolic = 0.0
@@ -128,11 +127,15 @@ class FormSummaryReporter(
         }
     }
 
-    private fun getMapValue(map: Any?, value: String): Double {
+    private fun getMapValue(
+        map: Any?,
+        value: String,
+    ): Double {
         var d = 0.0
         map?.let {
-            if (it is Map<*, *> && it.containsKey(value))
+            if (it is Map<*, *> && it.containsKey(value)) {
                 d = (it[value] as? String?)?.toDoubleOrNull() ?: it[value] as Double
+            }
         }
         return d
     }
@@ -140,7 +143,7 @@ class FormSummaryReporter(
     private fun createAgeSummaryView(
         serverData: List<FormLayout>,
         formLayout: FormLayout,
-        resultMap: Map<String, Any>
+        resultMap: Map<String, Any>,
     ) {
         formLayout.apply {
             FormResultComposer.findGroupIdForNCD(serverData, id)?.let {
@@ -163,18 +166,20 @@ class FormSummaryReporter(
         }
     }
 
-    private fun initialCardLayout(title: String, tag: String): View {
+    private fun initialCardLayout(
+        title: String,
+        tag: String,
+    ): View {
         val binding = CardLayoutBinding.inflate(LayoutInflater.from(context))
         binding.llFamilyRoot.tag = tag
         binding.cardTitle.text = title
         return binding.root
     }
 
-
     private fun createSummaryView(
         formLayout: FormLayout,
         resultMap: Map<String, Any>,
-        translate: Boolean
+        translate: Boolean,
     ) {
         formLayout.apply {
             if (resultMap.containsKey(family)) {
@@ -194,7 +199,10 @@ class FormSummaryReporter(
         }
     }
 
-    private fun getActualValue(value: Any?, optionsList: ArrayList<Map<String, Any>>?): String {
+    private fun getActualValue(
+        value: Any?,
+        optionsList: ArrayList<Map<String, Any>>?,
+    ): String {
         if (optionsList != null) {
             optionsList.let { list ->
                 list.forEach { map ->
@@ -207,7 +215,9 @@ class FormSummaryReporter(
             when (value) {
                 is String -> return if (Screening.national_id == value || Screening.passport == value || Screening.birthCertificate == value) {
                     CommonUtils.getIdentityDisplayName(value)
-                } else value
+                } else {
+                    value
+                }
 
                 is Map<*, *> -> {
                     getActual(value)?.let {
@@ -224,7 +234,7 @@ class FormSummaryReporter(
                 }
 
                 else -> {
-                    //Else block execution
+                    // Else block execution
                 }
             }
         }
@@ -241,18 +251,20 @@ class FormSummaryReporter(
         return null
     }
 
-    private fun getActualName(map: Map<String, Any>, value: Any?): String? {
+    private fun getActualName(
+        map: Map<String, Any>,
+        value: Any?,
+    ): String? {
         if (map.containsKey(DefinedParams.ID)) {
             val id = map[DefinedParams.ID]
             id?.let {
-                if (it == value)
-                    return  map[DefinedParams.cultureValue] as? String ?: map[DefinedParams.NAME] as String
+                if (it == value) {
+                    return map[DefinedParams.cultureValue] as? String ?: map[DefinedParams.NAME] as String
+                }
             }
         }
         return null
     }
 
-    fun getFormResultView(): String {
-        return resultRootSuffix
-    }
+    fun getFormResultView(): String = resultRootSuffix
 }

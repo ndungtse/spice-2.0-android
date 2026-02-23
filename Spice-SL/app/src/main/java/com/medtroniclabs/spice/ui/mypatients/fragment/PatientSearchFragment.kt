@@ -36,6 +36,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDHrioBaseActivity
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewCMRActivity
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.SortDialogFragment
+import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
 import com.medtroniclabs.spice.ncd.screening.ui.ScreeningActivity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -49,7 +50,6 @@ import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListener
 import com.medtroniclabs.spice.ui.mypatients.PatientsListAdapter
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientListViewModel
 import com.medtroniclabs.spice.ui.referralhistory.activity.ReferralHistoryActivity
-import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -59,22 +59,26 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     lateinit var binding: FragmentPatientSearchBinding
     private val patientListViewModel: PatientListViewModel by viewModels()
     private lateinit var patientsListAdapter: PatientsListAdapter
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
-        binding = FragmentPatientSearchBinding.inflate(layoutInflater,container,false)
+        binding = FragmentPatientSearchBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
     companion object {
         const val TAG = "PatientSearchFragment"
-        fun newInstance(): PatientSearchFragment {
-            return PatientSearchFragment()
-        }
+
+        fun newInstance(): PatientSearchFragment = PatientSearchFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         setAdapterViews()
@@ -84,8 +88,6 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             swipeRefresh()
         }
     }
-
-
 
     private fun swipeRefresh() {
         withNetworkAvailability(online = {
@@ -104,7 +106,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 val patientCount = count.toLong()
                 if (patientCount > 0) {
                     binding.tvPatientCount.apply {
-                        text = if(patientCount == 1L) getString(R.string.patient_found) else getString(R.string.patients_found, patientCount)
+                        text = if (patientCount == 1L) getString(R.string.patient_found) else getString(R.string.patients_found, patientCount)
                         visibility = View.VISIBLE
                     }
                     binding.tvNoPatientsFound.gone()
@@ -113,7 +115,9 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     binding.tvNoPatientsFound.visible()
                     binding.tvPatientCount.gone()
                     binding.tvNoPatientsFound.text = getString(R.string.no_patients_found)
-                    val isNotShown = patientListViewModel.origin?.lowercase() == MenuConstants.ASSESSMENT.lowercase() || patientListViewModel.origin?.lowercase() == MenuConstants.REGISTRATION.lowercase()
+                    val isNotShown =
+                        patientListViewModel.origin?.lowercase() == MenuConstants.ASSESSMENT.lowercase() ||
+                            patientListViewModel.origin?.lowercase() == MenuConstants.REGISTRATION.lowercase()
                     if (patientListViewModel.searchText.isBlank()) {
                         binding.tvNoPatientsFound.visible()
                         if (isNotShown) {
@@ -146,8 +150,9 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                         binding.btnRegister.setVisible(
                             patientListViewModel.origin.equals(
                                 MenuConstants.REGISTRATION,
-                                true
-                            ) || patientListViewModel.origin.equals(MenuConstants.ASSESSMENT, true)
+                                true,
+                            ) ||
+                                patientListViewModel.origin.equals(MenuConstants.ASSESSMENT, true),
                         )
                     }
                 }
@@ -156,12 +161,14 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                         visible()
 
                         val sortCount = patientListViewModel.sortCount()
-                        text = if (sortCount > 0)
+                        text = if (sortCount > 0) {
                             getString(R.string.sort_count, sortCount)
-                        else
+                        } else {
                             getString(R.string.sort)
-                    } else
+                        }
+                    } else {
                         invisible()
+                    }
                 }
                 binding.llSortFilter.btnFilter.apply {
                     if (CommonUtils.canShowFilter(patientListViewModel.origin) || CommonUtils.isCommunity()) {
@@ -171,12 +178,14 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                             binding.tvNoPatientsFound.visible()
                         }
                         val filterCount = patientListViewModel.filterCount()
-                        text = if (filterCount > 0)
+                        text = if (filterCount > 0) {
                             getString(R.string.filter_count, filterCount)
-                        else
+                        } else {
                             getString(R.string.filter)
-                    } else
+                        }
+                    } else {
                         invisible()
+                    }
                 }
             } else {
                 binding.tvNoPatientsFound.visible()
@@ -217,7 +226,13 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                             MenuConstants.LIFESTYLE.lowercase() -> NCDNutritionistActivity::class.java
                             MenuConstants.PSYCHOLOGICAL.lowercase() -> NCDCounselorActivity::class.java
                             MenuConstants.INVESTIGATION.lowercase() -> NCDLabTestListActivity::class.java
-                            MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> if (it.initialReviewed == true || CommonUtils.isNutritionist()) NCDMedicalReviewCMRActivity::class.java else AssessmentToolsActivity::class.java
+                            MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> if (it.initialReviewed == true ||
+                                CommonUtils.isNutritionist()
+                            ) {
+                                NCDMedicalReviewCMRActivity::class.java
+                            } else {
+                                AssessmentToolsActivity::class.java
+                            }
                             else -> null
                         }
                         destinationIntent?.let { destIntent ->
@@ -226,20 +241,20 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                                     putExtra(NCDMRUtil.EncounterReference, it.encounterReference)
                                     putExtra(
                                         DefinedParams.FhirId,
-                                        patientListViewModel.selectedPatientDetails?.id
+                                        patientListViewModel.selectedPatientDetails?.id,
                                     )
                                     putExtra(
                                         DefinedParams.PatientId,
-                                        patientListViewModel.selectedPatientDetails?.patientId
+                                        patientListViewModel.selectedPatientDetails?.patientId,
                                     )
                                     putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
                                     putExtra(
                                         DefinedParams.Gender,
-                                        patientListViewModel.selectedPatientDetails?.gender
+                                        patientListViewModel.selectedPatientDetails?.gender,
                                     )
                                     putExtra(
                                         DefinedParams.IsDeepLink,
-                                        arguments?.getBoolean(DefinedParams.IsDeepLink)
+                                        arguments?.getBoolean(DefinedParams.IsDeepLink),
                                     )
                                 }
                             startActivity(intent)
@@ -254,6 +269,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             }
         }
     }
+
     private fun initViews() {
         patientListViewModel.origin = arguments?.getString(DefinedParams.ORIGIN)
         binding.bottomCardView.gone()
@@ -284,7 +300,6 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             }
         }
 
-
         binding.llExactSearch.etPatientSearch.addTextChangedListener(searchListener)
         binding.llExactSearch.btnSearch.safeClickListener(this)
         binding.btnRegister.safeClickListener(this)
@@ -297,39 +312,41 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
         binding.llExactSearch.etPatientSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                if (binding.llExactSearch.btnSearch.isEnabled)
+                if (binding.llExactSearch.btnSearch.isEnabled) {
                     binding.llExactSearch.btnSearch.performClick()
+                }
                 true
-            } else
+            } else {
                 false
+            }
         }
     }
+
     private fun autoPatientSelect(item: PatientListRespModel) {
         patientListViewModel.origin = MenuConstants.MY_PATIENTS_MENU_ID.lowercase()
         val origin = patientListViewModel.origin?.lowercase()
         val destinationIntent = when (origin) {
-                    MenuConstants.REGISTRATION.lowercase() -> RegistrationActivity::class.java
+            MenuConstants.REGISTRATION.lowercase() -> RegistrationActivity::class.java
             MenuConstants.ASSESSMENT.lowercase() -> AssessmentToolsActivity::class.java
             MenuConstants.INVESTIGATION.lowercase(),
             MenuConstants.LIFESTYLE.lowercase(),
             MenuConstants.PSYCHOLOGICAL.lowercase(),
             MenuConstants.MY_PATIENTS_MENU_ID.lowercase(),
-            MenuConstants.DISPENSE.lowercase() -> {
+            MenuConstants.DISPENSE.lowercase(),
+            -> {
                 if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isNonCommunity() && CommonUtils.isNURSE())) {
                     NCDMedicalReviewCMRActivity::class.java
                 } else if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isNonCommunity() && CommonUtils.isHRIO())) {
                     NCDHrioBaseActivity::class.java
                 } else {
-
                     patientListViewModel.selectedPatientDetails = item
-                        patientListViewModel.createPatientVisit(
-                            PatientVisitRequest(
-                                patientReference = item.patientId,
-                                provenance = ProvanceDto(
-                                ),
-                                memberReference = item.id
-                            )
-                        )
+                    patientListViewModel.createPatientVisit(
+                        PatientVisitRequest(
+                            patientReference = item.patientId,
+                            provenance = ProvanceDto(),
+                            memberReference = item.id,
+                        ),
+                    )
                     null
                 }
             }
@@ -341,19 +358,29 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             intent.putExtra(DefinedParams.FhirId, item.id)
             intent.putExtra(DefinedParams.PatientId, item.patientId)
             intent.putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
-            intent.putExtra(DefinedParams.Gender,item.gender)
+            intent.putExtra(DefinedParams.Gender, item.gender)
             startActivity(intent)
         }
     }
 
     private val searchListener = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        override fun beforeTextChanged(
+            s: CharSequence?,
+            start: Int,
+            count: Int,
+            after: Int,
+        ) {
             /**
              * this method is not used
              */
         }
 
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        override fun onTextChanged(
+            s: CharSequence?,
+            start: Int,
+            before: Int,
+            count: Int,
+        ) {
             /**
              * this method is not used
              */
@@ -386,8 +413,11 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         }
         patientsListAdapter.addLoadStateListener {
             val isLoading = it.refresh is LoadState.Loading
-            if (isLoading) showLoading()
-            else hideLoading()
+            if (isLoading) {
+                showLoading()
+            } else {
+                hideLoading()
+            }
             if (it.append is LoadState.Loading) {
                 binding.pageProgress.visible()
             } else {
@@ -415,21 +445,21 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     MenuConstants.LIFESTYLE.lowercase(),
                     MenuConstants.PSYCHOLOGICAL.lowercase(),
                     MenuConstants.MY_PATIENTS_MENU_ID.lowercase(),
-                    MenuConstants.DISPENSE.lowercase() -> {
+                    MenuConstants.DISPENSE.lowercase(),
+                    -> {
                         if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isNonCommunity() && CommonUtils.isNURSE())) {
                             NCDMedicalReviewCMRActivity::class.java
                         } else if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isNonCommunity() && CommonUtils.isHRIO())) {
-                             NCDHrioBaseActivity::class.java
+                            NCDHrioBaseActivity::class.java
                         } else {
                             patientListViewModel.selectedPatientDetails = item
                             withNetworkAvailability(online = {
                                 patientListViewModel.createPatientVisit(
                                     PatientVisitRequest(
                                         patientReference = item.patientId,
-                                        provenance = ProvanceDto(
-                                        ),
-                                        memberReference = item.id
-                                    )
+                                        provenance = ProvanceDto(),
+                                        memberReference = item.id,
+                                    ),
                                 )
                             })
                             null
@@ -443,7 +473,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     intent.putExtra(DefinedParams.FhirId, item.id)
                     intent.putExtra(DefinedParams.PatientId, item.patientId)
                     intent.putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
-                    intent.putExtra(DefinedParams.Gender,item.gender)
+                    intent.putExtra(DefinedParams.Gender, item.gender)
                     startActivity(intent)
                 }
             }
@@ -476,7 +506,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             }
             binding.loadingProgress.id -> {}
 
-            binding.btnAddNewMember.id ->{
+            binding.btnAddNewMember.id -> {
                 val intent = Intent(requireContext(), AddNewMemberActivity::class.java)
                 startActivity(intent)
             }
@@ -497,13 +527,14 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             patientListViewModel.setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDSearchPatient + " " + patientListViewModel.origin.takeIf { !it.isNullOrBlank() },
-                isCompleted = true
+                isCompleted = true,
             )
             patientListViewModel.searchText =
-                binding.llExactSearch.etPatientSearch.text?.trim().toString()
+                binding.llExactSearch.etPatientSearch.text
+                    ?.trim()
+                    .toString()
             getPatientList()
             scrollTop()
-
         })
     }
 
@@ -515,7 +546,8 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         val existingFragment =
             childFragmentManager.findFragmentByTag(PatientSearchFilterDialog.TAG) as? PatientSearchFilterDialog
         if (existingFragment == null) {
-            PatientSearchFilterDialog.newInstance(patientListViewModel.origin)
+            PatientSearchFilterDialog
+                .newInstance(patientListViewModel.origin)
                 .show(childFragmentManager, PatientSearchFilterDialog.TAG)
         } else {
             existingFragment.show(childFragmentManager, PatientSearchFilterDialog.TAG)
@@ -526,7 +558,8 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         val existingFragment =
             childFragmentManager.findFragmentByTag(SortDialogFragment.TAG) as? SortDialogFragment
         if (existingFragment == null) {
-            SortDialogFragment.newInstance()
+            SortDialogFragment
+                .newInstance()
                 .show(childFragmentManager, SortDialogFragment.TAG)
         } else {
             existingFragment.show(childFragmentManager, SortDialogFragment.TAG)

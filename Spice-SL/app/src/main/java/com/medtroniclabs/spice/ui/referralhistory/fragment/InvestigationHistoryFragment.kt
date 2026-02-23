@@ -30,7 +30,6 @@ import com.medtroniclabs.spice.ui.referralhistory.adapter.ReferralHistoryAdapter
 import com.medtroniclabs.spice.ui.referralhistory.viewmodel.ReferralHistoryViewModel
 
 class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
-
     lateinit var binding: FragmentReferralTicketBinding
     private var listPopupWindow: PopupWindow? = null
     private lateinit var adapters: ReferralHistoryAdapter
@@ -38,8 +37,9 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
     val viewModel: ReferralHistoryViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentReferralTicketBinding.inflate(inflater, container, false)
         return binding.root
@@ -47,9 +47,8 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "InvestigationHistoryFragment"
-        fun newInstance(): InvestigationHistoryFragment {
-            return InvestigationHistoryFragment()
-        }
+
+        fun newInstance(): InvestigationHistoryFragment = InvestigationHistoryFragment()
 
         fun newInstance(patientId: String?): InvestigationHistoryFragment {
             val fragment = InvestigationHistoryFragment()
@@ -60,18 +59,20 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
     }
 
-    private fun getPatientId(): String? {
-        return arguments?.getString(DefinedParams.FhirId, "")
-    }
+    private fun getPatientId(): String? = arguments?.getString(DefinedParams.FhirId, "")
 
     private fun getInitialReferralTickets() {
-        getPatientId()?.takeIf { it.isNotBlank() }
+        getPatientId()
+            ?.takeIf { it.isNotBlank() }
             ?.let { viewModel.getInvestigationHistory(patientId = it) }
     }
 
@@ -103,21 +104,21 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
         recyclerView.addItemDecoration(
             DividerItemDecoration(
                 recyclerView.context,
-                DividerItemDecoration.VERTICAL
-            )
+                DividerItemDecoration.VERTICAL,
+            ),
         )
         dateListAdapter =
             DateListAdapter { referred ->
                 if (connectivityManager.isNetworkAvailable()) {
                     viewModel.getInvestigationHistory(
                         patientId = getPatientId(),
-                        investigationTicketId = referred.id
+                        investigationTicketId = referred.id,
                     )
                     viewModel.investigationTicketId = referred.id
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
                 listPopupWindow?.dismiss()
@@ -126,7 +127,7 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
         listPopupWindow = PopupWindow(
             view,
             LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
+            LinearLayout.LayoutParams.WRAP_CONTENT,
         )
     }
 
@@ -137,7 +138,6 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
             ivPrevious.safeClickListener(this@InvestigationHistoryFragment)
         }
     }
-
 
     override fun onClick(v: View?) {
         when (v?.id) {
@@ -153,7 +153,7 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
             }
@@ -164,7 +164,7 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
             }
@@ -178,11 +178,12 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
     private fun handleRetry() {
         if (connectivityManager.isNetworkAvailable()) {
             if (!viewModel.investigationTicketId.isNullOrBlank()) {
-                getPatientId()?.takeIf { it.isNotBlank() }
+                getPatientId()
+                    ?.takeIf { it.isNotBlank() }
                     ?.let {
                         viewModel.getInvestigationHistory(
                             patientId = it,
-                            investigationTicketId = viewModel.investigationTicketId
+                            investigationTicketId = viewModel.investigationTicketId,
                         )
                     }
             } else {
@@ -199,14 +200,12 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
             viewModel.investigationReferralDates.value?.get(selectedIndex)?.id?.let {
                 viewModel.getInvestigationHistory(
                     patientId = getPatientId(),
-                    investigationTicketId = it
+                    investigationTicketId = it,
                 )
                 viewModel.investigationTicketId = it
             }
-
         }
     }
-
 
     private fun attachObservers() {
         viewModel.investigationTicketLiveData.observe(viewLifecycleOwner) { resource ->
@@ -274,15 +273,15 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
                             DateUtils.convertDateFormat(
                                 it,
                                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                DateUtils.DATE_ddMMyyyy
+                                DateUtils.DATE_ddMMyyyy,
                             )
-                        }
+                        },
                     ),
                     mapOf(
                         label to requireContext().getString(R.string.investigations_referred),
-                        this.Value to createInvestigationList(data.investigations)
-                    )
-               )
+                        this.Value to createInvestigationList(data.investigations),
+                    ),
+                ),
             )
         }
         adjustGuideline()
@@ -292,8 +291,8 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun createInvestigationList(investigations: List<Investigation>?): List<String>? {
-       val testList = investigations?.map { it.testName }
-       return testList
+        val testList = investigations?.map { it.testName }
+        return testList
     }
 
     private fun adjustGuideline() {
@@ -303,7 +302,10 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
         binding.centerGuideline.layoutParams = params
     }
 
-    private fun setReferralDates(referredDates: List<ReferredDate>?, id: String?) {
+    private fun setReferralDates(
+        referredDates: List<ReferredDate>?,
+        id: String?,
+    ) {
         if (referredDates != null) {
             if (viewModel.investigationTicketId == null) {
                 viewModel.investigationTicketId = id
@@ -357,11 +359,10 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
             viewModel.investigationReferralDates.value?.get(selectedIndex)?.id?.let {
                 viewModel.getInvestigationHistory(
                     patientId = getPatientId(),
-                    investigationTicketId = it
+                    investigationTicketId = it,
                 )
                 viewModel.investigationTicketId = it
             }
         }
     }
-
 }

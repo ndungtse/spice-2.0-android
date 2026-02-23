@@ -11,7 +11,6 @@ import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 
 class ComplianceSpinnerAdapter(context: Context, val translationToggle: Boolean) :
     ArrayAdapter<String>(context, R.layout.spinner_drop_down_item_compliance) {
-
     var itemList = ArrayList<MedicalComplianceEntity>()
 
     override fun getCount(): Int = itemList.size
@@ -20,35 +19,34 @@ class ComplianceSpinnerAdapter(context: Context, val translationToggle: Boolean)
         itemList = ArrayList(listItems)
     }
 
-    fun getData(position: Int) : MedicalComplianceEntity? {
-        return if(position<itemList.size) itemList[position] else null
-    }
+    fun getData(position: Int): MedicalComplianceEntity? = if (position < itemList.size) itemList[position] else null
 
-    override fun getItem(position: Int): String {
-        return if (translationToggle){
-            itemList[position].displayValue?:itemList[position].name
-        }else{
+    override fun getItem(position: Int): String =
+        if (translationToggle) {
+            itemList[position].displayValue ?: itemList[position].name
+        } else {
             itemList[position].name
         }
-    }
 
     override fun getItemId(position: Int): Long = position.toLong()
 
-    private fun createView(position: Int, viewGroup: ViewGroup?): View {
-
+    private fun createView(
+        position: Int,
+        viewGroup: ViewGroup?,
+    ): View {
         val binding = SpinnerDropDownBinding.inflate(
-            LayoutInflater.from(viewGroup?.context)
+            LayoutInflater.from(viewGroup?.context),
         )
         binding.tvTitle.text = getItem(position)
 
         return binding.root
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
+    override fun getItemViewType(position: Int): Int = position
 
-    override fun getDropDownView(position: Int, mView: View?, parentGroup: ViewGroup): View {
-        return createView(position, parentGroup)
-    }
+    override fun getDropDownView(
+        position: Int,
+        mView: View?,
+        parentGroup: ViewGroup,
+    ): View = createView(position, parentGroup)
 }

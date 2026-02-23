@@ -7,5 +7,5 @@ import androidx.room.PrimaryKey
 data class MentalHealthEntity(
     @PrimaryKey
     val formType: String,
-    val formInput: String?
+    val formInput: String?,
 )

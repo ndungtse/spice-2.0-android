@@ -59,12 +59,15 @@ import com.medtroniclabs.spice.databinding.ActivityLandingBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
+import com.medtroniclabs.spice.ncd.data.NCDSupportRequest
 import com.medtroniclabs.spice.ncd.data.PatientTransfer
 import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
 import com.medtroniclabs.spice.ncd.data.PeerSupervisorNotificationRequest
 import com.medtroniclabs.spice.ncd.data.PeerSupervisorNotificationResponse
 import com.medtroniclabs.spice.ncd.landing.dialog.LanguagePreferenceDialog
 import com.medtroniclabs.spice.ncd.landing.dialog.NCDOfflineDataDialog
+import com.medtroniclabs.spice.ncd.landing.dialog.NCDSupportDialogFragment
+import com.medtroniclabs.spice.ncd.landing.dialog.NCDSupportDialogListener
 import com.medtroniclabs.spice.ncd.landing.ui.UserTermsConditionsActivity
 import com.medtroniclabs.spice.ncd.landing.viewmodel.NCDOfflineDataViewModel
 import com.medtroniclabs.spice.network.NetworkConstants
@@ -84,23 +87,24 @@ import com.medtroniclabs.spice.ui.patientTransfer.NCDApproveRejectListener
 import com.medtroniclabs.spice.ui.patientTransfer.adapter.NCDIncomingRequestAdapter
 import com.medtroniclabs.spice.ui.patientTransfer.adapter.NCDInformationMessageAdapter
 import com.medtroniclabs.spice.ui.patientTransfer.dialog.NCDPatientDetailDialogue
-import com.medtroniclabs.spice.ncd.data.NCDSupportRequest
-import com.medtroniclabs.spice.ncd.landing.dialog.NCDSupportDialogFragment
-import com.medtroniclabs.spice.ncd.landing.dialog.NCDSupportDialogListener
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-
-class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
-    DrawerLayout.DrawerListener, View.OnClickListener, OnDialogDismissListener,
-    NCDApproveRejectListener, NCDSupportDialogListener {
-
+class LandingActivity :
+    BaseActivity(),
+    NavigationView.OnNavigationItemSelectedListener,
+    DrawerLayout.DrawerListener,
+    View.OnClickListener,
+    OnDialogDismissListener,
+    NCDApproveRejectListener,
+    NCDSupportDialogListener {
     lateinit var binding: ActivityLandingBinding
 
     private val viewModel: LandingViewModel by viewModels()
     private val offlineDataViewModel: NCDOfflineDataViewModel by viewModels()
     private val patientViewModel: PatientDetailViewModel by viewModels()
     private val languageViewModel: LanguagePreferenceViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition { true }
@@ -110,9 +114,10 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         val isLoggedIn =
-            SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISLOGGEDIN.name) || SecuredPreference.getBoolean(
-                SecuredPreference.EnvironmentKey.ISOFFLINELOGIN.name
-            )
+            SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISLOGGEDIN.name) ||
+                SecuredPreference.getBoolean(
+                    SecuredPreference.EnvironmentKey.ISOFFLINELOGIN.name,
+                )
         val isMetaLoaded =
             SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISMETALOADED.name)
 
@@ -122,7 +127,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             finish()
             return
         } else {
-            if (CommonUtils.isNonCommunity() ) {
+            if (CommonUtils.isNonCommunity()) {
                 val isFromLauncher: Boolean =
                     intent?.categories?.contains(Intent.CATEGORY_LAUNCHER) ?: false
                 if (isFromLauncher && !SecuredPreference.getTermsAndConditionsStatus()) {
@@ -148,13 +153,13 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             binding.root,
             binding.fakeStatusBar,
             binding.fakeNavBar,
-            false
+            false,
         )
         if (CommonUtils.isNonCommunity()) {
             languageViewModel.getCultures()
         } else {
             val menu = binding.navView.menu
-       //     menu.findItem(R.id.switch_language)?.let { menu.removeItem(it.itemId) }
+            //     menu.findItem(R.id.switch_language)?.let { menu.removeItem(it.itemId) }
         }
         initializeDrawerView()
         initializeHomeViews()
@@ -222,20 +227,26 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     resorceState.data?.let {
                         val generalErrorDialog =
                             GeneralErrorDialog.newInstance(
-                                if(viewModel.isSupport){getString(R.string.alert)}else{getString(R.string.transfer)},
+                                if (viewModel.isSupport) {
+                                    getString(R.string.alert)
+                                } else {
+                                    getString(R.string.transfer)
+                                },
                                 callback = {
                                     viewModel.patientUpdateResponse.setError(message = null)
                                     val dialog = supportFragmentManager.findFragmentByTag(
-                                        GeneralErrorDialog.TAG) as? GeneralErrorDialog
+                                        GeneralErrorDialog.TAG,
+                                    ) as? GeneralErrorDialog
                                     dialog?.dismiss()
                                 },
                                 this,
                                 false,
                                 okayButton = getString(R.string.ok),
-                                messageBtnData = Pair(it, true)
+                                messageBtnData = Pair(it, true),
                             )
                         val errorFragment = supportFragmentManager.findFragmentByTag(
-                            GeneralErrorDialog.TAG)
+                            GeneralErrorDialog.TAG,
+                        )
                         if (errorFragment == null) {
                             generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
                         }
@@ -293,10 +304,10 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                                 this,
                                 false,
                                 okayButton = getString(R.string.ok),
-                                messageBtnData = Pair(it, true)
+                                messageBtnData = Pair(it, true),
                             )
                         val errorFragment = supportFragmentManager.findFragmentByTag(
-                            GeneralErrorDialog.TAG
+                            GeneralErrorDialog.TAG,
                         )
                         if (errorFragment == null) {
                             generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
@@ -314,10 +325,10 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                                 this,
                                 false,
                                 okayButton = getString(R.string.ok),
-                                messageBtnData = Pair(it, true)
+                                messageBtnData = Pair(it, true),
                             )
                         val errorFragment = supportFragmentManager.findFragmentByTag(
-                            GeneralErrorDialog.TAG
+                            GeneralErrorDialog.TAG,
                         )
                         if (errorFragment == null) {
                             generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
@@ -325,7 +336,6 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     }
                 }
             }
-
         }
         viewModel.cbsNotificationListResponse.observe(this) { resourceState ->
             when (resourceState.state) {
@@ -336,8 +346,9 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resourceState.data?.let { notifications ->
-                        if (!notifications.isNullOrEmpty()) storeNotificationIds(notifications)
-                        else {
+                        if (!notifications.isNullOrEmpty()) {
+                            storeNotificationIds(notifications)
+                        } else {
                             binding.CenterProgress.gone()
                             binding.tvNoNotificationsFound.visible()
                         }
@@ -354,10 +365,10 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                                 this,
                                 false,
                                 okayButton = getString(R.string.ok),
-                                messageBtnData = Pair(it, true)
+                                messageBtnData = Pair(it, true),
                             )
                         val errorFragment = supportFragmentManager.findFragmentByTag(
-                            GeneralErrorDialog.TAG
+                            GeneralErrorDialog.TAG,
                         )
                         if (errorFragment == null) {
                             generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
@@ -375,9 +386,11 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resourceState.data?.let { notifications ->
-                        if (!notifications.isNullOrEmpty())
+                        if (!notifications.isNullOrEmpty()) {
                             showNotificationView(notifications)
-                        else binding.tvNoNotificationsFound.visible()
+                        } else {
+                            binding.tvNoNotificationsFound.visible()
+                        }
                     }
                 }
 
@@ -391,10 +404,11 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                                 this,
                                 false,
                                 okayButton = getString(R.string.ok),
-                                messageBtnData = Pair(it, true)
+                                messageBtnData = Pair(it, true),
                             )
                         val errorFragment = supportFragmentManager.findFragmentByTag(
-                            GeneralErrorDialog.TAG)
+                            GeneralErrorDialog.TAG,
+                        )
                         if (errorFragment == null) {
                             generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
                         }
@@ -425,10 +439,10 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                                 this,
                                 false,
                                 okayButton = getString(R.string.ok),
-                                messageBtnData = Pair(it, true)
+                                messageBtnData = Pair(it, true),
                             )
                         val errorFragment = supportFragmentManager.findFragmentByTag(
-                            GeneralErrorDialog.TAG
+                            GeneralErrorDialog.TAG,
                         )
                         if (errorFragment == null) {
                             generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
@@ -440,8 +454,9 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     private fun setTransferCount(transferCount: Long): Int {
-        if (transferCount > 0)
+        if (transferCount > 0) {
             return View.VISIBLE
+        }
         return View.GONE
     }
 
@@ -451,14 +466,15 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         }
         return transferCount.toString()
     }
+
     private fun loadAdapterData(data: PatientTransferListResponse) {
         if (data.incomingPatientList.size > 0) {
             binding.rvOutgoingList.visible()
             binding.rvOutgoingList.addItemDecoration(
                 DividerItemDecoration(
                     baseContext,
-                    LinearLayoutManager.VERTICAL
-                )
+                    LinearLayoutManager.VERTICAL,
+                ),
             )
             binding.rvOutgoingList.layoutManager = LinearLayoutManager(this@LandingActivity)
             binding.rvOutgoingList.adapter = NCDIncomingRequestAdapter(data.incomingPatientList, this)
@@ -471,8 +487,8 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             binding.rvInformationList.addItemDecoration(
                 DividerItemDecoration(
                     baseContext,
-                    LinearLayoutManager.VERTICAL
-                )
+                    LinearLayoutManager.VERTICAL,
+                ),
             )
             binding.rvInformationList.adapter =
                 NCDInformationMessageAdapter(data.outgoingPatientList, this)
@@ -501,22 +517,24 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             binding.rvInformationList.gone()
         }
     }
-    private fun onClickUploadLog(){
+
+    private fun onClickUploadLog() {
         if (BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "staging" || BuildConfig.BUILD_TYPE == "training") {
             binding.uploadLog.setOnClickListener {
-                val uploadWorkRequest = OneTimeWorkRequest.Builder(UploadWorker::class.java)
+                val uploadWorkRequest = OneTimeWorkRequest
+                    .Builder(UploadWorker::class.java)
                     .setInputData(periodicUploaderInputData())
                     .setConstraints(
-                        Constraints.Builder()
+                        Constraints
+                            .Builder()
                             .setRequiredNetworkType(NetworkType.CONNECTED)
-                            .build()
+                            .build(),
                     ).build()
                 WorkManager.getInstance(this).enqueue(uploadWorkRequest)
             }
         } else {
             binding.uploadLog.gone()
         }
-
     }
 
     private val onBackPressedCallback: OnBackPressedCallback =
@@ -531,7 +549,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             UserDetail.startDateTime,
             eventName = AnalyticsDefinedParams.HouseholdCreation,
             exitReason = AnalyticsDefinedParams.CancelButtonClicked,
-            isCompleted = false
+            isCompleted = false,
         )
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -554,7 +572,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
      * method to initialize home view toolbar and views
      */
     private fun initializeHomeViews() {
-        if (CommonUtils.isNonCommunity() ) {
+        if (CommonUtils.isNonCommunity()) {
             binding.navNotificationView.visible()
             binding.appBarMain.clNotification.visible()
         } else {
@@ -574,7 +592,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         } else {
             binding.drawerLayout.setDrawerLockMode(
                 DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
-                GravityCompat.END
+                GravityCompat.END,
             )
             binding.appBarMain.ivNotification.gone()
         }
@@ -623,7 +641,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             binding.drawerLayout,
             toolBar,
             R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
+            R.string.navigation_drawer_close,
         )
         binding.drawerLayout.addDrawerListener(toggle)
         binding.drawerLayout.addDrawerListener(this)
@@ -634,14 +652,13 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         } else {
             binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END)
         }
-
     }
 
     private fun updateSideBarFooter() {
         binding.appBarBottom.tvAppVersion.text = this.getString(
             R.string.firstname_lastname,
             getString(R.string.app_version),
-            getBuildVersion()
+            getBuildVersion(),
         )
     }
 
@@ -664,12 +681,15 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                         val homeMenuItem = binding.navView.menu.findItem(R.id.home)
                         selectNavigationMenu(homeMenuItem)
                     }, 200)
-
                 } else {
-                    if (binding.appBarMain.includeMainContent.syncingHolder.isVisible()) {
+                    if (binding.appBarMain.includeMainContent.syncingHolder
+                            .isVisible()
+                    ) {
                         showSyncInProgressWarning()
                         return true
-                } else showLogoutDialogFlow()
+                    } else {
+                        showLogoutDialogFlow()
+                    }
                 }
             }
 
@@ -677,7 +697,8 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
                 val profileDialogFragment =
                     supportFragmentManager.findFragmentByTag(ProfileDialogFragment.TAG)
-                profileDialogFragment ?: ProfileDialogFragment.newInstance()
+                profileDialogFragment ?: ProfileDialogFragment
+                    .newInstance()
                     .show(supportFragmentManager, ProfileDialogFragment.TAG)
                 return true
             }
@@ -691,7 +712,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                         supportFragmentManager.findFragmentByTag(NCDOfflineDataDialog.TAG)
                     ncdOfflineDataDialog ?: NCDOfflineDataDialog.newInstance().show(
                         supportFragmentManager,
-                        NCDOfflineDataDialog.TAG
+                        NCDOfflineDataDialog.TAG,
                     )
                 }
                 return true
@@ -701,17 +722,18 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
                 if (connectivityManager.isNetworkAvailable()) {
                     binding.appBarMain.tvTitle.text = getString(R.string.privacy_policy)
-                    supportFragmentManager.beginTransaction()
+                    supportFragmentManager
+                        .beginTransaction()
                         .replace(
                             R.id.fragmentContainerView,
                             PrivacyPolicyFragment(),
-                            PrivacyPolicyFragment::class.simpleName
-                        )
-                        .commit()
+                            PrivacyPolicyFragment::class.simpleName,
+                        ).commit()
                 } else {
                     showErrorDialogue(
-                        getString(R.string.error), getString(R.string.no_internet_error),
-                        false
+                        getString(R.string.error),
+                        getString(R.string.no_internet_error),
+                        false,
                     ) {}
                 }
             }
@@ -721,7 +743,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 val chooseSiteDialogueFragment = ChooseSiteDialogueFragment.newInstance()
                 chooseSiteDialogueFragment.show(
                     supportFragmentManager,
-                    ChooseSiteDialogueFragment.TAG
+                    ChooseSiteDialogueFragment.TAG,
                 )
                 return true
             }
@@ -732,7 +754,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     LanguagePreferenceDialog.newInstance(languagePreferenceListener)
                 languagePreferenceDialog.show(
                     supportFragmentManager,
-                    LanguagePreferenceDialog.TAG
+                    LanguagePreferenceDialog.TAG,
                 )
                 return true
             }
@@ -755,7 +777,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             supportFragmentManager.findFragmentByTag(NCDSupportDialogFragment.TAG)
         supportDialogFragment ?: NCDSupportDialogFragment.newInstance().show(
             supportFragmentManager,
-            NCDSupportDialogFragment.TAG
+            NCDSupportDialogFragment.TAG,
         )
     }
 
@@ -765,7 +787,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 message = getString(R.string.language_change_alert),
                 isNegativeButtonNeed = true,
                 cancelBtnName = getString(R.string.no),
-                positiveButtonName = getString(R.string.yes)
+                positiveButtonName = getString(R.string.yes),
             ) { isPositiveResult ->
                 if (isPositiveResult && SecuredPreference.logout()) {
                     cancelAllWorker()
@@ -778,7 +800,9 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     private fun goToOfflineSyncPage() {
-        if (binding.appBarMain.includeMainContent.syncingHolder.isVisible()) {
+        if (binding.appBarMain.includeMainContent.syncingHolder
+                .isVisible()
+        ) {
             showSyncInProgressWarning()
         } else {
             startActivity(Intent(this, OfflineSyncActivity::class.java))
@@ -790,7 +814,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.background_sync_in_progress),
-            isNegativeButtonNeed = false
+            isNegativeButtonNeed = false,
         ) {}
     }
 
@@ -799,11 +823,10 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             R.id.home -> {
                 handleNavigation()
             }
-
         }
     }
 
-    private fun handleNavigation(isDeepLink :Boolean= false) {
+    private fun handleNavigation(isDeepLink: Boolean = false) {
         if (CommonUtils.isCommunity() && CommonUtils.isRolePresent()) {
             binding.appBarMain.tvTitle.text = getString(R.string.search_patient)
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
@@ -813,19 +836,20 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             replaceFragmentIfExists<PatientSearchFragment>(
                 R.id.fragmentContainerView,
                 bundle = bundle,
-                tag = PatientSearchFragment.TAG
+                tag = PatientSearchFragment.TAG,
             )
         } else {
             binding.appBarMain.tvTitle.text = getString(R.string.home_title)
-            if (CommonUtils.isChwChp())
+            if (CommonUtils.isChwChp()) {
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
             val bundle = Bundle().apply {
-                putBoolean(DefinedParams.IsDeepLink,isDeepLink)
+                putBoolean(DefinedParams.IsDeepLink, isDeepLink)
             }
             replaceFragmentInId<HomeScreenFragment>(
                 R.id.fragmentContainerView,
                 bundle = bundle,
-                tag = HomeScreenFragment.TAG
+                tag = HomeScreenFragment.TAG,
             )
         }
     }
@@ -838,7 +862,10 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         }
     }
 
-    override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+    override fun onDrawerSlide(
+        drawerView: View,
+        slideOffset: Float,
+    ) {
     }
 
     override fun onDrawerOpened(drawerView: View) {
@@ -850,10 +877,12 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     if (CommonUtils.isCommunity() && CommonUtils.isPeerSuperVisor()) {
                         viewModel.notificationIsViewed = true
                         val request = PeerSupervisorNotificationRequest(
-                            userId = SecuredPreference.getUserId().toString()
+                            userId = SecuredPreference.getUserId().toString(),
                         )
                         viewModel.getCBSUpdatedNotificationList(request)
-                    } else viewModel.notificationIsViewed = false
+                    } else {
+                        viewModel.notificationIsViewed = false
+                    }
                 }
             }
         }
@@ -863,8 +892,8 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         if (CommonUtils.isNCDProvider() || CommonUtils.isPhysicianPrescriber()) {
             viewModel.patientTransferNotificationCount(
                 NCDPatientTransferNotificationCountRequest(
-                    SecuredPreference.getOrganizationId().toString()
-                )
+                    SecuredPreference.getOrganizationId().toString(),
+                ),
             )
         }
     }
@@ -924,7 +953,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 }
                 replaceFragmentInId<PatientSearchFragment>(
                     R.id.fragmentContainerView,
-                    tag = PatientSearchFragment.TAG
+                    tag = PatientSearchFragment.TAG,
                 )
             }
         }
@@ -934,9 +963,11 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         val workManager = WorkManager.getInstance(this)
         workManager.getWorkInfosForUniqueWorkLiveData(workerUniqueName).observe(this) {
             if (!it.isNullOrEmpty() && it[0].state == WorkInfo.State.RUNNING) {
-                binding.appBarMain.includeMainContent.syncingHolder.visible()
+                binding.appBarMain.includeMainContent.syncingHolder
+                    .visible()
             } else {
-                binding.appBarMain.includeMainContent.syncingHolder.gone()
+                binding.appBarMain.includeMainContent.syncingHolder
+                    .gone()
             }
         }
     }
@@ -949,33 +980,34 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
                 .build()
 
-        Log.i("Analytics","Periodic Request Added : ")
+        Log.i("Analytics", "Periodic Request Added : ")
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             "UploadWorker",
             ExistingPeriodicWorkPolicy.REPLACE,
-            periodicRequest
+            periodicRequest,
         )
     }
 
-    private fun periodicUploaderInputData(): Data {
-        return Data.Builder().apply {
-            putString(
-                DefinedParams.BaseUrl,
-                NetworkConstants.BASE_URL
-            )
-            putString(
-                DefinedParams.BuildConfigs,
-                BuildConfig.BUILD_TYPE
-            )
-            putAll(
-                mapOf(
-                    DefinedParams.Authorization to SecuredPreference.getString(
-                        SecuredPreference.EnvironmentKey.TOKEN.toString()
-                    )
+    private fun periodicUploaderInputData(): Data =
+        Data
+            .Builder()
+            .apply {
+                putString(
+                    DefinedParams.BaseUrl,
+                    NetworkConstants.BASE_URL,
                 )
-            )
-        }.build()
-    }
+                putString(
+                    DefinedParams.BuildConfigs,
+                    BuildConfig.BUILD_TYPE,
+                )
+                putAll(
+                    mapOf(
+                        DefinedParams.Authorization to SecuredPreference.getString(
+                            SecuredPreference.EnvironmentKey.TOKEN.toString(),
+                        ),
+                    ),
+                )
+            }.build()
 
     override fun onResume() {
         super.onResume()
@@ -986,14 +1018,19 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         val workManager = WorkManager.getInstance(this)
         workManager.getWorkInfosForUniqueWorkLiveData(workerUniqueNameForNCD).observe(this) {
             if (!it.isNullOrEmpty() && it[0].state == WorkInfo.State.RUNNING) {
-                binding.appBarMain.includeMainContent.syncingHolder.visible()
+                binding.appBarMain.includeMainContent.syncingHolder
+                    .visible()
             } else {
-                binding.appBarMain.includeMainContent.syncingHolder.gone()
+                binding.appBarMain.includeMainContent.syncingHolder
+                    .gone()
             }
         }
     }
 
-    override fun onTransferStatusUpdate(status: String, transfer: PatientTransfer) {
+    override fun onTransferStatusUpdate(
+        status: String,
+        transfer: PatientTransfer,
+    ) {
         when (status) {
             TransferStatusEnum.REJECTED.name -> {
                 showAlertDialogWithComments(
@@ -1003,24 +1040,24 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     errorMessage = getString(R.string.valid_reason),
                     buttonName = Pair(
                         getString(R.string.ok),
-                        getString(R.string.cancel)
-                    )
+                        getString(R.string.cancel),
+                    ),
                 ) { isPositiveResult, rejectionReason ->
                     if (isPositiveResult) {
                         viewModel.setAnalyticsData(
                             UserDetail.startDateTime,
                             eventName = AnalyticsDefinedParams.NCDTransferStatus + " " + TransferStatusEnum.REJECTED.name,
-                            isCompleted = true
+                            isCompleted = true,
                         )
-                            viewModel.patientTransferUpdate(
-                                NCDPatientTransferUpdateRequest(
-                                    transfer.id,
-                                    transferStatus = status,
-                                    rejectReason = rejectionReason,
-                                    memberReference = transfer.patient.id,
-                                    transferSite = transfer.transferSite
-                                )
-                            )
+                        viewModel.patientTransferUpdate(
+                            NCDPatientTransferUpdateRequest(
+                                transfer.id,
+                                transferStatus = status,
+                                rejectReason = rejectionReason,
+                                memberReference = transfer.patient.id,
+                                transferSite = transfer.transferSite,
+                            ),
+                        )
                     }
                 }
             }
@@ -1029,22 +1066,23 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 viewModel.setAnalyticsData(
                     UserDetail.startDateTime,
                     eventName = AnalyticsDefinedParams.NCDTransferStatus + " " + status,
-                    isCompleted = true
+                    isCompleted = true,
                 )
                 viewModel.patientTransferUpdate(
                     NCDPatientTransferUpdateRequest(
                         transfer.id,
                         transferStatus = status,
                         memberReference = transfer.patient.id,
-                        transferSite = transfer.transferSite
-                    )
+                        transferSite = transfer.transferSite,
+                    ),
                 )
             }
         }
     }
 
     override fun onViewDetail(patientID: Long) {
-        NCDPatientDetailDialogue.newInstance(patientID)
+        NCDPatientDetailDialogue
+            .newInstance(patientID)
             .show(supportFragmentManager, NCDPatientDetailDialogue.TAG)
     }
 
@@ -1056,7 +1094,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     NCDSupportRequest(
                         userId = SecuredPreference.getUserId().toString(),
                         summary = it,
-                        healthFacilityId = SecuredPreference.getOrganizationId().toLong()
+                        healthFacilityId = SecuredPreference.getOrganizationId().toLong(),
                     )
                 viewModel.createSupportRequest(request)
             }
@@ -1064,18 +1102,19 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             showErrorDialogue(
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
+                isNegativeButtonNeed = false,
             ) {}
         }
     }
-     private fun patientSearchDeepLink(){
-         val data: Uri? = intent?.data
-         val isDeepLink = data?.getQueryParameter("isDeepLink")
-         if (isDeepLink == "true") {
-             handleNavigation(true)
-             // Perform necessary action when deep link is detected
-         }
-     }
+
+    private fun patientSearchDeepLink() {
+        val data: Uri? = intent?.data
+        val isDeepLink = data?.getQueryParameter("isDeepLink")
+        if (isDeepLink == "true") {
+            handleNavigation(true)
+            // Perform necessary action when deep link is detected
+        }
+    }
 
     private fun showNotificationView(notificationResponses: ArrayList<PeerSupervisorNotificationResponse>) {
         binding.tvNoNotificationsFound.gone()
@@ -1084,7 +1123,9 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         if (oldIds != newIds) {
             SecuredPreference.notificationIds = newIds
             binding.appBarMain.notificationDot.visible()
-        } else binding.appBarMain.notificationDot.gone()
+        } else {
+            binding.appBarMain.notificationDot.gone()
+        }
         val adapter = PeerSupervisorNotificationAdapter()
         adapter.setData(notificationResponses)
         binding.rvNotifications.layoutManager = LinearLayoutManager(this)
@@ -1093,16 +1134,18 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
     private fun storeNotificationIds(notificationResponses: ArrayList<PeerSupervisorNotificationResponse>) {
         SecuredPreference.notificationIds = notificationResponses.map { it.id }
-        if (!SecuredPreference.notificationIds.isNullOrEmpty())
+        if (!SecuredPreference.notificationIds.isNullOrEmpty()) {
             binding.appBarMain.notificationDot.visible()
-        else binding.appBarMain.notificationDot.gone()
+        } else {
+            binding.appBarMain.notificationDot.gone()
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        if (CommonUtils.isCommunity() && CommonUtils.isPeerSuperVisor()){
+        if (CommonUtils.isCommunity() && CommonUtils.isPeerSuperVisor()) {
             val request = PeerSupervisorNotificationRequest(
-                userId = SecuredPreference.getUserId().toString()
+                userId = SecuredPreference.getUserId().toString(),
             )
             viewModel.getCBSNotificationList(request)
         }
@@ -1114,12 +1157,13 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             getString(R.string.logout_alert),
             positiveButtonName = getString(R.string.yes),
             cancelBtnName = getString(R.string.no),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (CommonUtils.isCommunity() && CommonUtils.isPeerSuperVisor()) {
                 SecuredPreference.putString(
                     SecuredPreference.EnvironmentKey.PEER_SUPERVISOR_NOTIFICATION_TOKEN.name,
-                    SecuredPreference.getString(SecuredPreference.EnvironmentKey.TOKEN.toString()))
+                    SecuredPreference.getString(SecuredPreference.EnvironmentKey.TOKEN.toString()),
+                )
             }
 
             val isNetworkAvailable = connectivityManager.isNetworkAvailable()
@@ -1131,14 +1175,13 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                             showErrorDialogue(
                                 getString(R.string.error),
                                 getString(R.string.no_internet_error),
-                                isNegativeButtonNeed = false
+                                isNegativeButtonNeed = false,
                             ) {}
                         }, 600)
                     } else {
                         if (SecuredPreference.notificationIds != null && viewModel.notificationIsViewed) {
                             viewModel.updateCBSNotification()
-                        }
-                        else{
+                        } else {
                             SecuredPreference.removePeerSupervisorToken()
                             finishLogout()
                         }

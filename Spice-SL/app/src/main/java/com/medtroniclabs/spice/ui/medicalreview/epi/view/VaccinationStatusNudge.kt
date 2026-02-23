@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.medicalreview.epi.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatImageView
@@ -21,7 +20,6 @@ class VaccinationStatusNudge @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     item: VaccinationDetail? = null,
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
-
     companion object {
         const val Vaccinated = 1
         const val VaccinatedWithDelay = 2
@@ -45,16 +43,15 @@ class VaccinationStatusNudge @JvmOverloads constructor(
         }
     }
 
-
     private fun getVaccinationStatus(vaccinationDetail: VaccinationDetail): Pair<Int, Long?> {
         if (vaccinationDetail.vaccinatedDate != null) { // Vaccination Completed
             val daysDiff =
                 getDaysBetween(vaccinationDetail.vaccinatedDate!!, vaccinationDetail.updatedScheduleDate)
-            return if (daysDiff > 0)
+            return if (daysDiff > 0) {
                 Pair(VaccinatedWithDelay, daysDiff)
-            else
+            } else {
                 Pair(Vaccinated, null)
-
+            }
         } else {
             val dayDiff = vaccinationDetail.updatedScheduleDate
                 ?.let { ChronoUnit.DAYS.between(it, LocalDate.now()) }
@@ -64,16 +61,19 @@ class VaccinationStatusNudge @JvmOverloads constructor(
         }
     }
 
-    private fun getDaysBetween(vaccinatedDateStr: String, scheduledDate: LocalDate?): Long {
+    private fun getDaysBetween(
+        vaccinatedDateStr: String,
+        scheduledDate: LocalDate?,
+    ): Long {
         val vaccinatedDate = vaccinatedDateStr.getLocalDate()
         return ChronoUnit.DAYS.between(scheduledDate, vaccinatedDate)
     }
 
     private fun updateStatusIcon(item: VaccinationDetail) {
         val status = getVaccinationStatus(item)
-        when(status.first) {
+        when (status.first) {
             Upcoming -> {
-                background =  ContextCompat.getDrawable(context, R.drawable.bg_epi_upcoming)
+                background = ContextCompat.getDrawable(context, R.drawable.bg_epi_upcoming)
                 flIconEpiStatus.background = ContextCompat.getDrawable(context, R.drawable.bg_ic_epi_upcoming)
                 ivIconEpiStatus.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_epi_upcoming))
                 tvEpiStatus.setTextColor(context.getColor(R.color.epi_upcoming_primary))
@@ -81,8 +81,8 @@ class VaccinationStatusNudge @JvmOverloads constructor(
             }
 
             Vaccinated -> {
-                //setBackgroundResource(R.drawable.bg_epi_vaccinated)
-                background =  ContextCompat.getDrawable(context, R.drawable.bg_epi_vaccinated)
+                // setBackgroundResource(R.drawable.bg_epi_vaccinated)
+                background = ContextCompat.getDrawable(context, R.drawable.bg_epi_vaccinated)
                 flIconEpiStatus.background = ContextCompat.getDrawable(context, R.drawable.bg_ic_epi_vaccinated)
                 ivIconEpiStatus.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_epi_vaccinated))
                 tvEpiStatus.setTextColor(context.getColor(R.color.epi_vaccinated_primary))
@@ -90,7 +90,7 @@ class VaccinationStatusNudge @JvmOverloads constructor(
             }
 
             VaccinatedWithDelay -> {
-                background =  ContextCompat.getDrawable(context, R.drawable.bg_epi_delay_vaccinated)
+                background = ContextCompat.getDrawable(context, R.drawable.bg_epi_delay_vaccinated)
                 flIconEpiStatus.background = ContextCompat.getDrawable(context, R.drawable.bg_ic_epi_delay_vaccinated)
                 ivIconEpiStatus.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_epi_vaccinated))
                 tvEpiStatus.setTextColor(context.getColor(R.color.epi_vaccinated_delay_primary))
@@ -104,7 +104,7 @@ class VaccinationStatusNudge @JvmOverloads constructor(
             }
 
             else -> {
-                background =  ContextCompat.getDrawable(context, R.drawable.bg_epi_missed)
+                background = ContextCompat.getDrawable(context, R.drawable.bg_epi_missed)
                 flIconEpiStatus.background = ContextCompat.getDrawable(context, R.drawable.bg_ic_epi_missed)
                 ivIconEpiStatus.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_epi_missed))
                 tvEpiStatus.setTextColor(context.getColor(R.color.epi_missed_primary))

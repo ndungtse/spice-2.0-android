@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.data.offlinesync.utils
 
 object OfflineConstant {
-
     const val KEY_REQUESTS_ID = "key_requests_id"
 
     const val REQUEST_ID = "requestId"
@@ -25,5 +24,4 @@ object OfflineConstant {
 
     const val CONTACT_TRACING_YET_TO_TAKE = 0
     const val CONTACT_TRACING_DONE = 1
-
 }

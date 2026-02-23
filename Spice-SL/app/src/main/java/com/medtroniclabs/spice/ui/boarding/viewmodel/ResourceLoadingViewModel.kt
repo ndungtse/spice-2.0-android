@@ -7,14 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.appextensions.setLoading
-import com.medtroniclabs.spice.appextensions.setSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.data.DeviceDetails
-import com.medtroniclabs.spice.network.DeviceInformation
 import com.medtroniclabs.spice.ncd.followup.repo.NCDFollowUpRepo
+import com.medtroniclabs.spice.network.DeviceInformation
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.OfflineSyncRepository
@@ -31,9 +29,8 @@ class ResourceLoadingViewModel @Inject constructor(
     private val offlineSyncRepository: OfflineSyncRepository,
     private val connectivityManager: ConnectivityManager,
     private val followUpRepo: NCDFollowUpRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
-
     val oldUserDataSync = MutableLiveData<Resource<List<String>?>>()
     val metaDataCompleteLiveData = MutableLiveData<Resource<Boolean>>()
     val deviceDetailsLiveData = MutableLiveData<Resource<DeviceDetails>>()
@@ -44,7 +41,6 @@ class ResourceLoadingViewModel @Inject constructor(
     private val meta = mutableListOf<String>()
     private val syncDelay = 20 * 1000L // 20 Sec
     var changeFacility = false
-
 
     fun syncOldUserData() {
         viewModelScope.launch(dispatcherIO) {
@@ -69,8 +65,8 @@ class ResourceLoadingViewModel @Inject constructor(
                 metaRepository.getMetaDataInformation(
                     workflowNames,
                     meta,
-                    changeFacility
-                )
+                    changeFacility,
+                ),
             )
         }
     }
@@ -83,7 +79,7 @@ class ResourceLoadingViewModel @Inject constructor(
                 return@launch
             }
             deviceDetailsLiveData.postValue(
-                metaRepository.updateDeviceDetails(DeviceInformation.getDeviceDetails(context))
+                metaRepository.updateDeviceDetails(DeviceInformation.getDeviceDetails(context)),
             )
         }
     }
@@ -92,7 +88,7 @@ class ResourceLoadingViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             householdsLiveData.postLoading()
 
-            //1. Update status for old request Id
+            // 1. Update status for old request Id
             if (!getSyncStatus()) {
                 householdsLiveData.postError()
                 return@launch
@@ -156,7 +152,6 @@ class ResourceLoadingViewModel @Inject constructor(
         return true
     }
 
-
     fun downloadTheFollowUpData() {
         viewModelScope.launch(dispatcherIO) {
             ncdFollowUpLiveData.postLoading()
@@ -176,5 +171,4 @@ class ResourceLoadingViewModel @Inject constructor(
             followUpRepo.createCallDetails()
         }
     }
-
 }

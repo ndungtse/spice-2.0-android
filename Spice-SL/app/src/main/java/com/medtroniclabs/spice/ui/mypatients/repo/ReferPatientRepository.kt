@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.ui.mypatients.repo
 
-import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.ReferPatientAPIRequest
 import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
@@ -18,12 +17,9 @@ import javax.inject.Inject
 
 class ReferPatientRepository @Inject constructor(
     private val apiHelper: ApiHelper,
-    private val roomHelper: RoomHelper
+    private val roomHelper: RoomHelper,
 ) {
-
-    suspend fun getHealthFacilityMetaData(
-        districtId: String?
-    ): Resource<List<ReferPatientHealthFacilityItem>> {
+    suspend fun getHealthFacilityMetaData(districtId: String?): Resource<List<ReferPatientHealthFacilityItem>> {
         try {
             val response = apiHelper.getHealthFacilityMetaData(ReferPatientAPIRequest(districtId))
             if (response.isSuccessful) {
@@ -52,6 +48,7 @@ class ReferPatientRepository @Inject constructor(
         }
         return Resource(state = ResourceState.ERROR)
     }
+
     suspend fun createReferPatientResult(
         patientReference: String?,
         encounterId: String?,
@@ -61,8 +58,8 @@ class ReferPatientRepository @Inject constructor(
         houseHoldId: String?,
         villageId: String?,
         memberId: String?,
-        tbIMRCompleted: Boolean? = null
-    ): Resource<HashMap<String,Any>> {
+        tbIMRCompleted: Boolean? = null,
+    ): Resource<HashMap<String, Any>> {
         try {
             val request = createReferPatientRequest(
                 patientReference,
@@ -73,7 +70,7 @@ class ReferPatientRepository @Inject constructor(
                 houseHoldId,
                 villageId,
                 memberId,
-                tbIMRCompleted = tbIMRCompleted
+                tbIMRCompleted = tbIMRCompleted,
             )
             val response = request?.let { apiHelper.createReferPatientResult(it) }
             if (response != null && response.isSuccessful) {
@@ -86,6 +83,7 @@ class ReferPatientRepository @Inject constructor(
         }
         return Resource(state = ResourceState.ERROR)
     }
+
     private fun createReferPatientRequest(
         patientReference: String?,
         encounterId: String?,
@@ -95,9 +93,9 @@ class ReferPatientRepository @Inject constructor(
         houseHoldId: String?,
         villageId: String?,
         memberId: String?,
-        tbIMRCompleted: Boolean? = null
-    ): ReferPatientResult {
-        return ReferPatientResult(
+        tbIMRCompleted: Boolean? = null,
+    ): ReferPatientResult =
+        ReferPatientResult(
             encounterId = encounterId,
             type = MedicalReviewTypeEnums.medicalReview.name,
             referredReason = selectedItems.third,
@@ -114,15 +112,14 @@ class ReferPatientRepository @Inject constructor(
             villageId = villageId,
             memberId = memberId,
             category = assessmentName.second,
-            tbIMRCompleted = tbIMRCompleted
+            tbIMRCompleted = tbIMRCompleted,
         )
-    }
-    suspend fun getDefaultHealthFacilityDistrictId(): Resource<HealthFacilityEntity?>? {
-        return try {
+
+    suspend fun getDefaultHealthFacilityDistrictId(): Resource<HealthFacilityEntity?>? =
+        try {
             val response = roomHelper.getDefaultHealthFacility()
             Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 }

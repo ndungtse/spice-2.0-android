@@ -8,36 +8,40 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.RowActivitiesBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.MenuSelectionListener
-import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.common.DefinedParams
 
 class DashboardMenuItemsAdapter(
     private val roleBasedActivitiesList: List<MenuEntity>,
-    private val listener: MenuSelectionListener
+    private val listener: MenuSelectionListener,
 ) :
     RecyclerView.Adapter<DashboardMenuItemsAdapter.ActivitiesViewHolder>() {
-
     class ActivitiesViewHolder(val binding: RowActivitiesBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ActivitiesViewHolder {
-        return ActivitiesViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ActivitiesViewHolder =
+        ActivitiesViewHolder(
             RowActivitiesBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: ActivitiesViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ActivitiesViewHolder,
+        position: Int,
+    ) {
         val model = roleBasedActivitiesList[position]
         holder.binding.tvTitle.text = if (CommonUtils.parseUserLocale() == DefinedParams.EN) {
             model.name
@@ -63,44 +67,48 @@ class DashboardMenuItemsAdapter(
         }
 
         holder.binding.root.safeClickListener {
-            if (model.menuId == MenuConstants.ICCM_MENU_ID && model.name.equals(
+            if (model.menuId == MenuConstants.ICCM_MENU_ID &&
+                model.name.equals(
                     MenuConstants.OTHER_SYMPTOMS,
-                    true
+                    true,
                 )
             ) {
                 listener.onMenuSelected(model.name, model.subModule)
-            }else{
-                listener.onMenuSelected(model.menuId,model.subModule)
+            } else {
+                listener.onMenuSelected(model.menuId, model.subModule)
             }
         }
     }
 
-
-    private fun getResourceActivityId(menuID: String, context: Context, name: String): Drawable? {
+    private fun getResourceActivityId(
+        menuID: String,
+        context: Context,
+        name: String,
+    ): Drawable? {
         return when (menuID) {
             MenuConstants.CBS_MENU_ID.lowercase() -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_cbs
+                R.drawable.ic_cbs,
             )
 
             MenuConstants.CBS_MENU_ID.uppercase() -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_cbs
+                R.drawable.ic_cbs,
             )
 
             MenuConstants.HOUSEHOLD_MENU_ID -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_household
+                R.drawable.ic_household,
             )
 
             MenuConstants.MY_PATIENTS_MENU_ID -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_my_patient
+                R.drawable.ic_my_patient,
             )
 
             MenuConstants.SCREENER_MENU_ID -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_general_screener_tool
+                R.drawable.ic_general_screener_tool,
             )
 
             MenuConstants.ICCM_MENU_ID -> {
@@ -113,132 +121,130 @@ class DashboardMenuItemsAdapter(
 
             MenuConstants.TB_MENU_ID.lowercase() -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_tb_tool
+                R.drawable.ic_tb_tool,
             )
 
             MenuConstants.TB_MENU_ID -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_tb_tool
+                R.drawable.ic_tb_tool,
             )
             MenuConstants.NCD_MENU_ID -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_ncd_tool
+                R.drawable.ic_ncd_tool,
             )
 
             MenuConstants.RMNCH_MENU_ID, MenuConstants.MATERNAL_HEALTH -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_rmnch_tool
+                R.drawable.ic_rmnch_tool,
             )
 
             MenuConstants.OTHER_SYMPTOMS -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_general
+                R.drawable.ic_general,
             )
 
             MenuConstants.GENERAL_ID -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_general
+                R.drawable.ic_general,
             )
 
             MenuConstants.MOTHER_AND_NEONATE_ID -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_mother_neonate
+                R.drawable.ic_mother_neonate,
             )
 
             MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_child_under_5
+                R.drawable.ic_child_under_5,
             )
 
             MenuConstants.UNDER_AGE_ABOVE_FIVE_YEAR_ID -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_child_above_5
+                R.drawable.ic_child_above_5,
             )
 
             MenuConstants.EPI_ID -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_epi
+                R.drawable.ic_epi,
             )
             MenuConstants.PerformanceMonitoring_ID -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_performance_monitoring
+                R.drawable.ic_performance_monitoring,
             )
 
             MenuConstants.SCREENING -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_screening
+                R.drawable.ic_screening,
             )
 
             MenuConstants.REGISTRATION -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_registration
+                R.drawable.ic_registration,
             )
 
             MenuConstants.ASSESSMENT -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_assessment
+                R.drawable.ic_assessment,
             )
 
             MenuConstants.DASHBOARD -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_dashboard
+                R.drawable.ic_dashboard,
             )
 
             MenuConstants.LIFESTYLE -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_lifestyle
+                R.drawable.ic_lifestyle,
             )
 
             MenuConstants.PSYCHOLOGICAL -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_psycological_menu
+                R.drawable.ic_psycological_menu,
             )
 
             MenuConstants.MENTAL_HEALTH -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_mental_health
+                R.drawable.ic_mental_health,
             )
 
             MenuConstants.DISPENSE -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_dispense
+                R.drawable.ic_dispense,
             )
 
             MenuConstants.FOLLOW_UP -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_follow_up
+                R.drawable.ic_follow_up,
             )
 
             MenuConstants.INVESTIGATION -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_investigation
+                R.drawable.ic_investigation,
             )
 
             MenuConstants.COMMUNITY_PROFILE -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_community_profile
+                R.drawable.ic_community_profile,
             )
 
             MenuConstants.FP_MENU_ID -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_family_planning
+                R.drawable.ic_family_planning,
             )
 
             MenuConstants.FP_MENU_MR -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_family_planning
+                R.drawable.ic_family_planning,
             )
 
             MenuConstants.HIV -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_hiv
+                R.drawable.ic_hiv,
             )
 
             else -> null
         }
     }
 
-    override fun getItemCount(): Int {
-        return roleBasedActivitiesList.size
-    }
+    override fun getItemCount(): Int = roleBasedActivitiesList.size
 }

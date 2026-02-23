@@ -2,7 +2,7 @@ package com.medtroniclabs.spice.ncd.data
 
 data class PrescriptionNudgeResponse(
     var recentBGLogs: ArrayList<RecentBGLogs>,
-    var prescriptionResults: ArrayList<PrescriptionResults>
+    var prescriptionResults: ArrayList<PrescriptionResults>,
 )
 
 data class RecentBGLogs(
@@ -27,9 +27,7 @@ data class PrescriptionResults(
     val dosageUnitValue: String? = null,
 )
 
-
-data class PredictionRequest(val memberId : String? = null, val patientReference : String? = null)
-
+data class PredictionRequest(val memberId: String? = null, val patientReference: String? = null)
 
 data class HBA1CModel(
     val id: String? = null,
@@ -45,7 +43,7 @@ data class HBA1CModel(
     val comments: Any? = null,
     val roleName: Any? = null,
     val isReview: Any? = null,
-    val resultUpdatedBy: Any? = null
+    val resultUpdatedBy: Any? = null,
 )
 
 data class LabTestResult(
@@ -58,9 +56,5 @@ data class LabTestResult(
     val testedOn: String? = null,
     val patientId: String? = null,
     val performedBy: Int? = null,
-    val performedName: String? = null
+    val performedName: String? = null,
 )
-
-
-
-

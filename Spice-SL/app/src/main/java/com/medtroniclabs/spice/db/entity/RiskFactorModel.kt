@@ -9,5 +9,5 @@ data class RiskFactorModel(
     @SerializedName("risk_level")
     var riskLevel: String,
     @SerializedName("risk_score")
-    var riskScore: Int
+    var riskScore: Int,
 )

@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter
 object MemberRegistration {
     const val name = "name"
     const val phoneNumber = "phone_number"
-    const val villageId="village_id"
+    const val villageId = "village_id"
     const val dateOfBirth = "date_of_birth"
     const val gender = "gender"
     const val householdId = "household_id"
@@ -27,10 +27,15 @@ object MemberRegistration {
     const val Grandparent = "Grandparent"
     const val OtherRelation = "Other Family Member (specify)"
 
-    fun isValidRelationAge(ctx: Context, dob: String, relation: String, headDob: String?): String? {
+    fun isValidRelationAge(
+        ctx: Context,
+        dob: String,
+        relation: String,
+        headDob: String?,
+    ): String? {
         // No Age Validation for Brother or Sister and Other relation
-        if (relation.equals(BrotherOrSister, true)
-            || relation.equals(OtherRelation, true)
+        if (relation.equals(BrotherOrSister, true) ||
+            relation.equals(OtherRelation, true)
         ) {
             return null
         }
@@ -70,7 +75,7 @@ object MemberRegistration {
     fun isValidMinAgeForCbsMemberAdd(dob: String): Boolean {
         val memberDOB = LocalDate.parse(
             dob,
-            DateTimeFormatter.ofPattern(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+            DateTimeFormatter.ofPattern(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
         )
         val ageDifference = Period.between(memberDOB, LocalDate.now())
         return ageDifference.years == 0

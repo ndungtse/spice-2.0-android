@@ -20,9 +20,9 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListenerForFollowUp
 
 class NCDFollowUpLostFragment : BaseFragment(), PatientSelectionListenerForFollowUp {
-
     companion object {
         const val TAG = "NCDFollowUpLostFragment"
+
         fun newInstance(type: String) =
             NCDFollowUpLostFragment().apply {
                 arguments = Bundle().apply {
@@ -34,7 +34,7 @@ class NCDFollowUpLostFragment : BaseFragment(), PatientSelectionListenerForFollo
     private lateinit var binding: FragmentFollowUpSearchBinding
     private val followUpAdapter: NCDPatientFollowUPListAdapter by lazy {
         NCDPatientFollowUPListAdapter(
-            this
+            this,
         )
     }
 
@@ -42,15 +42,19 @@ class NCDFollowUpLostFragment : BaseFragment(), PatientSelectionListenerForFollo
     private val followUpViewModel: NCDFollowUpLostViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentFollowUpSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -73,7 +77,7 @@ class NCDFollowUpLostFragment : BaseFragment(), PatientSelectionListenerForFollo
             viewModel,
             binding = binding,
             context = requireContext(),
-            followUpAdapter = followUpAdapter
+            followUpAdapter = followUpAdapter,
         )
     }
 
@@ -88,7 +92,7 @@ class NCDFollowUpLostFragment : BaseFragment(), PatientSelectionListenerForFollo
             showError = { title, message ->
                 showErrorDialog(title = title, message = message)
             },
-            postError = { viewModel.totalPatientCount.postValue(null) }
+            postError = { viewModel.totalPatientCount.postValue(null) },
         )
     }
 
@@ -105,7 +109,7 @@ class NCDFollowUpLostFragment : BaseFragment(), PatientSelectionListenerForFollo
                     memberId = item.memberId,
                     isInitiated = true,
                     phoneNumber = item.phoneNumber,
-                    provenance = ProvanceDto()
+                    provenance = ProvanceDto(),
                 )
                 withNetworkAvailability(online = {
                     viewModel.updatePatientCallRegister(request)
@@ -130,7 +134,7 @@ class NCDFollowUpLostFragment : BaseFragment(), PatientSelectionListenerForFollo
         NCDFollowUpUtils.collectPagedData(
             lifecycleOwner = viewLifecycleOwner,
             pagingDataFlow = viewModel.patientsDataSource,
-            adapter = followUpAdapter
+            adapter = followUpAdapter,
         )
     }
 }

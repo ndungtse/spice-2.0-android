@@ -5,5 +5,5 @@ data class SyncResponse(
     val status: Boolean,
     val entityList: List<SyncEntityList>?,
     val responseCode: Int,
-    val totalCount: Int
+    val totalCount: Int,
 )

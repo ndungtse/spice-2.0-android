@@ -19,11 +19,10 @@ import javax.inject.Inject
 
 class InvestigationRepository @Inject constructor(
     private var apiHelper: ApiHelper,
-    private var roomHelper: RoomHelper
+    private var roomHelper: RoomHelper,
 ) {
-
-    suspend fun searchInvestigationByName(request: SearchRequestLabTest): Resource<ArrayList<SearchLabTestResponse>> {
-        return try {
+    suspend fun searchInvestigationByName(request: SearchRequestLabTest): Resource<ArrayList<SearchLabTestResponse>> =
+        try {
             val response = apiHelper.searchLabTestByName(request)
             if (response.isSuccessful) {
                 response.body()?.entityList?.let {
@@ -37,11 +36,9 @@ class InvestigationRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(ResourceState.ERROR)
         }
-    }
 
-
-    suspend fun createLabTest(request: LabTestCreateRequest): Resource<Map<String, Any>> {
-        return try {
+    suspend fun createLabTest(request: LabTestCreateRequest): Resource<Map<String, Any>> =
+        try {
             val response = apiHelper.createLabTest(request)
             if (response.isSuccessful) {
                 response.body()?.entity?.let {
@@ -55,10 +52,9 @@ class InvestigationRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(ResourceState.ERROR)
         }
-    }
 
-    suspend fun getLabTestList(request: LabTestListRequest): Resource<ArrayList<LabTestListResponse>> {
-        return try {
+    suspend fun getLabTestList(request: LabTestListRequest): Resource<ArrayList<LabTestListResponse>> =
+        try {
             val response = apiHelper.getLabTestList(request)
             if (response.isSuccessful) {
                 response.body()?.entityList?.let {
@@ -72,10 +68,9 @@ class InvestigationRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(ResourceState.ERROR)
         }
-    }
 
-    suspend fun removeLabTest(request: RemoveLabTestRequest): Resource<Map<String, Any>> {
-        return try {
+    suspend fun removeLabTest(request: RemoveLabTestRequest): Resource<Map<String, Any>> =
+        try {
             val response = apiHelper.removeLabTest(request)
             if (response.isSuccessful) {
                 response.body()?.entity?.let {
@@ -89,10 +84,9 @@ class InvestigationRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(ResourceState.ERROR)
         }
-    }
 
-    suspend fun getLabTestNudgeList(predictionRequest: PredictionRequest): Resource<HashMap<String, Any>> {
-        return try {
+    suspend fun getLabTestNudgeList(predictionRequest: PredictionRequest): Resource<HashMap<String, Any>> =
+        try {
             val response = apiHelper.getLabTestNudgeList(predictionRequest)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
@@ -102,11 +96,11 @@ class InvestigationRepository @Inject constructor(
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     private fun getErrorMessage(errorBody: ResponseBody?): String? {
-        if (errorBody == null)
+        if (errorBody == null) {
             return null
+        }
         return try {
             val errorResponse = Gson().fromJson(errorBody.string(), ErrorResponse::class.java)
             return errorResponse.message
@@ -115,15 +109,15 @@ class InvestigationRepository @Inject constructor(
         }
     }
 
-    suspend fun markAsReviewed(request: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> {
-        return try {
+    suspend fun markAsReviewed(request: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> =
+        try {
             val response = apiHelper.markAsReviewed(request)
-            if (response.isSuccessful)
+            if (response.isSuccessful) {
                 Resource(ResourceState.SUCCESS, response.body())
-            else
+            } else {
                 Resource(ResourceState.ERROR)
+            }
         } catch (e: Exception) {
             Resource(ResourceState.ERROR)
         }
-    }
 }

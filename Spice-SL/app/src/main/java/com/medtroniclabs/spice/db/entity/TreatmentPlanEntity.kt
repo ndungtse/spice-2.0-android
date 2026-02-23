@@ -14,7 +14,7 @@ data class TreatmentPlanEntity(
     val duration: String,
     val period: String,
     val riskLevel: String? = null,
-    val type: String? = null
+    val type: String? = null,
 ) {
     @Ignore
     val carePlanId: String? = null

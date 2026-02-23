@@ -1,9 +1,5 @@
 package com.medtroniclabs.spice.db.entity
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
 data class MemberClinicalEntity(
     val patientId: String?,
     val visitCount: Long,
@@ -12,5 +8,5 @@ data class MemberClinicalEntity(
     val isDeliveryAtHome: Boolean? = null,
     val neonateHouseholdMemberLocalId: Long? = null,
     val isNeonateAlive: Boolean? = null,
-    val isNeonateDeathRecordedByPHU: Boolean? = null
+    val isNeonateDeathRecordedByPHU: Boolean? = null,
 )

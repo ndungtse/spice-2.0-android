@@ -27,17 +27,16 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 
 class EmctVisitStatusDialogFragment : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentEmctVisitStatusDialogBinding
     private lateinit var emctTagView: TagListCustomView
     private val hivViewModel: HivViewModel by activityViewModels()
     var listener: DialogDismissListener? = null
     private val diagnosisViewModel: DiagnosisViewModel by activityViewModels()
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentEmctVisitStatusDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -45,8 +44,10 @@ class EmctVisitStatusDialogFragment : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
@@ -54,6 +55,7 @@ class EmctVisitStatusDialogFragment : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "EmctVisitStatusDialogFragment"
+
         fun newInstance() = EmctVisitStatusDialogFragment()
     }
 
@@ -67,7 +69,7 @@ class EmctVisitStatusDialogFragment : DialogFragment(), View.OnClickListener {
             TagListCustomView(binding.root.context, binding.emctChipGroup) { name, _, isChecked ->
                 if (isChecked) {
                     binding.btnOkay.isEnabled = true
-                    hivViewModel.selectedemtctVisitStatus =  emctTagView.getSelectedTags().firstOrNull()?.value
+                    hivViewModel.selectedemtctVisitStatus = emctTagView.getSelectedTags().firstOrNull()?.value
                 } else {
                     binding.btnOkay.isEnabled = false
                     hivViewModel.selectedemtctVisitStatus = null
@@ -81,15 +83,15 @@ class EmctVisitStatusDialogFragment : DialogFragment(), View.OnClickListener {
                 request = HivVitalsRequest(
                     patientReference = hivViewModel.id,
                     memberId = hivViewModel.memberId,
-                    types = listOf(EMTCCT_VISIT_STATUS)
-                )
+                    types = listOf(EMTCCT_VISIT_STATUS),
+                ),
             )
             val emTctVisitStatusList = statusList.map {
                 ChipViewItemModel(name = it.name, value = it.value)
             }
             emctTagView.addChipItemList(
                 ArrayList(emTctVisitStatusList.distinct()),
-                null
+                null,
             )
         }
 
@@ -112,7 +114,6 @@ class EmctVisitStatusDialogFragment : DialogFragment(), View.OnClickListener {
             }
         }
 
-
         hivViewModel.hivVitalsByTypeLiveData.observe(viewLifecycleOwner) { response ->
             when (response.state) {
                 ResourceState.LOADING -> {
@@ -131,17 +132,16 @@ class EmctVisitStatusDialogFragment : DialogFragment(), View.OnClickListener {
                                 selectedEmtctVisitStatus.add(
                                     ChipViewItemModel(
                                         name = response.emtctVisitStatus,
-                                        value = response.emtctVisitStatus
-                                    )
+                                        value = response.emtctVisitStatus,
+                                    ),
                                 )
                             }
                             emctTagView.addChipItemList(
                                 emTctVisitStatusList.distinct(),
-                                selectedEmtctVisitStatus.distinct()
+                                selectedEmtctVisitStatus.distinct(),
                             )
                         }
                     }
-
                 }
 
                 ResourceState.ERROR -> {
@@ -149,10 +149,7 @@ class EmctVisitStatusDialogFragment : DialogFragment(), View.OnClickListener {
                 }
             }
         }
-
-
     }
-
 
     override fun onClick(view: View?) {
         when (view?.id) {
@@ -172,15 +169,13 @@ class EmctVisitStatusDialogFragment : DialogFragment(), View.OnClickListener {
                     longitude = hivViewModel.lastLocation?.longitude,
                     latitude = hivViewModel.lastLocation?.latitude,
                     startTime = DateUtils.getCurrentDateAndTime(DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
-                    endTime = DateUtils.getCurrentDateAndTime(DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+                    endTime = DateUtils.getCurrentDateAndTime(DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
                 ),
-                stringValue = emtctVisitStatus
+                stringValue = emtctVisitStatus,
             )
         }
         if (request != null) {
             hivViewModel.createEMTCT(request)
         }
     }
-
-
 }

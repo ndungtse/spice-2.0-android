@@ -17,17 +17,20 @@ import javax.inject.Inject
 @HiltViewModel
 class MedicalReviewAncHistoryViewModel @Inject constructor(
     private val motherNeonateANCRepo: MotherNeonateANCRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
     val motherNeonateAncSummary = MutableLiveData<Resource<MotherNeonateAncSummaryModel>>()
 
-    fun getMedicalReviewAncHistory(id: String?,fhirId: String?) {
+    fun getMedicalReviewAncHistory(
+        id: String?,
+        fhirId: String?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             motherNeonateAncSummary.postLoading()
             motherNeonateAncSummary.postValue(
                 motherNeonateANCRepo.fetchSummaryDetails(
-                    MotherNeonateAncRequest(id, previousHistory = true, patientReference = fhirId)
-                )
+                    MotherNeonateAncRequest(id, previousHistory = true, patientReference = fhirId),
+                ),
             )
         }
     }

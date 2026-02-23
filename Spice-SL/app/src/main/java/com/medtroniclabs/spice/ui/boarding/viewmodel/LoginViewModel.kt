@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.ncd.data.DeviceDetails
 import com.medtroniclabs.spice.network.DeviceInformation
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
@@ -28,8 +27,6 @@ class LoginViewModel @Inject constructor(
     private val followUpRepository: FollowUpRepository,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
-
-
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 
@@ -43,7 +40,7 @@ class LoginViewModel @Inject constructor(
     fun doLogin(
         context: Context,
         username: String,
-        password: String
+        password: String,
     ) {
         viewModelScope.launch(dispatcherIO) {
             loginResponseLiveData.postLoading()
@@ -54,11 +51,10 @@ class LoginViewModel @Inject constructor(
     private fun getUnSyncedDataCount() {
         viewModelScope.launch(dispatcherIO) {
             val count = houseHoldRepository.getUnSyncedHouseholdCount() +
-                    houseHoldRepository.getUnSyncedHouseholdMemberCount() +
-                    assessmentRepository.getUnSyncedAssessmentCount() +
-                    followUpRepository.getUnSyncedFollowUpCount()
+                houseHoldRepository.getUnSyncedHouseholdMemberCount() +
+                assessmentRepository.getUnSyncedAssessmentCount() +
+                followUpRepository.getUnSyncedFollowUpCount()
             unSyncedDataCountLiveData.postValue(count)
         }
     }
-
 }

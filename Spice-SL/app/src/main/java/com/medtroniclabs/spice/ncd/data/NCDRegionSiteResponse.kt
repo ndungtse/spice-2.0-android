@@ -8,5 +8,5 @@ data class RegionSiteResponse(
 )
 
 data class OperatingUnitModel(
-    val tenantId: Long
+    val tenantId: Long,
 )

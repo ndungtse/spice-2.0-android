@@ -17,27 +17,30 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.communityprofile.adapter.CommunityListAdapter
 import com.medtroniclabs.spice.ui.communityprofile.viewmodel.CommunityProfileViewModel
 
-
 class CommunityProfileSearchFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentCommunityProfileSearchBinding
     private val communityProfileViewModel: CommunityProfileViewModel by activityViewModels()
     private lateinit var communityListAdapter: CommunityListAdapter
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentCommunityProfileSearchBinding.inflate(
             inflater,
             container,
-            false
+            false,
         )
 
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         addObserver()
@@ -54,7 +57,8 @@ class CommunityProfileSearchFragment : BaseFragment(), View.OnClickListener {
         binding.llExactSearch.etSearchTerm.setTextChangeListener {
             val input = it?.trim().toString()
             binding.llExactSearch.btnSearch.isEnabled =
-                input.isNotEmpty() && input.length >= 3
+                input.isNotEmpty() &&
+                input.length >= 3
 
             if (input.isEmpty()) {
                 communityProfileViewModel.setSearchFilter("")
@@ -70,14 +74,14 @@ class CommunityProfileSearchFragment : BaseFragment(), View.OnClickListener {
         binding.llExactSearch.etSearchTerm.setCompoundDrawablesWithIntrinsicBounds(
             ContextCompat.getDrawable(
                 requireContext(),
-                R.drawable.ic_blue_search
-            ),  // Left drawable
-            null,  // Top drawable
-            null,  // Right drawable
-            null   // Bottom drawable
+                R.drawable.ic_blue_search,
+            ), // Left drawable
+            null, // Top drawable
+            null, // Right drawable
+            null, // Bottom drawable
         )
         communityListAdapter = CommunityListAdapter { selectedCommunity ->
-            val isExist = selectedCommunity.isCommunityProfileDetailAvailable?.let {  it > 0 } ?: false
+            val isExist = selectedCommunity.isCommunityProfileDetailAvailable?.let { it > 0 } ?: false
             loadFormOrDetailFragment(selectedCommunity, isExist)
         }
         binding.rvCommunities.adapter = communityListAdapter
@@ -86,9 +90,9 @@ class CommunityProfileSearchFragment : BaseFragment(), View.OnClickListener {
 
     private fun addObserver() {
         communityProfileViewModel.searchFilterLiveData.observe(viewLifecycleOwner) {
-            if(it.isEmpty()){
+            if (it.isEmpty()) {
                 binding.tvNoCommunityFound.visibility = View.VISIBLE
-            }else{
+            } else {
                 binding.tvNoCommunityFound.visibility = View.GONE
             }
             binding.tvCommunityCount.text = setLabel(it.size)
@@ -96,7 +100,10 @@ class CommunityProfileSearchFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun loadFormOrDetailFragment(community: CommunityProfileDetail, isExist: Boolean) {
+    private fun loadFormOrDetailFragment(
+        community: CommunityProfileDetail,
+        isExist: Boolean,
+    ) {
         val bundle = Bundle().apply {
             putLong(DefinedParams.COMMUNITY_ID, community.villageId)
             putString(DefinedParams.COMMUNITY_NAME, community.villageName)
@@ -118,7 +125,6 @@ class CommunityProfileSearchFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-
     companion object {
         const val TAG = "CommunityProfileSearchFragment"
     }
@@ -126,7 +132,8 @@ class CommunityProfileSearchFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.btnSearch -> {
-                val searchTerm = binding.llExactSearch.etSearchTerm.text.toString()
+                val searchTerm = binding.llExactSearch.etSearchTerm.text
+                    .toString()
                 communityProfileViewModel.setSearchFilter(searchTerm)
             }
         }

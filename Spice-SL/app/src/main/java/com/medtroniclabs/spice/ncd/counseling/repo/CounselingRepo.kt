@@ -3,20 +3,25 @@ package com.medtroniclabs.spice.ncd.counseling.repo
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.ncd.data.AssessmentResultModel
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import javax.inject.Inject
 
 class CounselingRepo @Inject constructor(
-    private var apiHelper: ApiHelper, private var roomHelper: RoomHelper
+    private var apiHelper: ApiHelper, private var roomHelper: RoomHelper,
 ) {
-    fun getLifestyleAssessments(type: String? = null, category: String) =
-        roomHelper.getComorbidities(type, category)
+    fun getLifestyleAssessments(
+        type: String? = null,
+        category: String,
+    ) = roomHelper.getComorbidities(type, category)
 
-    suspend fun createAssessment(request: NCDCounselingModel, lifestyle: Boolean): Resource<APIResponse<NCDCounselingModel>> {
-        return try {
+    suspend fun createAssessment(
+        request: NCDCounselingModel,
+        lifestyle: Boolean,
+    ): Resource<APIResponse<NCDCounselingModel>> =
+        try {
             val response = if (lifestyle) apiHelper.createLifestyle(request) else apiHelper.createPsychological(request)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body())
@@ -26,10 +31,12 @@ class CounselingRepo @Inject constructor(
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun updateAssessment(request: AssessmentResultModel, lifestyle: Boolean): Resource<APIResponse<HashMap<String, Any>>> {
-        return try {
+    suspend fun updateAssessment(
+        request: AssessmentResultModel,
+        lifestyle: Boolean,
+    ): Resource<APIResponse<HashMap<String, Any>>> =
+        try {
             val response = if (lifestyle) apiHelper.updateLifestyle(request) else apiHelper.updatePsychological(request)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body())
@@ -39,10 +46,12 @@ class CounselingRepo @Inject constructor(
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getAssessmentList(request: NCDCounselingModel, lifestyle: Boolean): Resource<APIResponse<ArrayList<NCDCounselingModel>>> {
-        return try {
+    suspend fun getAssessmentList(
+        request: NCDCounselingModel,
+        lifestyle: Boolean,
+    ): Resource<APIResponse<ArrayList<NCDCounselingModel>>> =
+        try {
             val response = if (lifestyle) apiHelper.getLifestyleList(request) else apiHelper.getPsychological(request)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body())
@@ -52,10 +61,12 @@ class CounselingRepo @Inject constructor(
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun removeAssessment(request: NCDCounselingModel, lifestyle: Boolean): Resource<APIResponse<NCDCounselingModel>> {
-        return try {
+    suspend fun removeAssessment(
+        request: NCDCounselingModel,
+        lifestyle: Boolean,
+    ): Resource<APIResponse<NCDCounselingModel>> =
+        try {
             val response = if (lifestyle) apiHelper.removeLifestyle(request) else apiHelper.removePsychological(request)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body())
@@ -65,5 +76,4 @@ class CounselingRepo @Inject constructor(
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 }

@@ -6,22 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.FragmentDangersignsDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isBreastfeed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isConvulsionPastFewDays
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSleepy
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
-import com.medtroniclabs.spice.R
 
 class DangerSignsDialog : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentDangersignsDialogBinding
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentDangersignsDialogBinding.inflate(layoutInflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -34,7 +33,7 @@ class DangerSignsDialog : DialogFragment(), View.OnClickListener {
 
         fun newInstance(id: String): DangerSignsDialog {
             val bundle = Bundle().apply {
-              putString("id", id)
+                putString("id", id)
             } // Assuming memberID is passed as argument}
             val fragment = DangerSignsDialog()
             fragment.arguments = bundle
@@ -46,28 +45,31 @@ class DangerSignsDialog : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListener()
 
         arguments?.getString("id")?.let {
             when (it) {
-                isUnusualSleepy->{
+                isUnusualSleepy -> {
                     binding.dangerSignType.text = getString(R.string.unconscious_unusually_sleepy)
                 }
-                isConvulsionPastFewDays->{
+                isConvulsionPastFewDays -> {
                     binding.dangerSignType.text = getString(R.string.convulsions)
                 }
-                isVomiting->{
+                isVomiting -> {
                     binding.dangerSignType.text = getString(R.string.vomits_everything)
-           }
-                isBreastfeed->{
+                }
+                isBreastfeed -> {
                     binding.dangerSignType.text = getString(R.string.unable_to_drink_or_breastfeed)
-              }
+                }
             }
         }
     }
@@ -77,7 +79,6 @@ class DangerSignsDialog : DialogFragment(), View.OnClickListener {
         binding.btnCancel.safeClickListener(this)
     }
 
-
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnLink.id -> {
@@ -86,7 +87,6 @@ class DangerSignsDialog : DialogFragment(), View.OnClickListener {
             binding.btnCancel.id -> {
                 dismiss()
                 okayButtonClickListener?.onDangerSignsClicked(false)
-
             }
         }
     }
@@ -94,11 +94,13 @@ class DangerSignsDialog : DialogFragment(), View.OnClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
     }
+
     private var okayButtonClickListener: DangerSignsClickListener? = null
 
     fun setDangerSignListener(listener: DangerSignsClickListener) {
         this.okayButtonClickListener = listener
     }
+
     interface DangerSignsClickListener {
         fun onDangerSignsClicked(b: Boolean)
     }

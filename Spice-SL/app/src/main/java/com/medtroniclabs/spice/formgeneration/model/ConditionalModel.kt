@@ -9,5 +9,5 @@ data class ConditionalModel(
     var greaterThanOrEqual: Double? = null,
     var lessThanOrEqual: Double? = null,
     var enabled: Boolean? = null,
-    var targetOption: String?= null,
+    var targetOption: String? = null,
 )

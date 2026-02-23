@@ -39,8 +39,8 @@ data class FormLayout(
     var minValueForHour: Int? = null,
     var minValueForMinute: Int? = null,
     var maxValue: Double? = null,
-    var maxValueForHour: Int?=null,
-    var maxValueForMinute: Int?=null,
+    var maxValueForHour: Int? = null,
+    var maxValueForMinute: Int? = null,
     var pulseMinValue: Double? = null,
     var pulseMaxValue: Double? = null,
     var totalCount: Int? = null,
@@ -94,7 +94,7 @@ data class FormLayout(
     var workflowType: ArrayList<String>? = null,
     var orderId: Int? = null,
     var customizedWorkflowId: Double? = null,
-    var infoTitle: String? = null
+    var infoTitle: String? = null,
 ) : BaseViewParams
 
 data class RangeModel(
@@ -102,12 +102,13 @@ data class RangeModel(
     val gender: String,
     val minRange: Double,
     val maxRange: Double,
-    val displayRange: String
+    val displayRange: String,
 )
 
 data class FormResponse(
-    var formLayout: List<FormLayout>, var time: Long
+    var formLayout: List<FormLayout>, var time: Long,
 )
+
 data class BPModel(
     var systolic: Double? = null,
     var diastolic: Double? = null,

@@ -5,40 +5,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import com.google.gson.Gson
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.data.ExaminationModel
 import com.medtroniclabs.spice.databinding.FragmentExaminationCardBinding
 import com.medtroniclabs.spice.formgeneration.ExaminationGenerator
 import com.medtroniclabs.spice.formgeneration.ExaminationListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class ExaminationCardFragment : BaseFragment(), ExaminationListener {
-
     private val viewModel: ExaminationCardViewModel by activityViewModels()
     private lateinit var binding: FragmentExaminationCardBinding
     private lateinit var examinationGenerator: ExaminationGenerator
 
-    companion object{
+    companion object {
         const val TAG = "ExaminationCardFragment"
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentExaminationCardBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -52,22 +50,22 @@ class ExaminationCardFragment : BaseFragment(), ExaminationListener {
     }
 
     private fun initView() {
-        examinationGenerator = ExaminationGenerator(binding.root.context, binding.llFamilyRoot,this, translate = SecuredPreference.getIsTranslationEnabled())
+        examinationGenerator = ExaminationGenerator(binding.root.context, binding.llFamilyRoot, this, translate = SecuredPreference.getIsTranslationEnabled())
     }
 
     override fun onDialogueCheckboxListener(
         id: String,
         formLayout: FormLayout,
         resultMap: Any?,
-        diseaseName: String
+        diseaseName: String,
     ) {
-        CheckBoxDialog.newInstance(id, resultMap) { map ->
-            examinationGenerator.validateCheckboxDialogue(id, map,diseaseName)
-        }.show(childFragmentManager, CheckBoxDialog.TAG)
+        CheckBoxDialog
+            .newInstance(id, resultMap) { map ->
+                examinationGenerator.validateCheckboxDialogue(id, map, diseaseName)
+            }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
     override fun setResultHashMap(resultMap: HashMap<String, Any>) {
         viewModel.examinationResultHashMap = resultMap
     }
-
 }

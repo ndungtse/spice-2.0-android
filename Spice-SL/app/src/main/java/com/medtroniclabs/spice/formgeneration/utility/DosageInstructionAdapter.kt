@@ -7,9 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.databinding.DosageInstructionItemListBinding
 
 class DosageInstructionAdapter(
-    private val infoList: ArrayList<String>
-) : RecyclerView.Adapter<DosageInstructionAdapter.DosageInstructionListViewHolder>(){
-
+    private val infoList: ArrayList<String>,
+) : RecyclerView.Adapter<DosageInstructionAdapter.DosageInstructionListViewHolder>() {
     inner class DosageInstructionListViewHolder(val binding: DosageInstructionItemListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
@@ -17,19 +16,19 @@ class DosageInstructionAdapter(
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
-    ): DosageInstructionAdapter.DosageInstructionListViewHolder {
-        return DosageInstructionListViewHolder(
-            DosageInstructionItemListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        viewType: Int,
+    ): DosageInstructionAdapter.DosageInstructionListViewHolder =
+        DosageInstructionListViewHolder(
+            DosageInstructionItemListBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         )
-    }
 
-    override fun onBindViewHolder(holder: DosageInstructionAdapter.DosageInstructionListViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: DosageInstructionAdapter.DosageInstructionListViewHolder,
+        position: Int,
+    ) {
         val infoModel = infoList[position]
         holder.binding.tvInfo.text = infoModel
     }
 
-    override fun getItemCount(): Int {
-        return infoList.size
-    }
+    override fun getItemCount(): Int = infoList.size
 }

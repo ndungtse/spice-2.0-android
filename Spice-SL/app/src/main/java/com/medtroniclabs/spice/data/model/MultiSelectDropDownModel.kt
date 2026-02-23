@@ -4,5 +4,5 @@ data class MultiSelectDropDownModel(
     var id: Long,
     var name: String,
     var displayValue: String? = null,
-    var value: String?
+    var value: String?,
 )

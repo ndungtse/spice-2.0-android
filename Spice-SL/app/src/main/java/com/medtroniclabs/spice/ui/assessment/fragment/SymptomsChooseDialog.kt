@@ -20,28 +20,29 @@ import com.medtroniclabs.spice.ui.assessment.SymptomAdapter
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class SymptomsChooseDialog : DialogFragment(), View.OnClickListener {
-
     lateinit var binding: LayoutChooseSymptomsBinding
 
     private val viewModel: AssessmentViewModel by activityViewModels()
 
     companion object {
         const val TAG = "SymptomsChooseDialog"
-        fun newInstance(): SymptomsChooseDialog {
-            return SymptomsChooseDialog()
-        }
+
+        fun newInstance(): SymptomsChooseDialog = SymptomsChooseDialog()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = LayoutChooseSymptomsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeView(view)
         viewModel.getSymptomList()
@@ -61,7 +62,7 @@ class SymptomsChooseDialog : DialogFragment(), View.OnClickListener {
             if (selectedSymptoms != null && selectedSymptoms.isNotEmpty()) {
                 val model = selectedSymptoms.find { it.id == symptom._id }
                 if (model != null) {
-                    tempList.add(SymptomModel(symptom._id, symptom.symptom, true,symptom.type, cultureValue = symptom.displayValue, value = symptom.value))
+                    tempList.add(SymptomModel(symptom._id, symptom.symptom, true, symptom.type, cultureValue = symptom.displayValue, value = symptom.value))
                 } else {
                     tempList.add(SymptomModel(symptom._id, symptom.symptom, type = symptom.type, cultureValue = symptom.displayValue, value = symptom.value))
                 }
@@ -77,33 +78,36 @@ class SymptomsChooseDialog : DialogFragment(), View.OnClickListener {
                 "",
                 false,
                 getString(R.string.hypertension),
-                viewType = 1
-            )
+                viewType = 1,
+            ),
         )
-        list.addAll(tempList.filter {
-            it.type.equals(
-                AssessmentDefinedParams.Compliance_Type_Hypertension,
-                true
-            )
-        })
+        list.addAll(
+            tempList.filter {
+                it.type.equals(
+                    AssessmentDefinedParams.Compliance_Type_Hypertension,
+                    true,
+                )
+            },
+        )
         list.add(
             SymptomModel(
                 DefaultID.toLong(),
                 "",
                 false,
                 getString(R.string.diabetes),
-                viewType = 1
-            )
+                viewType = 1,
+            ),
         )
-        list.addAll(tempList.filter {
-            it.type.equals(
-                AssessmentDefinedParams.Compliance_Type_Diabetes,
-                true
-            )
-        })
+        list.addAll(
+            tempList.filter {
+                it.type.equals(
+                    AssessmentDefinedParams.Compliance_Type_Diabetes,
+                    true,
+                )
+            },
+        )
         return list
     }
-
 
     private fun initializeView(view: View) {
         binding.rvSymptom.layoutManager = LinearLayoutManager(view.context)
@@ -115,13 +119,12 @@ class SymptomsChooseDialog : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
     override fun onClick(view: View?) {
         when (view?.id) {
-
             R.id.btnCancel -> {
                 dismiss()
             }

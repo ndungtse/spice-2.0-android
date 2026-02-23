@@ -62,9 +62,8 @@ class InvestigationGenerator(
     private val parentLayout: LinearLayout,
     var scrollView: NestedScrollView? = null,
     val translate: Boolean = false,
-    val listener: InvestigationListener
+    val listener: InvestigationListener,
 ) : ContextWrapper(context) {
-
     private var serverData: List<InvestigationModel>? = null
     private val rootSuffix = "rootView"
     private val titleSuffix = "titleTextView"
@@ -84,7 +83,7 @@ class InvestigationGenerator(
             investigationBinding.tvRecommendedOn.text = DateUtils.convertDateTimeToDate(
                 investigation.recommendedOn,
                 DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                DATE_ddMMyyyy
+                DATE_ddMMyyyy,
             )
             if (!investigation.dataError) {
                 investigationBinding.resultContainerHolder.visible()
@@ -93,24 +92,25 @@ class InvestigationGenerator(
 
             if ((investigation.id != null && investigation.labTestResultList != null && investigation.labTestResultList!!.size > 0) || isNCDFlow) {
                 investigationBinding.ivRemoveMedication.invisible()
-            }  else {
+            } else {
                 investigationBinding.ivRemoveMedication.visible()
             }
-            toggleFacility(investigationBinding,investigation)
+            toggleFacility(investigationBinding, investigation)
             // After backend done we need to remove it
             investigationBinding.tvRecommendedBy.text =
                 investigation.recommendedByName.takeIf { !it.isNullOrBlank() }
                     ?: getString(R.string.hyphen_symbol)
             investigationBinding.root.setOnClickListener {
                 investigation.dropdownState = !investigation.dropdownState
-                toggleFacility(investigationBinding,investigation)
-                
+                toggleFacility(investigationBinding, investigation)
             }
-            investigationBinding.clMarkAsReviewed.setVisible(CommonUtils.isNonCommunity() && (!investigation.labTestResultList.isNullOrEmpty()) && investigation.isReview != true)
+            investigationBinding.clMarkAsReviewed.setVisible(
+                CommonUtils.isNonCommunity() && (!investigation.labTestResultList.isNullOrEmpty()) && investigation.isReview != true,
+            )
             investigationBinding.btnMarkAsReviewed.safeClickListener {
                 listener.markAsReviewed(
                     investigation.id,
-                    investigationBinding.etTestComments.text.toString()
+                    investigationBinding.etTestComments.text.toString(),
                 )
             }
             if (investigation.dataError) {
@@ -123,48 +123,48 @@ class InvestigationGenerator(
             investigationBinding.ivRemoveMedication.setOnClickListener {
                 listener.removeInvestigation(investigation)
             }
-            if(isTiberbuUser()){
-                if (!investigation.components.isNullOrEmpty()){
+            if (isTiberbuUser()) {
+                if (!investigation.components.isNullOrEmpty()) {
                     investigationBinding.resultTable.visible()
-                    resultTableData(investigationBinding,investigation.components)
-                    investigationBinding.comments.text = ":  ${if (investigation.comments.isNullOrEmpty()) getString(R.string.hyphen_symbol) else investigation.comments}"
-                    investigationBinding.descriptiveResult.text = ":  ${if (investigation.descriptiveResult.isNullOrEmpty()) getString(R.string.hyphen_symbol) else investigation.descriptiveResult}"
-
-                }else{
+                    resultTableData(investigationBinding, investigation.components)
+                    investigationBinding.comments.text =
+                        ":  ${if (investigation.comments.isNullOrEmpty()) getString(R.string.hyphen_symbol) else investigation.comments}"
+                    investigationBinding.descriptiveResult.text =
+                        ":  ${if (investigation.descriptiveResult.isNullOrEmpty()) getString(R.string.hyphen_symbol) else investigation.descriptiveResult}"
+                } else {
                     investigationBinding.ivDropDown.invisible()
                 }
-            }else {
+            } else {
                 if (investigation.labTestResultList != null) {
                     investigationBinding.resultContainerHolder.setPadding(
-                        resources.getDimension(R.dimen._16sdp).roundToInt()
+                        resources.getDimension(R.dimen._16sdp).roundToInt(),
                     )
                     investigationBinding.resultViewContainer.visible()
                     investigationBinding.resultContainer.gone()
                     renderInvestigationResultViewContainer(
                         investigation,
-                        investigationBinding.resultViewContainer
+                        investigationBinding.resultViewContainer,
                     )
                 } else {
                     investigationBinding.resultContainerHolder.setPadding(
-                        resources.getDimension(R.dimen._0dp).roundToInt()
+                        resources.getDimension(R.dimen._0dp).roundToInt(),
                     )
                     investigationBinding.resultViewContainer.gone()
                     investigationBinding.resultContainer.visible()
                     renderInvestigationResultContainer(
                         investigation,
-                        investigationBinding.resultContainer
+                        investigationBinding.resultContainer,
                     )
                 }
             }
             parentLayout.addView(investigationBinding.root)
         }
-
     }
 
     // Table design for Lab test result
     private fun resultTableData(
         investigationBinding: LayoutInvestigationRowBinding,
-        components: ArrayList<Map<String, Any?>>
+        components: ArrayList<Map<String, Any?>>,
     ) {
         investigationBinding.recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -183,7 +183,9 @@ class InvestigationGenerator(
 
         // Check if at least one valid row contains "result"
         val hasValidEntries = components.any {
-            it[com.medtroniclabs.spice.common.DefinedParams.TestName] != null && it[com.medtroniclabs.spice.common.DefinedParams.Result] != null && it[com.medtroniclabs.spice.common.DefinedParams.Uom] != null
+            it[com.medtroniclabs.spice.common.DefinedParams.TestName] != null &&
+                it[com.medtroniclabs.spice.common.DefinedParams.Result] != null &&
+                it[com.medtroniclabs.spice.common.DefinedParams.Uom] != null
         }
 
         // Add Header if valid entries exist
@@ -192,10 +194,10 @@ class InvestigationGenerator(
                 LabTestResultModel(
                     labTestName = getString(R.string.test_name_),
                     resultValue = getString(R.string.result),
-                    labTestUom =  getString(R.string.unit),
+                    labTestUom = getString(R.string.unit),
                     normalRange = getString(R.string.description),
-                    isHeader = true
-                )
+                    isHeader = true,
+                ),
             )
         }
 
@@ -212,21 +214,17 @@ class InvestigationGenerator(
                     resultValue = resultValue,
                     labTestUom = unit,
                     normalRange = normalRange,
-                    isHeader = false
-                )
+                    isHeader = false,
+                ),
             )
         }
 
         return list
     }
 
-
-
-
-
     private fun toggleFacility(
         investigationBinding: LayoutInvestigationRowBinding,
-        investigation: InvestigationModel
+        investigation: InvestigationModel,
     ) {
         if (!investigation.dropdownState) {
             investigationBinding.resultContainerHolder.gone()
@@ -239,7 +237,7 @@ class InvestigationGenerator(
 
     private fun renderInvestigationResultViewContainer(
         investigation: InvestigationModel,
-        resultContainer: LinearLayout
+        resultContainer: LinearLayout,
     ) {
         investigation.labTestResultList?.forEach { investigationResult ->
             if (resultContainer.findViewWithTag<TextView>(TestedOn) == null) {
@@ -264,26 +262,30 @@ class InvestigationGenerator(
             var rangeBoolean = false
             var rangeDisplay: String? = null
 
-            investigation.resultList?.formLayout?.filter { it.id == investigationResult.name }
+            investigation.resultList
+                ?.formLayout
+                ?.filter { it.id == investigationResult.name }
                 ?.let { list ->
                     if (list.isNotEmpty()) {
                         val formData = list[0]
-                        formData.ranges?.filter {
-                            it.unitType.equals(
-                                investigationResult.unit,
-                                true
-                            ) && (it.gender.equals(Gender, true) || it.gender.equals(both, true))
-                        }?.let { ranges ->
-                            if (ranges.isNotEmpty()) {
-                                val numberValue: Double? =
-                                    investigationResult.value.toString().toDoubleOrNull()
-                                val range = ranges[0]
-                                rangeDisplay = range.displayRange
-                                if (numberValue != null && (numberValue < range.minRange || numberValue > range.maxRange)) {
-                                    rangeBoolean = true
+                        formData.ranges
+                            ?.filter {
+                                it.unitType.equals(
+                                    investigationResult.unit,
+                                    true,
+                                ) &&
+                                    (it.gender.equals(Gender, true) || it.gender.equals(both, true))
+                            }?.let { ranges ->
+                                if (ranges.isNotEmpty()) {
+                                    val numberValue: Double? =
+                                        investigationResult.value.toString().toDoubleOrNull()
+                                    val range = ranges[0]
+                                    rangeDisplay = range.displayRange
+                                    if (numberValue != null && (numberValue < range.minRange || numberValue > range.maxRange)) {
+                                        rangeBoolean = true
+                                    }
                                 }
                             }
-                        }
                     }
                 }
 
@@ -308,19 +310,18 @@ class InvestigationGenerator(
 
     private fun appendUnitIfExist(
         value: Any?,
-        unit: String?
+        unit: String?,
     ): CharSequence {
-
         val displayValue: String
 
         if (getDecimalFormatted(value).isNotEmpty()) {
             displayValue = getDecimalFormatted(value)
         } else if (value is String) {
-            if (DateUtils.isDateFormat(DATE_TIME_EEEMMMddHHmmsszyyyy, value)){
+            if (DateUtils.isDateFormat(DATE_TIME_EEEMMMddHHmmsszyyyy, value)) {
                 displayValue = convertDateFormat(
                     value,
                     DATE_TIME_EEEMMMddHHmmsszyyyy,
-                    DATE_ddMMyyyy
+                    DATE_ddMMyyyy,
                 )
             } else {
                 displayValue = value
@@ -329,36 +330,35 @@ class InvestigationGenerator(
             displayValue = value.toString()
         }
 
-
-        return if (unit != null)
+        return if (unit != null) {
             "$displayValue $unit"
-        else
+        } else {
             displayValue
-
+        }
     }
 
     private fun renderInvestigationResultContainer(
         investigation: InvestigationModel,
-        resultContainer: FlexboxLayout
+        resultContainer: FlexboxLayout,
     ) {
         investigation.resultList?.formLayout?.forEach { formLayout ->
             when (formLayout.viewType) {
                 VIEW_TYPE_FORM_DATEPICKER -> createDatePicker(
                     formLayout,
                     resultContainer,
-                    investigation
+                    investigation,
                 )
 
                 VIEW_TYPE_FORM_EDITTEXT -> createEditText(
                     formLayout,
                     resultContainer,
-                    investigation
+                    investigation,
                 )
 
                 VIEW_TYPE_FORM_SPINNER -> createCustomSpinner(
                     formLayout,
                     resultContainer,
-                    investigation
+                    investigation,
                 )
             }
         }
@@ -367,7 +367,7 @@ class InvestigationGenerator(
     private fun createCustomSpinner(
         formLayout: FormLayout,
         resultContainer: FlexboxLayout,
-        investigation: InvestigationModel
+        investigation: InvestigationModel,
     ) {
         val binding = CustomSpinnerLayoutInvestigationBinding.inflate(LayoutInflater.from(context))
         formLayout.apply {
@@ -380,8 +380,8 @@ class InvestigationGenerator(
             dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to DefaultIDLabel,
-                    DefinedParams.ID to "-1"
-                )
+                    DefinedParams.ID to "-1",
+                ),
             )
             if (isMandatory && !CommonUtils.mandatoryNotRequired()) {
                 binding.tvTitle.markMandatory()
@@ -399,7 +399,7 @@ class InvestigationGenerator(
                         adapterView: AdapterView<*>?,
                         view: View?,
                         pos: Int,
-                        itemId: Long
+                        itemId: Long,
                     ) {
                         val selectedItem = adapter.getData(position = pos)
                         handleSelectedItem(selectedItem, investigation, id)
@@ -417,11 +417,10 @@ class InvestigationGenerator(
         }
     }
 
-
     private fun createEditText(
         formLayout: FormLayout,
         resultContainer: FlexboxLayout,
-        investigation: InvestigationModel
+        investigation: InvestigationModel,
     ) {
         val binding = EdittextLayoutInvestigationBinding.inflate(LayoutInflater.from(context))
         formLayout.apply {
@@ -438,13 +437,13 @@ class InvestigationGenerator(
                 unitDropDownList.add(
                     hashMapOf<String, Any>(
                         DefinedParams.NAME to DefaultIDLabel,
-                        DefinedParams.ID to "-1"
-                    )
+                        DefinedParams.ID to "-1",
+                    ),
                 )
                 addDropDownList(list, unitDropDownList)
                 adapter.setData(unitDropDownList)
                 binding.etUserInputSpinner.adapter = adapter
-            }?:kotlin.run {
+            } ?: kotlin.run {
                 binding.etUserInputSpinner.gone()
                 binding.tvTitleUnit.gone()
             }
@@ -454,7 +453,7 @@ class InvestigationGenerator(
                         adapterView: AdapterView<*>?,
                         view: View?,
                         pos: Int,
-                        itemId: Long
+                        itemId: Long,
                     ) {
                         val selectedItem = adapter.getData(position = pos)
                         handleSelectedItem(selectedItem, investigation, id + unitSuffix)
@@ -471,10 +470,11 @@ class InvestigationGenerator(
             maxLines?.let { binding.etUserInput.setLines(it) }
                 ?: binding.etUserInput.setSingleLine()
             getCategorizedMap(investigation)[id]?.let {
-                if (it is String)
+                if (it is String) {
                     binding.etUserInput.setText(it)
-                else if (it is Double)
+                } else if (it is Double) {
                     binding.etUserInput.setText(getDecimalFormatted(it))
+                }
             }
             hint?.let {
                 if (translate) {
@@ -497,8 +497,9 @@ class InvestigationGenerator(
                 inputFilter.add(InputFilter.LengthFilter(it))
             }
 
-            if (applyDecimalFilter == true)
+            if (applyDecimalFilter == true) {
                 inputFilter.add(DigitsInputFilter())
+            }
 
             if (id == DefinedParams.NationalId) {
                 inputFilter.add(InputFilter.AllCaps())
@@ -508,17 +509,19 @@ class InvestigationGenerator(
                 try {
                     binding.etUserInput.filters = inputFilter.toTypedArray()
                 } catch (_: Exception) {
-                    //Exception - Catch block
+                    // Exception - Catch block
                 }
             }
 
             inputType?.let {
                 when (it) {
-                    InputType.TYPE_CLASS_PHONE, InputType.TYPE_CLASS_NUMBER -> binding.etUserInput.inputType =
-                        InputType.TYPE_CLASS_NUMBER
+                    InputType.TYPE_CLASS_PHONE, InputType.TYPE_CLASS_NUMBER ->
+                        binding.etUserInput.inputType =
+                            InputType.TYPE_CLASS_NUMBER
 
-                    InputType.TYPE_NUMBER_FLAG_DECIMAL -> binding.etUserInput.inputType =
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                    InputType.TYPE_NUMBER_FLAG_DECIMAL ->
+                        binding.etUserInput.inputType =
+                            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
 
                     else -> {
                         binding.etUserInput.inputType = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
@@ -535,8 +538,13 @@ class InvestigationGenerator(
                     }
 
                     else -> {
-                        if ((inputType != null && (inputType == InputType.TYPE_CLASS_NUMBER ||
-                                    inputType == InputType.TYPE_NUMBER_FLAG_DECIMAL))
+                        if ((
+                                inputType != null &&
+                                    (
+                                        inputType == InputType.TYPE_CLASS_NUMBER ||
+                                            inputType == InputType.TYPE_NUMBER_FLAG_DECIMAL
+                                    )
+                            )
                         ) {
                             val resultValue = editable.trim().toString().toDoubleOrNull()
                             resultValue?.let {
@@ -563,7 +571,7 @@ class InvestigationGenerator(
     private fun handleSelectedItem(
         selectedItem: Map<String, Any>?,
         investigation: InvestigationModel,
-        id: String
+        id: String,
     ) {
         selectedItem?.let {
             val selectedId = it[DefinedParams.ID]
@@ -583,7 +591,7 @@ class InvestigationGenerator(
     private fun setExistingValueToAdapter(
         existingValue: Any?,
         dropDownList: ArrayList<Map<String, Any>>,
-        etUserInputSpinner: AppCompatSpinner
+        etUserInputSpinner: AppCompatSpinner,
     ) {
         existingValue?.let {
             val selectedMapIndex =
@@ -599,11 +607,10 @@ class InvestigationGenerator(
         }
     }
 
-
     private fun createDatePicker(
         formLayout: FormLayout,
         resultContainer: FlexboxLayout,
-        investigation: InvestigationModel
+        investigation: InvestigationModel,
     ) {
         val binding = DatepickerLayoutBinding.inflate(LayoutInflater.from(context))
         formLayout.apply {
@@ -621,26 +628,31 @@ class InvestigationGenerator(
             }
             binding.tvTitle.tag = id + titleSuffix
 
-
             getCategorizedMap(investigation)[id]?.let {
                 if (it is String) {
                     binding.etUserInput.text = convertDateFormat(
                         it,
                         DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        DATE_ddMMyyyy
+                        DATE_ddMMyyyy,
                     )
                 }
             }
 
             binding.etUserInputHolder.safeClickListener {
-                val dateInput = if (binding.etUserInput.text.toString().isNotEmpty())
-                    DateUtils.getYearMonthAndDate(binding.etUserInput.text.toString()) else null
+                val dateInput = if (binding.etUserInput.text
+                        .toString()
+                        .isNotEmpty()
+                ) {
+                    DateUtils.getYearMonthAndDate(binding.etUserInput.text.toString())
+                } else {
+                    null
+                }
                 showDatePicker(
                     context = context,
                     disableFutureDate = disableFutureDate ?: false,
                     minDate = getMaxDateLimit(menstrualPeriod, minDays),
                     maxDate = maxDate ?: getMaxDateLimit(maxDays),
-                    date = dateInput
+                    date = dateInput,
                 ) { _, year, month, dayOfMonth ->
                     val stringDate = "$dayOfMonth-$month-$year"
                     val parsedDate = DateUtils.getDatePatternDDMMYYYY().parse(stringDate)
@@ -649,7 +661,7 @@ class InvestigationGenerator(
                         getCategorizedMap(investigation)[id] = DateUtils.getDateString(
                             parsedDate.time,
                             inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
-                            outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                            outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                         )
                         listener.checkValidation()
                     }
@@ -664,7 +676,6 @@ class InvestigationGenerator(
         }
     }
 
-
     private fun showDatePicker(
         context: Context,
         disableFutureDate: Boolean = false,
@@ -674,7 +685,6 @@ class InvestigationGenerator(
         cancelCallBack: (() -> Unit)? = null,
         callBack: (dialog: DatePicker, year: Int, month: Int, dayOfMonth: Int) -> Unit,
     ): DatePickerDialog {
-
         val calendar = Calendar.getInstance()
         var thisYear = calendar.get(Calendar.YEAR)
         var thisMonth = calendar.get(Calendar.MONTH)
@@ -697,7 +707,7 @@ class InvestigationGenerator(
             dateSetListener,
             thisYear,
             thisMonth,
-            thisDay
+            thisDay,
         )
 
         if (cancelCallBack != null) {
@@ -720,13 +730,9 @@ class InvestigationGenerator(
         dialog.show()
 
         return dialog
-
     }
 
-    private fun getCategorizedMap(
-        investigation: InvestigationModel
-    ): HashMap<String, Any> {
-
+    private fun getCategorizedMap(investigation: InvestigationModel): HashMap<String, Any> {
         investigation.resultHashMap?.let {
             return it
         } ?: kotlin.run {
@@ -737,7 +743,7 @@ class InvestigationGenerator(
 
     private fun addDropDownList(
         list: ArrayList<Map<String, Any>>,
-        dropDownList: ArrayList<Map<String, Any>>
+        dropDownList: ArrayList<Map<String, Any>>,
     ) {
         if (list.isNotEmpty()) {
             dropDownList.addAll(list)
@@ -750,39 +756,49 @@ class InvestigationGenerator(
             LayoutInvestigationRowBinding.inflate(LayoutInflater.from(this))
         this.serverData?.let { investigationList ->
             if (isLabTech) {
-                val anyResultsEntered : Boolean = investigationList.any { !it.resultHashMap.isNullOrEmpty() }
+                val anyResultsEntered: Boolean = investigationList.any { !it.resultHashMap.isNullOrEmpty() }
                 if (CommonUtils.isCommunity() || !anyResultsEntered) {
                     investigationList.forEach { investigation ->
                         if ((investigation.resultHashMap.isNullOrEmpty())) {
                             investigation.dropdownState = !investigation.dropdownState
-                            toggleFacility(investigationBinding,investigation)
+                            toggleFacility(investigationBinding, investigation)
                             investigation.dataError = false
                             isValid = false
                         }
                     }
                 }
             }
-            investigationList.filter { it.id == null || (it.resultHashMap != null && it.resultHashMap!!.size > 0) }
+            investigationList
+                .filter { it.id == null || (it.resultHashMap != null && it.resultHashMap!!.size > 0) }
                 .forEach { data ->
                     if (data.resultHashMap != null && data.resultHashMap!!.size == 0) {
                         isValid = true
                         data.dataError = true
                     } else {
                         data.resultList?.formLayout?.forEach { formData ->
-                            if ((formData.isMandatory && data.resultHashMap != null && !data.resultHashMap!!.containsKey(
-                                    formData.id
-                                ))
-                                ||
-                                (formData.isMandatory && data.resultHashMap != null && data.resultHashMap!!.containsKey(
-                                    formData.id
+                            if ((
+                                    formData.isMandatory &&
+                                        data.resultHashMap != null &&
+                                        !data.resultHashMap!!.containsKey(
+                                            formData.id,
+                                        )
+                                ) ||
+                                (
+                                    formData.isMandatory &&
+                                        data.resultHashMap != null &&
+                                        data.resultHashMap!!.containsKey(
+                                            formData.id,
+                                        ) &&
+                                        data.resultHashMap!![formData.id] is String &&
+                                        (data.resultHashMap!![formData.id] as String).isEmpty()
                                 )
-                                        && data.resultHashMap!![formData.id] is String && (data.resultHashMap!![formData.id] as String).isEmpty())
                             ) {
                                 isValid = false
                                 data.dataError = false
                             } else if (formData.viewType == VIEW_TYPE_FORM_EDITTEXT) {
-                                if (data.resultHashMap != null && data.resultHashMap!!.containsKey(
-                                        formData.id
+                                if (data.resultHashMap != null &&
+                                    data.resultHashMap!!.containsKey(
+                                        formData.id,
                                     )
                                 ) {
                                     val actualValue = data.resultHashMap!![formData.id]
@@ -792,8 +808,9 @@ class InvestigationGenerator(
                                         isValid = validateMinMaxLength(
                                             actualValue,
                                             isValid,
-                                            formData
-                                        ) && validateUnit(formData, data)
+                                            formData,
+                                        ) &&
+                                            validateUnit(formData, data)
                                         data.dataError = isValid
                                     }
                                 } else {
@@ -814,27 +831,30 @@ class InvestigationGenerator(
         return isValid
     }
 
-    private fun validateUnit(formData: FormLayout, data: InvestigationModel): Boolean {
-        return if (formData.unitList == null || (formData.unitList != null && formData.unitList!!.size == 0)) {
+    private fun validateUnit(
+        formData: FormLayout,
+        data: InvestigationModel,
+    ): Boolean =
+        if (formData.unitList == null || (formData.unitList != null && formData.unitList!!.size == 0)) {
             true
         } else {
             data.resultHashMap!!.containsKey(
-                formData.id + com.medtroniclabs.spice.common.DefinedParams.Unit
+                formData.id + com.medtroniclabs.spice.common.DefinedParams.Unit,
             )
         }
-    }
-
 
     private fun validateMinMaxLength(
         actualValue: Any?,
         valid: Boolean,
-        formLayout: FormLayout
+        formLayout: FormLayout,
     ): Boolean {
         var isValid = valid
         formLayout.apply {
-            if (minLength != null && viewType == VIEW_TYPE_FORM_EDITTEXT
-                && actualValue != null && actualValue is String
-                && actualValue.length < minLength!!
+            if (minLength != null &&
+                viewType == VIEW_TYPE_FORM_EDITTEXT &&
+                actualValue != null &&
+                actualValue is String &&
+                actualValue.length < minLength!!
             ) {
                 isValid = false
                 /*requestFocusView(
@@ -992,13 +1012,9 @@ class InvestigationGenerator(
         return isValid
     }
 
-    fun getResultFromInvestigation(): List<InvestigationModel>? {
-        return serverData
-    }
+    fun getResultFromInvestigation(): List<InvestigationModel>? = serverData
 
     fun setPatientGender(gender: String) {
         Gender = gender
     }
-
-
 }

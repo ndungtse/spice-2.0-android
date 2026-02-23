@@ -10,9 +10,8 @@ import com.medtroniclabs.spice.databinding.InformationItemListBinding
 import com.medtroniclabs.spice.formgeneration.model.InformationModel
 
 class InformationListAdapter(
-    private val infoList: ArrayList<InformationModel>
+    private val infoList: ArrayList<InformationModel>,
 ) : RecyclerView.Adapter<InformationListAdapter.InformationListViewHolder>() {
-
     inner class InformationListViewHolder(val binding: InformationItemListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
@@ -20,28 +19,27 @@ class InformationListAdapter(
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
-    ): InformationListAdapter.InformationListViewHolder {
-        return InformationListViewHolder(
-            InformationItemListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        viewType: Int,
+    ): InformationListAdapter.InformationListViewHolder =
+        InformationListViewHolder(
+            InformationItemListBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         )
-    }
 
-    override fun onBindViewHolder(holder: InformationListViewHolder, position: Int) {
-            val infoModel = infoList[position]
-            if (infoModel.imageId != null){
-                holder.binding.ivItem.setImageResource(infoModel.imageId)
-            } else{
-                holder.binding.ivItem.visibility = View.GONE
-            }
+    override fun onBindViewHolder(
+        holder: InformationListViewHolder,
+        position: Int,
+    ) {
+        val infoModel = infoList[position]
+        if (infoModel.imageId != null) {
+            holder.binding.ivItem.setImageResource(infoModel.imageId)
+        } else {
+            holder.binding.ivItem.visibility = View.GONE
+        }
         holder.binding.apply {
             llContainer.setVisible(infoModel.inputText.isNotBlank())
             tvInfo.text = infoModel.inputText
         }
     }
 
-    override fun getItemCount(): Int {
-        return infoList.size
-    }
+    override fun getItemCount(): Int = infoList.size
 }
-

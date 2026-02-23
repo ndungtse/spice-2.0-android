@@ -43,7 +43,6 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 
 class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentAssessmentRmnchNeonateSummaryBinding
 
     private val assessmentRMNCHNeonateViewModel: AssessmentRMNCHNeonateViewModel by activityViewModels()
@@ -52,15 +51,19 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
 
     private var datePickerDialog: DatePickerDialog? = null
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentAssessmentRmnchNeonateSummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         binding.callSupervisor.isEnabled = false
         initView()
@@ -69,9 +72,12 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
     }
 
     private fun setNextVisitDateAndDefaultHealthFacilityWhileClickHomeInSummary() {
-        val followUpDate = binding.etNextFollowUpDate.takeIf {
-            it.visibility == View.VISIBLE && it.text.isNotEmpty()
-        }?.text?.trim()?.toString() ?: DateUtils.getFormattedDate(1)
+        val followUpDate = binding.etNextFollowUpDate
+            .takeIf {
+                it.visibility == View.VISIBLE && it.text.isNotEmpty()
+            }?.text
+            ?.trim()
+            ?.toString() ?: DateUtils.getFormattedDate(1)
         followUpDate?.let { updateFollowUpDate(it) }
         val pncDetails = if (binding.resultNeonateCardView.isVisible()) {
             assessmentRMNCHNeonateViewModel.assessmentSaveLiveData.value?.data
@@ -81,7 +87,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         assessmentRMNCHNeonateViewModel.updateOtherAssessmentDetailsForPNCNeonateDeathCase(
             pncDetails,
             viewModel.otherAssessmentDetails,
-            viewModel.getCurrentLocation()
+            viewModel.getCurrentLocation(),
         )
     }
 
@@ -122,16 +128,16 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                         assessmentRMNCHNeonateViewModel.referralStatus
                     } else {
                         viewModel.referralStatus
-                    }
+                    },
                 ) ?: getString(R.string.seperator_hyphen),
-                parentLayout = binding.motherParentLayout
+                parentLayout = binding.motherParentLayout,
             )
             addDefaultSummaryView(map)
             showSummaryDetail(
                 map,
                 RMNCH.PNC,
                 binding.motherParentLayout,
-                viewModel.formLayoutsLiveData.value
+                viewModel.formLayoutsLiveData.value,
             )
             showNextFollowUpDate(map)
         }
@@ -142,16 +148,15 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                 map,
                 PNCNeonatal,
                 binding.neonateParentLayout,
-                assessmentRMNCHNeonateViewModel.formLayoutsLiveData.value
+                assessmentRMNCHNeonateViewModel.formLayoutsLiveData.value,
             )
             updateStatusBar(assessmentRMNCHNeonateViewModel.referralStatus, resultForShow)
         } else {
             updateStatusBar(viewModel.referralStatus)
         }
-
     }
 
-    private fun showCallDialog(hashMap: HashMap<String, Any>) : Boolean {
+    private fun showCallDialog(hashMap: HashMap<String, Any>): Boolean {
         val isChildDeath = (hashMap[PNCNeonatal] as? Map<String, Any>)
             ?.get(deathOfNewborn) as? Boolean ?: false
         binding.callSupervisor.setVisible(isChildDeath)
@@ -159,6 +164,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
     }
 
     private var isFirstSelection = true
+
     private fun loadPhuSitesList(siteList: ArrayList<Map<String, Any>>) {
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(siteList)
@@ -169,7 +175,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                     adapterView: AdapterView<*>?,
                     view: View?,
                     pos: Int,
-                    itemId: Long
+                    itemId: Long,
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
@@ -195,7 +201,10 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
             }
     }
 
-    private fun updateStatusBar(referralStatus: String?, isCbs: Boolean = false) {
+    private fun updateStatusBar(
+        referralStatus: String?,
+        isCbs: Boolean = false,
+    ) {
         when (referralStatus) {
             ReferralStatus.Referred.name -> {
                 viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
@@ -234,7 +243,6 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         }
     }
 
-
     private fun setListener() {
         binding.btnDone.safeClickListener(this)
         binding.etNextFollowUpDate.safeClickListener(this)
@@ -249,9 +257,12 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         map: Map<*, *>,
         pnc: String,
         parentLayout: LinearLayout,
-        value: Resource<FormResponse>?
+        value: Resource<FormResponse>?,
     ) {
-        value?.data?.formLayout?.filter { it.family == pnc && it.isSummary == true }
+        value
+            ?.data
+            ?.formLayout
+            ?.filter { it.family == pnc && it.isSummary == true }
             ?.filter { pnc != PNCNeonatal || (map[PNCNeonatal] as? Map<String, Any>)?.containsKey(it.id) == true }
             ?.filterNot { it.id in showQuestionBasedAge() }
             ?.forEach { formlayout ->
@@ -268,21 +279,19 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                                 Triple(
                                     getString(R.string.yes),
                                     getString(R.string.no),
-                                    getString(R.string.hyphen_symbol)
+                                    getString(R.string.hyphen_symbol),
                                 ),
-                                requireContext()
+                                requireContext(),
                             ),
                             null,
-                            requireContext()
-                        )
+                            requireContext(),
+                        ),
                     )
                 }
             }
     }
 
-
     private fun addDefaultSummaryView(map: HashMap<String, Any>) {
-
         val title: String = when (viewModel.workflowName) {
             RMNCH.ANC -> getString(R.string.anc_visit)
             RMNCH.ChildHoodVisit -> getString(R.string.child_hood_visit)
@@ -302,13 +311,13 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                     Triple(
                         getString(R.string.yes),
                         getString(R.string.no),
-                        getString(R.string.hyphen_symbol)
+                        getString(R.string.hyphen_symbol),
                     ),
-                    requireContext()
+                    requireContext(),
                 ),
                 null,
-                requireContext()
-            )
+                requireContext(),
+            ),
         )
 
         binding.motherParentLayout.addView(
@@ -323,20 +332,24 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                     Triple(
                         getString(R.string.yes),
                         getString(R.string.no),
-                        getString(R.string.hyphen_symbol)
+                        getString(R.string.hyphen_symbol),
                     ),
-                    requireContext()
-                ), null,
-                requireContext()
-            )
+                    requireContext(),
+                ),
+                null,
+                requireContext(),
+            ),
         )
-
     }
 
     private fun handleRMNCHNeonateDone() {
         assessmentRMNCHNeonateViewModel.fetchCurrentLocation(requireContext())
         if (binding.etNextFollowUpDate.visibility == View.VISIBLE && binding.etNextFollowUpDate.text.isNotEmpty()) {
-            updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
+            updateFollowUpDate(
+                binding.etNextFollowUpDate.text
+                    .trim()
+                    .toString(),
+            )
         }
         if (viewModel.otherAssessmentDetails.isEmpty()) {
             val intent = Intent(requireActivity(), HouseholdSearchActivity::class.java)
@@ -353,7 +366,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                 pncDetails,
                 viewModel.otherAssessmentDetails,
                 viewModel.getCurrentLocation(),
-                viewModel.assessmentUpdateLiveData
+                viewModel.assessmentUpdateLiveData,
             )
         }
         viewModel.setUserJourney(DONEBUTTONTRIGGERED)
@@ -375,25 +388,25 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         }
     }
 
-
     private fun showDatePickerDialog() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (!binding.etNextFollowUpDate.text.isNullOrBlank())
+        if (!binding.etNextFollowUpDate.text.isNullOrBlank()) {
             yearMonthDate =
                 DateUtils.convertedMMMToddMM(binding.etNextFollowUpDate.text.toString())
+        }
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
                 minDate = DateUtils.getTomorrowDate(),
                 date = yearMonthDate,
-                cancelCallBack = { datePickerDialog = null }
+                cancelCallBack = { datePickerDialog = null },
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 binding.etNextFollowUpDate.text =
                     DateUtils.convertDateTimeToDate(
                         stringDate,
                         DateUtils.DATE_FORMAT_ddMMyyyy,
-                        DateUtils.DATE_ddMMyyyy
+                        DateUtils.DATE_ddMMyyyy,
                     )
                 updateFollowUpDate(binding.etNextFollowUpDate.text.toString())
                 datePickerDialog = null
@@ -408,7 +421,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                     date,
                     DateUtils.DATE_ddMMyyyy,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    inUTC = true
+                    inUTC = true,
                 )
         }
     }
@@ -420,33 +433,36 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                 if (map.containsKey(RMNCH.DateOfDelivery)) {
                     val dateOfDelivery = map[RMNCH.DateOfDelivery] as String
                     if (dateOfDelivery.trim().isNotEmpty()) {
-                        DateUtils.convertStringToDate(
-                            dateOfDelivery,
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                        )?.let { deliveryDate ->
-                            RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
-                                binding.etNextFollowUpDate.text = DateUtils.getDateStringFromDate(
-                                    visitDate, DateUtils.DATE_ddMMyyyy
-                                )
-                                updateFollowUpDate(DateUtils.getDateStringFromDate(
-                                    visitDate, DateUtils.DATE_ddMMyyyy
-                                ))
-                                if (binding.etNextFollowUpDate.text.isNotEmpty()) {
-                                    binding.btnDone.isEnabled = true
-                                    binding.callSupervisor.isEnabled = true
+                        DateUtils
+                            .convertStringToDate(
+                                dateOfDelivery,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            )?.let { deliveryDate ->
+                                RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
+                                    binding.etNextFollowUpDate.text = DateUtils.getDateStringFromDate(
+                                        visitDate,
+                                        DateUtils.DATE_ddMMyyyy,
+                                    )
+                                    updateFollowUpDate(
+                                        DateUtils.getDateStringFromDate(
+                                            visitDate,
+                                            DateUtils.DATE_ddMMyyyy,
+                                        ),
+                                    )
+                                    if (binding.etNextFollowUpDate.text.isNotEmpty()) {
+                                        binding.btnDone.isEnabled = true
+                                        binding.callSupervisor.isEnabled = true
+                                    }
                                 }
                             }
-                        }
                     }
-
                 }
             }
         }
     }
 
-    fun getCurrentAnsweredStatus(): Boolean {
-        return viewModel.otherAssessmentDetails.isNotEmpty()
-    }
+    fun getCurrentAnsweredStatus(): Boolean = viewModel.otherAssessmentDetails.isNotEmpty()
+
     private fun showQuestionBasedAge(): List<String> {
         var questionList = ArrayList<String>()
         if (viewModel.isDeathOfNewborn) {
@@ -454,20 +470,27 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         }
         return questionList
     }
-    private fun bindRmnchSummaryView(title: String?, value: String?, valueTextColor: Int? = null, parentLayout: LinearLayout,) {
+
+    private fun bindRmnchSummaryView(
+        title: String?,
+        value: String?,
+        valueTextColor: Int? = null,
+        parentLayout: LinearLayout,
+    ) {
         value?.let { result ->
             parentLayout.addView(
                 addViewSummaryLayout(
                     title,
                     result,
                     valueTextColor,
-                    requireContext()
-                )
+                    requireContext(),
+                ),
             )
         }
     }
-    fun getStatus(referralStatus: String?): String? {
-        return when (referralStatus) {
+
+    fun getStatus(referralStatus: String?): String? =
+        when (referralStatus) {
             ReferralStatus.Referred.name -> getString(R.string.referred)
             ReferralStatus.OnTreatment.name -> getString(R.string.on_treatment)
             ReferralStatus.Recovered.name -> getString(R.string.recovered)
@@ -475,5 +498,4 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                 null
             }
         }
-    }
 }

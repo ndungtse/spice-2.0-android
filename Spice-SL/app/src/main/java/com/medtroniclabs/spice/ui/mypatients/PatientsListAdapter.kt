@@ -18,11 +18,10 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 
 class PatientsListAdapter(
-    val listener: PatientSelectionListener
+    val listener: PatientSelectionListener,
 ) : PagingDataAdapter<PatientListRespModel, PatientsListAdapter.PatientListViewHolder>(
-    PatientListComparator
-) {
-
+        PatientListComparator,
+    ) {
     inner class PatientListViewHolder(val binding: ListItemPatientsBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
@@ -33,14 +32,14 @@ class PatientsListAdapter(
             val gender = item.gender?.lowercase()?.capitalizeFirstChar()
                 ?: context.getString(R.string.separator_hyphen)
 
-            val formattedAge = item.birthDate?.let { DateUtils.getAgeDescription(it,context) }
+            val formattedAge = item.birthDate?.let { DateUtils.getAgeDescription(it, context) }
                 ?: context.getString(R.string.separator_hyphen)
             val age = item.age ?: formattedAge
             val patientInfo = context.getString(
                 R.string.household_summary_member_info,
                 name,
                 age,
-                CommonUtils.translatedGender(context, gender)
+                CommonUtils.translatedGender(context, gender),
             )
             var leftLbl = context.getString(R.string.empty)
             var rightLbl = context.getString(R.string.empty)
@@ -71,14 +70,18 @@ class PatientsListAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PatientListViewHolder {
-        return PatientListViewHolder(
-            ListItemPatientsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): PatientListViewHolder =
+        PatientListViewHolder(
+            ListItemPatientsBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         )
-    }
 
-
-    override fun onBindViewHolder(holder: PatientListViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: PatientListViewHolder,
+        position: Int,
+    ) {
         getItem(position)?.let { item ->
             holder.bind(item)
             holder.binding.cardPatient.safeClickListener {
@@ -90,20 +93,19 @@ class PatientsListAdapter(
     object PatientListComparator : DiffUtil.ItemCallback<PatientListRespModel>() {
         override fun areItemsTheSame(
             oldItem: PatientListRespModel,
-            newItem: PatientListRespModel
-        ): Boolean {
-            return oldItem.id == newItem.id
-        }
+            newItem: PatientListRespModel,
+        ): Boolean = oldItem.id == newItem.id
 
         override fun areContentsTheSame(
             oldItem: PatientListRespModel,
-            newItem: PatientListRespModel
-        ): Boolean {
-            return oldItem.id == newItem.id
-        }
+            newItem: PatientListRespModel,
+        ): Boolean = oldItem.id == newItem.id
     }
 
-    fun getDrawable(view: ConstraintLayout, colorCode: String) {
+    fun getDrawable(
+        view: ConstraintLayout,
+        colorCode: String,
+    ) {
         if (view.background != null) {
             val drawable = view.background as GradientDrawable
             drawable.mutate()

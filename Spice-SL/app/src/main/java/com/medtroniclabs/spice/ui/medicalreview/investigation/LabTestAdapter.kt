@@ -10,7 +10,6 @@ import com.medtroniclabs.spice.model.LabTestResultModel
 
 class LabTestAdapter(private val labTestList: List<LabTestResultModel>) :
     RecyclerView.Adapter<LabTestAdapter.LabTestViewHolder>() {
-
     class LabTestViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val labTestName: TextView = view.findViewById(R.id.labTestName)
         val resultValue: TextView = view.findViewById(R.id.resultValue)
@@ -18,13 +17,20 @@ class LabTestAdapter(private val labTestList: List<LabTestResultModel>) :
         val normalRange: TextView = view.findViewById(R.id.normalRange)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LabTestViewHolder {
-        val view = LayoutInflater.from(parent.context)
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): LabTestViewHolder {
+        val view = LayoutInflater
+            .from(parent.context)
             .inflate(R.layout.item_lab_test, parent, false)
         return LabTestViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: LabTestViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: LabTestViewHolder,
+        position: Int,
+    ) {
         val labTest = labTestList[position]
         holder.labTestName.text = labTest.labTestName
         holder.resultValue.text = labTest.resultValue

@@ -4,5 +4,5 @@ data class CheckBoxSpinnerData(
     val id: Long,
     val name: String,
     var isSelected: Boolean,
-    var chwId : Long? = null
+    var chwId: Long? = null,
 )

@@ -11,7 +11,6 @@ import com.medtroniclabs.spice.appextensions.cancelAllWorker
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityForgetPasswordBinding
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.fragment.ConfirmPasswordFragment
 import com.medtroniclabs.spice.ui.boarding.fragment.ResetPasswordFragment
@@ -22,7 +21,6 @@ import java.util.UUID
 
 @AndroidEntryPoint
 class ForgetPasswordActivity : BaseActivity() {
-
     private lateinit var binding: ActivityForgetPasswordBinding
     private val viewModel: ForgotPasswordViewModel by viewModels()
 
@@ -31,7 +29,7 @@ class ForgetPasswordActivity : BaseActivity() {
         binding = ActivityForgetPasswordBinding.inflate(layoutInflater)
         setMainContentView(binding.root)
 
-        //Get token from Deeplink. If token null -> Request reset password link.
+        // Get token from Deeplink. If token null -> Request reset password link.
         // If token not null -> Change password page will appear
         val token = intent?.data?.getQueryParameter("token")
         viewModel.updateResetToken(token)
@@ -40,11 +38,12 @@ class ForgetPasswordActivity : BaseActivity() {
     }
 
     private fun attachObservers() {
-
         viewModel.resetTokenLiveData.observe(this) {
             if (!it.isNullOrEmpty()) {
-                supportFragmentManager.beginTransaction()
-                    .replace(binding.fcEmailFragment.id, ConfirmPasswordFragment()).commit()
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(binding.fcEmailFragment.id, ConfirmPasswordFragment())
+                    .commit()
 
                 Handler(Looper.getMainLooper()).postDelayed({
                     if (connectivityManager.isNetworkAvailable()) {
@@ -58,8 +57,10 @@ class ForgetPasswordActivity : BaseActivity() {
                     }
                 }, 500)
             } else {
-                supportFragmentManager.beginTransaction()
-                    .add(binding.fcEmailFragment.id, ResetPasswordFragment()).commit()
+                supportFragmentManager
+                    .beginTransaction()
+                    .add(binding.fcEmailFragment.id, ResetPasswordFragment())
+                    .commit()
             }
         }
 
@@ -71,7 +72,7 @@ class ForgetPasswordActivity : BaseActivity() {
                         title = getString(R.string.alert),
                         message = resource.message
                             ?: getString(R.string.something_went_wrong_try_later),
-                        positiveButtonName = getString(R.string.ok)
+                        positiveButtonName = getString(R.string.ok),
                     ) {}
                 }
 
@@ -84,7 +85,7 @@ class ForgetPasswordActivity : BaseActivity() {
                     showErrorDialogue(
                         title = getString(R.string.reset_password),
                         message = getString(R.string.email_registered_successfully),
-                        positiveButtonName = getString(R.string.ok)
+                        positiveButtonName = getString(R.string.ok),
                     ) { isPositive ->
                         if (isPositive) {
                             redirectToLogin()
@@ -102,7 +103,7 @@ class ForgetPasswordActivity : BaseActivity() {
                         title = getString(R.string.alert),
                         message = resource.message
                             ?: getString(R.string.something_went_wrong_try_later),
-                        positiveButtonName = getString(R.string.ok)
+                        positiveButtonName = getString(R.string.ok),
                     ) {
                         finish()
                     }
@@ -138,15 +139,13 @@ class ForgetPasswordActivity : BaseActivity() {
                     showErrorDialogue(
                         title = getString(R.string.reset_password),
                         message = getString(R.string.password_registered_successfully),
-                        positiveButtonName = getString(R.string.ok)
+                        positiveButtonName = getString(R.string.ok),
                     ) {
                         redirectToLogin()
-
                     }
                 }
             }
         }
-
     }
 
     fun redirectToLogin() {

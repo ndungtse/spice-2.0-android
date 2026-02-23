@@ -37,6 +37,7 @@ import org.json.JSONObject
 class CbsActivity : BaseActivity(), OnDialogDismissListener {
     private lateinit var binding: ActivityAssessmentBinding
     private val viewModel: AssessmentViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -51,8 +52,9 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
             },
             callbackHome = {
                 viewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
-                if (intent.getBooleanExtra(DeathOfMother, false)
-                    || intent.getBooleanExtra(deathOfNewborn,false)) {
+                if (intent.getBooleanExtra(DeathOfMother, false) ||
+                    intent.getBooleanExtra(deathOfNewborn, false)
+                ) {
                     navigateAncCbs()
                 } else {
                     navigateHome(true)
@@ -64,8 +66,8 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
     }
 
     fun handleBack() {
-        if (intent.getBooleanExtra(DeathOfMother, false)
-            || intent.getBooleanExtra(deathOfNewborn,false)
+        if (intent.getBooleanExtra(DeathOfMother, false) ||
+            intent.getBooleanExtra(deathOfNewborn, false)
         ) {
             navigateAncCbs()
         } else {
@@ -91,7 +93,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
             Pair(fragment.getCurrentAnsweredStatus(), false)
         } else if (fragment is CbsSummaryFragment) {
             Pair(true, true)
-        } else if (fragment is CbsMemberRegistration){
+        } else if (fragment is CbsMemberRegistration) {
             Pair(fragment.getCurrentAnsweredStatus(), false)
         } else {
             Pair(false, false)
@@ -104,7 +106,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
             showErrorDialogue(
                 getString(R.string.alert),
                 getString(R.string.exit_reason),
-                isNegativeButtonNeed = true
+                isNegativeButtonNeed = true,
             ) { isPositive ->
                 if (isPositive) {
                     navigationHandling(isHome, backButtonStatus.second)
@@ -119,7 +121,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (isPositive) {
                 navigationHandling(isHome = true, true)
@@ -127,9 +129,13 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
         }
     }
 
-    private fun navigationHandling(isHome: Boolean, isFromSummary: Boolean) {
-        if (isFromSummary)
+    private fun navigationHandling(
+        isHome: Boolean,
+        isFromSummary: Boolean,
+    ) {
+        if (isFromSummary) {
             startBackgroundOfflineSync()
+        }
 
         if (isHome) {
             val intent = Intent(this, LandingActivity::class.java)
@@ -152,8 +158,8 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                     hideLoading()
                     resource.data?.let {
                         // insertOtherAssessmentDetails()
-                        if (intent.getBooleanExtra(deathOfNewborn, false)
-                            || intent.getBooleanExtra(DeathOfMother, false)
+                        if (intent.getBooleanExtra(deathOfNewborn, false) ||
+                            intent.getBooleanExtra(DeathOfMother, false)
                         ) {
                             val key = if (intent.getBooleanExtra(DeathOfMother, false)) {
                                 DefinedParams.RmnchNotifiableCondition
@@ -163,8 +169,11 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                                 DefinedParams.CbsNotifiableCondition
                             }
                             viewModel.updateMemberDeceasedStatus(
-                                viewModel.memberDetailsLiveData.value?.data?.id ?: -1L, false,
-                                extractNotifiableConditions(viewModel.assessmentStringLiveData.value,key)
+                                viewModel.memberDetailsLiveData.value
+                                    ?.data
+                                    ?.id ?: -1L,
+                                false,
+                                extractNotifiableConditions(viewModel.assessmentStringLiveData.value, key),
                             )
                         }
                         loadSummaryFragment()
@@ -225,18 +234,21 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                     resource.data?.let {
                         // insertOtherAssessmentDetails()
                         val deathReason =
-                            ((viewModel.assessmentMap[CBS.lowercase()] as? Map<String, Any>)
-                                ?.get(DefinedParams.surveillanceDetails) as? Map<String, Any>)
-                                ?.get(DefinedParams.RmnchNotifiableCondition) as? List<Map<String, Any>>
+                            (
+                                (viewModel.assessmentMap[CBS.lowercase()] as? Map<String, Any>)
+                                    ?.get(DefinedParams.surveillanceDetails) as? Map<String, Any>
+                            )?.get(DefinedParams.RmnchNotifiableCondition) as? List<Map<String, Any>>
 
                         val rmnchText =
-                            deathReason?.mapNotNull { it[DefinedParams.NAME] as? String }
+                            deathReason
+                                ?.mapNotNull { it[DefinedParams.NAME] as? String }
                                 ?.toMutableList() ?: mutableListOf()
 
                         val otherText =
-                            ((viewModel.assessmentMap[CBS.lowercase()] as? Map<String, Any>)
-                                ?.get(DefinedParams.surveillanceDetails) as? Map<String, Any>)
-                                ?.get(DefinedParams.OtherNotifiableConditions) as? String
+                            (
+                                (viewModel.assessmentMap[CBS.lowercase()] as? Map<String, Any>)
+                                    ?.get(DefinedParams.surveillanceDetails) as? Map<String, Any>
+                            )?.get(DefinedParams.OtherNotifiableConditions) as? String
                         val cbsMap =
                             (viewModel.assessmentMap[CBS.lowercase()] as? MutableMap<String, Any>)
                                 ?: mutableMapOf()
@@ -249,7 +261,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                         val index = rmnchText.indexOfFirst {
                             it.equals(
                                 DefinedParams.Other,
-                                ignoreCase = true
+                                ignoreCase = true,
                             )
                         }
 
@@ -264,13 +276,20 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                          Since the assessment flow already manages death cases,
                          we only need to handle it specifically for CBS.
                          */
-                        val isAncOrNormal = viewModel.birthLiveData.value?.data?.third ?: false
+                        val isAncOrNormal = viewModel.birthLiveData.value
+                            ?.data
+                            ?.third ?: false
                         if (isAncOrNormal) {
-                            val isDelete = viewModel.birthLiveData.value?.data?.second ?: false
+                            val isDelete = viewModel.birthLiveData.value
+                                ?.data
+                                ?.second ?: false
                             if (isDelete) {
                                 viewModel.updateMemberDeceasedStatus(
-                                    viewModel.memberDetailsLiveData.value?.data?.id ?: -1L, false,
-                                    finalText
+                                    viewModel.memberDetailsLiveData.value
+                                        ?.data
+                                        ?.id ?: -1L,
+                                    false,
+                                    finalText,
                                 )
                             }
                             viewModel.cbsMemberIDAndPregnancyDetail.first?.let {
@@ -278,14 +297,14 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                                     viewModel.getUpdatedPregnancyDetail(
                                         it,
                                         viewModel.cbsMemberIDAndPregnancyDetail.second,
-                                        true
-                                    )
+                                        true,
+                                    ),
                                 )
                             }
                             viewModel.saveAssessment(
                                 viewModel.assessmentMap,
                                 viewModel.referralResult,
-                                viewModel.menuId
+                                viewModel.menuId,
                             )
                         } else {
                             val dataOfDelivery = it.dateOfBirth
@@ -309,24 +328,31 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
             }
         }
     }
-    private fun extractNotifiableConditions(jsonString: String?,key :String): String {
-        return try {
+
+    private fun extractNotifiableConditions(
+        jsonString: String?,
+        key: String,
+    ): String =
+        try {
             jsonString?.let {
                 val jsonObject = JSONObject(it)
-                val surveillanceDetails = jsonObject.getJSONObject(CBS.lowercase())
+                val surveillanceDetails = jsonObject
+                    .getJSONObject(CBS.lowercase())
                     .getJSONObject(DefinedParams.surveillanceDetails)
 
                 val jsonArray =
                     surveillanceDetails.getJSONArray(key)
 
-                val conditions = (0 until jsonArray.length()).mapNotNull { index ->
-                    jsonArray.getJSONObject(index).optString(DefinedParams.NAME, null)
-                }.toMutableList()
+                val conditions = (0 until jsonArray.length())
+                    .mapNotNull { index ->
+                        jsonArray.getJSONObject(index).optString(DefinedParams.NAME, null)
+                    }.toMutableList()
 
                 // Check if "Other" exists, then append "Other(value)"
                 if (DefinedParams.Other in conditions) {
                     val otherValue =
-                        surveillanceDetails.optString(DefinedParams.OtherNotifiableConditions, "")
+                        surveillanceDetails
+                            .optString(DefinedParams.OtherNotifiableConditions, "")
                             .takeIf { it.isNotEmpty() }
                     if (otherValue != null) {
                         conditions[conditions.indexOf(DefinedParams.Other)] =
@@ -338,13 +364,13 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
         } catch (e: Exception) {
             "" // Return an empty string if parsing fails
         }
-    }
+
     private fun loadSummaryFragment() {
         setTitle(AssessmentDefinedParams.Summary.capitalizeFirstChar())
         hideBackButton()
         replaceFragmentInId<CbsSummaryFragment>(
             binding.formsFragmentContainer.id,
-            tag = CbsSummaryFragment.TAG
+            tag = CbsSummaryFragment.TAG,
         )
     }
 
@@ -352,7 +378,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
         setTitle(getString(R.string.member_registration))
         replaceFragmentInId<CbsMemberRegistration>(
             binding.formsFragmentContainer.id,
-            tag = CbsMemberRegistration.TAG
+            tag = CbsMemberRegistration.TAG,
         )
     }
 
@@ -377,7 +403,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
         bundle.putString(DefinedParams.ORIGIN, intent.getStringExtra(DefinedParams.ORIGIN))
         bundle.putString(
             MenuConstants.WorkFlowName,
-            intent.getStringExtra(MenuConstants.WorkFlowName)
+            intent.getStringExtra(MenuConstants.WorkFlowName),
         )
         bundle.putLong(AssessmentId, intent.getLongExtra(AssessmentId, 0L))
         bundle.putBoolean(deathOfNewborn, intent.getBooleanExtra(deathOfNewborn, false))
@@ -389,5 +415,4 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
             tag = CbsFragment.TAG,
         )
     }
-
 }

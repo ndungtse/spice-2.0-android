@@ -17,7 +17,6 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentRMNCHNeonateVie
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class BioDataChildFragment : BaseFragment() {
-
     private lateinit var binding: FragmentBioDataBinding
     private val assessmentRMNCHNeonateViewModel: AssessmentRMNCHNeonateViewModel by activityViewModels()
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -27,13 +26,18 @@ class BioDataChildFragment : BaseFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentBioDataBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         attachObserver()
         viewModel.memberDetailsLiveData.value?.data?.id?.let {
@@ -46,7 +50,6 @@ class BioDataChildFragment : BaseFragment() {
             when (resource.state) {
                 ResourceState.LOADING -> {
                     showProgress()
-
                 }
 
                 ResourceState.ERROR -> {
@@ -75,16 +78,16 @@ class BioDataChildFragment : BaseFragment() {
             binding.dobAge.tvValue.text = getAgeValue(
                 CommonUtils.getAgeFromDOB(
                     dateOfBirth,
-                    requireContext()
-                )
+                    requireContext(),
+                ),
             )
             binding.llPatientInfo.addView(
                 AssessmentCommonUtils.addViewSummaryLayout(
                     title = getString(R.string.pnc),
                     value = getVisitCount(),
                     null,
-                    binding.root.context
-                )
+                    binding.root.context,
+                ),
             )
         }
     }
@@ -96,15 +99,14 @@ class BioDataChildFragment : BaseFragment() {
         return getString(R.string.hyphen_symbol)
     }
 
-    private fun getAgeValue(ageFromDob: String): String {
-        return if (!ageFromDob.contains(" "))
+    private fun getAgeValue(ageFromDob: String): String =
+        if (!ageFromDob.contains(" ")) {
             requireContext().getString(
                 R.string.firstname_lastname,
                 ageFromDob,
-                getString(R.string.years)
+                getString(R.string.years),
             )
-        else
+        } else {
             ageFromDob
-    }
-
+        }
 }

@@ -7,21 +7,21 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.mappingkey.Screening
 
 class FormResultComposer {
-
     private var groupedResultMap: HashMap<String, Any> = HashMap()
 
     fun groupValues(
         serverData: List<FormLayout?>,
         resultMap: HashMap<String, *>,
         menuType: String? = null,
-        bmiCategoryGroupId: String? = null
+        bmiCategoryGroupId: String? = null,
     ): Pair<String?, HashMap<String, Any>> {
-        val customWorkflowList = ArrayList<Pair<String,Double?>>()
+        val customWorkflowList = ArrayList<Pair<String, Double?>>()
         serverData.forEach { formLayout ->
             if (formLayout?.isCustomWorkflow == true) {
                 formLayout.id.let { cWorkflowId ->
-                    if (cWorkflowId.isNotBlank())
+                    if (cWorkflowId.isNotBlank()) {
                         customWorkflowList.add(Pair(cWorkflowId, formLayout.customizedWorkflowId))
+                    }
                 }
             }
             when (formLayout?.viewType) {
@@ -30,7 +30,7 @@ class FormResultComposer {
                     addToGroup(
                         formLayout?.family,
                         formLayout?.id!!,
-                        resultMap[formLayout.id]
+                        resultMap[formLayout.id],
                     )
                     resultMap.remove(formLayout.id)
                 }
@@ -55,11 +55,12 @@ class FormResultComposer {
                     }
                 }
             }
-            if (list.isNotEmpty())
+            if (list.isNotEmpty()) {
                 groupedResultMap[Screening.CustomizedWorkflows] = list
+            }
         }
 
-        if (groupedResultMap.containsKey(Screening.PCMentalHealth))
+        if (groupedResultMap.containsKey(Screening.PCMentalHealth)) {
             (groupedResultMap[Screening.PCMentalHealth] as? HashMap<*, *>)?.let { pcMap ->
                 val pcMH = HashMap<String, Any>()
                 pcMH[Screening.PCMentalHealth] = pcMap
@@ -70,10 +71,12 @@ class FormResultComposer {
                 groupedResultMap.remove(Screening.PCMentalHealth)
                 groupedResultMap[Screening.PHQ4.lowercase()] = pcMH
             }
+        }
 
         bmiCategoryGroupId?.let { groupId ->
-            if (groupedResultMap.containsKey(Screening.BMI_CATEGORY) && groupedResultMap.containsKey(
-                    groupId
+            if (groupedResultMap.containsKey(Screening.BMI_CATEGORY) &&
+                groupedResultMap.containsKey(
+                    groupId,
                 )
             ) {
                 (groupedResultMap[groupId] as? HashMap<String, Any>)?.let {
@@ -86,13 +89,13 @@ class FormResultComposer {
 
         return Pair(
             StringConverter.convertGivenMapToString(groupedResultMap),
-            addToMenuGroup(groupedResultMap, menuType)
+            addToMenuGroup(groupedResultMap, menuType),
         )
     }
 
     fun addToMenuGroup(
         groupedResultMap: HashMap<String, Any>,
-        menuType: String?
+        menuType: String?,
     ): HashMap<String, Any> {
         val menuGroupMap = HashMap<String, Any>()
         menuType?.let {
@@ -109,15 +112,20 @@ class FormResultComposer {
 
     private fun createGroup(id: String) {
         val tempMap = HashMap<String, Any>()
-        if (!groupedResultMap.containsKey(id))
+        if (!groupedResultMap.containsKey(id)) {
             groupedResultMap[id] = tempMap
+        }
     }
 
-    private fun addToGroup(family: String?, id: String, any: Any?) {
-
+    private fun addToGroup(
+        family: String?,
+        id: String,
+        any: Any?,
+    ) {
         family?.let {
-            if (!groupedResultMap.containsKey(it))
+            if (!groupedResultMap.containsKey(it)) {
                 createGroup(it)
+            }
             val subMap = groupedResultMap[it] as HashMap<String, Any>
             any?.let { value ->
                 subMap.put(id, value)
@@ -125,28 +133,36 @@ class FormResultComposer {
         }
     }
 
-    private fun groupResultsForNCD(serverData: List<FormLayout?>, id: String, any: Any?) {
-
+    private fun groupResultsForNCD(
+        serverData: List<FormLayout?>,
+        id: String,
+        any: Any?,
+    ) {
         val familyGroup = findGroupIdForNCD(serverData, id)
 
         var subMap: HashMap<String, Any>? = null
 
         if (familyGroup != null) {
-            if (!groupedResultMap.containsKey(familyGroup))
+            if (!groupedResultMap.containsKey(familyGroup)) {
                 createGroup(familyGroup)
+            }
             subMap = groupedResultMap[familyGroup] as HashMap<String, Any>?
         }
 
         any?.let { value ->
-            if (subMap != null)
+            if (subMap != null) {
                 subMap.put(id, value)
-            else groupedResultMap.put(id, value)
+            } else {
+                groupedResultMap.put(id, value)
+            }
         }
-
     }
 
     companion object {
-        fun findGroupIdForNCD(serverData: List<FormLayout?>, id: String): String? {
+        fun findGroupIdForNCD(
+            serverData: List<FormLayout?>,
+            id: String,
+        ): String? {
             val baseId = when (id) {
                 Screening.BMI -> Screening.Height
                 Screening.Glucose_Value, Screening.Glucose_Type, Screening.HbA1c_Date_Time, Screening.Glucose_Date_Time, Screening.GlucoseId, Screening.GlucoseUnit, Screening.GlucoseLogId, Screening.BGTakenOn -> Screening.BloodGlucoseID

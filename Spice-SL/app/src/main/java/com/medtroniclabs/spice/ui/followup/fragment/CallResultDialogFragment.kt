@@ -33,21 +33,18 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentBottomCallResultDialogBinding
     private val viewModel: FollowUpViewModel by activityViewModels()
-    val data = setOf(NCD, IMMUNISATION,HIV)
+    val data = setOf(NCD, IMMUNISATION, HIV)
     val familyPlanningData = setOf(AssessmentDefinedParams.Family_Planning.uppercase())
+
     companion object {
         const val TAG = "CallResultDialogFragment"
-        fun newInstance(): CallResultDialogFragment {
-            return CallResultDialogFragment()
-        }
+
+        fun newInstance(): CallResultDialogFragment = CallResultDialogFragment()
     }
 
-    override fun getTheme(): Int {
-        return R.style.DialogStyle
-    }
+    override fun getTheme(): Int = R.style.DialogStyle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,14 +61,19 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
         }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentBottomCallResultDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
     }
@@ -86,9 +88,9 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
                 it,
                 SecuredPreference.getIsTranslationEnabled(),
                 viewModel.callResultHashMap,
-                Pair(CallResult,null),
+                Pair(CallResult, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                callResultSelectionCallback
+                callResultSelectionCallback,
             )
             binding.selectionCallResult.addView(view)
         }
@@ -99,7 +101,7 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
         binding.btnDone.safeClickListener(this)
     }
 
-    private var callResultSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, formLayout: FormLayout, name: String?) -> Unit)? =
+    private var callResultSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             val newSelection = selectedID as String
             val lastSelection = viewModel.callResultHashMap[CallResult]
@@ -121,17 +123,16 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
             }
         }
 
-    private var unsuccessfulSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, formLayout: FormLayout, name: String?) -> Unit)? =
+    private var unsuccessfulSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.unSuccessfulHashMap[UnSuccessful] = selectedID as String
             enableForUnSuccessful()
         }
 
-    private var patientStatusSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, formLayout: FormLayout, name: String?) -> Unit)? =
+    private var patientStatusSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.patientStatusHashMap[PatientStatus] = selectedID as String
         }
-
 
     private fun enableForUnSuccessful() {
         val isCallResultEnabled = viewModel.callResultHashMap.isNotEmpty()
@@ -149,14 +150,14 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
         flowList.add(
             getOptionMap(
                 FollowUpCallStatus.SUCCESSFUL.name,
-                getString(R.string.successful)
-            )
+                getString(R.string.successful),
+            ),
         )
         flowList.add(
             getOptionMap(
                 FollowUpCallStatus.UNSUCCESSFUL.name,
-                getString(R.string.un_successful)
-            )
+                getString(R.string.un_successful),
+            ),
         )
         return flowList
     }
@@ -169,29 +170,29 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
             flowList.add(
                 getOptionMap(
                     getString(R.string.not_inform),
-                    getString(R.string.not_inform)
-                )
+                    getString(R.string.not_inform),
+                ),
             )
         } else if (familyPlanningData.contains(value)) {
             flowList.add(getOptionMap(getString(R.string.visited), getString(R.string.visited)))
             flowList.add(
                 getOptionMap(
                     getString(R.string.not_visited),
-                    getString(R.string.not_visited)
-                )
+                    getString(R.string.not_visited),
+                ),
             )
         } else {
             flowList.add(getOptionMap(ReferralStatus.Recovered.name, getString(R.string.recovered)))
             if (viewModel.selectedFollowUpDetail?.type?.equals(
                     ReferralStatus.Referred.name,
-                    true
+                    true,
                 ) != true
             ) {
                 flowList.add(
                     getOptionMap(
                         ReferralStatus.OnTreatment.name,
-                        getString(R.string.on_treatment)
-                    )
+                        getString(R.string.on_treatment),
+                    ),
                 )
             }
             flowList.add(getOptionMap(ReferralStatus.Referred.name, getString(R.string.referred)))
@@ -204,19 +205,22 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
         flowList.add(
             getOptionMap(
                 FollowUpCallReason.UNREACHABLE.name,
-                getString(R.string.un_reachable)
-            )
+                getString(R.string.un_reachable),
+            ),
         )
         flowList.add(
             getOptionMap(
                 FollowUpCallReason.WRONG_NUMBER.name,
-                getString(R.string.wrong_number)
-            )
+                getString(R.string.wrong_number),
+            ),
         )
         return flowList
     }
 
-    private fun getOptionMap(id: String, value: String): Map<String, Any> {
+    private fun getOptionMap(
+        id: String,
+        value: String,
+    ): Map<String, Any> {
         val map = HashMap<String, Any>()
         map[DefinedParams.ID] = id
         map[DefinedParams.NAME] = value
@@ -254,9 +258,9 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
                 it,
                 SecuredPreference.getIsTranslationEnabled(),
                 viewModel.patientStatusHashMap,
-                Pair(PatientStatus,null),
+                Pair(PatientStatus, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                patientStatusSelectionCallback
+                patientStatusSelectionCallback,
             )
             binding.selectionPatientStatus.addView(view)
         }
@@ -272,15 +276,15 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
                 it,
                 SecuredPreference.getIsTranslationEnabled(),
                 viewModel.unSuccessfulHashMap,
-                Pair(UnSuccessful,null),
+                Pair(UnSuccessful, null),
                 FormLayout(
                     viewType = "",
                     id = "",
                     title = "",
                     visibility = "",
-                    optionsList = null
+                    optionsList = null,
                 ),
-                unsuccessfulSelectionCallback
+                unsuccessfulSelectionCallback,
             )
             binding.selectionPatientStatus.addView(view)
         }

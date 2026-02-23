@@ -7,5 +7,5 @@ data class PregnancyDetails(
     val pncVisitNo: Int?,
     val dateOfDelivery: String?,
     val noOfNeonates: Int?,
-    val childVisitNo: Int?
+    val childVisitNo: Int?,
 )

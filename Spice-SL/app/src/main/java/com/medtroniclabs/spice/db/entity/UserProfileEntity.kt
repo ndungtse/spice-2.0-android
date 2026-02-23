@@ -7,5 +7,5 @@ import androidx.room.PrimaryKey
 data class UserProfileEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
-    val profileData: String
+    val profileData: String,
 )

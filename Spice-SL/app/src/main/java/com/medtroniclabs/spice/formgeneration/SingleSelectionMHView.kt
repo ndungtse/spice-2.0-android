@@ -25,7 +25,7 @@ class SingleSelectionMHView : LinearLayout {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
-        defStyleAttr
+        defStyleAttr,
     ) {
         init(context)
     }
@@ -33,26 +33,28 @@ class SingleSelectionMHView : LinearLayout {
         context: Context,
         attrs: AttributeSet?,
         defStyleAttr: Int,
-        defStyleRes: Int
+        defStyleRes: Int,
     ) : super(context, attrs, defStyleAttr, defStyleRes) {
         init(context)
     }
+
     private fun init(context: Context) {
         viewContext = context
         orientation = HORIZONTAL
         layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
     }
+
     fun addViewElements(
-        //Pair(questionId, translate)
+        // Pair(questionId, translate)
         questionIdTranslatePair: Pair<Long, Boolean>,
         optionList: ArrayList<Map<String, Any>>,
-        //Pair(selectedId, mapType)
+        // Pair(selectedId, mapType)
         selectedIdMapTypePair: Pair<Long?, String?>,
         editList: ArrayList<Map<String, Any>>? = null,
         resultMap: HashMap<String, Any>,
-        //Triple(isViewOnly, isUnselect, question)
+        // Triple(isViewOnly, isUnselect, question)
         isViewOnlySelectionPair: Triple<Boolean, Boolean, String?>,
-        callback: ((questionId: Long, answerId: Long, score: Double, answerName: String, isClicked: Boolean) -> Unit?)? = null
+        callback: ((questionId: Long, answerId: Long, score: Double, answerName: String, isClicked: Boolean) -> Unit?)? = null,
     ) {
         removeAllViews()
         val editMap = ArrayList<Long>()
@@ -61,7 +63,7 @@ class SingleSelectionMHView : LinearLayout {
             getResultMapType(selectedIdMapTypePair.second),
             resultMap,
             editList,
-            isViewOnlySelectionPair.third
+            isViewOnlySelectionPair.third,
         )?.forEach { item ->
             if (item[Screening.Answer_Id] is Long) {
                 (item[Screening.Answer_Id] as? Long)?.let {
@@ -83,7 +85,7 @@ class SingleSelectionMHView : LinearLayout {
             val param = LayoutParams(
                 0,
                 LayoutParams.MATCH_PARENT,
-                1.0f
+                1.0f,
             )
             textView.layoutParams = param
             if (questionIdTranslatePair.second && translatedName != null && translatedName is String) {
@@ -111,56 +113,58 @@ class SingleSelectionMHView : LinearLayout {
                         Triple(
                             false,
                             isViewOnlySelectionPair.second,
-                            isViewOnlySelectionPair.third
+                            isViewOnlySelectionPair.third,
                         ),
-                        callback
+                        callback,
                     )
                 }
             }
-            if(editMap.contains(idValue))
-            {
+            if (editMap.contains(idValue)) {
                 textView.isSelected = true
                 callback?.invoke(questionIdTranslatePair.first, idValue, score, name, false)
-            }
-            else
+            } else {
                 textView.isSelected = false
+            }
             addView(textView)
         }
     }
+
     private fun getBackgroundDrawable(
         index: Int,
-        list: ArrayList<Map<String, Any>>
+        list: ArrayList<Map<String, Any>>,
     ): Drawable? {
         when (index) {
             0 -> return ContextCompat.getDrawable(viewContext, R.drawable.left_mh_view_selector)
             list.size - 1 -> return ContextCompat.getDrawable(
                 viewContext,
-                R.drawable.right_mh_view_selector
+                R.drawable.right_mh_view_selector,
             )
         }
         return null
     }
+
     fun resetSingleSelectionChildViews() {
         forEach {
             it.isSelected = false
         }
     }
+
     private fun getEditList(
         viewOnly: Boolean,
         resultType: String?,
         resultMap: HashMap<String, Any>,
         editList: ArrayList<Map<String, Any>>?,
-        question: String?
+        question: String?,
     ): ArrayList<Map<String, Any>>? {
-        return if (!viewOnly && resultMap.containsKey(resultType) && editList==null){
-            val itemsList:ArrayList<Map<String, Any>> = ArrayList()
-            val resultMapItems = resultMap[resultType] as? HashMap<String,Any>
+        return if (!viewOnly && resultMap.containsKey(resultType) && editList == null) {
+            val itemsList: ArrayList<Map<String, Any>> = ArrayList()
+            val resultMapItems = resultMap[resultType] as? HashMap<String, Any>
             resultMapItems?.let {
-                if (resultMapItems.containsKey(question)){
-                    val questionItems = resultMapItems[question] as? HashMap<String,Any>
-                    questionItems?.let {listItems ->
+                if (resultMapItems.containsKey(question)) {
+                    val questionItems = resultMapItems[question] as? HashMap<String, Any>
+                    questionItems?.let { listItems ->
                         for ((key, value) in listItems) {
-                            if (key== Screening.Answer_Id){
+                            if (key == Screening.Answer_Id) {
                                 val newMap = HashMap<String, Any>()
                                 newMap[key] = value
                                 itemsList.add(newMap)
@@ -170,17 +174,18 @@ class SingleSelectionMHView : LinearLayout {
                 }
             }
             return itemsList
+        } else {
+            editList
         }
-        else editList
     }
-    fun getResultMapType(type: String?): String? {
-        return when(type){
+
+    fun getResultMapType(type: String?): String? =
+        when (type) {
             Screening.PHQ4 -> Screening.MentalHealthDetails
             AssessmentDefinedParams.GAD7 -> AssessmentDefinedParams.GAD7_Mental_Health
             AssessmentDefinedParams.PHQ9 -> AssessmentDefinedParams.PHQ9_Mental_Health
             else -> null
         }
-    }
 
     fun prefillSingleSelection(string: String) {
         forEach {

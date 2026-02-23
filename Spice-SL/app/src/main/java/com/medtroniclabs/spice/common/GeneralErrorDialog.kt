@@ -13,7 +13,6 @@ import com.medtroniclabs.spice.databinding.FragmentGeneralErrorDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class GeneralErrorDialog() : DialogFragment() {
-
     private var callback: ((isPositiveResult: Boolean) -> Unit)? = null
     var isNegativeButtonNeed: Boolean = false
 
@@ -22,7 +21,6 @@ class GeneralErrorDialog() : DialogFragment() {
     }
 
     companion object {
-
         const val TAG = "GeneralErrorDialog"
 
         private const val KEY_TITLE = "KEY_TITLE"
@@ -39,9 +37,8 @@ class GeneralErrorDialog() : DialogFragment() {
             isNegativeButtonNeed: Boolean,
             okayButton: String = context.getString(R.string.ok),
             cancelButton: String = context.getString(R.string.cancel),
-            messageBtnData: Pair<String?, Boolean> = Pair(null, false)
+            messageBtnData: Pair<String?, Boolean> = Pair(null, false),
         ): GeneralErrorDialog {
-
             val args = Bundle()
             args.putString(KEY_TITLE, title)
             args.putString(KEY_MESSAGE, messageBtnData.first)
@@ -60,7 +57,7 @@ class GeneralErrorDialog() : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentGeneralErrorDialogBinding.inflate(inflater, container, false)
 
@@ -69,7 +66,10 @@ class GeneralErrorDialog() : DialogFragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         readArguments()
@@ -112,8 +112,7 @@ class GeneralErrorDialog() : DialogFragment() {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
-
 }

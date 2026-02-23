@@ -4,5 +4,5 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 
 data class ExaminationModel(
     val diseaseName: String,
-    val questionnaires: ArrayList<FormLayout>
+    val questionnaires: ArrayList<FormLayout>,
 )

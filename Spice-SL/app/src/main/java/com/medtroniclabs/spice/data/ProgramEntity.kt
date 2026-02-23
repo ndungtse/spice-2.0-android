@@ -9,7 +9,7 @@ data class ProgramEntity(
     @PrimaryKey
     val id: Long,
     val name: String,
-    val healthFacilityIds: ArrayList<Long>
+    val healthFacilityIds: ArrayList<Long>,
 ) {
     @Ignore
     val healthFacilities: ArrayList<HealthFacility>? = null

@@ -23,22 +23,27 @@ class BirthHistoryFragment : BaseFragment() {
     companion object {
         const val TAG = "BirthHistoryFragment"
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding =
             FragmentBirthHistoryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         attachObservers()
         getBirthHistory()
     }
-    private fun getBirthHistory(){
+
+    private fun getBirthHistory() {
         val patientId = arguments?.getString(DefinedParams.PatientId, "")
         val memberId = arguments?.getString(DefinedParams.MemberID, "")
         viewModel.getBirthHistoryDetails(patientId, memberId)
@@ -97,13 +102,14 @@ class BirthHistoryFragment : BaseFragment() {
                 val formattedPrematureText = birthHistoryDetails.gestationalAgeCategory
                     ?.takeIf { it.isNotBlank() }
                     ?.capitalizeFirstChar()
-                    ?.let { " ($it)" }.orEmpty()
+                    ?.let { " ($it)" }
+                    .orEmpty()
                 "$ageWeek$weeksText$formattedPrematureText"
             } ?: getString(R.string.separator_double_hyphen)
             tvBreathingProblem.text = birthHistoryDetails.haveBreathingProblem.toYesNoOrDefault(
                 getString(R.string.separator_double_hyphen),
                 getString(R.string.yes),
-                getString(R.string.no)
+                getString(R.string.no),
             )
         }
     }

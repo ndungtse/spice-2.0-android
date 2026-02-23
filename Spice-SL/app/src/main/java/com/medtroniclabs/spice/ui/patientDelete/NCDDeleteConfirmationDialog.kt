@@ -25,7 +25,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
-
     private lateinit var reasonListCustomView: TagListCustomView
     private val viewModel: NCDPatientDeleteViewModel by activityViewModels()
 
@@ -38,7 +37,6 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
     }
 
     companion object {
-
         const val TAG = "NCDDeleteConfirmationDialog"
 
         private const val KEY_TITLE = "KEY_TITLE"
@@ -54,9 +52,8 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
             context: Context,
             isNegativeButtonNeed: Boolean,
             okayButton: String = context.getString(R.string.ok),
-            cancelButton: String = context.getString(R.string.cancel)
+            cancelButton: String = context.getString(R.string.cancel),
         ): NCDDeleteConfirmationDialog {
-
             val args = Bundle()
             args.putString(KEY_TITLE, title)
             args.putString(KEY_MESSAGE, message)
@@ -74,7 +71,7 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = NcdDeleteConfirmationDialogueBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -82,7 +79,10 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         readArguments()
         setupView()
@@ -99,7 +99,7 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
             otherCallBack = { selectedName, isChecked ->
                 if (selectedName.startsWith(
                         DefinedParams.Other.lowercase(),
-                        ignoreCase = true
+                        ignoreCase = true,
                     )
                 ) {
                     if (isChecked) {
@@ -112,7 +112,7 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
                     }
                 }
             },
-            otherSingleSelect = true
+            otherSingleSelect = true,
         )
     }
 
@@ -133,15 +133,16 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
                     value = element.type,
                     name = element.name,
                     cultureValue = element.displayValue,
-                )
+                ),
             )
         }
         reasonListCustomView.addChipItemList(chipItems, null, diagnosisGrouping(chipItems))
     }
 
-    private fun diagnosisGrouping(list: List<ChipViewItemModel>?): HashMap<String, MutableList<ChipViewItemModel>>? {
-        return list?.groupByTo(HashMap(), { it.type.toString() }, { it })
-    }
+    private fun diagnosisGrouping(list: List<ChipViewItemModel>?): HashMap<String, MutableList<ChipViewItemModel>>? =
+        list?.groupByTo(HashMap(), {
+            it.type.toString()
+        }, { it })
 
     private fun readArguments() {
         arguments?.getBoolean(IS_NEGATIVE_BUTTON_NEEDED)?.let {
@@ -166,19 +167,20 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
 
     private fun deleteArchive() {
         val chipValue = getChipValue(reasonListCustomView.getSelectedTags()[0])
-        if (binding.etOtherReason.text.isNullOrEmpty())
+        if (binding.etOtherReason.text.isNullOrEmpty()) {
             callback?.invoke(true, chipValue, null)
-        else
+        } else {
             callback?.invoke(true, chipValue, binding.etOtherReason.fetchString())
+        }
         dismiss()
     }
 
-    private fun getChipValue(any: Any): String {
-        return if (any is ChipViewItemModel)
+    private fun getChipValue(any: Any): String =
+        if (any is ChipViewItemModel) {
             any.name
-        else
+        } else {
             any.toString()
-    }
+        }
 
     private fun validateInputs(): Boolean {
         var isValid = true
@@ -207,7 +209,7 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
@@ -228,5 +230,4 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
             }
         }
     }
-
 }

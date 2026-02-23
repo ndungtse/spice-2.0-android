@@ -5,5 +5,5 @@ data class ReferPatientUserRoles(
     val name: String,
     val level: String,
     val groupName: String,
-    val displayName: String
+    val displayName: String,
 )

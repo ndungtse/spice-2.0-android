@@ -4,6 +4,11 @@ import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
 
 interface InvestigationListener {
     fun removeInvestigation(investigationGenerator: InvestigationModel)
+
     fun checkValidation()
-    fun markAsReviewed(id: String?, comments: String?)
+
+    fun markAsReviewed(
+        id: String?,
+        comments: String?,
+    )
 }

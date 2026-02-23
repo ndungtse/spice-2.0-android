@@ -22,7 +22,6 @@ interface NCDSupportDialogListener {
 }
 
 class NCDSupportDialogFragment : DialogFragment(), View.OnClickListener {
-
     private var _binding: NcdDialogSupportFragmentBinding? = null
     private val binding: NcdDialogSupportFragmentBinding
         get() = _binding!!
@@ -36,9 +35,8 @@ class NCDSupportDialogFragment : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "NCDSupportDialogFragment"
-        fun newInstance(): NCDSupportDialogFragment {
-            return NCDSupportDialogFragment()
-        }
+
+        fun newInstance(): NCDSupportDialogFragment = NCDSupportDialogFragment()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +47,7 @@ class NCDSupportDialogFragment : DialogFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         _binding = NcdDialogSupportFragmentBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -57,7 +55,10 @@ class NCDSupportDialogFragment : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initUI()
     }
@@ -83,15 +84,14 @@ class NCDSupportDialogFragment : DialogFragment(), View.OnClickListener {
         if (CommonUtils.checkIsTablet(requireContext())) {
             dialog?.window?.setLayout(
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT
+                WindowManager.LayoutParams.WRAP_CONTENT,
             )
         } else {
             dialog?.window?.setLayout(
                 WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.WRAP_CONTENT
+                WindowManager.LayoutParams.WRAP_CONTENT,
             )
         }
-
     }
 
     override fun onDestroyView() {

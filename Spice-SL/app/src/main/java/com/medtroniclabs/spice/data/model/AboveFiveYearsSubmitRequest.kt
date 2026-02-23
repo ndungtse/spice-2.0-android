@@ -8,6 +8,5 @@ data class AboveFiveYearsSubmitRequest(
     val systemicExaminations: List<String?>? = null,
     val systemicExaminationsNotes: String? = null,
     val clinicalNotes: String? = null,
-    val encounter:MedicalReviewEncounter? = null,
+    val encounter: MedicalReviewEncounter? = null,
 )
-

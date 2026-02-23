@@ -14,46 +14,43 @@ import javax.inject.Inject
 
 class ForgotPasswordRepository @Inject constructor(
     private val apiHelper: ApiHelper,
-    private val roomHelper: RoomHelper
+    private val roomHelper: RoomHelper,
 ) {
-
-    suspend fun forgotPassword(email: String): Resource<Boolean> {
-        return try {
+    suspend fun forgotPassword(email: String): Resource<Boolean> =
+        try {
             val response = apiHelper.forgotPassword(email, CLIENT_CONSTANT)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = true)
             } else {
                 Resource(
                     state = ResourceState.ERROR,
-                    message = getErrorMessage(response.errorBody())
+                    message = getErrorMessage(response.errorBody()),
                 )
             }
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun verifyToken(token: String): Resource<Boolean> {
-        return try {
+    suspend fun verifyToken(token: String): Resource<Boolean> =
+        try {
             val response = apiHelper.verifyToken(token)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = true)
             } else {
                 Resource(
                     state = ResourceState.ERROR,
-                    message = getErrorMessage(response.errorBody())
+                    message = getErrorMessage(response.errorBody()),
                 )
             }
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     suspend fun resetPassword(
         token: String,
-        password: String
-    ): Resource<Boolean> {
-        return try {
+        password: String,
+    ): Resource<Boolean> =
+        try {
             val securedPassword = EncryptionUtil.getSecurePassword(password)
             val response =
                 apiHelper.resetPassword(token, RequestChangePassword(securedPassword))
@@ -62,18 +59,17 @@ class ForgotPasswordRepository @Inject constructor(
             } else {
                 Resource(
                     state = ResourceState.ERROR,
-                    message = getErrorMessage(response.errorBody())
+                    message = getErrorMessage(response.errorBody()),
                 )
             }
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
-
 
     private fun getErrorMessage(errorBody: ResponseBody?): String? {
-        if (errorBody == null)
+        if (errorBody == null) {
             return null
+        }
         return try {
             val errorResponse = Gson().fromJson(errorBody.string(), ErrorResponse::class.java)
             return errorResponse.message

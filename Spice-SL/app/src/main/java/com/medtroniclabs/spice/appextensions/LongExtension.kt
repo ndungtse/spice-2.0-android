@@ -11,7 +11,6 @@ import java.time.temporal.TemporalQueries.localDate
 import java.util.Date
 import java.util.Locale
 
-
 fun Long.convertToUtcDateTime(): String {
     val instant = Instant.ofEpochMilli(this).atOffset(ZoneOffset.UTC)
     val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME

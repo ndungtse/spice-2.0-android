@@ -13,7 +13,6 @@ import com.medtroniclabs.spice.databinding.DialogGeneralSuccessBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class GeneralSuccessDialog(private val callback: () -> Unit) : DialogFragment() {
-
     companion object {
         const val TAG = "GeneralSuccessDialog"
 
@@ -25,7 +24,7 @@ class GeneralSuccessDialog(private val callback: () -> Unit) : DialogFragment() 
             title: String,
             message: String,
             okayButton: String,
-            callback: () -> Unit
+            callback: () -> Unit,
         ): GeneralSuccessDialog {
             val args = Bundle()
             args.putString(KEY_TITLE, title)
@@ -42,7 +41,7 @@ class GeneralSuccessDialog(private val callback: () -> Unit) : DialogFragment() 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogGeneralSuccessBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -50,7 +49,10 @@ class GeneralSuccessDialog(private val callback: () -> Unit) : DialogFragment() 
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         readArguments()

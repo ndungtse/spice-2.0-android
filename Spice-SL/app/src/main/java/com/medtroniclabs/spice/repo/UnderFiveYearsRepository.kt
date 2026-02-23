@@ -17,13 +17,10 @@ import javax.inject.Inject
 
 class UnderFiveYearsRepository @Inject constructor(
     private var roomHelper: RoomHelper,
-    private var apiHelper: ApiHelper
+    private var apiHelper: ApiHelper,
 ) {
-
-    suspend fun getStaticMetaData(
-        menuType: String
-    ): Resource<Boolean> {
-        return try {
+    suspend fun getStaticMetaData(menuType: String): Resource<Boolean> =
+        try {
             val response = apiHelper.getUnderFiveYearsMetaData()
             if (response.isSuccessful) {
                 response.body()?.entity?.apply {
@@ -33,8 +30,8 @@ class UnderFiveYearsRepository @Inject constructor(
                             systemicExaminations,
                             patientStatus,
                             immunisationStatus,
-                            muac
-                        )
+                            muac,
+                        ),
                     )
                     roomHelper.deleteExaminationsList(MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name)
                     roomHelper.saveExaminationsList(examinations)
@@ -45,42 +42,38 @@ class UnderFiveYearsRepository @Inject constructor(
                 }
                 SecuredPreference.putBoolean(
                     SecuredPreference.EnvironmentKey.IS_UNDER_FIVE_YEARS_LOADED.name,
-                    true
+                    true,
                 )
                 Resource(state = ResourceState.SUCCESS, true)
             } else {
                 Resource(state = ResourceState.ERROR)
             }
-
         } catch (e: Exception) {
             e.printStackTrace()
             SecuredPreference.putBoolean(
                 SecuredPreference.EnvironmentKey.IS_UNDER_FIVE_YEARS_LOADED.name,
-                false
+                false,
             )
             Resource(state = ResourceState.ERROR)
         }
 
-    }
-
-    private fun convertToSignsAndSymptomsEntity(examinationList: List<MedicalReviewMetaItems>): List<SignsAndSymptomsEntity> {
-        return examinationList.map { examination ->
+    private fun convertToSignsAndSymptomsEntity(examinationList: List<MedicalReviewMetaItems>): List<SignsAndSymptomsEntity> =
+        examinationList.map { examination ->
             SignsAndSymptomsEntity(
                 _id = examination.id,
                 symptom = examination.name,
                 type = examination.type,
                 displayValue = null, // Assuming no direct mapping for this field
                 displayOrder = examination.displayOrder,
-                value = examination.value
+                value = examination.value,
             )
         }
-    }
 
     private fun generateChipItemByType(
         systemicExaminations: List<MedicalReviewMetaItems>,
         patientStatus: List<MedicalReviewMetaItems>,
         immunisationStatus: ArrayList<MedicalReviewMetaItems>,
-        muac: List<MedicalReviewMetaItems>
+        muac: List<MedicalReviewMetaItems>,
     ): List<MedicalReviewMetaItems> {
         val chipItemList = ArrayList<MedicalReviewMetaItems>()
         systemicExaminations.forEach {
@@ -96,8 +89,8 @@ class UnderFiveYearsRepository @Inject constructor(
         return chipItemList
     }
 
-    suspend fun createMedicalReviewForUnderFiveYears(request: CreateUnderFiveYearsRequest): Resource<CreateUnderTwoMonthsResponse> {
-        return try {
+    suspend fun createMedicalReviewForUnderFiveYears(request: CreateUnderFiveYearsRequest): Resource<CreateUnderTwoMonthsResponse> =
+        try {
             val response = apiHelper.createMedicalReviewForUnderFiveYears(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
@@ -109,12 +102,9 @@ class UnderFiveYearsRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getImmunisationStatusMetaItems(
-        type: String
-    ): Resource<List<MedicalReviewMetaItems>> {
-        return try {
+    suspend fun getImmunisationStatusMetaItems(type: String): Resource<List<MedicalReviewMetaItems>> =
+        try {
             val response = roomHelper.getSummaryDetailMetaItems(type)
             val filteredAndSortedResponse = response
                 .filter { item -> item.category == MedicalReviewTypeEnums.immunisation_status.name }
@@ -123,12 +113,9 @@ class UnderFiveYearsRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getMuAcStatusMetaItems(
-        type: String
-    ): Resource<List<MedicalReviewMetaItems>> {
-        return try {
+    suspend fun getMuAcStatusMetaItems(type: String): Resource<List<MedicalReviewMetaItems>> =
+        try {
             val response = roomHelper.getSummaryDetailMetaItems(type)
             val filteredAndSortedResponse = response
                 .filter { item -> item.category == MedicalReviewTypeEnums.muac.name }
@@ -137,9 +124,9 @@ class UnderFiveYearsRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
-    suspend fun getWazWhzScore(request: WazWhzScoreRequest): Resource<WazWhzScoreResponse> {
-        return try {
+
+    suspend fun getWazWhzScore(request: WazWhzScoreRequest): Resource<WazWhzScoreResponse> =
+        try {
             val response = apiHelper.getWazWhzScore(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
@@ -151,5 +138,4 @@ class UnderFiveYearsRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 }

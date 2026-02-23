@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ncd.medicalreview.prescription.viewmodel
 
 import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
@@ -25,7 +24,6 @@ import com.medtroniclabs.spice.data.UnitMetricEntity
 import com.medtroniclabs.spice.data.UpdatePrescriptionModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.entity.DosageDurationEntity
-import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
@@ -46,9 +44,8 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDPrescriptionViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private val prescriptionRepository: NCDPrescriptionRepo
+    private val prescriptionRepository: NCDPrescriptionRepo,
 ) : BaseViewModel(dispatcherIO) {
-
     val medicationListLiveData = MutableLiveData<Resource<ArrayList<MedicationResponse>>>()
     val prescriptionListLiveData = MutableLiveData<Resource<ArrayList<Prescription>>>()
     val unitList = MutableLiveData<List<UnitMetricEntity>>()
@@ -94,21 +91,25 @@ class NCDPrescriptionViewModel @Inject constructor(
         }
     }
 
-    fun removePrescription(prescriptionId: String, reason: String?) {
+    fun removePrescription(
+        prescriptionId: String,
+        reason: String?,
+    ) {
         this.prescriptionId = prescriptionId
         viewModelScope.launch(dispatcherIO) {
             removePrescriptionLiveData.postLoading()
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDPrescriptionDelete,
-                isCompleted = true
+                isCompleted = true,
             )
             val response = prescriptionRepository.removePrescription(
                 RemovePrescriptionRequest(
-                    prescriptionId, ProvanceDto(),
+                    prescriptionId,
+                    ProvanceDto(),
                     reason,
-                    requestFrom = DefinedParams.Africa
-                )
+                    requestFrom = DefinedParams.Africa,
+                ),
             )
             removePrescriptionLiveData.postSuccess(response.data)
         }
@@ -119,7 +120,7 @@ class NCDPrescriptionViewModel @Inject constructor(
             try {
                 unitList.postValue(prescriptionRepository.getUnitList(DefinedParams.PRESCRIPTION))
             } catch (_: Exception) {
-                //Exception - Catch block
+                // Exception - Catch block
             }
         }
     }
@@ -129,7 +130,7 @@ class NCDPrescriptionViewModel @Inject constructor(
             try {
                 prescribedDaysList.postValue(prescriptionRepository.getDosageDurations())
             } catch (_: Exception) {
-                //Exception - Catch block
+                // Exception - Catch block
             }
         }
     }
@@ -158,11 +159,10 @@ class NCDPrescriptionViewModel @Inject constructor(
         }
     }
 
-
     fun createOrUpdatePrescription(
         signatureBitmap: Bitmap,
         filePath: File,
-        request: PatientPrescriptionModel
+        request: PatientPrescriptionModel,
     ) {
         updatePrescriptionLiveDate.postLoading()
         viewModelScope.launch(dispatcherIO) {
@@ -201,8 +201,8 @@ class NCDPrescriptionViewModel @Inject constructor(
                 val response = prescriptionRepository.getPatientPrescriptionHistoryList(
                     RemovePrescriptionRequest(
                         prescriptionId = prescriptionId,
-                        requestFrom = DefinedParams.Africa
-                    )
+                        requestFrom = DefinedParams.Africa,
+                    ),
                 )
                 response.data.let {
                     medicationHistoryLiveData.postSuccess(it)
@@ -227,7 +227,7 @@ class NCDPrescriptionViewModel @Inject constructor(
         builder.addFormDataPart(
             "signature",
             file.name,
-            file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+            file.asRequestBody("multipart/form-data".toMediaTypeOrNull()),
         )
 
         val prescriptionRequest = request.prescriptions?.let {
@@ -239,8 +239,9 @@ class NCDPrescriptionViewModel @Inject constructor(
                     patientVisitId = patient_visit_id,
                     memberId = memberReference,
                     patientReference = patientReference,
-                    provenance = ProvanceDto()
-                ), prescriptions = it
+                    provenance = ProvanceDto(),
+                ),
+                prescriptions = it,
             )
         }
 
@@ -250,7 +251,7 @@ class NCDPrescriptionViewModel @Inject constructor(
         setAnalyticsData(
             UserDetail.startDateTime,
             eventName = AnalyticsDefinedParams.NCDPrescriptionCreation,
-            isCompleted = true
+            isCompleted = true,
         )
         val response = prescriptionRepository.createPrescriptionRequest(requestBody)
         response.data?.let {
@@ -260,7 +261,7 @@ class NCDPrescriptionViewModel @Inject constructor(
         }
     }
 
-     fun getPrescriptionPrediction() {
+    fun getPrescriptionPrediction() {
         viewModelScope.launch(dispatcherIO) {
             try {
                 val response = prescriptionRepository.getNudgesList(PredictionRequest(memberId = memberReference))
@@ -271,7 +272,7 @@ class NCDPrescriptionViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                //error Block
+                // error Block
             }
         }
     }

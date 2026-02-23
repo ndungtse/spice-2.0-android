@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.mappingkey
 
 object UnderTwoExaminationKeyMapping {
-
     object DiseaseName {
         const val verySevereDisease = "Very Severe Disease (PSBI)"
         const val jaundice = "Jaundice"

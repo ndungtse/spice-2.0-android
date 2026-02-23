@@ -22,9 +22,8 @@ import androidx.core.text.buildSpannedString
 import androidx.core.text.color
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.formgeneration.FormSupport.getResId
-
 import java.io.Serializable
-import java.util.*
+import java.util.Locale
 
 fun TextView.markMandatory() {
     text = buildSpannedString {
@@ -34,18 +33,16 @@ fun TextView.markMandatory() {
 }
 
 fun TextView.markNonMandatory() {
-        val startIndex = text.toString().lastIndexOf(" *")
-        if (startIndex != -1) {
-            val newText = text.toString().substring(0, startIndex)
-            text = newText
-        }
+    val startIndex = text.toString().lastIndexOf(" *")
+    if (startIndex != -1) {
+        val newText = text.toString().substring(0, startIndex)
+        text = newText
+    }
 }
 
 fun TextView.capitalizeFirstChar() {
-    text = text.toString().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ENGLISH) else it.toString()  }
+    text = text.toString().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ENGLISH) else it.toString() }
 }
-
-
 
 /**
  * Disable the copy paste value for edit text
@@ -54,18 +51,20 @@ fun TextView.disableCopyPaste() {
     isLongClickable = false
     setTextIsSelectable(false)
     customSelectionActionModeCallback = object : android.view.ActionMode.Callback {
-        override fun onActionItemClicked(p0: android.view.ActionMode?, p1: MenuItem?): Boolean {
-            return false
-        }
+        override fun onActionItemClicked(
+            p0: android.view.ActionMode?,
+            p1: MenuItem?,
+        ): Boolean = false
 
-        override fun onCreateActionMode(p0: android.view.ActionMode?, p1: Menu?): Boolean {
-            return false
-        }
+        override fun onCreateActionMode(
+            p0: android.view.ActionMode?,
+            p1: Menu?,
+        ): Boolean = false
 
-        override fun onPrepareActionMode(p0: android.view.ActionMode?, p1: Menu?): Boolean {
-            return false
-        }
-
+        override fun onPrepareActionMode(
+            p0: android.view.ActionMode?,
+            p1: Menu?,
+        ): Boolean = false
 
         override fun onDestroyActionMode(p0: android.view.ActionMode?) {
             /**
@@ -90,51 +89,50 @@ fun Context.hideKeyboard(view: View) {
 /**
  * Returns the `location` object as a human readable string.
  */
-fun Location?.toText(): String {
-    return if (this != null) {
+fun Location?.toText(): String =
+    if (this != null) {
         "($latitude, $longitude)"
     } else {
         "Unknown location"
     }
-}
 
 fun View.safeClickListener(clickListener: View.OnClickListener?) {
     val safeClickListener = SafeClickListener(clickListener)
     setOnClickListener(safeClickListener)
 }
 
-fun androidx.appcompat.widget.PopupMenu.safePopupMenuClickListener(clickListener: androidx.appcompat.widget.PopupMenu.OnMenuItemClickListener){
+fun androidx.appcompat.widget.PopupMenu.safePopupMenuClickListener(clickListener: androidx.appcompat.widget.PopupMenu.OnMenuItemClickListener) {
     val safePopupMenuClickListener = SafePopupMenuClickListener(clickListener)
     setOnMenuItemClickListener(safePopupMenuClickListener)
 }
 
 @Suppress("DEPRECATION")
-inline fun <reified T : Serializable> Bundle.customGetSerializable(key: String): T? {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+inline fun <reified T : Serializable> Bundle.customGetSerializable(key: String): T? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getSerializable(key, T::class.java)
     } else {
         getSerializable(key) as? T
     }
-}
 
 @Suppress("DEPRECATION")
-inline fun <reified T : Parcelable> Bundle.customGetParcelable(key: String): T? {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+inline fun <reified T : Parcelable> Bundle.customGetParcelable(key: String): T? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getParcelable(key, T::class.java)
     } else {
         getParcelable(key) as? T
     }
-}
 
-inline fun <reified T : Parcelable> Bundle.parcelableArrayList(key: String): ArrayList<T>? = when {
-    Build.VERSION.SDK_INT >= 33 -> getParcelableArrayList(key, T::class.java)
-    else -> @Suppress("DEPRECATION") getParcelableArrayList(key)
-}
+inline fun <reified T : Parcelable> Bundle.parcelableArrayList(key: String): ArrayList<T>? =
+    when {
+        Build.VERSION.SDK_INT >= 33 -> getParcelableArrayList(key, T::class.java)
+        else -> @Suppress("DEPRECATION") getParcelableArrayList(key)
+    }
 
-inline fun <reified T : Serializable> Intent.customSerializableExtra(key: String): T? = when {
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getSerializableExtra(key, T::class.java)
-    else -> @Suppress("DEPRECATION") getSerializableExtra(key) as? T
-}
+inline fun <reified T : Serializable> Intent.customSerializableExtra(key: String): T? =
+    when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getSerializableExtra(key, T::class.java)
+        else -> @Suppress("DEPRECATION") getSerializableExtra(key) as? T
+    }
 
 fun EditText.touchObserver() {
     setOnTouchListener { view, event ->
@@ -148,17 +146,11 @@ fun EditText.touchObserver() {
     }
 }
 
-fun EditText.fetchString(): String {
-    return text.toString().trim()
-}
+fun EditText.fetchString(): String = text.toString().trim()
 
-fun Editable.fetchString(): String {
-    return toString().trim()
-}
+fun Editable.fetchString(): String = toString().trim()
 
-fun String.capitalizeFirstChar(): String {
-    return toString().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ENGLISH) else it.toString() }
-}
+fun String.capitalizeFirstChar(): String = toString().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ENGLISH) else it.toString() }
 
 var TextView.textSizeSsp: Int?
     get() {
@@ -170,6 +162,7 @@ var TextView.textSizeSsp: Int?
         val resId = getResId(sizeString, R.dimen::class.java)
         setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(resId).toFloat())
     }
+
 fun TextView.markMandatorys() {
     // Check if already marked
     if (text.contains(" *")) return // Already marked, skip

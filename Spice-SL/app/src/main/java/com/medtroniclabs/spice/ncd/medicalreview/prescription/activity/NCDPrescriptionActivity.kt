@@ -22,7 +22,6 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.SearchLength
-import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.MedicationResponse
 import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.PatientPrescriptionHistoryResponse
@@ -52,9 +51,11 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureListener,
+class NCDPrescriptionActivity :
+    BaseActivity(),
+    View.OnClickListener,
+    SignatureListener,
     MedicationListener {
-
     private lateinit var binding: ActivityNcdPrescriptionBinding
     private val prescriptionViewModel: NCDPrescriptionViewModel by viewModels()
     private val patientViewModel: PatientDetailViewModel by viewModels()
@@ -112,13 +113,23 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                 }
             }
             addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                override fun beforeTextChanged(
+                    p0: CharSequence?,
+                    p1: Int,
+                    p2: Int,
+                    p3: Int,
+                ) {
                     /**
                      * this method is not used
                      */
                 }
 
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                override fun onTextChanged(
+                    p0: CharSequence?,
+                    p1: Int,
+                    p2: Int,
+                    p3: Int,
+                ) {
                     /**
                      * this method is not used
                      */
@@ -154,7 +165,6 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
     }
 
     fun attachObserver() {
-
         prescriptionViewModel.prescriptionPredictionResponseLiveDate.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -169,7 +179,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     resourceState.data?.let {
                         PrescriptionResultDialogFragment().show(
                             supportFragmentManager,
-                            PrescriptionResultDialogFragment.TAG
+                            PrescriptionResultDialogFragment.TAG,
                         )
                     }
                 }
@@ -207,7 +217,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                 }
 
                 else -> {
-                    //Invoked if response state is not success
+                    // Invoked if response state is not success
                 }
             }
         }
@@ -229,7 +239,6 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     hideLoading()
                 }
             }
-
         }
 
         prescriptionViewModel.prescriptionListLiveData.observe(this) { resourceState ->
@@ -271,8 +280,8 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                                     isEditable = false,
                                     prescribedSince = prescription.prescribedSince,
                                     showErrorMessage = false,
-                                    prescriptionRemainingDays = prescription.prescriptionRemainingDays
-                                )
+                                    prescriptionRemainingDays = prescription.prescriptionRemainingDays,
+                                ),
                             )
                         }
                         val existingIds = prescriptionViewModel.prescriptionUIModel?.map { it.prescriptionId }?.toSet() ?: emptySet()
@@ -280,7 +289,6 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                         val newItems = prescriptionUIModel.filter { it.prescriptionId !in existingIds }
 
                         prescriptionViewModel.prescriptionUIModel?.addAll(newItems)
-
                     } ?: kotlin.run {
                         prescriptionViewModel.prescriptionUIModel = null
                     }
@@ -336,16 +344,16 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                                     dosageUnitName = data.dosageUnitName,
                                     createdAt = data.prescribedSince,
                                     dosageUnitValue = data.dosageUnitValue,
-                                )
+                                ),
                             )
                         }
-                        NCDMedicationHistoryDialog.newInstance(patientPrescriptionHistoryResponse)
+                        NCDMedicationHistoryDialog
+                            .newInstance(patientPrescriptionHistoryResponse)
                             .show(supportFragmentManager, NCDMedicationHistoryDialog.TAG)
                     }
                 }
             }
         }
-
     }
 
     private fun reloadPrescriptionInstruction() {
@@ -361,9 +369,11 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         if (searchResultList.isNotEmpty()) {
             searchResultList.forEach {
                 val search = "${it.name}, ${it.brandName}, ${it.dosageFormName}"
-                if (isValidSuggestion(search)) searchResults.add(
-                    Pair(search, it.classificationName ?: "")
-                )
+                if (isValidSuggestion(search)) {
+                    searchResults.add(
+                        Pair(search, it.classificationName ?: ""),
+                    )
+                }
             }
         }
         prescriptionAdapter.setData(searchResults)
@@ -377,7 +387,6 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
     }
 
     override fun onClick(view: View?) {
-
         when (view?.id) {
             R.id.btnAddMedicine -> {
                 if (connectivityManager.isNetworkAvailable()) {
@@ -386,7 +395,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     showErrorDialogue(
                         getString(R.string.title_no_network),
                         getString(R.string.message_no_network),
-                        isNegativeButtonNeed = false
+                        isNegativeButtonNeed = false,
                     ) { _ -> }
                 }
             }
@@ -398,7 +407,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     showErrorDialogue(
                         getString(R.string.title_no_network),
                         getString(R.string.message_no_network),
-                        isNegativeButtonNeed = false
+                        isNegativeButtonNeed = false,
                     ) { _ -> }
                 }
             }
@@ -410,7 +419,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     showErrorDialogue(
                         getString(R.string.title_no_network),
                         getString(R.string.message_no_network),
-                        isNegativeButtonNeed = false
+                        isNegativeButtonNeed = false,
                     ) { _ -> }
                 }
             }
@@ -527,8 +536,9 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                 (it.id ?: 0) > 0 && !it.isEdit
             }
             binding.btnRenewAll.visibility = if (data == null) View.GONE else View.VISIBLE
-        } else
+        } else {
             binding.btnRenewAll.visibility = View.GONE
+        }
     }
 
     private fun loadPrescriptionData(data: ArrayList<MedicationResponse>) {
@@ -550,13 +560,16 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         }
     }
 
-    private fun loadMedicationEdit(model: MedicationResponse, dividerStatus: Boolean) {
+    private fun loadMedicationEdit(
+        model: MedicationResponse,
+        dividerStatus: Boolean,
+    ) {
         val medicationEditBinding = NcdRowPrescriptionEditBinding.inflate(layoutInflater)
         medicationEditBinding.tvMedicationName.text =
             if (model.name.isNullOrBlank()) getString(R.string.separator_hyphen) else model.name
-        if (model.dosage_form_name_entered.isNullOrBlank() || (model.id ?: 0) <= 0)
+        if (model.dosage_form_name_entered.isNullOrBlank() || (model.id ?: 0) <= 0) {
             otherMedicationEdit(medicationEditBinding, model)
-        else {
+        } else {
             medicationEditBinding.tvForm.visibility = View.VISIBLE
             medicationEditBinding.spinnerForm.visibility = View.GONE
             medicationEditBinding.tvForm.text = model.dosage_form_name_entered
@@ -575,15 +588,14 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
 
         medicationEditBinding.etInstruction.text = model.instruction_entered ?: ""
 
-
-        //Dosage Unit Value
+        // Dosage Unit Value
         medicationEditBinding.etDosage.visibility = View.VISIBLE
         medicationEditBinding.etDosage.setText(model.enteredDosageUnitValue ?: "")
 
         medicationEditBinding.tvDosage.visibility = View.GONE
         medicationEditBinding.tvDosage.text = ""
 
-        //Dosage Unit Name
+        // Dosage Unit Name
         medicationEditBinding.tvUnitVal.visibility = View.GONE
         medicationEditBinding.tvUnitVal.text = ""
 
@@ -593,7 +605,12 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         medicationEditBinding.tvUnit.adapter = dosageAdapter
         medicationEditBinding.tvUnit.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                override fun onItemSelected(
+                    p0: AdapterView<*>?,
+                    p1: View?,
+                    p2: Int,
+                    p3: Long,
+                ) {
                     val selectedItem = dosageAdapter.getData(position = p2)
                     selectedItem?.let {
                         model.dosage_unit_selected = it[DefinedParams.ID].toString().toLong()
@@ -610,7 +627,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         model.dosage_unit_name_entered?.let {
             medicationEditBinding.tvUnit.setSelection(
                 getSpinnerPosition(dosageAdapter, it),
-                true
+                true,
             )
         } ?: kotlin.run {
             medicationEditBinding.tvUnit.setSelection(0, true)
@@ -623,7 +640,12 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             medicationEditBinding.spinnerPrescribedDays.adapter = prescribedDaysAdapter
             medicationEditBinding.spinnerPrescribedDays.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                    override fun onItemSelected(
+                        p0: AdapterView<*>?,
+                        p1: View?,
+                        p2: Int,
+                        p3: Long,
+                    ) {
                         val selectedItem = prescribedDaysAdapter.getData(position = p2)
                         selectedItem?.let {
                             model.filledPrescriptionDays = it[DefinedParams.QUANTITY].toString().toLongOrNull()
@@ -640,7 +662,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             model.dosage_duration_name?.let {
                 medicationEditBinding.spinnerPrescribedDays.setSelection(
                     getSpinnerPosition(prescribedDaysAdapter, it),
-                    true
+                    true,
                 )
             } ?: kotlin.run {
                 medicationEditBinding.tvUnit.setSelection(0, true)
@@ -654,7 +676,12 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         medicationEditBinding.spinnerFrequency.adapter = adapter
         medicationEditBinding.spinnerFrequency.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                override fun onItemSelected(
+                    p0: AdapterView<*>?,
+                    p1: View?,
+                    p2: Int,
+                    p3: Long,
+                ) {
                     val selectedItem = adapter.getData(position = p2)
                     selectedItem?.let {
                         editSpinnerFrequency(selectedItem, medicationEditBinding, model)
@@ -672,7 +699,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         model.dosage_frequency_name_entered?.let {
             medicationEditBinding.spinnerFrequency.setSelection(
                 getSpinnerPosition(adapter, it),
-                true
+                true,
             )
         } ?: kotlin.run {
             medicationEditBinding.spinnerFrequency.setSelection(0, true)
@@ -719,13 +746,17 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             loadPrescriptionListData()
         }
         medicationEditBinding.etInstruction.safeClickListener {
-            NCDInstructionExpansionDialog.newInstance(model)
+            NCDInstructionExpansionDialog
+                .newInstance(model)
                 .show(supportFragmentManager, NCDInstructionExpansionDialog.TAG)
         }
         binding.llMedicationList.addView(medicationEditBinding.root)
     }
 
-    private fun loadMedicationView(model: MedicationResponse, dividerStatus: Boolean) {
+    private fun loadMedicationView(
+        model: MedicationResponse,
+        dividerStatus: Boolean,
+    ) {
         val medicationBinding = NcdRowPrescriptionBinding.inflate(layoutInflater)
         medicationBinding.tvMedicationName.text =
             if (model.name.isNullOrBlank()) getString(R.string.separator_hyphen) else model.name
@@ -751,8 +782,8 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             medicationBinding.tvPrescribedDays.setTextColor(
                 ContextCompat.getColor(
                     this,
-                    R.color.black
-                )
+                    R.color.black,
+                ),
             )
             medicationBinding.ivPrescriptionCompleted.visibility = View.GONE
         } else {
@@ -760,8 +791,8 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             medicationBinding.tvPrescribedDays.setTextColor(
                 ContextCompat.getColor(
                     this,
-                    R.color.medium_high_risk_color
-                )
+                    R.color.medium_high_risk_color,
+                ),
             )
             medicationBinding.ivPrescriptionCompleted.visibility = View.VISIBLE
         }
@@ -780,7 +811,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             strPrescribedSince = DateUtils.convertDateTimeToDate(
                 prescribedSince,
                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                DateUtils.DATE_FORMAT_ddMMMyyyy
+                DateUtils.DATE_FORMAT_ddMMMyyyy,
             )
             medicationBinding.tvPrescribedSince.safeClickListener {
                 if (connectivityManager.isNetworkAvailable()) {
@@ -791,7 +822,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     showErrorDialogue(
                         getString(R.string.title_no_network),
                         getString(R.string.message_no_network),
-                        isNegativeButtonNeed = false
+                        isNegativeButtonNeed = false,
                     ) { _ -> }
                 }
             }
@@ -822,13 +853,13 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     getString(R.string.confirmation),
                     message = getString(R.string.delete_confirmation),
                     true,
-                    buttonName = Pair(getString(R.string.ok), getString(R.string.cancel))
+                    buttonName = Pair(getString(R.string.ok), getString(R.string.cancel)),
                 ) { isPositiveResult, discontinuedReason ->
                     if (isPositiveResult) {
                         model.prescriptionId.let {
                             prescriptionViewModel.removePrescription(
                                 it.toString(),
-                                discontinuedReason
+                                discontinuedReason,
                             )
                         }
                     }
@@ -837,21 +868,20 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                 showErrorDialogue(
                     getString(R.string.title_no_network),
                     getString(R.string.message_no_network),
-                    isNegativeButtonNeed = false
+                    isNegativeButtonNeed = false,
                 ) { _ -> }
             }
         }
         binding.llMedicationList.addView(medicationBinding.root)
     }
 
-    private fun getSearchString(medicationResponse: MedicationResponse): String {
-        return medicationResponse.let {
+    private fun getSearchString(medicationResponse: MedicationResponse): String =
+        medicationResponse.let {
             val name = it.name ?: ""
             val brandName = it.brandName ?: ""
             val dosageFormName = it.dosageFormName ?: ""
             "$name, $brandName , $dosageFormName"
         }
-    }
 
     override fun applySignature(signature: Bitmap) {
         updatePrescriptions(signature)
@@ -863,9 +893,9 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                 signature,
                 CommonUtils.getFilePath(
                     prescriptionViewModel.patient_visit_id!!.toString(),
-                    context = this
+                    context = this,
                 ),
-                getReqBody()
+                getReqBody(),
             )
         }
     }
@@ -887,8 +917,8 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     dosageUnitName = it.dosageUnitName,
                     dosageUnitValue = it.dosageUnitValue,
                     instructionNote = it.instructionNote,
-                    codeDetails = it.codeDetailsObject
-                )
+                    codeDetails = it.codeDetailsObject,
+                ),
             )
         }
 
@@ -896,16 +926,16 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             prescriptions = prescriptionList,
             enrollmentType = prescriptionViewModel.enrollmentType,
             identityValue = prescriptionViewModel.identityValue,
-            patientVisitId = prescriptionViewModel.patient_visit_id?.toLong()
+            patientVisitId = prescriptionViewModel.patient_visit_id?.toLong(),
         )
     }
 
-    private fun dividerVisibility(dividerStatus: Boolean): Int {
-        return if (dividerStatus)
+    private fun dividerVisibility(dividerStatus: Boolean): Int =
+        if (dividerStatus) {
             View.GONE
-        else
+        } else {
             View.VISIBLE
-    }
+        }
 
     private fun getPrescribedDays(): ArrayList<Map<String, Any>> {
         val dropDownList = ArrayList<Map<String, Any>>()
@@ -913,8 +943,8 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             hashMapOf<String, Any>(
                 DefinedParams.NAME to getString(R.string.please_select),
                 DefinedParams.ID to "-1",
-                DefinedParams.QUANTITY to ""
-            )
+                DefinedParams.QUANTITY to "",
+            ),
         )
         prescriptionViewModel.prescribedDaysList.value?.forEach {
             dropDownList.add(
@@ -922,7 +952,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     DefinedParams.NAME to it.name,
                     DefinedParams.ID to it.id,
                     DefinedParams.QUANTITY to it.quantity,
-                )
+                ),
             )
         }
         return dropDownList
@@ -934,41 +964,49 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             hashMapOf<String, Any>(
                 DefinedParams.NAME to getString(R.string.please_select),
                 DefinedParams.ID to "-1",
-                DefinedParams.DESCRIPTION to ""
-            )
+                DefinedParams.DESCRIPTION to "",
+            ),
         )
         prescriptionViewModel.unitList.value?.forEach {
             dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to it.unit,
                     DefinedParams.ID to it.id,
-                )
+                ),
             )
         }
         return dropDownList
     }
 
-    private fun getSpinnerPosition(dosageAdapter: CustomSpinnerAdapter, it: String): Int {
-        return if (it != getString(R.string.please_select) && dosageAdapter.getIndexOfItemByName(it) != -1)
+    private fun getSpinnerPosition(
+        dosageAdapter: CustomSpinnerAdapter,
+        it: String,
+    ): Int =
+        if (it != getString(R.string.please_select) && dosageAdapter.getIndexOfItemByName(it) != -1) {
             dosageAdapter.getIndexOfItemByName(it)
-        else
+        } else {
             0
-    }
+        }
 
-    private fun checkValue(it: Editable?): Editable? {
-        return if (it.isNullOrBlank())
+    private fun checkValue(it: Editable?): Editable? =
+        if (it.isNullOrBlank()) {
             null
-        else
+        } else {
             it
-    }
+        }
 
     private fun editSpinnerFrequency(
         selectedItem: Map<String, Any>,
         medicationEditBinding: NcdRowPrescriptionEditBinding,
-        model: MedicationResponse
+        model: MedicationResponse,
     ) {
         selectedItem.let {
-            if (!(model.dosage_frequency_name_entered != null && model.dosage_frequency_name_entered!!.isNotEmpty() && model.dosage_frequency_name_entered == (it[DefinedParams.NAME] as String))) {
+            if (!(
+                    model.dosage_frequency_name_entered != null &&
+                        model.dosage_frequency_name_entered!!.isNotEmpty() &&
+                        model.dosage_frequency_name_entered == (it[DefinedParams.NAME] as String)
+                )
+            ) {
                 if (it.containsKey(DefinedParams.DESCRIPTION)) {
                     medicationEditBinding.etInstruction.text =
                         it[DefinedParams.DESCRIPTION] as String
@@ -990,16 +1028,16 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             hashMapOf<String, Any>(
                 DefinedParams.NAME to getString(R.string.please_select),
                 DefinedParams.ID to "-1",
-                DefinedParams.DESCRIPTION to ""
-            )
+                DefinedParams.DESCRIPTION to "",
+            ),
         )
         prescriptionViewModel.frequencyList.value?.forEach {
             dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to it.name,
                     DefinedParams.ID to it.id,
-                    DefinedParams.DESCRIPTION to (it.description ?: "")
-                )
+                    DefinedParams.DESCRIPTION to (it.description ?: ""),
+                ),
             )
         }
         return dropDownList
@@ -1007,7 +1045,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
 
     private fun otherMedicationEdit(
         medicationEditBinding: NcdRowPrescriptionEditBinding,
-        model: MedicationResponse
+        model: MedicationResponse,
     ) {
         medicationEditBinding.tvForm.visibility = View.GONE
         medicationEditBinding.spinnerForm.visibility = View.VISIBLE
@@ -1016,7 +1054,12 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         medicationEditBinding.spinnerForm.adapter = spinnerFormAdapter
         medicationEditBinding.spinnerForm.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                override fun onItemSelected(
+                    p0: AdapterView<*>?,
+                    p1: View?,
+                    p2: Int,
+                    p3: Long,
+                ) {
                     val selectedItem = spinnerFormAdapter.getData(position = p2)
                     selectedItem?.let {
                         model.dosage_form_name_entered = it[DefinedParams.ID] as String
@@ -1032,14 +1075,17 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         model.dosage_form_name_entered?.let {
             medicationEditBinding.spinnerFrequency.setSelection(
                 getSpinnerPosition(spinnerFormAdapter, it),
-                true
+                true,
             )
         } ?: kotlin.run {
             medicationEditBinding.spinnerForm.setSelection(0, true)
         }
     }
 
-    private fun ivResetRemove(edit: Boolean, medicationEditBinding: NcdRowPrescriptionEditBinding) {
+    private fun ivResetRemove(
+        edit: Boolean,
+        medicationEditBinding: NcdRowPrescriptionEditBinding,
+    ) {
         if (edit) {
             medicationEditBinding.ivResetMedication.visibility = View.VISIBLE
             medicationEditBinding.ivRemoveMedication.visibility = View.GONE
@@ -1049,38 +1095,37 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         }
     }
 
-
     private fun getFormName(): ArrayList<Map<String, Any>> {
         val dropDownList = ArrayList<Map<String, Any>>()
         dropDownList.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
                 DefinedParams.ID to DefinedParams.DefaultID,
-            )
+            ),
         )
         dropDownList.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.Tablet,
                 DefinedParams.ID to DefinedParams.Tablet,
-            )
+            ),
         )
         dropDownList.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.Liquid_Oral,
                 DefinedParams.ID to DefinedParams.Liquid_Oral,
-            )
+            ),
         )
         dropDownList.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.Injection_Injectable_Solution,
                 DefinedParams.ID to DefinedParams.Injection_Injectable_Solution,
-            )
+            ),
         )
         dropDownList.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.Capsule,
                 DefinedParams.ID to DefinedParams.Capsule,
-            )
+            ),
         )
 
         return dropDownList
@@ -1122,7 +1167,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                             dosageUnitId = it.dosage_unit_selected,
                             classificationName = it.classificationName,
                             brandName = it.brandName,
-                            codeDetailsObject = it.codeDetails
+                            codeDetailsObject = it.codeDetails,
                         )
                         prescriptionViewModel.savePrescriptionList?.add(finalModel)
                     } else {
@@ -1131,12 +1176,13 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     }
                 }
                 isSignatureViewOrNot(errorList)
-            } else
+            } else {
                 showErrorDialogue(
                     getString(R.string.alert),
                     getString(R.string.no_new_medicines_prescribed),
                     false,
                 ) {}
+            }
         } ?: kotlin.run {
             showErrorDialogue(
                 getString(R.string.alert),
@@ -1181,8 +1227,12 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                 isValid = false
                 invalidList.add(getString(R.string.frequency))
             }
-            if ((prescription.filledPrescriptionDays
-                    ?: 0) <= 0 || prescription.filledPrescriptionDays?.toString()
+            if ((
+                    prescription.filledPrescriptionDays
+                        ?: 0
+                ) <= 0 ||
+                prescription.filledPrescriptionDays
+                    ?.toString()
                     .isNullOrBlank()
             ) {
                 isValid = false
@@ -1190,19 +1240,16 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             }
             return Pair(isValid, invalidList)
         }
-
     }
 
-    private fun validateSpinnerValue(it: String): Boolean {
-        return it.isEmpty() || it == getString(R.string.please_select)
-    }
+    private fun validateSpinnerValue(it: String): Boolean = it.isEmpty() || it == getString(R.string.please_select)
 
     private fun validateErrorMessage(data: MedicationResponse) {
         showHideMedicineErrorMessage(
             data.datetime,
             data.name,
             ArrayList(),
-            View.GONE
+            View.GONE,
         )
     }
 
@@ -1210,10 +1257,10 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         index: Long?,
         medicationName: String?,
         invalidList: ArrayList<String>,
-        visiblity: Int
+        visiblity: Int,
     ) {
         index?.let {
-            getViewByTag("${index}${medicationName}")?.let { view ->
+            getViewByTag("${index}$medicationName")?.let { view ->
                 if (view is TextView) {
                     view.visibility = visiblity
                     if (invalidList.isNotEmpty()) {
@@ -1226,20 +1273,18 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         }
     }
 
-    private fun getViewByTag(tag: Any): View? {
-        return binding.root.findViewWithTag(tag)
-    }
+    private fun getViewByTag(tag: Any): View? = binding.root.findViewWithTag(tag)
 
     private fun invalidPrescription(
         it: MedicationResponse,
-        invalidList: java.util.ArrayList<String>
+        invalidList: java.util.ArrayList<String>,
     ) {
         if (prescriptionViewModel.prescriptionUIModel != null && prescriptionViewModel.prescriptionUIModel!!.isNotEmpty()) {
             showHideMedicineErrorMessage(
                 it.datetime,
                 it.name,
                 invalidList,
-                View.VISIBLE
+                View.VISIBLE,
             )
         }
         prescriptionViewModel.savePrescriptionList?.clear()
@@ -1247,7 +1292,8 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
 
     private fun isSignatureViewOrNot(errorList: ArrayList<String>) {
         if (errorList.size <= 0) {
-            SignatureDialogFragment.newInstance(this)
+            SignatureDialogFragment
+                .newInstance(this)
                 .show(supportFragmentManager, SignatureDialogFragment.TAG)
         }
     }
@@ -1271,7 +1317,6 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         }
         loadPrescriptionListData()
     }
-
 
     private fun showDMRecyclerView() {
         binding.apply {
@@ -1298,8 +1343,8 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     patientReference = it.patientReference,
                     memberReference = it.memberReference,
                     isActive = !isFromDiscontinue,
-                    requestFrom = DefinedParams.Africa
-                )
+                    requestFrom = DefinedParams.Africa,
+                ),
             )
         }
     }
@@ -1314,11 +1359,12 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
          */
     }
 
-    override fun deleteMedication(pos: Int, prescriptionId: Long?) {
+    override fun deleteMedication(
+        pos: Int,
+        prescriptionId: Long?,
+    ) {
         /**
          * this method is not used
          */
     }
 }
-
-

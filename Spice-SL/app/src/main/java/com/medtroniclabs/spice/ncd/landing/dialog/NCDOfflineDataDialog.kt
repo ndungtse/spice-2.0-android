@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.ncd.landing.dialog
 
-
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -25,7 +24,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {
-
     private var onDismissListener: OnDialogDismissListener? = null
     private val viewModel: NCDOfflineDataViewModel by viewModels()
     private lateinit var binding: FragmentNcdOfflineDataDialogBinding
@@ -37,15 +35,14 @@ class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "NCDOfflineDataDialog"
-        fun newInstance(): NCDOfflineDataDialog {
-            return NCDOfflineDataDialog()
-        }
+
+        fun newInstance(): NCDOfflineDataDialog = NCDOfflineDataDialog()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNcdOfflineDataDialogBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -58,7 +55,10 @@ class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {
         isCancelable = false
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -100,36 +100,54 @@ class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {
         offlineDataHandling(screening, assessment, followUpNeed)
     }
 
-    private fun offlineDataHandling(screening: Long, assessment: Long, followUpNeed: Long) {
+    private fun offlineDataHandling(
+        screening: Long,
+        assessment: Long,
+        followUpNeed: Long,
+    ) {
         if (screening > 0) {
             binding.tvMessage.text =
-                if (screening > 1) getString(
-                    R.string.screened_patients,
-                    screening.toString()
-                ) else getString(
-                    R.string.screened_patient
-                )
-        } else
+                if (screening > 1) {
+                    getString(
+                        R.string.screened_patients,
+                        screening.toString(),
+                    )
+                } else {
+                    getString(
+                        R.string.screened_patient,
+                    )
+                }
+        } else {
             binding.tvMessage.text = getString(R.string.no_screened_patients)
+        }
 
         if (assessment > 0) {
             binding.tvAssessmentMessage.text =
-                if (assessment > 1) getString(
-                    R.string.assessed_patients,
-                    assessment.toString()
-                ) else getString(
-                    R.string.assessed_patient
-                )
-        } else
+                if (assessment > 1) {
+                    getString(
+                        R.string.assessed_patients,
+                        assessment.toString(),
+                    )
+                } else {
+                    getString(
+                        R.string.assessed_patient,
+                    )
+                }
+        } else {
             binding.tvAssessmentMessage.text = getString(R.string.no_assessed_patients)
+        }
 
         if (followUpNeed > 0) {
-            binding.tvFollowUpMessage.text = if (followUpNeed > 1) getString(
-                R.string.follow_ups,
-                followUpNeed.toString()
-            ) else getString(
-                R.string.follow_up_one
-            )
+            binding.tvFollowUpMessage.text = if (followUpNeed > 1) {
+                getString(
+                    R.string.follow_ups,
+                    followUpNeed.toString(),
+                )
+            } else {
+                getString(
+                    R.string.follow_up_one,
+                )
+            }
         } else {
             binding.tvFollowUpMessage.text = getString(R.string.no_follow_up)
         }
@@ -151,7 +169,7 @@ class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
@@ -167,7 +185,7 @@ class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {
                 viewModel.setAnalyticsData(
                     UserDetail.startDateTime,
                     eventName = AnalyticsDefinedParams.NCDUploadOfflineData,
-                    isCompleted = true
+                    isCompleted = true,
                 )
                 dismiss()
             }

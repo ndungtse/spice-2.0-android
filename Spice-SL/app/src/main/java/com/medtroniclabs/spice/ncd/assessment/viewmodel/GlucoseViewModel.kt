@@ -11,8 +11,8 @@ import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientListRespModel
-import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.assessment.repo.GlucoseRepo
+import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
@@ -26,7 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class GlucoseViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private val glucoseRepo: GlucoseRepo
+    private val glucoseRepo: GlucoseRepo,
 ) : BaseViewModel(dispatcherIO) {
     var glucoseLogCreateResponseLiveData = SingleLiveEvent<Resource<APIResponse<HashMap<String, Any>>>>()
     var glucoseLogListResponseLiveData = SingleLiveEvent<Resource<BPBGListModel>>()
@@ -34,7 +34,7 @@ class GlucoseViewModel @Inject constructor(
     fun glucoseLogCreate(
         hashMap: HashMap<String, Any>,
         patientDetails: PatientListRespModel,
-        menuId: String?
+        menuId: String?,
     ) {
         hashMap.apply {
             with(patientDetails) {
@@ -55,7 +55,7 @@ class GlucoseViewModel @Inject constructor(
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDBloodGlucoseCreation + " " + menuId,
-                isCompleted = true
+                isCompleted = true,
             )
             glucoseLogCreateResponseLiveData.postValue(glucoseRepo.glucoseLogCreate(hashMap))
         }

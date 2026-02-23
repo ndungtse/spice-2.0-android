@@ -10,10 +10,7 @@ import java.util.Locale
 import java.util.TimeZone
 
 object AnalyticsUtils {
-
-    fun mapToString(map: Map<String, Any?>): String {
-        return Gson().toJson(map)
-    }
+    fun mapToString(map: Map<String, Any?>): String = Gson().toJson(map)
 
     fun stringToMap(input: String): Map<String, Any> {
         val mapType = object : TypeToken<Map<String, Any>>() {}.type
@@ -49,17 +46,18 @@ object AnalyticsUtils {
         apiId: Int? = null,
         referenceId: String? = null,
         userJourney: List<ScreenDetails>? = null,
-        endTime: String? = getCurrentDateTimeInLocalTime()
-    ): Map<String, Any?> = mutableMapOf(
-        AnalyticsDefinedParams.StartTime to startTime,
-        AnalyticsDefinedParams.EndTime to endTime,
-        AnalyticsDefinedParams.EventType to eventType,
-        AnalyticsDefinedParams.IsCompleted to isCompleted,
-        AnalyticsDefinedParams.ExitReason to exitReason,
-        AnalyticsDefinedParams.ApiId to apiId,
-        AnalyticsDefinedParams.ReferenceId to referenceId,
-        AnalyticsDefinedParams.UserJourney to userJourney
-    )
+        endTime: String? = getCurrentDateTimeInLocalTime(),
+    ): Map<String, Any?> =
+        mutableMapOf(
+            AnalyticsDefinedParams.StartTime to startTime,
+            AnalyticsDefinedParams.EndTime to endTime,
+            AnalyticsDefinedParams.EventType to eventType,
+            AnalyticsDefinedParams.IsCompleted to isCompleted,
+            AnalyticsDefinedParams.ExitReason to exitReason,
+            AnalyticsDefinedParams.ApiId to apiId,
+            AnalyticsDefinedParams.ReferenceId to referenceId,
+            AnalyticsDefinedParams.UserJourney to userJourney,
+        )
 
     fun createFollowUpEventParameter(
         id: Long,
@@ -67,24 +65,23 @@ object AnalyticsUtils {
         callStatus: String,
         patientStatus: String?,
         unSuccessfulReason: String?,
-        startTiming: String?
-    ): Map<String, Any?> = mutableMapOf(
-        AnalyticsDefinedParams.FollowUpId to id,
-        AnalyticsDefinedParams.PatientId to patientId,
-        AnalyticsDefinedParams.CallStatus to callStatus,
-        AnalyticsDefinedParams.PatientStatus to patientStatus,
-        AnalyticsDefinedParams.UnSuccessFullReason to unSuccessfulReason,
-        AnalyticsDefinedParams.StartTime to startTiming,
-        AnalyticsDefinedParams.EndTime to getCurrentDateTimeInLocalTime()
-    )
+        startTiming: String?,
+    ): Map<String, Any?> =
+        mutableMapOf(
+            AnalyticsDefinedParams.FollowUpId to id,
+            AnalyticsDefinedParams.PatientId to patientId,
+            AnalyticsDefinedParams.CallStatus to callStatus,
+            AnalyticsDefinedParams.PatientStatus to patientStatus,
+            AnalyticsDefinedParams.UnSuccessFullReason to unSuccessfulReason,
+            AnalyticsDefinedParams.StartTime to startTiming,
+            AnalyticsDefinedParams.EndTime to getCurrentDateTimeInLocalTime(),
+        )
 
-
-    fun UserDetail.updateUserIdIfEmpty(userId: String): String {
-        return this.userId.ifEmpty {
+    fun UserDetail.updateUserIdIfEmpty(userId: String): String =
+        this.userId.ifEmpty {
             this.userId = userId
             userId
         }
-    }
 
     fun getCurrentDateTimeInLocalTime(): String {
         val currentTime = System.currentTimeMillis()
@@ -93,12 +90,11 @@ object AnalyticsUtils {
         return dateFormat.format(currentTime)
     }
 
-    fun UserDetail.getAppVersion(versionName: String): String {
-        return this.appVersion.ifEmpty {
+    fun UserDetail.getAppVersion(versionName: String): String =
+        this.appVersion.ifEmpty {
             this.appVersion = versionName
             versionName
         }
-    }
 
     suspend fun setUserJourneyData(
         eventName: String,
@@ -106,12 +102,12 @@ object AnalyticsUtils {
         userJourney: List<ScreenDetails>?,
         analyticsRepository: AnalyticsRepository,
         userId: String,
-        lastSyncedAt: String? = null
+        lastSyncedAt: String? = null,
     ) {
         val parameter = createEventParameter(
             endTime = null,
             referenceId = referenceId,
-            userJourney = userJourney
+            userJourney = userJourney,
         )
         val role: String = if (!userJourney.isNullOrEmpty()) {
             userJourney[0].userRole ?: UserDetail.role
@@ -120,5 +116,4 @@ object AnalyticsUtils {
         }
         analyticsRepository.logEvent(userId, userRole = role, eventName, parameter, lastSyncedAt)
     }
-
 }

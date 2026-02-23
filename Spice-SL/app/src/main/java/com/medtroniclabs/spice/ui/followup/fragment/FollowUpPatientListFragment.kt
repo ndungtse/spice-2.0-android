@@ -25,8 +25,7 @@ import com.medtroniclabs.spice.ui.followup.adapter.PatientListAdapter
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
 import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 
-class FollowUpPatientListFragment: BaseFragment(), FollowUpDialogFragment.FollowUpClickListener {
-
+class FollowUpPatientListFragment : BaseFragment(), FollowUpDialogFragment.FollowUpClickListener {
     private lateinit var binding: FragmentFollowUpMyPatientListBinding
     private val viewModel: FollowUpViewModel by activityViewModels()
     private lateinit var adapter: PatientListAdapter
@@ -38,19 +37,25 @@ class FollowUpPatientListFragment: BaseFragment(), FollowUpDialogFragment.Follow
     private val dialerLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK || result.resultCode == RESULT_CANCELED) {
-                CallResultDialogFragment.newInstance()
+                CallResultDialogFragment
+                    .newInstance()
                     .show(childFragmentManager, CallResultDialogFragment.TAG)
             }
         }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentFollowUpMyPatientListBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
         attachListener()
@@ -77,10 +82,11 @@ class FollowUpPatientListFragment: BaseFragment(), FollowUpDialogFragment.Follow
     private fun initAdapter() {
         adapter = PatientListAdapter { index, data ->
             viewModel.selectedFollowUpDetail = data
-            when(index) {
+            when (index) {
                 PatientListAdapter.ConstantPatientListAdapter.PATIENT_DETAIL -> {
                     FollowUpDialogFragment.newInstance(this).show(
-                        parentFragmentManager, FollowUpDialogFragment.TAG
+                        parentFragmentManager,
+                        FollowUpDialogFragment.TAG,
                     )
                 }
 
@@ -123,10 +129,9 @@ class FollowUpPatientListFragment: BaseFragment(), FollowUpDialogFragment.Follow
                 showErrorDialogue(
                     getString(R.string.alert),
                     getString(R.string.warning_link_to_household),
-                    isNegativeButtonNeed = false
+                    isNegativeButtonNeed = false,
                 ) { _ -> }
             }
         }
     }
-
 }

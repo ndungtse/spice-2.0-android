@@ -32,9 +32,9 @@ import java.io.FileOutputStream
 import javax.inject.Inject
 
 @HiltViewModel
-class RegistrationFormViewModel  @Inject constructor(
+class RegistrationFormViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private var registrationRepository: RegistrationRepository
+    private var registrationRepository: RegistrationRepository,
 ) : BaseViewModel(dispatcherIO) {
     var registrationResponseLiveData = MutableLiveData<Resource<RegistrationResponse>>()
     var validatePatientResponseLiveDate =
@@ -48,13 +48,17 @@ class RegistrationFormViewModel  @Inject constructor(
 
     var isFromProceedEnrollment = false
 
-    fun loadDataCacheByType(type: String, tag: String, selectedParent: Long?) {
+    fun loadDataCacheByType(
+        type: String,
+        tag: String,
+        selectedParent: Long?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             when (type) {
                 DefinedParams.Country -> {
                     countrySpinnerLiveData.postLoading()
                     countrySpinnerLiveData.postValue(
-                        registrationRepository.getCountries(tag)
+                        registrationRepository.getCountries(tag),
                     )
                 }
 
@@ -62,7 +66,7 @@ class RegistrationFormViewModel  @Inject constructor(
                     selectedParent?.let { parent ->
                         districtSpinnerLiveData.postLoading()
                         districtSpinnerLiveData.postValue(
-                            registrationRepository.getCounties(tag, parent)
+                            registrationRepository.getCounties(tag, parent),
                         )
                     }
                 }
@@ -71,7 +75,7 @@ class RegistrationFormViewModel  @Inject constructor(
                     selectedParent?.let { parent ->
                         chiefdomSpinnerLiveData.postLoading()
                         chiefdomSpinnerLiveData.postValue(
-                            registrationRepository.getSubCounties(tag, parent)
+                            registrationRepository.getSubCounties(tag, parent),
                         )
                     }
                 }
@@ -80,7 +84,7 @@ class RegistrationFormViewModel  @Inject constructor(
                     selectedParent?.let { parent ->
                         villageSpinnerLiveData.postLoading()
                         villageSpinnerLiveData.postValue(
-                            registrationRepository.getAllVillages(tag, parent)
+                            registrationRepository.getAllVillages(tag, parent),
                         )
                     }
                 }
@@ -88,7 +92,7 @@ class RegistrationFormViewModel  @Inject constructor(
                 DefinedParams.Program -> {
                     programsSpinnerLiveData.postLoading()
                     programsSpinnerLiveData.postValue(
-                        registrationRepository.getAllPrograms(tag)
+                        registrationRepository.getAllPrograms(tag),
                     )
                 }
             }
@@ -98,7 +102,7 @@ class RegistrationFormViewModel  @Inject constructor(
     fun registerPatient(
         context: Context,
         hashMap: HashMap<String, Any>,
-        signature: ByteArray?
+        signature: ByteArray?,
     ) {
         val builder = MultipartBody.Builder()
         builder.setType(MultipartBody.FORM)
@@ -135,11 +139,12 @@ class RegistrationFormViewModel  @Inject constructor(
                     builder.addFormDataPart(
                         "signatureFile",
                         file.name,
-                        file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+                        file.asRequestBody("multipart/form-data".toMediaTypeOrNull()),
                     )
                 }
-            } else
+            } else {
                 registrationResponseLiveData.postError()
+            }
         }
 
         viewModelScope.launch(dispatcherIO) {
@@ -147,17 +152,20 @@ class RegistrationFormViewModel  @Inject constructor(
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDRegistrationCreation,
-                isCompleted = true
+                isCompleted = true,
             )
             registrationResponseLiveData.postValue(registrationRepository.registerPatient(builder.build()))
         }
     }
 
-    fun validatePatient(resp: HashMap<String, Any>, serverData: List<FormLayout?>?) {
+    fun validatePatient(
+        resp: HashMap<String, Any>,
+        serverData: List<FormLayout?>?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             validatePatientResponseLiveDate.postLoading()
             validatePatientResponseLiveDate.postValue(
-                registrationRepository.validatePatient(resp, Pair(resp, serverData))
+                registrationRepository.validatePatient(resp, Pair(resp, serverData)),
             )
         }
     }

@@ -1,35 +1,36 @@
 package com.medtroniclabs.spice.ui.medicalreview
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.medtroniclabs.spice.databinding.FragmentSignatureDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.signature.view.SignatureView
 
-class SignatureDialogFragment() : DialogFragment(),
-    View.OnClickListener {
-
-    constructor(signatureListener: SignatureListener) : this(){
+class SignatureDialogFragment() : DialogFragment(), View.OnClickListener {
+    constructor(signatureListener: SignatureListener) : this() {
         this.signatureListener = signatureListener
     }
 
     private var signatureListener: SignatureListener? = null
     private lateinit var binding: FragmentSignatureDialogBinding
 
-    private var isSigned:Boolean = false
+    private var isSigned: Boolean = false
 
     companion object {
         const val TAG = "SignatureDialogFragment"
-        fun newInstance(signatureListener: SignatureListener): SignatureDialogFragment {
-            return SignatureDialogFragment(signatureListener)
-        }
+
+        fun newInstance(signatureListener: SignatureListener): SignatureDialogFragment = SignatureDialogFragment(signatureListener)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSignatureDialogBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -37,7 +38,10 @@ class SignatureDialogFragment() : DialogFragment(),
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeView()
         setListeners()
@@ -47,7 +51,7 @@ class SignatureDialogFragment() : DialogFragment(),
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
@@ -95,7 +99,7 @@ class SignatureDialogFragment() : DialogFragment(),
 
     private fun isSigned(): Boolean {
         var signed = true
-        if(!isSigned) {
+        if (!isSigned) {
             signed = false
             binding.tvErrorSignature.visibility = View.VISIBLE
         }

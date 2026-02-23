@@ -2,7 +2,7 @@ package com.medtroniclabs.spice.data
 
 data class UpdatePrescriptionModel(
     var id: Long? = null,
-    val prescriptionId :String? = null,
+    val prescriptionId: String? = null,
     var isDeleted: Boolean? = null,
     var medicationId: Long? = null,
     var dosageForm: String? = null,
@@ -24,5 +24,5 @@ data class UpdatePrescriptionModel(
     var instructionNote: String? = null,
     var discontinuedOn: String? = null,
     var dosageFormName: String? = null,
-    val codeDetailsObject: CodeDetailsObject? = null
+    val codeDetailsObject: CodeDetailsObject? = null,
 )

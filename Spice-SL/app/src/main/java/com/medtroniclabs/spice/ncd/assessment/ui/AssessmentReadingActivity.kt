@@ -42,7 +42,6 @@ import java.lang.reflect.Type
 
 @AndroidEntryPoint
 class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClickListener {
-
     private lateinit var binding: ActivityAssessmentReadingBinding
     private val viewModel: AssessmentReadingViewModel by viewModels()
     private val ncdFormViewModel: NCDFormViewModel by viewModels()
@@ -55,7 +54,9 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
         super.onCreate(savedInstanceState)
         binding = ActivityAssessmentReadingBinding.inflate(layoutInflater)
         setMainContentView(
-            binding.root, isToolbarVisible = true, title = getString(R.string.add_new_reading)
+            binding.root,
+            isToolbarVisible = true,
+            title = getString(R.string.add_new_reading),
         )
         init()
         renderAssessmentForm()
@@ -75,7 +76,11 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
 
     private fun renderAssessmentForm() {
         formGenerator = FormGenerator(
-            this, binding.llForm, listener = this, scrollView = binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
+            this,
+            binding.llForm,
+            listener = this,
+            scrollView = binding.scrollView,
+            translate = SecuredPreference.getIsTranslationEnabled(),
         ) { map, id ->
             when (id) {
                 Screening.Weight, Screening.Height -> {
@@ -91,12 +96,20 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
     private fun populateHeightWeight() {
         viewModel.patientDetails?.let {
             formGenerator.getViewByTag(Screening.Height)?.let { view ->
-                formGenerator.setValueForView(it.height?.takeIf { it > 0.0 }
-                    .removeTrailingPointZero(), view)
+                formGenerator.setValueForView(
+                    it.height
+                        ?.takeIf { it > 0.0 }
+                        .removeTrailingPointZero(),
+                    view,
+                )
             }
             formGenerator.getViewByTag(Screening.Weight)?.let { view ->
-                formGenerator.setValueForView(it.weight?.takeIf { it > 0.0 }
-                    .removeTrailingPointZero(), view)
+                formGenerator.setValueForView(
+                    it.weight
+                        ?.takeIf { it > 0.0 }
+                        .removeTrailingPointZero(),
+                    view,
+                )
             }
         }
     }
@@ -193,19 +206,28 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
         }
     }
 
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {/*
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
+        /*
         Never used
          */
     }
 
-    override fun onPopulate(targetId: String) {/*
+    override fun onPopulate(targetId: String) {
+        /*
         Never used
          */
     }
 
     override fun onCheckBoxDialogueClicked(
-        id: String, formLayout: FormLayout, resultMap: Any?
-    ) {/*
+        id: String,
+        formLayout: FormLayout,
+        resultMap: Any?,
+    ) {
+        /*
         Never used
          */
     }
@@ -215,13 +237,17 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
-    ) {/*
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
+    ) {
+        /*
         Never used
          */
     }
 
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+    override fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
         withNetworkCheck(connectivityManager, {
             resultMap?.let { map ->
                 processValuesAndProceed(map, serverData)
@@ -229,60 +255,70 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
         })
     }
 
-    override fun onRenderingComplete() {/*
+    override fun onRenderingComplete() {
+        /*
         Never used
          */
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {/*
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
+        /*
         Never used
          */
     }
 
     override fun onInformationHandling(
-        id: String, noOfDays: Int, enteredDays: Int?, resultMap: HashMap<String, Any>?
-    ) {/*
+        id: String,
+        noOfDays: Int,
+        enteredDays: Int?,
+        resultMap: HashMap<String, Any>?,
+    ) {
+        /*
         Never used
          */
     }
 
-    override fun onAgeCheckForPregnancy() {/*
+    override fun onAgeCheckForPregnancy() {
+        /*
         Never used
          */
     }
 
     override fun handleMandatoryCondition(formLayout: FormLayout?) {
-
     }
 
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
         /*
        Never used
-        */
+         */
     }
 
     private fun processValuesAndProceed(
-        resultMap: HashMap<String, Any>, serverData: List<FormLayout?>?
+        resultMap: HashMap<String, Any>,
+        serverData: List<FormLayout?>?,
     ) {
         val map = HashMap<String, Any>()
         map.putAll(resultMap)
 
         when (viewModel.formTypeId) {
             DefinedParams.BP_LOG -> {
-                //Average Systolic and Diastolic Calculation
+                // Average Systolic and Diastolic Calculation
                 serverData?.first { it?.viewType == ViewType.VIEW_TYPE_FORM_BP }?.let {
                     bpViewModel.calculateBPValues(it, map)
                 }
                 calculateAverageBloodPressure(map)
 
-                //BMI Calculation
+                // BMI Calculation
                 calculateBMI(map)
 
-                //CVD Risk Calculation
+                // CVD Risk Calculation
                 viewModel.patientDetails?.let { details ->
                     details.isRegularSmoker?.let { regularSmoke ->
                         map[Screening.is_regular_smoker] = regularSmoke
@@ -299,22 +335,26 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                     object : TypeToken<ArrayList<RiskClassificationModel>>() {}.type
                 if (resultOne?.isNotEmpty() == true) {
                     val resultList = Gson().fromJson<ArrayList<RiskClassificationModel>>(
-                        resultOne[0].nonLabEntity, baseType
+                        resultOne[0].nonLabEntity,
+                        baseType,
                     )
                     calculateCVDRiskFactor(
-                        map, ArrayList(resultList), bpViewModel.getSystolicAverage()
+                        map,
+                        ArrayList(resultList),
+                        bpViewModel.getSystolicAverage(),
                     )
                 }
 
-                //BP Log Create - API
+                // BP Log Create - API
                 val result = serverData?.let {
                     FormResultComposer().groupValues(
-                        serverData = it, map
+                        serverData = it,
+                        map,
                     )
                 }
                 result?.first?.let {
                     StringConverter.stringToMap(it).let { requestMap ->
-                        //Removing unwanted params
+                        // Removing unwanted params
                         val bpLog = requestMap[DefinedParams.BP_LOG]
                         (bpLog as? LinkedTreeMap<String, Any>?)?.let { value ->
                             requestMap.putAll(value)
@@ -327,7 +367,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                             bpViewModel.createBpLog(
                                 requestMap,
                                 patientDetails = details,
-                                intent.getStringExtra(NCDMRUtil.MENU_Name)
+                                intent.getStringExtra(NCDMRUtil.MENU_Name),
                             )
                         }
                     }
@@ -335,22 +375,24 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
             }
 
             DefinedParams.GLUCOSE_LOG -> {
-                if (map.containsKey(Screening.BloodGlucoseID) || map.containsKey(
-                        AssessmentDefinedParams.hba1c
+                if (map.containsKey(Screening.BloodGlucoseID) ||
+                    map.containsKey(
+                        AssessmentDefinedParams.hba1c,
                     )
                 ) {
-                    //Glucose Calculation
+                    // Glucose Calculation
                     calculateBloodGlucose(map) {}
 
-                    //Glucose Log Create - API
+                    // Glucose Log Create - API
                     val result = serverData?.let {
                         FormResultComposer().groupValues(
-                            serverData = it, map
+                            serverData = it,
+                            map,
                         )
                     }
                     result?.first?.let {
                         StringConverter.stringToMap(it).let { requestMap ->
-                            //Removing unwanted params
+                            // Removing unwanted params
                             val glucoseLog = requestMap[DefinedParams.GLUCOSE_LOG]
                             (glucoseLog as? LinkedTreeMap<String, Any>?)?.let { value ->
                                 requestMap.putAll(value)
@@ -361,13 +403,14 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                                 glucoseViewModel.glucoseLogCreate(
                                     requestMap,
                                     patientDetails = details,
-                                    intent.getStringExtra(NCDMRUtil.MENU_Name)
+                                    intent.getStringExtra(NCDMRUtil.MENU_Name),
                                 )
                             }
                         }
                     }
-                } else
+                } else {
                     showErrorDialogue(message = getString(R.string.error_label)) {}
+                }
             }
         }
     }

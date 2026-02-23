@@ -15,8 +15,8 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.ListItemCounselorBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.utils.ValidationListener
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 
 class NCDCounselorAdapter(private val listener: ValidationListener) :
     RecyclerView.Adapter<NCDCounselorAdapter.ViewHolder>() {
@@ -43,7 +43,7 @@ class NCDCounselorAdapter(private val listener: ValidationListener) :
                         DateUtils.convertDateTimeToDate(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DateUtils.DATE_FORMAT_ddMMMyyyy
+                            DateUtils.DATE_FORMAT_ddMMMyyyy,
                         )
                     }
                     tvRefDate.text = refDate.textOrHyphen()
@@ -53,10 +53,11 @@ class NCDCounselorAdapter(private val listener: ValidationListener) :
                     etOtherNotes.setText(counselorAssessment.textOrEmpty())
                     etOtherNotes.addTextChangedListener { value ->
                         adapterList[layoutPosition].apply {
-                            this.counselorAssessment = if (value.isNullOrBlank())
+                            this.counselorAssessment = if (value.isNullOrBlank()) {
                                 null
-                            else
+                            } else {
                                 value.toString()
+                            }
                         }
                         listener.validate()
                     }
@@ -71,8 +72,9 @@ class NCDCounselorAdapter(private val listener: ValidationListener) :
                 binding.root.id -> {
                     if (layoutPosition < adapterList.size) {
                         val item = adapterList[layoutPosition]
-                        if (item.id.isNullOrBlank()) return
-                        else {
+                        if (item.id.isNullOrBlank()) {
+                            return
+                        } else {
                             adapterList[layoutPosition].let {
                                 it.isExpanded = !it.isExpanded
                             }
@@ -94,23 +96,36 @@ class NCDCounselorAdapter(private val listener: ValidationListener) :
         ivArrow.start()
     }
 
-    private fun getTextColor(context: Context, enteredBy: Any?): Int {
-        return if (enteredBy == null) context.getColor(R.color.disabled_text_color) else context.getColor(
-            R.color.navy_blue
-        )
-    }
+    private fun getTextColor(
+        context: Context,
+        enteredBy: Any?,
+    ): Int =
+        if (enteredBy == null) {
+            context.getColor(R.color.disabled_text_color)
+        } else {
+            context.getColor(
+                R.color.navy_blue,
+            )
+        }
 
     fun getData() = adapterList
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder =
+        ViewHolder(
             ListItemCounselorBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            )
+                LayoutInflater.from(parent.context),
+                parent,
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         adapterList.let {
             holder.bind(it[position])
         }

@@ -15,9 +15,7 @@ class ClinicalNotesViewModel @Inject constructor() : ViewModel() {
     val submitButtonStateLiveData: LiveData<Boolean>
         get() = _submitButtonStateLiveData
 
-
     fun handleSubmitButtonState() {
         _submitButtonStateLiveData.value = true
     }
-
 }

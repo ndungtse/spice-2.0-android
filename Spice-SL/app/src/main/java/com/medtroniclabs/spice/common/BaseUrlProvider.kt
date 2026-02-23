@@ -12,30 +12,31 @@ import retrofit2.http.POST
 import java.util.concurrent.TimeUnit
 
 object BaseUrlProvider {
-
     private const val BaseUrl = "https://su.medtroniclabs.org/sl/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         setLevel(HttpLoggingInterceptor.Level.BODY)
     }
 
-    private val client = OkHttpClient.Builder()
+    private val client = OkHttpClient
+        .Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
         .build()
 
-    private val retrofit = Retrofit.Builder()
+    private val retrofit = Retrofit
+        .Builder()
         .baseUrl(BaseUrl)
         .addConverterFactory(GsonConverterFactory.create())
         .client(client)
         .build()
 
     interface DynamicBaseUrlApiService {
-
         @POST("get-base-url")
-        suspend fun getBaseUrl(@retrofit2.http.Body request: BaseUrlRequest): BaseUrlResponse
-
+        suspend fun getBaseUrl(
+            @retrofit2.http.Body request: BaseUrlRequest,
+        ): BaseUrlResponse
     }
 
     private suspend fun fetchBaseUrl(): String {
@@ -43,7 +44,7 @@ object BaseUrlProvider {
         val request = BaseUrlRequest(
             versionCode = BuildConfig.VERSION_CODE.toString(),
             appVersion = BuildConfig.VERSION_NAME,
-            deviceId = SecuredPreference.getDeviceId()
+            deviceId = SecuredPreference.getDeviceId(),
         )
         return try {
             service.getBaseUrl(request).url ?: BuildConfig.API_BASE_URL
@@ -53,7 +54,6 @@ object BaseUrlProvider {
         }
     }
 
-
     fun dynamicURL(): String {
         var baseUrl: String = BuildConfig.API_BASE_URL
         runBlocking {
@@ -61,5 +61,4 @@ object BaseUrlProvider {
         }
         return baseUrl
     }
-
 }

@@ -2,10 +2,8 @@ package com.medtroniclabs.spice.repo
 
 import android.location.Location
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getStringOrEmptyString
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.CHIEF_DOM_CODE_LENGTH
 import com.medtroniclabs.spice.common.DefinedParams.PATIENT_NUMBER_LENGTH
 import com.medtroniclabs.spice.common.DefinedParams.VILLAGE_CODE_LENGTH
@@ -26,11 +24,10 @@ import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deceasedReason
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.isDeceased
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class HouseholdMemberRepository @Inject constructor(
-    private var roomHelper: RoomHelper
+    private var roomHelper: RoomHelper,
 ) {
     suspend fun registerMember(
         map: HashMap<String, Any>,
@@ -40,19 +37,19 @@ class HouseholdMemberRepository @Inject constructor(
         initial: String? = null,
         signature: String? = null,
         isPhuWalkInFlow: Boolean? = null,
-        location: Location?
+        location: Location?,
     ): Long? {
-        val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentReferenceId, initial, signature,location)
+        val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentReferenceId, initial, signature, location)
        /* if (memberEntity.patientId == null) {
             return  null
         }*/
-        
+
         // If updating a member and isHouseholdHead is not explicitly set in the map, preserve the old value
         if (entity != null && !map.containsKey(MemberRegistration.isHouseholdHead)) {
             val oldMemberEntity = roomHelper.getMemberDetailsByID(memberEntity.id)
             memberEntity.isHouseholdHead = oldMemberEntity.isHouseholdHead
         }
-        
+
         val memberId = roomHelper.registerMember(memberEntity)
 
         // If updating a member who is household head, update household name with member's name
@@ -79,7 +76,7 @@ class HouseholdMemberRepository @Inject constructor(
 //            }
 //        }
 
-        //Update Member count in household only in insert case
+        // Update Member count in household only in insert case
         if (entity == null || isPhuWalkInFlow == true) {
             val memberAddedForHouseHold = getMemberCountPerHouseHold(householdId)
             val memberMentionedInHouseHold =
@@ -92,18 +89,20 @@ class HouseholdMemberRepository @Inject constructor(
         return memberId
     }
 
-    suspend fun updateHeadPhoneNumber(householdId: Long, map: HashMap<String, Any>) {
-         val isHouseholdHead = map[MemberRegistration.isHouseholdHead]
-         if (CommonUtils.getIsBooleanFromString(isHouseholdHead) == true) {
-            //Updating in HouseHoldMEMBER
+    suspend fun updateHeadPhoneNumber(
+        householdId: Long,
+        map: HashMap<String, Any>,
+    ) {
+        val isHouseholdHead = map[MemberRegistration.isHouseholdHead]
+        if (CommonUtils.getIsBooleanFromString(isHouseholdHead) == true) {
+            // Updating in HouseHoldMEMBER
             roomHelper.updatePhoneNumberForHouseholdHead(
                 householdId,
                 map[MemberRegistration.phoneNumber]?.toString(),
-                null // phoneNumberCategory parameter kept for interface compatibility
+                null, // phoneNumberCategory parameter kept for interface compatibility
             )
         }
     }
-
 
     private suspend fun createOrUpdateHouseHoldMemberEntity(
         map: HashMap<String, Any>,
@@ -112,9 +111,8 @@ class HouseholdMemberRepository @Inject constructor(
         parentReferenceId: Long?,
         initial: String? = null,
         signature: String? = null,
-        location: Location?
+        location: Location?,
     ): HouseholdMemberEntity {
-
         val householdMemberEntity = entity ?: HouseholdMemberEntity()
 
         val name = map[MemberRegistration.name]
@@ -140,18 +138,18 @@ class HouseholdMemberRepository @Inject constructor(
         householdMemberEntity.nationalId = nationalId?.toString()?.takeIf { it.isNotEmpty() }
 
         val isHouseholdHead = map[MemberRegistration.isHouseholdHead]
-        householdMemberEntity.isHouseholdHead = isHouseholdHead==true
+        householdMemberEntity.isHouseholdHead = isHouseholdHead == true
 
         val householdFhirId = map[MemberRegistration.householdFhirId]
         householdMemberEntity.householdFhirId = householdFhirId?.toString()?.takeIf { it.isNotEmpty() }
 
         val isDeceased = map[isDeceased]
-        if (isDeceased != null && isDeceased is Boolean && isDeceased){
-             householdMemberEntity.isActive = false
+        if (isDeceased != null && isDeceased is Boolean && isDeceased) {
+            householdMemberEntity.isActive = false
         }
 
         val deceasedReason = map[deceasedReason]
-        if (deceasedReason != null && deceasedReason is String){
+        if (deceasedReason != null && deceasedReason is String) {
             householdMemberEntity.deceasedReason = deceasedReason
         }
 
@@ -172,11 +170,10 @@ class HouseholdMemberRepository @Inject constructor(
         return householdMemberEntity
     }
 
-
     private suspend fun getNextPatientId(villageId: Long): String? {
         val villageDetail = roomHelper.getVillageByID(villageId)
         if (villageDetail.chiefdomCode.isNullOrBlank()) {
-           return null
+            return null
         }
         if (villageDetail.villagecode.isNullOrBlank()) {
             return null
@@ -187,111 +184,91 @@ class HouseholdMemberRepository @Inject constructor(
         val startIndex = chiefDomCode.length + villageCode.length + chwUserId.length
 
         val lastPatientId =
-            roomHelper.getLastPatientId("$chiefDomCode$villageCode$chwUserId%")?.let { it.substring(startIndex, it.length) }
+            roomHelper
+                .getLastPatientId("$chiefDomCode$villageCode$chwUserId%")
+                ?.let { it.substring(startIndex, it.length) }
                 ?.toInt() ?: 0
         val nextPatientId = (lastPatientId + 1).toString().padStart(PATIENT_NUMBER_LENGTH, '0')
         return "$chiefDomCode$villageCode$chwUserId$nextPatientId"
     }
 
-    suspend fun getMemberDetailsByID(
-        memberId: Long,
-    ): Resource<HouseholdMemberEntity> {
-        return try {
+    suspend fun getMemberDetailsByID(memberId: Long): Resource<HouseholdMemberEntity> =
+        try {
             val memberEntity = roomHelper.getMemberDetailsByID(memberId)
             Resource(state = ResourceState.SUCCESS, data = memberEntity)
         } catch (e: Exception) {
             Resource(state = ResourceState.SUCCESS)
         }
-    }
 
-    suspend fun getMemberDetails(
-        memberId: Long,
-    ): HouseholdMemberEntity {
-        return roomHelper.getMemberDetailsByID(memberId)
-    }
+    suspend fun getMemberDetails(memberId: Long): HouseholdMemberEntity = roomHelper.getMemberDetailsByID(memberId)
 
-    suspend fun getMemberDetailsByParentId(
-        memberId: String,
-    ): Resource<List<HouseholdMemberEntity>> {
-        return try {
+    suspend fun getMemberDetailsByParentId(memberId: String): Resource<List<HouseholdMemberEntity>> =
+        try {
             val memberEntity = roomHelper.getMemberDetailsByParentId(memberId)
             Resource(state = ResourceState.SUCCESS, data = memberEntity)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getMemberDetailsByPatientId(
-        patientId: String,
-    ): Resource<HouseholdMemberEntity> {
-        return try {
+    suspend fun getMemberDetailsByPatientId(patientId: String): Resource<HouseholdMemberEntity> =
+        try {
             val memberEntity = roomHelper.getMemberDetailsByPatientId(patientId)
             Resource(state = ResourceState.SUCCESS, data = memberEntity)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getAssessmentMemberDetails(
-        id: Long
-    ): Resource<AssessmentMemberDetails> {
-        return try {
+    suspend fun getAssessmentMemberDetails(id: Long): Resource<AssessmentMemberDetails> =
+        try {
             val memberEntity = roomHelper.getAssessmentMemberDetails(id)
             Resource(state = ResourceState.SUCCESS, data = memberEntity)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    private suspend fun getMemberCountPerHouseHold(householdId: Long): Int {
-        return roomHelper.getMemberCountPerHouseHold(householdId)
-    }
+    private suspend fun getMemberCountPerHouseHold(householdId: Long): Int = roomHelper.getMemberCountPerHouseHold(householdId)
 
-    private suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int) {
-        return roomHelper.updateHeadCount(householdId, newNoOfPeople)
-    }
+    private suspend fun updateHeadCount(
+        householdId: Long,
+        newNoOfPeople: Int,
+    ) = roomHelper.updateHeadCount(householdId, newNoOfPeople)
 
     suspend fun getPatientVisitCountByType(
         type: String,
-        hhmLocalId: Long
-    ): MemberClinicalEntity? {
-        return roomHelper.getPatientVisitCountByType(type, hhmLocalId)
-    }
+        hhmLocalId: Long,
+    ): MemberClinicalEntity? = roomHelper.getPatientVisitCountByType(type, hhmLocalId)
 
     suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity) {
         roomHelper.savePatientVisitCountByType(memberClinicalEntity)
     }
 
-    suspend fun getPregnancyDetailByPatientId(hhmLocalId: Long): PregnancyDetail? {
-        return roomHelper.getPregnancyDetailByPatientId(hhmLocalId)
-    }
+    suspend fun getPregnancyDetailByPatientId(hhmLocalId: Long): PregnancyDetail? = roomHelper.getPregnancyDetailByPatientId(hhmLocalId)
 
-    suspend fun savePregnancyDetail(pregnancyDetail: PregnancyDetail): Long {
-        return roomHelper.savePregnancyDetail(pregnancyDetail)
-    }
+    suspend fun savePregnancyDetail(pregnancyDetail: PregnancyDetail): Long = roomHelper.savePregnancyDetail(pregnancyDetail)
 
-   suspend fun updateMemberDeceasedStatus(id: Long, status: Boolean) {
-        return roomHelper.updateMemberDeceasedStatus(id, status)
-    }
+    suspend fun updateMemberDeceasedStatus(
+        id: Long,
+        status: Boolean,
+    ) = roomHelper.updateMemberDeceasedStatus(id, status)
 
-    suspend fun getPatientIdById(id: Long): String {
-        return roomHelper.getPatientIdById(id)
-    }
+    suspend fun getPatientIdById(id: Long): String = roomHelper.getPatientIdById(id)
 
     suspend fun changeMemberDetailsToNotSynced(id: Long) {
         roomHelper.changeMemberDetailsToNotSynced(id)
     }
 
-    fun getUnAssignedHouseholdMember(): LiveData<List<UnAssignedHouseholdMemberDetail>> {
-        return roomHelper.getUnAssignedHouseholdMembersLiveData()
-    }
+    fun getUnAssignedHouseholdMember(): LiveData<List<UnAssignedHouseholdMemberDetail>> = roomHelper.getUnAssignedHouseholdMembersLiveData()
 
-    suspend fun addLinkMemberCall(memberId: String, callStartTime: Long, callEndTime: Long): Long {
+    suspend fun addLinkMemberCall(
+        memberId: String,
+        callStartTime: Long,
+        callEndTime: Long,
+    ): Long {
         val callHistory = CallHistory(
             type = CALL_TYPE_LINK_HHM,
             referenceId = memberId,
             callStartTime = callStartTime,
-            callEndTime = callEndTime
+            callEndTime = callEndTime,
         )
         return roomHelper.addLinkMemberCall(callHistory)
     }
@@ -300,35 +277,42 @@ class HouseholdMemberRepository @Inject constructor(
         roomHelper.updateMemberAsAssigned(memberId)
     }
 
-    suspend fun updateMemberDeceasedReason(id: Long, status: Boolean,deceasedReason: String?) {
-        return roomHelper.updateMemberDeceasedReason(id, status,deceasedReason)
-    }
+    suspend fun updateMemberDeceasedReason(
+        id: Long,
+        status: Boolean,
+        deceasedReason: String?,
+    ) = roomHelper.updateMemberDeceasedReason(id, status, deceasedReason)
 
-    suspend fun getHouseholdHeadDob(householdId: Long): String {
-        return roomHelper.getHouseholdHeadDob(householdId)
-    }
+    suspend fun getHouseholdHeadDob(householdId: Long): String = roomHelper.getHouseholdHeadDob(householdId)
 
-    suspend fun updatePregnantStatus(memberId: Long, isPregnant: Boolean) {
-        return roomHelper.updatePregnantStatus(memberId, isPregnant)
-    }
+    suspend fun updatePregnantStatus(
+        memberId: Long,
+        isPregnant: Boolean,
+    ) = roomHelper.updatePregnantStatus(memberId, isPregnant)
 
-    suspend fun getTbPatientLocalIdByHouseholdId(householdId: Long): MutableList<Long> {
-        return roomHelper.getTbPatientLocalIdByHouseholdId(householdId)
-    }
+    suspend fun getTbPatientLocalIdByHouseholdId(householdId: Long): MutableList<Long> = roomHelper.getTbPatientLocalIdByHouseholdId(householdId)
 
-    suspend fun isTbPatient(memberId: String) : Boolean {
-        return roomHelper.getTreatmentDetails(memberId) != null
-    }
+    suspend fun isTbPatient(memberId: String): Boolean = roomHelper.getTreatmentDetails(memberId) != null
 
-    suspend fun updateContactTracingStatus(memberId: Long, status: Int?) {
+    suspend fun updateContactTracingStatus(
+        memberId: Long,
+        status: Int?,
+    ) {
         roomHelper.updateContactTracingStatus(memberId, status)
     }
 
-    suspend fun updateContactTracingForLinkTbPatient(tbHHMId: Long, householdId: Long) {
+    suspend fun updateContactTracingForLinkTbPatient(
+        tbHHMId: Long,
+        householdId: Long,
+    ) {
         roomHelper.updateContactTracingForLinkTbPatient(tbHHMId, householdId)
     }
 
-    private suspend fun updateMemberAsAssigned(hhmFhirIds: List<HouseholdMemberFhirId>, hhId: Long, motherOrChildFhirId: String) {
+    private suspend fun updateMemberAsAssigned(
+        hhmFhirIds: List<HouseholdMemberFhirId>,
+        hhId: Long,
+        motherOrChildFhirId: String,
+    ) {
         val isMotherOrChildTbPatient = isTbPatient(motherOrChildFhirId)
         hhmFhirIds.forEach { hhmFhirId ->
             val hhTbPatientIds = getTbPatientLocalIdByHouseholdId(hhId)
@@ -342,7 +326,7 @@ class HouseholdMemberRepository @Inject constructor(
                 if (hhTbPatientIds.isNotEmpty() || isMotherOrChildTbPatient) {
                     updateContactTracingStatus(
                         hhmFhirId.hhmId,
-                        OfflineConstant.CONTACT_TRACING_YET_TO_TAKE
+                        OfflineConstant.CONTACT_TRACING_YET_TO_TAKE,
                     )
                 } else {
                     updateContactTracingStatus(hhmFhirId.hhmId, null)
@@ -352,5 +336,4 @@ class HouseholdMemberRepository @Inject constructor(
             updateMemberAsAssigned(hhmFhirId.hhmFhirId)
         }
     }
-
 }

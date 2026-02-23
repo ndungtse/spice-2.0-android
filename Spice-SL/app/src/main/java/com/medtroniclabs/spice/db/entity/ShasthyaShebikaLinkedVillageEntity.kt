@@ -8,10 +8,10 @@ import androidx.room.Index
     primaryKeys = ["shasthyaShebikaId", "subVillageId"],
     indices = [
         Index(value = ["shasthyaShebikaId"], name = "idx_linked_shasthya_shebika_id"),
-        Index(value = ["subVillageId"], name = "idx_linked_subvillage_id")
-    ]
+        Index(value = ["subVillageId"], name = "idx_linked_subvillage_id"),
+    ],
 )
 data class ShasthyaShebikaLinkedVillageEntity(
     val shasthyaShebikaId: Long,
-    val subVillageId: Long
+    val subVillageId: Long,
 )

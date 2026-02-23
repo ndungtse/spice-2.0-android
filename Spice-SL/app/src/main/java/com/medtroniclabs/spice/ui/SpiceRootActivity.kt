@@ -29,7 +29,6 @@ import javax.inject.Inject
 import kotlin.system.exitProcess
 
 open class SpiceRootActivity : AppCompatActivity() {
-
     private lateinit var sessionExpiredBroadcastReceiver: SessionExpiredBroadcastReceiver
 
     @Inject
@@ -48,8 +47,8 @@ open class SpiceRootActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this).registerReceiver(
             sessionExpiredBroadcastReceiver,
             IntentFilter(
-                DefinedParams.ACTION_SESSION_EXPIRED
-            )
+                DefinedParams.ACTION_SESSION_EXPIRED,
+            ),
         )
         if (this::appUpdateManager.isInitialized) {
             appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
@@ -57,7 +56,7 @@ open class SpiceRootActivity : AppCompatActivity() {
                     appUpdateManager.startUpdateFlowForResult(
                         appUpdateInfo,
                         activityResultLauncher,
-                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
+                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
                     )
                 }
             }
@@ -75,7 +74,7 @@ open class SpiceRootActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         LocalBroadcastManager.getInstance(this).unregisterReceiver(
-            sessionExpiredBroadcastReceiver
+            sessionExpiredBroadcastReceiver,
         )
     }
 
@@ -83,15 +82,17 @@ open class SpiceRootActivity : AppCompatActivity() {
      * Receiver for session expired broadcasts from [Retrofit API].
      */
     inner class SessionExpiredBroadcastReceiver : BroadcastReceiver() {
-
-        override fun onReceive(context: Context, intent: Intent) {
+        override fun onReceive(
+            context: Context,
+            intent: Intent,
+        ) {
             val sessionExpired = intent.getBooleanExtra(DefinedParams.SL_SESSION, false)
             val className = this.javaClass.simpleName
             if (sessionExpired && !AppConstants.exemptionList.contains(className)) {
                 showErrorDialogue(
                     getString(R.string.alert),
                     getString(R.string.session_expired),
-                    isNegativeButtonNeed = false
+                    isNegativeButtonNeed = false,
                 ) { status ->
                     if (status) {
                         cancelAllWorker()
@@ -110,18 +111,19 @@ open class SpiceRootActivity : AppCompatActivity() {
         title: String,
         message: String,
         positiveButtonName: String? = null,
-        callback: () -> Unit
+        callback: () -> Unit,
     ) {
         val generalSuccessDialog =
             GeneralSuccessDialog.newInstance(
                 title,
                 message = message,
                 okayButton = positiveButtonName ?: getString(R.string.done),
-                callback
+                callback,
             )
         val successFragment = supportFragmentManager.findFragmentByTag(GeneralSuccessDialog.TAG)
-        if (successFragment == null)
+        if (successFragment == null) {
             generalSuccessDialog.show(supportFragmentManager, GeneralSuccessDialog.TAG)
+        }
     }
 
     fun showErrorDialogue(
@@ -131,7 +133,7 @@ open class SpiceRootActivity : AppCompatActivity() {
         positiveButtonName: String? = null,
         okayBtnEnable: Boolean? = null,
         cancelBtnName: String? = null,
-        callback: ((isPositiveResult: Boolean) -> Unit)
+        callback: ((isPositiveResult: Boolean) -> Unit),
     ) {
         val generalErrorDialog =
             GeneralErrorDialog.newInstance(
@@ -141,11 +143,12 @@ open class SpiceRootActivity : AppCompatActivity() {
                 isNegativeButtonNeed ?: false,
                 okayButton = positiveButtonName ?: getString(R.string.ok),
                 cancelButton = cancelBtnName ?: getString(R.string.cancel),
-                messageBtnData = Pair(message, okayBtnEnable ?: true)
+                messageBtnData = Pair(message, okayBtnEnable ?: true),
             )
         val errorFragment = supportFragmentManager.findFragmentByTag(GeneralErrorDialog.TAG)
-        if (errorFragment == null)
+        if (errorFragment == null) {
             generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
+        }
     }
 
     private fun checkInAppUpdate() {
@@ -155,19 +158,18 @@ open class SpiceRootActivity : AppCompatActivity() {
             val appUpdateInfoTask = appUpdateManager.appUpdateInfo
 
             appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-                if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                    && appUpdateInfo.isUpdateTypeAllowed(
-                        AppUpdateType.IMMEDIATE
+                if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
+                    appUpdateInfo.isUpdateTypeAllowed(
+                        AppUpdateType.IMMEDIATE,
                     )
                 ) {
                     appUpdateManager.startUpdateFlowForResult(
                         appUpdateInfo,
                         activityResultLauncher,
-                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
+                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
                     )
                 }
             }
         }
     }
-
 }

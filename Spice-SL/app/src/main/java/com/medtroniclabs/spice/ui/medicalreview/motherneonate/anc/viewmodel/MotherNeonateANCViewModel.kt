@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel
 
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
@@ -29,12 +28,11 @@ class MotherNeonateANCViewModel @Inject constructor(
     val motherNeonateMetaResponse = MutableLiveData<Resource<Boolean>>()
     val motherNeonateCreateResponse = MutableLiveData<Resource<PatientEncounterResponse>>()
     var motherNeonateAncRequest: MotherNeonateAncRequest = MotherNeonateAncRequest()
-    val summaryCreateResponse = MutableLiveData<Resource<HashMap<String,Any>>>()
+    val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
     var ancVisit: Int = -1
     var patientId: String? = null
     var memberId: String? = null
     var lastLocation: Location? = null
-
 
     fun getMotherNeoNateAncStaticData() {
         viewModelScope.launch(dispatcherIO) {
@@ -42,18 +40,23 @@ class MotherNeonateANCViewModel @Inject constructor(
         }
     }
 
-    fun createMotherNeonate(encounterId: String?, patientHouseholdId: String?,memberId: String?,villageId: String?) {
+    fun createMotherNeonate(
+        encounterId: String?,
+        patientHouseholdId: String?,
+        memberId: String?,
+        villageId: String?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             try {
                 motherNeonateAncRequest.apply {
                     encounter =
-                        createMedicalReviewEncounter(encounterId, patientHouseholdId, memberId,villageId)
+                        createMedicalReviewEncounter(encounterId, patientHouseholdId, memberId, villageId)
                 }
                 motherNeonateCreateResponse.postLoading()
                 motherNeonateCreateResponse.postValue(
                     motherNeonateANCRepo.saveMotherNeonateAnc(
-                        motherNeonateAncRequest
-                    )
+                        motherNeonateAncRequest,
+                    ),
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -65,7 +68,7 @@ class MotherNeonateANCViewModel @Inject constructor(
         encounterId: String?,
         patientHouseholdId: String?,
         memberId: String?,
-        villageId: String?
+        villageId: String?,
     ): MedicalReviewEncounter {
         val currentTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
         return MedicalReviewEncounter(
@@ -80,7 +83,7 @@ class MotherNeonateANCViewModel @Inject constructor(
             householdId = patientHouseholdId,
             referred = true,
             visitNumber = ancVisit,
-            villageId = villageId
+            villageId = villageId,
         )
     }
 
@@ -94,11 +97,11 @@ class MotherNeonateANCViewModel @Inject constructor(
         patientStatus: String?,
         villageId: String?,
         patientId: String?,
-        assessmentName: String
+        assessmentName: String,
     ) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
-            if (patientId != null && memberId != null && patientStatus != null  && villageId != null && patientReference != null && submitCreateId != null) {
+            if (patientId != null && memberId != null && patientStatus != null && villageId != null && patientReference != null && submitCreateId != null) {
                 val response = summaryRepository.createSummarySubmit(
                     patientId = patientId,
                     patientReference = patientReference,
@@ -109,18 +112,14 @@ class MotherNeonateANCViewModel @Inject constructor(
                     referralTicketType = referralTicketType,
                     assessmentName = assessmentName,
                     householdId = householdId,
-                    villageId = villageId
+                    villageId = villageId,
                 )
                 summaryCreateResponse.postValue(response)
             }
         }
     }
 
-    fun getSubmitCreateId(): String? {
-        return motherNeonateCreateResponse.value?.data?.encounterId
-    }
+    fun getSubmitCreateId(): String? = motherNeonateCreateResponse.value?.data?.encounterId
 
-    fun getPatientReference(): String? {
-        return motherNeonateCreateResponse.value?.data?.patientReference
-    }
+    fun getPatientReference(): String? = motherNeonateCreateResponse.value?.data?.patientReference
 }

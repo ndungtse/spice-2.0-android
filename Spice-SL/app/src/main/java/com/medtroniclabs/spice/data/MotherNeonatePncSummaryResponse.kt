@@ -5,7 +5,7 @@ import com.medtroniclabs.spice.data.history.PatientStatus
 
 data class MotherNeonatePncSummaryResponse(
     val pncChild: PncChild?,
-    val pncMother: PncMother?
+    val pncMother: PncMother?,
 )
 
 data class PncChild(
@@ -23,7 +23,7 @@ data class PncChild(
     val breastFeeding: Boolean,
     val exclusiveBreastFeeding: Boolean,
     val clinicalNotes: String?,
-    val encounter: Any?
+    val encounter: Any?,
 )
 
 data class PncMother(
@@ -35,16 +35,15 @@ data class PncMother(
     val breastCondition: String?,
     val breastConditionNotes: Any?,
     val involutionsOfTheUterus: String?,
-    val involutionsOfTheUterusNotes: Any?=null,
+    val involutionsOfTheUterusNotes: Any? = null,
     val presentingComplaints: List<String>,
     val presentingComplaintsNotes: String?,
     val systemicExaminations: List<String>,
-    val systemicExaminationsNotes: String?=null,
+    val systemicExaminationsNotes: String? = null,
     val clinicalNotes: String?,
     val encounter: Any?,
     val diagnosis: ArrayList<DiagnosisDiseaseModel>? = null,
     val prescriptions: List<Prescription>? = null,
     val investigations: List<Investigation>? = null,
-    val summaryStatus:List<PatientStatus>?=null
-
+    val summaryStatus: List<PatientStatus>? = null,
 )

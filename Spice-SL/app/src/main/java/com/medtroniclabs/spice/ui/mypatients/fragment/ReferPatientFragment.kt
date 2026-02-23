@@ -30,14 +30,14 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
 
 class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentReferPatientBinding
     private val viewModel: ReferPatientViewModel by activityViewModels()
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentReferPatientBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -47,7 +47,12 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "ReferPatientFragment"
-        fun newInstance(name: String, patientReference: String?, encounterId: String?): ReferPatientFragment {
+
+        fun newInstance(
+            name: String,
+            patientReference: String?,
+            encounterId: String?,
+        ): ReferPatientFragment {
             val fragment = ReferPatientFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.NAME, name)
@@ -58,7 +63,10 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         setListener()
@@ -75,7 +83,6 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
             setHealthFacilityDistrictId(SecuredPreference.getDistrictId())
             viewModel.getHealthFacilityMetaData(SecuredPreference.getDistrictId().toString())
         }, ::finishFragment)
-
     }
 
     private fun attachObserver() {
@@ -161,17 +168,24 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
         list.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.ID to DefinedParams.DefaultID
-            )
+                DefinedParams.ID to DefinedParams.DefaultID,
+            ),
         )
         listItems?.forEach {
             it.roles.forEach { roles ->
                 list.add(
                     hashMapOf<String, Any>(
-                        DefinedParams.NAME to requireContext().getString(R.string.refer_patient_name_num_display, it.firstName, roles.displayName, SecuredPreference.getPhoneNumberCode(), it.phoneNumber),
+                        DefinedParams.NAME to
+                            requireContext().getString(
+                                R.string.refer_patient_name_num_display,
+                                it.firstName,
+                                roles.displayName,
+                                SecuredPreference.getPhoneNumberCode(),
+                                it.phoneNumber,
+                            ),
                         DefinedParams.ID to it.id,
-                        DefinedParams.FhirId to it.fhirId
-                    )
+                        DefinedParams.FhirId to it.fhirId,
+                    ),
                 )
             }
         }
@@ -179,13 +193,13 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
         val nameAdapter = CustomSpinnerAdapter(requireContext())
         nameAdapter.setData(list)
         binding.etNameNumber.adapter = nameAdapter
-        binding.etNameNumber.setSelection(0,false)
+        binding.etNameNumber.setSelection(0, false)
         binding.etNameNumber.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
                 position: Int,
-                id: Long
+                id: Long,
             ) {
                 val selectedValue = nameAdapter.getData(position)
                 selectedValue?.let {
@@ -193,6 +207,7 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
                     isEnableRefer()
                 }
             }
+
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 // method not in use
             }
@@ -204,8 +219,8 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
         list.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.ID to DefinedParams.DefaultID
-            )
+                DefinedParams.ID to DefinedParams.DefaultID,
+            ),
         )
         listItems.forEach {
             list.add(
@@ -213,23 +228,24 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
                     DefinedParams.NAME to it.name,
                     DefinedParams.TenantId to it.tenantId,
                     DefinedParams.ID to it.id,
-                    DefinedParams.FhirId to it.fhirId
-                )
+                    DefinedParams.FhirId to it.fhirId,
+                ),
             )
         }
         referToListListener(list)
     }
+
     private fun referToListListener(list: ArrayList<Map<String, Any>>) {
         val referToAdapter = CustomSpinnerAdapter(requireContext())
         referToAdapter.setData(list)
         binding.etReferTo.adapter = referToAdapter
-        binding.etReferTo.setSelection(0,false)
+        binding.etReferTo.setSelection(0, false)
         binding.etReferTo.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
                 position: Int,
-                id: Long
+                id: Long,
             ) {
                 val selectedValue = referToAdapter.getData(position)
                 selectedValue?.let {
@@ -248,12 +264,12 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
                     }
                 }
             }
+
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 // method not in use
             }
         }
     }
-
 
     private fun setListener() {
         binding.btnCancel.safeClickListener(this)
@@ -291,6 +307,7 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
             }
         }
     }
+
     private fun postResultInput() {
         val assessmentName: String? = arguments?.getString(DefinedParams.NAME, "")
         val patientReference: String? = arguments?.getString(DefinedParams.PatientReference, "")
@@ -311,7 +328,7 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
                 ""
             }
         }
-        if (connectivityManager.isNetworkAvailable()){
+        if (connectivityManager.isNetworkAvailable()) {
             patientViewModel.patientDetailsLiveData.value?.data?.let { patientDetails ->
                 viewModel.createReferPatientResult(
                     patientReference,
@@ -321,21 +338,21 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
                     patientDetails.houseHoldId,
                     patientDetails.villageId,
                     patientDetails.memberId,
-                    tbIMRCompleted = patientViewModel.getTbMedicalReviewStatus()
+                    tbIMRCompleted = patientViewModel.getTbMedicalReviewStatus(),
                 )
             }
         } else {
             (activity as BaseActivity?)?.showErrorDialogue(
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
+                isNegativeButtonNeed = false,
             ) {
-
             }
         }
     }
+
     private fun isEnableRefer() {
-        binding.btnRefer.isEnabled = viewModel.referToSelectedId != null && viewModel.clinicalSelectedId != null && viewModel.enteredReferredReason!=null
+        binding.btnRefer.isEnabled = viewModel.referToSelectedId != null && viewModel.clinicalSelectedId != null && viewModel.enteredReferredReason != null
     }
 
     private fun showLoadingProgress() {
@@ -343,6 +360,6 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
     }
 
     private fun hideLoadingProgress() {
-       binding.loadingProgress.gone()
+        binding.loadingProgress.gone()
     }
 }

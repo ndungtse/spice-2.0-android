@@ -5,5 +5,5 @@ data class HouseholdMemberLinkCallDetails(
     val patientId: String?,
     val villageId: String,
     val callRegisterDetails: List<CallRegisterDetail>,
-    val provenance: ProvanceDto = ProvanceDto()
+    val provenance: ProvanceDto = ProvanceDto(),
 )

@@ -37,10 +37,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 import java.util.Calendar
 
-
 @AndroidEntryPoint
 class PerformanceMonitoringActivity : BaseActivity() {
-
     lateinit var binding: ActivityPerformanceMonitoringBinding
 
     private val viewModel: PerformanceMonitoringViewModel by viewModels()
@@ -86,7 +84,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
 
         shouldTriggerYearSpinner = false
         shouldTriggerMonthSpinner = false
-        //Set Year
+        // Set Year
         yearMonth.first.let { year ->
             val index = LocalDate.now().year - year
             binding.yearSpinner.setSelection(index)
@@ -122,11 +120,12 @@ class PerformanceMonitoringActivity : BaseActivity() {
 
                 ResourceState.ERROR -> {
                     hideLoading()
-                    Toast.makeText(
-                        this,
-                        "Something went wrong in fetching user preference",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast
+                        .makeText(
+                            this,
+                            "Something went wrong in fetching user preference",
+                            Toast.LENGTH_LONG,
+                        ).show()
                 }
             }
         }
@@ -146,17 +145,19 @@ class PerformanceMonitoringActivity : BaseActivity() {
                     val isUnlocked = (preference?.fromDate.isNullOrEmpty() && preference?.toDate.isNullOrEmpty())
                     updateLockButtonStatus(isUnlocked)
 
-                    Toast.makeText(this, "Saved Filter Preference Successfully", Toast.LENGTH_LONG)
+                    Toast
+                        .makeText(this, "Saved Filter Preference Successfully", Toast.LENGTH_LONG)
                         .show()
                 }
 
                 ResourceState.ERROR -> {
                     hideLoading()
-                    Toast.makeText(
-                        this,
-                        "Something went wrong in Saved Filter Preference",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast
+                        .makeText(
+                            this,
+                            "Something went wrong in Saved Filter Preference",
+                            Toast.LENGTH_LONG,
+                        ).show()
                 }
             }
         }
@@ -164,7 +165,6 @@ class PerformanceMonitoringActivity : BaseActivity() {
         viewModel.dataFlow.observe(this) {
             adapter.submitData(lifecycle, it)
         }
-
 
         viewModel.filterChwListLiveData.observe(this) {
             when (it.state) {
@@ -178,14 +178,14 @@ class PerformanceMonitoringActivity : BaseActivity() {
 
                 ResourceState.ERROR -> {
                     hideLoading()
-                    Toast.makeText(
-                        this,
-                        "Something went wrong in fetching village",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast
+                        .makeText(
+                            this,
+                            "Something went wrong in fetching village",
+                            Toast.LENGTH_LONG,
+                        ).show()
                 }
             }
-
         }
 
         viewModel.chwFilterListLiveData.observe(this) {
@@ -220,7 +220,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
                 showErrorDialogue(
                     getString(R.string.title_no_network),
                     getString(R.string.message_no_network),
-                    isNegativeButtonNeed = false
+                    isNegativeButtonNeed = false,
                 ) { _ -> }
             }
         }
@@ -238,7 +238,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
                 showErrorDialogue(
                     getString(R.string.title_no_network),
                     getString(R.string.message_no_network),
-                    isNegativeButtonNeed = false
+                    isNegativeButtonNeed = false,
                 ) { _ -> }
             }
         }
@@ -254,7 +254,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
                 showErrorDialogue(
                     getString(R.string.title_no_network),
                     getString(R.string.message_no_network),
-                    isNegativeButtonNeed = false
+                    isNegativeButtonNeed = false,
                 ) { _ -> }
             }
         }
@@ -265,13 +265,15 @@ class PerformanceMonitoringActivity : BaseActivity() {
         binding.etFromDate.setOnClickListener {
             val yearMonthWeek = if (binding.etFromDate.text.isNotEmpty()) {
                 DateUtils.getYearMonthAndDate(binding.etFromDate.text.toString())
-            } else null
+            } else {
+                null
+            }
             showDatePicker(
                 context = this,
                 disableFutureDate = false,
                 minDate = viewModel.filterModel.startDate,
                 maxDate = viewModel.filterModel.endDate,
-                date = yearMonthWeek
+                date = yearMonthWeek,
             ) { _, year, month, dayOfMonth ->
                 viewModel.anyFilterChanged.value = true
                 resetToDate()
@@ -282,13 +284,14 @@ class PerformanceMonitoringActivity : BaseActivity() {
                     viewModel.updateFilter(fromDate = DateUtils.getDateDDMMYYYY().format(it))
                 }
             }
-
         }
 
         binding.etEndDate.setOnClickListener {
             val yearMonthWeek = if (binding.etEndDate.text.isNotEmpty()) {
                 DateUtils.getYearMonthAndDate(binding.etEndDate.text.toString())
-            } else null
+            } else {
+                null
+            }
             var minDate: Long? = null
             if (viewModel.filterModel.fromDate != null) {
                 minDate = getTimeInMilliFromDate(viewModel.filterModel.fromDate!!)
@@ -310,7 +313,6 @@ class PerformanceMonitoringActivity : BaseActivity() {
                     viewModel.updateFilter(toDate = DateUtils.getDateDDMMYYYY().format(it))
                 }
             }
-
         }
     }
 
@@ -369,7 +371,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
         toDate: String,
         selectedCHWs: List<CheckBoxSpinnerData>,
         selectedVillages: List<CheckBoxSpinnerData>,
-        shouldSave: Boolean
+        shouldSave: Boolean,
     ) {
         val serverFromDate =
             DateUtils.convertDateFormat(fromDate, DATE_ddMMyyyy, DateUtils.DATE_FORMAT_yyyyMMdd)
@@ -381,7 +383,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
             serverToDate,
             selectedCHWs.filter { it.id != 0L }.map { it.id },
             selectedVillages.filter { it.id != 0L }.map { it.id },
-            shouldSave
+            shouldSave,
         )
     }
 
@@ -390,9 +392,8 @@ class PerformanceMonitoringActivity : BaseActivity() {
             parent: AdapterView<*>?,
             view: View?,
             position: Int,
-            id: Long
+            id: Long,
         ) {
-
             val selectedItem =
                 (binding.yearSpinner.adapter as CustomSpinnerAdapter).getData(position = position)
             selectedItem?.let {
@@ -407,13 +408,10 @@ class PerformanceMonitoringActivity : BaseActivity() {
                 }
             }
             viewModel.anyFilterChanged.value = true
-
         }
 
         override fun onNothingSelected(parent: AdapterView<*>?) {
-
         }
-
     }
 
     private val monthSpinnerChangeListener = object : AdapterView.OnItemSelectedListener {
@@ -421,7 +419,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
             parent: AdapterView<*>?,
             view: View?,
             position: Int,
-            id: Long
+            id: Long,
         ) {
             val selectedItem =
                 (binding.monthSpinner.adapter as CustomSpinnerAdapter).getData(position = position)
@@ -440,7 +438,6 @@ class PerformanceMonitoringActivity : BaseActivity() {
         }
 
         override fun onNothingSelected(parent: AdapterView<*>?) {
-
         }
     }
 
@@ -469,16 +466,18 @@ class PerformanceMonitoringActivity : BaseActivity() {
             calendar.set(Calendar.DAY_OF_MONTH, 1)
             val startDate = calendar.timeInMillis
 
-            if (shouldResetDate)
+            if (shouldResetDate) {
                 binding.etFromDate.text = DateUtils.getDateDDMMYYYY().format(startDate)
+            }
 
             // Get the last day of the month
             val lastDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
             calendar.set(Calendar.DAY_OF_MONTH, lastDay)
             val endDate = calendar.timeInMillis
 
-            if (shouldResetDate)
+            if (shouldResetDate) {
                 binding.etEndDate.text = DateUtils.getDateDDMMYYYY().format(endDate)
+            }
 
             viewModel.updateFilter(startDate = startDate, endDate = endDate)
         }
@@ -494,23 +493,27 @@ class PerformanceMonitoringActivity : BaseActivity() {
         adapter = PerformanceMonitoringAdapter()
         binding.rvPerformanceList.adapter = adapter
         adapter.addLoadStateListener { loadState ->
-            if (loadState.refresh is LoadState.Loading)
+            if (loadState.refresh is LoadState.Loading) {
                 showLoading()
-            else
+            } else {
                 hideLoading()
+            }
 
-            if (loadState.append is LoadState.Loading)
+            if (loadState.append is LoadState.Loading) {
                 binding.paginationLoader.visible()
-            else
+            } else {
                 binding.paginationLoader.gone()
+            }
 
-            if (loadState.refresh is LoadState.Error || loadState.append is LoadState.Error)
-                Toast.makeText(this, getString(R.string.something_went_wrong), Toast.LENGTH_LONG)
+            if (loadState.refresh is LoadState.Error || loadState.append is LoadState.Error) {
+                Toast
+                    .makeText(this, getString(R.string.something_went_wrong), Toast.LENGTH_LONG)
                     .show()
+            }
 
             val isListEmpty = adapter.itemCount == 0 &&
-                    loadState.refresh is LoadState.NotLoading &&
-                    loadState.append.endOfPaginationReached
+                loadState.refresh is LoadState.NotLoading &&
+                loadState.append.endOfPaginationReached
 
             if (isListEmpty) {
                 binding.rvPerformanceList.gone()
@@ -560,7 +563,6 @@ class PerformanceMonitoringActivity : BaseActivity() {
         cancelCallBack: (() -> Unit)? = null,
         callBack: (dialog: DatePicker, year: Int, month: Int, dayOfMonth: Int) -> Unit,
     ): DatePickerDialog {
-
         val calendar = Calendar.getInstance()
         var thisYear = calendar.get(Calendar.YEAR)
         var thisMonth = calendar.get(Calendar.MONTH)
@@ -583,7 +585,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
             dateSetListener,
             thisYear,
             thisMonth,
-            thisDay
+            thisDay,
         )
 
         if (cancelCallBack != null) {
@@ -614,7 +616,5 @@ class PerformanceMonitoringActivity : BaseActivity() {
         dialog.show()
 
         return dialog
-
     }
-
 }

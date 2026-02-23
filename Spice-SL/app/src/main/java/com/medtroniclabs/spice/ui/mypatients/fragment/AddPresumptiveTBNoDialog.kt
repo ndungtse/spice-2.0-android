@@ -23,8 +23,9 @@ class AddPresumptiveTBNoDialog : DialogFragment(), View.OnClickListener {
     var listener: OnPresumptiveTBEnteredListener? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentAddWeightDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -32,16 +33,16 @@ class AddPresumptiveTBNoDialog : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-
     companion object {
         const val TAG = "AddPresumptiveTBNoDialog"
         const val Data = "Data"
+
         fun newInstance(
             text: String? = null,
             title: String,
             hint: String,
             length: Int,
-            inputType: Int
+            inputType: Int,
         ): AddPresumptiveTBNoDialog {
             val fragment = AddPresumptiveTBNoDialog()
             fragment.arguments = Bundle().apply {
@@ -55,7 +56,10 @@ class AddPresumptiveTBNoDialog : DialogFragment(), View.OnClickListener {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
     }
@@ -100,7 +104,9 @@ class AddPresumptiveTBNoDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun handleOkayClick() {
-        val tbNumber = binding.etWeight.text.toString().trim()
+        val tbNumber = binding.etWeight.text
+            .toString()
+            .trim()
         if (tbNumber.isNotEmpty()) {
             listener?.onPresumptiveTBEntered(tbNumber)
             dismiss()
@@ -108,11 +114,21 @@ class AddPresumptiveTBNoDialog : DialogFragment(), View.OnClickListener {
     }
 
     private val textWatcher = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        override fun beforeTextChanged(
+            s: CharSequence?,
+            start: Int,
+            count: Int,
+            after: Int,
+        ) {
             // Not needed for your use case
         }
 
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        override fun onTextChanged(
+            s: CharSequence?,
+            start: Int,
+            before: Int,
+            count: Int,
+        ) {
             // Not needed for your use case
         }
 

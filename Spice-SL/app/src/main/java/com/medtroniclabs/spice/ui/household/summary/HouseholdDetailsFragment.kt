@@ -7,26 +7,28 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.databinding.FragmentHouseholdDetailsBinding
 import com.medtroniclabs.spice.databinding.SummaryListItemBinding
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
 
 class HouseholdDetailsFragment : Fragment() {
-
     private lateinit var binding: FragmentHouseholdDetailsBinding
     private val householdSummaryViewModel: HouseHoldSummaryViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentHouseholdDetailsBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
     }
@@ -61,5 +63,4 @@ class HouseholdDetailsFragment : Fragment() {
         view.tvValue.text = villageName
         binding.llDetails.addView(view.root)
     }
-
 }

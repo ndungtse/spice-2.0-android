@@ -131,9 +131,7 @@ object AnalyticsDefinedParams {
     const val VIEWDISCONTINUEDMEDICATION = "View Discontinued Medication"
     const val DISPENSEMEDICATION = "Dispense Medication"
 
-
-
-    //Non Community
+    // Non Community
     const val ScreeningCreation = "ScreeningCreation"
     const val NCDAssessmentCreation = "AssessmentCreation"
     const val NCDRegistrationCreation = "RegistrationCreation"
@@ -200,7 +198,7 @@ object AnalyticsDefinedParams {
     const val INSTRUCTIONDIALOGUE = "Instruction Dialogue"
     const val CALLBUTTONTRIGGERED = "Call Button Triggered"
     const val CBS = "CBS"
-    const val LINKPATIENT =  "Link Patient Button Triggered"
+    const val LINKPATIENT = "Link Patient Button Triggered"
     const val TBTYPE = "TB Type"
 
     const val TBMEDICALREVIEW = "TB Medical Review"
@@ -211,7 +209,6 @@ object AnalyticsDefinedParams {
 
     const val FamilyPlanningMedicalReview = "Family Planning Medical Review"
     const val FamilyPlanningSummary = "Family Planning Medical Review Summary"
-
 
     const val AddBPDialogue = "AddBPDialogue"
     const val AddHeightWeightDialogue = "Add Height or Weight Dialogue"
@@ -224,7 +221,7 @@ object AnalyticsDefinedParams {
 
     const val btnVaccinationDone = "VaccinationDone Button Triggered"
 
-   const val MissedVaccination: String = "Missed Vaccination Dialogue"
+    const val MissedVaccination: String = "Missed Vaccination Dialogue"
 
     const val ImmunisationSummary = "Immunisation Summary"
 

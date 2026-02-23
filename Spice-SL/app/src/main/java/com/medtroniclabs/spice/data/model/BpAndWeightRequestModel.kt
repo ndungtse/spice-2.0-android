@@ -7,5 +7,5 @@ data class BpAndWeightRequestModel(
     val weight: Double? = null,
     val encounter: MedicalReviewEncounter? = null,
     val height: Double? = null,
-    val patientReference: String? = null
+    val patientReference: String? = null,
 )

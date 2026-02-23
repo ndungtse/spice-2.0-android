@@ -5,5 +5,5 @@ data class DiseaseConditionItems(
     val diseaseId: Long,
     val name: String,
     val displayOrder: Int,
-    val value: String? = null
+    val value: String? = null,
 )

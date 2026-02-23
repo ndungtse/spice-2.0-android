@@ -15,5 +15,5 @@ interface ExaminationsDAO {
     suspend fun deleteExaminationsList(menuType: String)
 
     @Query("SELECT * FROM ExaminationsEntity WHERE type = :workflow LIMIT 1")
-    suspend fun getExaminationsByType(workflow: String) : ExaminationListItems
+    suspend fun getExaminationsByType(workflow: String): ExaminationListItems
 }

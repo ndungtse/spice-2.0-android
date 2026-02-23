@@ -55,14 +55,14 @@ object ViewUtils {
             }
             dialog.setButton(
                 DialogInterface.BUTTON_POSITIVE,
-                context.getString(R.string.okay)
+                context.getString(R.string.okay),
             ) { dg, _ ->
                 dialog.onClick(dg, DialogInterface.BUTTON_POSITIVE)
             }
 
             dialog.setButton(
                 DialogInterface.BUTTON_NEGATIVE,
-                context.getString(R.string.cancel)
+                context.getString(R.string.cancel),
             ) { dg, _ ->
                 dialog.onClick(dg, DialogInterface.BUTTON_NEGATIVE)
             }
@@ -70,7 +70,6 @@ object ViewUtils {
                 dialog.setCancelable(false)
                 dialog.show()
             }
-
         } catch (exception: Exception) {
             exception.printStackTrace()
         }

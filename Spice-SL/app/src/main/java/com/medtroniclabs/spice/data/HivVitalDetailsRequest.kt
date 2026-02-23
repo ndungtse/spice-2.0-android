@@ -3,7 +3,7 @@ package com.medtroniclabs.spice.data
 data class HivVitalDetailsRequest(
     val patientReference: String? = null,
     val memberId: String? = null,
-    val types: ArrayList<String>
+    val types: ArrayList<String>,
 )
 
 data class HivVitalDetailsResponse(

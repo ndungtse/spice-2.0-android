@@ -2,7 +2,12 @@ package com.medtroniclabs.spice.signature.view
 
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Matrix
+import android.graphics.Paint
+import android.graphics.RectF
 import android.os.Build
 import android.os.Parcelable
 import android.util.AttributeSet
@@ -11,16 +16,16 @@ import android.view.View
 import android.view.ViewTreeObserver
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import com.medtroniclabs.spice.R.styleable
 import com.medtroniclabs.spice.custom.signature.utils.Bezier
 import com.medtroniclabs.spice.custom.signature.utils.ControlTimedPoints
 import com.medtroniclabs.spice.custom.signature.utils.TimedPoint
+import com.medtroniclabs.spice.custom.signature.view.ViewTreeObserverCompat
 import kotlin.math.max
 import kotlin.math.roundToInt
-import com.medtroniclabs.spice.R.styleable
-import com.medtroniclabs.spice.custom.signature.view.ViewTreeObserverCompat
 
 class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
-    //View state
+    // View state
     private var mPoints: MutableList<TimedPoint>? = null
     private var mIsEmpty = false
     private var mHasEditState: Boolean? = null
@@ -30,22 +35,26 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
     private var mLastWidth = 0f
     private val mDirtyRect: RectF
     private var mBitmapSavedState: Bitmap? = null
+
     // Cache
     private val mPointsCache: MutableList<TimedPoint> = ArrayList()
     private val mControlTimedPointsCached: ControlTimedPoints =
         ControlTimedPoints()
     private val mBezierCached: Bezier =
         Bezier()
-    //Configurable parameters
+
+    // Configurable parameters
     private var mMinWidth = 0
     private var mMaxWidth = 0
     private var mVelocityFilterWeight = 0f
     private var mOnSignedListener: OnSignedListener? = null
     private var mClearOnDoubleClick = false
-    //Click values
+
+    // Click values
     private var mFirstClick: Long = 0
     private var mCountClick = 0
-    //Default attribute values
+
+    // Default attribute values
     private val DEFAULT_ATTR_PEN_MIN_WIDTH_PX = 2
     private val DEFAULT_ATTR_PEN_MAX_WIDTH_PX = 3
     private val DEFAULT_ATTR_PEN_COLOR = Color.BLACK
@@ -54,6 +63,7 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
     private val mPaint = Paint()
     private var mSignatureBitmap: Bitmap? = null
     private var mSignatureBitmapCanvas: Canvas? = null
+
     override fun onSaveInstanceState(): Parcelable? {
         super.onSaveInstanceState()
 //        val bundle = Bundle()
@@ -76,6 +86,7 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
 //        mHasEditState = false
 //        super.onRestoreInstanceState(state)
 //    }
+
     /**
      * Set the pen color from a given resource.
      * If the resource is not found, [Color.BLACK] is assumed.
@@ -89,6 +100,7 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
             setPenColor(Color.parseColor("#000000"))
         }
     }
+
     /**
      * Set the pen color from a given color.
      *
@@ -97,6 +109,7 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
     private fun setPenColor(color: Int) {
         mPaint.color = color
     }
+
     /**
      * Set the minimum width of the stroke in pixel.
      *
@@ -105,6 +118,7 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
     fun setMinWidth(minWidth: Float) {
         mMinWidth = convertDpToPx(minWidth)
     }
+
     /**
      * Set the maximum width of the stroke in pixel.
      *
@@ -113,6 +127,7 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
     fun setMaxWidth(maxWidth: Float) {
         mMaxWidth = convertDpToPx(maxWidth)
     }
+
     /**
      * Set the velocity filter weight.
      *
@@ -121,6 +136,7 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
     fun setVelocityFilterWeight(velocityFilterWeight: Float) {
         mVelocityFilterWeight = velocityFilterWeight
     }
+
     private fun clearView() {
         mPoints = ArrayList()
         mLastVelocity = 0f
@@ -132,10 +148,12 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
         setIsEmpty(true)
         invalidate()
     }
+
     fun clear() {
         clearView()
         mHasEditState = true
     }
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (!isEnabled) return false
         val eventX = event.x
@@ -176,14 +194,17 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
 //        )
         return true
     }
+
     override fun onDraw(canvas: Canvas) {
         if (mSignatureBitmap != null) {
             canvas.drawBitmap(mSignatureBitmap!!, 0f, 0f, mPaint)
         }
     }
+
     fun setOnSignedListener(listener: OnSignedListener?) {
         mOnSignedListener = listener
     }
+
     private fun setIsEmpty(newValue: Boolean) {
         mIsEmpty = newValue
         if (mOnSignedListener != null) {
@@ -194,10 +215,13 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
             }
         }
     }
+
     fun getSignatureBitmap(): Bitmap {
         val originalBitmap = getTransparentSignatureBitmap()
         val whiteBgBitmap = Bitmap.createBitmap(
-            originalBitmap!!.width, originalBitmap.height, Bitmap.Config.ARGB_8888
+            originalBitmap!!.width,
+            originalBitmap.height,
+            Bitmap.Config.ARGB_8888,
         )
         val canvas = Canvas(whiteBgBitmap)
         canvas.drawColor(Color.WHITE)
@@ -237,10 +261,12 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
             })
         }
     }
+
     private fun getTransparentSignatureBitmap(): Bitmap? {
         ensureSignatureBitmap()
         return mSignatureBitmap
     }
+
     private fun isDoubleClick(): Boolean {
         if (mClearOnDoubleClick) {
             if (mFirstClick != 0L && System.currentTimeMillis() - mFirstClick > DOUBLE_CLICK_DELAY_MS) {
@@ -259,9 +285,10 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
         }
         return false
     }
+
     private fun getNewPoint(
         x: Float,
-        y: Float
+        y: Float,
     ): TimedPoint {
         val mCacheSize = mPointsCache.size
         val timedPoint: TimedPoint
@@ -272,9 +299,11 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
         }
         return timedPoint.set(x, y)
     }
+
     private fun recyclePoint(point: TimedPoint) {
         mPointsCache.add(point)
     }
+
     private fun addPoint(newPoint: TimedPoint) {
         mPoints!!.add(newPoint)
         val pointsCount = mPoints!!.size
@@ -291,8 +320,10 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
             val endPoint: TimedPoint = curve.endPoint
             var velocity: Float = endPoint.velocityFrom(startPoint)
             velocity = if (java.lang.Float.isNaN(velocity)) 0.0f else velocity
-            velocity = (mVelocityFilterWeight * velocity
-                    + (1 - mVelocityFilterWeight) * mLastVelocity)
+            velocity = (
+                mVelocityFilterWeight * velocity +
+                    (1 - mVelocityFilterWeight) * mLastVelocity
+            )
             // The new width is a function of the velocity. Higher velocities
             // correspond to thinner strokes.
             val newWidth = strokeWidth(velocity)
@@ -312,15 +343,17 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
         }
         mHasEditState = true
     }
+
     private fun addBezier(
         curve: Bezier,
         startWidth: Float,
-        endWidth: Float
+        endWidth: Float,
     ) { //  mSvgBuilder.append(curve, (startWidth + endWidth) / 2);
         ensureSignatureBitmap()
         val originalWidth = mPaint.strokeWidth
         val widthDelta = endWidth - startWidth
-        val drawSteps = Math.ceil(curve.length().toDouble())
+        val drawSteps = Math
+            .ceil(curve.length().toDouble())
             .toFloat()
         var i = 0
         while (i < drawSteps) {
@@ -347,10 +380,11 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
         }
         mPaint.strokeWidth = originalWidth
     }
+
     private fun calculateCurveControlPoints(
         s1: TimedPoint,
         s2: TimedPoint,
-        s3: TimedPoint
+        s3: TimedPoint,
     ): ControlTimedPoints {
         val dx1: Float = s1.x - s2.x
         val dy1: Float = s1.y - s2.y
@@ -360,9 +394,11 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
         val m1Y: Float = (s1.y + s2.y) / 2.0f
         val m2X: Float = (s2.x + s3.x) / 2.0f
         val m2Y: Float = (s2.y + s3.y) / 2.0f
-        val l1 = Math.sqrt(dx1 * dx1 + dy1 * dy1.toDouble())
+        val l1 = Math
+            .sqrt(dx1 * dx1 + dy1 * dy1.toDouble())
             .toFloat()
-        val l2 = Math.sqrt(dx2 * dx2 + dy2 * dy2.toDouble())
+        val l2 = Math
+            .sqrt(dx2 * dx2 + dy2 * dy2.toDouble())
             .toFloat()
         val dxm = m1X - m2X
         val dym = m1Y - m2Y
@@ -374,12 +410,12 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
         val ty: Float = s2.y - cmY
         return mControlTimedPointsCached.set(
             getNewPoint(m1X + tx, m1Y + ty),
-            getNewPoint(m2X + tx, m2Y + ty)
+            getNewPoint(m2X + tx, m2Y + ty),
         )
     }
-    private fun strokeWidth(velocity: Float): Float {
-        return max(mMaxWidth / (velocity + 1), mMinWidth.toFloat())
-    }
+
+    private fun strokeWidth(velocity: Float): Float = max(mMaxWidth / (velocity + 1), mMinWidth.toFloat())
+
     /**
      * Called when replaying history to ensure the dirty region includes all
      * mPoints.
@@ -389,7 +425,7 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
      */
     private fun expandDirtyRect(
         historicalX: Float,
-        historicalY: Float
+        historicalY: Float,
     ) {
         if (historicalX < mDirtyRect.left) {
             mDirtyRect.left = historicalX
@@ -402,6 +438,7 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
             mDirtyRect.bottom = historicalY
         }
     }
+
     /**
      * Resets the dirty region when the motion event occurs.
      *
@@ -410,70 +447,77 @@ class SignatureView(context: Context, attrs: AttributeSet?) : View(context, attr
      */
     private fun resetDirtyRect(
         eventX: Float,
-        eventY: Float
+        eventY: Float,
     ) { // The mLastTouchX and mLastTouchY were set when the ACTION_DOWN motion event occurred.
         mDirtyRect.left = Math.min(mLastTouchX, eventX)
         mDirtyRect.right = Math.max(mLastTouchX, eventX)
         mDirtyRect.top = Math.min(mLastTouchY, eventY)
         mDirtyRect.bottom = Math.max(mLastTouchY, eventY)
     }
+
     private fun ensureSignatureBitmap() {
         if (mSignatureBitmap == null) {
             mSignatureBitmap = Bitmap.createBitmap(
-                width, height,
-                Bitmap.Config.ARGB_8888
+                width,
+                height,
+                Bitmap.Config.ARGB_8888,
             )
             mSignatureBitmapCanvas = Canvas(mSignatureBitmap!!)
         }
     }
-    private fun convertDpToPx(dp: Float): Int {
-        return (context.resources.displayMetrics.density * dp).roundToInt()
-    }
+
+    private fun convertDpToPx(dp: Float): Int = (context.resources.displayMetrics.density * dp).roundToInt()
+
     interface OnSignedListener {
         fun onStartSigning()
+
         fun onSigned()
+
         fun onClear()
     }
 
     companion object {
         private const val DOUBLE_CLICK_DELAY_MS = 200
     }
+
     init {
         val a = context.theme.obtainStyledAttributes(
             attrs,
             styleable.SignatureView,
-            0, 0
+            0,
+            0,
         )
-        //Configurable parameters
+        // Configurable parameters
         try {
             mMinWidth = a.getDimensionPixelSize(
                 styleable.SignatureView_penMinWidth,
-                convertDpToPx(DEFAULT_ATTR_PEN_MIN_WIDTH_PX.toFloat())
+                convertDpToPx(DEFAULT_ATTR_PEN_MIN_WIDTH_PX.toFloat()),
             )
             mMaxWidth = a.getDimensionPixelSize(
                 styleable.SignatureView_penMaxWidth,
-                convertDpToPx(DEFAULT_ATTR_PEN_MAX_WIDTH_PX.toFloat())
+                convertDpToPx(DEFAULT_ATTR_PEN_MAX_WIDTH_PX.toFloat()),
             )
             mPaint.color = a.getColor(
-                styleable.SignatureView_penColor, DEFAULT_ATTR_PEN_COLOR
+                styleable.SignatureView_penColor,
+                DEFAULT_ATTR_PEN_COLOR,
             )
             mVelocityFilterWeight = a.getFloat(
                 styleable.SignatureView_velocityFilterWeight,
-                DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT
+                DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT,
             )
             mClearOnDoubleClick = a.getBoolean(
                 styleable.SignatureView_clearOnDoubleClick,
-                DEFAULT_ATTR_CLEAR_ON_DOUBLE_CLICK
+                DEFAULT_ATTR_CLEAR_ON_DOUBLE_CLICK,
             )
         } finally {
             a.recycle()
         }
-        //Fixed parameters
+        // Fixed parameters
         mPaint.isAntiAlias = true
         mPaint.style = Paint.Style.STROKE
         mPaint.strokeCap = Paint.Cap.ROUND
         mPaint.strokeJoin = Paint.Join.ROUND
-        //Dirty rectangle to update only the changed portion of the view
+        // Dirty rectangle to update only the changed portion of the view
         mDirtyRect = RectF()
         clearView()
     }

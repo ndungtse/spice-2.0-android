@@ -12,26 +12,17 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import java.lang.reflect.Type
 
 class OfflineStatusTypeConverter {
+    @TypeConverter
+    fun fromOfflineSyncStatus(syncStatus: OfflineSyncStatus): String = syncStatus.name
 
     @TypeConverter
-    fun fromOfflineSyncStatus(syncStatus: OfflineSyncStatus): String {
-        return syncStatus.name
-    }
+    fun toOfflineSyncStatus(syncStatusString: String): OfflineSyncStatus = OfflineSyncStatus.valueOf(syncStatusString)
 
     @TypeConverter
-    fun toOfflineSyncStatus(syncStatusString: String): OfflineSyncStatus {
-        return OfflineSyncStatus.valueOf(syncStatusString)
-    }
+    fun fromReferralStatus(referralStatus: ReferralStatus): String = referralStatus.name
 
     @TypeConverter
-    fun fromReferralStatus(referralStatus: ReferralStatus): String {
-        return referralStatus.name
-    }
-
-    @TypeConverter
-    fun toReferralStatus(referralStatusString: String): ReferralStatus {
-        return ReferralStatus.valueOf(referralStatusString)
-    }
+    fun toReferralStatus(referralStatusString: String): ReferralStatus = ReferralStatus.valueOf(referralStatusString)
 
     @TypeConverter
     fun fromString(value: String?): ArrayList<String?>? {
@@ -58,19 +49,13 @@ class OfflineStatusTypeConverter {
     }
 
     @TypeConverter
-    fun fromFollowUpCallStatus(callStatus: FollowUpCallStatus): String {
-        return callStatus.name
-    }
+    fun fromFollowUpCallStatus(callStatus: FollowUpCallStatus): String = callStatus.name
 
     @TypeConverter
-    fun toFollowUpCallStatus(status: String): FollowUpCallStatus {
-        return FollowUpCallStatus.valueOf(status)
-    }
+    fun toFollowUpCallStatus(status: String): FollowUpCallStatus = FollowUpCallStatus.valueOf(status)
 
     @TypeConverter
-    fun fromHealthFacilityListToString(list: ArrayList<HealthFacility>?): String {
-        return Gson().toJson(list)
-    }
+    fun fromHealthFacilityListToString(list: ArrayList<HealthFacility>?): String = Gson().toJson(list)
 
     @TypeConverter
     fun fromStringToHealthFacilityList(value: String): ArrayList<HealthFacility> {

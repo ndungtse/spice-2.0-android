@@ -15,7 +15,11 @@ fun isDebug(callback: (yes: Boolean) -> Unit) {
     }
 }
 
-fun getDisplayDimensions(activity: Activity, widthScale: Double,  heightScale: Double): Pair<Int, Int> {
+fun getDisplayDimensions(
+    activity: Activity,
+    widthScale: Double,
+    heightScale: Double,
+): Pair<Int, Int> {
     val metrics = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         val windowMetrics: WindowMetrics = activity.windowManager.currentWindowMetrics
         val insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
@@ -34,5 +38,3 @@ fun getDisplayDimensions(activity: Activity, widthScale: Double,  heightScale: D
 
     return Pair(targetWidth, targetHeight)
 }
-
-

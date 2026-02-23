@@ -16,12 +16,10 @@ import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
 
-
 @HiltViewModel
 open class BaseViewModel @Inject constructor(
-    @IoDispatcher open var dispatcherIO: CoroutineDispatcher
+    @IoDispatcher open var dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
-
     init {
         logViewModelLifecycle("Created")
     }
@@ -29,12 +27,11 @@ open class BaseViewModel @Inject constructor(
     @Inject
     lateinit var analyticsRepository: AnalyticsRepository
 
-
     fun setUserJourney(userJourney: String) =
         viewModelScope.launch(dispatcherIO) {
             setUserDetails()
             analyticsRepository.insertUserJourney(userJourney)
-            if(userJourney == AnalyticsDefinedParams.LOGOUT) {
+            if (userJourney == AnalyticsDefinedParams.LOGOUT) {
                 UserDetail.referenceId = UUID.randomUUID().toString()
             }
         }
@@ -44,7 +41,7 @@ open class BaseViewModel @Inject constructor(
         eventType: String? = null,
         eventName: String,
         exitReason: String? = null,
-        isCompleted: Boolean = true
+        isCompleted: Boolean = true,
     ) {
         viewModelScope.launch(dispatcherIO) {
             setUserDetails()
@@ -53,9 +50,9 @@ open class BaseViewModel @Inject constructor(
                 startDate,
                 eventType = eventType,
                 exitReason = exitReason,
-                isCompleted = isCompleted.toString()
+                isCompleted = isCompleted.toString(),
             )
-            analyticsRepository.logEvent(eventName, parameter,lastSyncDate())
+            analyticsRepository.logEvent(eventName, parameter, lastSyncDate())
         }
     }
 
@@ -65,7 +62,7 @@ open class BaseViewModel @Inject constructor(
         callStatus: FollowUpCallStatus,
         patientStatus: String?,
         unSuccessfulReason: String?,
-        startTiming: String?
+        startTiming: String?,
     ) {
         setUserDetails()
         val parameter = AnalyticsUtils.createFollowUpEventParameter(
@@ -74,10 +71,9 @@ open class BaseViewModel @Inject constructor(
             callStatus.name,
             patientStatus,
             unSuccessfulReason,
-            startTiming
+            startTiming,
         )
-        analyticsRepository.logEvent(AnalyticsDefinedParams.MyPatient, parameter,lastSyncDate())
-
+        analyticsRepository.logEvent(AnalyticsDefinedParams.MyPatient, parameter, lastSyncDate())
     }
 
     private fun setUserDetails() {
@@ -85,6 +81,7 @@ open class BaseViewModel @Inject constructor(
         UserDetail.role = SecuredPreference.getRole()
         UserDetail.startDateTime = AnalyticsUtils.getCurrentDateTimeInLocalTime()
     }
+
     private fun lastSyncDate(): String {
         val lastSyncedAt =
             SecuredPreference.getString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)

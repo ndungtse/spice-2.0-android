@@ -13,13 +13,11 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.CompoundButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
 import com.medtroniclabs.spice.common.DefinedParams.HIV
 import com.medtroniclabs.spice.common.DefinedParams.ID
@@ -41,24 +39,24 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ConsentFormActivity : BaseActivity(), View.OnClickListener {
-
     private lateinit var binding: ActivityConsentFormBinding
     private val viewModel: ConsentFormViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.isHivFlow = intent.getBooleanExtra(HIV,false)
+        viewModel.isHivFlow = intent.getBooleanExtra(HIV, false)
         viewModel.isHouseHoldFlow = intent.getBooleanExtra(isHouseHold, false)
 
         binding = ActivityConsentFormBinding.inflate(layoutInflater)
         setMainContentView(
-            binding.root, isToolbarVisible = true,
+            binding.root,
+            isToolbarVisible = true,
             title = if (viewModel.isHivFlow) {
                 getString(R.string.consent_form)
             } else {
                 getString(R.string.terms_and_condition)
             },
-            homeAndBackVisibility = Pair(true, true)
+            homeAndBackVisibility = Pair(true, true),
         )
 
         showLoading()
@@ -98,7 +96,7 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
                     putLong(FhirMemberID, intent.getLongExtra(FhirMemberID, -1L))
                     putBoolean(
                         isMemberRegistration,
-                        intent.getBooleanExtra(isMemberRegistration, false)
+                        intent.getBooleanExtra(isMemberRegistration, false),
                     )
                 }
             }
@@ -110,17 +108,15 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
         binding.wvTermAndCondition.settings.apply {
             builtInZoomControls = false
             setSupportZoom(false)
-
         }
 
         viewModel.termsAndConditionStringLiveData.observe(this) {
-
             binding.wvTermAndCondition.loadDataWithBaseURL(
                 null,
                 it,
                 "text/html",
                 "UTF-8",
-                null
+                null,
             )
 
             binding.btnAccept.safeClickListener(this)
@@ -130,9 +126,8 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
     private val webViewClientCallBack = object : WebViewClient() {
         override fun shouldOverrideUrlLoading(
             view: WebView?,
-            request: WebResourceRequest?
+            request: WebResourceRequest?,
         ): Boolean {
-
             request?.url?.let { emailUri ->
                 if (emailUri.toString().startsWith("mailto")) {
                     try {
@@ -149,13 +144,19 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
             return false
         }
 
-        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+        override fun onPageStarted(
+            view: WebView?,
+            url: String?,
+            favicon: Bitmap?,
+        ) {
             super.onPageStarted(view, url, favicon)
             showLoading()
         }
 
-
-        override fun onPageFinished(view: WebView?, url: String?) {
+        override fun onPageFinished(
+            view: WebView?,
+            url: String?,
+        ) {
             super.onPageFinished(view, url)
             hideLoading()
         }
@@ -163,7 +164,7 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
         override fun onReceivedError(
             view: WebView?,
             request: WebResourceRequest?,
-            error: WebResourceError?
+            error: WebResourceError?,
         ) {
             super.onReceivedError(view, request, error)
             hideLoading()
@@ -172,7 +173,7 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
         override fun onReceivedHttpError(
             view: WebView?,
             request: WebResourceRequest?,
-            errorResponse: WebResourceResponse?
+            errorResponse: WebResourceResponse?,
         ) {
             hideLoading()
         }
@@ -180,7 +181,7 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
         override fun onReceivedSslError(
             view: WebView?,
             handler: SslErrorHandler?,
-            error: SslError?
+            error: SslError?,
         ) {
             super.onReceivedSslError(view, handler, error)
             hideLoading()
@@ -212,5 +213,4 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
             }
         }
     }
-
 }

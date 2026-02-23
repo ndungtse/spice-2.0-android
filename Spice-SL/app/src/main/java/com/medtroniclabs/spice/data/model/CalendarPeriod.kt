@@ -4,5 +4,5 @@ data class CalendarPeriod(
     var years: Int,
     var months: Int,
     var weeks: Int,
-    var days: Int
+    var days: Int,
 )

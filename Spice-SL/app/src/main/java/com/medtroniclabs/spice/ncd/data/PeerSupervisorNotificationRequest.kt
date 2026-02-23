@@ -2,7 +2,7 @@ package com.medtroniclabs.spice.ncd.data
 
 data class PeerSupervisorNotificationRequest(
     var userId: String? = null,
-    var ids: List<Int>? = null
+    var ids: List<Int>? = null,
 )
 
 data class PeerSupervisorNotificationResponse(
@@ -11,7 +11,7 @@ data class PeerSupervisorNotificationResponse(
     val formData: FormData? = null,
     val formType: String? = null,
     val userId: Int,
-    val viewed: Boolean
+    val viewed: Boolean,
 )
 
 data class FormData(
@@ -23,5 +23,5 @@ data class FormData(
     val memberName: String? = null,
     val notifiableConditions: List<String>? = null,
     val villageName: String? = null,
-    val chwName: String? = null
+    val chwName: String? = null,
 )

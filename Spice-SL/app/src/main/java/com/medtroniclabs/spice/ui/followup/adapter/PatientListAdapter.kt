@@ -17,7 +17,6 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_TIME_CALL_DISPLAY_FORMAT
 import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.databinding.LayoutItemMyPatientBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_HH_VISIT
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_REFERRED
@@ -28,7 +27,6 @@ import java.time.temporal.ChronoUnit
 
 class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Unit) :
     RecyclerView.Adapter<PatientListAdapter.PatientViewHolder>() {
-
     object ConstantPatientListAdapter {
         const val PATIENT_DETAIL = 0
         const val CALL = 1
@@ -67,7 +65,7 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
                 tvLastCallAtValue.visible()
                 callButton.isEnabled = !data.isWrongNumber
 
-                when(data.type) {
+                when (data.type) {
                     FU_TYPE_HH_VISIT -> {
                         callButton.gone()
                         tvLastCallAtLabel.gone()
@@ -112,38 +110,44 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
         context: Context,
         name: String?,
         dob: String?,
-        gender: String?
-    ): String {
-        return context.getString(
+        gender: String?,
+    ): String =
+        context.getString(
             R.string.household_summary_member_info,
             name,
             CommonUtils.getAgeFromDOB(
                 dob,
-                context
+                context,
             ),
-            CommonUtils.getGenderText(gender, context)
+            CommonUtils.getGenderText(gender, context),
         )
-    }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PatientViewHolder {
-        return PatientViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): PatientViewHolder =
+        PatientViewHolder(
             LayoutItemMyPatientBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-    override fun getItemCount(): Int {
-        return listOfPatient.size
-    }
+    override fun getItemCount(): Int = listOfPatient.size
 
-    override fun onBindViewHolder(holder: PatientViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: PatientViewHolder,
+        position: Int,
+    ) {
         holder.bind(listOfPatient[position])
     }
 
-    private fun setOverDueInfo(dateString: String?, tv: TextView, adjust: Int = 0) {
+    private fun setOverDueInfo(
+        dateString: String?,
+        tv: TextView,
+        adjust: Int = 0,
+    ) {
         if (dateString != null) {
             val currentDate = LocalDate.now()
             val dateTime = OffsetDateTime.parse(dateString, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
@@ -152,10 +156,11 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
 
             when {
                 daysBetween < 0L -> {
-                    val suffix = if (daysBetween == -1L)
+                    val suffix = if (daysBetween == -1L) {
                         "day, Overdue"
-                    else
+                    } else {
                         "days, Overdue"
+                    }
 
                     tv.text = "${-daysBetween} $suffix"
                     tv.setTextColor(Color.parseColor("#994242"))

@@ -12,17 +12,17 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateU
 
 class BmiListAdapter(private var bmiLogs: ArrayList<BpAndWeightResponse> = arrayListOf()) :
     RecyclerView.Adapter<BmiListAdapter.BmiListViewHolder>() {
-
     inner class BmiListViewHolder(val binding: ListItemBmiLogBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
+
         fun bind(bpAndWeightResponse: BpAndWeightResponse) {
             with(binding) {
                 tvDate.text = bpAndWeightResponse.dateValue?.takeIf { !it.isNullOrBlank() }?.let {
                     DateUtils.convertDateTimeToDate(
                         it,
                         inputFormat = DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        outputFormat = DateUtils.DATE_ddMMyyyy
+                        outputFormat = DateUtils.DATE_ddMMyyyy,
                     )
                 } ?: context.getString(R.string.hyphen_symbol)
                 tvHeight.text = MotherNeonateUtil.convertHeight(bpAndWeightResponse.height, context)
@@ -34,12 +34,11 @@ class BmiListAdapter(private var bmiLogs: ArrayList<BpAndWeightResponse> = array
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
-    ): BmiListViewHolder {
-        return BmiListViewHolder(
-            ListItemBmiLogBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        viewType: Int,
+    ): BmiListViewHolder =
+        BmiListViewHolder(
+            ListItemBmiLogBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         )
-    }
 
     fun setData(data: ArrayList<BpAndWeightResponse>) {
         val oldCount = this.bmiLogs.size
@@ -51,12 +50,10 @@ class BmiListAdapter(private var bmiLogs: ArrayList<BpAndWeightResponse> = array
 
     override fun onBindViewHolder(
         holder: BmiListViewHolder,
-        position: Int
+        position: Int,
     ) {
         holder.bind(bmiLogs[position])
     }
 
-    override fun getItemCount(): Int {
-        return bmiLogs.size
-    }
+    override fun getItemCount(): Int = bmiLogs.size
 }

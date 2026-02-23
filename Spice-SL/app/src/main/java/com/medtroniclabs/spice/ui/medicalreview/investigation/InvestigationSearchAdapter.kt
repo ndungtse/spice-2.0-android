@@ -11,17 +11,20 @@ import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 
 class InvestigationSearchAdapter(context: Context) :
     ArrayAdapter<SearchLabTestResponse>(context, R.layout.spinner_drop_down_item) {
-
     private var investigationList = ArrayList<SearchLabTestResponse>()
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getView(
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup,
+    ): View {
         val view: View
         val viewHolder: ViewHolder
         if (convertView == null) {
             val binding = SearchLayoutLabtestBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
+                false,
             )
             view = binding.root
             viewHolder = ViewHolder(binding)
@@ -41,7 +44,6 @@ class InvestigationSearchAdapter(context: Context) :
         }
     }
 
-
     override fun getCount(): Int = investigationList.size
 
     override fun getItem(position: Int): SearchLabTestResponse = investigationList[position]
@@ -51,6 +53,4 @@ class InvestigationSearchAdapter(context: Context) :
     fun setData(itemList: ArrayList<SearchLabTestResponse>) {
         this.investigationList = itemList
     }
-
-
 }

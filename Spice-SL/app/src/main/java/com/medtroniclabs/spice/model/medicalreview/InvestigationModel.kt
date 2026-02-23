@@ -14,11 +14,11 @@ data class InvestigationModel(
     val codeDetails: CodeDetailsObject? = null,
     var dataError: Boolean = true,
     var labTestResultList: ArrayList<LabTestResultObject>? = null,
-    val id: String ?= null,
+    val id: String? = null,
     var dropdownState: Boolean = false,
     val isReview: Boolean? = null,
-    val components:ArrayList<Map<String,Any?>>? = null,
-    val comments:String? = null,
-    val descriptiveResult:String? =null,
-    val labTestId: Long? = null
+    val components: ArrayList<Map<String, Any?>>? = null,
+    val comments: String? = null,
+    val descriptiveResult: String? = null,
+    val labTestId: Long? = null,
 )

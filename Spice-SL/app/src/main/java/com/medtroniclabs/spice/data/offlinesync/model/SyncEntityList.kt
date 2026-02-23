@@ -9,5 +9,5 @@ data class SyncEntityList(
     val status: String?,
     val errorMessage: String?,
     val referenceId: String?,
-    val data: JsonElement?
+    val data: JsonElement?,
 )

@@ -4,5 +4,5 @@ enum class TransferStatusEnum {
     PENDING,
     ACCEPTED,
     REJECTED,
-    CANCELED
+    CANCELED,
 }

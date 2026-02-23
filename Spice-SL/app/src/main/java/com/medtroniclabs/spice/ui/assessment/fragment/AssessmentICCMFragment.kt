@@ -97,9 +97,11 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickListener,
+class AssessmentICCMFragment :
+    BaseFragment(),
+    FormEventListener,
+    View.OnClickListener,
     DangerSignsDialog.DangerSignsClickListener {
-
     private lateinit var binding: FragmentAssessmentBinding
     private lateinit var formGenerator: FormGenerator
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -107,13 +109,16 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentAssessmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         getFormDataForWorkflow()
@@ -150,11 +155,11 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 }
             }
         }
-        viewModel.isAssessmentCancelLiveData.observe(viewLifecycleOwner){
-            if (it){
+        viewModel.isAssessmentCancelLiveData.observe(viewLifecycleOwner) {
+            if (it) {
                 formGenerator.getViewByTag(muacCode)?.apply {
                     val background = background as? GradientDrawable
-                    background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), context.getColor( R.color.edittext_stroke))
+                    background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), context.getColor(R.color.edittext_stroke))
                 }
             }
         }
@@ -162,7 +167,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
     private fun renderDosageDetails(dateOfBirth: String) {
         val age = CommonUtils.convertStringDobToMonths(
-            dateOfBirth
+            dateOfBirth,
         )
         age?.let {
             /**
@@ -177,11 +182,13 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 formGenerator.getViewByTag(ACTStatus + infoSuffixText)?.let {
                     if (it is TextView) {
                         it.text =
-                            getACTSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
-                                CommonUtils.convertStringDobToMonths(
-                                    dob
-                                )
-                            })
+                            getACTSuffixText(
+                                viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
+                                    CommonUtils.convertStringDobToMonths(
+                                        dob,
+                                    )
+                                },
+                            )
                         it.visibility = View.VISIBLE
                     }
                 }
@@ -210,11 +217,13 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 formGenerator.getViewByTag(AmoxicillinStatus + infoSuffixText)?.let {
                     if (it is TextView) {
                         it.text =
-                            getSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
-                                CommonUtils.convertStringDobToMonths(
-                                    dob
-                                )
-                            })
+                            getSuffixText(
+                                viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
+                                    CommonUtils.convertStringDobToMonths(
+                                        dob,
+                                    )
+                                },
+                            )
                         it.visibility = View.VISIBLE
                     }
                 }
@@ -222,15 +231,17 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 formGenerator.getViewByTag(ZincStatus + infoSuffixText)?.let {
                     if (it is TextView) {
                         it.text =
-                            getZincSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
-                                CommonUtils.convertStringDobToMonths(
-                                    dob
-                                )
-                            })
+                            getZincSuffixText(
+                                viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
+                                    CommonUtils.convertStringDobToMonths(
+                                        dob,
+                                    )
+                                },
+                            )
                         it.visibility = View.VISIBLE
                     }
                 }
-            }  else {
+            } else {
                 formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
                     visibility = View.GONE
                 }
@@ -257,11 +268,14 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     private fun initView() {
         replaceFragmentInId<BioDataFragment>(
             binding.bioDataFragmentContainer.id,
-            tag = BioDataFragment.TAG
+            tag = BioDataFragment.TAG,
         )
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, this, binding.scrollView,
-            translate = SecuredPreference.getIsTranslationEnabled()
+            requireContext(),
+            binding.llForm,
+            this,
+            binding.scrollView,
+            translate = SecuredPreference.getIsTranslationEnabled(),
         )
     }
 
@@ -269,7 +283,11 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         const val TAG = "AssessmentICCMFragment"
     }
 
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
     }
 
     override fun onPopulate(targetId: String) {
@@ -278,23 +296,24 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     override fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     ) {
         val title = if (setOf(
                 CbsNotifiableCondition,
                 IccmFeverNotifiableCondition,
                 IccmDiarrheaNotifiableCondition,
                 NotifiableConditions,
-                RmnchNotifiableCondition
+                RmnchNotifiableCondition,
             ).contains(id)
         ) {
             getString(R.string.notifiable_conditions)
         } else {
             null
         }
-        CheckBoxDialog.newInstance(id, resultMap, title = title) { map ->
-            formGenerator.validateCheckboxDialogue(id, formLayout, map)
-        }.show(childFragmentManager, CheckBoxDialog.TAG)
+        CheckBoxDialog
+            .newInstance(id, resultMap, title = title) { map ->
+                formGenerator.validateCheckboxDialogue(id, formLayout, map)
+            }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
     override fun onInstructionClicked(
@@ -302,7 +321,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {
         viewModel.instructionId = id
         viewModel.dosageListModel = dosageListModel
@@ -312,14 +331,16 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     private fun showInstructionDialog(id: String) {
         val titleById = getTitleById(id)
         when (id) {
-            isUnusualSleepy,isVomiting,isConvulsionPastFewDays,isBreastfeed,muacCode, hasOedemaOfBothFeet, chestInDrawing, rdtTest -> {
-                InformationLayoutFragment.newInstance(id, titleById)
+            isUnusualSleepy, isVomiting, isConvulsionPastFewDays, isBreastfeed, muacCode, hasOedemaOfBothFeet, chestInDrawing, rdtTest -> {
+                InformationLayoutFragment
+                    .newInstance(id, titleById)
                     .show(childFragmentManager, InformationLayoutFragment.TAG)
                 viewModel.setUserJourney("$id ${AnalyticsDefinedParams.INFORMATIONDIALOUGE}")
             }
 
             Amoxicillin.lowercase(), ZincDispensedStatus, ACT.lowercase(), OrsDispensedStatus, JellyWaterDispensedStatus, SssDispensedStatus -> {
-                RecommendedDosageFragment.newInstance(id, titleById)
+                RecommendedDosageFragment
+                    .newInstance(id, titleById)
                     .show(childFragmentManager, RecommendedDosageFragment.TAG)
                 viewModel.setUserJourney("$id ${AnalyticsDefinedParams.RecommendedDosage}")
             }
@@ -331,23 +352,28 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         }
     }
 
-    private fun getTitleById(id: String): String {
-        return when (id) {
+    private fun getTitleById(id: String): String =
+        when (id) {
             muacCode -> getString(R.string.measuring_muac)
             hasOedemaOfBothFeet -> getString(R.string.checking_for_oedema)
             chestInDrawing -> getString(R.string.chest_in_drawing)
-            isUnusualSleepy-> getString(R.string.job_aid_unconscious_unusually_sleepy)
+            isUnusualSleepy -> getString(R.string.job_aid_unconscious_unusually_sleepy)
             isConvulsionPastFewDays -> getString(R.string.job_aid_convulsions)
             isVomiting -> getString(R.string.job_aid_vomiting)
             isBreastfeed -> getString(R.string.job_aid_not_able_to_breastfeed_drink)
             rdtTest -> getString(R.string.job_aid_reading_result)
-            else -> {id}
+            else -> {
+                id
+            }
         }
-    }
 
-
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
-        val dob = viewModel.memberDetailsLiveData.value?.data?.dateOfBirth
+    override fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
+        val dob = viewModel.memberDetailsLiveData.value
+            ?.data
+            ?.dateOfBirth
 
         resultMap?.let { map ->
             var noOfDaysOfFever = if (map.containsKey(NoOfDaysOfFever)) {
@@ -355,7 +381,6 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             } else {
                 null
             }
-
 
             var numberOfDaysDiarrhoea = if (map.containsKey(NoOfDaysDiarrhoea)) {
                 map[NoOfDaysDiarrhoea] as? Int
@@ -387,7 +412,6 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                         CommonUtils.isDateHigherThanInput(dob, it)
                     }
                 }
-
             }
 
             if (isFeverDaysValid == null && isDiarrhoeaDaysValid == null && isCoughDaysValid == null) {
@@ -398,7 +422,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 val diarrhoeaValid = isDiarrhoeaDaysValid ?: true
                 if (!feverValid) {
                     formGenerator.getViewByTag(NoOfDaysOfFever + errorSuffix)?.apply {
-                        visibility =  View.VISIBLE
+                        visibility = View.VISIBLE
                     }
                 }
                 if (!diarrhoeaValid) {
@@ -418,9 +442,12 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         }
     }
 
-    private fun onSubmitICCM(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
-        if (viewModel.isDangerSignFlow){
-            resultMap?.keys?.retainAll(listOf(isUnusualSleepy,isConvulsionPastFewDays,isBreastfeed,isVomiting))
+    private fun onSubmitICCM(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
+        if (viewModel.isDangerSignFlow) {
+            resultMap?.keys?.retainAll(listOf(isUnusualSleepy, isConvulsionPastFewDays, isBreastfeed, isVomiting))
             resultMap?.filterValues { it == true }?.keys?.forEach { key ->
                 viewModel.dangerSingsKey = key
             }
@@ -432,18 +459,18 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 FormResultComposer().groupValues(
                     serverData = it,
                     details,
-                    ICCM_MENU_ID
+                    ICCM_MENU_ID,
                 )
             }
 
             result?.second?.let {
-                viewModel.saveAssessment(it, referralResult,viewModel.menuId)
+                viewModel.saveAssessment(it, referralResult, viewModel.menuId)
             }
         }
         viewModel.setAnalyticsData(
             UserDetail.startDateTime,
             eventType = AnalyticsDefinedParams.ICCMAssessment,
-            eventName = AnalyticsDefinedParams.AssessmentCreation
+            eventName = AnalyticsDefinedParams.AssessmentCreation,
         )
     }
 
@@ -489,19 +516,19 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         }
     }
 
-
     override fun onRenderingComplete() {
-
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
         // Updating ORS Visibility based on muac
         updateOrsConditionBasedOnMuac(id, selectedId)
         when (id) {
             muacCode -> {
-                if (selectedId is String && selectedId != DefaultID)
-                {
-                    formGenerator.getViewByTag(muacStatus + rootSuffix )?.apply {
+                if (selectedId is String && selectedId != DefaultID) {
+                    formGenerator.getViewByTag(muacStatus + rootSuffix)?.apply {
                         visibility = View.VISIBLE
                     }
                     formGenerator.getViewByTag(muacStatus + summaryKey)?.let {
@@ -509,7 +536,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                             it.text = requireContext().getString(
                                 R.string.firstname_lastname,
                                 MUAC.uppercase(),
-                                selectedId
+                                selectedId,
                             )
                         }
                     }
@@ -520,8 +547,13 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                     }
                     formGenerator.getViewByTag(muacCode)?.apply {
                         val background = background as? GradientDrawable
-                        background?.setStroke(resources.getDimensionPixelSize(R.dimen._4sdp), getMuacColorCode(
-                            selectedId, requireContext()))
+                        background?.setStroke(
+                            resources.getDimensionPixelSize(R.dimen._4sdp),
+                            getMuacColorCode(
+                                selectedId,
+                                requireContext(),
+                            ),
+                        )
                     }
                 } else {
                     formGenerator.getViewByTag(muacStatus + rootSuffix)?.apply {
@@ -532,37 +564,36 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                         background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), getMuacColorCode(selectedId as String, requireContext()))
                     }
                 }
-
             }
-            hasCough ->{
+            hasCough -> {
                 viewModel.memberDetailsLiveData.value?.data?.let {
                     renderDosageDetails(it.dateOfBirth)
                 }
                 handleRecommendedDoseage(hasCough)
             }
-            hasDiarrhoea,rdtTest -> {
+            hasDiarrhoea, rdtTest -> {
                 viewModel.memberDetailsLiveData.value?.data?.let {
                     renderDosageDetails(it.dateOfBirth)
                 }
             }
-            isUnusualSleepy,isConvulsionPastFewDays,isVomiting,isBreastfeed->{
-                viewModel.nameOfDangerSignClicked=id
-                if (selectedId==true) {
-                    viewModel.isDangerSignFlow=true
+            isUnusualSleepy, isConvulsionPastFewDays, isVomiting, isBreastfeed -> {
+                viewModel.nameOfDangerSignClicked = id
+                if (selectedId == true) {
+                    viewModel.isDangerSignFlow = true
                     val existingFragment =
                         childFragmentManager.findFragmentByTag(
-                            DangerSignsDialog.TAG
+                            DangerSignsDialog.TAG,
                         )
                     if (existingFragment == null) {
-                        DangerSignsDialog.newInstance(id)
+                        DangerSignsDialog
+                            .newInstance(id)
                             .apply { setDangerSignListener(this@AssessmentICCMFragment) }
                             .show(childFragmentManager, DangerSignsDialog.TAG)
                     }
-                }else{
-                    viewModel.isDangerSignFlow=false
+                } else {
+                    viewModel.isDangerSignFlow = false
                 }
             }
-
         }
     }
 
@@ -584,24 +615,23 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         }
     }
 
-    private fun getZincSuffixText(age: Int?): CharSequence? {
-        return when(age){
+    private fun getZincSuffixText(age: Int?): CharSequence? =
+        when (age) {
             in 2..6 -> {
                 requireContext().getString(R.string.no_of_tablets_no_of_days_string, "1/2", 10)
             }
             in 7..60 -> {
                 requireContext().getString(R.string.no_of_tablets_no_of_days, 1, 10)
             }
-            else ->{
+            else -> {
                 null
             }
         }
-    }
 
-    private fun getSuffixText(age: Int?): String? {
-        return when(age){
+    private fun getSuffixText(age: Int?): String? =
+        when (age) {
             in 2..12 -> {
-               requireContext().getString(R.string.no_of_tablets_no_of_days, 2, 5)
+                requireContext().getString(R.string.no_of_tablets_no_of_days, 2, 5)
             }
             in 12..36 -> {
                 requireContext().getString(R.string.no_of_tablets_no_of_days, 4, 5)
@@ -609,16 +639,15 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             in 36..60 -> {
                 requireContext().getString(R.string.no_of_tablets_no_of_days, 6, 5)
             }
-            else ->{
+            else -> {
                 null
             }
         }
-    }
 
-    private fun getACTSuffixText(age: Int?): String {
-        return when(age){
+    private fun getACTSuffixText(age: Int?): String =
+        when (age) {
             in 6..36 -> {
-               requireContext().getString(R.string.no_of_tablets_no_of_days, 2, 3)
+                requireContext().getString(R.string.no_of_tablets_no_of_days, 2, 3)
             }
             in 37..96 -> {
                 requireContext().getString(R.string.no_of_tablets_no_of_days, 4, 3)
@@ -626,17 +655,16 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             in 97..168 -> {
                 requireContext().getString(R.string.no_of_tablets_no_of_days, 6, 3)
             }
-            else ->{
+            else -> {
                 requireContext().getString(R.string.no_of_tablets_no_of_days, 8, 3)
             }
         }
-    }
 
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,
         enteredDays: Int?,
-        resultMap: HashMap<String, Any>?
+        resultMap: HashMap<String, Any>?,
     ) {
         when (id) {
             BreathPerMinute -> {
@@ -664,27 +692,26 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
             NoOfDaysOfCough -> {
                 onDaysValidation(id)
-                showDaysLimitation(enteredDays,noOfDays,id)
+                showDaysLimitation(enteredDays, noOfDays, id)
             }
 
             NoOfDaysDiarrhoea -> {
                 onDaysValidation(id)
-                showDaysLimitation(enteredDays,noOfDays,id)
+                showDaysLimitation(enteredDays, noOfDays, id)
             }
 
             NoOfDaysOfFever -> {
                 onDaysValidation(id)
-                showDaysLimitation(enteredDays,noOfDays,id)
+                showDaysLimitation(enteredDays, noOfDays, id)
             }
 
             else -> {
-                showDaysLimitation(enteredDays,noOfDays,id)
+                showDaysLimitation(enteredDays, noOfDays, id)
             }
         }
     }
 
     override fun onAgeCheckForPregnancy() {
-        
     }
 
     override fun handleMandatoryCondition(formLayout: FormLayout?) {
@@ -707,18 +734,18 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
         /*
        Never used
-        */
+         */
     }
 
     private fun dismissAmoxicillinStatus(resultMap: HashMap<String, Any>?) {
-        formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix )?.apply {
+        formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix)?.apply {
             visibility = View.GONE
-            resultMap?.let {map ->
-                if (map.containsKey(Amoxicillin.lowercase())){
+            resultMap?.let { map ->
+                if (map.containsKey(Amoxicillin.lowercase())) {
                     map.remove(Amoxicillin.lowercase())
                     formGenerator.resetSingleSelection(Amoxicillin.lowercase())
                 }
@@ -730,7 +757,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     }
 
     private fun getAmoxicillinStatus() {
-        formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix )?.apply {
+        formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix)?.apply {
             visibility = View.VISIBLE
         }
         formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
@@ -738,15 +765,21 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         }
     }
 
-    private fun updateColorCode(id: String, colorCode: Int) {
+    private fun updateColorCode(
+        id: String,
+        colorCode: Int,
+    ) {
         formGenerator.getViewByTag(id + Information)?.let { view ->
-            if (view is TextView){
+            if (view is TextView) {
                 view.setTextColor(colorCode)
             }
         }
     }
 
-    private fun displayDaysInformation(id: String, viewVisibility: Int) {
+    private fun displayDaysInformation(
+        id: String,
+        viewVisibility: Int,
+    ) {
         formGenerator.getViewByTag(id + Information)?.apply { visibility = viewVisibility }
     }
 
@@ -756,7 +789,8 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 withLocationCheck({
                     viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                     viewModel.fetchCurrentLocation(requireContext())
-                    formGenerator.formSubmitAction(view) })
+                    formGenerator.formSubmitAction(view)
+                })
             }
         }
     }
@@ -788,15 +822,14 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         }
     }
 
-    fun getCurrentAnsweredStatus(): Boolean {
-        return formGenerator.getResultMap().isNotEmpty()
-    }
+    fun getCurrentAnsweredStatus(): Boolean = formGenerator.getResultMap().isNotEmpty()
 
     override fun onDangerSignsClicked(isClicked: Boolean) {
         if (isClicked) {
-                onSubmitICCM(formGenerator.getResultMap(), formGenerator.getServerData())
-        }else{
-            formGenerator.getViewByTag(viewModel.nameOfDangerSignClicked.toString()+rootSuffix)
+            onSubmitICCM(formGenerator.getResultMap(), formGenerator.getServerData())
+        } else {
+            formGenerator
+                .getViewByTag(viewModel.nameOfDangerSignClicked.toString() + rootSuffix)
                 ?.let { formGenerator.resetChildViews(it) }
         }
     }
@@ -804,20 +837,31 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     // Based on age the no of days fever/cough/diarrhoea validation
     private fun onDaysValidation(id: String) {
         formGenerator.getViewByTag(id).takeIf { it is EditText }?.let { editText ->
-            val dob = viewModel.memberDetailsLiveData.value?.data?.dateOfBirth
+            val dob = viewModel.memberDetailsLiveData.value
+                ?.data
+                ?.dateOfBirth
             val inputText = (editText as EditText).text.toString()
             if (!dob.isNullOrEmpty() && inputText.isNotEmpty()) {
                 val isValid = CommonUtils.isDateHigherThanInput(dob, inputText.toInt())
-                formGenerator.getViewByTag(id + errorSuffix)?.apply {
-                    visibility = if (isValid) View.GONE else View.VISIBLE
-                }.takeIf { it is TextView }?.let { textView->(textView as TextView).text=
-                    getString(R.string.the_day_s_should_be_less_than_age)
-                }
+                formGenerator
+                    .getViewByTag(id + errorSuffix)
+                    ?.apply {
+                        visibility = if (isValid) View.GONE else View.VISIBLE
+                    }.takeIf { it is TextView }
+                    ?.let { textView ->
+                        (textView as TextView).text =
+                            getString(R.string.the_day_s_should_be_less_than_age)
+                    }
             }
         }
     }
-    private fun showDaysLimitation(enteredDays: Int?, noOfDays: Int, id: String) {
-        if (enteredDays!=null && enteredDays > noOfDays) {
+
+    private fun showDaysLimitation(
+        enteredDays: Int?,
+        noOfDays: Int,
+        id: String,
+    ) {
+        if (enteredDays != null && enteredDays > noOfDays) {
             updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color))
             displayDaysInformation(id, View.VISIBLE)
         } else {
@@ -826,62 +870,72 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         }
     }
 
-    private fun updateOrsConditionBasedOnMuac(id: String, selectedId: Any?) {
-        if (id == muacCode){
+    private fun updateOrsConditionBasedOnMuac(
+        id: String,
+        selectedId: Any?,
+    ) {
+        if (id == muacCode) {
             if (selectedId == AssessmentDefinedParams.Red) {
                 viewModel.muacColor = AssessmentDefinedParams.Red
-                formGenerator.getViewByTag(OrsDispensedStatus + rootSuffix)?.apply {
-                    visibility = View.GONE
-                }.let {
-                    if (it != null) {
-                        formGenerator.resetChildViews(it)
-                    }
-                }
-                formGenerator.getViewByTag(ORSStatus + rootSuffix)?.apply {
-                    visibility = View.GONE
-                }
-            }else{
-                viewModel.muacColor = selectedId.toString()
-                if (viewModel.hasDiarrhoea) {
-                    formGenerator.getViewByTag(OrsDispensedStatus + rootSuffix)?.apply {
-                        visibility = View.VISIBLE
+                formGenerator
+                    .getViewByTag(OrsDispensedStatus + rootSuffix)
+                    ?.apply {
+                        visibility = View.GONE
                     }.let {
                         if (it != null) {
                             formGenerator.resetChildViews(it)
                         }
                     }
+                formGenerator.getViewByTag(ORSStatus + rootSuffix)?.apply {
+                    visibility = View.GONE
+                }
+            } else {
+                viewModel.muacColor = selectedId.toString()
+                if (viewModel.hasDiarrhoea) {
+                    formGenerator
+                        .getViewByTag(OrsDispensedStatus + rootSuffix)
+                        ?.apply {
+                            visibility = View.VISIBLE
+                        }.let {
+                            if (it != null) {
+                                formGenerator.resetChildViews(it)
+                            }
+                        }
                     formGenerator.getViewByTag(ORSStatus + rootSuffix)?.apply {
                         visibility = View.VISIBLE
                     }
                 }
             }
         }
-        if (id == hasDiarrhoea && selectedId == true){
-            viewModel.hasDiarrhoea= true
-            if (viewModel.muacColor==AssessmentDefinedParams.Red){
-                formGenerator.getViewByTag(OrsDispensedStatus + rootSuffix)?.apply {
-                    visibility = View.GONE
-                }.let {
-                    if (it != null) {
-                        formGenerator.resetChildViews(it)
+        if (id == hasDiarrhoea && selectedId == true) {
+            viewModel.hasDiarrhoea = true
+            if (viewModel.muacColor == AssessmentDefinedParams.Red) {
+                formGenerator
+                    .getViewByTag(OrsDispensedStatus + rootSuffix)
+                    ?.apply {
+                        visibility = View.GONE
+                    }.let {
+                        if (it != null) {
+                            formGenerator.resetChildViews(it)
+                        }
                     }
-                }
                 formGenerator.getViewByTag(ORSStatus + rootSuffix)?.apply {
                     visibility = View.GONE
                 }
-            }else{
-                formGenerator.getViewByTag(OrsDispensedStatus + rootSuffix)?.apply {
-                    visibility = View.VISIBLE
-                }.let {
-                    if (it != null) {
-                        formGenerator.resetChildViews(it)
+            } else {
+                formGenerator
+                    .getViewByTag(OrsDispensedStatus + rootSuffix)
+                    ?.apply {
+                        visibility = View.VISIBLE
+                    }.let {
+                        if (it != null) {
+                            formGenerator.resetChildViews(it)
+                        }
                     }
-                }
                 formGenerator.getViewByTag(ORSStatus + rootSuffix)?.apply {
                     visibility = View.VISIBLE
                 }
             }
         }
-
     }
 }

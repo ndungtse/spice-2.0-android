@@ -14,8 +14,6 @@ data class CHWPerformanceMonitoring(
     val worsened: Int? = null,
     val onTreatment: Int? = null,
     val householdMember: Int? = null,
-
-
     val followUpDueVisit: Int? = null,
     val followUpDueCalls: Int? = null,
     val followUpCondVisit: Int? = null,

@@ -4,7 +4,6 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.model.SortModel
 
-
 data class CustomDate(var startDate: String? = null, var endDate: String? = null)
 
 data class FollowUpRequest(
@@ -16,7 +15,7 @@ data class FollowUpRequest(
     val sort: SortModel? = null,
     val remainingAttempts: List<Long>? = null,
     val dateRange: String? = null,
-    val customDate: CustomDate? = null
+    val customDate: CustomDate? = null,
 )
 
 data class RegisterCallResponse(
@@ -35,7 +34,7 @@ data class RegisterCallResponse(
     val name: String? = null,
     val phoneNumber: String? = null,
     val callType: String? = null,
-    val completed: Boolean? = null
+    val completed: Boolean? = null,
 )
 
 data class CallDetails(
@@ -49,7 +48,7 @@ data class CallDetails(
     val latitude: String? = null,
     val longitude: String? = null,
     val visitedFacilityId: Long? = null,
-    val otherVisitedFacilityName: String? = null
+    val otherVisitedFacilityName: String? = null,
 )
 
 data class FollowUpUpdateRequest(
@@ -64,7 +63,7 @@ data class FollowUpUpdateRequest(
     val villageId: String? = null,
     val isInitiated: Boolean = false,
     val followUpDetails: List<CallDetails>? = null,
-    val provenance: ProvanceDto? = null
+    val provenance: ProvanceDto? = null,
 )
 
 data class PatientFollowUpEntity(
@@ -101,11 +100,11 @@ data class PatientFollowUpEntity(
     val nextBgAssessmentDate: String? = null,
     val noOfDueDays: Int? = null,
     val dueDate: String? = null,
-    val identityValue :String? =null
+    val identityValue: String? = null,
 )
 
 data class SortModelForFollowUp(
     var isScreeningDueDate: Boolean? = null,
     var isAssessmentDueDate: Boolean? = null,
-    var isMedicalReviewDueDate: Boolean? = null
+    var isMedicalReviewDueDate: Boolean? = null,
 )

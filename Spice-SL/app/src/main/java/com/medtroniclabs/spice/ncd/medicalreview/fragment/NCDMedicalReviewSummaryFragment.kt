@@ -26,14 +26,15 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMRAlertDialog
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewSummaryViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
-class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
+class NCDMedicalReviewSummaryFragment :
+    BaseFragment(),
+    View.OnClickListener,
     NCDMRAlertDialog.DialogCallback {
-
     private lateinit var binding: FragmentNcdMedicalReviewSummaryBinding
     private val viewModel: NCDMedicalReviewSummaryViewModel by activityViewModels()
     private val medicalReviewViewModel: NCDMedicalReviewViewModel by activityViewModels()
@@ -41,8 +42,9 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
     private var datePickerDialog: DatePickerDialog? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNcdMedicalReviewSummaryBinding.inflate(inflater, container, false)
         return binding.root
@@ -50,38 +52,37 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
 
     companion object {
         const val TAG = "NCDMedicalReviewSummaryFragment"
-        fun newInstance(visitId: String?,menu:String?, memberId: String?): NCDMedicalReviewSummaryFragment {
-            return NCDMedicalReviewSummaryFragment().apply {
+
+        fun newInstance(
+            visitId: String?,
+            menu: String?,
+            memberId: String?,
+        ): NCDMedicalReviewSummaryFragment =
+            NCDMedicalReviewSummaryFragment().apply {
                 arguments = Bundle().apply {
                     putString(NCDMRUtil.MEMBER_REFERENCE, memberId)
                     putString(NCDMRUtil.EncounterReference, visitId)
                     putString(NCDMRUtil.MENU_ID, menu)
                 }
             }
-        }
-
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
     }
-    private fun getVisitId(): String? {
-        return arguments?.getString(NCDMRUtil.EncounterReference)
-    }
 
-    private fun getMemberReference(): String? {
-        return arguments?.getString(NCDMRUtil.MEMBER_REFERENCE)
-    }
+    private fun getVisitId(): String? = arguments?.getString(NCDMRUtil.EncounterReference)
 
-    private fun getConfirmDiagnosisType(): List<String> {
-        return NCDMRUtil.getConfirmDiagnoses(getType())
-    }
+    private fun getMemberReference(): String? = arguments?.getString(NCDMRUtil.MEMBER_REFERENCE)
 
-    fun getType(): String? {
-        return arguments?.getString(MENU_ID)
-    }
+    private fun getConfirmDiagnosisType(): List<String> = NCDMRUtil.getConfirmDiagnoses(getType())
+
+    fun getType(): String? = arguments?.getString(MENU_ID)
 
     private fun attachObservers() {
         viewModel.summaryResponse.observe(viewLifecycleOwner) { resourceState ->
@@ -115,17 +116,19 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
                 R.string.firstname_lastname,
                 it.firstName?.capitalizeFirstChar()
                     ?: getString(R.string.empty),
-                it.lastName ?: getString(R.string.empty)
+                it.lastName ?: getString(R.string.empty),
             )
         }
         binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
             DateUtils.getTodayDateDDMMYYYY(),
             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            DateUtils.DATE_ddMMyyyy
+            DateUtils.DATE_ddMMyyyy,
         )
         medicalReviewViewModel.createMedicalReview.value?.data?.let {
             withNetworkAvailability(online = {
-                viewModel.fetchSummaryResponse(it.copy(memberReference = getMemberReference(), patientVisitId = getVisitId(), diagnosisType = getConfirmDiagnosisType()))
+                viewModel.fetchSummaryResponse(
+                    it.copy(memberReference = getMemberReference(), patientVisitId = getVisitId(), diagnosisType = getConfirmDiagnosisType()),
+                )
             })
         }
         binding.tvNextMedicalReviewLabel.markMandatory()
@@ -136,7 +139,7 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
             binding.tvObstetricsExaminationLabel.text = CommonUtils.getPhysicalExaminationTitle(
                 requireContext(),
                 type,
-                isFemalePregnant()
+                isFemalePregnant(),
             )
         }
     }
@@ -144,7 +147,7 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
     private fun isFemalePregnant(): Boolean {
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let {
             return it.gender.equals(Screening.Female, true) &&
-                    it.isPregnant == true
+                it.isPregnant == true
         }
         return false
     }
@@ -154,12 +157,12 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
             tvObstetricsExaminationText.text = CommonUtils.combineText(
                 data.physicalExams,
                 data.physicalExamComments,
-                getString(R.string.hyphen_symbol)
+                getString(R.string.hyphen_symbol),
             )
             tvChiefComplaintsText.text = CommonUtils.combineText(
                 data.complaints,
                 data.compliantComments,
-                getString(R.string.hyphen_symbol)
+                getString(R.string.hyphen_symbol),
             )
             tvClinicalNotesText.text =
                 data.clinicalNote?.takeIf { it.isNotBlank() } ?: getString(R.string.hyphen_symbol)
@@ -169,17 +172,18 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
             tvPrescrptionText.text = NCDMRUtil.printNumberedListString(
                 NCDMRUtil.createPrescription(
                     data.prescriptions,
-                    requireContext()
-                ), requireContext()
+                    requireContext(),
+                ),
+                requireContext(),
             )
             tvInvestigationText.text = CommonUtils.formatListToString(
                 data.investigations,
-                getString(R.string.hyphen_symbol)
+                getString(R.string.hyphen_symbol),
             )
             tvDiagnosisText.text = CommonUtils.combineText(
                 data.confirmDiagnosis?.diagnosis?.mapNotNull { it.name },
                 data.confirmDiagnosis?.diagnosisNotes.takeIf { it?.isNotBlank() == true },
-                getString(R.string.hyphen_symbol)
+                getString(R.string.hyphen_symbol),
             )
             val layoutParams = binding.tvDiagnosisText.layoutParams as ConstraintLayout.LayoutParams
             if (!data.confirmDiagnosis?.diagnosis.isNullOrEmpty()) {
@@ -201,22 +205,23 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
 
     private fun showDatePickerDialog() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (!binding.tvNextMedicalReviewLabelText.text.isNullOrBlank())
+        if (!binding.tvNextMedicalReviewLabelText.text.isNullOrBlank()) {
             yearMonthDate =
                 DateUtils.convertedMMMToddMM(binding.tvNextMedicalReviewLabelText.text.toString())
+        }
 
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
                 minDate = DateUtils.getTomorrowDate(),
                 date = yearMonthDate,
-                cancelCallBack = { datePickerDialog = null }
+                cancelCallBack = { datePickerDialog = null },
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 binding.tvNextMedicalReviewLabelText.text = DateUtils.convertDateTimeToDate(
                     stringDate,
                     DateUtils.DATE_FORMAT_ddMMyyyy,
-                    DateUtils.DATE_ddMMyyyy
+                    DateUtils.DATE_ddMMyyyy,
                 )
                 viewModel.nextFollowupDate = binding.tvNextMedicalReviewLabelText.text.toString()
                 datePickerDialog = null
@@ -241,7 +246,9 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
     }
 
     fun validateInput(): Boolean {
-        val value = binding.tvNextMedicalReviewLabelText.text?.trim().toString()
+        val value = binding.tvNextMedicalReviewLabelText.text
+            ?.trim()
+            .toString()
         if (value.isBlank()) {
             binding.tvNextMedicalReviewError.visible()
             binding.tvNextMedicalReviewLabelText.requestFocus()
@@ -258,7 +265,7 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
                     showErrorDialog(
                         message = getString(R.string.no_confirm_diagnosis_prescribed_medication_warning),
                         false,
-                        Pair(true, true)
+                        Pair(true, true),
                     )
                     false
                 }
@@ -267,7 +274,7 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
                     showErrorDialog(
                         message = getString(R.string.no_confirm_diagnosis_warning),
                         false,
-                        Pair(true, true)
+                        Pair(true, true),
                     )
                     false
                 }
@@ -276,7 +283,7 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
                     showErrorDialog(
                         message = getString(R.string.no_new_medicines_prescribed_warning),
                         false,
-                        Pair(true, true)
+                        Pair(true, true),
                     )
                     false
                 }
@@ -289,17 +296,18 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
     fun showErrorDialog(
         message: String,
         showConfirm: Boolean = false,
-        showYesNo: Pair<Boolean, Boolean> = Pair(true, true)
+        showYesNo: Pair<Boolean, Boolean> = Pair(true, true),
     ) {
         val existingDialog = childFragmentManager.findFragmentByTag(NCDMRAlertDialog.TAG)
         if (existingDialog == null) {
-            NCDMRAlertDialog.newInstance(
-                getString(R.string.alert),
-                message = message,
-                showYesNoClose = Triple(showYesNo.first, showYesNo.second, true),
-                showConfirm = showConfirm,
-                callback = this
-            ).show(childFragmentManager, NCDMRAlertDialog.TAG)
+            NCDMRAlertDialog
+                .newInstance(
+                    getString(R.string.alert),
+                    message = message,
+                    showYesNoClose = Triple(showYesNo.first, showYesNo.second, true),
+                    showConfirm = showConfirm,
+                    callback = this,
+                ).show(childFragmentManager, NCDMRAlertDialog.TAG)
         }
     }
 
@@ -307,7 +315,7 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
         (requireActivity() as? NCDMedicalReviewActivity)?.hitSummary()
     }
 
-    override fun onConfirmDiagnosisClicked(isBp:Boolean) {
+    override fun onConfirmDiagnosisClicked(isBp: Boolean) {
         if (isBp) {
             (requireActivity() as? NCDMedicalReviewActivity)?.addNewReading(true)
         } else {

@@ -26,11 +26,10 @@ class ScheduledSyncWork @AssistedInject constructor(
     val rxBuddyRepository: RxBuddyRepository,
     private val followUpRepo: NCDFollowUpRepo,
 ) : CoroutineWorker(context, userParameter) {
+    // For schedule
+    // private val syncDelay = 40 * 1000L // 40 Sec
 
-    //For schedule
-   // private val syncDelay = 40 * 1000L // 40 Sec
-
-    //For automatic
+    // For automatic
     private val syncDelay = 10 * 1000L // 40 Sec
 
     override suspend fun doWork(): Result {
@@ -38,27 +37,28 @@ class ScheduledSyncWork @AssistedInject constructor(
         if (CommonUtils.isCommunity()) {
             context.showNotification()
 
-            //1. Update status for old request Id
+            // 1. Update status for old request Id
             if (!getSyncStatus()) {
                 context.hideNotification()
                 return Result.failure()
             }
 
-            //2. Post Local changes and Get Status
+            // 2. Post Local changes and Get Status
             if (!postLocalChanges()) {
                 context.hideNotification()
                 return Result.failure()
             }
 
-            //3. Fetch Sync data with last synced at
+            // 3. Fetch Sync data with last synced at
             context.hideNotification()
-            return if (fetchSyncedData())
+            return if (fetchSyncedData()) {
                 Result.success()
-            else
+            } else {
                 Result.failure()
+            }
         } else {
             context.showNotification()
-            //1. Update status for old request Id
+            // 1. Update status for old request Id
             if (!getSyncStatusForNCD()) {
                 context.hideNotification()
                 return Result.failure()
@@ -94,11 +94,14 @@ class ScheduledSyncWork @AssistedInject constructor(
 
         return false
     }
+
     private suspend fun postLocalChangesNcd(): Boolean {
         val value = followUpRepo.createCallDetails()
 
-        //Save request id in Preference
-        if (value && !SecuredPreference.getStringArray(SecuredPreference.EnvironmentKey.OFFLINE_FOLLOW_UP_SYNC_REQUEST_ID.name)
+        // Save request id in Preference
+        if (value &&
+            !SecuredPreference
+                .getStringArray(SecuredPreference.EnvironmentKey.OFFLINE_FOLLOW_UP_SYNC_REQUEST_ID.name)
                 .isNullOrEmpty()
         ) {
             // Get Status for new request id
@@ -109,6 +112,7 @@ class ScheduledSyncWork @AssistedInject constructor(
         }
         return true
     }
+
     private suspend fun getSyncStatus(): Boolean {
         val requestIds =
             SecuredPreference.getStringArray(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
@@ -132,11 +136,11 @@ class ScheduledSyncWork @AssistedInject constructor(
     private suspend fun postLocalChanges(): Boolean {
         val requestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex(OfflineConstant.SYNC_MODE_AUTOMATIC) ?: return false
 
-        //Save request id in Preference
+        // Save request id in Preference
         if (requestIds.isNotEmpty()) {
             SecuredPreference.saveStringArray(
                 SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name,
-                requestIds.toTypedArray()
+                requestIds.toTypedArray(),
             )
 
             // Get Status for new request id
@@ -146,8 +150,8 @@ class ScheduledSyncWork @AssistedInject constructor(
             }
 
             /*
-            * Rx Buddy Sync for new household
-            * */
+             * Rx Buddy Sync for new household
+             * */
             /*val unSyncedRxBuddyRegister = rxBuddyRepository.getUnSyncedRxBuddyRegisterCount()
             if (unSyncedRxBuddyRegister > 0) {
                 val rxBuddyRequestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex(OfflineConstant.SYNC_MODE_AUTOMATIC)
@@ -165,7 +169,7 @@ class ScheduledSyncWork @AssistedInject constructor(
                 }
             }*/
 
-            /*Upload images here*/
+            // Upload images here
             offlineSyncRepository.uploadAllSignatures()
         }
 

@@ -30,7 +30,7 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
             getString(R.string.member_registration),
             homeAndBackVisibility = Pair(true, true),
             callback = {
-                if (validateFormInputs()){
+                if (validateFormInputs()) {
                     backNavigation()
                 } else {
                     onBackPressPopStack()
@@ -38,7 +38,7 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
             },
             callbackHome = {
                 backNavigationToHome()
-            }
+            },
         )
         initializeView()
     }
@@ -53,11 +53,11 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
         replaceFragmentInId<MemberRegistrationFragment>(
             binding.fragmentContainer.id,
             bundle = args,
-            tag = MemberRegistrationFragment::class.simpleName
+            tag = MemberRegistrationFragment::class.simpleName,
         )
         supportFragmentManager.setFragmentResultListener(
             MedicalReviewDefinedParams.MEMBER_REG,
-            this
+            this,
         ) { _, _ ->
             SuccessDialogFragment.newInstance(isMember = true).show(supportFragmentManager, SuccessDialogFragment.TAG)
         }
@@ -67,7 +67,7 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (isPositive) {
                 onBackPressPopStack()
@@ -79,7 +79,7 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (isPositive) {
                 householdRegistrationViewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
@@ -97,7 +97,8 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
             binding.btnNext.id -> {
                 withNetworkCheck(
                     connectivityManager,
-                    onNetworkAvailable = { addNewMemberCreate(v) })
+                    onNetworkAvailable = { addNewMemberCreate(v) },
+                )
             }
         }
     }
@@ -111,6 +112,7 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
     override fun onDialogDismissListener(isFinish: Boolean) {
         startActivityWithoutSplashScreen()
     }
+
     private fun getCurrentLocation() {
         val locationManager = SpiceLocationManager(this)
         locationManager.getCurrentLocation {
@@ -125,7 +127,7 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
 
     private fun validateFormInputs(): Boolean {
         val fragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
-        if (fragment is MemberRegistrationFragment){
+        if (fragment is MemberRegistrationFragment) {
             return fragment.getEnteredInputs()
         }
         return false

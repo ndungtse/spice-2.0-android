@@ -1,15 +1,18 @@
 package com.medtroniclabs.spice.ui.common
+
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.databinding.FragmentGeneralInfoDialogBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class GeneralInfoDialog : DialogFragment(), View.OnClickListener {
-
     companion object {
-
         const val TAG = "GeneralInfoDialog"
 
         private const val KEY_TITLE = "KEY_TITLE"
@@ -19,9 +22,8 @@ class GeneralInfoDialog : DialogFragment(), View.OnClickListener {
         fun newInstance(
             title: String,
             subTitle: String? = null,
-            information: ArrayList<String>
+            information: ArrayList<String>,
         ): GeneralInfoDialog {
-
             val args = Bundle()
             args.putString(KEY_TITLE, title)
             subTitle?.let {
@@ -39,7 +41,7 @@ class GeneralInfoDialog : DialogFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentGeneralInfoDialogBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -47,7 +49,10 @@ class GeneralInfoDialog : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
     }
@@ -70,14 +75,13 @@ class GeneralInfoDialog : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
     override fun onClick(v: View?) {
-        when(v?.id) {
+        when (v?.id) {
             binding.btnOkay.id, binding.ivClose.id -> dismiss()
         }
     }
-
 }

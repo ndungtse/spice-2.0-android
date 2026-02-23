@@ -21,5 +21,5 @@ enum class CommonEnums(val title: String, val cultureValue: Int, val value: Stri
     MATERNAL_DEATH("Maternal Death", R.string.maternal_death, "Maternal Death"),
     STILL_BIRTH("Still Birth", R.string.still_birth, "Still Birth"),
     LIVE_BIRTH("Live Birth", R.string.live_birth, "Live Birth"),
-    NEO_NATAL_DEATH("Neo Natal Death", R.string.neo_natal_death, "Neo Natal Death")
+    NEO_NATAL_DEATH("Neo Natal Death", R.string.neo_natal_death, "Neo Natal Death"),
 }

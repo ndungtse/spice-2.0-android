@@ -8,7 +8,6 @@ import com.medtroniclabs.spice.db.entity.FrequencyEntity
 
 @Dao
 interface FrequencyDAO {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFrequencyList(frequencyList: List<FrequencyEntity>): List<Long>
 
@@ -17,5 +16,4 @@ interface FrequencyDAO {
 
     @Query("DELETE FROM FrequencyEntity")
     suspend fun deleteAllVillages()
-
 }

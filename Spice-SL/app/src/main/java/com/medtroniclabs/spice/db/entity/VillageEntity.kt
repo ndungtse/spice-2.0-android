@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "VillageEntity")
 data class VillageEntity(
@@ -16,5 +15,5 @@ data class VillageEntity(
     var isUserVillage: Boolean = false,
     val chiefdomCode: String? = null,
     val districtCode: String? = null,
-    val healthFacilityId: Long? = null
+    val healthFacilityId: Long? = null,
 )

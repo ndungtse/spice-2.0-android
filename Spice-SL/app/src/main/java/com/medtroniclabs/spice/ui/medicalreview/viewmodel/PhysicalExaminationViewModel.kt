@@ -8,17 +8,15 @@ import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.PhysicalExaminationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class PhysicalExaminationViewModel @Inject constructor(
     private var repository: PhysicalExaminationRepository,
 ) : ViewModel() {
-
-    var congenitalDefect: Boolean?=null
-    var exclusiveBreastFeeding: Boolean?=null
-    var breastFeeding: Boolean?=null
+    var congenitalDefect: Boolean? = null
+    var exclusiveBreastFeeding: Boolean? = null
+    var breastFeeding: Boolean? = null
     var selectedSystemicExaminations = ArrayList<ChipViewItemModel>()
     var cordExaminationMap = HashMap<String, Any>()
     val congenitalDefectMap = HashMap<String, Any>()
@@ -30,7 +28,6 @@ class PhysicalExaminationViewModel @Inject constructor(
         systematicType.switchMap {
             val result = repository.getExaminationsComplaintByTypeLiveData(it)
             result
-
         }
 
     fun setType(category: String) {

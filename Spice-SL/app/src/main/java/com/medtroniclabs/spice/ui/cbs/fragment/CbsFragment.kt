@@ -16,8 +16,8 @@ import com.medtroniclabs.spice.common.DefinedParams.ANC_CBS
 import com.medtroniclabs.spice.common.DefinedParams.AssessmentId
 import com.medtroniclabs.spice.common.DefinedParams.CBS
 import com.medtroniclabs.spice.common.DefinedParams.CbsNotifiableCondition
-import com.medtroniclabs.spice.common.DefinedParams.birth
 import com.medtroniclabs.spice.common.DefinedParams.RmnchNotifiableCondition
+import com.medtroniclabs.spice.common.DefinedParams.birth
 import com.medtroniclabs.spice.common.DefinedParams.surveillanceDetails
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
@@ -44,6 +44,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
     private lateinit var binding: FragmentAssessmentBinding
     private lateinit var formGenerator: FormGenerator
     private val viewModel: AssessmentViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,7 +61,10 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         fun newInstance() = CbsFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         initFormView()
@@ -69,9 +73,11 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         if (requireArguments().getLong(AssessmentId) != 0L) {
             viewModel.getAssessmentDetailsById(requireArguments().getLong(AssessmentId))
         }
-        if (viewModel.motherID != null && viewModel.motherID != -1L && viewModel.workflowName.equals(
+        if (viewModel.motherID != null &&
+            viewModel.motherID != -1L &&
+            viewModel.workflowName.equals(
                 PNCNeonatal,
-                ignoreCase = true
+                ignoreCase = true,
             )
         ) {
             viewModel.getPregnancyDetailInformationForMother()
@@ -89,8 +95,11 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     private fun initFormView() {
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, this, binding.scrollView,
-            translate = false
+            requireContext(),
+            binding.llForm,
+            this,
+            binding.scrollView,
+            translate = false,
         ) { map, id ->
             when (id) {
                 RmnchNotifiableCondition -> {
@@ -125,26 +134,27 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     private fun showInCheckBox(resultMap: ArrayList<*>) {
         viewModel.symptomTypeListResponse.value
-            ?.firstOrNull { it.value.equals(deathOfNewborn,true) }
+            ?.firstOrNull { it.value.equals(deathOfNewborn, true) }
             ?.let { symptom ->
                 val selectedItemMap = hashMapOf<String, Any>(
                     DefinedParams.ID to symptom._id,
-                    DefinedParams.NAME to symptom.symptom
+                    DefinedParams.NAME to symptom.symptom,
                 ).apply {
                     symptom.displayValue?.let { put(DefinedParams.cultureValue, it) }
                     symptom.value?.let { put(DefinedParams.Value, it) }
                 }
 
                 val mapList = (resultMap as? ArrayList<HashMap<String, Any>>)?.apply {
-                    if (none { (it[DefinedParams.Value] as? String).equals(deathOfNewborn,true) }) add(selectedItemMap)
+                    if (none { (it[DefinedParams.Value] as? String).equals(deathOfNewborn, true) }) add(selectedItemMap)
                 } ?: arrayListOf(selectedItemMap)
 
-                viewModel.formLayoutsLiveData.value?.data?.formLayout
+                viewModel.formLayoutsLiveData.value
+                    ?.data
+                    ?.formLayout
                     ?.firstOrNull { it.id == RmnchNotifiableCondition }
-                    ?.let { formGenerator.validateCheckboxDialogue(RmnchNotifiableCondition, it, mapList,false) }
+                    ?.let { formGenerator.validateCheckboxDialogue(RmnchNotifiableCondition, it, mapList, false) }
             }
     }
-
 
     private fun removeInCheckBox(resultMap: ArrayList<*>) {
         (resultMap as? ArrayList<HashMap<String, Any>>)?.let { mapList ->
@@ -152,19 +162,27 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
             mapList.removeAll {
                 (it[DefinedParams.Value] as? String)?.equals(deathOfNewborn, true) == true
             }
-            viewModel.formLayoutsLiveData.value?.data?.formLayout
+            viewModel.formLayoutsLiveData.value
+                ?.data
+                ?.formLayout
                 ?.firstOrNull { it.id == RmnchNotifiableCondition }
                 ?.let { formLayout ->
                     formGenerator.validateCheckboxDialogue(
                         RmnchNotifiableCondition,
                         formLayout,
-                        mapList
+                        mapList,
                     )
                 }
         }
     }
-    private fun singleSelectValueOption(value: String, key: String, isSelected: Boolean) {
-        formGenerator.getViewByTag("${value}_${key}")
+
+    private fun singleSelectValueOption(
+        value: String,
+        key: String,
+        isSelected: Boolean,
+    ) {
+        formGenerator
+            .getViewByTag("${value}_$key")
             ?.let { view ->
                 if (view is TextView) {
                     view.isSelected = isSelected
@@ -181,13 +199,15 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                 list.firstOrNull { it.value == DeathOfMother }?.let { symptom ->
                     val selectedItemMap = hashMapOf<String, Any>(
                         com.medtroniclabs.spice.formgeneration.config.DefinedParams.ID to symptom._id,
-                        com.medtroniclabs.spice.formgeneration.config.DefinedParams.NAME to symptom.symptom
+                        com.medtroniclabs.spice.formgeneration.config.DefinedParams.NAME to symptom.symptom,
                     ).apply {
                         symptom.displayValue?.let { put(com.medtroniclabs.spice.formgeneration.config.DefinedParams.cultureValue, it) }
                         symptom.value?.let { put(com.medtroniclabs.spice.formgeneration.config.DefinedParams.value, it) }
                     }
                     if (selectedSymptoms.isEmpty()) {
-                        viewModel.formLayoutsLiveData.value?.data?.formLayout
+                        viewModel.formLayoutsLiveData.value
+                            ?.data
+                            ?.formLayout
                             ?.firstOrNull { it.id == RmnchNotifiableCondition }
                             ?.let { formGenerator.validateCheckboxDialogue(RmnchNotifiableCondition, it, arrayListOf(selectedItemMap)) }
                     }
@@ -246,21 +266,22 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         val workflowName = requireArguments().getString(MenuConstants.WorkFlowName)
         val memberData = viewModel.memberDetailsLiveData.value?.data
         when {
-            workflowName.equals(ChildHoodVisit,true) -> viewModel.getFormData(
-                MenuConstants.CBS_MENU_ID
+            workflowName.equals(ChildHoodVisit, true) -> viewModel.getFormData(
+                MenuConstants.CBS_MENU_ID,
             )
-            workflowName.equals(RMNCH.PNCNeonatal,true) -> viewModel.getFormData(
-                MenuConstants.CBS_MENU_ID
+            workflowName.equals(RMNCH.PNCNeonatal, true) -> viewModel.getFormData(
+                MenuConstants.CBS_MENU_ID,
             )
             workflowName.equals(ANC, true) -> viewModel.getFormData(ANC_CBS)
             memberData?.gender.equals(DefinedParams.male, true) -> viewModel.getFormData(
-                MenuConstants.CBS_MENU_ID
+                MenuConstants.CBS_MENU_ID,
             )
 
             memberData?.gender.equals(
                 DefinedParams.female,
-                true
-            ) && memberData?.isPregnant == true -> {
+                true,
+            ) &&
+                memberData?.isPregnant == true -> {
                 viewModel.getFormData(ANC_CBS)
             }
 
@@ -273,49 +294,61 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
     private fun initViews() {
         val bioFragment = BioDataFragment.newInstance(true)
 
-        childFragmentManager.beginTransaction().replace(
-            binding.bioDataFragmentContainer.id, bioFragment
-        ).commit()
+        childFragmentManager
+            .beginTransaction()
+            .replace(
+                binding.bioDataFragmentContainer.id,
+                bioFragment,
+            ).commit()
 
         viewModel.setUserJourney(AnalyticsDefinedParams.CBSFRAGMENT)
     }
 
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
-
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
     }
 
     override fun onPopulate(targetId: String) {
-
     }
 
     override fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     ) {
         val value = if (requireArguments().getBoolean(DeathOfMother, false)) {
-            listOf(Pair(DeathOfMother,false))
+            listOf(Pair(DeathOfMother, false))
         } else {
             listOf()
         }
-        if (cbsIsPatientAgeAboveFiveYear(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth)) {
-            CbsCheckBoxDialog.newInstance(
-                id,
-                resultMap,
-                autoPopulate = value,
-                title = getString(R.string.notifiable_conditions)
-            ) { map ->
-                formGenerator.validateCheckboxDialogue(id, formLayout, map)
-            }.show(childFragmentManager, CheckBoxDialog.TAG)
+        if (cbsIsPatientAgeAboveFiveYear(
+                viewModel.memberDetailsLiveData.value
+                    ?.data
+                    ?.dateOfBirth,
+            )
+        ) {
+            CbsCheckBoxDialog
+                .newInstance(
+                    id,
+                    resultMap,
+                    autoPopulate = value,
+                    title = getString(R.string.notifiable_conditions),
+                ) { map ->
+                    formGenerator.validateCheckboxDialogue(id, formLayout, map)
+                }.show(childFragmentManager, CheckBoxDialog.TAG)
         } else {
-            CheckBoxDialog.newInstance(
-                id,
-                resultMap,
-                autoPopulate = value,
-                title = getString(R.string.notifiable_conditions)
-            ) { map ->
-                formGenerator.validateCheckboxDialogue(id, formLayout, map)
-            }.show(childFragmentManager, CheckBoxDialog.TAG)
+            CheckBoxDialog
+                .newInstance(
+                    id,
+                    resultMap,
+                    autoPopulate = value,
+                    title = getString(R.string.notifiable_conditions),
+                ) { map ->
+                    formGenerator.validateCheckboxDialogue(id, formLayout, map)
+                }.show(childFragmentManager, CheckBoxDialog.TAG)
         }
     }
 
@@ -324,12 +357,14 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {
-
     }
 
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+    override fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
         val assessmentId = requireArguments().getLong(AssessmentId)
         resultMap?.let { details ->
             val gson = Gson()
@@ -337,7 +372,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                 FormResultComposer().groupValues(
                     serverData = it,
                     details,
-                    CBS.lowercase()
+                    CBS.lowercase(),
                 )
             }
             var memberIdOfMotherForResetPNCANC: Long? = null
@@ -382,10 +417,11 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                             }
                         }
                         data.assessmentDetails = gson.toJson(assessmentDetailsMap)
-                        val birth = ((resultValue[CBS.lowercase()] as? Map<String, Any>)
-                            ?.get(surveillanceDetails) as? Map<String, Any>)
-                            ?.get(birth) as? String
-                        if (!birth.isNullOrBlank() && !birth.equals(DefinedParams.still_birth,true)) {
+                        val birth = (
+                            (resultValue[CBS.lowercase()] as? Map<String, Any>)
+                                ?.get(surveillanceDetails) as? Map<String, Any>
+                        )?.get(birth) as? String
+                        if (!birth.isNullOrBlank() && !birth.equals(DefinedParams.still_birth, true)) {
                             // If the birth value is "boy" or "girl," the data will not be saved in the database but only in the ViewModel.
                             // Once the member is saved in the CBS activity, all data will be stored in the database(In cbsActivity).
                             // If the birth value is "boy" or "girl," the PNC and ANC will be reset, as the pregnancy flow will conclude after childbirth.
@@ -408,31 +444,42 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
             } else {
                 val referralResult = ReferralResultGenerator().calculateCBSReferralResult(details)
                 result?.second?.let { resultValue ->
-                    val rmnchList = ((resultValue[CBS.lowercase()] as? Map<String, Any>)
-                        ?.get(surveillanceDetails) as? Map<String, Any>)
-                        ?.get(RmnchNotifiableCondition) as? List<Map<String, Any>>
+                    val rmnchList = (
+                        (resultValue[CBS.lowercase()] as? Map<String, Any>)
+                            ?.get(surveillanceDetails) as? Map<String, Any>
+                    )?.get(RmnchNotifiableCondition) as? List<Map<String, Any>>
                     val isDelete = rmnchList?.any {
                         it[DefinedParams.Value]?.toString().equals(DeathOfMother, true)
                     } == true
 
-                    val birth = ((resultValue[CBS.lowercase()] as? Map<String, Any>)
-                        ?.get(surveillanceDetails) as? Map<String, Any>)
-                        ?.get(birth) as? String
-                    if (!birth.isNullOrBlank() && !birth.equals(DefinedParams.still_birth,true)) {
-                        viewModel.setBirth(resultValue, referralResult, birth, isDelete,viewModel.memberDetailsLiveData.value?.data?.id)
+                    val birth = (
+                        (resultValue[CBS.lowercase()] as? Map<String, Any>)
+                            ?.get(surveillanceDetails) as? Map<String, Any>
+                    )?.get(birth) as? String
+                    if (!birth.isNullOrBlank() && !birth.equals(DefinedParams.still_birth, true)) {
+                        viewModel.setBirth(
+                            resultValue,
+                            referralResult,
+                            birth,
+                            isDelete,
+                            viewModel.memberDetailsLiveData.value
+                                ?.data
+                                ?.id,
+                        )
                         viewModel.setUserJourney(AnalyticsDefinedParams.NEXTBUTTONTRIGGERED)
                         return
                     }
                     if (!birth.isNullOrBlank() && birth.equals(DefinedParams.still_birth, true)) {
                         viewModel.memberDetailsLiveData.value?.data?.id?.let {
-                            viewModel.savePatientClinicalInformation(viewModel.getUpdatedPregnancyDetail(it, viewModel.pregnancyDetail,true))
+                            viewModel.savePatientClinicalInformation(viewModel.getUpdatedPregnancyDetail(it, viewModel.pregnancyDetail, true))
                         }
                     }
                     val rmnchText = rmnchList?.mapNotNull { it[DefinedParams.NAME] as? String }?.toMutableList() ?: mutableListOf()
 
-                    val otherText = ((viewModel.assessmentMap[CBS.lowercase()] as? Map<String, Any>)
-                        ?.get(surveillanceDetails) as? Map<String, Any>)
-                        ?.get(DefinedParams.OtherNotifiableConditions) as? String
+                    val otherText = (
+                        (viewModel.assessmentMap[CBS.lowercase()] as? Map<String, Any>)
+                            ?.get(surveillanceDetails) as? Map<String, Any>
+                    )?.get(DefinedParams.OtherNotifiableConditions) as? String
 
                     val index = rmnchText.indexOfFirst { it.equals(DefinedParams.Other, ignoreCase = true) }
 
@@ -442,9 +489,11 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                     val finalText = rmnchText.joinToString(", ")
                     if (isDelete) {
                         viewModel.updateMemberDeceasedStatus(
-                            viewModel.memberDetailsLiveData.value?.data?.id ?: -1L,
+                            viewModel.memberDetailsLiveData.value
+                                ?.data
+                                ?.id ?: -1L,
                             false,
-                            finalText
+                            finalText,
                         )
                     }
                     viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
@@ -463,27 +512,25 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         }
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {
-
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
     }
 
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,
         enteredDays: Int?,
-        resultMap: HashMap<String, Any>?
+        resultMap: HashMap<String, Any>?,
     ) {
-
     }
 
     override fun onAgeCheckForPregnancy() {
-
     }
 
     override fun handleMandatoryCondition(formLayout: FormLayout?) {
-
     }
-
 
     override fun onClick(view: View) {
         when (view.id) {
@@ -496,14 +543,12 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         }
     }
 
-    fun getCurrentAnsweredStatus(): Boolean {
-        return formGenerator.getResultMap().isNotEmpty()
-    }
+    fun getCurrentAnsweredStatus(): Boolean = formGenerator.getResultMap().isNotEmpty()
 
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
     }
 }

@@ -38,7 +38,7 @@ class UserTermsConditionsActivity : BaseActivity(), View.OnClickListener {
             binding.root,
             true,
             getString(R.string.terms_and_condition),
-            homeAndBackVisibility = Pair(false, false)
+            homeAndBackVisibility = Pair(false, false),
         )
         viewModel.getConsentForm(DefinedParams.Landing)
         initializeViews()
@@ -56,7 +56,7 @@ class UserTermsConditionsActivity : BaseActivity(), View.OnClickListener {
                     hideLoading()
                     SecuredPreference.putBoolean(
                         SecuredPreference.EnvironmentKey.IS_TERMS_AND_CONDITIONS_APPROVED.name,
-                        true
+                        true,
                     )
                     startActivity(Intent(this, LandingActivity::class.java))
                     finish()
@@ -80,9 +80,8 @@ class UserTermsConditionsActivity : BaseActivity(), View.OnClickListener {
         binding.termsConditionWebView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(
                 view: WebView?,
-                request: WebResourceRequest?
+                request: WebResourceRequest?,
             ): Boolean {
-
                 request?.url?.let { emailUri ->
                     if (emailUri.toString().startsWith("mailto")) {
                         try {
@@ -99,13 +98,19 @@ class UserTermsConditionsActivity : BaseActivity(), View.OnClickListener {
                 return false
             }
 
-            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+            override fun onPageStarted(
+                view: WebView?,
+                url: String?,
+                favicon: Bitmap?,
+            ) {
                 super.onPageStarted(view, url, favicon)
                 showLoading()
             }
 
-
-            override fun onPageFinished(view: WebView?, url: String?) {
+            override fun onPageFinished(
+                view: WebView?,
+                url: String?,
+            ) {
                 super.onPageFinished(view, url)
                 hideLoading()
             }
@@ -113,7 +118,7 @@ class UserTermsConditionsActivity : BaseActivity(), View.OnClickListener {
             override fun onReceivedError(
                 view: WebView?,
                 request: WebResourceRequest?,
-                error: WebResourceError?
+                error: WebResourceError?,
             ) {
                 super.onReceivedError(view, request, error)
                 hideLoading()
@@ -122,7 +127,7 @@ class UserTermsConditionsActivity : BaseActivity(), View.OnClickListener {
             override fun onReceivedHttpError(
                 view: WebView?,
                 request: WebResourceRequest?,
-                errorResponse: WebResourceResponse?
+                errorResponse: WebResourceResponse?,
             ) {
                 hideLoading()
             }
@@ -130,7 +135,7 @@ class UserTermsConditionsActivity : BaseActivity(), View.OnClickListener {
             override fun onReceivedSslError(
                 view: WebView?,
                 handler: SslErrorHandler?,
-                error: SslError?
+                error: SslError?,
             ) {
                 super.onReceivedSslError(view, handler, error)
                 hideLoading()

@@ -13,17 +13,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NCDComorbiditiesViewModel @Inject constructor(
-    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
+    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
 ) : ViewModel() {
-
     var chips: ArrayList<ChipViewItemModel> = ArrayList()
     private val getChip = MutableLiveData<String?>()
     val getChipItems: LiveData<List<NCDMedicalReviewMetaEntity>> = getChip.switchMap {
         ncdMedicalReviewRepository.getComorbiditiesBasedOnType(it, Comorbidity)
     }
     var comments: String = ""
+
     fun getChips(type: String?) {
         getChip.value = type
     }
-
 }

@@ -15,24 +15,22 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentNcdCurrentMedicationBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
-import com.medtroniclabs.spice.formgeneration.extension.touchObserver
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDCurrentMedicationViewModel
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class NCDCurrentMedicationFragment : BaseFragment() {
-
     private lateinit var binding: FragmentNcdCurrentMedicationBinding
     private lateinit var currentMedicationTagListCustomView: TagListCustomView
     private val viewModel: NCDCurrentMedicationViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNcdCurrentMedicationBinding.inflate(inflater, container, false)
         return binding.root
@@ -40,11 +38,14 @@ class NCDCurrentMedicationFragment : BaseFragment() {
 
     companion object {
         const val TAG = "NCDCurrentMedicationFragment"
-        fun newInstance() =
-            NCDCurrentMedicationFragment()
+
+        fun newInstance() = NCDCurrentMedicationFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getChips()
         attachObserver()
@@ -58,7 +59,7 @@ class NCDCurrentMedicationFragment : BaseFragment() {
                     name = item.name,
                     cultureValue = item.displayValue,
                     type = item.type,
-                    value = item.value
+                    value = item.value,
                 )
             } as ArrayList<ChipViewItemModel>
             initView(complaintList)
@@ -151,20 +152,20 @@ class NCDCurrentMedicationFragment : BaseFragment() {
                     viewModel.chips =
                         ArrayList(currentMedicationTagListCustomView.getSelectedTags())
                     showNotes()
-                }
+                },
             )
             currentMedicationTagListCustomView.addChipItemList(complaintList, viewModel.chips)
         }
     }
 
-
     private fun showNotes() {
         if (viewModel.chips.firstOrNull {
                 it.name.equals(
                     DefinedParams.Other,
-                    ignoreCase = true
+                    ignoreCase = true,
                 )
-            } != null) {
+            } != null
+        ) {
             binding.etOtherCurrentMedication.visible()
         } else {
             binding.etOtherCurrentMedication.gone()
@@ -188,14 +189,14 @@ class NCDCurrentMedicationFragment : BaseFragment() {
                 hasChips,
                 hasOtherChip,
                 commentsNotBlank,
-                binding.etOtherCurrentMedication
+                binding.etOtherCurrentMedication,
             )
         } else {
             validateOptionalChips(
                 hasChips,
                 hasOtherChip,
                 commentsNotBlank,
-                binding.etOtherCurrentMedication
+                binding.etOtherCurrentMedication,
             )
         }
 
@@ -219,16 +220,16 @@ class NCDCurrentMedicationFragment : BaseFragment() {
 
         return Pair(
             (isChipValid.first && adheringValid.first && drugAllergiesValid.first),
-            viewFocus
+            viewFocus,
         )
     }
 
     private fun validateTextField(
         condition: Boolean?,
         textField: AppCompatEditText,
-        errorView: TextView
-    ): Boolean {
-        return when (condition) {
+        errorView: TextView,
+    ): Boolean =
+        when (condition) {
             true -> {
                 if (textField.text.isNullOrBlank()) {
                     showError(errorView)
@@ -249,13 +250,12 @@ class NCDCurrentMedicationFragment : BaseFragment() {
                 false
             }
         }
-    }
 
     private fun validateAdheringCurrentMed(): Pair<Boolean, AppCompatEditText?> {
         val isValid = validateTextField(
             viewModel.adheringCurrentMed,
             binding.etCommentCurrentMedication,
-            binding.tvErrorCurrentMedications
+            binding.tvErrorCurrentMedications,
         )
         return Pair(isValid, if (isValid) null else binding.etCommentCurrentMedication)
     }
@@ -264,7 +264,7 @@ class NCDCurrentMedicationFragment : BaseFragment() {
         val isValid = validateTextField(
             viewModel.drugAllergies,
             binding.etCommentAllergies,
-            binding.tvErrorAllergiesToDrugs
+            binding.tvErrorAllergiesToDrugs,
         )
         return Pair(isValid, if (isValid) null else binding.etCommentAllergies)
     }
@@ -273,9 +273,9 @@ class NCDCurrentMedicationFragment : BaseFragment() {
         hasChips: Boolean,
         hasOtherChip: Boolean,
         commentsNotBlank: Boolean,
-        editText: AppCompatEditText
-    ): Pair<Boolean, AppCompatEditText?> {
-        return if (hasChips) {
+        editText: AppCompatEditText,
+    ): Pair<Boolean, AppCompatEditText?> =
+        if (hasChips) {
             if (hasOtherChip) {
                 if (!commentsNotBlank) {
                     showError(binding.tvErrorOtherCurrentMedications)
@@ -292,21 +292,19 @@ class NCDCurrentMedicationFragment : BaseFragment() {
             showError(binding.tvErrorOtherCurrentMedications)
             Pair(false, editText)
         }
-    }
 
     private fun validateOptionalChips(
         hasChips: Boolean,
         hasOtherChip: Boolean,
         commentsNotBlank: Boolean,
-        editText: AppCompatEditText
-    ): Pair<Boolean, AppCompatEditText?> {
-        return if (!hasChips && binding.etOtherCurrentMedication.text?.isBlank() == true) {
+        editText: AppCompatEditText,
+    ): Pair<Boolean, AppCompatEditText?> =
+        if (!hasChips && binding.etOtherCurrentMedication.text?.isBlank() == true) {
             hideError(binding.tvErrorOtherCurrentMedications)
             Pair(true, null)
         } else {
             validateChips(hasChips, hasOtherChip, commentsNotBlank, editText)
         }
-    }
 
     private fun showError(errorView: TextView) {
         errorView.apply {

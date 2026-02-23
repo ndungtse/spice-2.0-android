@@ -42,7 +42,7 @@ import kotlin.math.roundToInt
 @HiltViewModel
 class BloodPressureViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private val bloodPressureRepo: BloodPressureRepo
+    private val bloodPressureRepo: BloodPressureRepo,
 ) : BaseViewModel(dispatcherIO) {
     var bpLogCreateResponseLiveData = SingleLiveEvent<Resource<APIResponse<HashMap<String, Any>>>>()
     var bpLogListResponseLiveData = SingleLiveEvent<Resource<BPBGListModel>>()
@@ -50,13 +50,9 @@ class BloodPressureViewModel @Inject constructor(
     private var systolicAverageSummary: Int? = null
     private var diastolicAverageSummary: Int? = null
 
-    fun getSystolicAverage(): Int? {
-        return systolicAverageSummary
-    }
+    fun getSystolicAverage(): Int? = systolicAverageSummary
 
-    fun getDiastolicAverage(): Int? {
-        return diastolicAverageSummary
-    }
+    fun getDiastolicAverage(): Int? = diastolicAverageSummary
 
     private val getRiskEntityList = MutableLiveData<Boolean>()
     val getRiskEntityListLiveData: LiveData<List<RiskFactorEntity>> = getRiskEntityList.switchMap {
@@ -67,7 +63,10 @@ class BloodPressureViewModel @Inject constructor(
         getRiskEntityList.value = true
     }
 
-    fun calculateBPValues(formLayout: FormLayout, resultMap: Map<String, Any>) {
+    fun calculateBPValues(
+        formLayout: FormLayout,
+        resultMap: Map<String, Any>,
+    ) {
         formLayout.apply {
             var systolic = 0.0
             var diastolic = 0.0
@@ -98,7 +97,11 @@ class BloodPressureViewModel @Inject constructor(
                         }
                     }
                     updateAverage(
-                        actualMapList, systolicEntries, diastolicEntries, systolic, diastolic
+                        actualMapList,
+                        systolicEntries,
+                        diastolicEntries,
+                        systolic,
+                        diastolic,
                     )
                 }
             }
@@ -110,7 +113,7 @@ class BloodPressureViewModel @Inject constructor(
         systolicEntries: Int,
         diastolicEntries: Int,
         systolic: Double,
-        diastolic: Double
+        diastolic: Double,
     ) {
         if (actualMapList.size > 0 && systolicEntries > 0 && diastolicEntries > 0) {
             systolicAverageSummary = (systolic / systolicEntries).roundToInt()
@@ -118,14 +121,15 @@ class BloodPressureViewModel @Inject constructor(
         }
     }
 
-    private fun validateMap(map: Any?, value: String): Double? {
-        return if (map is Map<*, *> && map.containsKey(value)) (map[value] as String).toDoubleOrNull() else null
-    }
+    private fun validateMap(
+        map: Any?,
+        value: String,
+    ): Double? = if (map is Map<*, *> && map.containsKey(value)) (map[value] as String).toDoubleOrNull() else null
 
     fun renderBMIValue(
         context: Context,
         formGenerator: FormGenerator,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
         val bmiView = formGenerator.getViewByTag(Screening.BMI) as? AppCompatTextView
         bmiView?.let { view ->
@@ -133,8 +137,9 @@ class BloodPressureViewModel @Inject constructor(
                 view.text = context.getString(R.string.hyphen_symbol)
                 formGenerator.removeIfContains(Screening.BMI)
             } else {
-                if (resultHashMap.containsKey(Screening.Weight) && resultHashMap.containsKey(
-                        Screening.Height
+                if (resultHashMap.containsKey(Screening.Weight) &&
+                    resultHashMap.containsKey(
+                        Screening.Height,
                     )
                 ) {
                     val weight = resultHashMap[Screening.Weight] as? Double
@@ -151,7 +156,8 @@ class BloodPressureViewModel @Inject constructor(
                                 val bmiWithInfoSpannableStringBuilder = if (bmi == null) {
                                     context.getString(R.string.hyphen_symbol)
                                 } else {
-                                    SpannableStringBuilder().append(bmi)
+                                    SpannableStringBuilder()
+                                        .append(bmi)
                                         .color(context.getColor(info.second)) {
                                             append(" (${info.first})")
                                         }
@@ -167,7 +173,7 @@ class BloodPressureViewModel @Inject constructor(
     fun createBpLog(
         hashMap: HashMap<String, Any>,
         patientDetails: PatientListRespModel,
-        menuId: String?
+        menuId: String?,
     ) {
         hashMap.apply {
             with(patientDetails) {
@@ -175,7 +181,7 @@ class BloodPressureViewModel @Inject constructor(
                     hashMap,
                     this,
                     hashMap[Screening.Height]?.toString()?.toDoubleOrNull(),
-                    hashMap[Screening.Weight]?.toString()?.toDoubleOrNull()
+                    hashMap[Screening.Weight]?.toString()?.toDoubleOrNull(),
                 )
                 id?.let { requestRelatedPersonFhirId ->
                     put(DefinedParams.RelatedPersonFhirId, requestRelatedPersonFhirId)
@@ -193,7 +199,7 @@ class BloodPressureViewModel @Inject constructor(
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDBloodPressureCreation + " " + menuId,
-                isCompleted = true
+                isCompleted = true,
             )
             bpLogCreateResponseLiveData.postValue(bloodPressureRepo.createBpLog(hashMap))
         }
@@ -205,7 +211,7 @@ class BloodPressureViewModel @Inject constructor(
             skip = 0
             memberId = patientId
             latestRequired = true
-            sortOrder = -1 //Desc
+            sortOrder = -1 // Desc
         }
         viewModelScope.launch(dispatcherIO) {
             bpLogListResponseLiveData.postLoading()

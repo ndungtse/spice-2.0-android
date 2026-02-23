@@ -13,9 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NCDLifestyleAssessmentViewModel @Inject constructor(
-    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
+    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
 ) : ViewModel() {
-
     var lifestyle: ArrayList<InitialLifeStyle>? = null
     private val getLifestyleAssessment = MutableLiveData<Boolean>()
     val getLifeStyleLiveData: LiveData<List<LifestyleEntity>> = getLifestyleAssessment.switchMap {

@@ -17,14 +17,13 @@ import com.medtroniclabs.spice.ui.medicalreview.epi.adapter.MissedVaccinationAda
 import com.medtroniclabs.spice.ui.medicalreview.epi.viewmodel.ImmunisationViewModel
 
 class MissedImmunisationDialogFragment : BaseDialogFragment() {
-
     private lateinit var binding: DialogMissedVaccinationBinding
     private val viewModel: ImmunisationViewModel by activityViewModels()
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogMissedVaccinationBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(R.drawable.bg_rounded_rect_white)
@@ -38,7 +37,10 @@ class MissedImmunisationDialogFragment : BaseDialogFragment() {
         dialog?.window?.setLayout(targetWidth, targetHeight)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         clickListener()
@@ -47,8 +49,10 @@ class MissedImmunisationDialogFragment : BaseDialogFragment() {
 
     private fun initView() {
         val list = mutableListOf<VaccinationDetail>()
-        //Adding dummy object for header
-        list.add(VaccinationDetail(type = "Week", vaccineName = "", scheduledDate = "", doseClosureWeeks = "", displayOrder = 0, category = "", vaccineOrder = 0))
+        // Adding dummy object for header
+        list.add(
+            VaccinationDetail(type = "Week", vaccineName = "", scheduledDate = "", doseClosureWeeks = "", displayOrder = 0, category = "", vaccineOrder = 0),
+        )
         list.addAll(viewModel.changesList)
         binding.rvVaccinationList.adapter = MissedVaccinationAdapter(list)
 
@@ -77,10 +81,11 @@ class MissedImmunisationDialogFragment : BaseDialogFragment() {
 
         binding.btnNext.setOnClickListener {
             dismiss()
-            val reason = binding.etMissedReason.text?.trim().toString()
+            val reason = binding.etMissedReason.text
+                ?.trim()
+                .toString()
             viewModel.shouldShowMissedVaccinationDialog(false, reason)
             viewModel.setUserJourney(AnalyticsDefinedParams.NEXTBUTTONTRIGGERED)
         }
     }
-
 }

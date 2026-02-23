@@ -8,5 +8,5 @@ data class ConsentForm(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
     val type: String,
-    val content: String
+    val content: String,
 )

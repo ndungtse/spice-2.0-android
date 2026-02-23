@@ -11,10 +11,6 @@ import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
-import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
-import com.medtroniclabs.spice.common.DateUtils.convertDateTimeToDate
-import com.medtroniclabs.spice.common.DateUtils.getCurrentDateAndTime
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
@@ -46,9 +42,11 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialogDismissListener,
+class AboveFiveYearsBaseActivity :
+    BaseActivity(),
+    View.OnClickListener,
+    OnDialogDismissListener,
     AncVisitCallBack {
-
     private lateinit var binding: ActivityAboveFiveYearsBaseBinding
     private val viewModel: AboveFiveYearsViewModel by viewModels()
     private val patientViewModel: PatientDetailViewModel by viewModels()
@@ -71,12 +69,12 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             },
             callbackHome = {
                 backNavigationToHome()
-            }
+            },
         )
         initializeViews()
         initializeListeners()
         attachObserver()
-        UserDetail.eventName=AnalyticsDefinedParams.MedicalReviewCreation
+        UserDetail.eventName = AnalyticsDefinedParams.MedicalReviewCreation
         viewModel.setUserJourney(AnalyticsDefinedParams.AboveFiveYears)
     }
 
@@ -84,10 +82,11 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (isPositive) {
-                supportFragmentManager.findFragmentById(R.id.presentingComplaintsContainer)
+                supportFragmentManager
+                    .findFragmentById(R.id.presentingComplaintsContainer)
                     .let { currentFragment ->
                         if (currentFragment !is AboveFiveYearsTreatmentSummaryFragment) {
                             viewModel.setAnalyticsData(
@@ -95,12 +94,11 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                                 eventType = AnalyticsDefinedParams.AboveFiveYears,
                                 exitReason = AnalyticsDefinedParams.BackButtonClicked,
                                 eventName = UserDetail.eventName,
-                                isCompleted = false
+                                isCompleted = false,
                             )
                         }
                     }
                 onBackPressPopStack()
-
             }
         }
     }
@@ -109,22 +107,23 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (isPositive) {
                 viewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
-                supportFragmentManager.findFragmentById(R.id.presentingComplaintsContainer)
-                .let { currentFragment ->
-                    if (currentFragment !is AboveFiveYearsTreatmentSummaryFragment) {
-                        viewModel.setAnalyticsData(
-                            UserDetail.startDateTime,
-                            eventType = AnalyticsDefinedParams.AboveFiveYears,
-                            exitReason = AnalyticsDefinedParams.HomeButtonClicked,
-                            eventName = UserDetail.eventName,
-                            isCompleted = false
-                        )
+                supportFragmentManager
+                    .findFragmentById(R.id.presentingComplaintsContainer)
+                    .let { currentFragment ->
+                        if (currentFragment !is AboveFiveYearsTreatmentSummaryFragment) {
+                            viewModel.setAnalyticsData(
+                                UserDetail.startDateTime,
+                                eventType = AnalyticsDefinedParams.AboveFiveYears,
+                                exitReason = AnalyticsDefinedParams.HomeButtonClicked,
+                                eventName = UserDetail.eventName,
+                                isCompleted = false,
+                            )
+                        }
                     }
-                }
                 startActivityWithoutSplashScreen()
             }
         }
@@ -146,8 +145,9 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     private fun swipeRefresh() {
-        presentingComplaintsViewModel.isMotherPnc=true
-        supportFragmentManager.findFragmentById(R.id.presentingComplaintsContainer)
+        presentingComplaintsViewModel.isMotherPnc = true
+        supportFragmentManager
+            .findFragmentById(R.id.presentingComplaintsContainer)
             .let { currentFragment ->
                 if (currentFragment is AboveFiveYearsTreatmentSummaryFragment) {
                     viewModel.aboveFiveYearsCreateResponse.value?.data?.let {
@@ -156,20 +156,21 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                                 AboveFiveYearsSummaryRequest(
                                     id = it.encounterId,
                                     patientReference = it.patientReference,
-                                    type = MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name
-                                )
+                                    type = MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name,
+                                ),
                             )
                         } else {
                             showErrorDialogue(
-                                getString(R.string.error), getString(R.string.no_internet_error),
+                                getString(R.string.error),
+                                getString(R.string.no_internet_error),
                                 isNegativeButtonNeed = false,
                             ) {}
                         }
                         viewModel.getAboveFiveYearsSummaryDetails(
                             AboveFiveYearsSummaryRequest(
                                 id = it.id,
-                                type = MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name
-                            )
+                                type = MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name,
+                            ),
                         )
                     }
                 } else {
@@ -189,7 +190,8 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 addPatientDetails()
             } else {
                 showErrorDialogue(
-                    getString(R.string.error), getString(R.string.no_internet_error),
+                    getString(R.string.error),
+                    getString(R.string.no_internet_error),
                     isNegativeButtonNeed = false,
                 ) {}
             }
@@ -217,10 +219,11 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     private fun addPatientDetails() {
         val patientInfoFragment =
             PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
-        supportFragmentManager.beginTransaction()
+        supportFragmentManager
+            .beginTransaction()
             .add(
                 R.id.patientDetailFragment,
-                patientInfoFragment
+                patientInfoFragment,
             ).commit()
         patientInfoFragment.setDataCallback(this)
     }
@@ -239,7 +242,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                     fragment?.dismiss()
                     MedicalReviewSuccessDialogFragment.newInstance().show(
                         supportFragmentManager,
-                        MedicalReviewSuccessDialogFragment.TAG
+                        MedicalReviewSuccessDialogFragment.TAG,
                     )
                 }
 
@@ -297,7 +300,8 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                             )
                         } else {
                             showErrorDialogue(
-                                getString(R.string.error), getString(R.string.no_internet_error),
+                                getString(R.string.error),
+                                getString(R.string.no_internet_error),
                                 isNegativeButtonNeed = false,
                             ) {}
                         }
@@ -346,7 +350,6 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                         message = getString(R.string.something_went_wrong_try_later),
                         positiveButtonName = getString(R.string.ok),
                     ) {
-                        
                     }
                 }
 
@@ -354,7 +357,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                     hideLoading()
                     MedicalReviewSuccessDialogFragment.newInstance().show(
                         supportFragmentManager,
-                        MedicalReviewSuccessDialogFragment.TAG
+                        MedicalReviewSuccessDialogFragment.TAG,
                     )
                 }
             }
@@ -369,7 +372,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         }
         replaceFragmentInId<AboveFiveYearsTreatmentSummaryFragment>(
             binding.presentingComplaintsContainer.id,
-            tag = AboveFiveYearsTreatmentSummaryFragment::class.simpleName
+            tag = AboveFiveYearsTreatmentSummaryFragment::class.simpleName,
         )
         val complaintsFragment =
             supportFragmentManager.findFragmentById(R.id.systemicExaminationsContainer)
@@ -388,40 +391,40 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         val bundle = Bundle().apply {
             putString(
                 MedicalReviewTypeEnums.PresentingComplaints.name,
-                MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name
+                MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name,
             )
             putString(
                 MedicalReviewTypeEnums.SystemicExaminations.name,
-                MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name
+                MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name,
             )
             putString(
                 MedicalReviewTypeEnums.DiagnosisType.name,
-                MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name
+                MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name,
             )
             putString(
                 DefinedParams.ID,
-                intent.getStringExtra(DefinedParams.ID)
+                intent.getStringExtra(DefinedParams.ID),
             )
         }
         replaceFragmentInId<MedicalReviewPatientDiagnosisFragment>(
             binding.patientDiagnosisContainer.id,
             bundle = bundle,
-            tag = MedicalReviewPatientDiagnosisFragment::class.simpleName
+            tag = MedicalReviewPatientDiagnosisFragment::class.simpleName,
         )
         replaceFragmentInId<PresentingComplaintsFragment>(
             binding.presentingComplaintsContainer.id,
             bundle = bundle,
-            tag = PresentingComplaintsFragment::class.simpleName
+            tag = PresentingComplaintsFragment::class.simpleName,
         )
         replaceFragmentInId<SystemicExaminationsFragment>(
             binding.systemicExaminationsContainer.id,
             bundle = bundle,
-            tag = SystemicExaminationsFragment::class.simpleName
+            tag = SystemicExaminationsFragment::class.simpleName,
         )
         replaceFragmentInId<ClinicalNotesFragment>(
             binding.clinicalNotesContainer.id,
             bundle = bundle,
-            tag = ClinicalNotesFragment::class.simpleName
+            tag = ClinicalNotesFragment::class.simpleName,
         )
     }
 
@@ -435,35 +438,36 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
                     val intent = Intent(this, PrescriptionActivity::class.java)
                     intent.putExtra(DefinedParams.PatientId, data.patientId)
-                    intent.putExtra(DefinedParams.EncounterId,patientViewModel.encounterId)
+                    intent.putExtra(DefinedParams.EncounterId, patientViewModel.encounterId)
                     getResult.launch(intent)
                 }
             }
-            binding.ivInvestigation.id  -> {
+            binding.ivInvestigation.id -> {
                 patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
                     val intent = Intent(this, InvestigationActivity::class.java)
                     intent.putExtra(DefinedParams.PatientId, data.patientId)
-                    intent.putExtra(DefinedParams.EncounterId,patientViewModel.encounterId)
+                    intent.putExtra(DefinedParams.EncounterId, patientViewModel.encounterId)
                     getResult.launch(intent)
                 }
             }
             binding.btnRefer.id ->
                 viewModel.aboveFiveYearsCreateResponse.value?.data?.let {
-                    ReferPatientFragment.newInstance(
-                        MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name,
-                        it.patientReference,
-                        it.encounterId
-                    )
-                        .show(
+                    ReferPatientFragment
+                        .newInstance(
+                            MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name,
+                            it.patientReference,
+                            it.encounterId,
+                        ).show(
                             supportFragmentManager,
-                            ReferPatientFragment.TAG
+                            ReferPatientFragment.TAG,
                         )
                 }
 
             binding.btnDone.id -> {
                 withLocationCheck({
                     patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                        viewModel.aboveFiveYearsCreateResponse.value?.data
+                        viewModel.aboveFiveYearsCreateResponse.value
+                            ?.data
                             ?.let { response ->
                                 if (connectivityManager.isNetworkAvailable()) {
                                     response.encounterId?.let { submitEncounterId ->
@@ -471,7 +475,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                                             viewModel.aboveFiveYearsSummaryCreate(
                                                 details,
                                                 submitEncounterId,
-                                                submitPatientReferenceId
+                                                submitPatientReferenceId,
                                             )
                                         }
                                     }
@@ -495,18 +499,21 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 if (connectivityManager.isNetworkAvailable()) {
                     viewModel.createAboveFiveYearsResult(
                         details,
-                        Pair(presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value },
-                            systemicExaminationViewModel.selectedSystemicExaminations.map { it.value }),
+                        Pair(
+                            presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value },
+                            systemicExaminationViewModel.selectedSystemicExaminations.map { it.value },
+                        ),
                         Triple(
                             presentingComplaintsViewModel.enteredComplaintNotes,
                             systemicExaminationViewModel.enteredExaminationNotes,
-                            chipItemViewModel.enteredClinicalNotes
+                            chipItemViewModel.enteredClinicalNotes,
                         ),
-                        patientViewModel.encounterId
+                        patientViewModel.encounterId,
                     )
                 } else {
                     showErrorDialogue(
-                        getString(R.string.error), getString(R.string.no_internet_error),
+                        getString(R.string.error),
+                        getString(R.string.no_internet_error),
                         isNegativeButtonNeed = false,
                     ) {}
                 }
@@ -522,10 +529,11 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         binding.btnDone.isEnabled = getSummaryStatus()
     }
 
-    private fun getSummaryStatus(): Boolean {
-        return ((viewModel.selectedPatientStatus == ReferralStatus.Recovered.name && viewModel.nextFollowupDate == null)
-                || (viewModel.selectedPatientStatus != ReferralStatus.Recovered.name && viewModel.nextFollowupDate != null))
-    }
+    private fun getSummaryStatus(): Boolean =
+        (
+            (viewModel.selectedPatientStatus == ReferralStatus.Recovered.name && viewModel.nextFollowupDate == null) ||
+                (viewModel.selectedPatientStatus != ReferralStatus.Recovered.name && viewModel.nextFollowupDate != null)
+        )
 
     override fun onDialogDismissListener(isFinish: Boolean) {
         startActivityWithoutSplashScreen()
@@ -544,8 +552,8 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 AboveFiveYearsSummaryRequest(
                     id = it.encounterId,
                     patientReference = it.patientReference,
-                    type = MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name
-                )
+                    type = MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name,
+                ),
             )
             initializeSummaryFragments()
             binding.nestedScrollViewID.fullScroll(ScrollView.FOCUS_UP)
@@ -563,7 +571,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
     private val getResult =
         registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
+            ActivityResultContracts.StartActivityForResult(),
         ) {
             if (it.resultCode == Activity.RESULT_OK) {
                 val value = it.data?.getStringExtra(DefinedParams.EncounterId)

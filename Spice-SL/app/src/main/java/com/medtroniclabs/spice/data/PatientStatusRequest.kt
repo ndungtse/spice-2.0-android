@@ -9,6 +9,6 @@ data class PatientStatusRequest(
     val gender: String? = null,
     val ticketType: String,
     val isPregnant: Boolean,
-    val encounterType:String ? = null,
-    val provenance: ProvanceDto
+    val encounterType: String? = null,
+    val provenance: ProvanceDto,
 )

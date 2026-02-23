@@ -19,7 +19,6 @@ import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 
 class NCDChiefComplaintsFragment : BaseFragment() {
-
     private val viewModel: NCDChiefComplaintsViewModel by activityViewModels()
     private lateinit var binding: FragmentSystemicExaminationsBinding
     private lateinit var tagView: TagListCustomView
@@ -27,33 +26,36 @@ class NCDChiefComplaintsFragment : BaseFragment() {
     companion object {
         const val TAG = "NCDChiefComplaintsFragment"
         const val IS_FEMALE_PREGNANT = "isFemalePregnant"
-        fun newInstance(menuId: String?, isFemalePregnant: Boolean): NCDChiefComplaintsFragment {
-            return NCDChiefComplaintsFragment().apply {
+
+        fun newInstance(
+            menuId: String?,
+            isFemalePregnant: Boolean,
+        ): NCDChiefComplaintsFragment =
+            NCDChiefComplaintsFragment().apply {
                 arguments = Bundle().apply {
                     putString(MENU_ID, menuId)
                     putBoolean(IS_FEMALE_PREGNANT, isFemalePregnant)
                 }
             }
-        }
     }
 
-    fun getType(): String? {
-        return arguments?.getString(MENU_ID)
-    }
+    fun getType(): String? = arguments?.getString(MENU_ID)
 
-    private fun isFemalePregnant(): Boolean {
-        return arguments?.getBoolean(NCDObstetricExaminationFragment.IS_FEMALE_PREGNANT) == true
-    }
+    private fun isFemalePregnant(): Boolean = arguments?.getBoolean(NCDObstetricExaminationFragment.IS_FEMALE_PREGNANT) == true
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSystemicExaminationsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getChips(handleChipType(getType(), isFemalePregnant()))
         setObserver()
@@ -71,7 +73,7 @@ class NCDChiefComplaintsFragment : BaseFragment() {
                     name = item.name,
                     cultureValue = item.displayValue,
                     type = item.type,
-                    value = item.value
+                    value = item.value,
                 )
             } as ArrayList<ChipViewItemModel>
             initView(complaintList)
@@ -80,13 +82,10 @@ class NCDChiefComplaintsFragment : BaseFragment() {
 
     private fun setObserver() {
         /*Never used
-        * */
+         * */
     }
 
-
-    private fun initView(
-        complaintList: ArrayList<ChipViewItemModel>
-    ) {
+    private fun initView(complaintList: ArrayList<ChipViewItemModel>) {
         with(binding) {
             binding.etPhysicalExaminationComments.visible()
             binding.tvCommentsTitle.gone()
@@ -99,20 +98,20 @@ class NCDChiefComplaintsFragment : BaseFragment() {
                         viewModel.chips.clear()
                         viewModel.chips =
                             ArrayList(tagView.getSelectedTags())
-                    }
+                    },
                 )
             tagView.addChipItemList(complaintList, viewModel.chips)
         }
     }
 
-    fun validateInput(isMandatory: Boolean = false): Pair<Boolean, AppCompatEditText> {
-        return Pair(
+    fun validateInput(isMandatory: Boolean = false): Pair<Boolean, AppCompatEditText> =
+        Pair(
             NCDMRUtil.validateInputForCommentOption(
                 isMandatory,
                 viewModel.chips,
                 binding.etPhysicalExaminationComments,
-                binding.tvErrorMessage
-            ), binding.etPhysicalExaminationComments
+                binding.tvErrorMessage,
+            ),
+            binding.etPhysicalExaminationComments,
         )
-    }
 }

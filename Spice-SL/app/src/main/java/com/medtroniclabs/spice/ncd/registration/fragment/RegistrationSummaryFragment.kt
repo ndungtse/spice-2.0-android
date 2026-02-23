@@ -16,23 +16,27 @@ import com.medtroniclabs.spice.databinding.FragmentRegistrationSummaryBinding
 import com.medtroniclabs.spice.databinding.SummaryLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ncd.registration.viewmodel.RegistrationFormViewModel
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ncd.registration.viewmodel.RegistrationFormViewModel
 
 class RegistrationSummaryFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentRegistrationSummaryBinding
     private val viewModel: RegistrationFormViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentRegistrationSummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         clickListener()
         addChildViews()
@@ -48,8 +52,9 @@ class RegistrationSummaryFragment : BaseFragment(), View.OnClickListener {
         viewModel.registrationResponseLiveData.value?.data?.treatmentPlanResponse.let { treatmentPlanMap ->
             if (treatmentPlanMap?.containsKey(DefinedParams.TreatmentPlan) == true) {
                 treatmentPlanMap[DefinedParams.TreatmentPlan]?.let { list ->
-                    if (list is ArrayList<*>)
+                    if (list is ArrayList<*>) {
                         addTPCardView(list)
+                    }
                 }
             }
         }
@@ -72,16 +77,17 @@ class RegistrationSummaryFragment : BaseFragment(), View.OnClickListener {
                         layout.addView(
                             inflateChildView(
                                 lbl,
-                                value
-                            )
+                                value,
+                            ),
                         )
                     }
                 }
             }
         }
 
-        if (cardBinding.llFamilyRoot.childCount > 0)
+        if (cardBinding.llFamilyRoot.childCount > 0) {
             binding.llForm.addView(cardBinding.root)
+        }
     }
 
     private fun addCardView(cardTitle: String) {
@@ -95,68 +101,76 @@ class RegistrationSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun addBioDataCardDetails(
         llFamilyRoot: LinearLayout,
-        responseModel: RegistrationResponse
+        responseModel: RegistrationResponse,
     ) {
         llFamilyRoot.apply {
             responseModel.let { response ->
                 response.dateOfEnrollment?.let {
                     addView(
                         inflateChildView(
-                            getString(R.string.date_of_registration), DateUtils.convertDateFormat(
+                            getString(R.string.date_of_registration),
+                            DateUtils.convertDateFormat(
                                 it,
                                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                DateUtils.DATE_ddMMyyyy
-                            )
-                        )
+                                DateUtils.DATE_ddMMyyyy,
+                            ),
+                        ),
                     )
                 }
                 response.name?.let {
                     addView(
                         inflateChildView(
-                            getString(R.string.name), it
-                        )
+                            getString(R.string.name),
+                            it,
+                        ),
                     )
                 }
                 response.gender?.let {
                     addView(
                         inflateChildView(
-                            getString(R.string.gender), it.capitalizeFirstChar()
-                        )
+                            getString(R.string.gender),
+                            it.capitalizeFirstChar(),
+                        ),
                     )
                 }
                 response.age?.let {
                     addView(
                         inflateChildView(
-                            getString(R.string.age), it
-                        )
+                            getString(R.string.age),
+                            it,
+                        ),
                     )
                 }
                 response.programId?.let {
                     addView(
                         inflateChildView(
-                            getString(R.string.patient_id), it
-                        )
+                            getString(R.string.patient_id),
+                            it,
+                        ),
                     )
                 }
                 response.nationalId?.let {
                     addView(
                         inflateChildView(
-                            getString(R.string.national_id), it
-                        )
+                            getString(R.string.national_id),
+                            it,
+                        ),
                     )
                 }
                 response.phoneNumber?.let {
                     addView(
                         inflateChildView(
-                            getString(R.string.mobile_number), it
-                        )
+                            getString(R.string.mobile_number),
+                            it,
+                        ),
                     )
                 }
                 response.facilityName?.let {
                     addView(
                         inflateChildView(
-                            getString(R.string.facility_name), it
-                        )
+                            getString(R.string.facility_name),
+                            it,
+                        ),
                     )
                 }
             }
@@ -164,7 +178,10 @@ class RegistrationSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun inflateChildView(
-        labelKey: String, value: String, applyBoldStyle: Boolean? = null, textColor: Int? = null
+        labelKey: String,
+        value: String,
+        applyBoldStyle: Boolean? = null,
+        textColor: Int? = null,
     ): View {
         val summaryBinding = SummaryLayoutBinding.inflate(layoutInflater)
         summaryBinding.tvKey.text = labelKey

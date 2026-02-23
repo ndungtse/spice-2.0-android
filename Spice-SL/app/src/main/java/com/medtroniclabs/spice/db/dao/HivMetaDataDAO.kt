@@ -7,5 +7,5 @@ import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 @Dao
 interface HivMetaDataDAO {
     @Query("SELECT * FROM MetaItemByTypeAndCategoryEntity")
-    suspend fun getHivMetaItems() : List<MedicalReviewMetaItems>
+    suspend fun getHivMetaItems(): List<MedicalReviewMetaItems>
 }

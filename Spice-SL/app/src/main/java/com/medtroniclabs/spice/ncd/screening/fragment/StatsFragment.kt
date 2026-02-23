@@ -8,21 +8,21 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.FragmentStatsBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ncd.registration.fragment.TermsAndConditionsFragment
 import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ncd.registration.fragment.TermsAndConditionsFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class StatsFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentStatsBinding
     private val viewModel: GeneralDetailsViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentStatsBinding.inflate(inflater, container, false)
         return binding.root
@@ -30,11 +30,14 @@ class StatsFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "StatsFragment"
-        fun newInstance() =
-            StatsFragment()
+
+        fun newInstance() = StatsFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
@@ -52,7 +55,7 @@ class StatsFragment : BaseFragment(), View.OnClickListener {
     private fun initView() {
         binding.apply {
             tvSiteName.text = viewModel.siteDetail.siteName.takeIf { it.isNotBlank() } ?: getString(
-                R.string.hyphen_symbol
+                R.string.hyphen_symbol,
             )
             tvScreeningCategory.text =
                 viewModel.siteDetail.categoryDisplayName?.takeIf { it.isNotBlank() }
@@ -72,7 +75,7 @@ class StatsFragment : BaseFragment(), View.OnClickListener {
                 replaceFragmentIfExists<TermsAndConditionsFragment>(
                     R.id.screeningParentLayout,
                     bundle = null,
-                    tag = TermsAndConditionsFragment.TAG
+                    tag = TermsAndConditionsFragment.TAG,
                 )
             }
         }

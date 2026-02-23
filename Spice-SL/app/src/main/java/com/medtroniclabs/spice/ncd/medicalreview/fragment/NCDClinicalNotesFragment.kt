@@ -16,25 +16,28 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 
 class NCDClinicalNotesFragment : BaseFragment() {
-
     private val viewModel: NCDClinicalNotesViewModel by activityViewModels()
     private lateinit var binding: FragmentSystemicExaminationsBinding
 
     companion object {
         const val TAG = "ClinicalNotesFragment"
-        fun newInstance() =
-            NCDClinicalNotesFragment()
+
+        fun newInstance() = NCDClinicalNotesFragment()
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSystemicExaminationsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setObserver()
         attachObserver()
@@ -46,9 +49,8 @@ class NCDClinicalNotesFragment : BaseFragment() {
 
     private fun setObserver() {
         /*never Used
-        * */
+         * */
     }
-
 
     private fun initView() {
         with(binding) {
@@ -84,7 +86,7 @@ class NCDClinicalNotesFragment : BaseFragment() {
 
         return Pair(
             true,
-            binding.etPhysicalExaminationComments
+            binding.etPhysicalExaminationComments,
         ) // If no other conditions matched, input is considered valid
     }
 }

@@ -26,9 +26,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import java.text.DecimalFormat
 
-
 class BioDataFragment : BaseFragment() {
-
     private lateinit var binding: FragmentBioDataBinding
 
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -48,13 +46,16 @@ class BioDataFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentBioDataBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
@@ -82,7 +83,6 @@ class BioDataFragment : BaseFragment() {
         viewModel.memberClinicalLiveData.observe(viewLifecycleOwner) { entity ->
             showPatientOtherInformation(entity)
         }
-
     }
 
     private fun showPatientOtherInformation(entity: MemberClinicalEntity?) {
@@ -113,12 +113,15 @@ class BioDataFragment : BaseFragment() {
                 title = title,
                 value = visitCount.toString(),
                 null,
-                binding.root.context
-            )
+                binding.root.context,
+            ),
         )
     }
 
-    private fun showPncRelatedInformation(entity: MemberClinicalEntity?, visitCount: Long) {
+    private fun showPncRelatedInformation(
+        entity: MemberClinicalEntity?,
+        visitCount: Long,
+    ) {
         if (entity != null) {
             entity.apply {
                 if (visitCount == 1L) {
@@ -126,8 +129,8 @@ class BioDataFragment : BaseFragment() {
                         AssessmentCommonUtils.addViewSummaryLayout(
                             title = getString(R.string.delivery_at),
                             value = getString(R.string.home_title),
-                            context = binding.llPatientInfo.context
-                        )
+                            context = binding.llPatientInfo.context,
+                        ),
                     )
                 } else {
                     isDeliveryAtHome?.let {
@@ -137,8 +140,8 @@ class BioDataFragment : BaseFragment() {
                             AssessmentCommonUtils.addViewSummaryLayout(
                                 title = getString(R.string.delivery_at),
                                 value = value,
-                                context = binding.llPatientInfo.context
-                            )
+                                context = binding.llPatientInfo.context,
+                            ),
                         )
                     }
                 }
@@ -150,10 +153,10 @@ class BioDataFragment : BaseFragment() {
                             value = DateUtils.convertDateFormat(
                                 clinicalDate,
                                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                DATE_ddMMyyyy
+                                DATE_ddMMyyyy,
                             ),
-                            context = binding.llPatientInfo.context
-                        )
+                            context = binding.llPatientInfo.context,
+                        ),
                     )
                 }
                 if (numberOfNeonate != null) {
@@ -161,8 +164,8 @@ class BioDataFragment : BaseFragment() {
                         AssessmentCommonUtils.addViewSummaryLayout(
                             title = getString(R.string.no_of_neonates),
                             value = DecimalFormat("##.#").format(numberOfNeonate),
-                            context = binding.llPatientInfo.context
-                        )
+                            context = binding.llPatientInfo.context,
+                        ),
                     )
                 }
             }
@@ -172,8 +175,8 @@ class BioDataFragment : BaseFragment() {
                     AssessmentCommonUtils.addViewSummaryLayout(
                         title = getString(R.string.delivery_at),
                         value = getString(R.string.home_title),
-                        context = binding.llPatientInfo.context
-                    )
+                        context = binding.llPatientInfo.context,
+                    ),
                 )
             }
         }
@@ -188,54 +191,54 @@ class BioDataFragment : BaseFragment() {
                         value = DateUtils.convertDateFormat(
                             clinicalDate,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DATE_ddMMyyyy
+                            DATE_ddMMyyyy,
                         ),
-                        context = binding.llPatientInfo.context
-                    )
+                        context = binding.llPatientInfo.context,
+                    ),
                 )
                 val lastMenstrualDate = DateUtils.getLastMenstrualDate(clinicalDate)
                 val gestationWeek = calculateGestationalAge(lastMenstrualDate).first
                 createSummary(
                     getString(R.string.gestational_age),
-                    "$gestationWeek ${getWeekPeriod(gestationWeek)}"
+                    "$gestationWeek ${getWeekPeriod(gestationWeek)}",
                 )
                 val estimatedDeliveryDate = calculateEstimatedDeliveryDate(lastMenstrualDate)
                 val formattedEstimatedDeliveryDate =
                     DateUtils.getDateFormat().format(estimatedDeliveryDate.time)
                 createSummary(
                     getString(R.string.estimated_delivery_date),
-                    formattedEstimatedDeliveryDate
+                    formattedEstimatedDeliveryDate,
                 )
-
             }
         }
     }
 
-    private fun getWeekPeriod(gestationWeek: Long): String {
-        return if (gestationWeek == 1L){
+    private fun getWeekPeriod(gestationWeek: Long): String =
+        if (gestationWeek == 1L) {
             requireContext().getString(R.string.week)
-        } else{
+        } else {
             requireContext().getString(R.string.weeks)
         }
-    }
 
-    private fun createSummary(title: String, value: String) {
+    private fun createSummary(
+        title: String,
+        value: String,
+    ) {
         binding.llPatientInfo.addView(
             AssessmentCommonUtils.addViewSummaryLayout(
                 title = title,
                 value = value,
-                context = binding.llPatientInfo.context
-            )
+                context = binding.llPatientInfo.context,
+            ),
         )
     }
 
-    private fun getVisitCount(visitCount: Long?): Long {
-        return if (visitCount == null) {
+    private fun getVisitCount(visitCount: Long?): Long =
+        if (visitCount == null) {
             1L
         } else {
             (visitCount + 1)
         }
-    }
 
     private fun initView() {
         viewModel.getMemberDetailsById()
@@ -258,14 +261,14 @@ class BioDataFragment : BaseFragment() {
             binding.gender.tvKey.text = getString(R.string.gender)
             binding.gender.tvValue.text = gender.capitalizeFirstChar()
             binding.dobAge.tvKey.text = getString(R.string.age)
-            var age= CommonUtils.getAgeFromDOB(
+            var age = CommonUtils.getAgeFromDOB(
                 dateOfBirth,
-                requireContext()
+                requireContext(),
             )
             binding.dobAge.tvValue.text = getAgeValue(
-                age
+                age,
             )
-            
+
             // Show mobile number if it exists
             if (!phoneNumber.isNullOrBlank()) {
                 binding.mobileNumber.root.visible()
@@ -274,13 +277,14 @@ class BioDataFragment : BaseFragment() {
             } else {
                 binding.mobileNumber.root.gone()
             }
-            
+
             if (viewModel.menuId.equals(MenuConstants.CBS_MENU_ID, true)) {
                 binding.dateOfOccurrence.root.visible()
                 binding.dateOfOccurrence.tvKey.text = getString(R.string.date_of_occurrence)
                 binding.dateOfOccurrence.tvValue.text = DateUtils.getTodayDateDDMMYYYY(DATE_ddMMyyyy)
-                if (gender.equals(DefinedParams.female, true)
-                    && doesShowPregnant(dateOfBirth)) {
+                if (gender.equals(DefinedParams.female, true) &&
+                    doesShowPregnant(dateOfBirth)
+                ) {
                     binding.pregnancy.root.visible()
                     binding.pregnancy.tvKey.text = getString(R.string.pregnant)
                     binding.pregnancy.tvValue.text = CommonUtils.getBooleanAsString(isPregnant ?: false).capitalizeFirstChar()
@@ -304,20 +308,22 @@ class BioDataFragment : BaseFragment() {
         val ageMonths = ageAndWeek.months
         val ageWeeks = ageAndWeek.weeks
         val ageDays = ageAndWeek.days
-        return !((ageYears !in RMNCH.PREGNANCY_MIN_AGE..RMNCH.PREGNANCY_MAX_AGE) || (ageYears == RMNCH.PREGNANCY_MAX_AGE && (ageMonths + ageWeeks + ageDays) != 0))
+        return !(
+            (ageYears !in RMNCH.PREGNANCY_MIN_AGE..RMNCH.PREGNANCY_MAX_AGE) ||
+                (ageYears == RMNCH.PREGNANCY_MAX_AGE && (ageMonths + ageWeeks + ageDays) != 0)
+        )
     }
 
-    private fun getAgeValue(ageFromDob: String): String {
-        return if (!ageFromDob.contains(" ") && ageFromDob.isNotEmpty())
+    private fun getAgeValue(ageFromDob: String): String =
+        if (!ageFromDob.contains(" ") && ageFromDob.isNotEmpty()) {
             requireContext().getString(
                 R.string.firstname_lastname,
                 ageFromDob,
-                getString(R.string.years)
+                getString(R.string.years),
             )
-        else if (ageFromDob.isEmpty()) {
+        } else if (ageFromDob.isEmpty()) {
             requireContext().getString(R.string.seperator_hyphen)
-        } else
+        } else {
             ageFromDob
-    }
-
+        }
 }

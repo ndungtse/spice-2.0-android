@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.ui.medicalreview.labTechnician
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -25,7 +24,6 @@ import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationListe
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, InvestigationListener {
-
     private lateinit var binding: ActivityLabTestListBinding
     private val viewModel: NCDLabTestViewModel by viewModels()
     private val patientDetailViewModel: PatientDetailViewModel by viewModels()
@@ -93,12 +91,14 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    GeneralSuccessDialog.newInstance(
-                        title = getString(R.string.lab_test),
-                        message = resource.data?.message
-                            ?: getString(R.string.lab_test_result_save),
-                        okayButton = getString(R.string.done)
-                    ) { finish() }.show(supportFragmentManager, GeneralSuccessDialog.TAG)
+                    GeneralSuccessDialog
+                        .newInstance(
+                            title = getString(R.string.lab_test),
+                            message = resource.data?.message
+                                ?: getString(R.string.lab_test_result_save),
+                            okayButton = getString(R.string.done),
+                        ) { finish() }
+                        .show(supportFragmentManager, GeneralSuccessDialog.TAG)
                 }
             }
         }
@@ -136,7 +136,7 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
             it.getStringExtra(DefinedParams.FhirId)?.let { id ->
                 patientDetailViewModel.getPatients(
                     id,
-                    origin = patientDetailViewModel.origin?.lowercase()
+                    origin = patientDetailViewModel.origin?.lowercase(),
                 )
             }
         }
@@ -145,7 +145,7 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
             binding.llInvestigationHolder,
             binding.nestedScrollView,
             translate = SecuredPreference.getIsTranslationEnabled(),
-            this
+            this,
         )
         viewModel.encounterId = intent?.getStringExtra(NCDMRUtil.EncounterReference)
     }
@@ -159,16 +159,20 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
             val diagnosis: List<String?>? =
                 patientDetails.confirmDiagnosis?.diagnosis?.map { it.name }
             binding.tvDiagnoses.text =
-                if (diagnosis.isNullOrEmpty()) getString(R.string.hyphen_symbol) else diagnosis.joinToString(
-                    separator = getString(R.string.comma_symbol)
-                )
+                if (diagnosis.isNullOrEmpty()) {
+                    getString(R.string.hyphen_symbol)
+                } else {
+                    diagnosis.joinToString(
+                        separator = getString(R.string.comma_symbol),
+                    )
+                }
 
             patientDetails.cvdRiskScore?.let { score ->
                 if (score > 0) {
                     binding.tvPatientRisk.text = StringConverter.appendTexts(
-                        "${score}%",
+                        "$score%",
                         patientDetails.cvdRiskLevel,
-                        separator = getString(R.string.separator_hyphen)
+                        separator = getString(R.string.separator_hyphen),
                     )
                     val textColor = CommonUtils.cvdRiskColorCode(score.toLong(), this)
                     binding.tvPatientRisk.setTextColor(textColor)
@@ -181,8 +185,8 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
                         firstText = text,
                         data.age?.toString(),
                         data.gender?.capitalizeFirstChar(),
-                        separator = getString(R.string.separator_hyphen)
-                    )
+                        separator = getString(R.string.separator_hyphen),
+                    ),
                 )
             }
         }
@@ -197,7 +201,7 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
                     patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
                         viewModel.updateLabTest(
                             geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation()),
-                            data
+                            data,
                         )
                     }
                 } else {
@@ -224,8 +228,10 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
 //     Method not to be used
     }
 
-    override fun markAsReviewed(id: String?, comments: String?) {
+    override fun markAsReviewed(
+        id: String?,
+        comments: String?,
+    ) {
 //     Method not to be used
     }
 }
-

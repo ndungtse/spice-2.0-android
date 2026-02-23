@@ -35,25 +35,29 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.communityprofile.adapter.CommunitySummaryAdapter
 import com.medtroniclabs.spice.ui.communityprofile.viewmodel.CommunityProfileViewModel
 
-
 class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentCommunityProfileSummaryBinding
     private lateinit var communitySummaryAdapter: CommunitySummaryAdapter
     private val viewModel: CommunityProfileViewModel by activityViewModels()
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentCommunityProfileSummaryBinding.inflate(
             layoutInflater,
             container,
-            false
+            false,
         )
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         addObservers()
@@ -87,7 +91,7 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun setData(
         statistics: CommunityPopulationStatistics?,
-        details: CommunityProfile?
+        details: CommunityProfile?,
     ) {
         val communityList = mutableListOf<CommunitySummaryListItem>()
         communityList.add(CommunitySummaryListItem.TitleItem(getString(R.string.profile_details)))
@@ -95,109 +99,110 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
             CommunitySummaryListItem.ProfileItem(
                 arguments?.getString(DefinedParams.COMMUNITY_NAME),
                 details?.communityDescription,
-                DateUtils.convertUTCString(details?.registeredDate, DATE_FORMAT_ddMMMyyyy)
-            )
+                DateUtils.convertUTCString(details?.registeredDate, DATE_FORMAT_ddMMMyyyy),
+            ),
         )
         communityList.add(
             CommunitySummaryListItem.TitleItem(
                 getString(
-                    R.string.community_population_statistics
-                )
-            )
+                    R.string.community_population_statistics,
+                ),
+            ),
         )
         communityList.add(
             CommunitySummaryListItem.OtherItem(
                 getString(R.string.total_population),
-                statistics?.populationCount.toString()
-            )
+                statistics?.populationCount.toString(),
+            ),
         )
         communityList.add(
             CommunitySummaryListItem.OtherItem(
                 getString(R.string.no_of_household_families),
-                statistics?.householdCount.toString()
-            )
+                statistics?.householdCount.toString(),
+            ),
         )
         communityList.add(
             CommunitySummaryListItem.OtherItem(
                 getString(R.string.no_of_women_of_child_bearing_age),
-                statistics?.childBearingAgeOfWomen.toString()
-            )
+                statistics?.childBearingAgeOfWomen.toString(),
+            ),
         )
         communityList.add(
             CommunitySummaryListItem.OtherItem(
                 getString(R.string.no_of_pregnant_women),
-                statistics?.pregnantCount.toString()
-            )
+                statistics?.pregnantCount.toString(),
+            ),
         )
         communityList.add(
             CommunitySummaryListItem.OtherItem(
                 getString(R.string.no_of_child_under_one_year),
-                statistics?.belowOneYearCount.toString()
-            )
+                statistics?.belowOneYearCount.toString(),
+            ),
         )
         communityList.add(
             CommunitySummaryListItem.OtherItem(
                 getString(R.string.no_of_children_under_five_years),
-                statistics?.belowFiveYearCount.toString()
-            )
+                statistics?.belowFiveYearCount.toString(),
+            ),
         )
 
         details?.payload?.let { payloadString ->
             val payload = StringConverter.stringToMap(payloadString)
-
         }
-        
+
         details?.payload?.let { payload ->
-            val forms = viewModel.formLayoutLiveData.value?.data?.formLayout?.filter { it.isSummary == true }
+            val forms = viewModel.formLayoutLiveData.value
+                ?.data
+                ?.formLayout
+                ?.filter { it.isSummary == true }
             val dataMap = StringConverter.stringToMap(payload)
-            
-            //Water and sanitation
+
+            // Water and sanitation
             val waterAndSanitation = dataMap[WaterAndSanitationFacilities] as LinkedTreeMap<*, *>
             val waterAndSanitationForms = forms?.filter { it.family == WaterAndSanitationFacilities }
             communityList.add(
                 CommunitySummaryListItem.TitleItem(
                     getString(
-                        R.string.water_and_sanitation_facilities
-                    )
-                )
+                        R.string.water_and_sanitation_facilities,
+                    ),
+                ),
             )
             waterAndSanitationForms?.forEach { form ->
                 val value = waterAndSanitation[form.id]
                 communityList.add(
                     CommunitySummaryListItem.OtherItem(
                         form.title,
-                        value.toString()
-                    )
+                        value.toString(),
+                    ),
                 )
             }
 
-
-            //Infrastructure
+            // Infrastructure
             val infrastructure = dataMap[Infrastructure] as LinkedTreeMap<*, *>
             val infrastructureForms = forms?.filter { it.family == Infrastructure }
             communityList.add(
                 CommunitySummaryListItem.TitleItem(
-                    getString(R.string.infrastructure_facilities)
-                )
+                    getString(R.string.infrastructure_facilities),
+                ),
             )
 
             infrastructureForms?.forEach { form ->
-                when(form.id){
+                when (form.id) {
                     MarketDays -> {
                         val marketDays = infrastructure[form.id] as? ArrayList<String>
-                        val size = marketDays?.size?:0
-                        if(size > 0) {
+                        val size = marketDays?.size ?: 0
+                        if (size > 0) {
                             communityList.add(
                                 CommunitySummaryListItem.OtherItemText(
                                     getString(R.string.market_days),
-                                    marketDays?.joinToString(",") { it.take(3) ?: "" }
-                                )
+                                    marketDays?.joinToString(",") { it.take(3) ?: "" },
+                                ),
                             )
                         }
                     }
                     MobileNetworkCoverage -> {
                         val value = infrastructure[form.id]
-                        when(value.toString()){
+                        when (value.toString()) {
                             True -> {
                                 viewModel.isNetworkCoverage = true
                                 viewModel.networkName = form.title
@@ -207,8 +212,8 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
                                     CommunitySummaryListItem.OtherItem(
                                         form.title,
                                         value.toString(),
-                                        isText = false
-                                    )
+                                        isText = false,
+                                    ),
                                 )
                             }
                         }
@@ -220,8 +225,9 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
                         if (viewModel.isNetworkCoverage && size > 0) {
                             if (!value.isNullOrEmpty()) {
                                 val valueList = value.let { CommonUtils.convertListToString(it) }
-                                if (value.contains(getString(R.string.other)) && infrastructure.containsKey(
-                                        OtherNetwork
+                                if (value.contains(getString(R.string.other)) &&
+                                    infrastructure.containsKey(
+                                        OtherNetwork,
                                     )
                                 ) {
                                     viewModel.otherNetwork =
@@ -229,15 +235,15 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
                                     communityList.add(
                                         CommunitySummaryListItem.OtherItemText(
                                             viewModel.networkName,
-                                            "$valueList - ${viewModel.otherNetwork}"
-                                        )
+                                            "$valueList - ${viewModel.otherNetwork}",
+                                        ),
                                     )
                                 } else {
                                     communityList.add(
                                         CommunitySummaryListItem.OtherItemText(
                                             viewModel.networkName,
-                                            valueList
-                                        )
+                                            valueList,
+                                        ),
                                     )
                                 }
                             }
@@ -245,7 +251,7 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
                     }
                     ChwHouseInCommunity -> {
                         val value = infrastructure[form.id]
-                        when(value.toString()){
+                        when (value.toString()) {
                             True -> {
                                 viewModel.isChwHome = true
                                 viewModel.chwHome = form.title
@@ -255,20 +261,20 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
                                     CommunitySummaryListItem.OtherItem(
                                         form.title,
                                         value.toString(),
-                                        isText = false
-                                    )
+                                        isText = false,
+                                    ),
                                 )
                             }
                         }
                     }
                     DescribeLocation -> {
                         val value = infrastructure[form.id]
-                        if(viewModel.isChwHome) {
+                        if (viewModel.isChwHome) {
                             communityList.add(
                                 CommunitySummaryListItem.OtherItemText(
                                     viewModel.chwHome,
-                                    value.toString()
-                                )
+                                    value.toString(),
+                                ),
                             )
                             viewModel.isChwHome = false
                             viewModel.chwHome = ""
@@ -280,32 +286,32 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
                             CommunitySummaryListItem.OtherItem(
                                 form.title,
                                 value.toString(),
-                                isText = (value is String)
-                            )
+                                isText = (value is String),
+                            ),
                         )
                     }
                 }
             }
 
-            //EmergencyManagementPlan
+            // EmergencyManagementPlan
             val emergency = dataMap[EmergencyManagementPlan] as LinkedTreeMap<*, *>
             val emergencyForms = forms?.filter { it.family == EmergencyManagementPlan }
             communityList.add(
                 CommunitySummaryListItem.TitleItem(
-                    getString(R.string.emergency_management_plan)
-                )
+                    getString(R.string.emergency_management_plan),
+                ),
             )
-            val emergencyMap = mutableMapOf<String,String>()
+            val emergencyMap = mutableMapOf<String, String>()
             emergencyForms?.forEach { form ->
                 val value = emergency[form.id]
-                when(form.id){
+                when (form.id) {
                     NearestPhu -> {
                         viewModel.nearestPhu = value.toString()
                     }
                     AccessRoadToPhu -> {
-                        when(value.toString()){
-                            True ->  emergencyMap[form.title] = getString(R.string.yes)
-                            False ->  emergencyMap[form.title] = getString(R.string.no)
+                        when (value.toString()) {
+                            True -> emergencyMap[form.title] = getString(R.string.yes)
+                            False -> emergencyMap[form.title] = getString(R.string.no)
                         }
                     }
                     else -> {
@@ -316,18 +322,14 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
 
             communityList.add(
                 CommunitySummaryListItem.EmergencyItem(
-                     viewModel.nearestPhu,
-                    emergencyMap
-                )
+                    viewModel.nearestPhu,
+                    emergencyMap,
+                ),
             )
-            
         }
-
 
         communitySummaryAdapter.updateList(communityList)
     }
-
-
 
     fun navigateToEditScreen() {
         arguments?.getLong(DefinedParams.COMMUNITY_ID)?.let {
@@ -335,12 +337,12 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
                 putLong(DefinedParams.COMMUNITY_ID, it)
                 putString(
                     DefinedParams.COMMUNITY_NAME,
-                    arguments?.getString(DefinedParams.COMMUNITY_NAME)
+                    arguments?.getString(DefinedParams.COMMUNITY_NAME),
                 )
                 arguments?.getBoolean(DefinedParams.COMMUNITY_REGISTERED)?.let {
                     putBoolean(
                         DefinedParams.COMMUNITY_REGISTERED,
-                        it
+                        it,
                     )
                 }
             }
@@ -355,7 +357,7 @@ class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.btnDone -> {
-                //viewModel.updateCurrentFragment(1)
+                // viewModel.updateCurrentFragment(1)
                 requireActivity().finish()
                 viewModel.setUserJourney(AnalyticsDefinedParams.DONEBUTTONTRIGGERED)
             }

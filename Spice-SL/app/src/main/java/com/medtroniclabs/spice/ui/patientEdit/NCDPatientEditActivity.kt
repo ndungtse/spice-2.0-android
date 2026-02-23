@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.patientEdit
 
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -14,13 +13,10 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.patientEdit.fragment.NCDPatientEditFragment
-import com.medtroniclabs.spice.ui.patientEdit.viewModel.NCDPatientEditViewModel
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class NCDPatientEditActivity : BaseActivity() {
-
     private lateinit var binding: ActivityNcdPatientEditBinding
     private val patientDetailViewModel: PatientDetailViewModel by viewModels()
 
@@ -31,7 +27,7 @@ class NCDPatientEditActivity : BaseActivity() {
             binding.root,
             true,
             getString(R.string.patient_details),
-            homeAndBackVisibility = Pair(true, null)
+            homeAndBackVisibility = Pair(true, null),
         )
         showVerticalMoreIcon(false)
         getPatientDetails()
@@ -45,7 +41,7 @@ class NCDPatientEditActivity : BaseActivity() {
             it.getStringExtra(NCDMRUtil.MEMBER_REFERENCE)?.let { id ->
                 patientDetailViewModel.getPatients(
                     id,
-                    origin = MenuConstants.MY_PATIENTS_MENU_ID
+                    origin = MenuConstants.MY_PATIENTS_MENU_ID,
                 )
             }
         }
@@ -54,21 +50,21 @@ class NCDPatientEditActivity : BaseActivity() {
     private fun loadFragment() {
         replaceFragmentInId<NCDPatientEditFragment>(
             binding.fragmentContainerAssessment.id,
-            tag = NCDPatientEditFragment.TAG
+            tag = NCDPatientEditFragment.TAG,
         )
     }
 
     private inline fun <reified fragment : Fragment> replaceFragmentInId(
         id: Int? = null,
         bundle: Bundle? = null,
-        tag: String? = null
+        tag: String? = null,
     ) {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             replace<fragment>(
                 id ?: binding.fragmentContainerAssessment.id,
                 args = bundle,
-                tag = tag
+                tag = tag,
             )
         }
         hideHomeButton(true)

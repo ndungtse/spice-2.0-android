@@ -21,13 +21,13 @@ data class LoginResponse(
     val isTermsAndConditionsAccepted: Boolean? = null,
     val suiteAccess: List<String>,
     val client: String,
-    val phoneNumber: String? = null
+    val phoneNumber: String? = null,
 )
 
 data class TimeZoneModel(
     val id: Long,
     val offset: String? = null,
-    val description: String
+    val description: String,
 )
 
 data class CountryModel(
@@ -35,18 +35,18 @@ data class CountryModel(
     val name: String,
     val countryCode: String? = null,
     val phoneNumberCode: String? = null,
-    val unitMeasurement:String? = null,
-    val tenantId: Long? = null
+    val unitMeasurement: String? = null,
+    val tenantId: Long? = null,
 )
 
 data class OrganizationModel(
     val id: Long,
-    val name: String
+    val name: String,
 )
 
 data class UserRole(
     val id: Int,
     val name: String,
     val level: Int,
-    val authority: String
+    val authority: String,
 )

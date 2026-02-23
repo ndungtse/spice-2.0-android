@@ -6,7 +6,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.medtroniclabs.spice.BuildConfig
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.CulturesEntity
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.DosageFrequency
@@ -87,7 +86,8 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 
 @Database(
-    entities = [HouseholdEntity::class, HouseholdMemberEntity::class, SignsAndSymptomsEntity::class, AssessmentEntity::class, MenuEntity::class,
+    entities = [
+        HouseholdEntity::class, HouseholdMemberEntity::class, SignsAndSymptomsEntity::class, AssessmentEntity::class, MenuEntity::class,
         UserProfileEntity::class, VillageEntity::class, HealthFacilityEntity::class, ClinicalWorkflowEntity::class, FormEntity::class,
         ClinicalWorkflowConditionEntity::class, MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class,
         FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class,
@@ -95,21 +95,31 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class,
         RiskFactorEntity::class, LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, UnitMetricEntity::class,
         DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class, DosageDurationEntity::class, NCDFollowUp::class,
-        LinkedVillageEntity::class, NCDCallDetails::class, NCDPatientDetailsEntity::class,CommunityProfile::class,RxBuddyDetails::class,TreatmentDetailsEntity::class,RxBuddyFollowUpEntity::class,
-        SubVillageEntity::class, ShasthyaShebikaEntity::class, ShasthyaShebikaLinkedVillageEntity::class],
-    version = 1
+        LinkedVillageEntity::class, NCDCallDetails::class, NCDPatientDetailsEntity::class, CommunityProfile::class, RxBuddyDetails::class, TreatmentDetailsEntity::class, RxBuddyFollowUpEntity::class,
+        SubVillageEntity::class, ShasthyaShebikaEntity::class, ShasthyaShebikaLinkedVillageEntity::class,
+    ],
+    version = 1,
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
 abstract class SpiceDataBase : RoomDatabase() {
     abstract fun householdDAO(): HouseholdDAO
+
     abstract fun memberDAO(): MemberDAO
+
     abstract fun assessmentDAO(): AssessmentDAO
+
     abstract fun metaDataDAO(): MetaDataDAO
+
     abstract fun examinationsComplaintsDAO(): ExaminationsComplaintsDAO
+
     abstract fun diagnosisDAO(): DiagnosisDAO
+
     abstract fun aboveFiveYearsDAO(): AboveFiveYearsDAO
+
     abstract fun examinationsDAO(): ExaminationsDAO
+
     abstract fun labourDeliveryDAO(): LabourDeliveryDAO
+
     abstract fun followUpDao(): FollowUpDao
 
     abstract fun followUpCallsDao(): FollowUpCallsDao
@@ -125,15 +135,23 @@ abstract class SpiceDataBase : RoomDatabase() {
     abstract fun callHistoryDao(): CallHistoryDao
 
     abstract fun screeningDAO(): ScreeningDAO
+
     abstract fun riskFactorDao(): RiskFactorDAO
 
     abstract fun ncdMedicalReviewDao(): NcdMedicalReviewDao
+
     abstract fun ncdFollowUpDao(): NCDFollowUpDao
+
     abstract fun communityDetailsDao(): CommunityDetailsDAO
+
     abstract fun rxBuddyDao(): RxBuddyDetailsDAO
-    abstract fun treatmentDetailsDao():TreatmentDetailsDAO
-    abstract fun rxBuddyFollowUpDao():RxBuddyFollowUpDAO
+
+    abstract fun treatmentDetailsDao(): TreatmentDetailsDAO
+
+    abstract fun rxBuddyFollowUpDao(): RxBuddyFollowUpDAO
+
     abstract fun hivMetaDataDAO(): HivMetaDataDAO
+
     companion object {
         private const val DATABASE_NAME = "SpiceDataBase"
 
@@ -145,18 +163,17 @@ abstract class SpiceDataBase : RoomDatabase() {
                 INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
             }
 
-
         private fun buildDatabase(context: Context): SpiceDataBase {
             System.loadLibrary("sqlcipher")
             val factory = SupportOpenHelperFactory(BuildConfig.ROOM_DB_ENCRYPTION_KEY.toByteArray(Charsets.UTF_8))
             val db = Room.databaseBuilder(
                 context.applicationContext,
                 SpiceDataBase::class.java,
-                DATABASE_NAME
+                DATABASE_NAME,
             )
-            if (!BuildConfig.DEBUG)
+            if (!BuildConfig.DEBUG) {
                 db.openHelperFactory(factory)
-
+            }
 
             return db.build()
         }

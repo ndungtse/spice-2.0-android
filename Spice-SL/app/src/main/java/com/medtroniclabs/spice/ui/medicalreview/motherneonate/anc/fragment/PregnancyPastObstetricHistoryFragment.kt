@@ -23,15 +23,14 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PregnancyPastObstetricHistoryFragment : BaseFragment() {
-
     private lateinit var binding: FragmentPregnancyPastObstetricHistoryBinding
     private lateinit var complaintsTagView: TagListCustomView
     private val viewModel: PregnancyPastObstetricHistoryViewModel by activityViewModels()
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPregnancyPastObstetricHistoryBinding.inflate(inflater, container, false)
         return binding.root
@@ -39,11 +38,14 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
 
     companion object {
         const val TAG = "PregnancyPastObstetricHistoryFragment"
-        fun newInstance() =
-            PregnancyPastObstetricHistoryFragment()
+
+        fun newInstance() = PregnancyPastObstetricHistoryFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.setAncReqToGetMetaForPregnancyHistory(MedicalReviewTypeEnums.PregnancyHistories.name)
         attachObservers()
@@ -56,7 +58,7 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
                     id = item.id,
                     name = item.name,
                     type = item.type,
-                    value = item.value
+                    value = item.value,
                 )
             } as ArrayList<ChipViewItemModel>
             initView(complaintList) {
@@ -79,18 +81,18 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
 
     private fun initView(
         complaintList: ArrayList<ChipViewItemModel>,
-        updateNextButtonStateCallback: (() -> Unit)? = null
+        updateNextButtonStateCallback: (() -> Unit)? = null,
     ) {
         var isOtherChip = false
         complaintsTagView =
             TagListCustomView(
                 binding.root.context,
                 binding.tagViewPresentingComplaints,
-                callBack = { name, _,isChecked ->
+                callBack = { name, _, isChecked ->
                     viewModel.pregnancyHistoryChip =
                         ArrayList(complaintsTagView.getSelectedTags())
                     updateNextButtonStateCallback?.invoke()
-                }
+                },
             )
         viewModel.pregnancyHistoryOther =
             complaintList.firstOrNull { it.name.equals(DefinedParams.Other, ignoreCase = true) }
@@ -104,7 +106,7 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
                 viewModel.resultFlowHashMap,
                 Pair(TAG, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                singleSelectionCallback
+                singleSelectionCallback,
             )
             binding.btnLayout.addView(view)
         }
@@ -119,12 +121,10 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
             viewModel.checkSubmitBtn()
         }
 
-
     private fun getRMNCHFlowData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
         flowList.add(CommonUtils.getOptionMap(getString(R.string.yes), getString(R.string.yes)))
         flowList.add(CommonUtils.getOptionMap(getString(R.string.no), getString(R.string.no)))
         return flowList
     }
-
 }

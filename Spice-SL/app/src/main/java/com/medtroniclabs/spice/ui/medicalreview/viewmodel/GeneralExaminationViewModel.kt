@@ -16,22 +16,22 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GeneralExaminationViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO : CoroutineDispatcher,
-    private var repository: ExaminationComplaintsRepository
-): ViewModel() {
-
-    var systemicExaminationsType : String = ""
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    private var repository: ExaminationComplaintsRepository,
+) : ViewModel() {
+    var systemicExaminationsType: String = ""
     var selectedSystemicExaminations = ArrayList<ChipViewItemModel>()
     var enteredExaminationNotes = ""
     val systemicExaminationList = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
     var isMotherPnc: Boolean = false
-    var breastConditionValue: String?=null
-    var uterusConditionValue: String?=null
-    var specifyCondition:String?=null
-    var specifyConditionUterus:String?=null
-    var breastFeeding: Boolean?=null
+    var breastConditionValue: String? = null
+    var uterusConditionValue: String? = null
+    var specifyCondition: String? = null
+    var specifyConditionUterus: String? = null
+    var breastFeeding: Boolean? = null
     val breastConditionMap = HashMap<String, Any>()
     val uterusConditionMap = HashMap<String, Any>()
+
     fun getSystemicExaminationList(type: String) {
         viewModelScope.launch(dispatcherIO) {
             systemicExaminationList.postLoading()

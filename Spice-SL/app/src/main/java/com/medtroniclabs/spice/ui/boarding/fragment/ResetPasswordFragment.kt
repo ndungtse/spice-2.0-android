@@ -8,8 +8,6 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
-import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.Validator
 import com.medtroniclabs.spice.databinding.FragmentEmailBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -18,12 +16,13 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ResetPasswordFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentEmailBinding
     private val viewModel: ForgotPasswordViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentEmailBinding.inflate(inflater, container, false)
         return binding.root
@@ -31,10 +30,14 @@ class ResetPasswordFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "EmailFragment"
+
         fun newInstance() = ResetPasswordFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         binding.tvEmailError.gone()
         initView()
@@ -58,7 +61,9 @@ class ResetPasswordFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun validateEmailInputs() {
-        val emailOrPhoneNumber = binding.etEmail.text.toString().trim()
+        val emailOrPhoneNumber = binding.etEmail.text
+            .toString()
+            .trim()
 
         if (emailOrPhoneNumber.isBlank()) {
             binding.tvEmailError.visible()
@@ -83,4 +88,3 @@ class ResetPasswordFragment : BaseFragment(), View.OnClickListener {
         withNetworkAvailability(online = { viewModel.resetEmail(emailOrPhoneNumber) })
     }
 }
-

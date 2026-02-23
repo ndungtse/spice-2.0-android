@@ -8,7 +8,7 @@ data class DiagnosisSaveUpdateRequest(
     val diseases: ArrayList<DiagnosisDiseaseModel>,
     val provenance: ProvanceDto,
     val otherNotes: String? = null,
-    val type: String
+    val type: String,
 )
 
 data class DiagnosisDiseaseModel(
@@ -17,5 +17,5 @@ data class DiagnosisDiseaseModel(
     val diseaseCategory: String,
     val notes: String? = null,
     val diseaseCondition: String?,
-    var type: String? = null
+    var type: String? = null,
 )

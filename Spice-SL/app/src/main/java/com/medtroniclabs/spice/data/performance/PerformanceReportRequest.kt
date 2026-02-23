@@ -6,6 +6,6 @@ data class PerformanceReportRequest(
     val villageIds: List<Long>? = null,
     val fromDate: String = "2024-08-01",
     val toDate: String = "2024-08-31",
-    var skip : Int = 0,
-    val limit: Int = 15
+    var skip: Int = 0,
+    val limit: Int = 15,
 )

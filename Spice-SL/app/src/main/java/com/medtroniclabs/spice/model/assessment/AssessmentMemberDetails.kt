@@ -10,8 +10,8 @@ data class AssessmentMemberDetails(
     val householdNo: Long? = null,
     val householdId: String? = null,
     val householdLocalId: Long,
-    val id:Long,
+    val id: Long,
     var isPregnant: Boolean? = null,
     val contactTracingStatus: Int? = null,
-    val phoneNumber: String? = null
+    val phoneNumber: String? = null,
 )

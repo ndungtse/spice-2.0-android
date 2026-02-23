@@ -8,5 +8,5 @@ data class NCDSiteRoleResponse(
     val firstName: String?,
     val email: String?,
     val username: String?,
-    val lastName: String?
+    val lastName: String?,
 )

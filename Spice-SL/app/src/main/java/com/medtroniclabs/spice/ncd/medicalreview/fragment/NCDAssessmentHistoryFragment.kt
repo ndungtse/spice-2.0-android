@@ -41,15 +41,15 @@ import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentNcdAssessmentHistoryBinding
     private var isBPSummary: Boolean = false
     private val viewModel: NCDBpAndBgViewModel by activityViewModels()
     private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentNcdAssessmentHistoryBinding.inflate(inflater, container, false)
@@ -58,11 +58,14 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "NCDAssessmentHistoryFragment"
-        fun newInstance() =
-            NCDAssessmentHistoryFragment()
+
+        fun newInstance() = NCDAssessmentHistoryFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isBPSummary = arguments?.getString(NCDMRUtil.TAG) == BP_TAG
         initializeViews()
@@ -126,7 +129,7 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
                             adapterView: AdapterView<*>?,
                             view: View?,
                             pos: Int,
-                            itemId: Long
+                            itemId: Long,
                         ) {
                             val selectedItem =
                                 (adapter as CustomSpinnerAdapter).getData(position = pos)
@@ -151,21 +154,20 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
         val dropDownList: ArrayList<Map<String, Any>> = arrayListOf(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to RBS_FBS,
-                DefinedParams.ID to NCDMRUtil.fbs_rbs_code
+                DefinedParams.ID to NCDMRUtil.fbs_rbs_code,
             ) as Map<String, Any>,
             hashMapOf<String, Any>(
                 DefinedParams.NAME to RBS,
-                DefinedParams.ID to NCDMRUtil.rbs_code
+                DefinedParams.ID to NCDMRUtil.rbs_code,
             ) as Map<String, Any>,
             hashMapOf<String, Any>(
                 DefinedParams.NAME to FBS,
-                DefinedParams.ID to NCDMRUtil.fbs_code
-            ) as Map<String, Any>
+                DefinedParams.ID to NCDMRUtil.fbs_code,
+            ) as Map<String, Any>,
         )
         adapter.setData(dropDownList)
         return adapter
     }
-
 
     private fun attachObservers() {
         viewModel.selectedBGDropDown.observe(viewLifecycleOwner) { num ->
@@ -189,8 +191,9 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     hideGraphLoader(true)
-                    if (isBPSummary)
+                    if (isBPSummary) {
                         loadBPValues(resourceState.data)
+                    }
                 }
             }
         }
@@ -207,8 +210,9 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     hideGraphLoader(false)
-                    if (!isBPSummary)
+                    if (!isBPSummary) {
                         loadBGValues(resourceState.data)
+                    }
                 }
             }
         }
@@ -221,7 +225,7 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
                 memberId = memberId,
                 latestRequired = true,
                 limit = NCDMRUtil.PageLimit,
-                sortOrder = -1 //Asc
+                sortOrder = -1, // Asc
 //                sortField = if (isBP) NCDMRUtil.BPTakenOn else NCDMRUtil.BGTakenOn
             )
 
@@ -247,12 +251,20 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
     private fun loadBPValues(bpLog: BPBGListModel?) {
         bpLog?.let {
             it.total.let {
-                viewModel.totalBPTotalCount = it//7
+                viewModel.totalBPTotalCount = it // 7
             }
             if (binding.ivGraphNext.tag == isBPSummary && binding.ivGraphPrevious.tag == isBPSummary) {
                 binding.ivGraphNext.isEnabled = bpLog.skip != 0
                 binding.ivGraphPrevious.isEnabled =
-                    viewModel.totalBPTotalCount?.let { count -> if (count != NCDMRUtil.PageLimit) viewModel.totalBPCount < (count / NCDMRUtil.PageLimit) else null }
+                    viewModel.totalBPTotalCount?.let { count ->
+                        if (count !=
+                            NCDMRUtil.PageLimit
+                        ) {
+                            viewModel.totalBPCount < (count / NCDMRUtil.PageLimit)
+                        } else {
+                            null
+                        }
+                    }
                         ?: false
             }
             it.latestBpLog?.let {
@@ -273,12 +285,14 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
             putString(NCDMRUtil.TAG, BP_TAG)
             putString(
                 NCDMRUtil.graphDetails,
-                Gson().toJson(log.apply {
-                    if (!bpLogList.isNullOrEmpty()) {
-                        bpLogList = ArrayList(bpLogList!!.reversed())
-                    }
-                }
-                ))
+                Gson().toJson(
+                    log.apply {
+                        if (!bpLogList.isNullOrEmpty()) {
+                            bpLogList = ArrayList(bpLogList!!.reversed())
+                        }
+                    },
+                ),
+            )
         }
         binding.tvLineOne.text = getString(R.string.systolic)
         binding.tvLineTwo.text = getString(R.string.diastolic)
@@ -288,14 +302,14 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
     private inline fun <reified fragment : Fragment> replaceFragmentInId(
         id: Int? = null,
         bundle: Bundle? = null,
-        tag: String? = null
+        tag: String? = null,
     ) {
         childFragmentManager.commit {
             setReorderingAllowed(true)
             replace<fragment>(
                 id ?: binding.llGraph.id,
                 args = bundle,
-                tag = tag
+                tag = tag,
             )
         }
     }
@@ -305,7 +319,8 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
             if (binding.ivGraphNext.tag == isBPSummary && binding.ivGraphPrevious.tag == isBPSummary) {
                 binding.ivGraphNext.isEnabled = it.skip != 0
                 binding.ivGraphPrevious.isEnabled =
-                    it.total != NCDMRUtil.PageLimit && viewModel.totalBGCount < (it.total / NCDMRUtil.PageLimit)
+                    it.total != NCDMRUtil.PageLimit &&
+                    viewModel.totalBGCount < (it.total / NCDMRUtil.PageLimit)
             }
             data.latestGlucoseLog?.let {
                 renderLatestBGLogDetails(it)
@@ -319,11 +334,16 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
             hideNoRecordView()
             val bundle = Bundle().apply {
                 putString(NCDMRUtil.TAG, NCDMRUtil.BG_TAG)
-                putString(NCDMRUtil.graphDetails, Gson().toJson(log.apply {
-                    if (!glucoseLogList.isNullOrEmpty()) {
-                        glucoseLogList = ArrayList(glucoseLogList!!.reversed())
-                    }
-                }))
+                putString(
+                    NCDMRUtil.graphDetails,
+                    Gson().toJson(
+                        log.apply {
+                            if (!glucoseLogList.isNullOrEmpty()) {
+                                glucoseLogList = ArrayList(glucoseLogList!!.reversed())
+                            }
+                        },
+                    ),
+                )
             }
             binding.tvLineOne.text = RBS
             binding.tvLineTwo.text = FBS
@@ -343,26 +363,27 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
         binding.llSummaryHolder.visible()
     }
 
-
     private fun renderLatestBPLogDetails(latestBPLog: BPLogList?) {
         latestBPLog?.let { log ->
-            val formattedDate = DateUtils.convertDateTimeToDate(
-                log.bpTakenOn,
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                DateUtils.DATE_FORMAT_ddMMMyyyy
-            ).ifEmpty { getString(R.string.separator_hyphen) }
+            val formattedDate = DateUtils
+                .convertDateTimeToDate(
+                    log.bpTakenOn,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    DateUtils.DATE_FORMAT_ddMMMyyyy,
+                ).ifEmpty { getString(R.string.separator_hyphen) }
             binding.llLastAssessment.tvValue.text = formattedDate
             binding.llValue.tvValue.text = getString(
                 R.string.average_mmhg_string,
                 CommonUtils.getDecimalFormatted(log.avgSystolic),
-                CommonUtils.getDecimalFormatted(log.avgDiastolic)
+                CommonUtils.getDecimalFormatted(log.avgDiastolic),
             )
             setSymptoms(
-                log.symptoms?.filter { it.isNotBlank() }
-                ?.takeIf { it.isNotEmpty() }
-                ?.joinToString(separator = ", ")
-                ?: getString(R.string.hyphen_symbol),
-                binding.llSymptoms.tvValue
+                log.symptoms
+                    ?.filter { it.isNotBlank() }
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.joinToString(separator = ", ")
+                    ?: getString(R.string.hyphen_symbol),
+                binding.llSymptoms.tvValue,
             )
         }
     }
@@ -370,7 +391,7 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
     private fun populateBGDetails(
         logList: ArrayList<GlucoseLogList>,
         num: Int?,
-        response: BPBGListModel
+        response: BPBGListModel,
     ) {
         val type = when (num) {
             NCDMRUtil.fbs_code -> NCDMRUtil.fbs
@@ -378,7 +399,9 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
             else -> null
         }
         type?.let { glucoseType ->
-            logList.firstOrNull { it.glucoseType == glucoseType }?.let { response.latestGlucoseLog }
+            logList
+                .firstOrNull { it.glucoseType == glucoseType }
+                ?.let { response.latestGlucoseLog }
                 ?.let {
                     renderLatestBGLogDetails(response.latestGlucoseLog)
                 } ?: renderLatestBGLogDetails(null)
@@ -391,27 +414,34 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
                 DateUtils.convertDateTimeToDate(
                     it,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    DateUtils.DATE_FORMAT_ddMMMyyyy
+                    DateUtils.DATE_FORMAT_ddMMMyyyy,
                 )
             } ?: getString(R.string.separator_hyphen)
 
             binding.llValue.tvValue.text = log.glucoseValue?.let {
                 "${CommonUtils.getDecimalFormatted(it)} ${getGlucoseUnit(log.glucoseUnit, false)}"
             } ?: getString(R.string.separator_hyphen)
-            setSymptoms(log.symptoms?.filter { it.isNotBlank() }
-                ?.takeIf { it.isNotEmpty() }
-                ?.joinToString(separator = ", ")
-                ?: getString(R.string.hyphen_symbol), binding.llSymptoms.tvValue)
+            setSymptoms(
+                log.symptoms
+                    ?.filter { it.isNotBlank() }
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.joinToString(separator = ", ")
+                    ?: getString(R.string.hyphen_symbol),
+                binding.llSymptoms.tvValue,
+            )
         } ?: run {
             listOf(
                 binding.llLastAssessment.tvValue,
                 binding.llValue.tvValue,
-                binding.llSymptoms.tvValue
+                binding.llSymptoms.tvValue,
             ).forEach { it.text = getString(R.string.separator_hyphen) }
         }
     }
 
-    private fun setSymptoms(symptoms: String, tvValue: TextView) {
+    private fun setSymptoms(
+        symptoms: String,
+        tvValue: TextView,
+    ) {
         // do more
         tvValue.setExpandableText(
             symptoms,
@@ -443,12 +473,17 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
     private fun assessmentBpBg() {
         if (CommonUtils.isNurse()) {
             binding.btnAddNewReading.text =
-                if (isBPSummary) getString(R.string.add_blood_pressure_readings) else getString(
-                    R.string.add_blood_glucose_readings
-                )
+                if (isBPSummary) {
+                    getString(R.string.add_blood_pressure_readings)
+                } else {
+                    getString(
+                        R.string.add_blood_glucose_readings,
+                    )
+                }
             binding.btnAddNewReading.visible()
-        } else
+        } else {
             binding.btnAddNewReading.gone()
+        }
     }
 
     private fun showGraphLoader(isBPSummary: Boolean) {
@@ -489,33 +524,41 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
                 // Show the new instance of the dialog
                 if (isBPSummary) {
                     if (existingFragment == null) {
-                        NCDBloodPressureVitalsDialog.newInstance(){
-                            GeneralSuccessDialog.newInstance(
-                                getString(R.string.blood_pressure), getString(
-                                    R.string.blood_pressure_saved_successfully
-                                ), getString(R.string.okay)
-                            ) {
-                                (requireActivity() as? NCDMedicalReviewCMRActivity)?.swipeRefresh()
-                            }.show(parentFragmentManager, GeneralSuccessDialog.TAG)
-                        }.show(
-                            childFragmentManager,
-                            NCDBloodPressureVitalsDialog.TAG
-                        )
+                        NCDBloodPressureVitalsDialog
+                            .newInstance {
+                                GeneralSuccessDialog
+                                    .newInstance(
+                                        getString(R.string.blood_pressure),
+                                        getString(
+                                            R.string.blood_pressure_saved_successfully,
+                                        ),
+                                        getString(R.string.okay),
+                                    ) {
+                                        (requireActivity() as? NCDMedicalReviewCMRActivity)?.swipeRefresh()
+                                    }.show(parentFragmentManager, GeneralSuccessDialog.TAG)
+                            }.show(
+                                childFragmentManager,
+                                NCDBloodPressureVitalsDialog.TAG,
+                            )
                     }
                 } else {
                     if (existingFragment == null) {
-                        NCDBloodGlucoseReadingDialog.newInstance(){
-                            GeneralSuccessDialog.newInstance(
-                                getString(R.string.blood_glucose), getString(
-                                    R.string.blood_glucose_saved_successfully
-                                ), getString(R.string.okay)
-                            ) {
-                                (requireActivity() as? NCDMedicalReviewCMRActivity)?.swipeRefresh()
-                            }.show(parentFragmentManager, GeneralSuccessDialog.TAG)
-                        }.show(
-                            childFragmentManager,
-                            NCDBloodGlucoseReadingDialog.TAG
-                        )
+                        NCDBloodGlucoseReadingDialog
+                            .newInstance {
+                                GeneralSuccessDialog
+                                    .newInstance(
+                                        getString(R.string.blood_glucose),
+                                        getString(
+                                            R.string.blood_glucose_saved_successfully,
+                                        ),
+                                        getString(R.string.okay),
+                                    ) {
+                                        (requireActivity() as? NCDMedicalReviewCMRActivity)?.swipeRefresh()
+                                    }.show(parentFragmentManager, GeneralSuccessDialog.TAG)
+                            }.show(
+                                childFragmentManager,
+                                NCDBloodGlucoseReadingDialog.TAG,
+                            )
                     }
                 }
             }

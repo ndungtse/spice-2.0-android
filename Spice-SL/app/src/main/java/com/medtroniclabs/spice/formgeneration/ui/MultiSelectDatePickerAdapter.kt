@@ -16,10 +16,8 @@ class MultiSelectDatePickerAdapter(
     private val initialSelectedDates: MutableSet<Long>,
     private val minDate: Long? = null,
     private val maxDate: Long? = null,
-    private val onDateSelected: (Set<Long>) -> Unit
+    private val onDateSelected: (Set<Long>) -> Unit,
 ) : RecyclerView.Adapter<MultiSelectDatePickerAdapter.ViewHolder>() {
-
-
     private val selectedDates = initialSelectedDates.toMutableSet()
 
     private val daysInMonth: Int
@@ -39,12 +37,18 @@ class MultiSelectDatePickerAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.item_calendar_day, parent, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         val date = dates[position]
         if (date == null) {
             holder.dateTextView.text = ""
@@ -53,19 +57,25 @@ class MultiSelectDatePickerAdapter(
             return
         }
 
-        val normalizedDate = Calendar.getInstance().apply {
-            timeInMillis = date
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.timeInMillis
+        val normalizedDate = Calendar
+            .getInstance()
+            .apply {
+                timeInMillis = date
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }.timeInMillis
 
         val isSelected = selectedDates.contains(normalizedDate)
 
         val isDisabled = (minDate != null && date < minDate) || (maxDate != null && date > maxDate)
 
-        holder.dateTextView.text = Calendar.getInstance().apply { timeInMillis = date }.get(Calendar.DAY_OF_MONTH).toString()
+        holder.dateTextView.text = Calendar
+            .getInstance()
+            .apply { timeInMillis = date }
+            .get(Calendar.DAY_OF_MONTH)
+            .toString()
         holder.dateTextView.isEnabled = !isDisabled
         holder.itemView.isClickable = !isDisabled
 
@@ -88,7 +98,6 @@ class MultiSelectDatePickerAdapter(
                 onDateSelected(selectedDates)
             }
         }
-
     }
 
     override fun getItemCount(): Int = dates.size

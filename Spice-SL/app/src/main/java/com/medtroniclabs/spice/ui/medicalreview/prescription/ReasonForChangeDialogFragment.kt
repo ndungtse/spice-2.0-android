@@ -18,9 +18,8 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseDialogFragment
 
 class ReasonForChangeDialogFragment(
-    private val callback: ReasonChangeCallback?
+    private val callback: ReasonChangeCallback?,
 ) : BaseDialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentReasonForChangeDialogBinding
 
     companion object {
@@ -29,12 +28,12 @@ class ReasonForChangeDialogFragment(
         fun newInstance(
             name: String? = null,
             regimen: Int? = null,
-            prescribedMedicine:Boolean = false,
-            callback: ReasonChangeCallback?
+            prescribedMedicine: Boolean = false,
+            callback: ReasonChangeCallback?,
         ): ReasonForChangeDialogFragment {
             val args = Bundle().apply {
                 putString(Medications, name)
-                regimen?.let {putInt(Regimen, it+1)  }
+                regimen?.let { putInt(Regimen, it + 1) }
                 putBoolean(PrescribedMedicine, prescribedMedicine)
             }
             return ReasonForChangeDialogFragment(callback).apply {
@@ -44,8 +43,9 @@ class ReasonForChangeDialogFragment(
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentReasonForChangeDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -53,7 +53,10 @@ class ReasonForChangeDialogFragment(
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         setListener()
@@ -75,24 +78,23 @@ class ReasonForChangeDialogFragment(
         binding.btnOkay.isEnabled = !reason.isNullOrEmpty()
     }
 
-    private fun isAlreadyPrescribedMedicine(): Boolean {
-        return arguments?.getBoolean(PrescribedMedicine, false) ?: false
-    }
+    private fun isAlreadyPrescribedMedicine(): Boolean = arguments?.getBoolean(PrescribedMedicine, false) ?: false
 
-    private fun getRegimenLine(): String {
-        return if (isAlreadyPrescribedMedicine()) {
+    private fun getRegimenLine(): String =
+        if (isAlreadyPrescribedMedicine()) {
             if (arguments?.getInt(Regimen) != null) {
-                when(arguments?.getInt(Regimen)) {
+                when (arguments?.getInt(Regimen)) {
                     1 -> "1st"
                     2 -> "2nd"
                     3 -> "3rd"
                     else -> "${arguments?.getInt(Regimen)}th"
                 }
-            } else "1st"
+            } else {
+                "1st"
+            }
         } else {
             "1st"
         }
-    }
 
     private fun initView() {
         binding.tvReferredReasonLabel.markMandatory()
