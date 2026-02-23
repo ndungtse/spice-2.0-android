@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel
 
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
@@ -28,8 +27,8 @@ class AddBpViewModel @Inject constructor(
             saveBloodPressure.postLoading()
             saveBloodPressure.postValue(
                 motherNeonateANCRepo.createBloodPressure(
-                    bpAndWeightRequestModel
-                )
+                    bpAndWeightRequestModel,
+                ),
             )
         }
     }

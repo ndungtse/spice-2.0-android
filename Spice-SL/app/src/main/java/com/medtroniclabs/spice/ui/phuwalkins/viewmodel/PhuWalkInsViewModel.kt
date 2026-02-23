@@ -22,12 +22,11 @@ import javax.inject.Inject
 class PhuWalkInsViewModel @Inject constructor(
     private val householdMemberRepository: HouseholdMemberRepository,
     private val houseHoldRepository: HouseHoldRepository,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
+    var memberID: Long = -1L
 
-    var memberID:Long=-1L
-
-    var fhirMemberID:Long=-1L
+    var fhirMemberID: Long = -1L
 
     val unAssignedMembers: LiveData<List<UnAssignedHouseholdMemberDetail>> =
         householdMemberRepository.getUnAssignedHouseholdMember()
@@ -36,32 +35,29 @@ class PhuWalkInsViewModel @Inject constructor(
         context: Context,
         name: String?,
         dob: String?,
-        gender: String?
-    ): String {
-        return context.getString(
+        gender: String?,
+    ): String =
+        context.getString(
             R.string.household_summary_member_info,
             name,
             CommonUtils.getAgeFromDOB(
                 dob,
-                context
+                context,
             ),
-            CommonUtils.getGenderText(gender, context)
+            CommonUtils.getGenderText(gender, context),
         )
-    }
 
-
-    fun getFilteredHouseholdsLiveData(villageIds: Long): LiveData<List<HouseHoldEntityWithMemberCount>> {
-        return houseHoldRepository.getFilteredHouseholdsLiveData(
+    fun getFilteredHouseholdsLiveData(villageIds: Long): LiveData<List<HouseHoldEntityWithMemberCount>> =
+        houseHoldRepository.getFilteredHouseholdsLiveData(
             "",
             villageIds = listOf(villageIds),
             ssIds = emptyList(),
-            ""
+            "",
         )
-    }
 
     fun getSearchHouseholdsLiveData(
         search: String,
-        villageId: Long
+        villageId: Long,
     ): LiveData<List<HouseHoldEntityWithMemberCount>> {
         val listVillage = ArrayList<Long>()
         listVillage.add(villageId)
@@ -69,7 +65,7 @@ class PhuWalkInsViewModel @Inject constructor(
             search,
             villageIds = listVillage,
             ssIds = emptyList(),
-            ""
+            "",
         )
     }
 
@@ -79,9 +75,8 @@ class PhuWalkInsViewModel @Inject constructor(
             householdMemberRepository.addLinkMemberCall(
                 memberID.toString(),
                 callStartTime = callStartTime,
-                callEndTime =  System.currentTimeMillis()
+                callEndTime = System.currentTimeMillis(),
             )
         }
     }
-
 }

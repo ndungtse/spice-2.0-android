@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ncd.medicalreview.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
@@ -31,9 +30,8 @@ class NCDBloodPressureVitalsViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val bloodPressureRepo: BloodPressureRepo,
     private var assessmentRepository: AssessmentRepository,
-    private val glucoseRepo: GlucoseRepo
+    private val glucoseRepo: GlucoseRepo,
 ) : BaseViewModel(dispatcherIO) {
-
     val resultHashMap = HashMap<String, Any>()
     var bpLog: FormLayout? = null
     var height: FormLayout? = null
@@ -48,9 +46,13 @@ class NCDBloodPressureVitalsViewModel @Inject constructor(
         getRiskEntityList.value = true
     }
 
-    fun getNcdFormData(formType: String, workFlow: String) {
+    fun getNcdFormData(
+        formType: String,
+        workFlow: String,
+    ) {
         getNcdFormData.value = Pair(formType, workFlow)
     }
+
     private val getNcdFormData = MutableLiveData<Pair<String, String>>()
     val formLayoutsNcdLiveData: LiveData<String> = getNcdFormData.switchMap {
         assessmentRepository.getAssessmentFormData(it.first, it.second)
@@ -61,29 +63,26 @@ class NCDBloodPressureVitalsViewModel @Inject constructor(
     private var systolicAverageSummary: Int? = null
     private var diastolicAverageSummary: Int? = null
 
-    fun getSystolicAverage(): Int? {
-        return systolicAverageSummary
-    }
+    fun getSystolicAverage(): Int? = systolicAverageSummary
 
-    fun getDiastolicAverage(): Int? {
-        return diastolicAverageSummary
-    }
+    fun getDiastolicAverage(): Int? = diastolicAverageSummary
 
-    fun createBpLog(
-        hashMap: HashMap<String, Any>
-    ) {
+    fun createBpLog(hashMap: HashMap<String, Any>) {
         viewModelScope.launch(dispatcherIO) {
             bpLogCreateResponseLiveData.postLoading()
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDBloodPressureCreationForNurse,
-                isCompleted = true
+                isCompleted = true,
             )
             bpLogCreateResponseLiveData.postValue(bloodPressureRepo.createBpLogForNurse(hashMap))
         }
     }
 
-    fun calculateBPValues(formLayout: FormLayout, resultMap: Map<String, Any>) {
+    fun calculateBPValues(
+        formLayout: FormLayout,
+        resultMap: Map<String, Any>,
+    ) {
         formLayout.apply {
             var systolic = 0.0
             var diastolic = 0.0
@@ -114,23 +113,28 @@ class NCDBloodPressureVitalsViewModel @Inject constructor(
                         }
                     }
                     updateAverage(
-                        actualMapList, systolicEntries, diastolicEntries, systolic, diastolic
+                        actualMapList,
+                        systolicEntries,
+                        diastolicEntries,
+                        systolic,
+                        diastolic,
                     )
                 }
             }
         }
     }
 
-    private fun validateMap(map: Any?, value: String): Double? {
-        return if (map is Map<*, *> && map.containsKey(value)) (map[value] as String).toDoubleOrNull() else null
-    }
+    private fun validateMap(
+        map: Any?,
+        value: String,
+    ): Double? = if (map is Map<*, *> && map.containsKey(value)) (map[value] as String).toDoubleOrNull() else null
 
     private fun updateAverage(
         actualMapList: java.util.ArrayList<*>,
         systolicEntries: Int,
         diastolicEntries: Int,
         systolic: Double,
-        diastolic: Double
+        diastolic: Double,
     ) {
         if (actualMapList.size > 0 && systolicEntries > 0 && diastolicEntries > 0) {
             systolicAverageSummary = (systolic / systolicEntries).roundToInt()
@@ -151,7 +155,7 @@ class NCDBloodPressureVitalsViewModel @Inject constructor(
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDBloodGlucoseCreationForNurse,
-                isCompleted = true
+                isCompleted = true,
             )
             glucoseLogCreateResponseLiveData.postValue(glucoseRepo.glucoseLogCreateForNurse(result))
         }

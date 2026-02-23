@@ -7,14 +7,13 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import javax.inject.Inject
 
 class ExaminationComplaintsRepository @Inject constructor(
-    private var roomHelper: RoomHelper
+    private var roomHelper: RoomHelper,
 ) {
-    suspend fun getComplaintsListByType(type: String): Resource<List<MedicalReviewMetaItems>> {
-     return try {
+    suspend fun getComplaintsListByType(type: String): Resource<List<MedicalReviewMetaItems>> =
+        try {
             val response = roomHelper.getExaminationsComplaintByType(type)
             Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 }

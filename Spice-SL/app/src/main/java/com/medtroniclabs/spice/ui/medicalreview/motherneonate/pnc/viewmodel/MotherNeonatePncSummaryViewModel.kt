@@ -22,17 +22,17 @@ import javax.inject.Inject
 @HiltViewModel
 class MotherNeonatePncSummaryViewModel @Inject constructor(
     private val motherNeonatePNCRepo: MotherNeonatePNCRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
     var nextFollowupDate: String? = null
-    var patientStatusMother:String? = null
+    var patientStatusMother: String? = null
     var patientStatusChild: String? = null
     private val getPncMetaForPatientStatus = MutableLiveData<String?>(null)
     var motherNeonatePncSummaryRequest = MotherNeonatePncSummaryRequest()
     val pncSummaryResponse = MutableLiveData<Resource<MotherNeonatePncSummaryResponse>>()
-    var pncMotherPatientStatus:List<PatientStatus>?=null
-    var pncChildPatientStatus:List<MedicalReviewMetaItems>?=null
-    var motherNeonateAlive=true
+    var pncMotherPatientStatus: List<PatientStatus>? = null
+    var pncChildPatientStatus: List<MedicalReviewMetaItems>? = null
+    var motherNeonateAlive = true
 
     val pncMetaLiveDataForPatientStatus: LiveData<List<MedicalReviewMetaItems>> =
         getPncMetaForPatientStatus
@@ -40,7 +40,7 @@ class MotherNeonatePncSummaryViewModel @Inject constructor(
                 category?.let {
                     motherNeonatePNCRepo.getExaminationsComplaintsForPnc(
                         MedicalReviewTypeEnums.patient_status.name,
-                        it
+                        it,
                     )
                 }
             }
@@ -53,7 +53,7 @@ class MotherNeonatePncSummaryViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             pncSummaryResponse.postLoading()
             pncSummaryResponse.postValue(
-                motherNeonatePNCRepo.getPncSummaryDetails(motherNeonatePncSummaryRequest)
+                motherNeonatePNCRepo.getPncSummaryDetails(motherNeonatePncSummaryRequest),
             )
         }
     }

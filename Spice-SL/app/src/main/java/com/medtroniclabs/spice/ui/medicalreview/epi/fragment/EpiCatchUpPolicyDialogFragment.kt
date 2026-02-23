@@ -17,14 +17,14 @@ import com.medtroniclabs.spice.ui.BaseDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.epi.adapter.EpiCatchUpPolicyAdapter
 import com.medtroniclabs.spice.ui.medicalreview.epi.viewmodel.ImmunisationViewModel
 
-class EpiCatchUpPolicyDialogFragment(private val missedVaccineCount: Int)  : BaseDialogFragment() {
-
+class EpiCatchUpPolicyDialogFragment(private val missedVaccineCount: Int) : BaseDialogFragment() {
     private val viewModel: ImmunisationViewModel by activityViewModels()
     private lateinit var binding: DialogEpiCatchUpPolicyBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogEpiCatchUpPolicyBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(R.drawable.bg_rounded_rect_white)
@@ -38,7 +38,10 @@ class EpiCatchUpPolicyDialogFragment(private val missedVaccineCount: Int)  : Bas
         dialog?.window?.setLayout(targetWidth, targetHeight)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         clickListener()
@@ -55,14 +58,13 @@ class EpiCatchUpPolicyDialogFragment(private val missedVaccineCount: Int)  : Bas
 
         viewModel.getEpiCatchUpPolicyItems()
         viewModel.epiCatchUpPolicyItems.observe(viewLifecycleOwner) {
-            when(it.state) {
+            when (it.state) {
                 ResourceState.SUCCESS -> {
                     it.data?.let { list ->
                         binding.rvCatchPolicyList.adapter = EpiCatchUpPolicyAdapter(list)
                     }
                 }
                 else -> {
-
                 }
             }
         }

@@ -16,14 +16,12 @@ import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Pregnancy
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import javax.inject.Inject
 
 class MotherNeonateANCRepo @Inject constructor(
     private val apiHelper: ApiHelper,
-    private val roomHelper: RoomHelper
+    private val roomHelper: RoomHelper,
 ) {
     suspend fun getMotherNeoNateAncStaticData(motherNeonateMetaResponse: MutableLiveData<Resource<Boolean>>) {
         try {
@@ -39,14 +37,14 @@ class MotherNeonateANCRepo @Inject constructor(
                                 data.obstetricExaminations,
                                 data.pregnancyHistories,
                                 data.bloodGroup,
-                                data.patientStatus
-                            )
+                                data.patientStatus,
+                            ),
                         )
                         roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.ANC_REVIEW.name)
                         roomHelper.saveDiagnosisList(data.diseaseCategories)
                         SecuredPreference.putBoolean(
                             SecuredPreference.EnvironmentKey.IS_MOTHER_NEONATE_LOADEDANC.name,
-                            true
+                            true,
                         )
                     }
                     motherNeonateMetaResponse.postSuccess()
@@ -67,50 +65,56 @@ class MotherNeonateANCRepo @Inject constructor(
         obstetricExaminations: List<MedicalReviewMetaItems>,
         pregnancyHistories: List<MedicalReviewMetaItems>,
         bloodGroup: List<MedicalReviewMetaItems>,
-        patientStatus: List<MedicalReviewMetaItems>
+        patientStatus: List<MedicalReviewMetaItems>,
     ): List<MedicalReviewMetaItems> {
         val chipItemList = mutableListOf<MedicalReviewMetaItems>()
-        chipItemList.addAll(presentingComplaints.map {
-            it.apply {
-                category = MedicalReviewTypeEnums.PresentingComplaints.name
-            }
-        })
-        chipItemList.addAll(obstetricExaminations.map {
-            it.apply {
-                category = MedicalReviewTypeEnums.ObstetricExaminations.name
-            }
-        })
-        chipItemList.addAll(pregnancyHistories.map {
-            it.apply {
-                category = MedicalReviewTypeEnums.PregnancyHistories.name
-            }
-        })
-        chipItemList.addAll(bloodGroup.map {
-            it.apply {
-                type = MedicalReviewTypeEnums.ANC_REVIEW.name
-                category = MedicalReviewTypeEnums.BloodGroup.name
-            }
-        })
-        chipItemList.addAll(patientStatus.map {
-            it.apply {
-                type = MedicalReviewTypeEnums.ANC_REVIEW.name
-                category = MedicalReviewTypeEnums.patient_status.name
-            }
-        })
+        chipItemList.addAll(
+            presentingComplaints.map {
+                it.apply {
+                    category = MedicalReviewTypeEnums.PresentingComplaints.name
+                }
+            },
+        )
+        chipItemList.addAll(
+            obstetricExaminations.map {
+                it.apply {
+                    category = MedicalReviewTypeEnums.ObstetricExaminations.name
+                }
+            },
+        )
+        chipItemList.addAll(
+            pregnancyHistories.map {
+                it.apply {
+                    category = MedicalReviewTypeEnums.PregnancyHistories.name
+                }
+            },
+        )
+        chipItemList.addAll(
+            bloodGroup.map {
+                it.apply {
+                    type = MedicalReviewTypeEnums.ANC_REVIEW.name
+                    category = MedicalReviewTypeEnums.BloodGroup.name
+                }
+            },
+        )
+        chipItemList.addAll(
+            patientStatus.map {
+                it.apply {
+                    type = MedicalReviewTypeEnums.ANC_REVIEW.name
+                    category = MedicalReviewTypeEnums.patient_status.name
+                }
+            },
+        )
         return chipItemList
     }
 
     fun getExaminationsComplaintsForAnc(
         category: String,
-        type: String
-    ): LiveData<List<MedicalReviewMetaItems>> {
-        return roomHelper.getExaminationsComplaintsForAnc(category, type)
-    }
+        type: String,
+    ): LiveData<List<MedicalReviewMetaItems>> = roomHelper.getExaminationsComplaintsForAnc(category, type)
 
-    suspend fun saveMotherNeonateAnc(
-        motherNeonateAncRequest: MotherNeonateAncRequest,
-    ):Resource<PatientEncounterResponse> {
-        return try {
+    suspend fun saveMotherNeonateAnc(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<PatientEncounterResponse> =
+        try {
             val response = apiHelper.saveMotherNeonateAnc(motherNeonateAncRequest)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
@@ -121,30 +125,26 @@ class MotherNeonateANCRepo @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun fetchSummary(request: MotherNeonateAncRequest): Resource<MotherNeonateAncSummaryModel> {
-        return try {
+    suspend fun fetchSummary(request: MotherNeonateAncRequest): Resource<MotherNeonateAncSummaryModel> =
+        try {
             val response = apiHelper.fetchSummary(request)
             if (response.isSuccessful) {
                 val res = response.body()
                 if (res?.status == true) {
-                    Resource(state = ResourceState.SUCCESS,response.body()?.entity)
+                    Resource(state = ResourceState.SUCCESS, response.body()?.entity)
                 } else {
                     Resource(state = ResourceState.ERROR)
                 }
             } else {
                 Resource(state = ResourceState.ERROR)
             }
-
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun fetchWeight(motherNeonateAncRequest: MotherNeonateAncRequest):
-            Resource<BpAndWeightResponse> {
-        return try {
+    suspend fun fetchWeight(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<BpAndWeightResponse> =
+        try {
             val response = apiHelper.fetchWeight(motherNeonateAncRequest)
             if (response.isSuccessful) {
                 val res = response.body()
@@ -159,11 +159,9 @@ class MotherNeonateANCRepo @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun fetchBloodPressure(motherNeonateAncRequest: MotherNeonateAncRequest):
-            Resource<BpAndWeightResponse> {
-        return try {
+    suspend fun fetchBloodPressure(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<BpAndWeightResponse> =
+        try {
             val response = apiHelper.fetchBloodPressure(motherNeonateAncRequest)
             if (response.isSuccessful) {
                 val res = response.body()
@@ -178,10 +176,9 @@ class MotherNeonateANCRepo @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun createWeight(bpAndWeightRequestModel: BpAndWeightRequestModel): Resource<HashMap<String, Any>> {
-        return try {
+    suspend fun createWeight(bpAndWeightRequestModel: BpAndWeightRequestModel): Resource<HashMap<String, Any>> =
+        try {
             val response = apiHelper.createWeight(bpAndWeightRequestModel)
             if (response.isSuccessful) {
                 val res = response.body()
@@ -196,10 +193,9 @@ class MotherNeonateANCRepo @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun createBloodPressure(bpAndWeightRequestModel: BpAndWeightRequestModel): Resource<HashMap<String, Any>> {
-        return try {
+    suspend fun createBloodPressure(bpAndWeightRequestModel: BpAndWeightRequestModel): Resource<HashMap<String, Any>> =
+        try {
             val response = apiHelper.createBloodPressure(bpAndWeightRequestModel)
             if (response.isSuccessful) {
                 val res = response.body()
@@ -214,10 +210,9 @@ class MotherNeonateANCRepo @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun fetchSummaryDetails(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<MotherNeonateAncSummaryModel> {
-        return try {
+    suspend fun fetchSummaryDetails(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<MotherNeonateAncSummaryModel> =
+        try {
             val response = apiHelper.fetchSummary(motherNeonateAncRequest)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
@@ -228,5 +223,4 @@ class MotherNeonateANCRepo @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 }

@@ -67,7 +67,6 @@ import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import java.lang.reflect.Type
 
 class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnClickListener {
-
     private lateinit var binding: FragmentScreeningFormBuilderBinding
     private lateinit var formGenerator: FormGenerator
     private val viewModel: ScreeningFormBuilderViewModel by activityViewModels()
@@ -75,10 +74,10 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     private val ncdFormViewModel: NCDFormViewModel by activityViewModels()
     private val generalDetailsViewModel: GeneralDetailsViewModel by activityViewModels()
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentScreeningFormBuilderBinding.inflate(inflater, container, false)
         return binding.root
@@ -86,11 +85,14 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
 
     companion object {
         const val TAG = "ScreeningFormBuilderFragment"
-        fun newInstance() =
-            ScreeningFormBuilderFragment()
+
+        fun newInstance() = ScreeningFormBuilderFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -122,7 +124,11 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         binding.btnNext.text = getString(R.string.submit)
         formGenerator =
             FormGenerator(
-                requireContext(), binding.llForm, listener = this, scrollView = binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
+                requireContext(),
+                binding.llForm,
+                listener = this,
+                scrollView = binding.scrollView,
+                translate = SecuredPreference.getIsTranslationEnabled(),
             ) { map, id ->
                 when (id) {
                     Screening.Weight, Screening.Height -> {
@@ -130,16 +136,15 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                         showBGCardOrNot(map)
                     }
 
-                    Screening.DateOfBirth, Screening.BloodGlucoseID,Screening.diabetes -> {
+                    Screening.DateOfBirth, Screening.BloodGlucoseID, Screening.diabetes -> {
                         showBGCardOrNot(map)
                     }
                     DefinedParams.Gender -> {
                         showHidePregnancyCard(map)
                     }
-                    Screening.lastMenstrualPeriod ->{
-                        getGestationalPeriod(map,id)
+                    Screening.lastMenstrualPeriod -> {
+                        getGestationalPeriod(map, id)
                     }
-
                 }
             }
         ncdFormViewModel.getNCDForm(MenuConstants.SCREENING.lowercase())
@@ -149,11 +154,15 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     override fun onResume() {
         super.onResume()
 
-        if ((activity as? ScreeningActivity?)?.ableToGetLocation() == true)
+        if ((activity as? ScreeningActivity?)?.ableToGetLocation() == true) {
             getCurrentLocation()
+        }
     }
 
-    private fun getGestationalPeriod(resultHashMap: HashMap<String, Any>, id: String) {
+    private fun getGestationalPeriod(
+        resultHashMap: HashMap<String, Any>,
+        id: String,
+    ) {
         if (!resultHashMap.containsKey(id)) {
             return
         }
@@ -172,7 +181,6 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                     }
                     resultHashMap[Screening.GestationalAge] = totalWeeks
                 }
-
             } catch (e: Exception) {
                 if (view is TextView) {
                     view.text = getString(R.string.hyphen_symbol)
@@ -181,6 +189,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
             }
         }
     }
+
     private fun showHidePregnancyCard(resultHashMap: HashMap<String, Any>) {
         val gender = resultHashMap[DefinedParams.Gender]
         if (gender != null && gender is String && gender.equals(Screening.Female, true)) {
@@ -191,6 +200,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     }
 
     private var screeningJSON: List<FormLayout>? = null
+
     private fun attachObservers() {
         ncdFormViewModel.ncdFormResponse.observe(viewLifecycleOwner) { resources ->
             when (resources.state) {
@@ -233,7 +243,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(
                             data,
-                            EntityMapper.getResultSpinnerMapList(data)
+                            EntityMapper.getResultSpinnerMapList(data),
                         )
                     }
                 }
@@ -256,7 +266,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                         replaceFragmentIfExists<ScreeningSummaryFragment>(
                             R.id.screeningParentLayout,
                             bundle = null,
-                            tag = ScreeningSummaryFragment.TAG
+                            tag = ScreeningSummaryFragment.TAG,
                         )
                     }
                 }
@@ -266,8 +276,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                 }
             }
         }
-        bpViewModel.getRiskEntityListLiveData.observe(viewLifecycleOwner){
-
+        bpViewModel.getRiskEntityListLiveData.observe(viewLifecycleOwner) {
         }
         viewModel.validatePatientResponseLiveDate.observe(viewLifecycleOwner) { resources ->
             when (resources.state) {
@@ -287,16 +296,19 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                             val dialog =
                                 DuplicationNudgeDialog.newInstance(
                                     StringConverter.convertGivenMapToString(
-                                        responseMap
-                                    ), isFromEnrollment = false
+                                        responseMap,
+                                    ),
+                                    isFromEnrollment = false,
                                 ) { doAssessment ->
-                                    if (doAssessment)
+                                    if (doAssessment) {
                                         proceedAssessment(responseMap)
+                                    }
                                 }
                             dialog.show(childFragmentManager, DuplicationNudgeDialog.TAG)
                         }
-                    } else
+                    } else {
                         proceedScreening(resources.data)
+                    }
                 }
             }
         }
@@ -319,7 +331,11 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         }
     }
 
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
         if (localDataCache is String) {
             when (localDataCache) {
                 Screening.PHQ4 -> {
@@ -341,14 +357,15 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     override fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     ) {
-        CheckBoxDialog.newInstance(
-            id,
-            resultMap
-        ) { map ->
-            formGenerator.validateCheckboxDialogue(id, formLayout, map)
-        }.show(childFragmentManager, CheckBoxDialog.TAG)
+        CheckBoxDialog
+            .newInstance(
+                id,
+                resultMap,
+            ) { map ->
+                formGenerator.validateCheckboxDialogue(id, formLayout, map)
+            }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
     override fun onInstructionClicked(
@@ -356,31 +373,37 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {
         informationList?.let { informationList ->
-            GeneralInfoDialog.newInstance(
-                title,
-                description,
-                informationList
-            ).show(childFragmentManager, GeneralInfoDialog.TAG)
+            GeneralInfoDialog
+                .newInstance(
+                    title,
+                    description,
+                    informationList,
+                ).show(childFragmentManager, GeneralInfoDialog.TAG)
         }
     }
 
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+    override fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
         resultMap?.let {
             viewModel.getCurrentLocation()?.let { location ->
                 resultMap[Screening.Latitude] = location.latitude.toString()
                 resultMap[Screening.Longitude] = location.longitude.toString()
             } ?: kotlin.run {
-                resultMap[Screening.Latitude] = SecuredPreference.getDouble(
-                    SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name,
-                    0.0
-                ).toString()
-                resultMap[Screening.Longitude] = SecuredPreference.getDouble(
-                    SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name,
-                    0.0
-                ).toString()
+                resultMap[Screening.Latitude] = SecuredPreference
+                    .getDouble(
+                        SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name,
+                        0.0,
+                    ).toString()
+                resultMap[Screening.Longitude] = SecuredPreference
+                    .getDouble(
+                        SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name,
+                        0.0,
+                    ).toString()
             }
             resultMap[Screening.Screening_Date_Time] =
                 DateUtils.getCurrentDateTimeInUserTimeZone(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
@@ -396,12 +419,12 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
 
     private fun processValuesAndProceed(
         resultMap: HashMap<String, Any>,
-        serverData: List<FormLayout?>?
+        serverData: List<FormLayout?>?,
     ) {
         viewModel.setAnalyticsData(
             UserDetail.startDateTime,
             eventName = ScreeningCreation,
-            isCompleted = true
+            isCompleted = true,
         )
 
         val map = HashMap<String, Any>()
@@ -409,7 +432,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         calculateBMI(map)
         calculateAverageBloodPressure(map)
         viewModel.setPhQ4Score(calculatePHQScore(map))
-        calculateBloodGlucose(map, removeUnwantedKeys = true) {( fbs, rbs )->
+        calculateBloodGlucose(map, removeUnwantedKeys = true) { (fbs, rbs) ->
             if (fbs != null) {
                 viewModel.setFbsBloodGlucose(fbs)
             }
@@ -426,7 +449,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         if (resultOne?.isNotEmpty() == true) {
             val resultList = Gson().fromJson<ArrayList<RiskClassificationModel>>(
                 resultOne[0].nonLabEntity,
-                baseType
+                baseType,
             )
             calculateCVDRiskFactor(map, ArrayList(resultList), bpViewModel.getSystolicAverage())
         }
@@ -451,7 +474,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
             FormResultComposer().groupValues(
                 serverData = it,
                 map,
-                bmiCategoryGroupId = Screening.BioMetrics
+                bmiCategoryGroupId = Screening.BioMetrics,
             )
         }
         result?.second?.let {
@@ -471,7 +494,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                 it,
                 siteDetail,
                 eSignature = arguments?.getByteArray(Screening.Signature),
-                isReferred = isReferred
+                isReferred = isReferred,
             )
         }
     }
@@ -482,7 +505,10 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
          */
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
         /*
         Never used
          */
@@ -492,7 +518,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         id: String,
         noOfDays: Int,
         enteredDays: Int?,
-        resultMap: HashMap<String, Any>?
+        resultMap: HashMap<String, Any>?,
     ) {
         /*
         Never used
@@ -506,13 +532,12 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     }
 
     override fun handleMandatoryCondition(formLayout: FormLayout?) {
-
     }
 
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
         var matchingCondition: String? = null
         val hivViewBasedOnAge =
@@ -537,13 +562,17 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
             if (formGenerator.isViewVisible(formItem?.id ?: "")) {
                 formGenerator.getViewByTag(formItem?.id + rootSuffix)?.visibility =
                     View.GONE
-                formGenerator.getViewByTag(formItem?.id + rootSuffix)
+                formGenerator
+                    .getViewByTag(formItem?.id + rootSuffix)
                     ?.let { formGenerator.resetChildViews(it) }
             }
         }
     }
 
-    private fun getAgeConditionCategory(age: Int, ageCondition: ArrayList<String>): Pair<Boolean, String> {
+    private fun getAgeConditionCategory(
+        age: Int,
+        ageCondition: ArrayList<String>,
+    ): Pair<Boolean, String> {
         for (condition in ageCondition) {
             when {
                 condition.contains("-") -> {
@@ -572,13 +601,18 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     }
 
     private fun resetAllHIVCategoryView(serverData: List<FormLayout?>?) {
-        val hivViewBasedOnAge = serverData?.filter { it?.ageCondition?.isNotEmpty() == true && it.workflowType?.contains(
-            HIV) == true }
+        val hivViewBasedOnAge = serverData?.filter {
+            it?.ageCondition?.isNotEmpty() == true &&
+                it.workflowType?.contains(
+                    HIV,
+                ) == true
+        }
         hivViewBasedOnAge?.forEach { formItem ->
             if (formGenerator.isViewVisible(formItem?.id + "")) {
                 formGenerator.getViewByTag(formItem?.id + rootSuffix)?.visibility =
                     View.GONE
-                formGenerator.getViewByTag(formItem?.id + rootSuffix)
+                formGenerator
+                    .getViewByTag(formItem?.id + rootSuffix)
                     ?.let { formGenerator.resetChildViews(it) }
             }
         }
@@ -587,7 +621,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     private fun calculateFurtherAssessment(
         map: HashMap<String, Any>,
         unitGenericType: String,
-        serverData: List<FormLayout?>?
+        serverData: List<FormLayout?>?,
     ) {
         screeningJSON?.first { it.viewType == ViewType.VIEW_TYPE_FORM_BP }?.let {
             bpViewModel.calculateBPValues(it, map)
@@ -601,13 +635,14 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
             unitGenericType,
             getPregnancySymptomCount(map),
             Pair(null, map),
-            serverData
+            serverData,
         )
         map[Screening.ReferAssessment] =
             if (assessmentConditionResult.first) Screening.PositiveValue else Screening.NegativeValue
 
-        if (assessmentConditionResult.second.isNotEmpty())
+        if (assessmentConditionResult.second.isNotEmpty()) {
             map[Screening.referredReasons] = assessmentConditionResult.second
+        }
     }
 
     private fun getPregnancySymptomCount(resultHashMap: HashMap<String, Any>): Int {
@@ -624,14 +659,17 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         val bmi = calculateBMI(resultHashMap)
         val diabetes = resultHashMap[Screening.diabetes]
         val shouldShow =
-            (dob != null && dob.years > 40) || (bmi != null && bmi > 25) || formGenerator.checkIfNoSymptomsPresent(
-                diabetes
-            )
+            (dob != null && dob.years > 40) ||
+                (bmi != null && bmi > 25) ||
+                formGenerator.checkIfNoSymptomsPresent(
+                    diabetes,
+                )
         showGlucoseValues(shouldShow)
     }
 
     private fun showGlucoseValues(status: Boolean) {
-        formGenerator.getViewByTag(Screening.BloodGlucoseID + formGenerator.rootSuffix)
+        formGenerator
+            .getViewByTag(Screening.BloodGlucoseID + formGenerator.rootSuffix)
             ?.let { view ->
                 if (status) {
                     view.visibility = View.VISIBLE
@@ -646,7 +684,9 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                 }
             }
         formGenerator.getViewByTag(Screening.lastMealTime + rootSuffix)?.let { view ->
-            view.visibility = if (status) View.VISIBLE else {
+            view.visibility = if (status) {
+                View.VISIBLE
+            } else {
                 formGenerator.getViewByTag(R.id.etHour)?.let { editText ->
                     if (editText is AppCompatEditText) {
                         editText.setText("")

@@ -24,7 +24,7 @@ data class HivRequestData(
     val obstetricExaminationNotes: String? = null,
     val fundalHeight: String? = null,
     val fetalHeartRate: String? = null,
-    val pregnancyDetails: PregnancyDetailsModel? = null
+    val pregnancyDetails: PregnancyDetailsModel? = null,
 )
 
 data class HivStatus(
@@ -35,17 +35,17 @@ data class HivStatus(
     val lastMenstrualPeriod: String? = null,
     val gestationalInWeeks: Long? = null,
     val expectedDateOfDelivery: String? = null,
-    val tbStatus : String? = null
+    val tbStatus: String? = null,
 )
 
 data class OpportunisticInfectionsDTO(
     val tbPreventiveDateRange: DateRange? = null,
     val cotrimoxazoleDateRange: DateRange? = null,
     val tbTreatmentDateRange: DateRange? = null,
-    val cryptococcalMeningitisDateRange: DateRange? = null
+    val cryptococcalMeningitisDateRange: DateRange? = null,
 )
 
 data class DateRange(
     val startDate: String? = null,
-    val endDate: String? = null
+    val endDate: String? = null,
 )

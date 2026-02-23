@@ -14,10 +14,9 @@ import com.medtroniclabs.spice.formgeneration.extension.parcelableArrayList
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.adapter.NCDMedicationHistoryAdapter
 
-
-class NCDMedicationHistoryDialog : DialogFragment(),
+class NCDMedicationHistoryDialog :
+    DialogFragment(),
     View.OnClickListener {
-
     private lateinit var binding: FragmentNcdMedicationHistoryDialogBinding
     private lateinit var medicationHistoryAdapter: NCDMedicationHistoryAdapter
     private lateinit var prescriptionLists: ArrayList<PatientPrescriptionHistoryResponse>
@@ -25,6 +24,7 @@ class NCDMedicationHistoryDialog : DialogFragment(),
     companion object {
         const val TAG = "NCDMedicationHistoryDialog"
         const val KEY_LIST = "KEY_LIST"
+
         fun newInstance(prescriptionList: ArrayList<PatientPrescriptionHistoryResponse>): NCDMedicationHistoryDialog {
             val fragment = NCDMedicationHistoryDialog()
             fragment.arguments = Bundle().apply {
@@ -37,14 +37,17 @@ class NCDMedicationHistoryDialog : DialogFragment(),
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNcdMedicationHistoryDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         readArguments()
@@ -84,8 +87,9 @@ class NCDMedicationHistoryDialog : DialogFragment(),
 
     private fun readArguments() {
         arguments?.let { args ->
-            if (args.containsKey(KEY_LIST))
+            if (args.containsKey(KEY_LIST)) {
                 prescriptionLists = args.parcelableArrayList(KEY_LIST) ?: ArrayList()
+            }
         }
     }
 

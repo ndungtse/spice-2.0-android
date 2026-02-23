@@ -47,8 +47,9 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
     var listener: NCDDialogDismissListener? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogNcdDiagnosisBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -58,6 +59,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "NCDDiagnosisDialogFragment"
+
         fun newInstance(
             patientId: String?,
             memberId: String?,
@@ -67,57 +69,47 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
             isPregnant: Boolean,
             isDiagnosisMismatch: Boolean,
             type: String? = null,
-            menuName:String? = null
+            menuName: String? = null,
         ) = NCDDiagnosisDialogFragment().apply {
-                arguments = Bundle().apply {
-                    putString(DefinedParams.PatientId, patientId)
-                    putString(DefinedParams.MemberID, memberId)
-                    putStringArrayList(CONFIRM_DIAGNOSIS_TYPE, types)
-                    putStringArrayList(CONFIRM_DIAGNOSIS_TYPE_GET, getTypes)
-                    putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
-                    putBoolean(NCDMRUtil.IS_DIAGNOSIS_MISMATCH, isDiagnosisMismatch)
-                    putBoolean(IsPregnant, isPregnant)
-                    putString(Screening.Type,type)
-                    putString(MENU_Name, menuName)
-                }
+            arguments = Bundle().apply {
+                putString(DefinedParams.PatientId, patientId)
+                putString(DefinedParams.MemberID, memberId)
+                putStringArrayList(CONFIRM_DIAGNOSIS_TYPE, types)
+                putStringArrayList(CONFIRM_DIAGNOSIS_TYPE_GET, getTypes)
+                putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
+                putBoolean(NCDMRUtil.IS_DIAGNOSIS_MISMATCH, isDiagnosisMismatch)
+                putBoolean(IsPregnant, isPregnant)
+                putString(Screening.Type, type)
+                putString(MENU_Name, menuName)
             }
+        }
     }
 
-    private fun getTypes(): ArrayList<String> {
-        return arguments?.getStringArrayList(CONFIRM_DIAGNOSIS_TYPE) ?: arrayListOf()
-    }
+    private fun getTypes(): ArrayList<String> = arguments?.getStringArrayList(CONFIRM_DIAGNOSIS_TYPE) ?: arrayListOf()
 
-    private fun getConfirmDiagnosisTypes(): ArrayList<String> {
-        return arguments?.getStringArrayList(CONFIRM_DIAGNOSIS_TYPE_GET) ?: arrayListOf()
-    }
+    private fun getConfirmDiagnosisTypes(): ArrayList<String> = arguments?.getStringArrayList(CONFIRM_DIAGNOSIS_TYPE_GET) ?: arrayListOf()
 
-    private fun isPregnant(): Boolean {
-        return arguments?.getBoolean(IsPregnant) ?: false
-    }
+    private fun isPregnant(): Boolean = arguments?.getBoolean(IsPregnant) ?: false
 
-    private fun isDiagnosisMismatch(): Boolean {
-        return arguments?.getBoolean(NCDMRUtil.IS_DIAGNOSIS_MISMATCH) ?: false
-    }
+    private fun isDiagnosisMismatch(): Boolean = arguments?.getBoolean(NCDMRUtil.IS_DIAGNOSIS_MISMATCH) ?: false
 
-    private fun getGender(): String {
-        return if (arguments?.getBoolean(NCDMRUtil.IS_FEMALE) == true) {
+    private fun getGender(): String =
+        if (arguments?.getBoolean(NCDMRUtil.IS_FEMALE) == true) {
             Screening.Female.lowercase()
         } else {
             Screening.Male.lowercase()
         }
-    }
 
-    fun getPatientId(): String? {
-        return arguments?.getString(DefinedParams.PatientId)
-    }
-    fun getMemberId(): String? {
-        return arguments?.getString(DefinedParams.MemberID)
-    }
-    private fun getTypeForRequest(): String? {
-        return NCDMRUtil.requestTypeForConfirmDiagnoses(arguments?.getString(Screening.Type))
-    }
+    fun getPatientId(): String? = arguments?.getString(DefinedParams.PatientId)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    fun getMemberId(): String? = arguments?.getString(DefinedParams.MemberID)
+
+    private fun getTypeForRequest(): String? = NCDMRUtil.requestTypeForConfirmDiagnoses(arguments?.getString(Screening.Type))
+
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -183,36 +175,40 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                                                 patientDiagnosis.add(dia)
                                             }
                                             (patientStatusMap[NCDMRUtil.HypertensionStatus] as? String)?.let { hyp ->
-                                                if (hyp.equals(NCDMRUtil.KnownPatient, true))
+                                                if (hyp.equals(NCDMRUtil.KnownPatient, true)) {
                                                     patientDiagnosis.add(NCDMRUtil.HYPERTENSION.lowercase())
+                                                }
                                             }
-                                            if (values.contains(DefinedParams.Other.lowercase()))
+                                            if (values.contains(DefinedParams.Other.lowercase())) {
                                                 patientDiagnosis.add(DefinedParams.Other.lowercase())
-                                            liveData.filter { db ->
-                                                patientDiagnosis.any { db.value.equals(it, true) }
-                                            }.map { item ->
-                                                ChipViewItemModel(
-                                                    id = item.id,
-                                                    name = item.name,
-                                                    cultureValue = item.displayValue,
-                                                    type = item.type,
-                                                    value = item.value
-                                                )
                                             }
+                                            liveData
+                                                .filter { db ->
+                                                    patientDiagnosis.any { db.value.equals(it, true) }
+                                                }.map { item ->
+                                                    ChipViewItemModel(
+                                                        id = item.id,
+                                                        name = item.name,
+                                                        cultureValue = item.displayValue,
+                                                        type = item.type,
+                                                        value = item.value,
+                                                    )
+                                                }
                                         }
                                     }
                                 } else {
-                                    liveData.filter { db ->
-                                        values.any { db.value.equals(it, true) }
-                                    }.map { item ->
-                                        ChipViewItemModel(
-                                            id = item.id,
-                                            name = item.name,
-                                            cultureValue = item.displayValue,
-                                            type = item.type,
-                                            value = item.value
-                                        )
-                                    }
+                                    liveData
+                                        .filter { db ->
+                                            values.any { db.value.equals(it, true) }
+                                        }.map { item ->
+                                            ChipViewItemModel(
+                                                id = item.id,
+                                                name = item.name,
+                                                cultureValue = item.displayValue,
+                                                type = item.type,
+                                                value = item.value,
+                                            )
+                                        }
                                 }
 
                                 if (!data.diagnosisNotes.isNullOrBlank()) {
@@ -241,15 +237,18 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
     private fun getDiagonsis() {
         if (isDiagnosisMismatch()) {
             getPatientId()?.let { patientReference ->
-                ncdMedicalReviewViewModel.ncdPatientDiagnosisStatus(HashMap<String, Any>().apply {
-                    put(
-                        DefinedParams.PatientReference,
-                        patientReference
-                    )
-                })
+                ncdMedicalReviewViewModel.ncdPatientDiagnosisStatus(
+                    HashMap<String, Any>().apply {
+                        put(
+                            DefinedParams.PatientReference,
+                            patientReference,
+                        )
+                    },
+                )
             }
-        } else
+        } else {
             confirmDiagnosis()
+        }
     }
 
     private fun confirmDiagnosis() {
@@ -257,8 +256,8 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
             NCDDiagnosisGetRequest(
                 patientReference = getPatientId(),
                 memberReference = getMemberId(),
-                diagnosisType = getConfirmDiagnosisTypes()
-            )
+                diagnosisType = getConfirmDiagnosisTypes(),
+            ),
         )
     }
 
@@ -269,7 +268,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                 name = item.name,
                 cultureValue = item.displayValue,
                 type = item.type,
-                value = item.value
+                value = item.value,
             )
         } as ArrayList<ChipViewItemModel>
         addChip(complaintList)
@@ -279,16 +278,17 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
         tagListCustomView.addChipItemList(
             complaintList,
             viewModel.selectedChips,
-            diagnosisGrouping(complaintList)
+            diagnosisGrouping(complaintList),
         )
     }
 
-    private fun diagnosisGrouping(list: List<ChipViewItemModel>?): HashMap<String, MutableList<ChipViewItemModel>>? {
-        return list?.groupByTo(HashMap(), { it.type.toString() }, { it })
-    }
+    private fun diagnosisGrouping(list: List<ChipViewItemModel>?): HashMap<String, MutableList<ChipViewItemModel>>? =
+        list?.groupByTo(HashMap(), {
+            it.type.toString()
+        }, { it })
 
     private fun initView() {
-        viewModel.getChip(getTypes().map { it.lowercase() }, getGender(),isPregnant())
+        viewModel.getChip(getTypes().map { it.lowercase() }, getGender(), isPregnant())
         tagListCustomView =
             TagListCustomView(
                 binding.root.context,
@@ -296,7 +296,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                 callBack = { _, _, _ ->
                     viewModel.selectedChips =
                         ArrayList(tagListCustomView.getSelectedTags())
-                }
+                },
             )
         binding.ivClose.safeClickListener(this)
         binding.btnCancel.safeClickListener(this)
@@ -326,9 +326,9 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
             },
             patientReference = getPatientId(),
             memberReference = getMemberId(),
-            type = getTypeForRequest()
+            type = getTypeForRequest(),
         )
-        viewModel.createConfirmDiagonsis(request,arguments?.getString(MENU_Name))
+        viewModel.createConfirmDiagonsis(request, arguments?.getString(MENU_Name))
     }
 
     fun validateInput(): Boolean {

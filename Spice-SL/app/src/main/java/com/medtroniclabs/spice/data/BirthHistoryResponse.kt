@@ -1,9 +1,9 @@
 package com.medtroniclabs.spice.data
 
 data class BirthHistoryResponse(
-    val birthWeight: String?=null,
-    val gestationalAge: Int?=null,
-    val haveBreathingProblem: Boolean?=null,
-    val birthWeightCategory:String?=null   ,
-    val gestationalAgeCategory:String?=null
+    val birthWeight: String? = null,
+    val gestationalAge: Int? = null,
+    val haveBreathingProblem: Boolean? = null,
+    val birthWeightCategory: String? = null,
+    val gestationalAgeCategory: String? = null,
 )

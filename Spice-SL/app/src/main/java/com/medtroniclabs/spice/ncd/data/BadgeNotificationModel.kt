@@ -9,5 +9,5 @@ data class BadgeNotificationModel(
     val psychologicalCount: Int = 0,
     val nonReviewedTestCount: Int = 0,
     val prescriptionDaysCompletedCount: Int = 0,
-    val provenance: ProvanceDto = ProvanceDto()
+    val provenance: ProvanceDto = ProvanceDto(),
 )

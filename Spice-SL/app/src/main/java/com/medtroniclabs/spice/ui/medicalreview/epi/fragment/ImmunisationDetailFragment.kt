@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.epi.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,26 +11,24 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.epi.adapter.ImmunisationListAdapter
 import com.medtroniclabs.spice.ui.medicalreview.epi.viewmodel.ImmunisationViewModel
-import com.medtroniclabs.spice.ui.medicalreview.underfiveyears.UnderFiveYearTreatmentSummaryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ImmunisationDetailFragment: BaseFragment() {
-
-    private lateinit var binding : FragmentImmunisationDetailsBinding
+class ImmunisationDetailFragment : BaseFragment() {
+    private lateinit var binding: FragmentImmunisationDetailsBinding
     private lateinit var immunisationListAdapter: ImmunisationListAdapter
     private val viewModel: ImmunisationViewModel by activityViewModels()
 
-
     companion object {
         const val TAG = "ImmunisationDetailFragment"
+
         fun newInstance() = ImmunisationDetailFragment()
 
         fun newInstance(
             id: String?,
             patientId: String?,
             memberId: String?,
-            dateOfBirth: String?
+            dateOfBirth: String?,
         ): ImmunisationDetailFragment {
             val fragment = ImmunisationDetailFragment()
             val bundle = Bundle()
@@ -45,13 +42,18 @@ class ImmunisationDetailFragment: BaseFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentImmunisationDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
@@ -59,11 +61,11 @@ class ImmunisationDetailFragment: BaseFragment() {
 
     private fun initView() {
         arguments?.getString(DefinedParams.DOB)?.let {
-            //binding.epiProgressIndicatorView.setPatientDetails(it)
+            // binding.epiProgressIndicatorView.setPatientDetails(it)
         }
 
         immunisationListAdapter = ImmunisationListAdapter {
-           // val patientId = arguments?.getString(DefinedParams.PatientId)
+            // val patientId = arguments?.getString(DefinedParams.PatientId)
             val dialog = UpdateVaccinationStatusFragment(it)
             dialog.show(childFragmentManager, "dialog")
         }
@@ -78,7 +80,7 @@ class ImmunisationDetailFragment: BaseFragment() {
         viewModel.getImmunisationDetails(id, memberId, patientId, dob)
 
         viewModel.immunisationDetailListLiveData.observe(viewLifecycleOwner) {
-            when(it.state) {
+            when (it.state) {
                 ResourceState.LOADING -> {
                     showProgress()
                 }
@@ -99,8 +101,8 @@ class ImmunisationDetailFragment: BaseFragment() {
             val adapterList = immunisationListAdapter.getVaccinationGroupItems()
             viewModel.updateImmunisationDetails(adapterList)
             showProgress()
-           // val index = adapterList.indexOfFirst { it.scheduleDate == updatedItem.scheduledDate }
-           // immunisationListAdapter.notifyItemChanged(index)
+            // val index = adapterList.indexOfFirst { it.scheduleDate == updatedItem.scheduledDate }
+            // immunisationListAdapter.notifyItemChanged(index)
         }
 
         viewModel.shouldRefreshListLiveData.observe(viewLifecycleOwner) {
@@ -108,5 +110,4 @@ class ImmunisationDetailFragment: BaseFragment() {
             hideProgress()
         }
     }
-
 }

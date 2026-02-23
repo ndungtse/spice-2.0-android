@@ -35,18 +35,18 @@ import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.WhoClinicalStageVi
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListenerForTb
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddWeightDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.AddBMIDialog
-import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.AddHeightDialog
 import com.medtroniclabs.spice.ui.medicalreview.tb.fragment.BMIListDialog
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.EMTCCT_VISIT_STATUS
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
-class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
-    DialogDismissListenerForTb, DialogDismissListener {
-
+class HivMedicalReviewDiagnosesFragment :
+    BaseFragment(),
+    View.OnClickListener,
+    DialogDismissListenerForTb,
+    DialogDismissListener {
     private lateinit var binding: FragmentHivMedicalReviewDiagnosesBinding
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
     private val diagnosisViewModel: DiagnosisViewModel by activityViewModels()
@@ -54,17 +54,19 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
     private val hivViewModel: HivViewModel by activityViewModels()
     private val whoStageViewModel: WhoClinicalStageViewModel by activityViewModels()
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentHivMedicalReviewDiagnosesBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
@@ -79,8 +81,8 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                 diagnosisViewModel.getDiagnosisDetails(
                     CreateUnderTwoMonthsResponse(
                         patientReference = id,
-                        type = MedicalReviewTypeEnums.HIV_REVIEW.name
-                    )
+                        type = MedicalReviewTypeEnums.HIV_REVIEW.name,
+                    ),
                 )
             }
         }
@@ -103,8 +105,8 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                 diagnosisViewModel.getDiagnosisDetails(
                     CreateUnderTwoMonthsResponse(
                         patientReference = id,
-                        type = MedicalReviewTypeEnums.HIV_REVIEW.name
-                    )
+                        type = MedicalReviewTypeEnums.HIV_REVIEW.name,
+                    ),
                 )
             }
         }
@@ -121,7 +123,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                 details.id?.let { id ->
                     diagnosisViewModel.getHivVitalsDetails(
                         patientReference = id,
-                        memberId = getMemberId()
+                        memberId = getMemberId(),
                     )
                 }
             }
@@ -134,20 +136,21 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                 cardBMI.visible()
             }
         }
-
     }
 
     companion object {
         const val TAG: String = "HivMedicalReviewDiagnosesFragment"
-        fun newInstance(): HivMedicalReviewDiagnosesFragment {
-            return HivMedicalReviewDiagnosesFragment()
-        }
 
-        fun newInstance(isHiv: Boolean = false,isEmtctMR:Boolean = false): HivMedicalReviewDiagnosesFragment {
+        fun newInstance(): HivMedicalReviewDiagnosesFragment = HivMedicalReviewDiagnosesFragment()
+
+        fun newInstance(
+            isHiv: Boolean = false,
+            isEmtctMR: Boolean = false,
+        ): HivMedicalReviewDiagnosesFragment {
             val fragment = HivMedicalReviewDiagnosesFragment()
             fragment.arguments = Bundle().apply {
                 putBoolean(HIV, isHiv)
-                putBoolean(DefinedParams.EMTCTMR,isEmtctMR)
+                putBoolean(DefinedParams.EMTCTMR, isEmtctMR)
             }
             return fragment
         }
@@ -164,12 +167,16 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
             binding.tvCd4.id -> showCD4Dialog(true, false)
         }
     }
-    private fun showCD4Dialog(isCd4: Boolean, isCd4Percentage: Boolean) {
+
+    private fun showCD4Dialog(
+        isCd4: Boolean,
+        isCd4Percentage: Boolean,
+    ) {
         withNetworkAvailability(online = {
             showDialogIfNotPresent(CD4DialogFragment.TAG) {
                 CD4DialogFragment.newInstance(
                     isCD4 = isCd4,
-                    isCD4Percentage = isCd4Percentage
+                    isCD4Percentage = isCd4Percentage,
                 )
             }
         })
@@ -192,11 +199,10 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
             (activity as BaseActivity?)?.showErrorDialogue(
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
+                isNegativeButtonNeed = false,
             ) {}
         }
     }
-
 
     override fun onDialogDismissedForTb(isPatientType: Boolean) {
         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
@@ -204,8 +210,8 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                 diagnosisViewModel.getDiagnosisDetails(
                     CreateUnderTwoMonthsResponse(
                         patientReference = id,
-                        type = MedicalReviewTypeEnums.HIV_REVIEW.name
-                    )
+                        type = MedicalReviewTypeEnums.HIV_REVIEW.name,
+                    ),
                 )
             }
         }
@@ -214,18 +220,18 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
     private fun showAddHeightDialog() {
         withNetworkAvailability(online = {
             showDialogIfNotPresent(AddBMIDialog.TAG) {
-                AddBMIDialog.newInstance(
-                    patientId = patientViewModel.getPatientId(),
-                    villageId = patientViewModel.getVillageId(),
-                    householdId = patientViewModel.getPatientHouseholdId(),
-                    memberId = getMemberId(),
-                ).apply {
-                    listener = this@HivMedicalReviewDiagnosesFragment
-                }
+                AddBMIDialog
+                    .newInstance(
+                        patientId = patientViewModel.getPatientId(),
+                        villageId = patientViewModel.getVillageId(),
+                        householdId = patientViewModel.getPatientHouseholdId(),
+                        memberId = getMemberId(),
+                    ).apply {
+                        listener = this@HivMedicalReviewDiagnosesFragment
+                    }
             }
         })
     }
-
 
     fun attachObserver() {
         val progressBar = binding.pbWeightPageProgress
@@ -260,7 +266,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                     addWeightText,
                     weightContainer,
                     retryButton,
-                    weightTextView
+                    weightTextView,
                 )
             }
         }
@@ -283,14 +289,14 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                                 condition = list.any {
                                     it.type.equals(
                                         MedicalReviewTypeEnums.HIV_REVIEW.name,
-                                        ignoreCase = true
-                                    ) || it.type.isNullOrBlank()
+                                        ignoreCase = true,
+                                    ) ||
+                                        it.type.isNullOrBlank()
                                 },
                                 textView = binding.tvDiagnosis,
                                 buttonView = binding.tvDiagnosisConfirm,
-                                metaList = diagnosisViewModel.diagnosisMetaList
+                                metaList = diagnosisViewModel.diagnosisMetaList,
                             )
-
                         } else {
                             binding.diagnosesPageProgress.visible()
                             updateDiagnosisUI(
@@ -298,7 +304,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                                 condition = list.isNotEmpty(),
                                 textView = binding.tvDiagnosis,
                                 buttonView = binding.tvDiagnosisConfirm,
-                                metaList = diagnosisViewModel.diagnosisMetaList
+                                metaList = diagnosisViewModel.diagnosisMetaList,
                             )
                         }
                     }
@@ -314,7 +320,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                     handleLoading(
                         binding.tbHeightPageProgress,
                         binding.tvAddHeight,
-                        binding.clHeight
+                        binding.clHeight,
                     )
                 }
 
@@ -323,21 +329,24 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                         binding.tbHeightPageProgress,
                         binding.retryButtonTbHeightConfirm,
                         binding.clHeight,
-                        binding.tvAddHeight
+                        binding.tvAddHeight,
                     )
                     resourceState.data?.let { data ->
                         binding.tvHeightLbl.text = getString(R.string.height_hint)
                         binding.tvHeight.text =
-                            MotherNeonateUtil.convertHeight(
-                                data.height,
-                                requireContext()
-                            ).takeIf { it.isNotEmpty() } ?: "--"
+                            MotherNeonateUtil
+                                .convertHeight(
+                                    data.height,
+                                    requireContext(),
+                                ).takeIf { it.isNotEmpty() } ?: "--"
 
-                        if (!binding.tvHeight.text.toString().equals("--", true)) {
+                        if (!binding.tvHeight.text
+                                .toString()
+                                .equals("--", true)
+                        ) {
                             binding.tvAddHeight.text = getString(R.string.edit_height)
                         }
                     }
-
                 }
 
                 ResourceState.ERROR -> {
@@ -346,7 +355,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                         binding.tvAddHeight,
                         binding.clHeight,
                         binding.retryButtonTbHeightConfirm,
-                        binding.tvHeight
+                        binding.tvHeight,
                     )
                 }
             }
@@ -358,7 +367,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                     handleLoading(
                         binding.tbBMIPageProgress,
                         binding.tvBmiHistory,
-                        binding.clBmi
+                        binding.clBmi,
                     )
                 }
 
@@ -367,14 +376,14 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                         binding.tbBMIPageProgress,
                         binding.retryButtonTbBMI,
                         binding.clBmi,
-                        binding.tvBmiHistory
+                        binding.tvBmiHistory,
                     )
                     resourceState.data?.let {
                         binding.tvBmiLbl.text = getString(R.string.bmi)
                         binding.tvBmi.text =
                             MotherNeonateUtil.convertBmi(
                                 it.bmi,
-                                requireContext()
+                                requireContext(),
                             )
                     }
                 }
@@ -385,7 +394,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                         binding.tvBmiHistory,
                         binding.clBmi,
                         binding.retryButtonTbBMI,
-                        binding.tvBmi
+                        binding.tvBmi,
                     )
                 }
             }
@@ -399,7 +408,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                         binding.tvEmtctVisitStatusUpdate,
                         binding.clEmtct,
                         binding.retryButtonEmtct,
-                        binding.tvEmtct
+                        binding.tvEmtct,
                     )
                 }
 
@@ -416,7 +425,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                         binding.emtctPageProgress,
                         binding.retryButtonEmtct,
                         binding.clEmtct,
-                        binding.tvEmtctVisitStatusUpdate
+                        binding.tvEmtctVisitStatusUpdate,
                     )
                     response.data?.let { data ->
                         binding.tvEmtct.text =
@@ -437,7 +446,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                     resources.data?.let { list ->
                         binding.tvCd4Value.text = list.cd4 ?: getString(R.string.seperator_hyphen)
                         binding.tvWhoValue.text = list.whoClinicalStage ?: getString(R.string.seperator_hyphen)
-                            //getClinicalStageText(list.whoClinicalStage)
+                        // getClinicalStageText(list.whoClinicalStage)
                         binding.tvWho.text = if (list.whoClinicalStage != null) {
                             getString(R.string.edit_who_clinical_stage)
                         } else {
@@ -448,7 +457,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                         hivViewModel.whovalue = getClinicalStageText(list.whoClinicalStage)
                             .takeUnless { it.equals(getString(R.string.hyphen_symbol), true) }
                         binding.tvEmtct.text = list.emtctVisitStatus.takeIf { !it.isNullOrEmpty() } ?: "-"
-                            //getEmtctVisitText(list.emtctVisitStatus)
+                        // getEmtctVisitText(list.emtctVisitStatus)
                         hivViewModel.emtctVisitStatus = getEmtctVisitText(list.emtctVisitStatus)
                     }
                 }
@@ -458,7 +467,6 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                 }
             }
         }
-
 
         whoStageViewModel.whoStageCreateLiveData.observe(viewLifecycleOwner) { resourcesState ->
             when (resourcesState.state) {
@@ -471,7 +479,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                     patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
                         diagnosisViewModel.getHivVitalsDetails(
                             patientReference = details.id,
-                            memberId = details.memberId
+                            memberId = details.memberId,
                         )
                     }
                 }
@@ -481,9 +489,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                 }
             }
         }
-
     }
-
 
     private fun updateDiagnosisUI(
         diagnosisItems: List<String>,
@@ -491,7 +497,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
         textView: TextView,
         buttonView: TextView,
         metaList: MutableLiveData<Resource<List<DiseaseCategoryItems>>>,
-        isSite: Boolean = false
+        isSite: Boolean = false,
     ) {
         textView.text = if (condition) {
             metaList.value?.data?.let { diagnosisList ->
@@ -500,11 +506,11 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                         diagnosisItems.any {
                             it.equals(
                                 item.value,
-                                ignoreCase = true
+                                ignoreCase = true,
                             )
                         }
-                    }
-                    .map { it.name }.distinct()
+                    }.map { it.name }
+                    .distinct()
 
                 if (matchingNames.isNotEmpty()) {
                     convertListToString(ArrayList(matchingNames))
@@ -515,18 +521,14 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
         } else {
             getString(R.string.hyphen_symbol)
         }
-
     }
 
-    private fun getMemberId(): String {
-        return patientViewModel.getPatientMemberId() ?: ""
-    }
-
+    private fun getMemberId(): String = patientViewModel.getPatientMemberId() ?: ""
 
     private fun handleLoading(
         pageProgress: ProgressBar,
         textView: AppCompatTextView,
-        clView: ConstraintLayout
+        clView: ConstraintLayout,
     ) {
         pageProgress.visible()
         textView.isEnabled = false
@@ -537,7 +539,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
         pageProgress: ProgressBar,
         retryButton: MaterialButton,
         clView: ConstraintLayout,
-        textView: AppCompatTextView
+        textView: AppCompatTextView,
     ) {
         pageProgress.gone()
         retryButton.gone()
@@ -550,7 +552,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
         textView: AppCompatTextView,
         clView: ConstraintLayout,
         retryButton: MaterialButton,
-        textViewError: AppCompatTextView
+        textViewError: AppCompatTextView,
     ) {
         pageProgress.gone()
         textView.isEnabled = true
@@ -567,21 +569,25 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
     }
 
     private fun showAddBpOrWeightDialog() {
-        val dialog = AddBMIDialog.newInstance(
-            patientId = patientViewModel.getPatientId(),
-            villageId = patientViewModel.getVillageId(),
-            householdId = patientViewModel.getPatientHouseholdId(),
-            memberId = patientViewModel.getPatientMemberId()
-        ).apply {
-            listener = this@HivMedicalReviewDiagnosesFragment
-        }
+        val dialog = AddBMIDialog
+            .newInstance(
+                patientId = patientViewModel.getPatientId(),
+                villageId = patientViewModel.getVillageId(),
+                householdId = patientViewModel.getPatientHouseholdId(),
+                memberId = patientViewModel.getPatientMemberId(),
+            ).apply {
+                listener = this@HivMedicalReviewDiagnosesFragment
+            }
 
         showDialogIfNotPresent(AddBMIDialog.TAG) {
             dialog
         }
     }
 
-    override fun onDialogDismissed(isBp: Boolean, isHeight: Boolean) {
+    override fun onDialogDismissed(
+        isBp: Boolean,
+        isHeight: Boolean,
+    ) {
         if (connectivityManager.isNetworkAvailable()) {
             viewModel.fetchHeight(MotherNeonateAncRequest(memberId = getMemberId()))
             viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
@@ -590,8 +596,8 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
                 HivVitalsRequest(
                     patientReference = hivViewModel.id,
                     memberId = hivViewModel.memberId,
-                    types = listOf(EMTCCT_VISIT_STATUS)
-                )
+                    types = listOf(EMTCCT_VISIT_STATUS),
+                ),
             )
 
             val dialog =
@@ -602,9 +608,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
         }
     }
 
-    private fun getPatientId(): String {
-        return arguments?.getString(DefinedParams.PatientId, "") ?: ""
-    }
+    private fun getPatientId(): String = arguments?.getString(DefinedParams.PatientId, "") ?: ""
 
     private fun showBmiDialog() {
         if (connectivityManager.isNetworkAvailable()) {
@@ -615,7 +619,7 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
             (activity as BaseActivity?)?.showErrorDialogue(
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
+                isNegativeButtonNeed = false,
             ) {}
         }
     }
@@ -631,14 +635,12 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
             (activity as BaseActivity?)?.showErrorDialogue(
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
+                isNegativeButtonNeed = false,
             ) {}
         }
     }
 
-    private fun isHiv(): Boolean {
-        return arguments?.getBoolean(MedicalReviewTypeEnums.HIV.name) == true
-    }
+    private fun isHiv(): Boolean = arguments?.getBoolean(MedicalReviewTypeEnums.HIV.name) == true
 
     private fun getClinicalStageText(whoClinicalStage: String?): String {
         whoStageViewModel.getWhoStageLiveData.value?.let { whoStageList ->
@@ -652,23 +654,23 @@ class HivMedicalReviewDiagnosesFragment : BaseFragment(), View.OnClickListener,
             return getString(R.string.seperator_hyphen)
         }
     }
+
     private fun getEmtctVisitText(whoClinicalStage: String?): String {
         hivViewModel.hivEmtctStatusLiveData.value?.let { whoStageList ->
             return if (whoClinicalStage.isNullOrEmpty()) {
                 getString(R.string.seperator_hyphen)
             } else {
-                whoStageList.firstOrNull {
-                    it.name.equals(
-                        whoClinicalStage,
-                        ignoreCase = true
-                    )
-                }?.value
+                whoStageList
+                    .firstOrNull {
+                        it.name.equals(
+                            whoClinicalStage,
+                            ignoreCase = true,
+                        )
+                    }?.value
                     ?: getString(R.string.seperator_hyphen)
             }
         } ?: run {
             return getString(R.string.seperator_hyphen)
         }
     }
-
-
 }

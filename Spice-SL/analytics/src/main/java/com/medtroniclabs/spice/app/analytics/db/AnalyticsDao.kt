@@ -9,7 +9,6 @@ import com.medtroniclabs.spice.app.analytics.model.UserJourneyAnalytics
 
 @Dao
 interface AnalyticsDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAnalytics(analytics: Analytics): Long
 
@@ -17,7 +16,10 @@ interface AnalyticsDao {
     suspend fun getAllAnalytics(): List<Analytics>
 
     @Query("SELECT parameter FROM analytics WHERE referenceId=:referenceId AND eventType=:eventType")
-    suspend fun getParameterByRefIdAndEvent(referenceId: String, eventType: String): String?
+    suspend fun getParameterByRefIdAndEvent(
+        referenceId: String,
+        eventType: String,
+    ): String?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUserJourneyAnalytics(userJourneyAnalytics: UserJourneyAnalytics): Long
@@ -28,13 +30,9 @@ interface AnalyticsDao {
     @Query("DELETE FROM userJourneyAnalytics WHERE sessionId !=:referenceId")
     suspend fun deleteAllUserJourneys(referenceId: String)
 
-
     @Query("DELETE FROM analytics")
     suspend fun deleteAllAnalytics()
 
     @Query("DELETE FROM userJourneyAnalytics")
     suspend fun deleteAllUserJourneys()
-
-
-
 }

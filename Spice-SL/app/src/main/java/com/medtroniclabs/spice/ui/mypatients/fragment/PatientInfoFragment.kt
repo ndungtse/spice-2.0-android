@@ -10,7 +10,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.getLocalDate
-import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.combineText
 import com.medtroniclabs.spice.common.CommonUtils.getContactNumber
@@ -20,10 +19,10 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
-import com.medtroniclabs.spice.common.DefinedParams.HIV_IMR_CMR
 import com.medtroniclabs.spice.common.DefinedParams.EMTCT
 import com.medtroniclabs.spice.common.DefinedParams.EMTCTMR
 import com.medtroniclabs.spice.common.DefinedParams.EMTCT_SUMMARY
+import com.medtroniclabs.spice.common.DefinedParams.HIV_IMR_CMR
 import com.medtroniclabs.spice.common.DefinedParams.IsReferredScreen
 import com.medtroniclabs.spice.common.DefinedParams.MaritalStatus
 import com.medtroniclabs.spice.common.DefinedParams.Occupation
@@ -32,7 +31,6 @@ import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.DefinedParams.entryPoint
 import com.medtroniclabs.spice.common.DefinedParams.familyPlanning
 import com.medtroniclabs.spice.common.DefinedParams.isFamilyPlanSummary
-import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentPatientInfoBinding
@@ -46,61 +44,57 @@ import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
 import com.medtroniclabs.spice.ui.common.GeneralInfoDialog
 import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class PatientInfoFragment : BaseFragment() {
-
     private lateinit var binding: FragmentPatientInfoBinding
     val viewModel: PatientDetailViewModel by activityViewModels()
     private var dataCallback: AncVisitCallBack? = null
+
     fun setDataCallback(callback: AncVisitCallBack) {
         dataCallback = callback
     }
 
-
     companion object {
         const val TAG = "PatientInfoFragment"
 
-        fun newInstance(): PatientInfoFragment {
-            return PatientInfoFragment()
-        }
+        fun newInstance(): PatientInfoFragment = PatientInfoFragment()
 
         fun newInstance(
             patientId: String?,
             isAnc: Boolean = false,
-            isPnc:Boolean =false,
+            isPnc: Boolean = false,
             isReferredScreen: Boolean = false,
-            isTb:Boolean = false,
+            isTb: Boolean = false,
             isFamilyPlan: Boolean = false,
             isFPSummary: Boolean = false,
-            isHivImrCmr: Boolean = false
+            isHivImrCmr: Boolean = false,
         ): PatientInfoFragment {
             val fragment = PatientInfoFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
             bundle.putBoolean(ANC, isAnc)
-            bundle.putBoolean(PNC,isPnc)
-            bundle.putBoolean(TB,isTb)
+            bundle.putBoolean(PNC, isPnc)
+            bundle.putBoolean(TB, isTb)
             bundle.putBoolean(HIV_IMR_CMR, isHivImrCmr)
             bundle.putBoolean(IsReferredScreen, isReferredScreen)
-            bundle.putBoolean(familyPlanning,isFamilyPlan)
-            bundle.putBoolean(isFamilyPlanSummary,isFPSummary)
+            bundle.putBoolean(familyPlanning, isFamilyPlan)
+            bundle.putBoolean(isFamilyPlanSummary, isFPSummary)
             fragment.arguments = bundle
             return fragment
         }
 
         fun newInstanceForNCD(
             patientId: String?,
-            origin: String
+            origin: String,
         ): PatientInfoFragment {
             val fragment = PatientInfoFragment()
             val bundle = Bundle()
@@ -113,15 +107,15 @@ class PatientInfoFragment : BaseFragment() {
         // EMTCT Patient Info
         fun newInstanceForEMTCT(
             patientId: String?,
-            isEMTCT:Boolean = false,
+            isEMTCT: Boolean = false,
             isEMTCTMR: Boolean = false,
-            isEMTCTSummary:Boolean = false
-            ):PatientInfoFragment {
+            isEMTCTSummary: Boolean = false,
+        ): PatientInfoFragment {
             val fragment = PatientInfoFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
             bundle.putBoolean(DefinedParams.EMTCT, isEMTCT)
-            bundle.putBoolean(EMTCTMR,isEMTCTMR)
+            bundle.putBoolean(EMTCTMR, isEMTCTMR)
             bundle.putBoolean(DefinedParams.EMTCT_SUMMARY, isEMTCTSummary)
             fragment.arguments = bundle
             return fragment
@@ -129,20 +123,24 @@ class PatientInfoFragment : BaseFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPatientInfoBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getMenuForClinicalWorkflows()
         attachObservers()
     }
 
-    fun  initView() {
+    fun initView() {
         val patientId = arguments?.getString(DefinedParams.PatientId, "")
         if (patientId?.isNotBlank() == true) {
             if (CommonUtils.isCommunity()) {
@@ -151,7 +149,7 @@ class PatientInfoFragment : BaseFragment() {
                 val origin = arguments?.getString(DefinedParams.ORIGIN, "")
                 viewModel.getPatients(
                     patientId,
-                    origin = origin
+                    origin = origin,
                 )
             }
         }
@@ -189,16 +187,17 @@ class PatientInfoFragment : BaseFragment() {
                 ResourceState.SUCCESS -> {
                     resourceState.data?.instructions?.let { instructions ->
                         val title = instructions.removeAt(0)
-                        GeneralInfoDialog.newInstance(
-                            title,
-                            null,
-                            instructions
-                        ).show(childFragmentManager, GeneralInfoDialog.TAG)
+                        GeneralInfoDialog
+                            .newInstance(
+                                title,
+                                null,
+                                instructions,
+                            ).show(childFragmentManager, GeneralInfoDialog.TAG)
                     }
                 }
 
                 else -> {
-                    //Nothing to invoke
+                    // Nothing to invoke
                 }
             }
         }
@@ -221,51 +220,37 @@ class PatientInfoFragment : BaseFragment() {
         }
     }
 
-    private fun isAnc(): Boolean? {
-        return arguments?.getBoolean(ANC, false)
-    }
-    private fun isHivImrCmr(): Boolean {
-        return arguments?.getBoolean(HIV_IMR_CMR, false) ?: false
-    }
-    private fun isPnc(): Boolean? {
-        return arguments?.getBoolean(PNC, false)
-    }
-    private fun isTB(): Boolean? {
-        return arguments?.getBoolean(TB, false)
-    }
-    private fun isReferredScreen(): Boolean? {
-        return arguments?.getBoolean(IsReferredScreen, false)
-    }
+    private fun isAnc(): Boolean? = arguments?.getBoolean(ANC, false)
 
-    private fun isFamilyPlan():Boolean?{
-        return arguments?.getBoolean(familyPlanning,false)
-    }
+    private fun isHivImrCmr(): Boolean = arguments?.getBoolean(HIV_IMR_CMR, false) ?: false
 
-    private fun isFamilyPlanSummary():Boolean?{
-        return arguments?.getBoolean(isFamilyPlanSummary,false)
-    }
+    private fun isPnc(): Boolean? = arguments?.getBoolean(PNC, false)
 
-    private fun isEMTCT():Boolean?{
-        return arguments?.getBoolean(EMTCT,false)
-    }
-    private fun isEMTCTMR():Boolean?{
-        return arguments?.getBoolean(EMTCTMR,false)
-    }
+    private fun isTB(): Boolean? = arguments?.getBoolean(TB, false)
 
-    private fun isEMTCTSummary():Boolean?{
-        return arguments?.getBoolean(EMTCT_SUMMARY,false)
-    }
+    private fun isReferredScreen(): Boolean? = arguments?.getBoolean(IsReferredScreen, false)
+
+    private fun isFamilyPlan(): Boolean? = arguments?.getBoolean(familyPlanning, false)
+
+    private fun isFamilyPlanSummary(): Boolean? = arguments?.getBoolean(isFamilyPlanSummary, false)
+
+    private fun isEMTCT(): Boolean? = arguments?.getBoolean(EMTCT, false)
+
+    private fun isEMTCTMR(): Boolean? = arguments?.getBoolean(EMTCTMR, false)
+
+    private fun isEMTCTSummary(): Boolean? = arguments?.getBoolean(EMTCT_SUMMARY, false)
+
     private fun setDataInInfo(patientListRespModel: PatientListRespModel) {
         showProgress()
         viewModel.patientDetailsId = patientListRespModel.id
-        viewModel.childPatientDetails=patientListRespModel.pregnancyDetails?.neonatePatientId
-        viewModel.dateOfDelivery=patientListRespModel.pregnancyDetails?.dateOfDelivery
-        viewModel.neonateOutCome=patientListRespModel.pregnancyDetails?.neonatalOutcomes
+        viewModel.childPatientDetails = patientListRespModel.pregnancyDetails?.neonatePatientId
+        viewModel.dateOfDelivery = patientListRespModel.pregnancyDetails?.dateOfDelivery
+        viewModel.neonateOutCome = patientListRespModel.pregnancyDetails?.neonatalOutcomes
         viewModel.chwName = patientListRespModel.chwName
         viewModel.isEmtctFlow = patientListRespModel.isEmtctFlow == true
         viewModel.hivTestedPositive = patientListRespModel.hivTestedPositive == true
         val isAnc = isAnc()
-        val isPnc= isPnc()
+        val isPnc = isPnc()
         val name =
             patientListRespModel.name ?: requireContext().getString(R.string.separator_hyphen)
         val gender =
@@ -283,7 +268,7 @@ class PatientInfoFragment : BaseFragment() {
 
         val chwValue = listOfNotNull(
             chwName,
-            chwPhoneNumber.takeIf { it.isNotBlank() }?.let { "($it)" }
+            chwPhoneNumber.takeIf { it.isNotBlank() }?.let { "($it)" },
         ).joinToString(" ")
         with(binding) {
             val lastMenstrualDate =
@@ -292,71 +277,92 @@ class PatientInfoFragment : BaseFragment() {
                 }
             val dateOfDelivery =
                 patientListRespModel.pregnancyDetails?.dateOfDelivery.takeIf { it?.isNotBlank() == true }?.let {
-                    DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)?:requireContext().getString(R.string.hyphen_symbol)
+                    DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy) ?: requireContext().getString(R.string.hyphen_symbol)
                 }
 
             val dataList = mutableListOf(
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.patient_id),
-                    DefinedParams.Value to (patientListRespModel.patientId
-                        ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+                    DefinedParams.Value to (
+                        patientListRespModel.patientId
+                            ?: requireContext().getString(R.string.hyphen_symbol)
+                    ).toString().trim(),
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.contact_number),
-                    DefinedParams.Value to (getContactNumber(patientListRespModel.phoneNumber.takeIf { it?.isNotBlank() == true }
-                        ?.trim())
-                        ?: requireContext().getString(R.string.hyphen_symbol))
+                    DefinedParams.Value to (
+                        getContactNumber(
+                            patientListRespModel.phoneNumber
+                                .takeIf { it?.isNotBlank() == true }
+                                ?.trim(),
+                        )
+                            ?: requireContext().getString(R.string.hyphen_symbol)
+                    ),
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.hh_id),
-                    DefinedParams.Value to (patientListRespModel.houseHoldNumber
-                        ?: requireContext().getString(R.string.hyphen_symbol)).toString()
+                    DefinedParams.Value to (
+                        patientListRespModel.houseHoldNumber
+                            ?: requireContext().getString(R.string.hyphen_symbol)
+                    ).toString(),
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.landmark),
-                    DefinedParams.Value to (patientListRespModel.landmark.takeIf { it?.isNotBlank() == true }
-                        ?.trim()
-                        ?: requireContext().getString(R.string.hyphen_symbol))
+                    DefinedParams.Value to (
+                        patientListRespModel.landmark
+                            .takeIf { it?.isNotBlank() == true }
+                            ?.trim()
+                            ?: requireContext().getString(R.string.hyphen_symbol)
+                    ),
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.household_location),
-                    DefinedParams.Value to (patientListRespModel.village.takeIf { it?.isNotBlank() == true }
-                        ?.trim()
-                        ?: requireContext().getString(R.string.hyphen_symbol))
+                    DefinedParams.Value to (
+                        patientListRespModel.village
+                            .takeIf { it?.isNotBlank() == true }
+                            ?.trim()
+                            ?: requireContext().getString(R.string.hyphen_symbol)
+                    ),
                 ),
-
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.dateofbirth),
-                    DefinedParams.Value to (patientListRespModel.birthDate?.getLocalDate()
-                        ?.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
-                        ?: requireContext().getString(R.string.hyphen_symbol))
-                )
+                    DefinedParams.Value to (
+                        patientListRespModel.birthDate
+                            ?.getLocalDate()
+                            ?.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
+                            ?: requireContext().getString(R.string.hyphen_symbol)
+                    ),
+                ),
             )
             if (isAnc == true && lastMenstrualDate != null) {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.last_menstrual_period),
-                        DefinedParams.Value to lastMenstrualDate
-                    )
+                        DefinedParams.Value to lastMenstrualDate,
+                    ),
                 )
             }
-            if (isPnc==true&&dateOfDelivery != null){
+            if (isPnc == true && dateOfDelivery != null) {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.date_of_delivery),
-                        DefinedParams.Value to dateOfDelivery
-                    )
+                        DefinedParams.Value to dateOfDelivery,
+                    ),
                 )
             }
             if (isAnc == true && !(viewModel.isSummary)) {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.anc_visit),
-                        DefinedParams.Value to (patientListRespModel.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }
-                            ?.plus(1)
-                            ?.toString()
-                            ?: "1")
-                    )
+                        DefinedParams.Value to (
+                            patientListRespModel.pregnancyDetails
+                                ?.ancVisitMedicalReview
+                                ?.takeIf { true }
+                                ?.plus(1)
+                                ?.toString()
+                                ?: "1"
+                        ),
+                    ),
                 )
             }
 
@@ -366,64 +372,70 @@ class PatientInfoFragment : BaseFragment() {
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.presumptive_tb_no),
                         DefinedParams.Value to (patientListRespModel.presumptiveTbNo?.takeIf { it.isNotBlank() } ?: tbNo),
-                        DefinedParams.IsSummary to viewModel.isSummary.toString()
-                    )
+                        DefinedParams.IsSummary to viewModel.isSummary.toString(),
+                    ),
                 )
             }
             if (isReferredScreen() == true) {
                 dataList.add(
                     mapOf(
-                        DefinedParams.label to if (CommonUtils.isCommunity()) requireContext().getString(
-                            R.string.diagnosis_tb
-                        ) else requireContext().getString(R.string.diagnosis),
+                        DefinedParams.label to if (CommonUtils.isCommunity()) {
+                            requireContext().getString(
+                                R.string.diagnosis_tb,
+                            )
+                        } else {
+                            requireContext().getString(R.string.diagnosis)
+                        },
                         DefinedParams.Value to combineText(
-                            patientListRespModel.diagnosis?.filter { it.diseaseCategory?.lowercase() != OtherNotes.lowercase() }
-                                ?.map { it.diseaseCategory }?.distinct(),
+                            patientListRespModel.diagnosis
+                                ?.filter { it.diseaseCategory?.lowercase() != OtherNotes.lowercase() }
+                                ?.map { it.diseaseCategory }
+                                ?.distinct(),
                             "",
-                            getString(R.string.hyphen_symbol)
-                        )
-                    )
+                            getString(R.string.hyphen_symbol),
+                        ),
+                    ),
                 )
             }
-            if (isFamilyPlan() == true || isFamilyPlanSummary() == true){
+            if (isFamilyPlan() == true || isFamilyPlanSummary() == true) {
                 dataList.removeAt(5)
                 dataList.removeAt(3)
 
-                if(isFamilyPlanSummary() == true){
-              dataList.add(
+                if (isFamilyPlanSummary() == true) {
+                    dataList.add(
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.marital_status_summary),
-                            DefinedParams.Value to stringOrHyphen(patientListRespModel.maritalStatus)
-                        )
+                            DefinedParams.Value to stringOrHyphen(patientListRespModel.maritalStatus),
+                        ),
                     )
                     dataList.add(
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.date_of_delivery),
-                            DefinedParams.Value to (dateOfDelivery?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()
-                        )
+                            DefinedParams.Value to (dateOfDelivery ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim(),
+                        ),
                     )
-                }else {
+                } else {
                     dataList.add(
                         mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.marital_status),
-                        DefinedParams.Value to (viewModel.maritalStatus ?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()
-                    )
+                            DefinedParams.label to requireContext().getString(R.string.marital_status),
+                            DefinedParams.Value to (viewModel.maritalStatus ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim(),
+                        ),
                     )
                     dataList.add(
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.occupation),
-                            DefinedParams.Value to (viewModel.occupation ?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()
-                        )
+                            DefinedParams.Value to (viewModel.occupation ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim(),
+                        ),
                     )
                     dataList.add(
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.date_of_delivery),
-                            DefinedParams.Value to (dateOfDelivery?:requireContext().getString(R.string.hyphen_symbol)).toString().trim()
-                        )
+                            DefinedParams.Value to (dateOfDelivery ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim(),
+                        ),
                     )
                 }
             }
-            if (isEMTCT() == true ||isEMTCTSummary() == true ) {
+            if (isEMTCT() == true || isEMTCTSummary() == true) {
                /* dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.chw),
@@ -436,46 +448,54 @@ class PatientInfoFragment : BaseFragment() {
                         DefinedParams.Value to stringOrHyphen(patientListRespModel.occupation)
                     )
                 )*/
-
             }
-            if (isEMTCTSummary() == true ){
+            if (isEMTCTSummary() == true) {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.anc_visit),
-                        DefinedParams.Value to (patientListRespModel.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }
-                            ?.toString()
-                            ?: "1")
-                    )
+                        DefinedParams.Value to (
+                            patientListRespModel.pregnancyDetails
+                                ?.ancVisitMedicalReview
+                                ?.takeIf { true }
+                                ?.toString()
+                                ?: "1"
+                        ),
+                    ),
                 )
             }
 
             if (isHivImrCmr()) {
                 prepareHivImrCmrData(
                     dataList = dataList,
-                    patient = patientListRespModel
+                    patient = patientListRespModel,
                 )
             }
 
-            if (isEMTCTMR() == true){
+            if (isEMTCTMR() == true) {
                 prepareEMTCTMRData(
                     dataList = dataList,
-                    patient = patientListRespModel
+                    patient = patientListRespModel,
                 )
             }
             commonAdapter(dataList as MutableList<Map<String, Any>>)
         }
     }
+
     private fun stringOrHyphen(value: String?) = value?.takeIf { it.isNotBlank() }?.trim() ?: requireContext().getString(R.string.hyphen_symbol)
+
     private fun prepareHivImrCmrData(
         dataList: MutableList<Map<String, String>>,
-        patient: PatientListRespModel
+        patient: PatientListRespModel,
     ): MutableList<Map<String, String>> {
-        fun removeItem(labelResId: Int, value: String?) {
+        fun removeItem(
+            labelResId: Int,
+            value: String?,
+        ) {
             dataList.remove(
                 mapOf(
                     DefinedParams.label to requireContext().getString(labelResId),
-                    DefinedParams.Value to stringOrHyphen(value)
-                )
+                    DefinedParams.Value to stringOrHyphen(value),
+                ),
             )
         }
         removeItem(R.string.household_location, patient.village)
@@ -488,7 +508,7 @@ class PatientInfoFragment : BaseFragment() {
 
         val chwValue = listOfNotNull(
             chwName,
-            chwPhoneNumber.takeIf { it.isNotBlank() }?.let { "($it)" }
+            chwPhoneNumber.takeIf { it.isNotBlank() }?.let { "($it)" },
         ).joinToString(" ")
         // Add updated items
         dataList.addAll(
@@ -499,7 +519,7 @@ class PatientInfoFragment : BaseFragment() {
                 ),*/
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.household_location),
-                    DefinedParams.Value to stringOrHyphen(patient.village)
+                    DefinedParams.Value to stringOrHyphen(patient.village),
                 ),
                 /*mapOf(
                     DefinedParams.label to requireContext().getString(R.string.chw),
@@ -514,25 +534,26 @@ class PatientInfoFragment : BaseFragment() {
                     DefinedParams.Value to combineText(
                         patient.populationTypes,
                         "",
-                        getString(R.string.hyphen_symbol)
-                    )
+                        getString(R.string.hyphen_symbol),
+                    ),
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.art_code),
                     DefinedParams.Value to ((patient.artCode ?: viewModel.artCode) ?: ""),
-                    DefinedParams.IsSummary to viewModel.isSummary.toString()
-                )
-            )
+                    DefinedParams.IsSummary to viewModel.isSummary.toString(),
+                ),
+            ),
         )
         return dataList
     }
 
     private fun prepareEMTCTMRData(
         dataList: MutableList<Map<String, String>>,
-        patient: PatientListRespModel
+        patient: PatientListRespModel,
     ): MutableList<Map<String, String>> {
         val hyphen = requireContext().getString(R.string.hyphen_symbol)
         val formatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)
+
         fun stringOrHyphen(value: String?) = value?.takeIf { it.isNotBlank() }?.trim() ?: hyphen
         val chwPhoneNumber = patient.chwPhoneNumber
             ?.takeIf { it.isNotBlank() }
@@ -543,14 +564,18 @@ class PatientInfoFragment : BaseFragment() {
 
         val chwValue = listOfNotNull(
             chwName,
-            chwPhoneNumber.takeIf { it.isNotBlank() }?.let { "($it)" }
+            chwPhoneNumber.takeIf { it.isNotBlank() }?.let { "($it)" },
         ).joinToString(" ")
-        fun removeItem(labelResId: Int, value: String?) {
+
+        fun removeItem(
+            labelResId: Int,
+            value: String?,
+        ) {
             dataList.remove(
                 mapOf(
                     DefinedParams.label to requireContext().getString(labelResId),
-                    DefinedParams.Value to stringOrHyphen(value)
-                )
+                    DefinedParams.Value to stringOrHyphen(value),
+                ),
             )
         }
         // Remove specific items if present
@@ -568,7 +593,7 @@ class PatientInfoFragment : BaseFragment() {
                 ),*/
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.household_location),
-                    DefinedParams.Value to stringOrHyphen(patient.village)
+                    DefinedParams.Value to stringOrHyphen(patient.village),
                 ),
                 /*mapOf(
                     DefinedParams.label to requireContext().getString(R.string.chw),
@@ -580,25 +605,27 @@ class PatientInfoFragment : BaseFragment() {
                 ),*/
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.emtct_enrolment_date),
-                    DefinedParams.Value to (patient.emtctEnrollDate?.getLocalDate()
-                        ?.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
-                        ?: requireContext().getString(R.string.empty__))
+                    DefinedParams.Value to (
+                        patient.emtctEnrollDate
+                            ?.getLocalDate()
+                            ?.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
+                            ?: requireContext().getString(R.string.empty__)
+                    ),
                 ),
-
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.entry_point),
                     DefinedParams.Value to combineText(
                         entryPoint,
                         patient.otherEntryPoint,
-                    getString(R.string.hyphen_symbol)
-                )
+                        getString(R.string.hyphen_symbol),
+                    ),
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.art_code),
                     DefinedParams.Value to ((patient.artCode ?: viewModel.artCode) ?: ""),
-                    DefinedParams.IsSummary to viewModel.isSummary.toString()
-                )
-            )
+                    DefinedParams.IsSummary to viewModel.isSummary.toString(),
+                ),
+            ),
         )
         return dataList
     }
@@ -620,8 +647,9 @@ class PatientInfoFragment : BaseFragment() {
                                     showMentalHealthDialog(
                                         CommonUtils.getAssessmentType(
                                             requireContext(),
-                                            type
-                                        ), mhPair.second
+                                            type,
+                                        ),
+                                        mhPair.second,
                                     )
                                 })
                             }
@@ -632,13 +660,14 @@ class PatientInfoFragment : BaseFragment() {
                     withNetworkAvailability(online = {
                         viewModel.ncdGetInstructions()
                     })
-                }, onItemToggle = {
+                },
+                onItemToggle = {
                     withNetworkAvailability(online = {
                         val request = NCDPregnancyRiskUpdate(
                             memberReference = viewModel.getPatientFHIRId(),
                             patientReference = viewModel.getPatientId(),
                             isPregnancyRisk = it,
-                            provenance = ProvanceDto()
+                            provenance = ProvanceDto(),
                         )
                         viewModel.ncdUpdatePregnancyRisk(request)
                     })
@@ -647,7 +676,7 @@ class PatientInfoFragment : BaseFragment() {
                     viewModel.occupation = it
                 },
                 maritalStatus = {
-                    if (!it.equals(DefaultID)){
+                    if (!it.equals(DefaultID)) {
                         viewModel.maritalStatus = it
                     }
                 },
@@ -659,7 +688,7 @@ class PatientInfoFragment : BaseFragment() {
                     showArtCode(it)
                 },
                 isHiv = isHivImrCmr(),
-                isFamilyPlanningSummary = viewModel.isFamilyPlanning
+                isFamilyPlanningSummary = viewModel.isFamilyPlanning,
             )
         val isLandscape =
             resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -681,22 +710,23 @@ class PatientInfoFragment : BaseFragment() {
         hintRes: Int,
         length: Int = 20,
         inputType: Int = InputType.TYPE_CLASS_NUMBER,
-        onEntered: (String) -> Unit
+        onEntered: (String) -> Unit,
     ) {
         showDialogIfNotPresent(tag) {
-            AddPresumptiveTBNoDialog.newInstance(
-                text = text,
-                title = getString(titleRes),
-                hint = getString(hintRes),
-                length = length,
-                inputType = inputType
-            ).apply {
-                this.listener = object : OnPresumptiveTBEnteredListener {
-                    override fun onPresumptiveTBEntered(tbNumber: String) {
-                        onEntered(tbNumber)
+            AddPresumptiveTBNoDialog
+                .newInstance(
+                    text = text,
+                    title = getString(titleRes),
+                    hint = getString(hintRes),
+                    length = length,
+                    inputType = inputType,
+                ).apply {
+                    this.listener = object : OnPresumptiveTBEnteredListener {
+                        override fun onPresumptiveTBEntered(tbNumber: String) {
+                            onEntered(tbNumber)
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -705,14 +735,16 @@ class PatientInfoFragment : BaseFragment() {
             tag = AddPresumptiveTBNoDialog.TAG,
             text = text,
             titleRes = R.string.presumptive_tb_no,
-            hintRes = R.string.enter_number
+            hintRes = R.string.enter_number,
         ) { tbNumber ->
             viewModel.presumptiveTbNo = tbNumber
-            viewModel.patientDetailsLiveData.value?.data?.apply {
-                presumptiveTbNo = tbNumber
-            }?.let {
-                setDataInInfo(it)
-            }
+            viewModel.patientDetailsLiveData.value
+                ?.data
+                ?.apply {
+                    presumptiveTbNo = tbNumber
+                }?.let {
+                    setDataInInfo(it)
+                }
         }
     }
 
@@ -721,47 +753,53 @@ class PatientInfoFragment : BaseFragment() {
             tag = AddPresumptiveTBNoDialog.TAG,
             text = text,
             titleRes = R.string.art_code,
-            hintRes = R.string.enter_number
+            hintRes = R.string.enter_number,
         ) { artCode ->
             viewModel.artCode = artCode
-            viewModel.patientDetailsLiveData.value?.data?.apply {
-                this.artCode = artCode
-            }?.let {
-                setDataInInfo(it)
-            }
+            viewModel.patientDetailsLiveData.value
+                ?.data
+                ?.apply {
+                    this.artCode = artCode
+                }?.let {
+                    setDataInInfo(it)
+                }
         }
     }
 
-    private fun showMentalHealthDialog(type: String, isEditAssessment: Boolean) {
+    private fun showMentalHealthDialog(
+        type: String,
+        isEditAssessment: Boolean,
+    ) {
         val dialog = childFragmentManager.findFragmentByTag(NCDMentalHealthQuestionDialog.TAG)
         if (dialog == null) {
-            NCDMentalHealthQuestionDialog.newInstance(
-                type,
-                viewModel.getPatientId(),
-                viewModel.getPatientFHIRId(),
-                isEditAssessment
-            ) { response, errorResponse ->
-                if (errorResponse.isNullOrBlank() && response != null) {
-                    val fragment = childFragmentManager.findFragmentByTag(GeneralSuccessDialog.TAG)
-                    if (fragment == null) {
-                        GeneralSuccessDialog.newInstance(
-                            title = response.first,
-                            message = response.second,
-                            okayButton = getString(R.string.done)
-                        ) {
-                            (requireActivity() as? NCDMedicalReviewActivity)?.swipeRefresh()
-                        }.show(childFragmentManager, GeneralSuccessDialog.TAG)
+            NCDMentalHealthQuestionDialog
+                .newInstance(
+                    type,
+                    viewModel.getPatientId(),
+                    viewModel.getPatientFHIRId(),
+                    isEditAssessment,
+                ) { response, errorResponse ->
+                    if (errorResponse.isNullOrBlank() && response != null) {
+                        val fragment = childFragmentManager.findFragmentByTag(GeneralSuccessDialog.TAG)
+                        if (fragment == null) {
+                            GeneralSuccessDialog
+                                .newInstance(
+                                    title = response.first,
+                                    message = response.second,
+                                    okayButton = getString(R.string.done),
+                                ) {
+                                    (requireActivity() as? NCDMedicalReviewActivity)?.swipeRefresh()
+                                }.show(childFragmentManager, GeneralSuccessDialog.TAG)
+                        }
+                    } else {
+                        (activity as BaseActivity?)?.showErrorDialogue(
+                            title = getString(R.string.error),
+                            message = errorResponse
+                                ?: getString(R.string.something_went_wrong_try_later),
+                            positiveButtonName = getString(R.string.ok),
+                        ) {}
                     }
-                } else {
-                    (activity as BaseActivity?)?.showErrorDialogue(
-                        title = getString(R.string.error),
-                        message = errorResponse
-                            ?: getString(R.string.something_went_wrong_try_later),
-                        positiveButtonName = getString(R.string.ok)
-                    ) {}
-                }
-            }
-                .show(childFragmentManager, NCDPatientHistoryDialog.TAG)
+                }.show(childFragmentManager, NCDPatientHistoryDialog.TAG)
         }
     }
 
@@ -769,124 +807,156 @@ class PatientInfoFragment : BaseFragment() {
         showProgress()
         data.name?.let { name ->
             setTitle(
-                setTitleBasedOnRole(data, name)
+                setTitleBasedOnRole(data, name),
             )
         }
         val cvdRiskLevel = data.cvdRiskScore?.toLong()?.takeIf { it > 0 }?.let {
             Pair(
                 StringConverter.appendTexts(
-                    "${it}%",
-                    data.cvdRiskLevel, separator = "-"
+                    "$it%",
+                    data.cvdRiskLevel,
+                    separator = "-",
                 ),
-                CommonUtils.cvdRiskColorCode(it, requireContext())
+                CommonUtils.cvdRiskColorCode(it, requireContext()),
             )
         }
 
         val bmiPair = CommonUtils.getBMIFormattedText(
             requireContext(),
-            data.bmi?.takeIf { it > 0.0 }
+            data.bmi?.takeIf { it > 0.0 },
         )
         val dataList = mutableListOf(
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.registration_date),
-                DefinedParams.Value to (data.enrollmentAt?.let {
-                    DateUtils.convertDateFormat(
-                        it,
-                        DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        DATE_FORMAT_ddMMMyyyy
-                    ).takeIf { it.isNotBlank() } ?: requireContext().getString(R.string.hyphen_symbol)
-                } ?: requireContext().getString(R.string.pending_registration)).toString().trim()
+                DefinedParams.Value to (
+                    data.enrollmentAt?.let {
+                        DateUtils
+                            .convertDateFormat(
+                                it,
+                                DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                DATE_FORMAT_ddMMMyyyy,
+                            ).takeIf { it.isNotBlank() } ?: requireContext().getString(R.string.hyphen_symbol)
+                    } ?: requireContext().getString(R.string.pending_registration)
+                ).toString().trim(),
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.cvd_risk),
-                DefinedParams.Value to (cvdRiskLevel?.first
-                    ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim(),
-                DefinedParams.color to cvdRiskLevel?.second
+                DefinedParams.Value to (
+                    cvdRiskLevel?.first
+                        ?: requireContext().getString(R.string.hyphen_symbol)
+                ).toString().trim(),
+                DefinedParams.color to cvdRiskLevel?.second,
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.patient_id),
-                DefinedParams.Value to (data.programId
-                    ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+                DefinedParams.Value to (
+                    data.programId
+                        ?: requireContext().getString(R.string.hyphen_symbol)
+                ).toString().trim(),
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.bmi),
-                DefinedParams.Value to (bmiPair.first
-                    ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim(),
-                DefinedParams.color to bmiPair.second
+                DefinedParams.Value to (
+                    bmiPair.first
+                        ?: requireContext().getString(R.string.hyphen_symbol)
+                ).toString().trim(),
+                DefinedParams.color to bmiPair.second,
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.national_id),
-                DefinedParams.Value to (data.identityValue
-                    ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
-            )
+                DefinedParams.Value to (
+                    data.identityValue
+                        ?: requireContext().getString(R.string.hyphen_symbol)
+                ).toString().trim(),
+            ),
         )
         dataList.add(
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.contact_number),
-                DefinedParams.Value to (getContactNumber(data.phoneNumber.takeIf { it?.isNotBlank() == true }
-                    ?.trim())
-                    ?: requireContext().getString(R.string.hyphen_symbol))
-            )
+                DefinedParams.Value to (
+                    getContactNumber(
+                        data.phoneNumber
+                            .takeIf { it?.isNotBlank() == true }
+                            ?.trim(),
+                    )
+                        ?: requireContext().getString(R.string.hyphen_symbol)
+                ),
+            ),
         )
         val isMentalHealth = viewModel.mrMenuId.equals("mentalHealth", ignoreCase = true)
         if (isMentalHealth) {
             val phq4Score = data.phq4score ?: requireContext().getString(R.string.hyphen_symbol)
-            val phq4AssessmentType = if (data.phq4score != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
-                R.string.start_assessment
-            )
+            val phq4AssessmentType = if (data.phq4score != null) {
+                requireContext().getString(R.string.edit_assessment)
+            } else {
+                requireContext().getString(
+                    R.string.start_assessment,
+                )
+            }
             dataList.add(
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.phq4_score),
                     DefinedParams.Value to phq4Score,
                     Screening.type to phq4AssessmentType,
-                    DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
-                )
+                    DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color),
+                ),
             )
             val showSuicidcalIdeation =
                 viewModel.clinicalWorkflowsMenusLiveData.value?.firstOrNull {
                     it.workflowName.equals(
                         Screening.suicideScreener,
-                        true
+                        true,
                     )
                 } != null
             if (showSuicidcalIdeation) {
                 val suicidcalIdeation = data.suicidalIdeation ?: requireContext().getString(
-                    R.string.hyphen_symbol
+                    R.string.hyphen_symbol,
                 )
                 val type =
-                    if (data.suicidalIdeation != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
-                        R.string.start_assessment
-                    )
+                    if (data.suicidalIdeation != null) {
+                        requireContext().getString(R.string.edit_assessment)
+                    } else {
+                        requireContext().getString(
+                            R.string.start_assessment,
+                        )
+                    }
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.suicidal_ideation),
                         DefinedParams.Value to suicidcalIdeation.capitalizeFirstChar(),
                         Screening.type to type,
-                        DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
-                    )
+                        DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color),
+                    ),
                 )
             }
             val showCageAid =
                 viewModel.clinicalWorkflowsMenusLiveData.value?.firstOrNull {
                     it.workflowName.equals(
                         Screening.substanceAbuse,
-                        true
+                        true,
                     )
                 } != null
             if (showCageAid) {
-                val cageAid = data.cageAid?.toDoubleOrNull()?.toInt()?.toString()
+                val cageAid = data.cageAid
+                    ?.toDoubleOrNull()
+                    ?.toInt()
+                    ?.toString()
                     ?: requireContext().getString(R.string.hyphen_symbol)
                 val assessmentType =
-                    if (data.cageAid != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
-                        R.string.start_assessment
-                    )
+                    if (data.cageAid != null) {
+                        requireContext().getString(R.string.edit_assessment)
+                    } else {
+                        requireContext().getString(
+                            R.string.start_assessment,
+                        )
+                    }
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.cage_aid),
                         DefinedParams.Value to cageAid,
                         Screening.type to assessmentType,
-                        DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
-                    )
+                        DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color),
+                    ),
                 )
             }
         } else {
@@ -896,8 +966,8 @@ class PatientInfoFragment : BaseFragment() {
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.cage_aid),
                             DefinedParams.Value to aid.toDoubleOrNull()?.toInt()?.toString(),
-                            DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
-                        )
+                            DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color),
+                        ),
                     )
                 }
             }
@@ -910,8 +980,8 @@ class PatientInfoFragment : BaseFragment() {
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.high_risk),
                     DefinedParams.Value to (data.pregnancyDetails?.isPregnancyRisk ?: false),
-                    DefinedParams.Gender to (data.gender)
-                )
+                    DefinedParams.Gender to (data.gender),
+                ),
             )
         }
         if (viewModel.isCmr) {
@@ -921,21 +991,24 @@ class PatientInfoFragment : BaseFragment() {
                     DefinedParams.Value to combineText(
                         data.confirmDiagnosis?.diagnosis?.mapNotNull { it.name },
                         data.confirmDiagnosis?.diagnosisNotes.takeIf { it?.isNotBlank() == true },
-                        getString(R.string.hyphen_symbol)
-                    )
-                )
+                        getString(R.string.hyphen_symbol),
+                    ),
+                ),
             )
         }
         (activity as BaseActivity).setRedRiskPatient(data.isRedRiskPatient)
         commonAdapter(dataList as MutableList<Map<String, Any>>)
     }
 
-    private fun setTitleBasedOnRole(response: PatientListRespModel, text: String): String {
-        return StringConverter.appendTexts(
-            firstText = text,
-            response.age.toString(),
-            CommonUtils.translatedGender(requireContext(), response.gender),
-            separator = getString(R.string.hyphen_symbol)
-        ).capitalizeFirstChar()
-    }
+    private fun setTitleBasedOnRole(
+        response: PatientListRespModel,
+        text: String,
+    ): String =
+        StringConverter
+            .appendTexts(
+                firstText = text,
+                response.age.toString(),
+                CommonUtils.translatedGender(requireContext(), response.gender),
+                separator = getString(R.string.hyphen_symbol),
+            ).capitalizeFirstChar()
 }

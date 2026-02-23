@@ -4,10 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -22,9 +20,8 @@ class VaccinationItemView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     item: VaccinationDetail? = null,
-    callback: (VaccinationDetail) -> Unit?
+    callback: (VaccinationDetail) -> Unit?,
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
-
     private val tvImmunisationName: AppCompatTextView
     private val tvImmunisationDate: AppCompatTextView
     private val flEpiStatusNudge: FrameLayout
@@ -51,7 +48,7 @@ class VaccinationItemView @JvmOverloads constructor(
                 DateUtils.convertDateTimeToDate(
                     it,
                     DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    DATE_ddMMyyyy
+                    DATE_ddMMyyyy,
                 )
             } ?: "--"
             enableOrDisableView(false)
@@ -81,5 +78,4 @@ class VaccinationItemView @JvmOverloads constructor(
             tvImmunisationName.isEnabled = false
         }
     }
-
 }

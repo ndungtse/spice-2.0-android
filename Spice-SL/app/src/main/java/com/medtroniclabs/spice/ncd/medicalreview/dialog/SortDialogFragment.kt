@@ -24,7 +24,7 @@ import javax.inject.Inject
 class SortDialogFragment : DialogFragment(), View.OnClickListener {
     private lateinit var binding: FragmentSortingDialogBinding
     private val patientListViewModel: PatientListViewModel by viewModels(
-        ownerProducer = { requireParentFragment() }
+        ownerProducer = { requireParentFragment() },
     )
 
     @Inject
@@ -32,15 +32,14 @@ class SortDialogFragment : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "SortingDialogFragment"
-        fun newInstance(): SortDialogFragment {
-            return SortDialogFragment()
-        }
+
+        fun newInstance(): SortDialogFragment = SortDialogFragment()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSortingDialogBinding.inflate(inflater, container, false)
         isCancelable = false
@@ -53,11 +52,14 @@ class SortDialogFragment : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         prefillValues()
         setListeners()
@@ -81,25 +83,29 @@ class SortDialogFragment : DialogFragment(), View.OnClickListener {
         binding.rgSortCondition.setOnCheckedChangeListener { _, checkedId ->
             if (connectivityManager.isNetworkAvailable()) {
                 val radioButton =
-                    if (checkedId > 0) binding.rgSortCondition.findViewById<RadioButton>(
-                        checkedId
-                    ) else null
+                    if (checkedId > 0) {
+                        binding.rgSortCondition.findViewById<RadioButton>(
+                            checkedId,
+                        )
+                    } else {
+                        null
+                    }
                 if (radioButton != null && radioButton.isChecked) {
                     patientListViewModel.apply {
                         isRedRisk = value(checkedId, binding.rbRedRisk.id)
                         isLatestAssessment = value(
                             checkedId,
-                            binding.rbLatestAssessment.id
+                            binding.rbLatestAssessment.id,
                         )
                         isMedicalReviewDueDate = value(
                             checkedId,
-                            binding.rbMedicalReview.id
+                            binding.rbMedicalReview.id,
                         )
                         isHighLowBp = value(checkedId, binding.rbBP.id)
                         isHighLowBg = value(checkedId, binding.rbBG.id)
                         isAssessmentDueDate = value(
                             checkedId,
-                            binding.rbAssessmentDueDate.id
+                            binding.rbAssessmentDueDate.id,
                         )
                     }
                     handleResetButtons()
@@ -110,7 +116,8 @@ class SortDialogFragment : DialogFragment(), View.OnClickListener {
                 dismiss()
                 (activity as BaseActivity).showErrorDialogue(
                     getString(R.string.error),
-                    getString(R.string.no_internet_error), false
+                    getString(R.string.no_internet_error),
+                    false,
                 ) {}
             }
         }
@@ -119,9 +126,10 @@ class SortDialogFragment : DialogFragment(), View.OnClickListener {
         binding.labelHeader.ivClose.safeClickListener(this)
     }
 
-    private fun value(checkedId: Int, id: Int): Boolean? {
-        return if (checkedId == id) true else null
-    }
+    private fun value(
+        checkedId: Int,
+        id: Int,
+    ): Boolean? = if (checkedId == id) true else null
 
     override fun onClick(view: View) {
         when (view.id) {
@@ -129,7 +137,7 @@ class SortDialogFragment : DialogFragment(), View.OnClickListener {
                 patientListViewModel.setAnalyticsData(
                     UserDetail.startDateTime,
                     eventName = AnalyticsDefinedParams.NCDPatientSort,
-                    isCompleted = true
+                    isCompleted = true,
                 )
                 patientListViewModel.setSort(true)
                 dismiss()

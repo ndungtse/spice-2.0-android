@@ -55,7 +55,10 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnClickListener,
+class HivMedicalReviewBaseActivity :
+    BaseActivity(),
+    AncVisitCallBack,
+    View.OnClickListener,
     OnDialogDismissListener {
     private lateinit var binding: ActivityHivMedicalReviewBaseBinding
     private val patientViewModel: PatientDetailViewModel by viewModels()
@@ -63,7 +66,6 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
     private val clinicalNotesViewModel: ClinicalNotesViewModel by viewModels()
     private val referPatientViewModel: ReferPatientViewModel by viewModels()
     private val weightViewModel: MotherNeonateBpWeightViewModel by viewModels()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,12 +90,10 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
             },
             callbackHome = {
                 backNavigationToHome()
-            }
+            },
         )
         hivViewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         hivViewModel.isEMTCT = intent.getBooleanExtra(DefinedParams.EMTCT, false)
-
-
     }
 
     private fun attachObserver() {
@@ -111,7 +111,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                         positiveButtonName = getString(R.string.ok),
                     ) {
                         if (it) {
-                            //onBackPressPopStack()
+                            // onBackPressPopStack()
                         }
                     }
                 }
@@ -155,7 +155,6 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         hivViewModel.createHivMedicalReviewSummaryLiveData.observe(this) { resources ->
 
             when (resources.state) {
-
                 ResourceState.LOADING -> {
                     showLoading()
                 }
@@ -164,9 +163,8 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                     hideLoading()
                     MedicalReviewSuccessDialogFragment.newInstance().show(
                         supportFragmentManager,
-                        MedicalReviewSuccessDialogFragment.TAG
+                        MedicalReviewSuccessDialogFragment.TAG,
                     )
-
                 }
 
                 ResourceState.ERROR -> {
@@ -191,7 +189,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                         supportFragmentManager.findFragmentByTag(ReferPatientFragment.TAG) as? ReferPatientFragment
                     fragment?.dismiss()
                     showDialogIfNotPresent(
-                        MedicalReviewSuccessDialogFragment.TAG
+                        MedicalReviewSuccessDialogFragment.TAG,
                     ) {
                         MedicalReviewSuccessDialogFragment.newInstance()
                     }
@@ -202,9 +200,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                 }
             }
         }
-
     }
-
 
     private fun setButtonClickListener() {
         binding.btnSubmit.safeClickListener(this)
@@ -220,7 +216,8 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                 hivViewModel.getHivMetaData()
             } else {
                 showErrorDialogue(
-                    getString(R.string.error), getString(R.string.no_internet_error),
+                    getString(R.string.error),
+                    getString(R.string.no_internet_error),
                     isNegativeButtonNeed = false,
                 ) {}
             }
@@ -233,13 +230,14 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         replaceFragment(
             R.id.patientDetailFragment,
             PatientInfoFragment.TAG,
-                PatientInfoFragment.newInstanceForEMTCT(
+            PatientInfoFragment
+                .newInstanceForEMTCT(
                     intent.getStringExtra(DefinedParams.PatientId),
                     isEMTCT = true,
-                    isEMTCTSummary = hivViewModel.isHivSummary
+                    isEMTCTSummary = hivViewModel.isHivSummary,
                 ).apply {
                     setDataCallback(this@HivMedicalReviewBaseActivity)
-                }
+                },
         )
     }
 
@@ -252,7 +250,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
             showErrorDialogue(
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
+                isNegativeButtonNeed = false,
             ) {
                 binding.refreshLayout.isRefreshing = false
                 startActivityWithoutSplashScreen()
@@ -284,7 +282,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (isPositive) {
                 hivViewModel.isHivSummary = false
@@ -297,7 +295,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (isPositive) {
                 hivViewModel.isHivSummary = false
@@ -310,7 +308,6 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         setResult(Activity.RESULT_OK)
         finish()
     }
-
 
     private fun enableSubmitBtn() {
         val clinicalNotesFragment =
@@ -328,7 +325,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
     private fun initializeFragments() {
         supportFragmentManager.setFragmentResultListener(
             MedicalReviewDefinedParams.SUMMARY_ITEM,
-            this
+            this,
         ) { _, _ ->
             enableReferralDoneBtn()
         }
@@ -343,46 +340,48 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         replaceFragment(
             R.id.patientBMIContainer,
             HivMedicalReviewDiagnosesFragment.TAG,
-            HivMedicalReviewDiagnosesFragment.newInstance(true)
+            HivMedicalReviewDiagnosesFragment.newInstance(true),
         )
         val bundle = if (hivViewModel.isEMTCT) {
             Bundle().apply {
                 putBoolean(DefinedParams.EMTCT, intent.getBooleanExtra(DefinedParams.EMTCT, false))
-                putBoolean(DefinedParams.isPregnant,patientViewModel.isPregnant())
-                putBoolean(DefinedParams.Gender,patientViewModel.getGenderIsFemale())
+                putBoolean(DefinedParams.isPregnant, patientViewModel.isPregnant())
+                putBoolean(DefinedParams.Gender, patientViewModel.getGenderIsFemale())
             }
-        } else   Bundle().apply {
-            putBoolean(DefinedParams.isPregnant,patientViewModel.isPregnant())
-            putBoolean(DefinedParams.Gender,patientViewModel.getGenderIsFemale())
+        } else {
+            Bundle().apply {
+                putBoolean(DefinedParams.isPregnant, patientViewModel.isPregnant())
+                putBoolean(DefinedParams.Gender, patientViewModel.getGenderIsFemale())
+            }
         }
 
         replaceFragmentOrCreateNewFragment<EligibilityFragment>(
             binding.patientEligibility.id,
             bundle = bundle,
-            tag = EligibilityFragment.TAG
+            tag = EligibilityFragment.TAG,
         )
 
         replaceFragmentOrCreateNewFragment<HivTestFragment>(
             binding.patientHIVTest.id,
             bundle = bundle,
-            tag = HivTestFragment.TAG
+            tag = HivTestFragment.TAG,
         )
         replaceFragmentOrCreateNewFragment<ClinicalNotesFragment>(
             binding.clinicalNotesContainer.id,
             bundle = null,
-            tag = ClinicalNotesFragment.TAG
+            tag = ClinicalNotesFragment.TAG,
         )
-
     }
 
     private fun enableReferralDoneBtn() {
         binding.btnDone.isEnabled =
-            hivViewModel.selectedPatientStatus != null || hivViewModel.nextVisitDate != null
+            hivViewModel.selectedPatientStatus != null ||
+            hivViewModel.nextVisitDate != null
     }
 
     private fun setupResultListeners() {
         val listener: (String, Bundle) -> Unit = { _, _ -> enableSubmitBtn() }
-         supportFragmentManager.setFragmentResultListener(CLINICAL_NOTES, this, listener)
+        supportFragmentManager.setFragmentResultListener(CLINICAL_NOTES, this, listener)
     }
 
     override fun onResume() {
@@ -390,9 +389,11 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         getCurrentLocation()
         swipeRefresh()
     }
+
     private fun callPatientDetails() {
         withNetworkAvailability(online = {
-            supportFragmentManager.findFragmentById(R.id.patientDetailFragment)
+            supportFragmentManager
+                .findFragmentById(R.id.patientDetailFragment)
                 .let {
                     patientViewModel.getPatientId()?.let { id ->
                         patientViewModel.getPatients(id)
@@ -400,6 +401,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                 }
         })
     }
+
     private fun getCurrentLocation() {
         val locationManager = SpiceLocationManager(this)
         locationManager.getCurrentLocation {
@@ -417,11 +419,11 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                         patientListRespModel = details,
                         selectedEligibilityPair = Pair(
                             hivViewModel.selectedHistoryListItem.map { it.value },
-                            hivViewModel.selectedPopulationType.map { it.value }
+                            hivViewModel.selectedPopulationType.map { it.value },
                         ),
                         haveHivTestTestedBeforePair = Pair(
                             isHaveYouTakenTestBefore,
-                            hivViewModel.selectedLastTestForHIV
+                            hivViewModel.selectedLastTestForHIV,
                         ),
                         hivTestResult = Triple(
                             hivViewModel.resultHashMap[A1_TEST_RESULT] as? String ?: "",
@@ -431,19 +433,19 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                         entryPoint = hivViewModel.selectedEntryPoint,
                         hivEmtctResult = Pair(
                             hivViewModel.resultHashMap[HIV_SYPHILIS_DUO_TEST] as? String ?: "",
-                            hivViewModel.resultHashMap[HBsAg] as? String ?: ""
+                            hivViewModel.resultHashMap[HBsAg] as? String ?: "",
                         ),
                         clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
                         encounterId = patientViewModel.encounterId,
                         isConsentGiven = if (!hivViewModel.isEMTCT) true else false,
                         weight = weightViewModel.getWeight(),
                         height = weightViewModel.getHeights(),
-
                     )
                 }
             } else {
                 showErrorDialogue(
-                    getString(R.string.error), getString(R.string.no_internet_error),
+                    getString(R.string.error),
+                    getString(R.string.no_internet_error),
                     isNegativeButtonNeed = false,
                 ) {}
             }
@@ -466,12 +468,14 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
             }
 
             R.id.btnRefer -> {
-                    ReferPatientFragment.newInstance(
+                ReferPatientFragment
+                    .newInstance(
                         MedicalReviewTypeEnums.HIV.name,
                         hivViewModel.patientReference,
-                        hivViewModel.encounterId
+                        hivViewModel.encounterId,
                     ).show(
-                        supportFragmentManager, ReferPatientFragment.TAG
+                        supportFragmentManager,
+                        ReferPatientFragment.TAG,
                     )
             }
 
@@ -479,7 +483,7 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                 patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
                     val intent = Intent(this, InvestigationActivity::class.java)
                     intent.putExtra(PatientId, data.patientId)
-                    intent.putExtra(DefinedParams.EncounterId,patientViewModel.encounterId)
+                    intent.putExtra(DefinedParams.EncounterId, patientViewModel.encounterId)
                     getResult.launch(intent)
                 }
             }
@@ -517,7 +521,10 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         return (isValidSummaryFragment == true)
     }
 
-    private fun showReviewSummary(encounterId: String?, patientReference: String?) {
+    private fun showReviewSummary(
+        encounterId: String?,
+        patientReference: String?,
+    ) {
         scrollUp()
         removeFragment(R.id.patientBMIContainer)
         removeFragment(R.id.patientHIVTest)
@@ -525,12 +532,12 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
         val bundle = Bundle().apply {
             putString(DefinedParams.EncounterId, encounterId)
             putString(DefinedParams.PatientReference, patientReference)
-            putBoolean(DefinedParams.EMTCT,hivViewModel.isEMTCT)
+            putBoolean(DefinedParams.EMTCT, hivViewModel.isEMTCT)
         }
         replaceFragmentInId<HivSummaryFragment>(
             binding.hivSummary.id,
             bundle,
-            tag = HivSummaryFragment.TAG
+            tag = HivSummaryFragment.TAG,
         )
         binding.bottomNavigationView.gone()
         binding.referralBottomView.visible()
@@ -541,7 +548,6 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
             supportFragmentManager.beginTransaction().remove(it).commit()
         }
     }
-
 
     private fun createHivSummaryDetails() {
         val request = MedicalReviewSummarySubmitRequest(
@@ -554,11 +560,12 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
             provenance = ProvanceDto(),
             patientId = hivViewModel.patientId,
             patientStatus = hivViewModel.selectedPatientStatus,
-            nextVisitDate = DateUtils.convertDateTimeToDate(
-                hivViewModel.nextVisitDate,
-                DATE_ddMMyyyy,
-                DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-            ).takeIf { it.isNotEmpty() }
+            nextVisitDate = DateUtils
+                .convertDateTimeToDate(
+                    hivViewModel.nextVisitDate,
+                    DATE_ddMMyyyy,
+                    DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                ).takeIf { it.isNotEmpty() },
         )
         hivViewModel.createHivSummary(request)
     }
@@ -571,12 +578,10 @@ class HivMedicalReviewBaseActivity : BaseActivity(), AncVisitCallBack, View.OnCl
                 }
             }
         }
+
     private fun scrollUp() {
         binding.nestedScrollViewID.post {
             binding.nestedScrollViewID.fullScroll(View.FOCUS_UP)
         }
     }
 }
-
-
-

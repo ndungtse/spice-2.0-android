@@ -18,7 +18,7 @@ data class FollowUp(
     val encounterId: String?,
     var patientStatus: String?,
     var currentPatientStatus: String? = null,
-    val reason: String ? =null,
+    val reason: String? = null,
     var attempts: Int = 0,
     var successfulAttempts: Int = 0,
     var unsuccessfulAttempts: Int = 0,
@@ -32,10 +32,10 @@ data class FollowUp(
     var isWrongNumber: Boolean = false,
     var calledAt: Long? = null,
     var syncStatus: OfflineSyncStatus = OfflineSyncStatus.Success,
-    var updatedAt: Long = System.currentTimeMillis()
+    var updatedAt: Long = System.currentTimeMillis(),
 ) {
     @Ignore
-    var followUpDetails : List<FollowUpCall> = listOf()
+    var followUpDetails: List<FollowUpCall> = listOf()
 
     @Ignore
     var provenance: ProvanceDto = ProvanceDto(modifiedDate = System.currentTimeMillis().convertToUtcDateTime())

@@ -4,10 +4,10 @@ data class AssessmentDetails(
     val id: Long,
     val villageId: String, // Village Id of household
     val assessmentType: String,
-    val assessmentDetails:String,
+    val assessmentDetails: String,
     val patientId: String?, // member - patient Id
     val referralStatus: String,
-    val referredReason: ArrayList<String>?= null,
+    val referredReason: ArrayList<String>? = null,
     var otherDetails: String? = null,
     val callResult: String? = null, // Call logs for PS and PHU
     val memberId: String?, // Member -FHIR id
@@ -18,5 +18,5 @@ data class AssessmentDetails(
     val neonatePatientId: String? = null,
     val neonatePatientReferenceId: Long? = null,
     var latitude: Double = 0.0,
-    var longitude: Double = 0.0
+    var longitude: Double = 0.0,
 )

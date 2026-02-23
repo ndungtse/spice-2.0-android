@@ -13,10 +13,10 @@ import javax.inject.Inject
 
 class UnderFiveYearsTreatmentSummaryRepository @Inject constructor(
     private val apiHelper: ApiHelper,
-    private val roomHelper: RoomHelper
+    private val roomHelper: RoomHelper,
 ) {
-    suspend fun getUnderFiveYearsSummaryDetails(request: CreateUnderTwoMonthsResponse): Resource<SummaryDetails> {
-        return try {
+    suspend fun getUnderFiveYearsSummaryDetails(request: CreateUnderTwoMonthsResponse): Resource<SummaryDetails> =
+        try {
             val response = apiHelper.getUnderFiveYearsSummaryDetails(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
@@ -28,13 +28,9 @@ class UnderFiveYearsTreatmentSummaryRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     fun getExaminationsComplaints(
         category: String,
-        type: String
-    ): LiveData<List<MedicalReviewMetaItems>> {
-        return roomHelper.getExaminationsComplaintsForAnc(category, type)
-    }
-
+        type: String,
+    ): LiveData<List<MedicalReviewMetaItems>> = roomHelper.getExaminationsComplaintsForAnc(category, type)
 }

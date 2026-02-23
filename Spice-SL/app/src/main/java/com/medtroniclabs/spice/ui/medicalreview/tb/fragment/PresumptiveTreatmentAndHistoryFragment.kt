@@ -26,14 +26,14 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PresumptiveTreatmentAndHistoryFragment : BaseFragment(), View.OnClickListener {
-
     private val patientDetailsViewModel: PatientDetailViewModel by activityViewModels()
     private lateinit var binding: FragmentPresumptiveTreatmentAndHistoryBinding
     private val viewModel: TbPatientHistoryAndPresumptiveViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPresumptiveTreatmentAndHistoryBinding.inflate(inflater, container, false)
         return binding.root
@@ -41,11 +41,14 @@ class PresumptiveTreatmentAndHistoryFragment : BaseFragment(), View.OnClickListe
 
     companion object {
         const val TAG = "PresumptiveTreatmentAndHistoryFragment"
-        fun newInstance() =
-            PresumptiveTreatmentAndHistoryFragment()
+
+        fun newInstance() = PresumptiveTreatmentAndHistoryFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initListeners()
@@ -83,40 +86,44 @@ class PresumptiveTreatmentAndHistoryFragment : BaseFragment(), View.OnClickListe
             tvPresentingText.text = CommonUtils.combineText(
                 history.presentingComplaints.orEmpty(),
                 history.presentingComplaintsNotes.orEmpty(),
-                getString(R.string.hyphen_symbol)
+                getString(R.string.hyphen_symbol),
             )
             tvComorbiditiesText.text = CommonUtils.combineText(
                 history.comorbidities.orEmpty(),
                 history.comorbiditiesNotes.orEmpty(),
-                getString(R.string.hyphen_symbol)
+                getString(R.string.hyphen_symbol),
             )
             tvSystemicText.text = CommonUtils.combineText(
-                history.systemicExaminations?.map {
-                    if (it.name.equals(
-                            MedicalReviewDefinedParams.respiratory,
-                            ignoreCase = true
-                        ) && !it.value.isNullOrBlank()
-                    ) {
-                        "${it.name} : ${it.value}"
-                    } else {
-                        it.name
-                    }
-                }.orEmpty(),
+                history.systemicExaminations
+                    ?.map {
+                        if (it.name.equals(
+                                MedicalReviewDefinedParams.respiratory,
+                                ignoreCase = true,
+                            ) &&
+                            !it.value.isNullOrBlank()
+                        ) {
+                            "${it.name} : ${it.value}"
+                        } else {
+                            it.name
+                        }
+                    }.orEmpty(),
                 history.systemicExaminationNotes.orEmpty(),
-                getString(R.string.hyphen_symbol)
+                getString(R.string.hyphen_symbol),
             )
             tvClinicalNotesText.text = history.clinicalNotes?.takeIf { it.isNotBlank() }
                 ?: getString(R.string.hyphen_symbol)
             tvPrescriptionsText.text =
-                history.prescriptions?.let { CommonUtils.createPrescription(it, requireContext()) }
+                history.prescriptions
+                    ?.let { CommonUtils.createPrescription(it, requireContext()) }
                     ?.takeIf { it.isNotEmpty() }
                     ?: requireContext().getString(R.string.hyphen_symbol)
-            tvInvestigationsText.text = history.investigations?.let {
-                CommonUtils.createInvestigation(
-                    it,
-                    requireContext()
-                )
-            }?.takeIf { it.isNotEmpty() }
+            tvInvestigationsText.text = history.investigations
+                ?.let {
+                    CommonUtils.createInvestigation(
+                        it,
+                        requireContext(),
+                    )
+                }?.takeIf { it.isNotEmpty() }
                 ?: requireContext().getString(R.string.hyphen_symbol)
             if (history.tbInvestigationStatus.equals(AssessmentDefinedParams.NA, true)) {
                 binding.tvUpdateInv.visible()
@@ -154,7 +161,11 @@ class PresumptiveTreatmentAndHistoryFragment : BaseFragment(), View.OnClickListe
         binding.tvPresentingText.text = presentingText
     }
 
-    private fun appendIfNotEmpty(builder: StringBuilder, delimiter: String, text: String) {
+    private fun appendIfNotEmpty(
+        builder: StringBuilder,
+        delimiter: String,
+        text: String,
+    ) {
         if (builder.isNotEmpty()) builder.append(delimiter)
         builder.append(text)
     }
@@ -171,22 +182,22 @@ class PresumptiveTreatmentAndHistoryFragment : BaseFragment(), View.OnClickListe
                 viewModel.fetchPatientHistory(
                     MotherNeonateAncRequest(
                         patientReference = patientDetailsViewModel.getPatientFHIRId(),
-                        tbIMRCompleted = true
-                    )
+                        tbIMRCompleted = true,
+                    ),
                 )
             } else {
                 viewModel.fetchPatientHistory(
                     MotherNeonateAncRequest(
                         patientReference = patientDetailsViewModel.getPatientFHIRId(),
-                        tbIMRCompleted = false
-                    )
+                        tbIMRCompleted = false,
+                    ),
                 )
             }
         }
     }
 
     override fun onClick(v: View?) {
-        when(v?.id) {
+        when (v?.id) {
             R.id.tvUpdateInv -> {
                 (activity as TBMedicalReviewActivity).openInvestigationActivity()
             }

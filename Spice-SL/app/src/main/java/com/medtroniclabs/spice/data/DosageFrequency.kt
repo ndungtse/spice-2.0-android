@@ -17,5 +17,5 @@ data class DosageFrequency(
     val displayValue: String? = null,
     val isDefault: Boolean,
     val answerDependent: Boolean,
-    val childExists: Boolean
+    val childExists: Boolean,
 )

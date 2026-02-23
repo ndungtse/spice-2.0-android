@@ -23,20 +23,19 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 
 class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentProfileDialogBinding
     private val viewModel: LandingViewModel by activityViewModels()
 
     companion object {
         const val TAG = "ProfileDialogFragment"
-        fun newInstance(): ProfileDialogFragment {
-            return ProfileDialogFragment()
-        }
+
+        fun newInstance(): ProfileDialogFragment = ProfileDialogFragment()
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentProfileDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -44,7 +43,10 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -80,7 +82,7 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun initView() {
-        if (CommonUtils.isNonCommunity()){
+        if (CommonUtils.isNonCommunity()) {
             binding.tvDesignationText.visible()
             binding.tvDesignationLabel.visible()
             binding.tvDesignationSeparator.visible()
@@ -99,21 +101,26 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
             tvName.text = requireContext().getString(
                 R.string.firstname_lastname,
                 user.firstName.textOrEmpty(),
-                user.lastName.textOrEmpty()
+                user.lastName.textOrEmpty(),
             )
             tvGenderText.text = user.gender.takeIf { it?.isNotBlank() == true } ?: getString(R.string.separator_double_hyphen)
             tvDesignationText.text = user.designation?.name.textOrHyphen()
             tvEmailText.text = user.username.takeIf { it.isNotBlank() } ?: getString(R.string.separator_double_hyphen)
             tvPhoneNumberText.text = getContactNumber(user.phoneNumber.takeIf { it?.isNotBlank() == true }) ?: getString(R.string.separator_double_hyphen)
-            if(user.villages.isNullOrEmpty()) {
+            if (user.villages.isNullOrEmpty()) {
                 villageGroup.gone()
                 tvVillageText.text = getString(R.string.separator_double_hyphen)
             } else {
                 villageGroup.visible()
                 tvVillageText.text = user.villages.joinToString(separator = ", ") { it.name }
             }
-            tvAssignedHealthFacilityText.text = if(user.organizations.isNullOrEmpty()) getString(R.string.hyphen_symbol) else user.organizations.joinToString(separator = ", ") { it.name }
-                ?: getString(R.string.hyphen_symbol)
+            tvAssignedHealthFacilityText.text =
+                if (user.organizations.isNullOrEmpty()) {
+                    getString(R.string.hyphen_symbol)
+                } else {
+                    user.organizations.joinToString(separator = ", ") { it.name }
+                        ?: getString(R.string.hyphen_symbol)
+                }
             tvSuiteAccessText.text = user.suiteAccess?.let {
                 user.suiteAccess[0]
             } ?: getString(R.string.separator_double_hyphen)
@@ -142,7 +149,7 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
     private fun handleDialogHeight() {
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 

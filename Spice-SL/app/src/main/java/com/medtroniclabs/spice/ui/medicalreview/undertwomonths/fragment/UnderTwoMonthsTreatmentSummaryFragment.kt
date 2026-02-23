@@ -42,9 +42,7 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.adapter.ExaminationSummaryAdapter
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
-
 class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentUnderTwoMonthsTreatmentSummaryBinding
     private var datePickerDialog: DatePickerDialog? = null
     private val summaryViewModel: UnderTwoMonthsTreatmentSummaryViewModel by activityViewModels()
@@ -52,7 +50,9 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     private lateinit var examinationSummaryAdapter: ExaminationSummaryAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentUnderTwoMonthsTreatmentSummaryBinding.inflate(inflater, container, false)
         return binding.root
@@ -60,10 +60,12 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
     companion object {
         const val TAG = "UnderTwoMonthsTreatmentSummaryFragment"
+
         fun newInstance() = UnderTwoMonthsTreatmentSummaryFragment()
 
         fun newInstance(
-            encounterId: String?, patientReference: String?
+            encounterId: String?,
+            patientReference: String?,
         ): UnderTwoMonthsTreatmentSummaryFragment {
             val fragment = UnderTwoMonthsTreatmentSummaryFragment()
             val bundle = Bundle()
@@ -72,10 +74,12 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             fragment.arguments = bundle
             return fragment
         }
-
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         setListeners()
@@ -88,8 +92,8 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         summaryViewModel.getUnderTwoMonthsSummaryDetails(
             CreateUnderTwoMonthsResponse(
                 encounterId = arguments?.getString(DefinedParams.EncounterId) ?: "",
-                patientReference = arguments?.getString(DefinedParams.PatientReference) ?: ""
-            )
+                patientReference = arguments?.getString(DefinedParams.PatientReference) ?: "",
+            ),
         )
         examinationSummaryAdapter = ExaminationSummaryAdapter()
         binding.rvExaminationList.layoutManager = LinearLayoutManager(requireContext())
@@ -126,31 +130,31 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             tvPresentingComplaints.text = details.presentingComplaints.takeIf { it != null }?.toString() ?: getString(R.string.empty__)
             tvClinicalNotes.text = details.clinicalNotes.toString()
             tvDiagnosis.text =
-                details.diagnosis?.let {list ->
-                    if (list.isNotEmpty()){
+                details.diagnosis?.let { list ->
+                    if (list.isNotEmpty()) {
                         binding.tvDiagnosis.setTextColor(ContextCompat.getColor(requireContext(), R.color.a_red_error))
                     }
                     convertListToString(
-                        ArrayList(list.filter { it.diseaseCategory.lowercase() != OtherNotes.lowercase() }.map { it.diseaseCategory }.distinct())
+                        ArrayList(list.filter { it.diseaseCategory.lowercase() != OtherNotes.lowercase() }.map { it.diseaseCategory }.distinct()),
                     )
                 } ?: requireContext().getString(R.string.empty__)
 
             tvClinicalName.text = requireContext().getString(
                 R.string.firstname_lastname,
                 SecuredPreference.getUserDetails()?.firstName,
-                SecuredPreference.getUserDetails()?.lastName
+                SecuredPreference.getUserDetails()?.lastName,
             )
             tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
                 DateUtils.getTodayDateDDMMYYYY(),
                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                DateUtils.DATE_ddMMyyyy
+                DateUtils.DATE_ddMMyyyy,
             )
         }
         examinationList(details)
-        binding.tvPrescription.text= details.prescriptions.let { CommonUtils.createPrescription(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+        binding.tvPrescription.text = details.prescriptions.let { CommonUtils.createPrescription(it, requireContext()) }?.takeIf { it.isNotEmpty() }
             ?: requireContext().getString(R.string.empty__)
 
-        binding.tvInvestigation.text = details.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+        binding.tvInvestigation.text = details.investigations?.let { createInvestigation(it, requireContext()) }?.takeIf { it.isNotEmpty() }
             ?: requireContext().getString(R.string.hyphen_symbol)
     }
 
@@ -165,7 +169,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     "${result.index}. $matchingName"
                 } else {
                     result.symptomsTitle
-                }
+                },
             )
         }
         updatedExaminationResults?.let { examinationSummaryAdapter.updateData(it) }
@@ -180,20 +184,20 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         hideProgress()
     }
 
-    private fun convertExaminationDetailsToString(details: List<ExaminationDetail>): List<String> {
-        return details.map { detail ->
+    private fun convertExaminationDetailsToString(details: List<ExaminationDetail>): List<String> =
+        details.map { detail ->
             val title = detail.title ?: ""
             val value = convertAnyToString(detail.value, requireContext())
             "$title : $value"
         }
-    }
 
     private fun setListeners() {
         binding.etNextVisitDate.safeClickListener(this)
     }
 
     private fun showDatePickerDialog() {
-        val yearMonthDate = binding.etNextVisitDate.text?.takeIf { it.isNotBlank() }
+        val yearMonthDate = binding.etNextVisitDate.text
+            ?.takeIf { it.isNotBlank() }
             ?.let { DateUtils.convertedMMMToddMM(it.toString()) }
 
         if (datePickerDialog == null) {
@@ -201,21 +205,25 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 context = requireContext(),
                 minDate = DateUtils.getTomorrowDate(),
                 date = yearMonthDate,
-                cancelCallBack = { datePickerDialog = null }
+                cancelCallBack = { datePickerDialog = null },
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 binding.etNextVisitDate.text = DateUtils.convertDateTimeToDate(
-                    stringDate, DateUtils.DATE_FORMAT_ddMMyyyy, DateUtils.DATE_ddMMyyyy
+                    stringDate,
+                    DateUtils.DATE_FORMAT_ddMMyyyy,
+                    DateUtils.DATE_ddMMyyyy,
                 )
                 summaryViewModel.nextVisitDate =
-                    binding.etNextVisitDate.text.toString().trim().takeIf { it.isNotBlank() }
+                    binding.etNextVisitDate.text
+                        .toString()
+                        .trim()
+                        .takeIf { it.isNotBlank() }
                 datePickerDialog = null
                 binding.tvNextVisitTimeError.gone()
                 summaryListener()
             }
         }
     }
-
 
     override fun onClick(v: View?) {
         when (v?.id) {
@@ -227,16 +235,17 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
     private fun summaryListener() {
         setFragmentResult(
-            MedicalReviewDefinedParams.SUMMARY_ITEM, bundleOf(
-                MedicalReviewDefinedParams.SUMMARY_ITEM to true
-            )
+            MedicalReviewDefinedParams.SUMMARY_ITEM,
+            bundleOf(
+                MedicalReviewDefinedParams.SUMMARY_ITEM to true,
+            ),
         )
     }
 
     private fun updateNextFollowUpDate() {
         if (summaryViewModel.selectedPatientStatus?.equals(
                 ReferralStatus.Recovered.name,
-                true
+                true,
             ) == true
         ) {
             if (summaryViewModel.nextVisitDate != null) {
@@ -258,8 +267,8 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 dropDownList.add(
                     hashMapOf<String, Any>(
                         DefinedParams.NAME to item.name,
-                        DefinedParams.Value to item.value
-                    )
+                        DefinedParams.Value to item.value,
+                    ),
                 )
             }
         }
@@ -269,7 +278,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         for ((index, patientStatus) in dropDownList.withIndex()) {
             if ((patientStatus[DefinedParams.Value] as? String).equals(
                     ReferralStatus.OnTreatment.name,
-                    true
+                    true,
                 )
             ) {
                 defaultPosition = index
@@ -285,7 +294,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     adapterView: AdapterView<*>?,
                     view: View?,
                     pos: Int,
-                    itemId: Long
+                    itemId: Long,
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {

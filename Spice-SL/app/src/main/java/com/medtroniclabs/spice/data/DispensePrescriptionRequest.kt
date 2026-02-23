@@ -5,8 +5,9 @@ import kotlinx.parcelize.Parcelize
 
 data class DispensePrescriptionRequest(
     val encounter: EncounterDetails,
-    val prescriptions: List<DispenseUpdatePrescriptionRequest>
+    val prescriptions: List<DispenseUpdatePrescriptionRequest>,
 )
+
 @Parcelize
 data class DispensePrescriptionResponse(
     val prescribedDays: Int? = null,
@@ -43,8 +44,8 @@ data class DispensePrescriptionResponse(
 data class DispenseUpdatePrescriptionRequest(
     val medicationName: String? = null,
     val dosageFrequencyName: String? = null,
-    val prescriptionId: String? =null,
+    val prescriptionId: String? = null,
     val instructionNote: String? = null,
     val prescriptionFilledDays: Int? = null,
-    val reason: String? = null
+    val reason: String? = null,
 )

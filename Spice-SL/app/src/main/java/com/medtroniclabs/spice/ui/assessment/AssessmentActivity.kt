@@ -54,7 +54,6 @@ import org.json.JSONObject
 
 @AndroidEntryPoint
 class AssessmentActivity : BaseActivity() {
-
     private lateinit var binding: ActivityAssessmentBinding
     private val viewModel: AssessmentViewModel by viewModels()
     private val assessmentRMNCHNeonateViewModel: AssessmentRMNCHNeonateViewModel by viewModels()
@@ -74,8 +73,7 @@ class AssessmentActivity : BaseActivity() {
             callbackHome = {
                 viewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
                 backNavigation(true)
-            }
-
+            },
         )
         getIntentValue()
         loadFragment()
@@ -95,7 +93,7 @@ class AssessmentActivity : BaseActivity() {
             showErrorDialogue(
                 getString(R.string.alert),
                 getString(R.string.exit_reason),
-                isNegativeButtonNeed = true
+                isNegativeButtonNeed = true,
             ) { isPositive ->
                 if (isPositive) {
                     viewModel.isAssessmentCancelLiveData.value = true
@@ -111,47 +109,51 @@ class AssessmentActivity : BaseActivity() {
      * First boolean - Changes in page
      * Second boolean - Summary page or not
      */
-    private fun getBackButtonStatus(): Pair<Boolean,Boolean> {
+    private fun getBackButtonStatus(): Pair<Boolean, Boolean> {
         val fragment = supportFragmentManager.findFragmentById(R.id.formsFragmentContainer)
         if (fragment is AssessmentRMNCHFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), false)
         } else if (fragment is AssessmentICCMFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), false)
-        }else if (fragment is AssessmentOtherSymptomsFragment) {
+        } else if (fragment is AssessmentOtherSymptomsFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), false)
-        }else if (fragment is AssessmentRMNCHNeonateFragment) {
+        } else if (fragment is AssessmentRMNCHNeonateFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), false)
-        }else if (fragment is AssessmentICCMSummaryFragment){
+        } else if (fragment is AssessmentICCMSummaryFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), true)
-        }else if (fragment is AssessmentOtherSymptomSummaryFragment) {
+        } else if (fragment is AssessmentOtherSymptomSummaryFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), true)
-        }else if (fragment is AssessmentRMNCHSummaryFragment) {
+        } else if (fragment is AssessmentRMNCHSummaryFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), true)
-        }else if (fragment is AssessmentRMNCHNeonateSummaryFragment) {
+        } else if (fragment is AssessmentRMNCHNeonateSummaryFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), true)
-        } else if(fragment is AssessmentNCDFragment) {
+        } else if (fragment is AssessmentNCDFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), true)
         } else if (fragment is AssessmentTBFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), false)
-        } else if(fragment is AssessmentTBSummaryFragment) {
+        } else if (fragment is AssessmentTBSummaryFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), true)
-        } else if(fragment is AssessmentNCDSummaryFragment) {
+        } else if (fragment is AssessmentNCDSummaryFragment) {
             return Pair(false, false)
-        } else if(fragment is AssessmentSLNCDFragment){
+        } else if (fragment is AssessmentSLNCDFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), false)
-        } else if(fragment is AssessmentSLNCDSummaryFragment){
+        } else if (fragment is AssessmentSLNCDSummaryFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), true)
-        } else if(fragment is AssessmentFamilyPlanningFragment){
+        } else if (fragment is AssessmentFamilyPlanningFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), false)
-        } else if(fragment is AssessmentFamilyPlanningSummaryFragment){
+        } else if (fragment is AssessmentFamilyPlanningSummaryFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), true)
         }
         return Pair(false, false)
     }
 
-    private fun navigationHandling(isHome: Boolean, isFromSummary: Boolean) {
-        if (isFromSummary && !CommonUtils.isNonCommunity() )
+    private fun navigationHandling(
+        isHome: Boolean,
+        isFromSummary: Boolean,
+    ) {
+        if (isFromSummary && !CommonUtils.isNonCommunity()) {
             startBackgroundOfflineSync()
+        }
 
         if (isHome) {
             setupAnalytic(AnalyticsDefinedParams.HomeButtonClicked)
@@ -165,7 +167,8 @@ class AssessmentActivity : BaseActivity() {
                 is AssessmentICCMSummaryFragment,
                 is AssessmentRMNCHSummaryFragment,
                 is AssessmentRMNCHNeonateSummaryFragment,
-                is AssessmentOtherSymptomSummaryFragment -> {
+                is AssessmentOtherSymptomSummaryFragment,
+                -> {
                     finishSuccessFlow()
                 }
                 is AssessmentNCDSummaryFragment -> {
@@ -182,19 +185,29 @@ class AssessmentActivity : BaseActivity() {
     }
 
     private fun setupAnalytic(btnClickType: String) {
-        var type= when (supportFragmentManager.findFragmentById(R.id.formsFragmentContainer)) {
-            is AssessmentICCMFragment->{AnalyticsDefinedParams.ICCMAssessment}
-            is AssessmentRMNCHFragment->{viewModel.workflowName.plus(AnalyticsDefinedParams.RMNCHAssessment)}
-            is AssessmentRMNCHNeonateFragment->{AnalyticsDefinedParams.RMNCHNeonateAssessment}
-            is AssessmentOtherSymptomsFragment->{AnalyticsDefinedParams.OtherSymptoms}
-            else -> {""}
+        var type = when (supportFragmentManager.findFragmentById(R.id.formsFragmentContainer)) {
+            is AssessmentICCMFragment -> {
+                AnalyticsDefinedParams.ICCMAssessment
+            }
+            is AssessmentRMNCHFragment -> {
+                viewModel.workflowName.plus(AnalyticsDefinedParams.RMNCHAssessment)
+            }
+            is AssessmentRMNCHNeonateFragment -> {
+                AnalyticsDefinedParams.RMNCHNeonateAssessment
+            }
+            is AssessmentOtherSymptomsFragment -> {
+                AnalyticsDefinedParams.OtherSymptoms
+            }
+            else -> {
+                ""
+            }
         }
         viewModel.setAnalyticsData(
             UserDetail.startDateTime,
             eventType = type,
             exitReason = btnClickType,
             eventName = AnalyticsDefinedParams.AssessmentCreation,
-            isCompleted = false
+            isCompleted = false,
         )
     }
 
@@ -207,7 +220,7 @@ class AssessmentActivity : BaseActivity() {
                 hideBackButton()
                 replaceFragmentInId<AssessmentICCMSummaryFragment>(
                     binding.formsFragmentContainer.id,
-                    tag = AssessmentICCMSummaryFragment.TAG
+                    tag = AssessmentICCMSummaryFragment.TAG,
                 )
             }
 
@@ -216,7 +229,7 @@ class AssessmentActivity : BaseActivity() {
                 hideBackButton()
                 replaceFragmentInId<AssessmentTBSummaryFragment>(
                     binding.formsFragmentContainer.id,
-                    tag = AssessmentTBSummaryFragment.TAG
+                    tag = AssessmentTBSummaryFragment.TAG,
                 )
             }
 
@@ -225,7 +238,7 @@ class AssessmentActivity : BaseActivity() {
                 hideBackButton()
                 replaceFragmentInId<AssessmentOtherSymptomSummaryFragment>(
                     binding.formsFragmentContainer.id,
-                    tag = AssessmentOtherSymptomSummaryFragment::class.simpleName
+                    tag = AssessmentOtherSymptomSummaryFragment::class.simpleName,
                 )
             }
 
@@ -235,24 +248,24 @@ class AssessmentActivity : BaseActivity() {
                 replaceFragmentInId<AssessmentRMNCHSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     bundle = bundle,
-                    tag = AssessmentRMNCHSummaryFragment.TAG
+                    tag = AssessmentRMNCHSummaryFragment.TAG,
                 )
             }
 
             MenuConstants.NCD_MENU_ID -> {
-                if (CommonUtils.isNonCommunity()){
+                if (CommonUtils.isNonCommunity()) {
                     setTitle(getString(R.string.assessment_summary))
                     showBackButton()
                     replaceFragmentInId<AssessmentNCDSummaryFragment>(
                         binding.formsFragmentContainer.id,
-                        tag = AssessmentNCDSummaryFragment.TAG
+                        tag = AssessmentNCDSummaryFragment.TAG,
                     )
                 } else {
                     setTitle(Summary.capitalizeFirstChar())
                     hideBackButton()
                     replaceFragmentInId<AssessmentSLNCDSummaryFragment>(
                         binding.formsFragmentContainer.id,
-                        tag = AssessmentSLNCDSummaryFragment.TAG
+                        tag = AssessmentSLNCDSummaryFragment.TAG,
                     )
                 }
             }
@@ -262,7 +275,7 @@ class AssessmentActivity : BaseActivity() {
                 showBackButton()
                 replaceFragmentInId<AssessmentNCDSummaryFragment>(
                     binding.formsFragmentContainer.id,
-                    tag = AssessmentNCDSummaryFragment.TAG
+                    tag = AssessmentNCDSummaryFragment.TAG,
                 )
             }
 
@@ -271,7 +284,7 @@ class AssessmentActivity : BaseActivity() {
                 showBackButton()
                 replaceFragmentInId<AssessmentNCDSummaryFragment>(
                     binding.formsFragmentContainer.id,
-                    tag = AssessmentNCDSummaryFragment.TAG
+                    tag = AssessmentNCDSummaryFragment.TAG,
                 )
             }
 
@@ -280,7 +293,7 @@ class AssessmentActivity : BaseActivity() {
                 hideBackButton()
                 replaceFragmentInId<AssessmentFamilyPlanningSummaryFragment>(
                     binding.formsFragmentContainer.id,
-                    tag = AssessmentFamilyPlanningSummaryFragment::class.simpleName
+                    tag = AssessmentFamilyPlanningSummaryFragment::class.simpleName,
                 )
             }
         }
@@ -290,25 +303,25 @@ class AssessmentActivity : BaseActivity() {
         val bundle = Bundle()
         bundle.putString(DefinedParams.FhirId, intent.getStringExtra(DefinedParams.FhirId))
         bundle.putString(DefinedParams.ORIGIN, intent.getStringExtra(DefinedParams.ORIGIN))
-        bundle.putBoolean(MenuConstants.FOLLOW_UP, intent.getBooleanExtra(MenuConstants.FOLLOW_UP,false))
+        bundle.putBoolean(MenuConstants.FOLLOW_UP, intent.getBooleanExtra(MenuConstants.FOLLOW_UP, false))
         when (viewModel.menuId) {
             MenuConstants.ICCM_MENU_ID -> {
                 setTitle(MenuConstants.ICCM_MENU_ID.uppercase())
                 replaceFragmentInId<AssessmentICCMFragment>(
                     binding.formsFragmentContainer.id,
-                    tag = AssessmentICCMFragment.TAG
+                    tag = AssessmentICCMFragment.TAG,
                 )
             }
 
             MenuConstants.TB_MENU_ID -> {
-                bundle.putBoolean(DefinedParams.CONTACT_TRACING,intent.getBooleanExtra(DefinedParams.CONTACT_TRACING,false))
-                bundle.putLong(DefinedParams.HouseholdId,viewModel.selectedHouseholdId)
+                bundle.putBoolean(DefinedParams.CONTACT_TRACING, intent.getBooleanExtra(DefinedParams.CONTACT_TRACING, false))
+                bundle.putLong(DefinedParams.HouseholdId, viewModel.selectedHouseholdId)
                 bundle.putBoolean(DefinedParams.isTbPatient, true)
                 setTitle(MenuConstants.TB_MENU_ID.uppercase())
                 replaceFragmentInId<AssessmentTBFragment>(
                     binding.formsFragmentContainer.id,
                     bundle = bundle,
-                    tag = AssessmentTBFragment.TAG
+                    tag = AssessmentTBFragment.TAG,
                 )
             }
 
@@ -316,7 +329,7 @@ class AssessmentActivity : BaseActivity() {
                 setTitle(MenuConstants.RMNCH_MENU_ID.uppercase())
                 replaceFragmentInId<AssessmentRMNCHFragment>(
                     binding.formsFragmentContainer.id,
-                    tag = AssessmentRMNCHFragment.TAG
+                    tag = AssessmentRMNCHFragment.TAG,
                 )
             }
 
@@ -324,19 +337,19 @@ class AssessmentActivity : BaseActivity() {
                 setTitle(OtherSymptoms)
                 replaceFragmentInId<AssessmentOtherSymptomsFragment>(
                     binding.formsFragmentContainer.id,
-                    tag = AssessmentOtherSymptomsFragment::class.simpleName
+                    tag = AssessmentOtherSymptomsFragment::class.simpleName,
                 )
             }
 
             MenuConstants.NCD_MENU_ID -> {
-                if (CommonUtils.isNonCommunity()){
+                if (CommonUtils.isNonCommunity()) {
                     setTitle(AssessmentDefinedParams.ncd.uppercase())
                     bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
                     showLoading()
                     replaceFragmentInId<AssessmentNCDFragment>(
                         binding.formsFragmentContainer.id,
                         bundle = bundle,
-                        tag = AssessmentNCDFragment.TAG
+                        tag = AssessmentNCDFragment.TAG,
                     )
                 } else {
                     setTitle(AssessmentDefinedParams.ncd.uppercase())
@@ -345,10 +358,9 @@ class AssessmentActivity : BaseActivity() {
                     replaceFragmentInId<AssessmentSLNCDFragment>(
                         binding.formsFragmentContainer.id,
                         bundle = bundle,
-                        tag = AssessmentSLNCDFragment.TAG
+                        tag = AssessmentSLNCDFragment.TAG,
                     )
                 }
-
             }
 
             MenuConstants.MATERNAL_HEALTH -> {
@@ -358,7 +370,7 @@ class AssessmentActivity : BaseActivity() {
                 replaceFragmentInId<AssessmentNCDFragment>(
                     binding.formsFragmentContainer.id,
                     bundle = bundle,
-                    tag = AssessmentNCDFragment.TAG
+                    tag = AssessmentNCDFragment.TAG,
                 )
             }
 
@@ -369,7 +381,7 @@ class AssessmentActivity : BaseActivity() {
                 replaceFragmentInId<AssessmentNCDFragment>(
                     binding.formsFragmentContainer.id,
                     bundle = bundle,
-                    tag = AssessmentNCDFragment.TAG
+                    tag = AssessmentNCDFragment.TAG,
                 )
             }
 
@@ -377,10 +389,9 @@ class AssessmentActivity : BaseActivity() {
                 setTitle(getString(R.string.family_planning).uppercase())
                 replaceFragmentInId<AssessmentFamilyPlanningFragment>(
                     binding.formsFragmentContainer.id,
-                    tag = AssessmentFamilyPlanningFragment.TAG
+                    tag = AssessmentFamilyPlanningFragment.TAG,
                 )
             }
-
         }
     }
 
@@ -393,7 +404,7 @@ class AssessmentActivity : BaseActivity() {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    resource.data?.let { assessment  ->
+                    resource.data?.let { assessment ->
                         val detailsJson = JSONObject(assessment.assessmentDetails)
                         val ancObject = detailsJson.optJSONObject(ANC_MENU)
                         val isDeathOfMother = ancObject?.optBoolean(DeathOfMother, false) == true
@@ -406,9 +417,11 @@ class AssessmentActivity : BaseActivity() {
                                 startCbsActivity(
                                     workFlowName = it,
                                     memberId = viewModel.selectedHouseholdMemberId,
-                                    assessmentId = viewModel.assessmentSaveLiveData.value?.data?.id,
+                                    assessmentId = viewModel.assessmentSaveLiveData.value
+                                        ?.data
+                                        ?.id,
                                     deathOfMother = isDeathOfMother,
-                                    deathOfNewborn = isDeathOfNeonate
+                                    deathOfNewborn = isDeathOfNeonate,
                                 )
                             }
                         } else {
@@ -429,7 +442,9 @@ class AssessmentActivity : BaseActivity() {
                     hideLoading()
                     if (!viewModel.isCbs) {
                         finishSuccessFlow()
-                        if (!com.medtroniclabs.spice.common.CommonUtils.isNonCommunity() ) {
+                        if (!com.medtroniclabs.spice.common.CommonUtils
+                                .isNonCommunity()
+                        ) {
                             startBackgroundOfflineSync()
                         }
                     } else {
@@ -437,9 +452,14 @@ class AssessmentActivity : BaseActivity() {
                         startCbsActivity(
                             workFlowName = PNCNeonatal,
                             memberId = assessmentRMNCHNeonateViewModel.childId,
-                            assessmentId = assessmentRMNCHNeonateViewModel.assessmentSaveLiveData.value?.data?.second?.id,
+                            assessmentId = assessmentRMNCHNeonateViewModel.assessmentSaveLiveData.value
+                                ?.data
+                                ?.second
+                                ?.id,
                             deathOfNewborn = true,
-                            motherId = viewModel.memberDetailsLiveData.value?.data?.id
+                            motherId = viewModel.memberDetailsLiveData.value
+                                ?.data
+                                ?.id,
                         )
                     }
                 }
@@ -459,7 +479,7 @@ class AssessmentActivity : BaseActivity() {
                         showErrorDialogue(
                             getString(R.string.error),
                             it,
-                            isNegativeButtonNeed = false
+                            isNegativeButtonNeed = false,
                         ) {}
                     }
                 }
@@ -470,8 +490,8 @@ class AssessmentActivity : BaseActivity() {
             }
         }
 
-        viewModel.saveRxBuddyDetails.observe(this){ resourceState ->
-            when(resourceState.state){
+        viewModel.saveRxBuddyDetails.observe(this) { resourceState ->
+            when (resourceState.state) {
                 ResourceState.LOADING -> {
                     showLoading()
                 }
@@ -481,7 +501,7 @@ class AssessmentActivity : BaseActivity() {
                         showErrorDialogue(
                             getString(R.string.error),
                             it,
-                            isNegativeButtonNeed = false
+                            isNegativeButtonNeed = false,
                         ) {}
                     }
                 }
@@ -491,14 +511,14 @@ class AssessmentActivity : BaseActivity() {
                     hideBackButton()
                     replaceFragmentInId<RxBuddySummaryFragment>(
                         binding.formsFragmentContainer.id,
-                        tag = RxBuddySummaryFragment.TAG
+                        tag = RxBuddySummaryFragment.TAG,
                     )
                 }
             }
         }
 
-        viewModel.saveRxBuddyFollowUpLiveData.observe(this){ resourceState ->
-            when(resourceState.state){
+        viewModel.saveRxBuddyFollowUpLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
                 ResourceState.LOADING -> {
                     showLoading()
                 }
@@ -508,7 +528,7 @@ class AssessmentActivity : BaseActivity() {
                         showErrorDialogue(
                             getString(R.string.error),
                             it,
-                            isNegativeButtonNeed = false
+                            isNegativeButtonNeed = false,
                         ) {}
                     }
                 }
@@ -516,26 +536,27 @@ class AssessmentActivity : BaseActivity() {
                     hideLoading()
                     val bundle = Bundle().apply {
                         putBoolean(DefinedParams.isRxBuddyFollowUp, true)
-                        putBoolean(MenuConstants.FOLLOW_UP, intent.getBooleanExtra(MenuConstants.FOLLOW_UP,false))
+                        putBoolean(MenuConstants.FOLLOW_UP, intent.getBooleanExtra(MenuConstants.FOLLOW_UP, false))
                     }
                     setTitle(Summary.capitalizeFirstChar())
                     hideBackButton()
                     replaceFragmentInId<RxBuddySummaryFragment>(
                         binding.formsFragmentContainer.id,
                         bundle = bundle,
-                        tag = RxBuddySummaryFragment.TAG
+                        tag = RxBuddySummaryFragment.TAG,
                     )
                 }
             }
         }
     }
+
     private fun startCbsActivity(
         workFlowName: String,
         memberId: Long?,
         assessmentId: Long?,
         deathOfMother: Boolean = false,
         deathOfNewborn: Boolean = false,
-        motherId:Long? = null
+        motherId: Long? = null,
     ) {
         val intent = Intent(this, CbsActivity::class.java).apply {
             putExtra(DefinedParams.MemberID, memberId)
@@ -551,10 +572,11 @@ class AssessmentActivity : BaseActivity() {
     }
 
     private fun finishSuccessFlow() {
-        val intent = if (viewModel.followUpId != null)
+        val intent = if (viewModel.followUpId != null) {
             Intent(this, FollowUpMyPatientActivity::class.java)
-        else
+        } else {
             Intent(this, HouseholdSearchActivity::class.java)
+        }
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
@@ -569,31 +591,30 @@ class AssessmentActivity : BaseActivity() {
         viewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
         viewModel.selectedHouseholdId = intent.getLongExtra(DefinedParams.HouseholdId, -1L)
         val followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1L)
-        if (followUpId != -1L)
+        if (followUpId != -1L) {
             viewModel.followUpId = followUpId
-        else
+        } else {
             viewModel.followUpId = null
+        }
 
         viewModel.workflowName?.let {
             viewModel.setUserJourney(getUserJourneyName(it))
         }
     }
 
-    private fun getUserJourneyName(it: String): String {
-
-        return if (it == PNC) {
+    private fun getUserJourneyName(it: String): String =
+        if (it == PNC) {
             AnalyticsDefinedParams.PNCMOTHERASSESSMENT
-        }else if (it == ChildHoodVisit){
+        } else if (it == ChildHoodVisit) {
             AnalyticsDefinedParams.RMNCHCHILDASSESSMENT
         } else {
             it.plus(getString(R.string.assessment))
         }
-    }
 
     fun replaceAssessmentRMNCHNeonateFragment() {
         replaceFragmentInId<AssessmentRMNCHNeonateFragment>(
             binding.formsFragmentContainer.id,
-            tag = AssessmentRMNCHNeonateFragment::class.simpleName
+            tag = AssessmentRMNCHNeonateFragment::class.simpleName,
         )
     }
 
@@ -601,7 +622,7 @@ class AssessmentActivity : BaseActivity() {
         hideBackButton()
         replaceFragmentInId<AssessmentRMNCHNeonateSummaryFragment>(
             binding.formsFragmentContainer.id,
-            tag = AssessmentRMNCHNeonateSummaryFragment::class.simpleName
+            tag = AssessmentRMNCHNeonateSummaryFragment::class.simpleName,
         )
     }
 

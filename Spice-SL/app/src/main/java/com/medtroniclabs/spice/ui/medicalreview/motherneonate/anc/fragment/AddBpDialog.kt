@@ -34,10 +34,8 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.AddB
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-
 @AndroidEntryPoint
 class AddBpDialog : DialogFragment(), View.OnClickListener {
-
     var listener: DialogDismissListener? = null
     private lateinit var binding: FragmentAddBpDialogBinding
     private val viewModel: AddBpViewModel by activityViewModels()
@@ -46,8 +44,9 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
     lateinit var connectivityManager: ConnectivityManager
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentAddBpDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -57,11 +56,14 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "AddBpDialog"
-        fun newInstance(): AddBpDialog {
-            return AddBpDialog()
-        }
 
-        fun newInstance(patientId: String?,villageId:String?, householdId:String?): AddBpDialog {
+        fun newInstance(): AddBpDialog = AddBpDialog()
+
+        fun newInstance(
+            patientId: String?,
+            villageId: String?,
+            householdId: String?,
+        ): AddBpDialog {
             val fragment = AddBpDialog()
             fragment.arguments = Bundle().apply {
                 putString(DefinedParams.PatientId, patientId)
@@ -82,7 +84,10 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
         setWidth(width)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -96,6 +101,7 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
             viewModel.lastLocation = it
         }
     }
+
     private fun attachObservers() {
         viewModel.saveBloodPressure.observe(viewLifecycleOwner) { resourcesState ->
             when (resourcesState.state) {
@@ -112,12 +118,10 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
 
                 ResourceState.ERROR -> {
                     binding.loader.gone()
-
                 }
             }
         }
     }
-
 
     private fun initView() {
         with(binding) {
@@ -131,11 +135,21 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
     }
 
     private val textWatcher = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        override fun beforeTextChanged(
+            s: CharSequence?,
+            start: Int,
+            count: Int,
+            after: Int,
+        ) {
             // Not needed for your use case
         }
 
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        override fun onTextChanged(
+            s: CharSequence?,
+            start: Int,
+            before: Int,
+            count: Int,
+        ) {
             // Not needed for your use case
         }
 
@@ -150,7 +164,6 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
             // Enable the button if only one EditText field is filled
             binding.btnOkay.isEnabled = onlyOneFilled
         }
-
     }
 
     override fun onStart() {
@@ -180,10 +193,14 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
             300,
             binding.etDiastolic,
             getString(R.string.diastolic_error_min),
-            maxErrorMessage = getString(R.string.diastolic_error_max)
+            maxErrorMessage = getString(R.string.diastolic_error_max),
         )
-        val isPulseValid = if ((binding.etPulse.text?.trim()
-                ?.isNotEmpty() == true)) {
+        val isPulseValid = if ((
+                binding.etPulse.text
+                    ?.trim()
+                    ?.isNotEmpty() == true
+            )
+        ) {
             isValidMeasurement(
                 binding.etPulse.text.toString(),
                 binding.tvPulseError,
@@ -191,7 +208,7 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
                 300,
                 minErrorMessage = getString(R.string.pulse_error_min),
                 maxErrorMessage = getString(R.string.pulse_error_max),
-                isPulseRequired = (isDiastolicValid == isSystolicValid)
+                isPulseRequired = (isDiastolicValid == isSystolicValid),
             )
         } else {
             true
@@ -207,7 +224,7 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
         text: AppCompatEditText? = null,
         minErrorMessage: String,
         maxErrorMessage: String,
-        isPulseRequired: Boolean = false
+        isPulseRequired: Boolean = false,
     ): Boolean {
         val value = valueText?.toIntOrNull()
         val diastolic = text?.text.toString().toIntOrNull()
@@ -245,7 +262,7 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnOkay.id -> handleOkayClick()
-            binding.btnCancel.id, binding.ivClose.id ->  {
+            binding.btnCancel.id, binding.ivClose.id -> {
                 viewModel.setUserJourney(AnalyticsDefinedParams.CANCELBUTTONTRIGGERED)
                 dismiss()
             }
@@ -262,24 +279,31 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
             (activity as BaseActivity?)?.showErrorDialogue(
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
+                isNegativeButtonNeed = false,
             ) {
-
             }
         }
     }
 
-    private fun createBpAndWeightRequestModel(): BpAndWeightRequestModel {
-        return BpAndWeightRequestModel(
-            systolic = binding.etSystolic.text?.trim().toString().toDoubleOrNull(),
-            diastolic = binding.etDiastolic.text?.trim().toString().toDoubleOrNull(),
-            pulse = binding.etPulse.text?.trim().toString().toDoubleOrNull(),
-            encounter = createMedicalReviewEncounter()
+    private fun createBpAndWeightRequestModel(): BpAndWeightRequestModel =
+        BpAndWeightRequestModel(
+            systolic = binding.etSystolic.text
+                ?.trim()
+                .toString()
+                .toDoubleOrNull(),
+            diastolic = binding.etDiastolic.text
+                ?.trim()
+                .toString()
+                .toDoubleOrNull(),
+            pulse = binding.etPulse.text
+                ?.trim()
+                .toString()
+                .toDoubleOrNull(),
+            encounter = createMedicalReviewEncounter(),
         )
-    }
 
-    private fun createMedicalReviewEncounter(): MedicalReviewEncounter {
-        return MedicalReviewEncounter(
+    private fun createMedicalReviewEncounter(): MedicalReviewEncounter =
+        MedicalReviewEncounter(
             provenance = ProvanceDto(),
             latitude = viewModel.lastLocation?.latitude,
             longitude = viewModel.lastLocation?.longitude,
@@ -287,7 +311,6 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
             startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
             endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
             villageId = arguments?.getString(DefinedParams.villageId),
-            householdId = arguments?.getString(DefinedParams.householdId)
+            householdId = arguments?.getString(DefinedParams.householdId),
         )
-    }
 }

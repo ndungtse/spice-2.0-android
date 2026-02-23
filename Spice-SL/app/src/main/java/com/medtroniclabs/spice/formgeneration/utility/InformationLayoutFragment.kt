@@ -32,14 +32,17 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rdtTest
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
-    lateinit var binding : FragmentInformationLayoutBinding
+    lateinit var binding: FragmentInformationLayoutBinding
 
     private val viewModel: AssessmentViewModel by activityViewModels()
 
-
     companion object {
         const val TAG = "InformationLayoutFragment"
-        fun newInstance(id: String, title: String): InformationLayoutFragment {
+
+        fun newInstance(
+            id: String,
+            title: String,
+        ): InformationLayoutFragment {
             val fragment = InformationLayoutFragment()
             fragment.arguments = Bundle().apply {
                 putString(DefinedParams.ID, id)
@@ -52,15 +55,18 @@ class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentInformationLayoutBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
         window?.setBackgroundDrawableResource(android.R.color.transparent)
-        return  binding.root
+        return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         initializeViews()
@@ -72,12 +78,12 @@ class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
         arguments?.getString(ID)?.let { informationType ->
             viewModel.setUserJourney("$informationType  ${AnalyticsDefinedParams.INSTRUCTIONDIALOGUE}")
         }
-        val informationListByType: ArrayList<InformationModel>? = when(arguments?.getString(ID)) {
-            muacCode, MUAC-> InformationUtils().getMuacInformationListItem(requireContext())
+        val informationListByType: ArrayList<InformationModel>? = when (arguments?.getString(ID)) {
+            muacCode, MUAC -> InformationUtils().getMuacInformationListItem(requireContext())
             hasOedemaOfBothFeet -> InformationUtils().getOedemaInformationList(requireContext())
             chestInDrawing -> InformationUtils().getChestIndrawingInformation(requireContext())
-            isUnusualSleepy,isVomiting,isConvulsionPastFewDays,isBreastfeed->{
-                InformationUtils().getDangerSignsInstructions(requireContext(),arguments?.getString(ID))
+            isUnusualSleepy, isVomiting, isConvulsionPastFewDays, isBreastfeed -> {
+                InformationUtils().getDangerSignsInstructions(requireContext(), arguments?.getString(ID))
             }
             rdtTest -> {
                 InformationUtils().getRdtTest(requireContext())
@@ -92,7 +98,7 @@ class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
         }
         binding.rvInfoList.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter  = informationListByType?.let { InformationListAdapter(it) }
+            adapter = informationListByType?.let { InformationListAdapter(it) }
         }
     }
 
@@ -102,7 +108,7 @@ class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
     }
 
     override fun onClick(view: View) {
-        when(view.id){
+        when (view.id) {
             binding.ivClose.id, binding.btnClose.id -> {
                 dismiss()
             }
@@ -113,7 +119,7 @@ class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 }

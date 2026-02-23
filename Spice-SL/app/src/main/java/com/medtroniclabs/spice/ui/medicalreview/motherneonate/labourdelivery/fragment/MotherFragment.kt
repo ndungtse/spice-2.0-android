@@ -28,7 +28,6 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.vie
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 
 class MotherFragment : BaseFragment() {
-
     private lateinit var binding: FragmentMotherBinding
     private lateinit var cgGeneralConditionOfMother: TagListCustomView
     private lateinit var cgSignSymptomsObserved: TagListCustomView
@@ -36,16 +35,19 @@ class MotherFragment : BaseFragment() {
     private lateinit var cgStatus: TagListCustomView
     private val viewModel: LabourDeliveryViewModel by activityViewModels()
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentMotherBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initListeners()
         initializeChipItem()
@@ -55,10 +57,10 @@ class MotherFragment : BaseFragment() {
     private fun initListeners() {
         binding.tvNumber.doAfterTextChanged {
             val ttNoOfDosage = it?.trim().toString()
-            if(ttNoOfDosage.isNotEmpty()) {
+            if (ttNoOfDosage.isNotEmpty()) {
                 viewModel.motherTTDosageSoFar = ttNoOfDosage
                 viewModel.validateSubmitButtonState()
-            }else {
+            } else {
                 viewModel.motherTTDosageSoFar = null
                 viewModel.validateSubmitButtonState()
             }
@@ -98,8 +100,8 @@ class MotherFragment : BaseFragment() {
                     id = it.id,
                     name = it.name,
                     type = it.type,
-                    value = it.value
-                )
+                    value = it.value,
+                ),
             )
         }
         cgSignSymptomsObserved.addChipItemList(chipItemList)
@@ -113,8 +115,8 @@ class MotherFragment : BaseFragment() {
                     id = it.id,
                     name = it.name,
                     type = it.type,
-                    value = it.value
-                )
+                    value = it.value,
+                ),
             )
         }
         cgStatus.addChipItemList(chipItemList)
@@ -128,8 +130,8 @@ class MotherFragment : BaseFragment() {
                     id = it.id,
                     name = it.name,
                     type = it.type,
-                    value = it.value
-                )
+                    value = it.value,
+                ),
             )
         }
         cgGeneralConditionOfMother.addChipItemList(chipItemList)
@@ -143,13 +145,12 @@ class MotherFragment : BaseFragment() {
                     id = it.id,
                     name = it.name,
                     type = it.type,
-                    value = it.value
-                )
+                    value = it.value,
+                ),
             )
         }
         cgRiskFactors.addChipItemList(chipItemList)
     }
-
 
     private fun initializeChipItem() {
         cgGeneralConditionOfMother =
@@ -183,22 +184,19 @@ class MotherFragment : BaseFragment() {
     companion object {
         const val TAG = "MotherFragment"
 
-        fun newInstance(): MotherFragment {
-            return MotherFragment()
-        }
+        fun newInstance(): MotherFragment = MotherFragment()
     }
 
-
     private fun initializeStateOfPerineumLabel(listItems: List<LabourDeliveryMetaEntity>) {
-    val chipItemList = ArrayList<ChipViewItemModel>()
+        val chipItemList = ArrayList<ChipViewItemModel>()
         listItems.filter { it.category == MedicalReviewTypeEnums.StateOfPerineum.name }.forEach {
             chipItemList.add(
                 ChipViewItemModel(
                     id = it.id,
                     name = it.name,
                     type = it.type,
-                    value = it.value
-                )
+                    value = it.value,
+                ),
             )
         }
         getMotherFlowData(chipItemList).let {
@@ -210,7 +208,7 @@ class MotherFragment : BaseFragment() {
                 viewModel.perineumStateMap,
                 Pair(StateOfPerineum, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                singleSelectionCallback
+                singleSelectionCallback,
             )
             binding.selectionGroup.addView(view)
         }
@@ -226,7 +224,7 @@ class MotherFragment : BaseFragment() {
                 viewModel.perineumStateMap,
                 Pair(Tear, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                singleSelectionCallback
+                singleSelectionCallback,
             )
             binding.tearlayout.removeAllViews()
             binding.tearlayout.addView(view)
@@ -244,9 +242,9 @@ class MotherFragment : BaseFragment() {
         if (selectedID.toString() == DefinedParams.Tear) {
             binding.groupTear.isVisible = true
             initializeTearLabel()
-        } else if (selectedID.toString() ==Episiotomy || selectedID.toString()== None) {
+        } else if (selectedID.toString() == Episiotomy || selectedID.toString() == None) {
             binding.groupTear.isVisible = false
-            viewModel.perineumStateMap[Tear]=""
+            viewModel.perineumStateMap[Tear] = ""
         } else {
             viewModel.perineumStateMap[Tear] = selectedID
         }
@@ -264,7 +262,8 @@ class MotherFragment : BaseFragment() {
     private fun getMotherFlowData(chipItemList: ArrayList<ChipViewItemModel>): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
         chipItemList.forEach {
-            it.value?.let {value -> CommonUtils.getOptionMap(value, it.name) }
+            it.value
+                ?.let { value -> CommonUtils.getOptionMap(value, it.name) }
                 ?.let { itemList -> flowList.add(itemList) }
         }
         return flowList
@@ -274,8 +273,9 @@ class MotherFragment : BaseFragment() {
         var isValid = false
         if (validateTagView(
                 cgGeneralConditionOfMother,
-                binding.cgGeneralConditionOfMotherError
-            ) && validateTagView(cgStatus, binding.cgStatusError)
+                binding.cgGeneralConditionOfMotherError,
+            ) &&
+            validateTagView(cgStatus, binding.cgStatusError)
         ) {
             isValid = true
         }
@@ -284,7 +284,7 @@ class MotherFragment : BaseFragment() {
 
     private fun validateTagView(
         tagView: TagListCustomView,
-        textView: AppCompatTextView
+        textView: AppCompatTextView,
     ): Boolean {
         var isValidOrNot = true
         if (tagView.getSelectedTags().isEmpty()) {

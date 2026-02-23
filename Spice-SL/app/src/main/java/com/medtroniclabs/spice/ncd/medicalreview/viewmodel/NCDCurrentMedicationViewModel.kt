@@ -13,9 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NCDCurrentMedicationViewModel @Inject constructor(
-    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
+    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
 ) : ViewModel() {
-
     var chips: ArrayList<ChipViewItemModel> = ArrayList()
     private val getChip = MutableLiveData<Boolean>()
     val getChipItems: LiveData<List<NCDMedicalReviewMetaEntity>> = getChip.switchMap {
@@ -27,6 +26,7 @@ class NCDCurrentMedicationViewModel @Inject constructor(
     var adheringMedComment: String? = null
 
     var comments: String = ""
+
     fun getChips() {
         getChip.value = true
     }

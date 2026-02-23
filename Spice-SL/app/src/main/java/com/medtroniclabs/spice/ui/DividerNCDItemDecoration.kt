@@ -26,7 +26,11 @@ class DividerNCDItemDecoration : ItemDecoration {
         divider = ContextCompat.getDrawable(context!!, resId)
     }
 
-    override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+    override fun onDraw(
+        c: Canvas,
+        parent: RecyclerView,
+        state: RecyclerView.State,
+    ) {
         val left = parent.paddingLeft
         val right = parent.width - parent.paddingRight
         val childCount = parent.childCount

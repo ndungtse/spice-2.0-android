@@ -26,26 +26,23 @@ import javax.inject.Inject
 
 class HouseHoldRepository @Inject constructor(
     private var apiHelper: ApiHelper,
-    private var roomHelper: RoomHelper
+    private var roomHelper: RoomHelper,
 ) {
+    suspend fun getLastHouseholdNo(villageId: Long): Long? = roomHelper.getLastHouseholdNo(villageId)
 
-    suspend fun getLastHouseholdNo(villageId: Long): Long? =
-        roomHelper.getLastHouseholdNo(villageId)
-
-    suspend fun checkHouseholdNumberExists(householdNo: Long): Boolean =
-        roomHelper.checkHouseholdNumberExists(householdNo)
+    suspend fun checkHouseholdNumberExists(householdNo: Long): Boolean = roomHelper.checkHouseholdNumberExists(householdNo)
 
     suspend fun generateUniqueHouseholdNumber(): Long {
         var householdNumber: Long
         var attempts = 0
         val maxAttempts = 100
-        
+
         do {
             // Generate random 10-digit number (1000000000 to 9999999999)
             householdNumber = (1000000000L..9999999999L).random()
             attempts++
         } while (checkHouseholdNumberExists(householdNumber) && attempts < maxAttempts)
-        
+
         if (attempts >= maxAttempts) {
             // Fallback: use timestamp-based number if too many collisions
             householdNumber = System.currentTimeMillis() % 10000000000L
@@ -53,52 +50,44 @@ class HouseHoldRepository @Inject constructor(
                 householdNumber += 1000000000L
             }
         }
-        
+
         return householdNumber
     }
 
-    suspend fun getHouseHoldDetailsById(houseHoldId: Long) =
-        roomHelper.getHouseHoldDetailsById(houseHoldId)
+    suspend fun getHouseHoldDetailsById(houseHoldId: Long) = roomHelper.getHouseHoldDetailsById(houseHoldId)
 
-    suspend fun getAllHouseHoldMemberList(houseHoldId: Long): ArrayList<HouseholdMemberEntity> =
-        roomHelper.getAllHouseHoldMemberList(houseHoldId)
+    suspend fun getAllHouseHoldMemberList(houseHoldId: Long): ArrayList<HouseholdMemberEntity> = roomHelper.getAllHouseHoldMemberList(houseHoldId)
 
-    fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount> {
-        return roomHelper.getMemberCountInHouseholdLiveData(houseHoldId)
-    }
+    fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount> = roomHelper.getMemberCountInHouseholdLiveData(houseHoldId)
 
     fun getFilteredHouseholdsLiveData(
         searchTerm: String,
         villageIds: List<Long>,
         ssIds: List<Long>,
-        status: String
-    ): LiveData<List<HouseHoldEntityWithMemberCount>> {
-        return roomHelper.getFilteredHouseholdsLiveData(searchTerm, villageIds, ssIds, status)
-    }
+        status: String,
+    ): LiveData<List<HouseHoldEntityWithMemberCount>> = roomHelper.getFilteredHouseholdsLiveData(searchTerm, villageIds, ssIds, status)
 
-    suspend fun getFormData(
-        formType: String,
-    ): Resource<String> {
-        return try {
+    suspend fun getFormData(formType: String): Resource<String> =
+        try {
             val response = roomHelper.getFormData(formType)
             Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-
-    suspend fun getHouseHoldFilterUiData(userId:Long): Resource<HouseHoldFilterUiData> {
-        return try {
+    suspend fun getHouseHoldFilterUiData(userId: Long): Resource<HouseHoldFilterUiData> =
+        try {
             val villages = roomHelper.getAllVillageEntity()
             val swasthyaSevikas = roomHelper.getShasthyaShebikaByShasthyaKormiId(userId)
-            Resource(state = ResourceState.SUCCESS, HouseHoldFilterUiData(villages,swasthyaSevikas))
-        }catch (_: Exception){
+            Resource(state = ResourceState.SUCCESS, HouseHoldFilterUiData(villages, swasthyaSevikas))
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun createOrUpdateHouseHoldEntity(map: HashMap<String, Any>, entity: HouseholdEntity? = null): HouseholdEntity {
+    suspend fun createOrUpdateHouseHoldEntity(
+        map: HashMap<String, Any>,
+        entity: HouseholdEntity? = null,
+    ): HouseholdEntity {
         val householdEntity = entity ?: HouseholdEntity()
 
         val householdName = map[HouseHoldRegistration.householdName]
@@ -150,27 +139,23 @@ class HouseHoldRepository @Inject constructor(
         return householdEntity
     }
 
-    suspend fun insertHouseHoldEntity(householdEntity: HouseholdEntity): Long {
-        return roomHelper.saveHouseHoldEntry(householdEntity)
-    }
+    suspend fun insertHouseHoldEntity(householdEntity: HouseholdEntity): Long = roomHelper.saveHouseHoldEntry(householdEntity)
 
-    suspend fun getShasthyaShebikasByKormiId(shasthyaKormiId: Long): Resource<LocalSpinnerResponse> {
-        return try {
+    suspend fun getShasthyaShebikasByKormiId(shasthyaKormiId: Long): Resource<LocalSpinnerResponse> =
+        try {
             val response = roomHelper.getShasthyaShebikaByShasthyaKormiId(shasthyaKormiId)
             Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse("shasthya_shebika_id", response))
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getSubVillagesByShasthyaShebikaId(shasthyaShebikaId: Long): Resource<LocalSpinnerResponse> {
-        return try {
+    suspend fun getSubVillagesByShasthyaShebikaId(shasthyaShebikaId: Long): Resource<LocalSpinnerResponse> =
+        try {
             val response = roomHelper.getSubVillagesByShasthyaShebikaId(shasthyaShebikaId)
             Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse("sub_village_id", response))
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     suspend fun updateHouseHoldEntity(householdEntity: HouseholdEntity) {
         roomHelper.updateHousehold(householdEntity)
@@ -178,81 +163,65 @@ class HouseHoldRepository @Inject constructor(
 
     private fun checkHeadCountOfHouseHold(
         givenHeadCount: Int,
-        memberCount: Int
-    ): Int {
-        return if (memberCount > givenHeadCount) {
+        memberCount: Int,
+    ): Int =
+        if (memberCount > givenHeadCount) {
             memberCount
         } else {
             givenHeadCount
         }
-    }
 
-    suspend fun getUserVillages(
-        tag: String
-    ): Resource<LocalSpinnerResponse> {
-        return try {
+    suspend fun getUserVillages(tag: String): Resource<LocalSpinnerResponse> =
+        try {
             val response = roomHelper.getAllVillageEntity()
             Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getUserLinkedVillages(
-        tag: String
-    ): Resource<LocalSpinnerResponse> {
-        return try {
+    suspend fun getUserLinkedVillages(tag: String): Resource<LocalSpinnerResponse> =
+        try {
             val response = roomHelper.getAllLinkedVillageEntity()
             Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     suspend fun getVillageByID(villageId: Long): Resource<VillageEntity> {
         val response = roomHelper.getVillageByID(villageId)
         return Resource(state = ResourceState.SUCCESS, data = response)
     }
 
-    suspend fun getMemberCountPerHouseHold(householdId: Long): Int {
-        return roomHelper.getMemberCountPerHouseHold(householdId)
-    }
+    suspend fun getMemberCountPerHouseHold(householdId: Long): Int = roomHelper.getMemberCountPerHouseHold(householdId)
 
-    private suspend fun insertHouseholdMembers(householdMembers: List<HouseHoldMember>?, hhIdMap: Map<String, Long>) {
+    private suspend fun insertHouseholdMembers(
+        householdMembers: List<HouseHoldMember>?,
+        hhIdMap: Map<String, Long>,
+    ) {
         householdMembers?.forEach { member ->
             hhIdMap[member.householdId]?.let {
                 roomHelper.registerMember(
                     member.toHouseholdMemberEntity(
                         it,
-                        OfflineSyncStatus.Success
-                    )
+                        OfflineSyncStatus.Success,
+                    ),
                 )
             }
         }
     }
 
-    suspend fun getUnSyncedHouseholdCount(): Int {
-        return roomHelper.getUnSyncedHouseholdCount()
-    }
+    suspend fun getUnSyncedHouseholdCount(): Int = roomHelper.getUnSyncedHouseholdCount()
 
-    suspend fun getUnSyncedHouseholdMemberCount(): Int {
-        return roomHelper.getUnSyncedHouseholdMemberCount()
-    }
+    suspend fun getUnSyncedHouseholdMemberCount(): Int = roomHelper.getUnSyncedHouseholdMemberCount()
 
-    fun getHouseholdCardDetailLiveData(id: Long): LiveData<HouseholdCardDetail> {
-        return roomHelper.getHouseholdCardDetailLiveData(id)
-    }
+    fun getHouseholdCardDetailLiveData(id: Long): LiveData<HouseholdCardDetail> = roomHelper.getHouseholdCardDetailLiveData(id)
 
-    fun getAllHouseHoldMembersLiveData(hhId: Long) : LiveData<List<HouseholdMemberWithTb>> {
-        return roomHelper.getAllHouseHoldMembersLiveData(hhId)
-    }
+    fun getAllHouseHoldMembersLiveData(hhId: Long): LiveData<List<HouseholdMemberWithTb>> = roomHelper.getAllHouseHoldMembersLiveData(hhId)
 
-    fun getAliveHouseHoldMembersLiveData(hhId: Long) : List<HouseholdMemberEntity> {
-        return roomHelper.getAliveHouseHoldMembersLiveData(hhId)
-    }
+    fun getAliveHouseHoldMembersLiveData(hhId: Long): List<HouseholdMemberEntity> = roomHelper.getAliveHouseHoldMembersLiveData(hhId)
 
-    suspend fun addNewMember(request: AddMemberRegRequest): Resource<String> {
-        return try{
+    suspend fun addNewMember(request: AddMemberRegRequest): Resource<String> =
+        try {
             val response = apiHelper.addNewMember(request)
             if (response.isSuccessful) {
                 Resource(ResourceState.SUCCESS, response.body()?.entity)
@@ -263,17 +232,13 @@ class HouseHoldRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(ResourceState.ERROR, message = e.localizedMessage)
         }
-    }
 
-    suspend fun getConsentForm() : ConsentForm? {
-        return roomHelper.getConsentFormByType(ConsentFormType.Household)
-    }
+    suspend fun getConsentForm(): ConsentForm? = roomHelper.getConsentFormByType(ConsentFormType.Household)
 
-    fun getAllHouseHoldMembersWithTbStatusLiveData(hhvId: Long) : LiveData<List<HouseholdMemberEntity>> {
-        return roomHelper.householdMemberWithTbStatus(hhvId)
-    }
+    fun getAllHouseHoldMembersWithTbStatusLiveData(hhvId: Long): LiveData<List<HouseholdMemberEntity>> = roomHelper.householdMemberWithTbStatus(hhvId)
 
-    suspend fun updateHouseholdMemberTbContactTraceStatus(hhmId: Long,tbContactTracingStatus:Int) {
-        return roomHelper.updateTBContactTraceStatus(hhmId,tbContactTracingStatus)
-    }
+    suspend fun updateHouseholdMemberTbContactTraceStatus(
+        hhmId: Long,
+        tbContactTracingStatus: Int,
+    ) = roomHelper.updateTBContactTraceStatus(hhmId, tbContactTracingStatus)
 }

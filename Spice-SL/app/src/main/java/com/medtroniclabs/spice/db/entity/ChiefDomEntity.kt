@@ -9,5 +9,5 @@ data class ChiefDomEntity(
     val id: Long,
     val name: String,
     val code: String? = null,
-    val districtId: Long
+    val districtId: Long,
 )

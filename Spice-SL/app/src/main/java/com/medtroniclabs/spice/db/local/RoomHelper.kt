@@ -46,9 +46,6 @@ import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 import com.medtroniclabs.spice.db.entity.LinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
-import com.medtroniclabs.spice.db.entity.ShasthyaShebikaEntity
-import com.medtroniclabs.spice.db.entity.ShasthyaShebikaLinkedVillageEntity
-import com.medtroniclabs.spice.db.entity.SubVillageEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
@@ -63,7 +60,10 @@ import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.RxBuddyDetails
 import com.medtroniclabs.spice.db.entity.RxBuddyFollowUpEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaEntity
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaLinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.SubVillageEntity
 import com.medtroniclabs.spice.db.entity.TreatmentDetailsEntity
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
@@ -77,24 +77,46 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 
 interface RoomHelper {
     suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long
+
     suspend fun updateHousehold(householdEntity: HouseholdEntity)
+
     suspend fun getLastHouseholdNo(villageId: Long): Long?
+
     suspend fun checkHouseholdNumberExists(householdNo: Long): Boolean
+
     suspend fun getHouseHoldDetailsById(houseHoldId: Long): HouseholdEntity
+
     suspend fun registerMember(householdMemberEntity: HouseholdMemberEntity): Long
+
     suspend fun getAllHouseHoldMemberList(houseHoldId: Long): ArrayList<HouseholdMemberEntity>
+
     suspend fun getMemberDetailsByID(memberId: Long): HouseholdMemberEntity
+
     suspend fun getMemberDetailsByParentId(memberId: String): List<HouseholdMemberEntity>
+
     suspend fun saveAssessment(assessmentEntity: AssessmentEntity): Long
+
     suspend fun updateOtherAssessmentDetails(assessmentEntity: AssessmentEntity)
+
     suspend fun getLatestAssessmentForMember(memberId: Long): AssessmentEntity?
+
     suspend fun insertSymptomList(symptoms: List<SignsAndSymptomsEntity>)
+
     suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity>
-    suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int)
+
+    suspend fun updateHeadCount(
+        householdId: Long,
+        newNoOfPeople: Int,
+    )
+
     suspend fun getMemberCountPerHouseHold(householdId: Long): Int
+
     suspend fun saveHealthFacility(healthFacilityEntityList: HealthFacilityEntity)
+
     suspend fun deleteAllHealthFacility()
+
     suspend fun saveVillage(villageEntityList: List<VillageEntity>)
+
     suspend fun getAllVillageEntity(): List<VillageEntity>
 
     suspend fun getAllLinkedVillageEntity(): List<VillageEntity>
@@ -102,105 +124,168 @@ interface RoomHelper {
     suspend fun insertLinkedVillages(linkedVillages: List<LinkedVillageEntity>)
 
     suspend fun deleteAllLinkedVillages()
+
     suspend fun getVillagesByChiefDom(chiefdomId: Long): List<VillageEntity>
-    
+
     // SubVillage methods
     suspend fun saveSubVillages(subVillageEntityList: List<SubVillageEntity>)
+
     suspend fun deleteAllSubVillages()
-    
+
     // ShasthyaShebika methods
     suspend fun saveShasthyaShebikas(shasthyaShebikaEntityList: List<ShasthyaShebikaEntity>)
+
     suspend fun deleteAllShasthyaShebikas()
+
     suspend fun getShasthyaShebikaByShasthyaKormiId(shasthyaKormiId: Long): List<ShasthyaShebikaEntity>
-    
+
     // ShasthyaShebikaLinkedVillage methods
     suspend fun insertShasthyaShebikaLinkedVillages(linkedVillages: List<ShasthyaShebikaLinkedVillageEntity>)
+
     suspend fun deleteAllShasthyaShebikaLinkedVillages()
+
     suspend fun getSubVillagesByShasthyaShebikaId(shasthyaShebikaId: Long): List<SubVillageEntity>
+
     suspend fun deleteAllVillages()
+
     suspend fun deleteAllHouseholds()
+
     suspend fun deleteAllHouseholdMembers()
+
     suspend fun saveMenus(menuEntity: MenuEntity)
+
     suspend fun deleteAllMenus()
+
     suspend fun saveUserProfileDetails(userProfileEntity: UserProfileEntity)
+
     suspend fun deleteAllUserProfileDetails()
+
     suspend fun getMenus(): List<MenuEntity>
+
     suspend fun getUserProfile(): UserProfileEntity
+
     suspend fun getDefaultHealthFacility(): HealthFacilityEntity?
+
     suspend fun saveClinicalWorkflows(clinicalWorkflows: List<ClinicalWorkflowEntity>)
+
     suspend fun deleteAllClinicalWorkflow()
+
     suspend fun getAllClinicalWorkflowIds(): List<Int>
+
     suspend fun saveForms(forms: List<FormEntity>)
+
     suspend fun deleteAllForms()
-    suspend fun getFormData(
-        formType: String
-    ): String
+
+    suspend fun getFormData(formType: String): String
 
     suspend fun insertSymptoms(symptomEntity: List<SignsAndSymptomsEntity>)
+
     suspend fun deleteAllSymptoms()
+
     suspend fun getMenuForClinicalWorkflows(): List<ClinicalWorkflowEntity>
+
     suspend fun deleteClinicalWorkflowConditions()
+
     suspend fun insertClinicalWorkflowConditions(clinicalWorkflowConditions: List<ClinicalWorkflowConditionEntity>)
+
     suspend fun getVillageByID(villageId: Long): VillageEntity
+
     suspend fun getLastPatientId(patientIdStarts: String): String?
+
     fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount>
+
     suspend fun getClinicalWorkflowId(
         gender: String,
-        age: Int
+        age: Int,
     ): List<NCDAssessmentClinicalWorkflow>
 
     suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel
+
     suspend fun getAllUnSyncedHouseHolds(hhIds: List<String>): List<HouseHold>
 
-    suspend fun getAllUnSyncedHouseHoldMembers(houseHoldId: Long, memberIds: List<Long> = listOf()): List<HouseHoldMember>
+    suspend fun getAllUnSyncedHouseHoldMembers(
+        houseHoldId: Long,
+        memberIds: List<Long> = listOf(),
+    ): List<HouseHoldMember>
 
     suspend fun getOtherHouseholdMembers(memberIds: List<String>): List<HouseHoldMember>
-    suspend fun updateFhirId(tableName: String, id: String, fhirId: String?, status: String)
+
+    suspend fun updateFhirId(
+        tableName: String,
+        id: String,
+        fhirId: String?,
+        status: String,
+    )
+
     fun getFilteredHouseholdsLiveData(
         searchInput: String,
         filterByVillage: List<Long>,
         filterBySs: List<Long>,
-        filterByStatus: String
+        filterByStatus: String,
     ): LiveData<List<HouseHoldEntityWithMemberCount>>
 
     suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>
+
     suspend fun getUnSyncedHouseholdCount(): Int
+
     suspend fun getUnSyncedHouseholdMemberCount(): Int
-    suspend fun getPatientVisitCountByType(type: String, hhmLocalId: Long): MemberClinicalEntity?
+
+    suspend fun getPatientVisitCountByType(
+        type: String,
+        hhmLocalId: Long,
+    ): MemberClinicalEntity?
+
     suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity)
+
     suspend fun deleteExaminationsComplaints(menuType: String)
+
     suspend fun insertExaminationsComplaint(symptomEntity: List<MedicalReviewMetaItems>)
+
     suspend fun deleteDiagnosisList(diagnosisType: String)
+
     suspend fun saveDiagnosisList(diagnosisList: ArrayList<DiseaseCategoryItems>)
+
     suspend fun getHouseholdIdByFhirId(fhirId: String?): Long?
+
     suspend fun getHouseholdMemberIdByFhirId(fhirId: String?): Long?
+
     suspend fun getExaminationsComplaintByType(type: String): List<MedicalReviewMetaItems>
+
     suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails
+
     suspend fun getUnSyncedAssessmentByHHMId(hhmId: Long): List<AssessmentDetails>
+
     suspend fun getOtherUnSyncedAssessments(addedAssessmentIds: List<String>): List<AssessmentDetails>
+
     suspend fun getUnSyncedAssessmentCount(): Int
 
     suspend fun deleteAllAssessments()
+
     suspend fun updatePregnancyAncDetail(
         hhmLocalId: Long,
         visitCount: Long,
-        clinicalDate: String?
+        clinicalDate: String?,
     )
 
     suspend fun getSummaryDetailMetaItems(type: String): List<MedicalReviewMetaItems>
+
     suspend fun deleteExaminationsComplaintsForAnc(type: String)
 
     fun getExaminationsComplaintsForAnc(
         category: String,
-        type: String
+        type: String,
     ): LiveData<List<MedicalReviewMetaItems>>
 
     suspend fun deleteExaminationsList(menuType: String)
+
     suspend fun saveExaminationsList(diagnosisList: ArrayList<ExaminationListItems>)
 
     suspend fun insertLabourDelivery(symptomEntity: List<LabourDeliveryMetaEntity>)
+
     suspend fun deleteLabourDelivery()
+
     suspend fun getLabourDelivery(): List<LabourDeliveryMetaEntity>
+
     suspend fun getDiagnosisList(diagnosisType: String): List<DiseaseCategoryItems>
 
     suspend fun getExaminationQuestionsByWorkFlow(workFlowType: String): ExaminationListItems
@@ -220,12 +305,13 @@ interface RoomHelper {
         search: String? = null,
         villageIds: List<Long> = listOf(),
         fromDate: String = "",
-        toDate: String = ""
+        toDate: String = "",
     ): LiveData<List<FollowUpPatientModel>>
 
     suspend fun getAllVillageIds(): List<Long>
 
     suspend fun deleteAllPregnancyDetails()
+
     suspend fun getPatientIdByFhirId(fhirId: String): String?
 
     suspend fun insertUpdatePregnancyDetailFromBE(pregnancyDetail: PregnancyDetail)
@@ -233,7 +319,7 @@ interface RoomHelper {
     suspend fun addCallHistory(
         oldFollowUp: FollowUp,
         history: FollowUpCall,
-        newFollowUp: FollowUp? = null
+        newFollowUp: FollowUp? = null,
     )
 
     suspend fun deleteAllFollowUpCalls()
@@ -256,29 +342,63 @@ interface RoomHelper {
 
     fun getAliveHouseHoldMembersLiveData(hhId: Long): List<HouseholdMemberEntity>
 
-    suspend fun updateOtherDuplicateTickets(id: Long, followUp: FollowUp)
+    suspend fun updateOtherDuplicateTickets(
+        id: Long,
+        followUp: FollowUp,
+    )
 
-    suspend fun updateDuplicateTicketsAsCompleted(id: Long, followUp: FollowUp)
+    suspend fun updateDuplicateTicketsAsCompleted(
+        id: Long,
+        followUp: FollowUp,
+    )
 
-    suspend fun updateOtherFollowUpForWrongNumber(id: Long, fhirId: String)
+    suspend fun updateOtherFollowUpForWrongNumber(
+        id: Long,
+        fhirId: String,
+    )
 
-    suspend fun updateOnTreatmentStatus(id: Long, followUp: FollowUp, updatedAt: Long)
+    suspend fun updateOnTreatmentStatus(
+        id: Long,
+        followUp: FollowUp,
+        updatedAt: Long,
+    )
 
-    suspend fun changeHouseholdStatus(idList: List<String>, syncStatus: String)
+    suspend fun changeHouseholdStatus(
+        idList: List<String>,
+        syncStatus: String,
+    )
 
-    suspend fun changeHouseholdMemberStatus(idList: List<String>, syncStatus: String)
+    suspend fun changeHouseholdMemberStatus(
+        idList: List<String>,
+        syncStatus: String,
+    )
 
-    suspend fun changeAssessmentStatus(idList: List<String>, syncStatus: String)
+    suspend fun changeAssessmentStatus(
+        idList: List<String>,
+        syncStatus: String,
+    )
 
-    suspend fun changeFollowUpStatus(idList: List<Long>, syncStatus: String)
+    suspend fun changeFollowUpStatus(
+        idList: List<Long>,
+        syncStatus: String,
+    )
 
     suspend fun changeFollowUpCallStatus(idList: List<Long>)
 
-    suspend fun changeHHMLinkCallStatus(idList: List<String>, syncStatus: String)
+    suspend fun changeHHMLinkCallStatus(
+        idList: List<String>,
+        syncStatus: String,
+    )
 
-    suspend fun changeCommunityProfileStatus(idList: List<Long>, syncStatus: String)
+    suspend fun changeCommunityProfileStatus(
+        idList: List<Long>,
+        syncStatus: String,
+    )
 
-    suspend fun changeAssignHHMStatus(idList: List<String>, syncStatus: String)
+    suspend fun changeAssignHHMStatus(
+        idList: List<String>,
+        syncStatus: String,
+    )
 
     suspend fun insertOrUpdateHHFromBE(entity: HouseholdEntity): Long
 
@@ -290,9 +410,11 @@ interface RoomHelper {
 
     fun getExaminationsComplaintsForPnc(
         category: String,
-        type: String
+        type: String,
     ): LiveData<List<MedicalReviewMetaItems>>
+
     suspend fun deleteAllFrequencyList()
+
     suspend fun saveFrequencyList(villageEntityList: List<FrequencyEntity>): List<Long>
 
     suspend fun saveUnitMetric(list: ArrayList<UnitMetricEntity>)
@@ -306,16 +428,24 @@ interface RoomHelper {
     suspend fun insertOrUpdateFollowUp(entity: FollowUp)
 
     suspend fun deleteCompletedFollowUp()
+
     suspend fun saveForm(forms: FormEntity)
 
-    suspend fun updateNeonatePatientId( hhmLocalId: Long, neonateId: Long)
+    suspend fun updateNeonatePatientId(
+        hhmLocalId: Long,
+        neonateId: Long,
+    )
 
     suspend fun getMemberDetailsByPatientId(patientId: String): HouseholdMemberEntity?
 
     suspend fun getChildPatientId(parentId: Long): Long?
 
     suspend fun getUserHealthFacility(isUserSite: Boolean): ArrayList<HealthFacilityEntity>
-    suspend fun updateMemberDeceasedStatus(id: Long, status: Boolean)
+
+    suspend fun updateMemberDeceasedStatus(
+        id: Long,
+        status: Boolean,
+    )
 
     suspend fun getPatientIdById(id: Long): String
 
@@ -327,7 +457,11 @@ interface RoomHelper {
 
     suspend fun getHHSignatureDetails(): List<HHSignatureDetail>
 
-    suspend fun updatePhoneNumberForHouseholdHead(id: Long, phoneNumber: String?, phoneNumberCategory: String?)
+    suspend fun updatePhoneNumberForHouseholdHead(
+        id: Long,
+        phoneNumber: String?,
+        phoneNumberCategory: String?,
+    )
 
     suspend fun insertLinkHouseholdMembers(insertList: List<LinkHouseholdMember>)
 
@@ -344,76 +478,126 @@ interface RoomHelper {
     suspend fun updateMemberAsAssigned(memberId: String)
 
     suspend fun saveConsent(consentEntity: ConsentEntity)
+
     fun getConsent(formType: String): LiveData<String>
+
     suspend fun deleteConsent()
 
     suspend fun saveModelQuestions(mentalHealthEntity: List<MentalHealthEntity>)
+
     suspend fun getModelQuestions(formType: String): MentalHealthEntity
+
     suspend fun deleteModelQuestions()
 
     suspend fun saveMedicalCompliance(list: List<MedicalComplianceEntity>)
-    suspend fun getMedicalParentComplianceList(): List<MedicalComplianceEntity>
-    suspend fun getMedicalChildComplianceList(parentId: Long): List<MedicalComplianceEntity>
-    suspend fun deleteMedicalCompliance()
-    suspend fun saveDistricts(counties: List<DistrictEntity>)
-    suspend fun getDistricts(countryId: Long): List<DistrictEntity>
-    suspend fun deleteDistricts()
-    suspend fun saveChiefDoms(chiefdoms: List<ChiefDomEntity>)
-    suspend fun getChiefDoms(districtId: Long): List<ChiefDomEntity>
-    suspend fun deleteChiefDoms()
-    suspend fun savePrograms(programs: List<ProgramEntity>)
-    suspend fun getPrograms(): List<ProgramEntity>
-    suspend fun deletePrograms()
-     fun getMentalQuestion(formType: String): LiveData<MentalHealthEntity?>
-    fun getSites(): LiveData<List<HealthFacilityEntity>>
-    suspend fun savePatientScreeningInformation(screeningEntity: ScreeningEntity) : ScreeningEntity
 
-    fun getScreenedPatientCount(startDate: Long, endDate: Long, userId: String): LiveData<Long>
+    suspend fun getMedicalParentComplianceList(): List<MedicalComplianceEntity>
+
+    suspend fun getMedicalChildComplianceList(parentId: Long): List<MedicalComplianceEntity>
+
+    suspend fun deleteMedicalCompliance()
+
+    suspend fun saveDistricts(counties: List<DistrictEntity>)
+
+    suspend fun getDistricts(countryId: Long): List<DistrictEntity>
+
+    suspend fun deleteDistricts()
+
+    suspend fun saveChiefDoms(chiefdoms: List<ChiefDomEntity>)
+
+    suspend fun getChiefDoms(districtId: Long): List<ChiefDomEntity>
+
+    suspend fun deleteChiefDoms()
+
+    suspend fun savePrograms(programs: List<ProgramEntity>)
+
+    suspend fun getPrograms(): List<ProgramEntity>
+
+    suspend fun deletePrograms()
+
+    fun getMentalQuestion(formType: String): LiveData<MentalHealthEntity?>
+
+    fun getSites(): LiveData<List<HealthFacilityEntity>>
+
+    suspend fun savePatientScreeningInformation(screeningEntity: ScreeningEntity): ScreeningEntity
+
+    fun getScreenedPatientCount(
+        startDate: Long,
+        endDate: Long,
+        userId: String,
+    ): LiveData<Long>
+
     fun getScreenedPatientReferredCount(
         startDate: Long,
         endDate: Long,
         userId: String,
-        isReferred: Boolean
+        isReferred: Boolean,
     ): LiveData<Long>
 
     suspend fun getAllScreeningRecords(uploadStatus: Boolean): List<ScreeningEntity>?
 
     suspend fun deleteUploadedScreeningRecords(todayDateTimeInMilliSeconds: Long)
 
-    suspend fun updateScreeningRecordById(id: Long, uploadStatus: Boolean)
+    suspend fun updateScreeningRecordById(
+        id: Long,
+        uploadStatus: Boolean,
+    )
 
     suspend fun insertRiskFactor(riskFactorEntity: RiskFactorEntity)
+
     fun getRiskFactorEntity(): LiveData<List<RiskFactorEntity>>
+
     suspend fun deleteRiskFactor()
 
     fun getSymptomListByTypeForNCD(type: String): LiveData<List<SignsAndSymptomsEntity>>
 
     suspend fun deleteTreatmentPlan()
+
     suspend fun insertTreatmentPlan(items: List<TreatmentPlanEntity>)
+
     suspend fun deleteNCDMedicalReviewMeta()
+
     suspend fun insertNCDMedicalReviewMeta(items: List<NCDMedicalReviewMetaEntity>)
 
     suspend fun deleteLifestyle()
+
     suspend fun insertLifestyle(items: List<LifestyleEntity>)
-    fun getComorbidities(type: String?,category: String): LiveData<List<NCDMedicalReviewMetaEntity>>
+
+    fun getComorbidities(
+        type: String?,
+        category: String,
+    ): LiveData<List<NCDMedicalReviewMetaEntity>>
 
     fun getLifeStyle(): LiveData<List<LifestyleEntity>>
-    fun getAssessmentFormData(formTypes: List<String>, workFlow: String): List<String>
-    fun getAssessmentFormData(formType: String, workFlow: String): LiveData<String>
+
+    fun getAssessmentFormData(
+        formTypes: List<String>,
+        workFlow: String,
+    ): List<String>
+
+    fun getAssessmentFormData(
+        formType: String,
+        workFlow: String,
+    ): LiveData<String>
+
     suspend fun getSymptomList(): List<SignsAndSymptomsEntity>
 
     suspend fun saveAssessmentInformation(request: AssessmentNCDEntity): AssessmentNCDEntity
 
-    suspend fun getAllAssessmentRecords(uploadStatus: Boolean):List<AssessmentNCDEntity>
+    suspend fun getAllAssessmentRecords(uploadStatus: Boolean): List<AssessmentNCDEntity>
 
-    suspend fun updateAssessmentUploadStatus(id: Long, uploadStatus: Boolean)
+    suspend fun updateAssessmentUploadStatus(
+        id: Long,
+        uploadStatus: Boolean,
+    )
 
     suspend fun deleteAssessmentList(isUploaded: Boolean)
 
     suspend fun getAssessmentClinicalWorkflow(
         gender: String,
-        name: String
+        name: String,
     ): List<NCDAssessmentClinicalWorkflow>
+
     suspend fun getUnitList(type: String): List<UnitMetricEntity>
 
     suspend fun deleteUnitMetric()
@@ -421,33 +605,55 @@ interface RoomHelper {
     suspend fun saveDosageFrequencyList(list: ArrayList<DosageFrequency>)
 
     suspend fun deleteDosageFrequencyList()
+
     fun getUnSyncedDataCountForNCDScreening(): LiveData<Long>
+
     fun getUnSyncedNCDAssessmentCount(): LiveData<Long>
 
     suspend fun saveNCDDiagnosisList(diseaseEntityList: ArrayList<NCDDiagnosisEntity>)
 
     suspend fun deleteNCDDiagnosisList()
+
     fun getNCDDiagnosisList(
         types: List<String>,
         gender: String,
-        isPregnant: Boolean
+        isPregnant: Boolean,
     ): LiveData<List<NCDDiagnosisEntity>>
-    fun getFrequencies() : LiveData<List<TreatmentPlanEntity>>
+
+    fun getFrequencies(): LiveData<List<TreatmentPlanEntity>>
 
     suspend fun getNCDShortageReason(type: String): List<ShortageReasonEntity>
+
     suspend fun deleteNCDShortageReason()
+
     suspend fun saveNCDShortageReason(shortageReasonEntity: List<ShortageReasonEntity>)
+
     suspend fun getUnAssignedParentFhirId(parentId: String): List<HouseholdMemberFhirId>
+
     suspend fun getUnAssignedChildFhirIds(patientId: String): List<HouseholdMemberFhirId>
-    suspend fun updateHouseholdHeadAndRelationShip(fhirIds: List<String>, householdId: Long)
+
+    suspend fun updateHouseholdHeadAndRelationShip(
+        fhirIds: List<String>,
+        householdId: Long,
+    )
+
     suspend fun updateMembersAsAssigned(fhirIds: List<String>)
 
-    suspend fun getNCDForm(type: String, customizedType: String): List<String>
+    suspend fun getNCDForm(
+        type: String,
+        customizedType: String,
+    ): List<String>
+
     suspend fun getUserVillages(): List<VillageEntity>
+
     suspend fun deleteDosageDurations()
+
     suspend fun insertDosageDurations(items: List<DosageDurationEntity>)
+
     suspend fun getDosageDurations(): List<DosageDurationEntity>
+
     suspend fun deleteAllNCDFollowUp()
+
     suspend fun insertNCDFollowUp(followUp: NCDFollowUp): Long
 
     fun getNCDFollowUpData(
@@ -455,18 +661,26 @@ interface RoomHelper {
         searchText: String,
         dateBasedOnChip: Pair<Long?, Long?>?,
         isScreened: Boolean?,
-        reason:String?
+        reason: String?,
     ): LiveData<List<NCDFollowUp>>
 
     suspend fun updatedCallInitiatedCall(ncdFollowUp: NCDFollowUp): NCDFollowUp
 
     suspend fun getNCDInitiatedCallFollowUp(): NCDFollowUp?
+
     suspend fun insertNCDCallDetails(followUp: NCDCallDetails): NCDCallDetails?
-    suspend fun updateRetryAttempts(id: Long, retryAttempts: Long)
+
+    suspend fun updateRetryAttempts(
+        id: Long,
+        retryAttempts: Long,
+    )
+
     suspend fun getAttemptsById(id: Long): Long?
+
     suspend fun getNCDFollowUpById(id: Long): NCDFollowUp
 
     suspend fun getAllNCDCallDetails(): List<NCDCallDetails>
+
     suspend fun insertNCDPatientDetails(patients: NCDPatientDetailsEntity): Long
 
     suspend fun deleteAllNCDPatientDetails()
@@ -476,15 +690,22 @@ interface RoomHelper {
     suspend fun deleteCallDetails(id: Long)
 
     fun getUnSyncedNCDFollowUpCount(): LiveData<Long>
+
     suspend fun saveCultures(cultures: List<CulturesEntity>)
+
     suspend fun getCultures(): List<CulturesEntity>
+
     suspend fun deleteCultures()
 
-    suspend fun updateMemberDeceasedReason(id: Long, status: Boolean,deceasedReason: String?)
+    suspend fun updateMemberDeceasedReason(
+        id: Long,
+        status: Boolean,
+        deceasedReason: String?,
+    )
 
     suspend fun getHouseholdHeadDob(householdId: Long): String
 
-    fun getFilterVillagesWithHouseholdsCount(searchInput: String):LiveData<List<CommunityProfileDetail>>
+    fun getFilterVillagesWithHouseholdsCount(searchInput: String): LiveData<List<CommunityProfileDetail>>
 
     suspend fun getCommunityStatistics(villageId: Long): CommunityPopulationStatistics
 
@@ -496,7 +717,10 @@ interface RoomHelper {
 
     suspend fun updateCommunityDetails(communityProfile: CommunityProfile)
 
-    suspend fun updateUnSynStatus(villageId:Long,synStatus:String)
+    suspend fun updateUnSynStatus(
+        villageId: Long,
+        synStatus: String,
+    )
 
     suspend fun getHealthFacilityBasedOnVillageId(villageId: Long): List<HealthFacilityEntity>
 
@@ -508,25 +732,34 @@ interface RoomHelper {
 
     fun householdMemberWithTbStatus(hhId: Long): LiveData<List<HouseholdMemberEntity>>
 
-    suspend fun updateTBContactTraceStatus(hhmId: Long, tbContactTracingStatus: Int)
+    suspend fun updateTBContactTraceStatus(
+        hhmId: Long,
+        tbContactTracingStatus: Int,
+    )
 
-    suspend fun updatePregnantStatus(memberId: Long, isPregnant: Boolean)
+    suspend fun updatePregnantStatus(
+        memberId: Long,
+        isPregnant: Boolean,
+    )
 
     suspend fun getSymptomListByTypes(types: List<String>): List<SignsAndSymptomsEntity>
 
-    suspend fun insertRxBuddyDetails(rxBuddyDetails: RxBuddyDetails):Long
+    suspend fun insertRxBuddyDetails(rxBuddyDetails: RxBuddyDetails): Long
 
-    suspend fun getRxBuddyDetails(patientMemberId:String):RxBuddyDetails?
+    suspend fun getRxBuddyDetails(patientMemberId: String): RxBuddyDetails?
 
-    suspend fun getOtherHouseholdExcludeTBPatient(householdId:Long,patientId:Long):List<HouseholdMemberEntity>
+    suspend fun getOtherHouseholdExcludeTBPatient(
+        householdId: Long,
+        patientId: Long,
+    ): List<HouseholdMemberEntity>
 
-    suspend fun insertTreatmentDetails(treatmentDetails: TreatmentDetailsEntity):Long
+    suspend fun insertTreatmentDetails(treatmentDetails: TreatmentDetailsEntity): Long
 
-    suspend fun updateTreatmentDetails(treatmentDetails: TreatmentDetailsEntity):Int
+    suspend fun updateTreatmentDetails(treatmentDetails: TreatmentDetailsEntity): Int
 
-    suspend fun getTreatmentDetails(memberId: String):TreatmentDetailsEntity?
+    suspend fun getTreatmentDetails(memberId: String): TreatmentDetailsEntity?
 
-    suspend fun insertRxBuddyFollowUp(rxBuddyFollowUp: RxBuddyFollowUpEntity):Long
+    suspend fun insertRxBuddyFollowUp(rxBuddyFollowUp: RxBuddyFollowUpEntity): Long
 
     suspend fun getHivMetaData(): List<MedicalReviewMetaItems>
 
@@ -538,9 +771,15 @@ interface RoomHelper {
 
     suspend fun getUnSyncedRxBuddyFollowUpWithRxBuddyId(): List<RxBuddyFollowUpDetails>
 
-    suspend fun updateNextVisitDateRxBuddyRegister(nextVisitDate: String, id: Long)
+    suspend fun updateNextVisitDateRxBuddyRegister(
+        nextVisitDate: String,
+        id: Long,
+    )
 
-    suspend fun updateNextVisitDateRxBuddyFollowUp(nextVisitDate: String, id: Long)
+    suspend fun updateNextVisitDateRxBuddyFollowUp(
+        nextVisitDate: String,
+        id: Long,
+    )
 
     suspend fun insertOrUpdateRxBuddyFromBE(entity: RxBuddyDetails): Long
 
@@ -554,13 +793,19 @@ interface RoomHelper {
 
     suspend fun getUnSyncedRxBuddyFollowUpCount(): Int
 
-    suspend fun updateRxBuddyRegisterSyncStatus(idList: List<Long>, syncStatus: String)
+    suspend fun updateRxBuddyRegisterSyncStatus(
+        idList: List<Long>,
+        syncStatus: String,
+    )
 
-    suspend fun updateRxBuddyFollowUpSyncStatus(idList: List<Long>, syncStatus: String)
+    suspend fun updateRxBuddyFollowUpSyncStatus(
+        idList: List<Long>,
+        syncStatus: String,
+    )
 
     suspend fun deleteDisableRxBuddies(ids: List<Long>)
 
-    suspend fun getHouseholdMemberIdAndStatusByFhirId(fhirId: String):  HouseholdMemberStatus?
+    suspend fun getHouseholdMemberIdAndStatusByFhirId(fhirId: String): HouseholdMemberStatus?
 
     suspend fun getUnSyncedHouseHoldByMemberId(hhmId: Long): HouseHold?
 
@@ -568,11 +813,20 @@ interface RoomHelper {
 
     suspend fun getMemberFhirIdByLocalId(hhmId: Long): String?
 
-    suspend fun getAllUnSyncedRxBuddyDetailWithHHM(hhmId: Long, rxBuddiesId: List<Long>): List<RxBuddyRegisterDetail>
+    suspend fun getAllUnSyncedRxBuddyDetailWithHHM(
+        hhmId: Long,
+        rxBuddiesId: List<Long>,
+    ): List<RxBuddyRegisterDetail>
 
     suspend fun getTbPatientLocalIdByHouseholdId(householdId: Long): MutableList<Long>
 
-    suspend fun updateContactTracingStatus(memberId: Long, status: Int?)
+    suspend fun updateContactTracingStatus(
+        memberId: Long,
+        status: Int?,
+    )
 
-    suspend fun updateContactTracingForLinkTbPatient(tbHHMId: Long, householdId: Long)
+    suspend fun updateContactTracingForLinkTbPatient(
+        tbHHMId: Long,
+        householdId: Long,
+    )
 }

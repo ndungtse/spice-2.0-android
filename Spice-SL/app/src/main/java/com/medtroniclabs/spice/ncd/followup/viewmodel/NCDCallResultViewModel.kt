@@ -13,9 +13,10 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDCallResultViewModel @Inject constructor(
     private val ncdFollowUpRepo: NCDFollowUpRepo,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
     val getAttempts = MutableLiveData<Long?>()
+
     fun getAttemptsById(id: Long?) {
         viewModelScope.launch {
             try {
@@ -28,5 +29,4 @@ class NCDCallResultViewModel @Inject constructor(
             }
         }
     }
-
 }

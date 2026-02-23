@@ -5,7 +5,6 @@ import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.history.Investigation
 import com.medtroniclabs.spice.data.history.PatientStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
-import com.medtroniclabs.spice.ncd.data.Diagnosis
 
 data class HivScreeningRequest(
     private val historyList: List<String>? = null,
@@ -21,18 +20,16 @@ data class HivScreeningRequest(
     private val lastMenstrualPeriod: String? = null,
     private val gestationalInWeeks: Int? = null,
     private val expectedDateOfDelivery: String? = null,
-    private val hivSyphilisDuoTest:String? = null,
-    private val hbsAGTest:String? = null,
+    private val hivSyphilisDuoTest: String? = null,
+    private val hbsAGTest: String? = null,
     private val screeningType: String? = null,
     private val clinicalNotes: String? = null,
     private val id: String? = null,
     private val otherEntryPoint: String? = null,
-    private val isConsentGiven:Boolean? = null,
+    private val isConsentGiven: Boolean? = null,
     val weight: Double? = null,
     val height: Double? = null,
-
 )
-
 
 data class HivScreeningResponse(
     val patientReference: String? = null,
@@ -42,7 +39,7 @@ data class HivScreeningResponse(
 data class HivCreateScreeningSummaryResponse(
     val id: String? = null,
     val eligibilities: Eligibilities? = null,
-    val diagnosis : List<DiagnosisDiseaseModel>? = null,
+    val diagnosis: List<DiagnosisDiseaseModel>? = null,
     val a1TestResult: String? = null,
     val a2TestResult: String? = null,
     val a3TestResult: String? = null,
@@ -50,17 +47,16 @@ data class HivCreateScreeningSummaryResponse(
     val hivSyphilisDuoTest: String? = null,
     val summaryStatus: List<PatientStatus>? = null,
     val hbsAGTest: String? = null,
-    val clinicalNotes : String? = null,
+    val clinicalNotes: String? = null,
     val prescriptions: List<Prescription>? = null,
     val investigations: List<Investigation>? = null,
-    val otherPopulationType: String? = null
+    val otherPopulationType: String? = null,
 )
 
 data class Eligibilities(
     val hivPopulationType: List<String>? = null,
-    val Symptoms: List<String>? = null
+    val Symptoms: List<String>? = null,
 )
-
 
 data class HivMedicalReviewSummaryRequest(
     val category: String? = null,
@@ -72,9 +68,8 @@ data class HivMedicalReviewSummaryRequest(
     val patientReference: String? = null,
     val patientStatus: String? = null,
     val provenance: ProvanceDto? = null,
-    val villageId: String? = null
+    val villageId: String? = null,
 )
-
 
 data class HivMedicalReviewSummaryResponse(
     val message: String? = null,
@@ -82,7 +77,7 @@ data class HivMedicalReviewSummaryResponse(
     val status: Boolean? = null,
     val entityList: Any? = null,
     val responseCode: Int? = null,
-    val totalCount: Any? = null
+    val totalCount: Any? = null,
 )
 
 data class MedicalReviewEntity(
@@ -102,7 +97,7 @@ data class MedicalReviewEntity(
     val reason: Any? = null,
     val category: String? = null,
     val provenance: ProvanceDto? = null,
-    val referralDetails: Any? = null
+    val referralDetails: Any? = null,
 )
 
 data class ViralLoadRequest(
@@ -112,6 +107,6 @@ data class ViralLoadRequest(
 
 data class ViralLoadResponse(
     val collectionDate: String? = null,
-    val gestationAtCollection: String?= null,
-    val result: String?= null,
+    val gestationAtCollection: String? = null,
+    val result: String? = null,
 )

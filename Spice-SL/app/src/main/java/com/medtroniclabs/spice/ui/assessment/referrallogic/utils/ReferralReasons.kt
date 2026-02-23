@@ -18,11 +18,12 @@ enum class ReferralReasons {
     Cough,
     Miscarriage,
     NCD,
-    NCDSymptoms;
+    NCDSymptoms,
+    ;
 
     companion object {
-        fun aliasOf(value: ReferralReasons): String {
-            return when(value) {
+        fun aliasOf(value: ReferralReasons): String =
+            when (value) {
                 ANCSigns -> RMNCH.ancSignsLabel
                 PNCMotherSigns -> RMNCH.pncMotherSignsLabel
                 childhoodVisitSigns -> RMNCH.childhoodVisitSignsLabel
@@ -30,6 +31,5 @@ enum class ReferralReasons {
                 GeneralDangerSigns -> generalDangerSigns
                 else -> value.name
             }
-        }
     }
 }

@@ -35,7 +35,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickListener {
-
     lateinit var binding: FragmentNcdPatientEditBinding
 
     private val viewModel: NCDPatientEditViewModel by activityViewModels()
@@ -46,13 +45,16 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNcdPatientEditBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeFormBuilder()
         attachObserver()
@@ -69,7 +71,7 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
             binding.llForm,
             this,
             binding.scrollView,
-            translate = SecuredPreference.getIsTranslationEnabled()
+            translate = SecuredPreference.getIsTranslationEnabled(),
         )
         ncdFormViewModel.getNCDForm(MenuConstants.REGISTRATION.lowercase())
     }
@@ -127,7 +129,7 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
                     resourceState.message?.let {
                         showErrorDialog(
                             getString(R.string.error),
-                            it
+                            it,
                         )
                     }
                 }
@@ -141,20 +143,22 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
     }
 
     private fun showSuccessDialog() {
-        GeneralSuccessDialog.newInstance(
-            getString(R.string.patient_details),
-            getString(R.string.patient_detail_updated_successfully),
-            okayButton = getString(R.string.done),
-            callback = {
-                if (activity is NCDPatientEditActivity) {
-                    activity?.apply {
-                        setResult(Activity.RESULT_OK, intent)
-                        finish()
+        GeneralSuccessDialog
+            .newInstance(
+                getString(R.string.patient_details),
+                getString(R.string.patient_detail_updated_successfully),
+                okayButton = getString(R.string.done),
+                callback = {
+                    if (activity is NCDPatientEditActivity) {
+                        activity?.apply {
+                            setResult(Activity.RESULT_OK, intent)
+                            finish()
+                        }
+                    } else {
+                        (activity as BaseActivity).redirectToHome()
                     }
-                } else {
-                    (activity as BaseActivity).redirectToHome()
-                }
-            }).show(childFragmentManager, GeneralSuccessDialog.TAG)
+                },
+            ).show(childFragmentManager, GeneralSuccessDialog.TAG)
     }
 
     private var resultLauncher =
@@ -166,14 +170,16 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
             }
         }
 
-
     override fun onRenderingComplete() {
         /**
          * this method is not used
          */
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
         /**
          * this method is not used
          */
@@ -183,7 +189,7 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
         id: String,
         noOfDays: Int,
         enteredDays: Int?,
-        resultMap: HashMap<String, Any>?
+        resultMap: HashMap<String, Any>?,
     ) {
         /**
          * this method is not used
@@ -205,7 +211,7 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
         /**
          * this method is not used
@@ -218,8 +224,11 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
          */
     }
 
-
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
         if (localDataCache is String) {
         }
     }
@@ -227,11 +236,12 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
     override fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     ) {
-        CheckBoxDialog.newInstance(id, resultMap) { map ->
-            formGenerator.validateCheckboxDialogue(id, formLayout, map)
-        }.show(childFragmentManager, CheckBoxDialog.TAG)
+        CheckBoxDialog
+            .newInstance(id, resultMap) { map ->
+                formGenerator.validateCheckboxDialogue(id, formLayout, map)
+            }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
     override fun onInstructionClicked(
@@ -239,7 +249,7 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {
         /**
          * this method is not used
@@ -248,7 +258,7 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?
+        serverData: List<FormLayout?>?,
     ) {
         val map = HashMap<String, Any>()
         if (resultMap != null) {
@@ -259,13 +269,15 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
             patientViewModel.getPatientFHIRId().toString()
         map[AssessmentDefinedParams.patientReference] = patientViewModel.getPatientId().toString()
         map[DefinedParams.Provenance] = ProvanceDto()
-        if (connectivityManager.isNetworkAvailable()) viewModel.ncdUpdatePatientDetail(map)
-        else (activity as? BaseActivity)?.showErrorDialogue(
-            getString(R.string.error),
-            getString(R.string.no_internet_error),
-            isNegativeButtonNeed = false
-        ) {}
-
+        if (connectivityManager.isNetworkAvailable()) {
+            viewModel.ncdUpdatePatientDetail(map)
+        } else {
+            (activity as? BaseActivity)?.showErrorDialogue(
+                getString(R.string.error),
+                getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false,
+            ) {}
+        }
     }
 
     override fun onClick(view: View) {

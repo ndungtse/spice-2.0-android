@@ -4,12 +4,12 @@ import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 
 data class EMTCTVisitStatusRequest(
     val encounter: MedicalReviewEncounter? = null,
-    val stringValue: String? = null
+    val stringValue: String? = null,
 )
 
 data class EMTCTVisitStatusResponse(
     val message: String? = null,
-    val entity: EMTCTEntity? = null
+    val entity: EMTCTEntity? = null,
 )
 
 data class EMTCTEntity(
@@ -29,7 +29,7 @@ data class EMTCTEntity(
     val cd4: Int? = null,
     val cd4Percentage: Double? = null,
     val doubleValue: Double? = null,
-    val encounter: EncounterResponse? = null
+    val encounter: EncounterResponse? = null,
 )
 
 data class EncounterResponse(
@@ -49,12 +49,12 @@ data class EncounterResponse(
     val visitNumber: Int? = null,
     val visitId: String? = null,
     val villageId: String? = null,
-    val type: String? = null
+    val type: String? = null,
 )
 
 data class ProvenanceResponse(
     val userId: String? = null,
     val spiceUserId: Int? = null,
     val organizationId: String? = null,
-    val modifiedDate: String? = null
+    val modifiedDate: String? = null,
 )

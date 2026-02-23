@@ -3,7 +3,6 @@ package com.medtroniclabs.spice.ui.assessment
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.model.SymptomModel
 import com.medtroniclabs.spice.databinding.LayoutSymptomAdapterBinding
 import com.medtroniclabs.spice.databinding.LayoutSymptomTitleBinding
@@ -11,39 +10,43 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class SymptomAdapter(val list: ArrayList<SymptomModel>, val translationToggle: Boolean) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
     class SymptomViewHolder(val binding: LayoutSymptomAdapterBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     class SymptomTitleViewHolder(val binding: LayoutSymptomTitleBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): RecyclerView.ViewHolder {
         if (viewType == 0) {
             val binding = LayoutSymptomAdapterBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
+                false,
             )
             return SymptomViewHolder(binding)
         } else {
             val binding = LayoutSymptomTitleBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
+                false,
             )
             return SymptomTitleViewHolder(binding)
         }
-
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+    ) {
         val symptom = list[position]
         if (holder is SymptomViewHolder) {
             holder.binding.checkSymptom.isChecked = symptom.isSelected
-            if (translationToggle){
+            if (translationToggle) {
                 holder.binding.checkSymptom.text = symptom.cultureValue ?: symptom.symptom
-            }else{
+            } else {
                 holder.binding.checkSymptom.text = symptom.symptom
             }
             holder.binding.root.safeClickListener {
@@ -58,20 +61,22 @@ class SymptomAdapter(val list: ArrayList<SymptomModel>, val translationToggle: B
                     }
                 } else {
                     val filteredModel = list.filter {
-                        it.symptom.startsWith(AssessmentDefinedParams.NoSymptoms, true) && it.isSelected &&
-                                it.type == symptom.type
+                        it.symptom.startsWith(AssessmentDefinedParams.NoSymptoms, true) &&
+                            it.isSelected &&
+                            it.type == symptom.type
                     }
                     updateSelection(position, symptom, filteredModel)
                 }
             }
-        } else if (holder is SymptomTitleViewHolder)
+        } else if (holder is SymptomTitleViewHolder) {
             holder.binding.SymptomTitle.text = symptom.type
+        }
     }
 
     private fun updateSelection(
         position: Int,
         symptom: SymptomModel,
-        filteredModel: List<SymptomModel>
+        filteredModel: List<SymptomModel>,
     ) {
         if (filteredModel.isNotEmpty()) {
             resetSelection(symptom.type, list)
@@ -83,23 +88,18 @@ class SymptomAdapter(val list: ArrayList<SymptomModel>, val translationToggle: B
         }
     }
 
-
-    private fun resetSelection(type: String?, list: ArrayList<SymptomModel>) {
+    private fun resetSelection(
+        type: String?,
+        list: ArrayList<SymptomModel>,
+    ) {
         list.filter { it.type == type }.forEach {
             it.isSelected = false
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return list[position].viewType
-    }
+    override fun getItemViewType(position: Int): Int = list[position].viewType
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
+    override fun getItemCount(): Int = list.size
 
-    fun getSelectedSymptomList(): List<SymptomModel> {
-        return list.filter { it.isSelected }
-    }
-
+    fun getSelectedSymptomList(): List<SymptomModel> = list.filter { it.isSelected }
 }

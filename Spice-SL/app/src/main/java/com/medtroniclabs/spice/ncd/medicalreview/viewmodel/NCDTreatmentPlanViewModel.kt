@@ -23,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDTreatmentPlanViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private val ncdTreatmentPlanRepo: NCDTreatmentPlanRepo
+    private val ncdTreatmentPlanRepo: NCDTreatmentPlanRepo,
 ) : BaseViewModel(dispatcherIO) {
     var patientReference: String? = null
     var memberReference: String? = null
@@ -53,8 +53,8 @@ class NCDTreatmentPlanViewModel @Inject constructor(
             getNCDTreatmentPlanLiveData.postLoading()
             getNCDTreatmentPlanLiveData.postValue(
                 ncdTreatmentPlanRepo.getNCDTreatmentPlan(
-                    request
-                )
+                    request,
+                ),
             )
         }
     }
@@ -65,12 +65,12 @@ class NCDTreatmentPlanViewModel @Inject constructor(
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDTreatmentPlanCreation,
-                isCompleted = true
+                isCompleted = true,
             )
             updateNCDTreatmentPlanLiveData.postValue(
                 ncdTreatmentPlanRepo.updateNCDTreatmentPlan(
-                    request
-                )
+                    request,
+                ),
             )
         }
     }

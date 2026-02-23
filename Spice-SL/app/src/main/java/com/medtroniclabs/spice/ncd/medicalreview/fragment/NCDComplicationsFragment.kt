@@ -25,8 +25,9 @@ class NCDComplicationsFragment : BaseFragment() {
     private lateinit var tagView: TagListCustomView
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSystemicExaminationsBinding.inflate(inflater, container, false)
         return binding.root
@@ -34,12 +35,14 @@ class NCDComplicationsFragment : BaseFragment() {
 
     companion object {
         const val TAG = "NCDComplicationsFragment"
-        fun newInstance(): NCDComplicationsFragment {
-            return NCDComplicationsFragment()
-        }
+
+        fun newInstance(): NCDComplicationsFragment = NCDComplicationsFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getChips()
         setObserver()
@@ -54,7 +57,7 @@ class NCDComplicationsFragment : BaseFragment() {
                     name = item.name,
                     cultureValue = item.displayValue,
                     type = item.type,
-                    value = item.value
+                    value = item.value,
                 )
             } as ArrayList<ChipViewItemModel>
             initView(complaintList)
@@ -67,10 +70,7 @@ class NCDComplicationsFragment : BaseFragment() {
         }
     }
 
-
-    private fun initView(
-        complaintList: ArrayList<ChipViewItemModel>
-    ) {
+    private fun initView(complaintList: ArrayList<ChipViewItemModel>) {
         with(binding) {
             binding.tvSystemicExaminationTitle.text = getString(R.string.complications)
             binding.tvCommentsTitle.text = getString(R.string.please_specify_the_complication)
@@ -86,7 +86,7 @@ class NCDComplicationsFragment : BaseFragment() {
                         viewModel.chips =
                             ArrayList(tagView.getSelectedTags())
                         showNotes()
-                    }
+                    },
                 )
             tagView.addChipItemList(complaintList, viewModel.chips)
         }
@@ -96,9 +96,10 @@ class NCDComplicationsFragment : BaseFragment() {
         if (viewModel.chips.firstOrNull {
                 it.name.equals(
                     DefinedParams.Other,
-                    ignoreCase = true
+                    ignoreCase = true,
                 )
-            } != null) {
+            } != null
+        ) {
             binding.etPhysicalExaminationComments.visible()
             binding.tvCommentsTitle.visible()
         } else {
@@ -115,7 +116,7 @@ class NCDComplicationsFragment : BaseFragment() {
             isMandatory,
             viewModel.chips,
             binding.etPhysicalExaminationComments,
-            binding.tvErrorMessage
+            binding.tvErrorMessage,
         )
         return Pair(isValid, binding.etPhysicalExaminationComments)
     }

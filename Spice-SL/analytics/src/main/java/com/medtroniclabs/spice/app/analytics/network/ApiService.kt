@@ -9,6 +9,6 @@ interface ApiService {
     @Multipart
     @POST("spice-service/in-app-analytics/upload-file")
     suspend fun uploadFile(
-        @Part file: MultipartBody.Part
+        @Part file: MultipartBody.Part,
     ): retrofit2.Response<Unit>
 }

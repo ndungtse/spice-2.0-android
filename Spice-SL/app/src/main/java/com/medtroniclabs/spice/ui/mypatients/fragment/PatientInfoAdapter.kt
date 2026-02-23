@@ -43,14 +43,13 @@ class PatientInfoAdapter(
     private val presumptiveTbNo: (String?) -> Unit,
     private val artCode: (String?) -> Unit,
     private val isHiv: Boolean = false,
-    private val isFamilyPlanningSummary: Boolean = false
+    private val isFamilyPlanningSummary: Boolean = false,
 ) :
     RecyclerView.Adapter<PatientInfoAdapter.ViewHolder>() {
-
     inner class ViewHolder(private val binding: PatientInfoItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
         val context: Context = binding.root.context
+
         fun bind(label: Map<String, Any?>) {
             with(binding) {
                 val empty = context.getString(R.string.hyphen_symbol)
@@ -59,7 +58,7 @@ class PatientInfoAdapter(
                     (label[DefinedParams.Value] as? String).takeIfNotNull(empty),
                     title = (label[DefinedParams.label] as? String).takeIfNotNull(empty),
                     maxLength = 25,
-                    activity = activity
+                    activity = activity,
                 )
                 if (label.containsKey(DefinedParams.color)) {
                     label[DefinedParams.color]?.let {
@@ -69,7 +68,7 @@ class PatientInfoAdapter(
                 val mentalHealthLabels = listOf(
                     context.getString(R.string.phq4_score),
                     context.getString(R.string.suicidal_ideation),
-                    context.getString(R.string.cage_aid)
+                    context.getString(R.string.cage_aid),
                 )
 
                 if (label[DefinedParams.label] != null && mentalHealthLabels.contains(label[DefinedParams.label])) {
@@ -80,13 +79,14 @@ class PatientInfoAdapter(
                     tvMentalHealth.gone()
                 }
                 tvMentalHealth.safeClickListener {
-                    val isEdit = tvMentalHealth.text.toString()
+                    val isEdit = tvMentalHealth.text
+                        .toString()
                         .equals(context.getString(R.string.edit_assessment), true)
                     mentalHealthAssessment.invoke(
                         Pair(
                             label[DefinedParams.label] as? String?,
-                            isEdit
-                        )
+                            isEdit,
+                        ),
                     )
                 }
                 if (label[DefinedParams.label]?.equals(context.getString(R.string.high_risk)) == true) {
@@ -166,7 +166,7 @@ class PatientInfoAdapter(
                                     parent: AdapterView<*>?,
                                     view: View?,
                                     position: Int,
-                                    id: Long
+                                    id: Long,
                                 ) {
                                     val selectedItem = spinnerFormAdapter.getData(position)
                                     maritalStatus.invoke(selectedItem?.get(DefinedParams.ID) as String)
@@ -196,7 +196,7 @@ class PatientInfoAdapter(
                     etValue,
                     tvValue,
                     ivEdit,
-                    context
+                    context,
                 ) {
                     presumptiveTbNo.invoke(it)
                 }
@@ -206,7 +206,7 @@ class PatientInfoAdapter(
                     etValue,
                     tvValue,
                     ivEdit,
-                    context
+                    context,
                 ) {
                     artCode.invoke(it)
                 }
@@ -221,7 +221,7 @@ class PatientInfoAdapter(
             tvValue: AppCompatTextView,
             ivEdit: AppCompatImageView,
             context: Context,
-            onTextChanged: (String) -> Unit
+            onTextChanged: (String) -> Unit,
         ) {
             val labelText = label[DefinedParams.label] as? String
             val isSummary = label[DefinedParams.IsSummary] == "true"
@@ -242,14 +242,14 @@ class PatientInfoAdapter(
                     ivEdit.gone()
                     tvValue.visible()
                     tvValue.text = context.getString(R.string.hyphen_symbol) // Default hyphen
-                    value?.takeIf { it.isNotBlank() && it != context.getString(R.string.hyphen_symbol) }
+                    value
+                        ?.takeIf { it.isNotBlank() && it != context.getString(R.string.hyphen_symbol) }
                         ?.let {
                             tvValue.text = it
                         }
                 }
             }
         }
-
 
         private fun userConfirms() {
             (activity as? BaseActivity?)?.showErrorDialogue(
@@ -258,36 +258,42 @@ class PatientInfoAdapter(
                 positiveButtonName = context.getString(R.string.yes),
                 isNegativeButtonNeed = true,
                 cancelBtnName = context.getString(R.string.no),
-                okayBtnEnable = true
+                okayBtnEnable = true,
             ) {
-                if (it)
+                if (it) {
                     binding.smHighRisk.performClick()
+                }
             }
         }
     }
 
     private val toggledListener = object : OnToggledListener {
-        override fun onSwitched(toggleableView: ToggleableView?, isOn: Boolean) {
+        override fun onSwitched(
+            toggleableView: ToggleableView?,
+            isOn: Boolean,
+        ) {
             onItemToggle.invoke(isOn)
         }
     }
 
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder =
+        ViewHolder(
             PatientInfoItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-    override fun getItemCount(): Int {
-        return data.size
-    }
+    override fun getItemCount(): Int = data.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         data[position]?.let { holder.bind(it) }
     }
 
@@ -297,32 +303,47 @@ class PatientInfoAdapter(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
                 DefinedParams.ID to DefinedParams.DefaultID,
-            )
+            ),
         )
         dropDownList.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to Married,
                 DefinedParams.ID to Married,
-            )
+            ),
         )
         dropDownList.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to Single,
                 DefinedParams.ID to Single,
-            )
+            ),
         )
 
         return dropDownList
     }
 
-    fun setupEditText(editText: AppCompatEditText, callback: (String) -> Unit) {
+    fun setupEditText(
+        editText: AppCompatEditText,
+        callback: (String) -> Unit,
+    ) {
         val occupationValue = resultValues[DefinedParams.Occupation]
         val watcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 callback.invoke(s?.toString().orEmpty())
             }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int,
+            ) {}
+
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int,
+            ) {}
         }
         if (occupationValue is String && occupationValue.isNotBlank()) {
             editText.setText(occupationValue)
@@ -331,7 +352,6 @@ class PatientInfoAdapter(
         }
         editText.addTextChangedListener(watcher)
     }
-
 
     fun hideKeyboard(view: View) {
         val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

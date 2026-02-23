@@ -50,10 +50,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LabourDeliveryViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private var repository: LabourDeliveryRepository
-) :  BaseViewModel(dispatcherIO) {
-
-
+    private var repository: LabourDeliveryRepository,
+) : BaseViewModel(dispatcherIO) {
     var context: Context? = null
     var motherPatientStatus: String? = null
     var lastMensurationDate: String? = null
@@ -80,17 +78,17 @@ class LabourDeliveryViewModel @Inject constructor(
     var dateOfLabourOnset: Triple<Int, Int, Int>? = null
     var deliveryType: String? = null
     var deliveryBy: String? = null
-    var deliveryByOthers: String? =null
+    var deliveryByOthers: String? = null
     var deliveryAt: String? = null
     var deliveryStatus: String? = null
     var noOfNeonates: String? = null
     var neonateOutcome: String? = null
     var neonateBirthWeight: String? = null
-    var name:String?=null
+    var name: String? = null
     var neonateSignsAndSymptoms = listOf<ChipViewItemModel>()
-    var gestationalAge:String?=null
-    var encounterID:String? = null
-    var deliveryPlaceOthers:String?=null
+    var gestationalAge: String? = null
+    var encounterID: String? = null
+    var deliveryPlaceOthers: String? = null
     private val _apgarScoresLiveData = MutableLiveData<List<ApgarScore>>()
     val apgarScoreLiveData: LiveData<List<ApgarScore>>
         get() = _apgarScoresLiveData
@@ -115,81 +113,86 @@ class LabourDeliveryViewModel @Inject constructor(
     val gestationalDate: LiveData<String> get() = _gestationalDate
     private var summaryCreateRequest: LabourDeliverySummaryRequest? = null
 
-    var isDirectPnc:Boolean=false
-    var neonateOutComeStateLiveData= MutableLiveData<List<ChipViewItemModel>>()
-    var neonateDataForPncLiveData= MutableLiveData<CreateLabourDeliveryRequest>()
-
+    var isDirectPnc: Boolean = false
+    var neonateOutComeStateLiveData = MutableLiveData<List<ChipViewItemModel>>()
+    var neonateDataForPncLiveData = MutableLiveData<CreateLabourDeliveryRequest>()
 
     fun set(context: Context) {
         this.context = context
     }
+
     fun getAgparScoreData() {
         val apgarScores = mutableListOf<ApgarScore>()
         apgarScores.add(
             ApgarScore(
-                viewType = AgparItemViewType.HEADER, AgparScoreHeader(
+                viewType = AgparItemViewType.HEADER,
+                AgparScoreHeader(
                     R.string.indicator_header,
                     R.string.one_minute_header,
                     R.string.five_minute_header,
-                    R.string.ten_minute_header
-                )
-            )
+                    R.string.ten_minute_header,
+                ),
+            ),
         )
         apgarScores.add(
             ApgarScore(
-                viewType = AgparItemViewType.ROW, row = AgparScoreRow(
+                viewType = AgparItemViewType.ROW,
+                row = AgparScoreRow(
                     indicatorName = R.string.activity_label,
-                    indicatorType = AgparRowIdentifierType.ACTIVITY
-                )
-            )
+                    indicatorType = AgparRowIdentifierType.ACTIVITY,
+                ),
+            ),
         )
         apgarScores.add(
             ApgarScore(
-                viewType = AgparItemViewType.ROW, row = AgparScoreRow(
+                viewType = AgparItemViewType.ROW,
+                row = AgparScoreRow(
                     indicatorName = R.string.pulse_label,
-                    indicatorType = AgparRowIdentifierType.PULSE
-                )
-            )
+                    indicatorType = AgparRowIdentifierType.PULSE,
+                ),
+            ),
         )
         apgarScores.add(
             ApgarScore(
-                viewType = AgparItemViewType.ROW, row = AgparScoreRow(
+                viewType = AgparItemViewType.ROW,
+                row = AgparScoreRow(
                     indicatorName = R.string.grimace_label,
-                    indicatorType = AgparRowIdentifierType.GRIMACE
-                )
-            )
+                    indicatorType = AgparRowIdentifierType.GRIMACE,
+                ),
+            ),
         )
         apgarScores.add(
             ApgarScore(
-                viewType = AgparItemViewType.ROW, row = AgparScoreRow(
+                viewType = AgparItemViewType.ROW,
+                row = AgparScoreRow(
                     indicatorName = R.string.appearance_label,
-                    indicatorType = AgparRowIdentifierType.APPEARANCE
-                )
-            )
+                    indicatorType = AgparRowIdentifierType.APPEARANCE,
+                ),
+            ),
         )
         apgarScores.add(
             ApgarScore(
-                viewType = AgparItemViewType.ROW, row = AgparScoreRow(
+                viewType = AgparItemViewType.ROW,
+                row = AgparScoreRow(
                     indicatorName = R.string.respiration_label,
-                    indicatorType = AgparRowIdentifierType.RESPIRATION
-                )
-            )
+                    indicatorType = AgparRowIdentifierType.RESPIRATION,
+                ),
+            ),
         )
 
         apgarScores.add(
             ApgarScore(
-                viewType = AgparItemViewType.FOOTER, footer = AgparScoreFooter(
-                    indicatorName = R.string.total_label
-                )
-            )
+                viewType = AgparItemViewType.FOOTER,
+                footer = AgparScoreFooter(
+                    indicatorName = R.string.total_label,
+                ),
+            ),
         )
 
         _apgarScoresLiveData.value = apgarScores
     }
 
-    fun updateAgparScore(
-        score: String
-    ) {
+    fun updateAgparScore(score: String) {
         _apgarScoresLiveData.value?.toMutableList()?.let { agparScores ->
 
             val rowPosition =
@@ -227,29 +230,34 @@ class LabourDeliveryViewModel @Inject constructor(
                 agparScores.indexOfFirst { it.viewType == AgparItemViewType.FOOTER }
 
             val newFooter = agparScores[footerPosition].footer?.copy(
-                oneMinuteTotal = (if (oneMinuteTotal =="") {
-                    null
-                } else {
-                    oneMinuteTotal.map { it.toString().toInt() }.sum().toString()
-                }), fiveMinuteTotal =( if (fiveMinuteTotal == "" ) {
-                    null
-                } else {
-                    fiveMinuteTotal.map { it.toString().toInt() }.sum().toString()}),
-                 tenMinuteTotal = if (tenMinuteTotal == "") {
+                oneMinuteTotal = (
+                    if (oneMinuteTotal == "") {
+                        null
+                    } else {
+                        oneMinuteTotal.map { it.toString().toInt() }.sum().toString()
+                    }
+                ),
+                fiveMinuteTotal = (
+                    if (fiveMinuteTotal == "") {
+                        null
+                    } else {
+                        fiveMinuteTotal.map { it.toString().toInt() }.sum().toString()
+                    }
+                ),
+                tenMinuteTotal = if (tenMinuteTotal == "") {
                     null
                 } else {
                     tenMinuteTotal.map { it.toString().toInt() }.sum().toString()
-                }
+                },
             )
             agparScores[footerPosition] = agparScores[footerPosition].copy(footer = newFooter)
 
             _apgarScoresLiveData.value = agparScores
         }
-
     }
 
-    fun getAgparRowName(): Int? {
-        return when (agparRowIdentifier) {
+    fun getAgparRowName(): Int? =
+        when (agparRowIdentifier) {
             AgparRowIdentifierType.ACTIVITY -> R.string.activity_label
             AgparRowIdentifierType.PULSE -> R.string.pulse_label
             AgparRowIdentifierType.GRIMACE -> R.string.grimace_label
@@ -258,17 +266,13 @@ class LabourDeliveryViewModel @Inject constructor(
             else -> null
         }
 
-    }
-
-    fun getAgparColumnName(): Int? {
-        return when (agparColumnIdentifier) {
+    fun getAgparColumnName(): Int? =
+        when (agparColumnIdentifier) {
             AgparColumnIdentifierType.ONE_MINUTE -> R.string.one_minute_header
             AgparColumnIdentifierType.FIVE_MINUTES -> R.string.five_minute_header
             AgparColumnIdentifierType.TEN_MINUTES -> R.string.ten_minute_header
             else -> null
         }
-
-    }
 
     fun getStaticMetaData() {
         viewModelScope.launch(dispatcherIO) {
@@ -277,65 +281,82 @@ class LabourDeliveryViewModel @Inject constructor(
         }
     }
 
-    fun createLabourDeliveryRequest(
-        prescriptionEncounterId: String?) {
-        if (timeOfDeliveryInHour?.toInt()!! <=12 && timeOfDeliveryInMinute?.toInt()!! <=59 && timeOfLabourOnSetInHour?.toInt()!!<=12 &&
-            timeOfLabourOnSetInMinutes?.toInt()!!<=59){
-           val createLabourMedicalReviewRequest = setLabourDeliveryRequest(prescriptionEncounterId)
-            if (isDirectPnc){
+    fun createLabourDeliveryRequest(prescriptionEncounterId: String?) {
+        if (timeOfDeliveryInHour?.toInt()!! <= 12 &&
+            timeOfDeliveryInMinute?.toInt()!! <= 59 &&
+            timeOfLabourOnSetInHour?.toInt()!! <= 12 &&
+            timeOfLabourOnSetInMinutes?.toInt()!! <= 59
+        ) {
+            val createLabourMedicalReviewRequest = setLabourDeliveryRequest(prescriptionEncounterId)
+            if (isDirectPnc) {
                 neonateDataForPncLiveData.postValue(createLabourMedicalReviewRequest)
-            }else {
+            } else {
                 viewModelScope.launch(dispatcherIO) {
                     createLabourDeliveryMedicalReviewResponse.postLoading()
                     createLabourDeliveryMedicalReviewResponse.postValue(
                         repository.createLabourDeliveryMedicalReview(
-                            request = createLabourMedicalReviewRequest
-                        )
+                            request = createLabourMedicalReviewRequest,
+                        ),
                     )
                 }
             }
         }
-
     }
 
-    fun setLabourDeliveryRequest(prescriptionEncounterId: String?):CreateLabourDeliveryRequest{
+    fun setLabourDeliveryRequest(prescriptionEncounterId: String?): CreateLabourDeliveryRequest {
         val encounter = MedicalReviewEncounter(
             latitude = lastLocation?.latitude ?: 0.0,
             longitude = lastLocation?.longitude ?: 0.0,
             referred = true,
             startTime = DateUtils.getCurrentDateAndTime(
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
             ),
             endTime = DateUtils.getCurrentDateAndTime(
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
             ),
             householdId = patientDetailModel?.houseHoldId,
             patientId = patientId,
             provenance = ProvanceDto(),
             memberId = patientDetailModel?.memberId.toString(),
-            villageId = patientDetailModel?.villageId
+            villageId = patientDetailModel?.villageId,
         )
         val encounterChild = MedicalReviewEncounter(
             latitude = lastLocation?.latitude ?: 0.0,
             longitude = lastLocation?.longitude ?: 0.0,
             referred = true,
             startTime = DateUtils.getCurrentDateAndTime(
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
             ),
             endTime = DateUtils.getCurrentDateAndTime(
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
             ),
             householdId = patientDetailModel?.houseHoldId,
             provenance = ProvanceDto(),
-            villageId = patientDetailModel?.villageId
+            villageId = patientDetailModel?.villageId,
         )
         val motherModel = createMotherModel(encounter, prescriptionEncounterId)
         val neonateModel = createNeonateModel(encounterChild)
         val childModel = createChildModel(ProvanceDto())
         val createLabourMedicalReviewRequest = CreateLabourDeliveryRequest(
             motherDTO = motherModel,
-            neonateDTO = if (neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.MaceratedStillBirth)==true || neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.FreshStillBirth)== true|| neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.StillBirth)== true|| neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.Miscarriage)== true) null else neonateModel,
-            child = if (neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.MaceratedStillBirth)==true || neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.FreshStillBirth)== true|| neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.StillBirth)== true|| neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.Miscarriage)== true) null else childModel
+            neonateDTO = if (neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.MaceratedStillBirth) == true ||
+                neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.FreshStillBirth) == true ||
+                neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.StillBirth) == true ||
+                neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.Miscarriage) == true
+            ) {
+                null
+            } else {
+                neonateModel
+            },
+            child = if (neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.MaceratedStillBirth) == true ||
+                neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.FreshStillBirth) == true ||
+                neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.StillBirth) == true ||
+                neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.Miscarriage) == true
+            ) {
+                null
+            } else {
+                childModel
+            },
         )
         return createLabourMedicalReviewRequest
     }
@@ -343,12 +364,14 @@ class LabourDeliveryViewModel @Inject constructor(
     private fun createChildModel(provanceDto: ProvanceDto): Child {
         val motherName = patientDetailModel?.name
         val childName =
-        if (name != null) {
-            name
+            if (name != null) {
+                name
             } else {
                 if (motherName != null) {
-                    "${DefinedParams.NeonateBabyNamePrefix} ${motherName}"
-                } else null
+                    "${DefinedParams.NeonateBabyNamePrefix} $motherName"
+                } else {
+                    null
+                }
             }
         val village = patientDetailModel?.village.takeIf { it != null }
         val villageId = patientDetailModel?.villageId.takeIf { it != null }
@@ -363,14 +386,14 @@ class LabourDeliveryViewModel @Inject constructor(
             dateOfBirth = getTimeOfDelivery(),
             patientId = null,
             isChild = true,
-            gender =  genderValue,
+            gender = genderValue,
             provenance = provanceDto,
             householdId = patientDetailModel?.houseHoldId,
             phoneNumber = patientDetailModel?.phoneNumber,
             householdHeadRelationship = patientDetailModel?.relationship,
             phoneNumberCategory = patientDetailModel?.phoneNumberCategory,
             latitude = lastLocation?.latitude ?: 0.0,
-            longitude = lastLocation?.longitude ?: 0.0
+            longitude = lastLocation?.longitude ?: 0.0,
         )
     }
 
@@ -380,7 +403,8 @@ class LabourDeliveryViewModel @Inject constructor(
         val apgarScoreTenMinute = createTenMinuteApgarScore()
         val genderValue = genderFlow[DefinedParams.Gender]?.toString()?.takeIf { it != "null" }
 
-        return NeonateDTO(neonateOutcome = neonateOutcome.takeIf { it != null },
+        return NeonateDTO(
+            neonateOutcome = neonateOutcome.takeIf { it != null },
             gender = genderValue,
             birthWeight = neonateBirthWeight.takeIf { it != null },
             stateOfBaby = stateOfBaby[DefinedParams.StateOfBaby] as? String,
@@ -389,7 +413,7 @@ class LabourDeliveryViewModel @Inject constructor(
             gestationalAge = gestationalAge,
             apgarScoreOneMinuteDTO = apgarScoreOneMinute.takeIf { it != null },
             apgarScoreFiveMinuteDTO = apgarScoreFiveMinute.takeIf { it != null },
-            apgarScoreTenMinuteDTO = apgarScoreTenMinute.takeIf { it != null }
+            apgarScoreTenMinuteDTO = apgarScoreTenMinute.takeIf { it != null },
         )
     }
 
@@ -397,7 +421,8 @@ class LabourDeliveryViewModel @Inject constructor(
         val apgarScores = _apgarScoresLiveData.value ?: return null
         val tenMinuteScores =
             apgarScores.filter { it.viewType == AgparItemViewType.ROW }.map { it.row?.tenMinute }
-        val tenMinuteTotal = apgarScores.filter { it.viewType == AgparItemViewType.FOOTER }
+        val tenMinuteTotal = apgarScores
+            .filter { it.viewType == AgparItemViewType.FOOTER }
             .map { it.footer?.tenMinuteTotal }
 
         if (tenMinuteScores.isEmpty() || tenMinuteScores.all { it == null }) {
@@ -410,7 +435,7 @@ class LabourDeliveryViewModel @Inject constructor(
             grimace = tenMinuteScores[2]?.toInt(),
             appearance = tenMinuteScores[3]?.toInt(),
             respiration = tenMinuteScores[4]?.toInt(),
-            tenMinuteTotalScore = tenMinuteTotal[0]?.toInt()
+            tenMinuteTotalScore = tenMinuteTotal[0]?.toInt(),
         )
     }
 
@@ -418,7 +443,8 @@ class LabourDeliveryViewModel @Inject constructor(
         val apgarScores = _apgarScoresLiveData.value ?: return null
         val fiveMinuteScores =
             apgarScores.filter { it.viewType == AgparItemViewType.ROW }.map { it.row?.fiveMinute }
-        val fiveMinuteTotal = apgarScores.filter { it.viewType == AgparItemViewType.FOOTER }
+        val fiveMinuteTotal = apgarScores
+            .filter { it.viewType == AgparItemViewType.FOOTER }
             .map { it.footer?.fiveMinuteTotal }
 
         if (fiveMinuteScores.isEmpty() || fiveMinuteScores.all { it == null }) {
@@ -431,7 +457,7 @@ class LabourDeliveryViewModel @Inject constructor(
             grimace = fiveMinuteScores[2]?.toInt(),
             appearance = fiveMinuteScores[3]?.toInt(),
             respiration = fiveMinuteScores[4]?.toInt(),
-            fiveMinuteTotalScore = fiveMinuteTotal[0]?.toInt()
+            fiveMinuteTotalScore = fiveMinuteTotal[0]?.toInt(),
         )
     }
 
@@ -439,7 +465,8 @@ class LabourDeliveryViewModel @Inject constructor(
         val apgarScores = _apgarScoresLiveData.value ?: return null
         val oneMinuteScores =
             apgarScores.filter { it.viewType == AgparItemViewType.ROW }.map { it.row?.oneMinute }
-        val oneMinuteTotal = apgarScores.filter { it.viewType == AgparItemViewType.FOOTER }
+        val oneMinuteTotal = apgarScores
+            .filter { it.viewType == AgparItemViewType.FOOTER }
             .map { it.footer?.oneMinuteTotal }
 
         if (oneMinuteScores.isEmpty() || oneMinuteScores.all { it == null }) {
@@ -452,19 +479,20 @@ class LabourDeliveryViewModel @Inject constructor(
             grimace = oneMinuteScores[2]?.toInt(),
             appearance = oneMinuteScores[3]?.toInt(),
             respiration = oneMinuteScores[4]?.toInt(),
-            oneMinuteTotalScore = oneMinuteTotal[0]?.toInt()
+            oneMinuteTotalScore = oneMinuteTotal[0]?.toInt(),
         )
     }
 
     private fun createMotherModel(
         encounter: MedicalReviewEncounter,
-        prescriptionEncounterId: String?
+        prescriptionEncounterId: String?,
     ): MotherDTO {
-        encounterID=prescriptionEncounterId
+        encounterID = prescriptionEncounterId
         encounter.id = prescriptionEncounterId
         val motherTTDosage = motherTTDosageSoFar
         val labourDTO = createLabourDeliveryModel()
-        return MotherDTO(id = prescriptionEncounterId,
+        return MotherDTO(
+            id = prescriptionEncounterId,
             signs = motherSignsAndSymptoms.map { it.value.toString() }.takeIf { it.isNotEmpty() },
             generalConditions = motherGeneralCondition.takeIf { it != null },
             riskFactors = motherRiskFactors.map { it.value.toString() }.takeIf { it.isNotEmpty() },
@@ -474,12 +502,12 @@ class LabourDeliveryViewModel @Inject constructor(
             tear = perineumStateMap[DefinedParams.Tear] as? String,
             encounter = encounter,
             labourDTO = labourDTO,
-            neonateOutcome = neonateOutcome.takeIf { it != null }
+            neonateOutcome = neonateOutcome.takeIf { it != null },
         )
     }
 
-    private fun createLabourDeliveryModel(): LabourDTO {
-        return LabourDTO(
+    private fun createLabourDeliveryModel(): LabourDTO =
+        LabourDTO(
             deliveryAt = deliveryAt,
             deliveryBy = deliveryBy,
             deliveryStatus = deliveryStatus,
@@ -488,9 +516,8 @@ class LabourDeliveryViewModel @Inject constructor(
             noOfNeoNates = noOfNeonates?.toInt(),
             dateAndTimeOfDelivery = getTimeOfDelivery(),
             dateAndTimeOfLabourOnset = getTimeOfLabourOnset(),
-            deliveryAtOther = deliveryPlaceOthers
+            deliveryAtOther = deliveryPlaceOthers,
         )
-    }
 
     private fun getTimeOfDelivery(): String? {
         val dateOfDelivery = this.dateOfDelivery ?: return null
@@ -498,67 +525,64 @@ class LabourDeliveryViewModel @Inject constructor(
         val timeOfDeliveryInMinutesInt = timeOfDeliveryInMinute?.toInt() ?: 0
         val timeOfDeliveryMap = this.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] as String
         val year = dateOfDelivery.first
-            val month = dateOfDelivery.second
-            val day = dateOfDelivery.third
+        val month = dateOfDelivery.second
+        val day = dateOfDelivery.third
 
-            val hour = timeOfDeliveryInHourInt.toInt()
-            val minute = timeOfDeliveryInMinutesInt.toInt()
+        val hour = timeOfDeliveryInHourInt.toInt()
+        val minute = timeOfDeliveryInMinutesInt.toInt()
 
-            val adjustedHour = when (timeOfDeliveryMap) {
-                context?.getString(R.string.pm) -> if (hour == 12) hour else hour + 12
-                context?.getString(R.string.am) -> if (hour == 12) 0 else hour
-                else -> hour
-            }
+        val adjustedHour = when (timeOfDeliveryMap) {
+            context?.getString(R.string.pm) -> if (hour == 12) hour else hour + 12
+            context?.getString(R.string.am) -> if (hour == 12) 0 else hour
+            else -> hour
+        }
 
-            val localDate = LocalDate.of(year.toInt(), month.toInt(), day.toInt())
-            val localTime = LocalTime.of(adjustedHour, minute)
+        val localDate = LocalDate.of(year.toInt(), month.toInt(), day.toInt())
+        val localTime = LocalTime.of(adjustedHour, minute)
 
-            val localDateTime = LocalDateTime.of(localDate, localTime)
+        val localDateTime = LocalDateTime.of(localDate, localTime)
 
-            val formatter = DateTimeFormatter.ofPattern(DateUtils.DATE_FORMAT_yyyyMMddHHmmss)
-            val formattedDateTime = localDateTime.format(formatter)
+        val formatter = DateTimeFormatter.ofPattern(DateUtils.DATE_FORMAT_yyyyMMddHHmmss)
+        val formattedDateTime = localDateTime.format(formatter)
 
-
-            return formattedDateTime
-
+        return formattedDateTime
     }
 
     private fun getTimeOfLabourOnset(): String? {
-            val dateOfLabourOnset = this.dateOfLabourOnset ?: return null
-            val timeOfLabourOnSetInHourInt = timeOfLabourOnSetInHour?.toInt() ?: 0
-            val timeOfLabourOnSetInMinuteInt = timeOfLabourOnSetInMinutes?.toInt() ?: 0
-            val timeOfLabourOnSetMap =
-                this.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] as String
-            val year = dateOfLabourOnset.first
-            val month = dateOfLabourOnset.second
-            val day = dateOfLabourOnset.third
+        val dateOfLabourOnset = this.dateOfLabourOnset ?: return null
+        val timeOfLabourOnSetInHourInt = timeOfLabourOnSetInHour?.toInt() ?: 0
+        val timeOfLabourOnSetInMinuteInt = timeOfLabourOnSetInMinutes?.toInt() ?: 0
+        val timeOfLabourOnSetMap =
+            this.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] as String
+        val year = dateOfLabourOnset.first
+        val month = dateOfLabourOnset.second
+        val day = dateOfLabourOnset.third
 
-            // Convert hour and minute to integers
-            val hour = timeOfLabourOnSetInHourInt.toInt()
-            val minute = timeOfLabourOnSetInMinuteInt.toInt()
+        // Convert hour and minute to integers
+        val hour = timeOfLabourOnSetInHourInt.toInt()
+        val minute = timeOfLabourOnSetInMinuteInt.toInt()
 
-            // Adjust hour for AM/PM
-            val adjustedHour = when (timeOfLabourOnSetMap) {
-                context?.getString(R.string.pm) -> if (hour == 12) hour else hour + 12
-                context?.getString(R.string.am) -> if (hour == 12) 0 else hour
-                else -> hour
-            }
+        // Adjust hour for AM/PM
+        val adjustedHour = when (timeOfLabourOnSetMap) {
+            context?.getString(R.string.pm) -> if (hour == 12) hour else hour + 12
+            context?.getString(R.string.am) -> if (hour == 12) 0 else hour
+            else -> hour
+        }
 
-            // Create LocalDate and LocalTime
-            val localDate = LocalDate.of(year.toInt(), month.toInt(), day.toInt())
-            val localTime = LocalTime.of(adjustedHour, minute)
+        // Create LocalDate and LocalTime
+        val localDate = LocalDate.of(year.toInt(), month.toInt(), day.toInt())
+        val localTime = LocalTime.of(adjustedHour, minute)
 
-            // Combine LocalDate and LocalTime into LocalDateTime
-            val localDateTime = LocalDateTime.of(localDate, localTime)
+        // Combine LocalDate and LocalTime into LocalDateTime
+        val localDateTime = LocalDateTime.of(localDate, localTime)
 
-            // Format LocalDateTime
-            val formatter = DateTimeFormatter.ofPattern(DateUtils.DATE_FORMAT_yyyyMMddHHmmss)
-            val formattedDateTime = localDateTime.format(formatter)
+        // Format LocalDateTime
+        val formatter = DateTimeFormatter.ofPattern(DateUtils.DATE_FORMAT_yyyyMMddHHmmss)
+        val formattedDateTime = localDateTime.format(formatter)
 
-            // Output the formatted string
-            return formattedDateTime
+        // Output the formatted string
+        return formattedDateTime
     }
-
 
     fun getLabourDeliveryMetaList() {
         viewModelScope.launch(dispatcherIO) {
@@ -571,36 +595,41 @@ class LabourDeliveryViewModel @Inject constructor(
         val apgarScore = _apgarScoresLiveData.value
             ?.filter { it.viewType == AgparItemViewType.ROW }
             ?.any { it.row?.oneMinute != null || it.row?.fiveMinute != null || it.row?.tenMinute != null }
-        _submitButtonState.value = (timeOfDeliveryMap.isNotEmpty()
-                || timeOfLabourOnsetMap.isNotEmpty()
-                || dateOfDelivery != null
-                || name!=null
-                || dateOfLabourOnset != null
-                || timeOfDeliveryInHour != null
-                || timeOfDeliveryInMinute != null
-                || timeOfLabourOnSetInHour != null
-                || timeOfLabourOnSetInMinutes != null
-                || deliveryType != null
-                || deliveryBy != null
-                || deliveryAt != null
-                || deliveryStatus != null
-                || noOfNeonates != null
-                || motherSignsAndSymptoms.isNotEmpty()
-                || motherGeneralCondition != null
-                || motherRiskFactors.isNotEmpty()
-                || perineumStateMap.isNotEmpty()
-                || motherTTDosageSoFar != null
-                || motherStatus.isNotEmpty()
-                || neonateOutcome != null
-                || genderFlow.isNotEmpty()
-                || neonateBirthWeight != null
-                || stateOfBaby.isNotEmpty()
-                || neonateSignsAndSymptoms.isNotEmpty()
-                || apgarScore == true)
-
+        _submitButtonState.value = (
+            timeOfDeliveryMap.isNotEmpty() ||
+                timeOfLabourOnsetMap.isNotEmpty() ||
+                dateOfDelivery != null ||
+                name != null ||
+                dateOfLabourOnset != null ||
+                timeOfDeliveryInHour != null ||
+                timeOfDeliveryInMinute != null ||
+                timeOfLabourOnSetInHour != null ||
+                timeOfLabourOnSetInMinutes != null ||
+                deliveryType != null ||
+                deliveryBy != null ||
+                deliveryAt != null ||
+                deliveryStatus != null ||
+                noOfNeonates != null ||
+                motherSignsAndSymptoms.isNotEmpty() ||
+                motherGeneralCondition != null ||
+                motherRiskFactors.isNotEmpty() ||
+                perineumStateMap.isNotEmpty() ||
+                motherTTDosageSoFar != null ||
+                motherStatus.isNotEmpty() ||
+                neonateOutcome != null ||
+                genderFlow.isNotEmpty() ||
+                neonateBirthWeight != null ||
+                stateOfBaby.isNotEmpty() ||
+                neonateSignsAndSymptoms.isNotEmpty() ||
+                apgarScore == true
+        )
     }
 
-    fun setDate(year: Int, month: Int, dayOfMonth: Int) {
+    fun setDate(
+        year: Int,
+        month: Int,
+        dayOfMonth: Int,
+    ) {
         val localDate = LocalDate.of(year, month, dayOfMonth)
         val zonedDateTime = localDate.atStartOfDay(ZoneOffset.UTC)
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX")
@@ -608,9 +637,7 @@ class LabourDeliveryViewModel @Inject constructor(
         _gestationalDate.value = formattedDate
     }
 
-    fun labourDeliverySummaryCreate(
-        request: MedicalReviewSummarySubmitRequest
-    ) {
+    fun labourDeliverySummaryCreate(request: MedicalReviewSummarySubmitRequest) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
             summaryCreateResponse.postValue(repository.labourDeliverySummaryCreate(request))

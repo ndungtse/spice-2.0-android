@@ -41,9 +41,8 @@ import javax.inject.Inject
 
 class AssessmentRepository @Inject constructor(
     private var roomHelper: RoomHelper,
-    private var apiHelper: ApiHelper
+    private var apiHelper: ApiHelper,
 ) {
-
     suspend fun savePNCAssessment(
         second: String,
         third: String? = null,
@@ -52,15 +51,18 @@ class AssessmentRepository @Inject constructor(
         lastLocation: Location?,
         otherDetails: HashMap<String, Any>?,
         childMemberIdFollowupIDAndDeathOfNewBorn: Triple<Long, Long?, Boolean?>,
-        childReferralResult: Pair<String?, ArrayList<String>>
-    ): Resource<Pair<AssessmentEntity, AssessmentEntity?>> {
-        return try {
-
+        childReferralResult: Pair<String?, ArrayList<String>>,
+    ): Resource<Pair<AssessmentEntity, AssessmentEntity?>> =
+        try {
             val motherAsstDetail = JsonParser.parseString(second)
             val pncMother = motherAsstDetail.asJsonObject.get(PNC).asJsonObject
             if (pncMother.get(visitNo).asLong == 1L) {
                 third?.let {
-                    val pncNeonate = JsonParser.parseString(it).asJsonObject.get(PNCNeonatal).asJsonObject
+                    val pncNeonate = JsonParser
+                        .parseString(it)
+                        .asJsonObject
+                        .get(PNCNeonatal)
+                        .asJsonObject
                     val isNeonateDeath = pncNeonate.get(deathOfNewborn).asBoolean
                     val neonateOutcome = if (isNeonateDeath) StillBirth else LiveBirth
                     pncMother.addProperty(NeonateOutcome, neonateOutcome)
@@ -74,7 +76,7 @@ class AssessmentRepository @Inject constructor(
                 referralResult,
                 lastLocation,
                 RMNCH.pnc_mother_key,
-                followUpId = childMemberIdFollowupIDAndDeathOfNewBorn.second
+                followUpId = childMemberIdFollowupIDAndDeathOfNewBorn.second,
             )
             motherAssessmentEntity.id = roomHelper.saveAssessment(motherAssessmentEntity)
 
@@ -89,34 +91,33 @@ class AssessmentRepository @Inject constructor(
                     childReferralResult,
                     lastLocation,
                     RMNCH.pnc_neonate_key,
-                    followUpId = childMemberIdFollowupIDAndDeathOfNewBorn.second
+                    followUpId = childMemberIdFollowupIDAndDeathOfNewBorn.second,
                 )
                 childAssessmentEntity.id = roomHelper.saveAssessment(childAssessmentEntity)
 
                 childMemberIdFollowupIDAndDeathOfNewBorn.third?.let { deathOfNewborn ->
-                    if (deathOfNewborn){
+                    if (deathOfNewborn) {
                         roomHelper.updateMemberDeceasedReason(childMemberDetail.id, false, PNC_MENU.uppercase())
                     }
                 }
 
-                /**/
+                //
                 roomHelper.updateNeonatePatientId(memberDetail.id, childMemberDetail.id)
-                /**/
+                //
 
                 Resource(
                     state = ResourceState.SUCCESS,
-                    data = Pair(motherAssessmentEntity, childAssessmentEntity)
+                    data = Pair(motherAssessmentEntity, childAssessmentEntity),
                 )
             } else {
                 Resource(
                     state = ResourceState.SUCCESS,
-                    data = Pair(motherAssessmentEntity, null)
+                    data = Pair(motherAssessmentEntity, null),
                 )
             }
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     private fun getAssessmentEntity(
         memberDetail: AssessmentMemberDetails,
@@ -125,9 +126,8 @@ class AssessmentRepository @Inject constructor(
         referralResult: Pair<String?, ArrayList<String>>,
         lastLocation: Location?,
         menuId: String,
-        followUpId: Long?
+        followUpId: Long?,
     ): AssessmentEntity {
-
         val assessmentEntity = AssessmentEntity(
             householdMemberLocalId = memberDetail.id,
             memberId = memberDetail.memberId,
@@ -136,20 +136,23 @@ class AssessmentRepository @Inject constructor(
             villageId = memberDetail.villageId,
             assessmentType = menuId,
             assessmentDetails = second,
-            otherDetails = if (otherDetails != null) StringConverter.convertGivenMapToString(
-                otherDetails
-            ) else null,
+            otherDetails = if (otherDetails != null) {
+                StringConverter.convertGivenMapToString(
+                    otherDetails,
+                )
+            } else {
+                null
+            },
             isReferred = getReferralStatus(referralResult.first),
             referralStatus = getReferralResult(referralResult.first),
             referredReason = referralResult.second,
             followUpId = followUpId,
             latitude = lastLocation?.latitude ?: 0.0,
-            longitude = lastLocation?.longitude ?: 0.0
+            longitude = lastLocation?.longitude ?: 0.0,
         )
 
         return assessmentEntity
     }
-
 
     suspend fun saveAssessment(
         resultData: String,
@@ -157,15 +160,15 @@ class AssessmentRepository @Inject constructor(
         menuId: String?,
         referralResult: Pair<String?, ArrayList<String>>?,
         otherDetails: HashMap<String, Any>? = null,
-        followUpId: Long? = null
+        followUpId: Long? = null,
     ): Resource<AssessmentEntity> {
-        val latitude =SecuredPreference.getDouble(
+        val latitude = SecuredPreference.getDouble(
             SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name,
-            0.0
+            0.0,
         )
         val longitude = SecuredPreference.getDouble(
             SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name,
-            0.0
+            0.0,
         )
         return try {
             val assessmentEntity = menuId?.let { menu ->
@@ -177,15 +180,19 @@ class AssessmentRepository @Inject constructor(
                     villageId = memberDetails.villageId,
                     assessmentType = menu.uppercase(Locale.getDefault()),
                     assessmentDetails = resultData,
-                    otherDetails = if (otherDetails != null) StringConverter.convertGivenMapToString(
-                        otherDetails
-                    ) else null,
+                    otherDetails = if (otherDetails != null) {
+                        StringConverter.convertGivenMapToString(
+                            otherDetails,
+                        )
+                    } else {
+                        null
+                    },
                     isReferred = getReferralStatus(referralResult?.first),
                     referralStatus = getReferralResult(referralResult?.first),
                     referredReason = referralResult?.second,
                     followUpId = followUpId,
                     latitude = latitude,
-                    longitude = longitude
+                    longitude = longitude,
                 )
             }
             assessmentEntity?.let {
@@ -197,6 +204,7 @@ class AssessmentRepository @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
     }
+
     suspend fun saveCallResult(assessmentEntity: AssessmentEntity): Resource<AssessmentEntity> {
         val id = roomHelper.saveAssessment(assessmentEntity)
         assessmentEntity.id = id
@@ -208,9 +216,8 @@ class AssessmentRepository @Inject constructor(
         return Resource(ResourceState.SUCCESS, data)
     }
 
-
-    private fun getReferralResult(result: String?): ReferralStatus {
-        return when (result) {
+    private fun getReferralResult(result: String?): ReferralStatus =
+        when (result) {
             ReferralStatus.Referred.name -> {
                 ReferralStatus.Referred
             }
@@ -223,18 +230,15 @@ class AssessmentRepository @Inject constructor(
                 ReferralStatus.Recovered
             }
         }
-    }
 
-    private fun getReferralStatus(value: String?): Boolean {
-        return value != null && value == ReferralStatus.Referred.name
-    }
+    private fun getReferralStatus(value: String?): Boolean = value != null && value == ReferralStatus.Referred.name
 
     suspend fun updateOtherAssessmentDetails(
         assessmentEntity: AssessmentEntity?,
         otherAssessmentDetails: HashMap<String, Any>,
-        lastLocation: Location?
-    ): Resource<String> {
-        return withContext(Dispatchers.IO) {
+        lastLocation: Location?,
+    ): Resource<String> =
+        withContext(Dispatchers.IO) {
             try {
                 if (assessmentEntity != null) {
                     assessmentEntity.otherDetails =
@@ -250,14 +254,13 @@ class AssessmentRepository @Inject constructor(
                 Resource(state = ResourceState.ERROR)
             }
         }
-    }
 
     suspend fun updateOtherAssessmentDetails(
         pair: Pair<AssessmentEntity, AssessmentEntity?>?,
         otherAssessmentDetails: HashMap<String, Any>,
-        lastLocation: Location?
-    ): Resource<String> {
-        return withContext(Dispatchers.IO) {
+        lastLocation: Location?,
+    ): Resource<String> =
+        withContext(Dispatchers.IO) {
             try {
                 val motherAssessmentEntity = pair?.first
                 if (motherAssessmentEntity != null) {
@@ -284,27 +287,31 @@ class AssessmentRepository @Inject constructor(
                 Resource(state = ResourceState.ERROR)
             }
         }
-    }
 
-    suspend fun getSymptomListByType(
-        type: String,
-    ): List<SignsAndSymptomsEntity> {
-        return try {
+    suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity> =
+        try {
             roomHelper.getSymptomListByType(type)
         } catch (_: Exception) {
             listOf()
         }
-    }
 
-    suspend fun getFormData(formType: String, tbType: String? = null): Resource<FormResponse> {
-        return try {
+    suspend fun getFormData(
+        formType: String,
+        tbType: String? = null,
+    ): Resource<FormResponse> =
+        try {
             val response = roomHelper.getFormData(formType)
             val formFieldsType = object : TypeToken<FormResponse>() {}.type
             val formFields: FormResponse = Gson().fromJson(response, formFieldsType)
             if (tbType != null) {
                 if (tbType == TBContactTracing) {
                     val filteredList =
-                        formFields.formLayout.filter { it.id == TBContactTracing || it.family == TBContactTracing || it.id == TBScreening || it.family == TBScreening }
+                        formFields.formLayout.filter {
+                            it.id == TBContactTracing ||
+                                it.family == TBContactTracing ||
+                                it.id == TBScreening ||
+                                it.family == TBScreening
+                        }
                     formFields.formLayout = filteredList
                 } else {
                     val filteredList =
@@ -318,7 +325,6 @@ class AssessmentRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     suspend fun getNearestHealthFacility(): Resource<ArrayList<Map<String, Any>>> {
         val healthFacilityList = roomHelper.getNearestHealthFacility()
@@ -329,90 +335,71 @@ class AssessmentRepository @Inject constructor(
                     DefinedParams.NAME to healthFacilityEntity.name,
                     DefinedParams.id to healthFacilityEntity.fhirId.toString(),
                     DefinedParams.isDefault to healthFacilityEntity.isDefault,
-                    DefinedParams.phoneNumber to (healthFacilityEntity.phoneNumber ?: "")
-                )
+                    DefinedParams.phoneNumber to (healthFacilityEntity.phoneNumber ?: ""),
+                ),
             )
         }
         return Resource(state = ResourceState.SUCCESS, data = dropDownList)
     }
 
-    suspend fun getHealthFacilityBasedOnVillageId(villageId: Long): Resource<List<HealthFacilityEntity>> {
-        return Resource(
+    suspend fun getHealthFacilityBasedOnVillageId(villageId: Long): Resource<List<HealthFacilityEntity>> =
+        Resource(
             state = ResourceState.SUCCESS,
-            data = roomHelper.getHealthFacilityBasedOnVillageId(villageId)
+            data = roomHelper.getHealthFacilityBasedOnVillageId(villageId),
         )
-    }
 
-    suspend fun getNearestHealthFacility(
-        tag: String
-    ): Resource<LocalSpinnerResponse> {
-        return try {
+    suspend fun getNearestHealthFacility(tag: String): Resource<LocalSpinnerResponse> =
+        try {
             val response = roomHelper.getNearestHealthFacility()
             Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getUnSyncedAssessmentCount(): Int {
-        return roomHelper.getUnSyncedAssessmentCount()
-    }
+    suspend fun getUnSyncedAssessmentCount(): Int = roomHelper.getUnSyncedAssessmentCount()
 
     suspend fun updatePregnancyAncDetail(
         hhmLocalId: Long,
         visitCount: Long,
-        clinicalDate: String?
+        clinicalDate: String?,
     ) {
         roomHelper.updatePregnancyAncDetail(hhmLocalId, visitCount, clinicalDate)
     }
 
-    suspend fun getChildPatientId(parentId: Long): Long? {
-        return roomHelper.getChildPatientId(parentId)
-    }
+    suspend fun getChildPatientId(parentId: Long): Long? = roomHelper.getChildPatientId(parentId)
 
     fun getAssessmentFormData(
         formType: String,
-        workFlow: String
-    ): LiveData<String> {
-        return roomHelper.getAssessmentFormData(formType, workFlow)
-    }
+        workFlow: String,
+    ): LiveData<String> = roomHelper.getAssessmentFormData(formType, workFlow)
 
-    suspend fun getSymptomList(): List<SignsAndSymptomsEntity> {
-        return roomHelper.getSymptomList()
-    }
+    suspend fun getSymptomList(): List<SignsAndSymptomsEntity> = roomHelper.getSymptomList()
 
-    suspend fun getMedicationParentComplianceList(): List<MedicalComplianceEntity> {
-        return roomHelper.getMedicalParentComplianceList()
-    }
+    suspend fun getMedicationParentComplianceList(): List<MedicalComplianceEntity> = roomHelper.getMedicalParentComplianceList()
 
-    suspend fun getMedicationChildComplianceList(parentId: Long): List<MedicalComplianceEntity> {
-        return roomHelper.getMedicalChildComplianceList(parentId)
-    }
+    suspend fun getMedicationChildComplianceList(parentId: Long): List<MedicalComplianceEntity> = roomHelper.getMedicalChildComplianceList(parentId)
 
-    suspend fun saveAssessmentInformation(createRequest: AssessmentNCDEntity) =
-        roomHelper.saveAssessmentInformation(createRequest)
+    suspend fun saveAssessmentInformation(createRequest: AssessmentNCDEntity) = roomHelper.saveAssessmentInformation(createRequest)
 
     suspend fun getAllAssessmentRecords(uploadStatus: Boolean) = roomHelper.getAllAssessmentRecords(uploadStatus)
 
-    suspend fun deleteAssessmentList(isUploaded: Boolean) =
-        roomHelper.deleteAssessmentList(isUploaded)
-    suspend fun updateAssessmentUploadStatus(id: Long, uploadStatus: Boolean) =
-        roomHelper.updateAssessmentUploadStatus(id, uploadStatus)
+    suspend fun deleteAssessmentList(isUploaded: Boolean) = roomHelper.deleteAssessmentList(isUploaded)
+
+    suspend fun updateAssessmentUploadStatus(
+        id: Long,
+        uploadStatus: Boolean,
+    ) = roomHelper.updateAssessmentUploadStatus(id, uploadStatus)
 
     suspend fun getAssessmentOfflineList(uploadStatus: Boolean) = roomHelper.getAllAssessmentRecords(uploadStatus)
-    suspend fun createAssessmentNCD(request: JsonObject) = apiHelper.createAssessmentNCD(request)
-    suspend fun getMentalQuestion(type: String): MentalHealthEntity =
-        roomHelper.getModelQuestions(type)
 
-    suspend fun getSymptomListByTypes(
-        types: List<String>,
-    ): List<SignsAndSymptomsEntity> {
-        return try {
+    suspend fun createAssessmentNCD(request: JsonObject) = apiHelper.createAssessmentNCD(request)
+
+    suspend fun getMentalQuestion(type: String): MentalHealthEntity = roomHelper.getModelQuestions(type)
+
+    suspend fun getSymptomListByTypes(types: List<String>): List<SignsAndSymptomsEntity> =
+        try {
             roomHelper.getSymptomListByTypes(types)
         } catch (_: Exception) {
             listOf()
         }
-    }
-
-
 }

@@ -17,12 +17,13 @@ import javax.inject.Inject
 @HiltViewModel
 class HivGeneralAndSystemicExaminationViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var repository: ExaminationComplaintsRepository
+    private var repository: ExaminationComplaintsRepository,
 ) : ViewModel() {
     var systemicExaminationsType: String = ""
     var selectedSystemicExaminations = ArrayList<ChipViewItemModel>()
     val systemicExaminationList = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
     val resultHashMap = hashMapOf<String, String?>()
+
     fun getSystemicExaminationList(type: String) {
         viewModelScope.launch(dispatcherIO) {
             systemicExaminationList.postLoading()

@@ -27,15 +27,15 @@ import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListenerForFollowUp
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListenerForFollowUpOffline
 
 class NCDFollowUpDialogFragment : DialogFragment() {
-
     private lateinit var binding: FragmentNcdFollowUpDialogBinding
     private val viewModel: NCDFollowUpViewModel by activityViewModels()
     private var listener: PatientSelectionListenerForFollowUp? = null
     private var listenerForFollowUp: PatientSelectionListenerForFollowUpOffline? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentNcdFollowUpDialogBinding.inflate(inflater, container, false)
@@ -46,11 +46,13 @@ class NCDFollowUpDialogFragment : DialogFragment() {
 
     companion object {
         const val TAG = "NCDFollowUpDialogFragment"
+
         fun newInstance(listener: PatientSelectionListenerForFollowUp): NCDFollowUpDialogFragment {
             val frag = NCDFollowUpDialogFragment()
             frag.listener = listener
             return frag
         }
+
         fun newInstance(listener: PatientSelectionListenerForFollowUpOffline): NCDFollowUpDialogFragment {
             val frag = NCDFollowUpDialogFragment()
             frag.listenerForFollowUp = listener
@@ -71,10 +73,12 @@ class NCDFollowUpDialogFragment : DialogFragment() {
         } else {
             forPhoneAndTab(65, 90)
         }
-
     }
 
-    private fun forPhoneAndTab(landscape: Int, portrait: Int) {
+    private fun forPhoneAndTab(
+        landscape: Int,
+        portrait: Int,
+    ) {
         when (resources.configuration.orientation) {
             Configuration.ORIENTATION_LANDSCAPE -> {
                 setDialogWidthAndHeightAsWrapPercent(landscape)
@@ -86,7 +90,10 @@ class NCDFollowUpDialogFragment : DialogFragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
     }
@@ -136,7 +143,8 @@ class NCDFollowUpDialogFragment : DialogFragment() {
                     ?.joinToString(", ")
                     ?: hyphen
 
-                setField(tvStartDateLabel,
+                setField(
+                    tvStartDateLabel,
                     tvStartDateText,
                     getString(R.string.day_since_last_review),
                     patient.referredDateSince?.let {
@@ -145,41 +153,44 @@ class NCDFollowUpDialogFragment : DialogFragment() {
                         } else {
                             null
                         }
-                    })
+                    },
+                )
 
                 setField(
                     tvCountyLabel,
                     tvCountyText,
                     getString(R.string.county),
-                    patient.countyName
+                    patient.countyName,
                 )
                 setField(
                     tvSubCountyLabel,
                     tvSubCountyText,
                     getString(R.string.sub_county),
-                    patient.subCountyName
+                    patient.subCountyName,
                 )
                 setField(
-                    tvChuLabel, tvChuText,
+                    tvChuLabel,
+                    tvChuText,
                     getString(R.string.community_health_unit),
-                    patient.communityHealthUnitName
+                    patient.communityHealthUnitName,
                 )
                 setField(
                     tvVillageLabel,
                     tvVillageText,
                     getString(R.string.village),
-                    patient.villageName
+                    patient.villageName,
                 )
                 setField(
                     tvLandmarkLabel,
                     tvLandmarkText,
                     getString(R.string.landmark),
-                    patient.landmark
+                    patient.landmark,
                 )
                 setField(
-                    tvNationalIDLabel, tvNationalIDText,
+                    tvNationalIDLabel,
+                    tvNationalIDText,
                     getString(R.string.national_id),
-                    patient.identityValue
+                    patient.identityValue,
                 )
                 // Show buttons
                 btnAssessment.visible()
@@ -194,7 +205,7 @@ class NCDFollowUpDialogFragment : DialogFragment() {
                 val age = patient.dateOfBirth?.let {
                     CommonUtils.getAgeFromDOB(
                         patient.dateOfBirth,
-                        requireContext()
+                        requireContext(),
                     )
                 } ?: hyphen
 
@@ -246,42 +257,44 @@ class NCDFollowUpDialogFragment : DialogFragment() {
                     tvStartDateLabel,
                     tvStartDateText,
                     getString(R.string.day_since_last_review),
-                    getString(R.string.hyphen_symbol)
+                    getString(R.string.hyphen_symbol),
                 )
 
                 setField(
                     tvCountyLabel,
                     tvCountyText,
                     getString(R.string.county),
-                    patient.countyName
+                    patient.countyName,
                 )
                 setField(
                     tvSubCountyLabel,
                     tvSubCountyText,
                     getString(R.string.sub_county),
-                    patient.subCountyName
+                    patient.subCountyName,
                 )
                 setField(
-                    tvChuLabel, tvChuText,
+                    tvChuLabel,
+                    tvChuText,
                     getString(R.string.community_health_unit),
-                    patient.communityHealthUnitName
+                    patient.communityHealthUnitName,
                 )
                 setField(
                     tvVillageLabel,
                     tvVillageText,
                     getString(R.string.village),
-                    patient.villageName
+                    patient.villageName,
                 )
                 setField(
                     tvLandmarkLabel,
                     tvLandmarkText,
                     getString(R.string.landmark),
-                    patient.landmark
+                    patient.landmark,
                 )
                 setField(
-                    tvNationalIDLabel, tvNationalIDText,
+                    tvNationalIDLabel,
+                    tvNationalIDText,
                     getString(R.string.national_id),
-                    patient.identityValue
+                    patient.identityValue,
                 )
                 // Show buttons
                 btnAssessment.visible()
@@ -291,7 +304,12 @@ class NCDFollowUpDialogFragment : DialogFragment() {
     }
 
     // General fields with labels and data
-    private fun setField(labelView: TextView, dataView: TextView, label: String, data: String?) {
+    private fun setField(
+        labelView: TextView,
+        dataView: TextView,
+        label: String,
+        data: String?,
+    ) {
         labelView.text = label
         dataView.text = data?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
     }

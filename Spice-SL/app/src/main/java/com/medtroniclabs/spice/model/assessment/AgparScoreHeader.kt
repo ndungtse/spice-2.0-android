@@ -4,5 +4,5 @@ data class AgparScoreHeader(
     val headerOne: Int,
     val headerTwo: Int,
     val headerThree: Int,
-    val headerFour: Int
+    val headerFour: Int,
 )

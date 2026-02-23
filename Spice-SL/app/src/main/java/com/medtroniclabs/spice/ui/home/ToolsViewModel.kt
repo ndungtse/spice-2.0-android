@@ -18,7 +18,6 @@ class ToolsViewModel @Inject constructor(
     private val metaRepository: MetaRepository,
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
-
     var selectedHouseholdId = -1L
     var selectedHouseholdMemberID = -1L
     var selectedMemberDob: String? = null
@@ -34,8 +33,9 @@ class ToolsViewModel @Inject constructor(
             menuListLiveData.postLoading()
             menuListLiveData.postValue(
                 metaRepository.getMenuForClinicalWorkflows(
-                    selectedHouseholdMemberID, gender
-                )
+                    selectedHouseholdMemberID,
+                    gender,
+                ),
             )
         }
     }
@@ -44,7 +44,7 @@ class ToolsViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             menuListLiveData.postLoading()
             menuListLiveData.postValue(
-                metaRepository.getMenu()
+                metaRepository.getMenu(),
             )
         }
     }

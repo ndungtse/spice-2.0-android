@@ -49,13 +49,11 @@ import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
-import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewCMRActivity
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDBloodPressureVitalsViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
-import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -63,7 +61,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentNcdBloodPressureVitalsDialogBinding
     private val viewModel: NCDBloodPressureVitalsViewModel by viewModels()
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
@@ -72,8 +69,9 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
     lateinit var connectivityManager: ConnectivityManager
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentNcdBloodPressureVitalsDialogBinding.inflate(inflater, container, false)
@@ -83,8 +81,8 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
 
     companion object {
         const val TAG = "NCDBloodPressureVitalsDialog"
-        fun newInstance(callback: () -> Unit) =
-            NCDBloodPressureVitalsDialog(callback)
+
+        fun newInstance(callback: () -> Unit) = NCDBloodPressureVitalsDialog(callback)
     }
 
     override fun onStart() {
@@ -94,7 +92,10 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         init()
@@ -142,7 +143,7 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
                         (activity as BaseActivity).showErrorDialogue(
                             getString(R.string.error),
                             message,
-                            false
+                            false,
                         ) {}
                     }
                 }
@@ -184,7 +185,7 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
                 horizontalPadding,
                 tvKey.paddingTop,
                 horizontalPadding,
-                tvKey.paddingBottom
+                tvKey.paddingBottom,
             )
             if (!CommonUtils.checkIsTablet(requireContext())) {
                 val constraintSet = ConstraintSet()
@@ -276,8 +277,14 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
         setupRadioButtons(binding.btnYes)
         setupRadioButtons(binding.btnNo)
         patientViewModel.patientDetailsLiveData.value?.data?.let { patientData ->
-            patientData.weight?.takeIf { it > 0 }?.toDoubleOrEmptyString()?.let { binding.etWeight.setText(it) }
-            patientData.height?.takeIf { it > 0 }?.toDoubleOrEmptyString()?.let { binding.etHeight.setText(it) }
+            patientData.weight
+                ?.takeIf { it > 0 }
+                ?.toDoubleOrEmptyString()
+                ?.let { binding.etWeight.setText(it) }
+            patientData.height
+                ?.takeIf { it > 0 }
+                ?.toDoubleOrEmptyString()
+                ?.let { binding.etHeight.setText(it) }
             binding.smokingGrp.visibility =
                 if (patientData.isRegularSmoker == null) View.VISIBLE else View.GONE
         }
@@ -285,9 +292,8 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
 
     private fun displayBMIValue() {
         with(binding.bmiView) {
-
             val bmi = CommonUtils.calculateBMI(
-                viewModel.resultHashMap
+                viewModel.resultHashMap,
             )
             if (bmi == null) {
                 tvValue.text = getString(R.string.hyphen_symbol)
@@ -316,29 +322,31 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
             arrayOf(
                 intArrayOf(-android.R.attr.state_enabled),
                 intArrayOf(-android.R.attr.state_checked),
-                intArrayOf(android.R.attr.state_checked)
-            ), intArrayOf(
+                intArrayOf(android.R.attr.state_checked),
+            ),
+            intArrayOf(
                 ContextCompat.getColor(
                     mContext,
-                    R.color.navy_blue_20_alpha
-                ),  // disabled
-                ContextCompat.getColor(mContext, R.color.purple),  // disabled
-                ContextCompat.getColor(mContext, R.color.purple) // enabled
-            )
+                    R.color.navy_blue_20_alpha,
+                ), // disabled
+                ContextCompat.getColor(mContext, R.color.purple), // disabled
+                ContextCompat.getColor(mContext, R.color.purple), // enabled
+            ),
         )
         val textColorStateList = ColorStateList(
             arrayOf(
                 intArrayOf(-android.R.attr.state_enabled),
                 intArrayOf(-android.R.attr.state_checked),
-                intArrayOf(android.R.attr.state_checked)
-            ), intArrayOf(
+                intArrayOf(android.R.attr.state_checked),
+            ),
+            intArrayOf(
                 ContextCompat.getColor(
                     mContext,
-                    R.color.navy_blue_20_alpha
-                ),  // disabled
+                    R.color.navy_blue_20_alpha,
+                ), // disabled
                 ContextCompat.getColor(mContext, R.color.navy_blue), // enabled
-                ContextCompat.getColor(mContext, R.color.purple)
-            )
+                ContextCompat.getColor(mContext, R.color.purple),
+            ),
         )
         radioButton.setPadding(20.dp, 0, 20.dp, 0)
         radioButton.setTextColor(textColorStateList)
@@ -350,7 +358,7 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
 
     private fun checkInputsAndEnableNextField(
         text: CharSequence,
-        list: ArrayList<BPModel>
+        list: ArrayList<BPModel>,
     ) {
         val binding = binding.llBpReading
         if (text == getString(R.string.sno_1)) {
@@ -404,11 +412,9 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
         appCompatEditText.filters = arrayOf(InputFilter.LengthFilter(3))
     }
 
-
     private fun renderAssessmentForm() {
         viewModel.getRiskEntityList()
     }
-
 
     override fun onClick(mView: View?) {
         when (mView?.id) {
@@ -434,45 +440,53 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
             errorMessage = getErrorMessage(
                 getString(
                     R.string.validation_error,
-                    getString(R.string.height_value)
-                )
-            )
+                    getString(R.string.height_value),
+                ),
+            ),
         )
 
         isValid = validateHeightAndWeight(
-            isValid, binding.etWeight, binding.tvWeightErrorMessage, viewModel.weight,
-            errorMessage = getString(R.string.validation_error, getString(R.string.weight_value))
+            isValid,
+            binding.etWeight,
+            binding.tvWeightErrorMessage,
+            viewModel.weight,
+            errorMessage = getString(R.string.validation_error, getString(R.string.weight_value)),
         )
 
         if (binding.etAssessmentDate.text.isNullOrBlank()) {
             isValid = false
             binding.tvAssessmentDateErrorMessage.visible()
             binding.tvAssessmentDateErrorMessage.text = getString(R.string.valid_assessment_date)
-        } else
+        } else {
             binding.tvAssessmentDateErrorMessage.gone()
+        }
 
-        if (binding.llBpReading.etSystolicOne.text.isNullOrBlank() ||
-            binding.llBpReading.etDiastolicOne.text.isNullOrBlank()
+        if (binding.llBpReading.etSystolicOne.text
+                .isNullOrBlank() ||
+            binding.llBpReading.etDiastolicOne.text
+                .isNullOrBlank()
         ) {
             isValid = false
             binding.tvBpLogErrorMessage.text = getErrorMessage(
                 viewModel.bpLog?.cultureErrorMessage
-                    ?: viewModel.bpLog?.errorMessage
+                    ?: viewModel.bpLog?.errorMessage,
             )
             binding.tvBpLogErrorMessage.visible()
         } else {
             isValid = validBPInputCheck(isValid)
         }
 
-        if (binding.tvAssessmentDateErrorMessage.visibility == View.VISIBLE)
+        if (binding.tvAssessmentDateErrorMessage.visibility == View.VISIBLE) {
             isValid = false
+        }
 
         if (binding.smokingGrp.visibility == View.VISIBLE) {
             if (!binding.btnYes.isChecked && !binding.btnNo.isChecked) {
                 isValid = false
                 binding.tvSmokingErr.visible()
-            } else
+            } else {
                 binding.tvSmokingErr.gone()
+            }
         }
 
         if (isValid) {
@@ -489,14 +503,28 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
                 NCDMRUtil.getBioDataBioMetrics(
                     result,
                     patientData,
-                    binding.etHeight.text.toString().toDouble(),
-                    binding.etWeight.text.toString().toDouble()
+                    binding.etHeight.text
+                        .toString()
+                        .toDouble(),
+                    binding.etWeight.text
+                        .toString()
+                        .toDouble(),
                 )
 
                 put(MemberRegistration.gender, patientData.gender ?: "")
                 // Add individual parameters
-                put(Screening.Weight, binding.etWeight.text.toString().toDouble())
-                put(Screening.Height, binding.etHeight.text.toString().toDouble())
+                put(
+                    Screening.Weight,
+                    binding.etWeight.text
+                        .toString()
+                        .toDouble(),
+                )
+                put(
+                    Screening.Height,
+                    binding.etHeight.text
+                        .toString()
+                        .toDouble(),
+                )
                 put(Screening.UnitMeasurement, Screening.Unit_Measurement_Metric_Type)
                 patientViewModel.getPatientId()?.let {
                     put(AssessmentDefinedParams.patientReference, it)
@@ -504,21 +532,22 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
                 patientViewModel.getPatientFHIRId()?.let {
                     put(
                         AssessmentDefinedParams.memberReference,
-                        it
+                        it,
                     )
                 }
 
                 put(
-                    AssessmentDefinedParams.assessmentTakenOn, DateUtils.getDateStringInFormat(
+                    AssessmentDefinedParams.assessmentTakenOn,
+                    DateUtils.getDateStringInFormat(
                         binding.etAssessmentDate.text.toString(),
                         DateUtils.DATE_ddMMyyyy,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                    )
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    ),
                 )
-                put(AssessmentDefinedParams.encounter,hashMapOf<String, Any?>(DefinedParams.Provenance to ProvanceDto()))
+                put(AssessmentDefinedParams.encounter, hashMapOf<String, Any?>(DefinedParams.Provenance to ProvanceDto()))
                 put(Screening.DateOfBirth, patientData.dateOfBirth ?: "")
                 put(AssessmentDefinedParams.assessmentType, Assessment)
-                put(DefinedParams.AssessmentOrganizationId,SecuredPreference.getOrganizationFhirId())
+                put(DefinedParams.AssessmentOrganizationId, SecuredPreference.getOrganizationFhirId())
                 put(AssessmentDefinedParams.assessmentProcessType, CommonUtils.requestFrom())
                 patientData.isRegularSmoker?.let { put(Screening.is_regular_smoker, it) }
                 // Check and set smoking status
@@ -528,24 +557,22 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
             }
         }
 
-
         // Calculate and update result hash map values
         if (result.containsKey(Screening.BPLog_Details) && result[Screening.BPLog_Details] != null) {
             CommonUtils.calculateAverageBloodPressure(result)
         }
         CommonUtils.calculateBMI(result)
 
-
         // Parse and calculate CVD Risk
         viewModel.getRiskEntityListLiveData.value?.firstOrNull()?.nonLabEntity?.let { nonLabEntity ->
             val resultList = Gson().fromJson<ArrayList<RiskClassificationModel>>(
                 nonLabEntity,
-                object : TypeToken<ArrayList<RiskClassificationModel>>() {}.type
+                object : TypeToken<ArrayList<RiskClassificationModel>>() {}.type,
             )
             CommonUtils.calculateCVDRiskFactor(
                 result,
                 resultList,
-                (result[Screening.Avg_Systolic] as? Number)?.toInt()
+                (result[Screening.Avg_Systolic] as? Number)?.toInt(),
             )
         }
 
@@ -553,10 +580,9 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
         (result[Screening.BMI] as? Double)?.let { bmi ->
             (result[Screening.BioMetrics] as? HashMap<String, Any>)?.put(
                 Screening.BMI,
-                bmi
+                bmi,
             )
         }
-
 
         // Consolidate BP Log details
         result[Screening.bp_log] = hashMapOf(
@@ -564,35 +590,41 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
             Screening.BMI_CATEGORY to viewModel.resultHashMap[Screening.BMI_CATEGORY],
             Screening.Avg_Diastolic to result[Screening.Avg_Diastolic],
             Screening.Avg_Blood_pressure to result[Screening.Avg_Blood_pressure],
-            Screening.BPLog_Details to result[Screening.BPLog_Details]
+            Screening.BPLog_Details to result[Screening.BPLog_Details],
         )
         result.keys.removeAll(
             setOf(
-                Screening.Weight, Screening.Height, Screening.BMI, Screening.BPLog_Details,
-                Screening.Avg_Blood_pressure, Screening.Avg_Diastolic, Screening.BMI_CATEGORY,
-                Screening.Avg_Systolic, MemberRegistration.gender
-            )
+                Screening.Weight,
+                Screening.Height,
+                Screening.BMI,
+                Screening.BPLog_Details,
+                Screening.Avg_Blood_pressure,
+                Screening.Avg_Diastolic,
+                Screening.BMI_CATEGORY,
+                Screening.Avg_Systolic,
+                MemberRegistration.gender,
+            ),
         )
 
         // Network check and action
         if (connectivityManager.isNetworkAvailable()) {
-            Timber.d("${result}")
+            Timber.d("$result")
             viewModel.createBpLog(result) // Uncomment as needed
         } else {
             (activity as BaseActivity).showErrorDialogue(
                 getString(R.string.error),
-                getString(R.string.no_internet_error), false
+                getString(R.string.no_internet_error),
+                false,
             ) {}
         }
     }
-
 
     private fun validateHeightAndWeight(
         validOrNot: Boolean,
         etInput: AppCompatEditText,
         tvErrorMessage: AppCompatTextView,
         formJson: FormLayout?,
-        errorMessage: String? = null
+        errorMessage: String? = null,
     ): Boolean {
         var isValid = validOrNot
         if (etInput.text.isNullOrBlank()) {
@@ -607,7 +639,7 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
                 formJson?.minValue,
                 formJson?.maxValue,
                 tvErrorMessage,
-                isValid
+                isValid,
             )
         }
         return isValid
@@ -630,7 +662,7 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
                         getString(
                             R.string.general_min_max_validation,
                             CommonUtils.getDecimalFormatted(minValue),
-                            CommonUtils.getDecimalFormatted(maxValue)
+                            CommonUtils.getDecimalFormatted(maxValue),
                         )
                 } else {
                     tvErrorMessage.gone()
@@ -651,7 +683,7 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
         minOrMaxValue: Double,
         minMaxFlg: Int,
         validOrNot: Boolean,
-        tvErrorMessage: AppCompatTextView
+        tvErrorMessage: AppCompatTextView,
     ): Boolean {
         var isValid = validOrNot
         if (minMaxFlg == 0) {
@@ -661,7 +693,7 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
                 tvErrorMessage.text =
                     getString(
                         R.string.general_min_validation,
-                        CommonUtils.getDecimalFormatted(minOrMaxValue)
+                        CommonUtils.getDecimalFormatted(minOrMaxValue),
                     )
             } else {
                 tvErrorMessage.gone()
@@ -672,7 +704,7 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
                 tvErrorMessage.visible()
                 tvErrorMessage.text = getString(
                     R.string.general_max_validation,
-                    CommonUtils.getDecimalFormatted(minOrMaxValue)
+                    CommonUtils.getDecimalFormatted(minOrMaxValue),
                 )
             } else {
                 tvErrorMessage.gone()
@@ -681,9 +713,8 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
         return isValid
     }
 
-    private fun getErrorMessage(errorMessage: String?): String {
-        return if (errorMessage.isNullOrBlank()) getString(R.string.default_user_input_error) else errorMessage
-    }
+    private fun getErrorMessage(errorMessage: String?): String =
+        if (errorMessage.isNullOrBlank()) getString(R.string.default_user_input_error) else errorMessage
 
     private fun validBPInputCheck(valid: Boolean): Boolean {
         var isValid = valid
@@ -699,14 +730,14 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
             Validator.checkValidBPInput(
                 requireContext(),
                 list,
-                viewModel.bpLog
+                viewModel.bpLog,
             )
         if (validationBPResultModel.status) {
             viewModel.resultHashMap[Screening.BPLog_Details] = list
             viewModel.bpLog?.let {
                 viewModel.calculateBPValues(
                     formLayout = it,
-                    viewModel.resultHashMap
+                    viewModel.resultHashMap,
                 )
             }
             binding.tvBpLogErrorMessage.gone()
@@ -721,15 +752,16 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
     private fun showDatePickerDialog() {
         var datePickerDialog: DatePickerDialog? = null
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (!binding.etAssessmentDate.text.isNullOrBlank())
+        if (!binding.etAssessmentDate.text.isNullOrBlank()) {
             yearMonthDate = DateUtils.getYearMonthAndDate(binding.etAssessmentDate.text.toString())
+        }
 
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
                 maxDate = System.currentTimeMillis(),
                 date = yearMonthDate,
-                cancelCallBack = { datePickerDialog = null }
+                cancelCallBack = { datePickerDialog = null },
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 if (DateUtils.validateForSameDate(year, month, dayOfMonth)) {
@@ -737,8 +769,9 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
                     binding.etAssessmentDate.text = ""
                     binding.tvAssessmentDateErrorMessage.text =
                         getString(R.string.please_select_past_date)
-                } else
+                } else {
                     hideDateValidation(stringDate)
+                }
                 datePickerDialog = null
             }
         }
@@ -749,7 +782,7 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
             DateUtils.convertDateTimeToDate(
                 stringDate,
                 DateUtils.DATE_FORMAT_ddMMyyyy,
-                DateUtils.DATE_ddMMyyyy
+                DateUtils.DATE_ddMMyyyy,
             )
         binding.tvAssessmentDateErrorMessage.text = ""
         binding.tvAssessmentDateErrorMessage.gone()

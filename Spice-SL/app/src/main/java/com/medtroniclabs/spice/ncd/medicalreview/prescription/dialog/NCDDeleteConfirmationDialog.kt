@@ -19,13 +19,12 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentNcdDeleteConfirmationDialogBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNcdDeleteConfirmationDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -41,7 +40,6 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
     }
 
     companion object {
-
         const val TAG = "NCDDeleteConfirmationDialog"
 
         private const val KEY_TITLE = "KEY_TITTLE"
@@ -57,7 +55,7 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
             context: Context,
             okButton: String = context.getString(R.string.ok),
             cancelButton: String = context.getString(R.string.cancel),
-            isNegativeButton: Boolean
+            isNegativeButton: Boolean,
         ): NCDDeleteConfirmationDialog {
             val args = Bundle()
             args.putString(KEY_TITLE, title)
@@ -86,8 +84,10 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
         setWidth(width)
     }
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         setupClickListeners()
@@ -116,7 +116,6 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
     override fun onClick(mView: View?) {
         when (mView?.id) {
             binding.btnOkay.id -> {
-
             }
 
             binding.btnCancel.id -> {
@@ -124,5 +123,4 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
             }
         }
     }
-
 }

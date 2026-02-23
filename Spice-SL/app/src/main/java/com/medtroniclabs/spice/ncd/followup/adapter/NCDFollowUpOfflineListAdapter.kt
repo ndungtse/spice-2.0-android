@@ -20,13 +20,14 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListenerForFollowUpOffline
 
-class NCDFollowUpOfflineListAdapter(val listener: PatientSelectionListenerForFollowUpOffline)
-    : RecyclerView.Adapter<NCDFollowUpOfflineListAdapter.NCDFollowUpOfflineViewHolder>() {
+class NCDFollowUpOfflineListAdapter(val listener: PatientSelectionListenerForFollowUpOffline) :
+    RecyclerView.Adapter<NCDFollowUpOfflineListAdapter.NCDFollowUpOfflineViewHolder>() {
     var list = mutableListOf<NCDFollowUp>()
 
     inner class NCDFollowUpOfflineViewHolder(val binding: FollowUpListItemPatientsBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
+
         fun bind(item: NCDFollowUp) {
             val context = binding.root.context
             val name = item.name ?: context.getString(R.string.separator_hyphen)
@@ -36,7 +37,7 @@ class NCDFollowUpOfflineListAdapter(val listener: PatientSelectionListenerForFol
             val age = item.dateOfBirth?.let {
                 CommonUtils.getAgeFromDOB(
                     item.dateOfBirth,
-                    context
+                    context,
                 )
             } ?: context.getString(R.string.separator_hyphen)
 
@@ -44,7 +45,7 @@ class NCDFollowUpOfflineListAdapter(val listener: PatientSelectionListenerForFol
                 R.string.household_summary_member_info,
                 name,
                 age,
-                CommonUtils.translatedGender(context, gender)
+                CommonUtils.translatedGender(context, gender),
             )
             binding.tvPatientName.text = patientInfo
             binding.tvDueInformation.setTextColor(Color.parseColor("#994242"))
@@ -56,7 +57,7 @@ class NCDFollowUpOfflineListAdapter(val listener: PatientSelectionListenerForFol
                     label = context.getString(R.string.reason),
                     text = referredReasonsText,
                     context = context,
-                    binding = binding
+                    binding = binding,
                 )
             }
             if (item.type.equals(NCDFollowUpUtils.LTFU_Type, true)) {
@@ -68,7 +69,7 @@ class NCDFollowUpOfflineListAdapter(val listener: PatientSelectionListenerForFol
                     label = context.getString(R.string.overdue),
                     text = overDueCategoriesText,
                     context = context,
-                    binding = binding
+                    binding = binding,
                 )
             }
             item.dueDate?.let { dueDate ->
@@ -98,7 +99,7 @@ class NCDFollowUpOfflineListAdapter(val listener: PatientSelectionListenerForFol
                         }
                         binding.tvDueInformation.text = context.getString(
                             NCDFollowUpUtils.getDaysString(due),
-                            due
+                            due,
                         )
                     } else {
                         binding.tvDueInformation.gone()
@@ -133,7 +134,7 @@ class NCDFollowUpOfflineListAdapter(val listener: PatientSelectionListenerForFol
         label: String,
         text: String?,
         context: Context,
-        binding: FollowUpListItemPatientsBinding // Replace with the actual type of your binding
+        binding: FollowUpListItemPatientsBinding, // Replace with the actual type of your binding
     ) {
         if (!text.isNullOrEmpty()) {
             binding.tvLabelReason.text = context.getString(R.string.label_with_text, label, text)
@@ -151,22 +152,22 @@ class NCDFollowUpOfflineListAdapter(val listener: PatientSelectionListenerForFol
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
-    ): NCDFollowUpOfflineViewHolder {
-        return NCDFollowUpOfflineViewHolder(
+        viewType: Int,
+    ): NCDFollowUpOfflineViewHolder =
+        NCDFollowUpOfflineViewHolder(
             FollowUpListItemPatientsBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: NCDFollowUpOfflineViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: NCDFollowUpOfflineViewHolder,
+        position: Int,
+    ) {
         holder.bind(list[position])
     }
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
+    override fun getItemCount(): Int = list.size
 }

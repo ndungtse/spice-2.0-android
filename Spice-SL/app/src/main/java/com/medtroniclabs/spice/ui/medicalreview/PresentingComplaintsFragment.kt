@@ -21,18 +21,17 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.PC_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 open class PresentingComplaintsFragment : BaseFragment() {
-
     private lateinit var binding: FragmentPresentingComplaintsBinding
     private lateinit var complaintsTagView: TagListCustomView
-    private val viewModel : PresentingComplaintsViewModel by activityViewModels()
+    private val viewModel: PresentingComplaintsViewModel by activityViewModels()
 
-    companion object{
+    companion object {
         const val TAG = "PresentingComplaintsFragment"
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -44,13 +43,16 @@ open class PresentingComplaintsFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPresentingComplaintsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeViews()
         attachObserver()
@@ -76,12 +78,13 @@ open class PresentingComplaintsFragment : BaseFragment() {
                 ResourceState.SUCCESS -> {
                     resource.data?.let { listItems ->
                         val chipItemList =
-                            listItems.filter { it.category == MedicalReviewTypeEnums.PresentingComplaints.name }
+                            listItems
+                                .filter { it.category == MedicalReviewTypeEnums.PresentingComplaints.name }
                                 .map {
                                     ChipViewItemModel(
                                         id = it.id,
                                         name = it.name,
-                                        value = it.value
+                                        value = it.value,
                                     )
                                 }
                         updateChipList(chipItemList)
@@ -98,7 +101,9 @@ open class PresentingComplaintsFragment : BaseFragment() {
 
     fun validate(): Boolean {
         if (binding.etPresentingComplaintsComments.text?.isNotEmpty() == true) {
-            val complaint = binding.etPresentingComplaintsComments.text?.trim().toString()
+            val complaint = binding.etPresentingComplaintsComments.text
+                ?.trim()
+                .toString()
             if (complaint.isBlank()) {
                 binding.tvErrorMessage.text = getString(R.string.default_user_input_error)
                 binding.tvErrorMessage.visible()
@@ -114,7 +119,7 @@ open class PresentingComplaintsFragment : BaseFragment() {
     private fun initializeViews() {
         complaintsTagView = TagListCustomView(
             binding.root.context,
-            binding.tagViewPresentingComplaints
+            binding.tagViewPresentingComplaints,
         ) { _, _, _ ->
             viewModel.selectedPresentingComplaints = ArrayList(complaintsTagView.getSelectedTags())
             setFragmentResult(PC_ITEM, bundleOf(CHIP_ITEMS to true))
@@ -125,28 +130,30 @@ open class PresentingComplaintsFragment : BaseFragment() {
 //        }
     }
 
-
     private fun updateChipList(chipItemList: List<ChipViewItemModel>) {
         if (viewModel.isMotherPnc) {
             complaintsTagView.addChipItemList(chipItemList, viewModel.selectedPresentingComplaints)
             binding.etPresentingComplaintsComments.setText(viewModel.enteredComplaintNotes)
-        } else  {
+        } else {
             complaintsTagView.addChipItemList(chipItemList, null)
         }
     }
-    fun refreshPresentingFragment(type: String, presentingComplaints: ArrayList<ChipViewItemModel>) {
+
+    fun refreshPresentingFragment(
+        type: String,
+        presentingComplaints: ArrayList<ChipViewItemModel>,
+    ) {
         refreshFragment()
         viewModel.selectedPresentingComplaints = presentingComplaints
         viewModel.getPresentingComplaintsList(type)
-        viewModel.isMotherPnc=true
+        viewModel.isMotherPnc = true
 // Ensure the ViewModel is updated
-        updateChipList(emptyList())  // Call updateChipList with an empty list to refresh the view
+        updateChipList(emptyList()) // Call updateChipList with an empty list to refresh the view
     }
+
     fun refreshFragment() {
         complaintsTagView.clearSelection()
         complaintsTagView.clearOtherChip()
         binding.etPresentingComplaintsComments.text?.clear()
     }
-
-
 }

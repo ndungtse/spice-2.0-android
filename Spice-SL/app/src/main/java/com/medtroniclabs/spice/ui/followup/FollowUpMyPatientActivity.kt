@@ -17,13 +17,13 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.COUNTER_REFERRAL_TAB
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HH_VISIT_TAB
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.MYFOLLOWUPPATIENTS
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.ONMOREBUTTONTRIGGERED
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.REFERRED_TAB
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.SEARCHBUTTONTRIGGERED
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -58,11 +58,13 @@ class FollowUpMyPatientActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFollowUpMyPatientBinding.inflate(layoutInflater)
         setMainContentView(
-            binding.root, isToolbarVisible = true, title = if (CommonUtils.isCommunity()) {
+            binding.root,
+            isToolbarVisible = true,
+            title = if (CommonUtils.isCommunity()) {
                 getString(R.string.my_patients)
             } else {
                 getString(R.string.search_patient)
-            }
+            },
         )
         if (CommonUtils.isCommunity()) {
             initView()
@@ -96,14 +98,26 @@ class FollowUpMyPatientActivity : BaseActivity() {
                 getString(R.string.referred),
                 getString(R.string.assessment),
                 getString(R.string.defaulters),
-                getString(R.string.LTFU)
+                getString(R.string.LTFU),
             )
             tab.text = tabTitles.getOrNull(position) ?: ""
         }.attach()
-        binding.llExactSearch.tabLayout.getTabAt(0)?.view?.setBackgroundResource(R.drawable.left_mh_view_selector)
-        binding.llExactSearch.tabLayout.getTabAt(1)?.view?.setBackgroundResource(R.drawable.mental_health_button_bg)
-        binding.llExactSearch.tabLayout.getTabAt(2)?.view?.setBackgroundResource(R.drawable.mental_health_button_bg)
-        binding.llExactSearch.tabLayout.getTabAt(3)?.view?.setBackgroundResource(R.drawable.right_mh_view_selector)
+        binding.llExactSearch.tabLayout
+            .getTabAt(0)
+            ?.view
+            ?.setBackgroundResource(R.drawable.left_mh_view_selector)
+        binding.llExactSearch.tabLayout
+            .getTabAt(1)
+            ?.view
+            ?.setBackgroundResource(R.drawable.mental_health_button_bg)
+        binding.llExactSearch.tabLayout
+            .getTabAt(2)
+            ?.view
+            ?.setBackgroundResource(R.drawable.mental_health_button_bg)
+        binding.llExactSearch.tabLayout
+            .getTabAt(3)
+            ?.view
+            ?.setBackgroundResource(R.drawable.right_mh_view_selector)
         val tabView1 = (binding.llExactSearch.tabLayout.getChildAt(0) as? ViewGroup)?.getChildAt(0)
         tabView1?.setPadding(0, 0, 0, 0)
         val tabView2 = (binding.llExactSearch.tabLayout.getChildAt(0) as? ViewGroup)?.getChildAt(1)
@@ -135,7 +149,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
 
                     setTabTypeface(
                         it,
-                        ResourcesCompat.getFont(applicationContext, R.font.inter_bold)
+                        ResourcesCompat.getFont(applicationContext, R.font.inter_bold),
                     )
                 }
             }
@@ -143,7 +157,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 setTabTypeface(
                     tab,
-                    ResourcesCompat.getFont(applicationContext, R.font.inter_regular)
+                    ResourcesCompat.getFont(applicationContext, R.font.inter_regular),
                 )
             }
 
@@ -174,9 +188,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
         viewModel.setUserJourney(MYFOLLOWUPPATIENTS)
     }
 
-
     private fun setTabLayout() {
-
         binding.viewPager.adapter = FollowUpPatientListAdapter(supportFragmentManager, lifecycle)
         TabLayoutMediator(binding.llExactSearch.tabLayout, binding.viewPager) { tab, position ->
             when (position) {
@@ -186,9 +198,18 @@ class FollowUpMyPatientActivity : BaseActivity() {
             }
         }.attach()
 
-        binding.llExactSearch.tabLayout.getTabAt(0)?.view?.setBackgroundResource(R.drawable.left_mh_view_selector)
-        binding.llExactSearch.tabLayout.getTabAt(1)?.view?.setBackgroundResource(R.drawable.mental_health_button_bg)
-        binding.llExactSearch.tabLayout.getTabAt(2)?.view?.setBackgroundResource(R.drawable.right_mh_view_selector)
+        binding.llExactSearch.tabLayout
+            .getTabAt(0)
+            ?.view
+            ?.setBackgroundResource(R.drawable.left_mh_view_selector)
+        binding.llExactSearch.tabLayout
+            .getTabAt(1)
+            ?.view
+            ?.setBackgroundResource(R.drawable.mental_health_button_bg)
+        binding.llExactSearch.tabLayout
+            .getTabAt(2)
+            ?.view
+            ?.setBackgroundResource(R.drawable.right_mh_view_selector)
         val tabView3 = (binding.llExactSearch.tabLayout.getChildAt(0) as? ViewGroup)?.getChildAt(2)
         tabView3?.setPadding(0, 0, 0, 0)
 
@@ -197,14 +218,14 @@ class FollowUpMyPatientActivity : BaseActivity() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.let {
                     viewModel.updateFollowUpFilter(pageType = it.position)
-                   // binding.llExactSearch.etSearchTerm.setText("")
+                    // binding.llExactSearch.etSearchTerm.setText("")
                     binding.viewPager.currentItem = it.position
                     getTabScreenName(it.position)?.let { tabName ->
                         viewModel.setUserJourney(tabName)
                     }
                     setTabTypeface(
                         it,
-                        ResourcesCompat.getFont(applicationContext, R.font.inter_bold)
+                        ResourcesCompat.getFont(applicationContext, R.font.inter_bold),
                     )
                 }
             }
@@ -237,7 +258,8 @@ class FollowUpMyPatientActivity : BaseActivity() {
         with(binding) {
             val origin = intent.getStringExtra(MenuConstants.MY_PATIENTS_MENU_ID)
             llFilter.btnFilter.safeClickListener {
-                FollowUpFilterBottomSheetDialogFragment.newInstance()
+                FollowUpFilterBottomSheetDialogFragment
+                    .newInstance()
                     .show(supportFragmentManager, FollowUpFilterBottomSheetDialogFragment.TAG)
             }
 
@@ -252,7 +274,9 @@ class FollowUpMyPatientActivity : BaseActivity() {
             llExactSearch.btnSearch.setOnClickListener {
                 viewModel.setUserJourney(SEARCHBUTTONTRIGGERED)
                 viewModel.updateFollowUpFilter(
-                    search = llExactSearch.etSearchTerm.text?.trim().toString()
+                    search = llExactSearch.etSearchTerm.text
+                        ?.trim()
+                        .toString(),
                 )
             }
         }
@@ -265,12 +289,15 @@ class FollowUpMyPatientActivity : BaseActivity() {
 
         viewModel.getFilterDataLiveData().observe(this) {
             var count = 0
-            if (!it.selectedVillages.isNullOrEmpty())
+            if (!it.selectedVillages.isNullOrEmpty()) {
                 count++
-            if (!it.selectedDateRange.isNullOrEmpty())
+            }
+            if (!it.selectedDateRange.isNullOrEmpty()) {
                 count++
-            if (!it.selectedReasons.isNullOrEmpty())
+            }
+            if (!it.selectedReasons.isNullOrEmpty()) {
                 count++
+            }
 
             if (count > 0) {
                 binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)
@@ -286,9 +313,9 @@ class FollowUpMyPatientActivity : BaseActivity() {
                 }
 
                 ResourceState.SUCCESS -> {
-                    if (it.data == true)
+                    if (it.data == true) {
                         startBackgroundOfflineSync()
-
+                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -298,7 +325,10 @@ class FollowUpMyPatientActivity : BaseActivity() {
         }
     }
 
-    private fun setTabTypeface(tab: TabLayout.Tab?,  typeface: Typeface?) {
+    private fun setTabTypeface(
+        tab: TabLayout.Tab?,
+        typeface: Typeface?,
+    ) {
         val count = tab?.view?.childCount ?: 0
         for (i in 0 until count) {
             val tabViewChild = tab?.view?.getChildAt(i)
@@ -307,12 +337,12 @@ class FollowUpMyPatientActivity : BaseActivity() {
             }
         }
     }
+
     private fun showHideVerticalIcon(visibility: Boolean) {
         showVerticalMoreIcon(visibility) {
             onMoreIconClicked(it)
         }
     }
-
 
     private fun onMoreIconClicked(view: View) {
         viewModel.setUserJourney(ONMOREBUTTONTRIGGERED)
@@ -348,7 +378,8 @@ class FollowUpMyPatientActivity : BaseActivity() {
                 val fragment =
                     supportFragmentManager.findFragmentByTag(NCDFollowUpOfflineBottomDialogFilter.TAG)
                 if (fragment == null) {
-                    NCDFollowUpOfflineBottomDialogFilter.newInstance()
+                    NCDFollowUpOfflineBottomDialogFilter
+                        .newInstance()
                         .show(supportFragmentManager, NCDFollowUpOfflineBottomDialogFilter.TAG)
                 }
             }
@@ -357,7 +388,8 @@ class FollowUpMyPatientActivity : BaseActivity() {
                 val fragment =
                     supportFragmentManager.findFragmentByTag(NCDFollowUpSortDialog.TAG)
                 if (fragment == null) {
-                    NCDFollowUpSortDialog.newInstance()
+                    NCDFollowUpSortDialog
+                        .newInstance()
                         .show(supportFragmentManager, NCDFollowUpSortDialog.TAG)
                 }
             }
@@ -372,7 +404,9 @@ class FollowUpMyPatientActivity : BaseActivity() {
 
             llExactSearch.btnSearch.setOnClickListener {
                 ncdFollowUpViewModel.searchLiveDataForOffline(
-                    llExactSearch.etSearchTerm.text?.trim().toString()
+                    llExactSearch.etSearchTerm.text
+                        ?.trim()
+                        .toString(),
                 )
             }
         }
@@ -382,10 +416,14 @@ class FollowUpMyPatientActivity : BaseActivity() {
         ncdFollowUpViewModel.totalPatientCountOffline.observe(this) { count ->
             if (count > 0) {
                 binding.tvHPatientCount.apply {
-                    text = if (count == 1) getString(R.string.patient_found) else getString(
-                        R.string.patients_found,
-                        count
-                    )
+                    text = if (count == 1) {
+                        getString(R.string.patient_found)
+                    } else {
+                        getString(
+                            R.string.patients_found,
+                            count,
+                        )
+                    }
                     visible()
                 }
                 binding.tvPatientNoFound.gone()
@@ -429,7 +467,8 @@ class FollowUpMyPatientActivity : BaseActivity() {
                         val fragment =
                             supportFragmentManager.findFragmentByTag(NCDCallResultBottomDialog.TAG)
                         if (fragment == null) {
-                            NCDCallResultBottomDialog.newInstance(it)
+                            NCDCallResultBottomDialog
+                                .newInstance(it)
                                 .show(supportFragmentManager, NCDCallResultBottomDialog.TAG)
                         }
                     }
@@ -475,5 +514,3 @@ class FollowUpMyPatientActivity : BaseActivity() {
         setOrientation()
     }
 }
-
-

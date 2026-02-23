@@ -50,12 +50,12 @@ class NCDFollowUpViewModel @Inject constructor(
     private var roomHelper: RoomHelper,
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private var ncdMedicalReviewRepo: NCDMedicalReviewRepository,
-    private val screeningRepository: ScreeningRepository
+    private val screeningRepository: ScreeningRepository,
 ) : BaseViewModel(dispatcherIO) {
     var spanCount: Int = DefinedParams.span_count_1
     var searchText = ""
     var type = ""
-    var sortModel : SortModelForFollowUp? = null
+    var sortModel: SortModelForFollowUp? = null
     var customDate: CustomDate? = null
     var dateRange: String? = null
     var totalPatientCount = MutableLiveData<Int?>()
@@ -81,12 +81,11 @@ class NCDFollowUpViewModel @Inject constructor(
                 customDate = if (dateRange == NCDFollowUpFilterEnum.CUSTOMISE.title) customDate else null,
                 dateRange = dateRange,
                 type = type,
-                remainingAttempts = remainingAttempts.mapNotNull { it.id }
+                remainingAttempts = remainingAttempts.mapNotNull { it.id },
             ) { getPatientsCount ->
                 totalPatientCount.postValue(getPatientsCount)
             }
         }).flow
-
 
     fun getPatientCallRegister() {
         viewModelScope.launch(dispatcherIO) {
@@ -95,14 +94,13 @@ class NCDFollowUpViewModel @Inject constructor(
         }
     }
 
-
     fun updatePatientCallRegister(request: FollowUpUpdateRequest) {
         viewModelScope.launch(dispatcherIO) {
             if (request.isInitiated) {
                 setAnalyticsData(
                     UserDetail.startDateTime,
-                    eventName = AnalyticsDefinedParams.NCDCallInitialed+" "+ request.type.takeIf { !it.isNullOrBlank() },
-                    isCompleted = true
+                    eventName = AnalyticsDefinedParams.NCDCallInitialed + " " + request.type.takeIf { !it.isNullOrBlank() },
+                    isCompleted = true,
                 )
             }
             statusUpdateResponse.postLoading()
@@ -114,12 +112,12 @@ class NCDFollowUpViewModel @Inject constructor(
         setAnalyticsData(
             UserDetail.startDateTime,
             eventName = AnalyticsDefinedParams.NCDFollowUpFilter + " " + type.takeIf { it.isNotBlank() },
-            isCompleted = true
+            isCompleted = true,
         )
         filterSet.postValue(true)
         val count = listOfNotNull(
             dateRange.takeIf { !it.isNullOrBlank() },
-            remainingAttempts.takeIf { !it.isNullOrEmpty() }
+            remainingAttempts.takeIf { !it.isNullOrEmpty() },
         ).size
 
         if (count > 0) {
@@ -129,10 +127,10 @@ class NCDFollowUpViewModel @Inject constructor(
         }
     }
 
-
     // Follow up Offline
     var selectedFollowUpPatient: NCDFollowUp? = null
     var searchTextOffline: String = ""
+
     fun searchLiveDataForOffline(text: String) {
         this.searchTextOffline = text
         searchTextOfflineLiveData.value = true
@@ -145,7 +143,7 @@ class NCDFollowUpViewModel @Inject constructor(
             searchTextOffline,
             getDateBasedOnChip(),
             sortTriple.first,
-            sortTriple.second
+            sortTriple.second,
         )
     }
     var typeOffline = ""
@@ -165,12 +163,12 @@ class NCDFollowUpViewModel @Inject constructor(
         setAnalyticsData(
             UserDetail.startDateTime,
             eventName = AnalyticsDefinedParams.NCDFollowUpFilter + " " + typeOffline.takeIf { it.isNotBlank() },
-            isCompleted = true
+            isCompleted = true,
         )
         searchTextOfflineLiveData.value = true
         val count = listOfNotNull(
             filterByDateRange.takeIf { !it.isNullOrEmpty() },
-            filterByVillage.takeIf { !it.isNullOrEmpty() }
+            filterByVillage.takeIf { !it.isNullOrEmpty() },
         ).size
 
         if (count > 0) {
@@ -199,8 +197,8 @@ class NCDFollowUpViewModel @Inject constructor(
                 val updatedFollowUp = ncdFollowUpRepo.updatedCallInitiatedCall(value)
                 setAnalyticsData(
                     UserDetail.startDateTime,
-                    eventName = AnalyticsDefinedParams.NCDCallInitialed+" "+ value.type.takeIf { !it.isNullOrBlank() },
-                    isCompleted = true
+                    eventName = AnalyticsDefinedParams.NCDCallInitialed + " " + value.type.takeIf { !it.isNullOrBlank() },
+                    isCompleted = true,
                 )
                 updateCallLiveData.postSuccess(updatedFollowUp)
             } catch (e: Exception) {
@@ -222,6 +220,7 @@ class NCDFollowUpViewModel @Inject constructor(
     }
 
     var villageListResponse = MutableLiveData<Resource<List<VillageEntity>>>()
+
     fun getAllVillagesName() {
         viewModelScope.launch(dispatcherIO) {
             villageListResponse.postLoading()
@@ -250,7 +249,7 @@ class NCDFollowUpViewModel @Inject constructor(
                 NCDFollowUpUtils.today -> Pair(startMillis, endMillis)
                 Screening.Yesterday.lowercase() -> Pair(
                     startMillis - oneDayMillis,
-                    endMillis - oneDayMillis
+                    endMillis - oneDayMillis,
                 )
 
                 NCDFollowUpUtils.customise -> {
@@ -258,7 +257,7 @@ class NCDFollowUpViewModel @Inject constructor(
                     customDate?.let {
                         Pair(
                             DateUtils.convertToTimestampWithoutZone(it.startDate, true),
-                            DateUtils.convertToTimestampWithoutZone(it.endDate, false)
+                            DateUtils.convertToTimestampWithoutZone(it.endDate, false),
                         )
                     }
                 }
@@ -275,7 +274,7 @@ class NCDFollowUpViewModel @Inject constructor(
         setAnalyticsData(
             UserDetail.startDateTime,
             eventName = AnalyticsDefinedParams.NCDFollowUpSort + " " + typeOffline.takeIf { it.isNotBlank() },
-            isCompleted = true
+            isCompleted = true,
         )
         val (triple, list) = when (typeOffline) {
             NCDFollowUpUtils.SCREENED -> sortModel?.isScreeningDueDate to null
@@ -284,8 +283,13 @@ class NCDFollowUpViewModel @Inject constructor(
             NCDFollowUpUtils.LTFU_Type -> {
                 val isAssessmentDue = sortModel?.isAssessmentDueDate == true
                 val value =
-                    if (isAssessmentDue) DefinedParams.Assessment else if (sortModel?.isMedicalReviewDueDate == true)
-                        NCDFollowUpUtils.medical_review else null
+                    if (isAssessmentDue) {
+                        DefinedParams.Assessment
+                    } else if (sortModel?.isMedicalReviewDueDate == true) {
+                        NCDFollowUpUtils.medical_review
+                    } else {
+                        null
+                    }
                 isAssessmentDue to value
             }
 
@@ -295,13 +299,14 @@ class NCDFollowUpViewModel @Inject constructor(
         val count = listOf(
             sortModel?.isScreeningDueDate,
             sortModel?.isAssessmentDueDate,
-            sortModel?.isMedicalReviewDueDate
+            sortModel?.isMedicalReviewDueDate,
         ).count { it == true }
         sortCount.postValue(count)
         searchTextOfflineLiveData.value = true
     }
 
     val getFollowUpReasonList = MutableLiveData<List<ShortageReasonEntity>>()
+
     fun getFollowUpReasonList() {
         viewModelScope.launch(dispatcherIO) {
             val deleteList =

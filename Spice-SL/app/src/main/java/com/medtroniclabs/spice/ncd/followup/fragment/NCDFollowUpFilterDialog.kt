@@ -34,9 +34,10 @@ import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
+class NCDFollowUpFilterDialog :
+    DialogFragment(),
+    View.OnClickListener,
     CompoundButton.OnCheckedChangeListener {
-
     private lateinit var binding: FragmentNcdFollowUpFilterDialogBinding
     private lateinit var tagListCustomView: TagListCustomView
     private val viewModel: NCDFollowUpViewModel by activityViewModels()
@@ -45,8 +46,9 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
     lateinit var connectivityManager: ConnectivityManager
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNcdFollowUpFilterDialogBinding.inflate(inflater, container, false)
         isCancelable = false
@@ -57,11 +59,14 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
 
     companion object {
         const val TAG = "NCDFollowUpFilterDialog"
-        fun newInstance() =
-            NCDFollowUpFilterDialog()
+
+        fun newInstance() = NCDFollowUpFilterDialog()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeViews()
         setListeners()
@@ -107,7 +112,7 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
         binding.tvToDate.safeClickListener(this)
         binding.labelHeader.ivClose.safeClickListener(this)
 
-        //Data range
+        // Data range
         binding.dataRangeDailyChip.setOnCheckedChangeListener(this)
         binding.dataRangeWeeklyChip.setOnCheckedChangeListener(this)
         binding.dataRangeCustomizeChip.setOnCheckedChangeListener(this)
@@ -115,7 +120,6 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
     }
 
     private fun initializeViews() {
-
         binding.tvTo.markMandatory()
         binding.tvFrom.markMandatory()
 
@@ -141,7 +145,7 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
                         it.toString(),
                         DateUtils.DATE_FORMAT_ddMMMyyyy,
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        inUTC = true
+                        inUTC = true,
                     )
             }
             enableButton()
@@ -158,7 +162,7 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
                 viewModel.customDate?.endDate = DateUtils.getEndDate(
                     endDate,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    inUTC = true
+                    inUTC = true,
                 )
             }
             enableButton()
@@ -168,14 +172,15 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
             TagListCustomView(requireContext(), binding.cgRetryAttempts) { _, _, _ ->
                 enableButton()
             }
-        val chipItems = (1..5).map { id ->
-            ChipViewItemModel(
-                id = id.toLong(),
-                name = "$id",
-                cultureValue = "$id",
-                value = "$id"
-            )
-        }.toCollection(ArrayList())
+        val chipItems = (1..5)
+            .map { id ->
+                ChipViewItemModel(
+                    id = id.toLong(),
+                    name = "$id",
+                    cultureValue = "$id",
+                    value = "$id",
+                )
+            }.toCollection(ArrayList())
         tagListCustomView.addChipItemList(chipItems, viewModel.remainingAttempts)
         enableButton()
     }
@@ -192,7 +197,7 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
                     binding.tvFromDate.text = DateUtils.convertDateTimeToDate(
                         startDate,
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ, // Use correct source format
-                        DateUtils.DATE_FORMAT_ddMMMyyyy
+                        DateUtils.DATE_FORMAT_ddMMMyyyy,
                     )
                 }
                 viewModel.customDate?.endDate?.let { endDate ->
@@ -200,39 +205,38 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
                     binding.tvToDate.text = DateUtils.convertDateTimeToDate(
                         endDate,
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ, // Use correct source format
-                        DateUtils.DATE_FORMAT_ddMMMyyyy
+                        DateUtils.DATE_FORMAT_ddMMMyyyy,
                     )
                 }
             }
         }
     }
 
-
     private fun initializeChipView(chip: Chip) {
         requireContext().let { context ->
             chip.chipBackgroundColor =
                 getColorStateList(
                     context.getColor(R.color.medium_blue),
-                    context.getColor(R.color.white)
+                    context.getColor(R.color.white),
                 )
             chip.setChipBackgroundColorResource(R.color.diagnosis_confirmation_selector)
             chip.chipStrokeWidth = 3f
             chip.setTextColor(
                 getColorStateList(
                     context.getColor(R.color.white),
-                    context.getColor(R.color.navy_blue)
-                )
+                    context.getColor(R.color.navy_blue),
+                ),
             )
             chip.chipStrokeColor = getColorStateList(
                 context.getColor(R.color.medium_blue),
-                context.getColor(R.color.mild_gray)
+                context.getColor(R.color.mild_gray),
             )
         }
     }
 
     private fun getColorStateList(
         selectedColor: Int,
-        unSelectedColor: Int
+        unSelectedColor: Int,
     ): ColorStateList {
         val states = arrayOf(
             intArrayOf(android.R.attr.state_checked),
@@ -244,7 +248,7 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
             selectedColor,
             unSelectedColor,
             selectedColor,
-            unSelectedColor
+            unSelectedColor,
         )
         return ColorStateList(states, colors)
     }
@@ -255,7 +259,10 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
         binding.tvToDate.isEnabled = false
     }
 
-    private fun changeView(chipView: Chip, isChecked: Boolean) {
+    private fun changeView(
+        chipView: Chip,
+        isChecked: Boolean,
+    ) {
         if (isChecked) {
             chipView.typeface = ResourcesCompat.getFont(requireContext(), R.font.inter_bold)
             chipView.chipStrokeWidth = 0f
@@ -275,7 +282,7 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
                     (activity as? BaseActivity)?.showErrorDialogue(
                         getString(R.string.error),
                         getString(R.string.no_internet_error),
-                        false
+                        false,
                     ) {}
                 }
                 dismiss()
@@ -312,12 +319,15 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
         // dismiss()
     }
 
-    private fun showDatePickerDialog(isFromDate: Boolean, text: String?) {
+    private fun showDatePickerDialog(
+        isFromDate: Boolean,
+        text: String?,
+    ) {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         if (!text.isNullOrBlank()) {
             yearMonthDate = DateUtils.getYearMonthAndDate(
                 text,
-                SimpleDateFormat(DateUtils.DATE_FORMAT_ddMMMyyyy, Locale.ENGLISH)
+                SimpleDateFormat(DateUtils.DATE_FORMAT_ddMMMyyyy, Locale.ENGLISH),
             )
         }
         val minMaxDate = getMinDate(isFromDate)
@@ -326,21 +336,22 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
             maxDate = minMaxDate.second,
             minDate = minMaxDate.first,
             date = yearMonthDate,
-            cancelCallBack = { }
+            cancelCallBack = { },
         ) { _, year, month, dayOfMonth ->
             // Month is 0-indexed, so add 1
-            DateUtils.convertDateFormat(
-                "$dayOfMonth/${month + 1}/$year",
-                DateUtils.DATE_ddMMyyyy,
-                DateUtils.DATE_FORMAT_ddMMMyyyy
-            )?.let { stringDate ->
-                if (isFromDate) {
-                    binding.tvFromDate.text = stringDate
-                    binding.tvToDate.isEnabled = true
-                } else {
-                    binding.tvToDate.text = stringDate
+            DateUtils
+                .convertDateFormat(
+                    "$dayOfMonth/${month + 1}/$year",
+                    DateUtils.DATE_ddMMyyyy,
+                    DateUtils.DATE_FORMAT_ddMMMyyyy,
+                )?.let { stringDate ->
+                    if (isFromDate) {
+                        binding.tvFromDate.text = stringDate
+                        binding.tvToDate.isEnabled = true
+                    } else {
+                        binding.tvToDate.text = stringDate
+                    }
                 }
-            }
         }
     }
 
@@ -350,26 +361,31 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
         val minCalenderInstance = Calendar.getInstance()
         minCalenderInstance.set(2000, Calendar.JANUARY, 1)
         return if (isFromDate) {
-            if (!toDate.isNullOrBlank())
+            if (!toDate.isNullOrBlank()) {
                 Pair(
                     minCalenderInstance.timeInMillis,
-                    DateUtils.convertDateToLong(toDate, DateUtils.DATE_FORMAT_ddMMMyyyy)
+                    DateUtils.convertDateToLong(toDate, DateUtils.DATE_FORMAT_ddMMMyyyy),
                 )
-            else {
+            } else {
                 Pair(minCalenderInstance.timeInMillis, System.currentTimeMillis())
             }
         } else {
-            if (!fromDate.isNullOrBlank())
+            if (!fromDate.isNullOrBlank()) {
                 Pair(
                     DateUtils.convertDateToLong(fromDate, DateUtils.DATE_FORMAT_ddMMMyyyy),
-                    System.currentTimeMillis()
+                    System.currentTimeMillis(),
                 )
-            else Pair(minCalenderInstance.timeInMillis, System.currentTimeMillis())
+            } else {
+                Pair(minCalenderInstance.timeInMillis, System.currentTimeMillis())
+            }
         }
     }
 
     // --- FIX: IMPLEMENTED THE REQUIRED onCheckedChanged METHOD ---
-    override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
+    override fun onCheckedChanged(
+        buttonView: CompoundButton,
+        isChecked: Boolean,
+    ) {
         if (buttonView !is Chip) return // Safety check
 
         changeView(buttonView, isChecked)
@@ -427,5 +443,5 @@ enum class NCDFollowUpFilterEnum(val title: String) {
     DAILY("daily"),
     WEEKLY("weekly"),
     MONTHLY("monthly"),
-    CUSTOMISE("customise")
+    CUSTOMISE("customise"),
 }

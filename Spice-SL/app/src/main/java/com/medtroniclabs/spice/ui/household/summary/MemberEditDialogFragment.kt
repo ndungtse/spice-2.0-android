@@ -19,7 +19,6 @@ import com.medtroniclabs.spice.ui.household.MemberSelectionListener
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
 
 class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentMemberEditDialogBinding
     private var listener: MemberSelectionListener? = null
     private val householdSummaryViewModel: HouseHoldSummaryViewModel by activityViewModels()
@@ -28,17 +27,16 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
         this.listener = listener
     }
 
-    companion object{
+    companion object {
         val TAG = "MemberEditDialogFragment"
-        fun newInstance(listener: MemberSelectionListener):MemberEditDialogFragment{
-            return MemberEditDialogFragment(listener)
-        }
+
+        fun newInstance(listener: MemberSelectionListener): MemberEditDialogFragment = MemberEditDialogFragment(listener)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentMemberEditDialogBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -46,7 +44,10 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.MEMBEREDITCHOOSERDIALOGUE)
@@ -57,14 +58,14 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
     private fun loadSpinnerData() {
         val memberAdapter = EditMemberSpinnerAdapter(
             requireContext(),
-            translate = SecuredPreference.getIsTranslationEnabled()
+            translate = SecuredPreference.getIsTranslationEnabled(),
         )
         val dropDownList = ArrayList<MemberDetailsSpinnerModel>()
         dropDownList.add(
             MemberDetailsSpinnerModel(
                 id = DefinedParams.DefaultSelectID,
-                name = DefinedParams.DefaultIDLabel
-            )
+                name = DefinedParams.DefaultIDLabel,
+            ),
         )
         householdSummaryViewModel.householdMembersLiveData.value?.let { data ->
             data.forEach { item ->
@@ -75,8 +76,8 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
                             name = item.name,
                             age = "",
                             gender = item.gender,
-                            dob = item.dateOfBirth
-                        )
+                            dob = item.dateOfBirth,
+                        ),
                     )
                 }
             }
@@ -85,7 +86,12 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
         binding.etMemberInput.adapter = memberAdapter
         binding.etMemberInput.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                override fun onItemSelected(
+                    p0: AdapterView<*>?,
+                    p1: View?,
+                    p2: Int,
+                    p3: Long,
+                ) {
                     val selectedItem = memberAdapter.getData(position = p2)
                     selectedItem?.let {
                         if (it.id != -1L) {
@@ -112,13 +118,13 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
     }
 
     override fun onClick(view: View) {
-        when(view.id){
+        when (view.id) {
             binding.btnOkay.id -> {
-                //Navigate to Member Edit Fragment
+                // Navigate to Member Edit Fragment
                 listener?.onMemberSelected(
                     householdSummaryViewModel.selectedMemberId,
                     true,
-                    householdSummaryViewModel.selectedMemberDob
+                    householdSummaryViewModel.selectedMemberDob,
                 )
                 householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.MEMBEREDITOKAYBUTTONTRIGGERED)
                 dismiss()
@@ -134,7 +140,7 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 }

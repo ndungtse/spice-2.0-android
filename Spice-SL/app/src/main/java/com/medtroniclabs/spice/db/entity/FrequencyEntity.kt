@@ -13,5 +13,5 @@ data class FrequencyEntity(
     val displayOrder: Long,
     @SerializedName("value")
     val frequency: Int = 1,
-    val description: String? = null
+    val description: String? = null,
 )

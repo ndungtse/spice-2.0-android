@@ -18,8 +18,8 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.history.Prescription
 import com.medtroniclabs.spice.data.history.HistoryEntity
+import com.medtroniclabs.spice.data.history.Prescription
 import com.medtroniclabs.spice.databinding.FragmentReferralTicketBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.ReferredDate
@@ -32,7 +32,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
-
     lateinit var binding: FragmentReferralTicketBinding
     private var listPopupWindow: PopupWindow? = null
     private lateinit var dateListAdapter: DateListAdapter
@@ -40,8 +39,9 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
     val viewModel: ReferralHistoryViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentReferralTicketBinding.inflate(inflater, container, false)
         return binding.root
@@ -49,9 +49,8 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "PrescriptionHistoryFragment"
-        fun newInstance(): PrescriptionHistoryFragment {
-            return PrescriptionHistoryFragment()
-        }
+
+        fun newInstance(): PrescriptionHistoryFragment = PrescriptionHistoryFragment()
 
         fun newInstance(patientId: String?): PrescriptionHistoryFragment {
             val fragment = PrescriptionHistoryFragment()
@@ -62,18 +61,20 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
     }
 
-    private fun getPatientId(): String? {
-        return arguments?.getString(DefinedParams.FhirId, "")
-    }
+    private fun getPatientId(): String? = arguments?.getString(DefinedParams.FhirId, "")
 
     private fun getInitialReferralTickets() {
-        getPatientId()?.takeIf { it.isNotBlank() }
+        getPatientId()
+            ?.takeIf { it.isNotBlank() }
             ?.let { viewModel.getPrescriptionHistory(patientId = it) }
     }
 
@@ -105,21 +106,21 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
         recyclerView.addItemDecoration(
             DividerItemDecoration(
                 recyclerView.context,
-                DividerItemDecoration.VERTICAL
-            )
+                DividerItemDecoration.VERTICAL,
+            ),
         )
         dateListAdapter =
             DateListAdapter { referred ->
                 if (connectivityManager.isNetworkAvailable()) {
                     viewModel.getPrescriptionHistory(
                         patientId = getPatientId(),
-                        prescriptionTicketId = referred.id
+                        prescriptionTicketId = referred.id,
                     )
                     viewModel.prescriptionTicketId = referred.id
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
                 listPopupWindow?.dismiss()
@@ -128,7 +129,7 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
         listPopupWindow = PopupWindow(
             view,
             LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
+            LinearLayout.LayoutParams.WRAP_CONTENT,
         )
     }
 
@@ -206,15 +207,15 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
                             DateUtils.convertDateFormat(
                                 it,
                                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                DateUtils.DATE_ddMMyyyy
+                                DateUtils.DATE_ddMMyyyy,
                             )
-                        }
+                        },
                     ),
                     mapOf(
                         label to requireContext().getString(R.string.medication_prescribed),
-                        this.Value to createPrescription(prescriptionData.prescriptions)
-                    )
-                )
+                        this.Value to createPrescription(prescriptionData.prescriptions),
+                    ),
+                ),
             )
         }
         adjustGuideline()
@@ -223,23 +224,21 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
         setReferralDates(prescriptionData.history, prescriptionData.encounterId)
     }
 
-    private fun createPrescription(prescriptions: List<Prescription>?): List<String>? {
-        return prescriptions?.map { prescription ->
+    private fun createPrescription(prescriptions: List<Prescription>?): List<String>? =
+        prescriptions?.map { prescription ->
             "${prescription.medicationName} / ${prescription.frequencyName} / ${prescription.prescribedDays} ${
                 dayPeriod(
-                    prescription.prescribedDays
+                    prescription.prescribedDays,
                 )
             }"
         }
-    }
 
-    private fun dayPeriod(prescribedDays: Int?): String {
-        return if (prescribedDays == 1){
+    private fun dayPeriod(prescribedDays: Int?): String =
+        if (prescribedDays == 1) {
             requireContext().getString(R.string.day)
         } else {
             requireContext().getString(R.string.days)
         }
-    }
 
     private fun adjustGuideline() {
         val params = binding.centerGuideline.layoutParams as ConstraintLayout.LayoutParams
@@ -253,14 +252,17 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
         binding.llHistoryAction.ivNext.isEnabled = checkNextItem() != -1
     }
 
-    private fun setReferralDates(referredDates: List<ReferredDate>?, id: String?) {
+    private fun setReferralDates(
+        referredDates: List<ReferredDate>?,
+        id: String?,
+    ) {
         if (referredDates != null) {
             if (viewModel.prescriptionTicketId == null) {
                 viewModel.prescriptionTicketId = id
                 viewModel.prescriptionReferralDates.value = referredDates
             }
-            viewModel.prescriptionReferralDates.value?.let {list ->
-                if (referredDates.size > list.size){
+            viewModel.prescriptionReferralDates.value?.let { list ->
+                if (referredDates.size > list.size) {
                     viewModel.prescriptionTicketId = id
                     viewModel.prescriptionReferralDates.value = referredDates
                 }
@@ -286,7 +288,7 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
             }
@@ -297,7 +299,7 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
             }
@@ -311,11 +313,12 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
     private fun handleRetry() {
         if (connectivityManager.isNetworkAvailable()) {
             if (!viewModel.prescriptionTicketId.isNullOrBlank()) {
-                getPatientId()?.takeIf { it.isNotBlank() }
+                getPatientId()
+                    ?.takeIf { it.isNotBlank() }
                     ?.let {
                         viewModel.getPrescriptionHistory(
                             patientId = it,
-                            prescriptionTicketId = viewModel.prescriptionTicketId
+                            prescriptionTicketId = viewModel.prescriptionTicketId,
                         )
                     }
             } else {
@@ -356,7 +359,7 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
             viewModel.prescriptionReferralDates.value?.get(selectedIndex)?.id?.let {
                 viewModel.getPrescriptionHistory(
                     patientId = getPatientId(),
-                    prescriptionTicketId = it
+                    prescriptionTicketId = it,
                 )
                 viewModel.prescriptionTicketId = it
             }
@@ -369,7 +372,7 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
             viewModel.prescriptionReferralDates.value?.get(selectedIndex)?.id?.let {
                 viewModel.getPrescriptionHistory(
                     patientId = getPatientId(),
-                    prescriptionTicketId = it
+                    prescriptionTicketId = it,
                 )
                 viewModel.prescriptionTicketId = it
             }

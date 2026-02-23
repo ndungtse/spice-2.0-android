@@ -16,11 +16,9 @@ import com.medtroniclabs.spice.formgeneration.extension.parcelableArrayList
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.medicalreview.pharmacist.adapter.NCDPrescriptionHistoryAdapter
 
-
 class NCDPrescriptionHistoryDialogFragment :
     DialogFragment(),
     View.OnClickListener {
-
     private lateinit var binding: NcdPrescriptionHistoryDialogFragmentBinding
     private lateinit var prescriptionHistoryAdapter: NCDPrescriptionHistoryAdapter
     private lateinit var prescriptionLists: ArrayList<DispensePrescriptionResponse>
@@ -28,6 +26,7 @@ class NCDPrescriptionHistoryDialogFragment :
     companion object {
         const val TAG = "PrescriptionSignatureDialogFragment"
         const val PRESCRIPTION_LIST = "PRESCRIPTION_LIST"
+
         fun newInstance(prescriptionList: ArrayList<DispensePrescriptionResponse>): NCDPrescriptionHistoryDialogFragment {
             val args = Bundle().apply {
                 putParcelableArrayList(PRESCRIPTION_LIST, prescriptionList)
@@ -41,7 +40,7 @@ class NCDPrescriptionHistoryDialogFragment :
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         binding = NcdPrescriptionHistoryDialogFragmentBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -49,7 +48,10 @@ class NCDPrescriptionHistoryDialogFragment :
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         readArguments()
         initializeView()
@@ -86,7 +88,7 @@ class NCDPrescriptionHistoryDialogFragment :
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 

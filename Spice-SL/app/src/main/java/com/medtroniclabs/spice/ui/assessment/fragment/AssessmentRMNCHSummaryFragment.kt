@@ -34,7 +34,6 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustom
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
-import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DEATH_OF_MOTHER_KEY
@@ -51,7 +50,6 @@ import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 
 class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
-
     lateinit var binding: FragmentRmnchSummaryBinding
 
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -61,38 +59,34 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentRmnchSummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListener()
         initSummaryViewByWorkFlowName()
         viewModel.setUserJourney(getUserJourneyName())
-        binding.etNextFollowUpDate.background= ContextCompat.getDrawable(requireContext(),R.drawable.edittext_background)
+        binding.etNextFollowUpDate.background = ContextCompat.getDrawable(requireContext(), R.drawable.edittext_background)
         val background = binding.etNextFollowUpDate.background as? GradientDrawable
         background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), ContextCompat.getColor(requireContext(), R.color.edittext_stroke))
     }
 
     private fun getUserJourneyName(): String {
-
-         when(viewModel.workflowName) {
-
-             ChildHoodVisit -> {
-                 return "${viewModel.workflowName}${AnalyticsDefinedParams.RMNCHCHILDASSESSMENTSUMMARY}"
-             }
-             else -> {
-               return  "${viewModel.workflowName}${AnalyticsDefinedParams.RMNCHSummaryAssessment}"
-
-             }
-
-
-         }
-
-
+        when (viewModel.workflowName) {
+            ChildHoodVisit -> {
+                return "${viewModel.workflowName}${AnalyticsDefinedParams.RMNCHCHILDASSESSMENTSUMMARY}"
+            }
+            else -> {
+                return "${viewModel.workflowName}${AnalyticsDefinedParams.RMNCHSummaryAssessment}"
+            }
+        }
     }
 
     private fun setListener() {
@@ -141,21 +135,24 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.parentLayout.removeAllViews()
             bindRmnchSummaryView(
                 getString(R.string.patient_status),
-                getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen)
+                getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen),
             )
             conditionBasedRendering(map)
             addDefaultSummaryView(map)
-            viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }
+            viewModel.formLayoutsLiveData.value
+                ?.data
+                ?.formLayout
+                ?.filter { it.isSummary == true }
                 ?.filter {
-                    map.entries.any { map -> map.key != ChildHoodVisit } || (map[ChildHoodVisit] as? Map<String, Any>)?.containsKey(
-                        it.id
-                    ) == true
-                }
-                ?.filterNot { it.id in showQuestionBasedAge(map,it) } // Remove the item with id "childhoodVisitSigns"
+                    map.entries.any { map -> map.key != ChildHoodVisit } ||
+                        (map[ChildHoodVisit] as? Map<String, Any>)?.containsKey(
+                            it.id,
+                        ) == true
+                }?.filterNot { it.id in showQuestionBasedAge(map, it) } // Remove the item with id "childhoodVisitSigns"
                 ?.filterNot {
                     it.id in showQuestionBasedAge(
                         map,
-                        it
+                        it,
                     )
                 } // Remove the item with id "childhoodVisitSigns"
                 ?.forEach { data ->
@@ -173,13 +170,13 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                                     Triple(
                                         getString(R.string.yes),
                                         getString(R.string.no),
-                                        getString(R.string.hyphen_symbol)
+                                        getString(R.string.hyphen_symbol),
                                     ),
-                                    requireContext()
+                                    requireContext(),
                                 ),
                                 null,
-                                requireContext()
-                            )
+                                requireContext(),
+                            ),
                         )
                     }
                 }
@@ -211,7 +208,10 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     val deathOfMother = workflowMap[DeathOfMother]
                     val deathOfBaby = workflowMap[deathOfBaby]
                     showCallBtnForDeathMother((deathOfMother is Boolean && deathOfMother) || deathOfBaby is Boolean && deathOfBaby)
-                    if ((miscarriageValue is Boolean && miscarriageValue) || (deathOfMother is Boolean && deathOfMother) || (deathOfBaby is Boolean && deathOfBaby)) {
+                    if ((miscarriageValue is Boolean && miscarriageValue) ||
+                        (deathOfMother is Boolean && deathOfMother) ||
+                        (deathOfBaby is Boolean && deathOfBaby)
+                    ) {
                         binding.etNextFollowUpDate.gone()
                         binding.tvNextFollowupDateTitle.gone()
                         binding.btnDone.isEnabled = true
@@ -223,12 +223,13 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             }
         }
     }
+
     private fun showCallBtnForDeathMother(isShow: Boolean) {
         binding.callSupervisor.setVisible(isShow)
     }
 
     private fun loadPhuSitesList(siteList: ArrayList<Map<String, Any>>) {
-        binding.etPhuChange.background= ContextCompat.getDrawable(requireContext(),R.drawable.edittext_background)
+        binding.etPhuChange.background = ContextCompat.getDrawable(requireContext(), R.drawable.edittext_background)
         val background = binding.etPhuChange.background as? GradientDrawable
         background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), ContextCompat.getColor(requireContext(), R.color.edittext_stroke))
         val adapter = CustomSpinnerAdapterCustomLayout(requireContext())
@@ -240,7 +241,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     adapterView: AdapterView<*>?,
                     view: View?,
                     pos: Int,
-                    itemId: Long
+                    itemId: Long,
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
@@ -259,7 +260,6 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun addDefaultSummaryView(map: HashMap<String, Any>) {
-
         val title: String = when (viewModel.workflowName) {
             RMNCH.ANC -> getString(R.string.anc_visit)
             ChildHoodVisit -> getString(R.string.child_hood_visit)
@@ -280,13 +280,13 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         Triple(
                             getString(R.string.yes),
                             getString(R.string.no),
-                            getString(R.string.hyphen_symbol)
+                            getString(R.string.hyphen_symbol),
                         ),
-                        requireContext()
+                        requireContext(),
                     ),
                     null,
-                    requireContext()
-                )
+                    requireContext(),
+                ),
             )
 
             if (map.containsKey(viewModel.workflowName)) {
@@ -301,24 +301,28 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                             getString(R.string.estimated_delivery_date),
                             formattedEstimatedDeliveryDate,
                             null,
-                            requireContext()
-                        )
+                            requireContext(),
+                        ),
                     )
                     convertStringToDate(
                         lmp,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                     )?.let { lmpDate ->
-                        RMNCH.calculateNextANCVisitDate(
-                            lmpDate
-                        )?.let { visitDate ->
-                            binding.etNextFollowUpDate.text = getDateStringFromDate(
-                                visitDate, DateUtils.DATE_ddMMyyyy
-                            )
-                            updateFollowUpDate(getDateStringFromDate(
-                                visitDate, DateUtils.DATE_ddMMyyyy
-                            ))
-                        }
-
+                        RMNCH
+                            .calculateNextANCVisitDate(
+                                lmpDate,
+                            )?.let { visitDate ->
+                                binding.etNextFollowUpDate.text = getDateStringFromDate(
+                                    visitDate,
+                                    DateUtils.DATE_ddMMyyyy,
+                                )
+                                updateFollowUpDate(
+                                    getDateStringFromDate(
+                                        visitDate,
+                                        DateUtils.DATE_ddMMyyyy,
+                                    ),
+                                )
+                            }
                     }
                 }
             }
@@ -326,17 +330,22 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let {
                 calculateAgeInMonths(it)?.let { pair ->
                     if (pair.first <= childHoodVisitMaxMonth) {
-                        RMNCH.calculateNextChildHoodVisitDate(
-                            age = pair.first,
-                            birthDate = pair.second
-                        )?.let { visitDate ->
-                            binding.etNextFollowUpDate.text = getDateStringFromDate(
-                                visitDate, DateUtils.DATE_ddMMyyyy
-                            )
-                            updateFollowUpDate(getDateStringFromDate(
-                                visitDate, DateUtils.DATE_ddMMyyyy
-                            ))
-                        }
+                        RMNCH
+                            .calculateNextChildHoodVisitDate(
+                                age = pair.first,
+                                birthDate = pair.second,
+                            )?.let { visitDate ->
+                                binding.etNextFollowUpDate.text = getDateStringFromDate(
+                                    visitDate,
+                                    DateUtils.DATE_ddMMyyyy,
+                                )
+                                updateFollowUpDate(
+                                    getDateStringFromDate(
+                                        visitDate,
+                                        DateUtils.DATE_ddMMyyyy,
+                                    ),
+                                )
+                            }
                     }
                 }
             }
@@ -354,17 +363,15 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     Triple(
                         getString(R.string.yes),
                         getString(R.string.no),
-                        getString(R.string.hyphen_symbol)
+                        getString(R.string.hyphen_symbol),
                     ),
-                    requireContext()
+                    requireContext(),
                 ),
                 null,
-                requireContext()
-            )
+                requireContext(),
+            ),
         )
-
     }
-
 
     companion object {
         const val TAG: String = "AssessmentRMNCHSummaryFragment"
@@ -373,7 +380,11 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun handleDoneButtonClick() {
         viewModel.fetchCurrentLocation(requireContext())
         if (binding.etNextFollowUpDate.visibility == View.VISIBLE && binding.etNextFollowUpDate.text.isNotEmpty()) {
-            updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
+            updateFollowUpDate(
+                binding.etNextFollowUpDate.text
+                    .trim()
+                    .toString(),
+            )
         }
         if (viewModel.otherAssessmentDetails.isEmpty()) {
             val intent = Intent(requireActivity(), HouseholdSearchActivity::class.java)
@@ -409,7 +420,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         viewModel.assessmentSaveLiveData.value?.data?.id?.let {
             intent.putExtra(AssessmentId, it)
         }
-        if (workFlowName.equals(ChildHoodVisit,true)) {
+        if (workFlowName.equals(ChildHoodVisit, true)) {
             intent.putExtra(RMNCH.deathOfNewborn, true)
         } else {
             intent.putExtra(DeathOfMother, true)
@@ -417,24 +428,26 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         intent.putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
         startActivity(intent)
     }
+
     private fun showDatePickerDialog() {
-       var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (!binding.etNextFollowUpDate.text.isNullOrBlank())
+        var yearMonthDate: Triple<Int?, Int?, Int?>? = null
+        if (!binding.etNextFollowUpDate.text.isNullOrBlank()) {
             yearMonthDate =
                 DateUtils.convertedMMMToddMM(binding.etNextFollowUpDate.text.toString())
+        }
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
                 minDate = DateUtils.getTomorrowDate(),
                 date = yearMonthDate,
-                cancelCallBack = { datePickerDialog = null }
+                cancelCallBack = { datePickerDialog = null },
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 binding.etNextFollowUpDate.text =
                     DateUtils.convertDateTimeToDate(
                         stringDate,
                         DateUtils.DATE_FORMAT_ddMMyyyy,
-                        DateUtils.DATE_ddMMyyyy
+                        DateUtils.DATE_ddMMyyyy,
                     )
                 updateFollowUpDate(binding.etNextFollowUpDate.text.toString())
                 datePickerDialog = null
@@ -449,37 +462,42 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     date,
                     DateUtils.DATE_ddMMyyyy,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    inUTC = true
+                    inUTC = true,
                 )
         }
     }
 
-    fun getCurrentAnsweredStatus(): Boolean {
-        return viewModel.otherAssessmentDetails.isNotEmpty()
-    }
+    fun getCurrentAnsweredStatus(): Boolean = viewModel.otherAssessmentDetails.isNotEmpty()
 
-    private fun showQuestionBasedAge(map: HashMap<String, Any>, formLayout: FormLayout):List<String> {
-        var age=viewModel.ageInMonth.value
-        var questionList=ArrayList<String>()
+    private fun showQuestionBasedAge(
+        map: HashMap<String, Any>,
+        formLayout: FormLayout,
+    ): List<String> {
+        var age = viewModel.ageInMonth.value
+        var questionList = ArrayList<String>()
         val resultMap = map[ANC] as? Map<String, Any> // Cast to Map<String, Any>
         val deathOfMother = resultMap?.get(DEATH_OF_MOTHER_KEY) as? Boolean
-        if (deathOfMother==true  ){
-           if (formLayout.id!=DEATH_OF_MOTHER_KEY) {
-               questionList.add(getAllIdsExcludingDeathOfMother(formLayout))
-           }
-        }else {
-            if (age?.contains(getString(R.string.week), true) == true
-                || age?.contains(getString(R.string.day), true) == true
+        if (deathOfMother == true) {
+            if (formLayout.id != DEATH_OF_MOTHER_KEY) {
+                questionList.add(getAllIdsExcludingDeathOfMother(formLayout))
+            }
+        } else {
+            if (age?.contains(getString(R.string.week), true) == true ||
+                age?.contains(getString(R.string.day), true) == true
             ) {
                 questionList.add(AssessmentDefinedParams.TakingMinimumMealsPerDay)
                 questionList.add(AssessmentDefinedParams.FedFrom4FoodGroups)
                 questionList.add(AssessmentDefinedParams.Measles1Given)
                 questionList.add(AssessmentDefinedParams.YellowFeverVacineGiven)
                 questionList.add(AssessmentDefinedParams.Measles2Given)
-
             } else {
-                when (age?.replace(getString(R.string.months), "")
-                    ?.replace(getString(R.string.month), "")?.trim()?.toInt()) {
+                when (
+                    age
+                        ?.replace(getString(R.string.months), "")
+                        ?.replace(getString(R.string.month), "")
+                        ?.trim()
+                        ?.toInt()
+                ) {
                     in 0..5 -> {
                         questionList.add(AssessmentDefinedParams.TakingMinimumMealsPerDay)
                         questionList.add(AssessmentDefinedParams.FedFrom4FoodGroups)
@@ -491,7 +509,6 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     in 6..12 -> {
                         questionList.add(AssessmentDefinedParams.ExclusivelyBreastfeeding)
                         questionList.add(AssessmentDefinedParams.Measles2Given)
-
                     }
 
                     in 13..15 -> {
@@ -506,23 +523,30 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
 
         return questionList
     }
+
     private fun getAllIdsExcludingDeathOfMother(formLayouts: FormLayout): String {
-        return formLayouts.id  // Exclude "deathOfMother"
+        return formLayouts.id // Exclude "deathOfMother"
     }
-    private fun bindRmnchSummaryView(title: String?, value: String?, valueTextColor: Int? = null) {
+
+    private fun bindRmnchSummaryView(
+        title: String?,
+        value: String?,
+        valueTextColor: Int? = null,
+    ) {
         value?.let { result ->
             binding.parentLayout.addView(
                 addViewSummaryLayout(
                     title,
                     result,
                     valueTextColor,
-                    requireContext()
-                )
+                    requireContext(),
+                ),
             )
         }
     }
-    fun getStatus(referralStatus: String?): String? {
-        return when (referralStatus) {
+
+    fun getStatus(referralStatus: String?): String? =
+        when (referralStatus) {
             ReferralStatus.Referred.name -> getString(R.string.referred)
             ReferralStatus.OnTreatment.name -> getString(R.string.on_treatment)
             ReferralStatus.Recovered.name -> getString(R.string.recovered)
@@ -530,5 +554,4 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 null
             }
         }
-    }
 }

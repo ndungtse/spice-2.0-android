@@ -14,7 +14,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MedicalReviewToolsActivity : BaseActivity() {
-
     private lateinit var binding: ActivityMedicalReviewToolsBinding
     private val toolsViewModel: ToolsViewModel by viewModels()
 
@@ -32,7 +31,7 @@ class MedicalReviewToolsActivity : BaseActivity() {
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 startActivity(intent)
                 finish()
-            }
+            },
         )
         initializeView()
     }
@@ -53,20 +52,21 @@ class MedicalReviewToolsActivity : BaseActivity() {
                 intent.getStringExtra(DefinedParams.MemberID),
                 intent.getStringExtra(DefinedParams.Gender),
                 intent.getStringExtra(DefinedParams.DOB),
-                childPatientId =intent.getStringExtra(DefinedParams.ChildPatientId),
+                childPatientId = intent.getStringExtra(DefinedParams.ChildPatientId),
                 dateOfDelivery = intent.getStringExtra(DefinedParams.DateOfDelivery),
                 intent.getStringExtra(DefinedParams.NeonateOutcome),
                 villageId = intent.getStringExtra(DefinedParams.villageId),
                 householdId = intent.getStringExtra(DefinedParams.householdId),
-                isPregnant = intent.getBooleanExtra(DefinedParams.isPregnant,false),
-                isEMTCTFlow = intent.getBooleanExtra(DefinedParams.EMTCT,false),
-                hivTestedPositive = intent.getBooleanExtra(DefinedParams.hivTestedPositive,false)
+                isPregnant = intent.getBooleanExtra(DefinedParams.isPregnant, false),
+                isEMTCTFlow = intent.getBooleanExtra(DefinedParams.EMTCT, false),
+                hivTestedPositive = intent.getBooleanExtra(DefinedParams.hivTestedPositive, false),
             )
             setTitle(
                 intent.getStringExtra(DefinedParams.MenuTitle)
-                    ?: getString(R.string.search_patient)
+                    ?: getString(R.string.search_patient),
             )
-            supportFragmentManager.beginTransaction()
+            supportFragmentManager
+                .beginTransaction()
                 .add(R.id.menuItemsFragment, fragment, fragmentTag)
                 .commit()
         }

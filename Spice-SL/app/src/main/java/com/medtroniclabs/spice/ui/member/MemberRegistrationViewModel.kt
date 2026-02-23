@@ -19,7 +19,6 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.HouseholdHead
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
@@ -34,22 +33,20 @@ class MemberRegistrationViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val memberRegistrationRepository: HouseholdMemberRepository,
     private val houseHoldRepository: HouseHoldRepository,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) : BaseViewModel(dispatcherIO) {
-
     var selectedHouseholdId: Long = -1L
     var memberRegistrationLiveData = MutableLiveData<Resource<Long>>()
     var startAssessment: Boolean? = null
     val memberDetailsLiveData = MutableLiveData<Resource<HouseholdMemberEntity>>()
     val formLayoutsLiveData = MutableLiveData<Resource<String>>()
-    var medicalReviewFlow=false
-    val addnewMemberReq=MutableLiveData<Resource<String>>()
-    var villageDetails:List<VillageEntity>?= null
+    var medicalReviewFlow = false
+    val addnewMemberReq = MutableLiveData<Resource<String>>()
+    var villageDetails: List<VillageEntity>? = null
     var addNewMember: Boolean = false
-    var memberDob: String?=null
-    var isPhuWalkInsFlow:Boolean? = null
+    var memberDob: String? = null
+    var isPhuWalkInsFlow: Boolean? = null
     val householdHeadDobLiveData = MutableLiveData<String?>()
-
 
     fun getHouseholdHeadDob(householdId: Long?) {
         if (householdId != null && householdId != -1L) {
@@ -72,7 +69,7 @@ class MemberRegistrationViewModel @Inject constructor(
 //                    formLayoutsLiveData.postValue(Resource(state = ResourceState.ERROR))
 //                }
 //            } else {
-                formLayoutsLiveData.postValue(houseHoldRepository.getFormData(formType))
+            formLayoutsLiveData.postValue(houseHoldRepository.getFormData(formType))
 //            }
         }
     }
@@ -92,42 +89,41 @@ class MemberRegistrationViewModel @Inject constructor(
         memberResultMap: HashMap<String, Any>,
         location: Location?,
         initial: String? = null,
-        signature: String? = null
+        signature: String? = null,
     ) {
-         memberRegistrationLiveData.postLoading()
-          try {
-              viewModelScope.launch(dispatcherIO) {
-                  location?.let {
-                      householdEntity.latitude = it.latitude
-                      householdEntity.longitude = it.longitude
-                  }
-                  
-                  // Update household name with member name if it's the household head
-                  val memberName = memberResultMap[MemberRegistration.name]
-                  if (memberName != null) {
-                      householdEntity.name = CommonUtils.getStringOrEmptyString(memberName)
-                      // Set isHouseholdHead to true when updating household name with member name
-                      memberResultMap[MemberRegistration.isHouseholdHead] = true
-                  }
-                  
-                  val houseHoldId = houseHoldRepository.insertHouseHoldEntity(householdEntity)
+        memberRegistrationLiveData.postLoading()
+        try {
+            viewModelScope.launch(dispatcherIO) {
+                location?.let {
+                    householdEntity.latitude = it.latitude
+                    householdEntity.longitude = it.longitude
+                }
 
+                // Update household name with member name if it's the household head
+                val memberName = memberResultMap[MemberRegistration.name]
+                if (memberName != null) {
+                    householdEntity.name = CommonUtils.getStringOrEmptyString(memberName)
+                    // Set isHouseholdHead to true when updating household name with member name
+                    memberResultMap[MemberRegistration.isHouseholdHead] = true
+                }
+
+                val houseHoldId = houseHoldRepository.insertHouseHoldEntity(householdEntity)
 
                   /*
-                  * Update Relation Household Head* */
-                  memberResultMap[HouseholdHeadRelationship] = HouseholdHead
+                   * Update Relation Household Head* */
+                memberResultMap[HouseholdHeadRelationship] = HouseholdHead
 
-                  registerMember(
-                      memberResultMap,
-                      houseHoldId,
-                      initial,
-                      signature,
-                      location
-                  )
-              }
-          }catch (e: Exception) {
-              memberRegistrationLiveData.postError(e.message)
-          }
+                registerMember(
+                    memberResultMap,
+                    houseHoldId,
+                    initial,
+                    signature,
+                    location,
+                )
+            }
+        } catch (e: Exception) {
+            memberRegistrationLiveData.postError(e.message)
+        }
     }
 
     fun registerMember(
@@ -135,9 +131,9 @@ class MemberRegistrationViewModel @Inject constructor(
         householdId: Long,
         initial: String? = null,
         signature: String? = null,
-        location: Location?
+        location: Location?,
     ) {
-         memberRegistrationLiveData.postLoading()
+        memberRegistrationLiveData.postLoading()
         try {
             viewModelScope.launch(dispatcherIO) {
                 selectedHouseholdId = householdId
@@ -153,7 +149,7 @@ class MemberRegistrationViewModel @Inject constructor(
                     initial = initial,
                     signature = signature,
                     isPhuWalkInFlow = isPhuWalkInsFlow,
-                    location = location
+                    location = location,
                 )
                 memberRegistrationRepository.updateHeadPhoneNumber(householdId, map)
                 if (memberId == null) {
@@ -167,15 +163,20 @@ class MemberRegistrationViewModel @Inject constructor(
         }
     }
 
-    fun addNewMember(map: HashMap<String, Any>?, formGenerator: FormGenerator, location: Location?) {
+    fun addNewMember(
+        map: HashMap<String, Any>?,
+        formGenerator: FormGenerator,
+        location: Location?,
+    ) {
         if (map == null) return
         val villageId = map[MemberRegistration.villageId]?.toString()?.toIntOrNull()
         val addMemberRegRequest = AddMemberRegRequest().apply {
             name = map[MemberRegistration.name]?.toString().orEmpty()
             this.villageId = villageId?.toString().orEmpty()
-            village = villageId?.let { id ->
-                villageDetails?.find { it.id == id.toLong() }?.name.orEmpty()
-            }.orEmpty()
+            village = villageId
+                ?.let { id ->
+                    villageDetails?.find { it.id == id.toLong() }?.name.orEmpty()
+                }.orEmpty()
             dateOfBirth = map[MemberRegistration.dateOfBirth]?.toString().orEmpty()
             gender = map[MemberRegistration.gender]?.toString().orEmpty()
             phoneNumber = map[MemberRegistration.phoneNumber]?.toString().orEmpty()
@@ -183,8 +184,8 @@ class MemberRegistrationViewModel @Inject constructor(
             provenance = ProvanceDto()
             isPregnant = null
             location?.let {
-                longitude=location.longitude
-                latitude=location.latitude
+                longitude = location.longitude
+                latitude = location.latitude
             }
         }
         viewModelScope.launch(dispatcherIO) {
@@ -192,7 +193,4 @@ class MemberRegistrationViewModel @Inject constructor(
             addnewMemberReq.postValue(houseHoldRepository.addNewMember(addMemberRegRequest))
         }
     }
-
-
-
 }

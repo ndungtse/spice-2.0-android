@@ -22,5 +22,5 @@ data class HouseHoldEntityWithMemberCount(
     @ColumnInfo("member_count")
     val registerMemberCount: Int = 0,
     @ColumnInfo("village_name")
-    val villageName: String
+    val villageName: String,
 )

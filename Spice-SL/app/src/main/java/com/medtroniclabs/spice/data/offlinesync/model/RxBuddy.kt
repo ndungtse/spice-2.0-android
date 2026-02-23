@@ -9,5 +9,5 @@ data class RxBuddy(
     val referenceId: Long, // RxBuddy Local Db Id
     val registry: RxBuddyRegister? = null,
     val followUps: List<RxBuddyFollowUp>,
-    val provenance: ProvanceDto = ProvanceDto()
+    val provenance: ProvanceDto = ProvanceDto(),
 )

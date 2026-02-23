@@ -10,28 +10,28 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 
 class SpiceLocationManager(private val context: Context) {
-
     private val fusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
 
     fun getCurrentLocation(callback: (Location) -> Unit) {
-
         if (ContextCompat.checkSelfPermission(
-                context, Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-                context, Manifest.permission.ACCESS_COARSE_LOCATION
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { lastLocation ->
                 lastLocation?.let {
                     SecuredPreference.putDouble(
                         SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name,
-                        it.latitude
+                        it.latitude,
                     )
                     SecuredPreference.putDouble(
                         SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name,
-                        it.longitude
+                        it.longitude,
                     )
                     callback(it)
                 }
@@ -39,22 +39,23 @@ class SpiceLocationManager(private val context: Context) {
                 val priority = Priority.PRIORITY_HIGH_ACCURACY
                 val cancellationTokenSource = CancellationTokenSource()
 
-                fusedLocationProviderClient.getCurrentLocation(
-                    priority,
-                    cancellationTokenSource.token
-                ).addOnSuccessListener { currentLocation ->
-                    currentLocation?.let {
-                        SecuredPreference.putDouble(
-                            SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name,
-                            it.latitude
-                        )
-                        SecuredPreference.putDouble(
-                            SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name,
-                            it.longitude
-                        )
-                        callback(it)
+                fusedLocationProviderClient
+                    .getCurrentLocation(
+                        priority,
+                        cancellationTokenSource.token,
+                    ).addOnSuccessListener { currentLocation ->
+                        currentLocation?.let {
+                            SecuredPreference.putDouble(
+                                SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name,
+                                it.latitude,
+                            )
+                            SecuredPreference.putDouble(
+                                SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name,
+                                it.longitude,
+                            )
+                            callback(it)
+                        }
                     }
-                }
             }
         }
     }

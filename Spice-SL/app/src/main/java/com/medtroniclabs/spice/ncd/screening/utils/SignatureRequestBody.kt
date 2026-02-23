@@ -17,7 +17,7 @@ object SignatureRequestBody {
         context: Context,
         triple: Triple<String, String, String?>,
         signature: ByteArray?,
-        isScreening: Boolean
+        isScreening: Boolean,
     ): RequestBody {
         val builder = MultipartBody.Builder()
         builder.setType(MultipartBody.FORM)
@@ -25,7 +25,7 @@ object SignatureRequestBody {
         val hashMap = CommonUtils.parseRequest(
             triple.first,
             triple.second,
-            triple.third
+            triple.third,
         )
         val request = Gson().toJson(hashMap)
         builder.addFormDataPart(getParam(isScreening), request)
@@ -52,7 +52,7 @@ object SignatureRequestBody {
                     builder.addFormDataPart(
                         "signatureFile",
                         file.name,
-                        file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+                        file.asRequestBody("multipart/form-data".toMediaTypeOrNull()),
                     )
                 }
             }
@@ -61,11 +61,7 @@ object SignatureRequestBody {
         return builder.build()
     }
 
-    private fun getParam(screening: Boolean): String {
-        return if (screening) "screeningRequest" else "registrationRequest"
-    }
+    private fun getParam(screening: Boolean): String = if (screening) "screeningRequest" else "registrationRequest"
 
-    private fun getSuffix(screening: Boolean): String {
-        return if (screening) Screening.ScreeningSignSuffix else Screening.RegistrationSignSuffix
-    }
+    private fun getSuffix(screening: Boolean): String = if (screening) Screening.ScreeningSignSuffix else Screening.RegistrationSignSuffix
 }

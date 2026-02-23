@@ -6,15 +6,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
-import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.setWidth
-import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewSucessDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -33,8 +30,9 @@ class MedicalReviewSuccessDialogFragment : DialogFragment(), View.OnClickListene
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentMedicalReviewSucessDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -45,21 +43,24 @@ class MedicalReviewSuccessDialogFragment : DialogFragment(), View.OnClickListene
     companion object {
         const val TAG = "MedicalReviewSuccessDialogFragment"
         const val ISENROLLED = "ISENROLLED"
-        fun newInstance(isEnroll:Boolean = false) = MedicalReviewSuccessDialogFragment().apply {
-            arguments = Bundle().apply {
-                putBoolean(ISENROLLED, isEnroll)
+
+        fun newInstance(isEnroll: Boolean = false) =
+            MedicalReviewSuccessDialogFragment().apply {
+                arguments = Bundle().apply {
+                    putBoolean(ISENROLLED, isEnroll)
+                }
             }
-        }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeListeners()
     }
 
-    private fun getIsEnroll(): Boolean {
-        return arguments?.getBoolean(ISENROLLED) ?: false
-    }
+    private fun getIsEnroll(): Boolean = arguments?.getBoolean(ISENROLLED) ?: false
 
     private fun initializeListeners() {
         viewModel.setUserJourney(AnalyticsDefinedParams.MEDICALREVIEWCOMPLETEDSUCCESSDIALOGUE)
@@ -96,5 +97,4 @@ class MedicalReviewSuccessDialogFragment : DialogFragment(), View.OnClickListene
         }
         setWidth(width)
     }
-
 }

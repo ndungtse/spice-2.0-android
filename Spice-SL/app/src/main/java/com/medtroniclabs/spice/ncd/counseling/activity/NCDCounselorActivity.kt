@@ -20,11 +20,11 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.counseling.adapter.NCDCounselorAdapter
 import com.medtroniclabs.spice.ncd.counseling.adapter.NCDCounselorHistoryAdapter
+import com.medtroniclabs.spice.ncd.counseling.utils.ValidationListener
+import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
 import com.medtroniclabs.spice.ncd.data.AssessmentResultModel
 import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.data.ResultModel
-import com.medtroniclabs.spice.ncd.counseling.utils.ValidationListener
-import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -33,7 +33,6 @@ import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
-
     private lateinit var binding: ActivityNcdCounselorBinding
 
     private val viewModel: CounselingViewModel by viewModels()
@@ -43,7 +42,8 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         binding = ActivityNcdCounselorBinding.inflate(layoutInflater)
-        setMainContentView(binding.root,
+        setMainContentView(
+            binding.root,
             isToolbarVisible = true,
             homeAndBackVisibility = Pair(true, true),
             callback = {
@@ -51,7 +51,8 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
             },
             callbackHome = {
                 backHandelFlow()
-            })
+            },
+        )
         saveIntentValues()
         attachObservers()
         setClickListener()
@@ -71,12 +72,13 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
             showErrorDialogue(
                 getString(R.string.alert),
                 getString(R.string.exit_reason_message),
-                isNegativeButtonNeed = true
+                isNegativeButtonNeed = true,
             ) {
                 if (it) finish()
             }
-        } else
+        } else {
             finish()
+        }
     }
 
     private fun getPatientDetails() {
@@ -106,7 +108,7 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
                     resourceState?.data?.message?.let { message ->
                         showSuccessDialogue(
                             title = getString(R.string.psychological_assessment),
-                            message = message
+                            message = message,
                         ) { refreshPage() }
                     } ?: run { refreshPage() }
                 }
@@ -169,11 +171,13 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
                 tvPatientRisk.text = StringConverter.appendTexts(it, "", separator = "-")
                 tvPatientRisk.setTextColor(
                     CommonUtils.cvdRiskColorCode(
-                        data.cvdRiskScore?.toLong() ?: 0, this@NCDCounselorActivity
-                    )
+                        data.cvdRiskScore?.toLong() ?: 0,
+                        this@NCDCounselorActivity,
+                    ),
                 )
             }
-            CommonUtils.getBMIFormattedText(this@NCDCounselorActivity, data.bmi)
+            CommonUtils
+                .getBMIFormattedText(this@NCDCounselorActivity, data.bmi)
                 .let { formattedBmi ->
                     tvBMI.text = formattedBmi.first?.toString().textOrHyphen()
                     formattedBmi.second?.let { bmiColor -> tvBMI.setTextColor(bmiColor) }
@@ -182,9 +186,13 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
                 tvSuicidal.text = si.textOrHyphen().capitalizeFirstChar()
                 val color = if (si.equals(
                         DefinedParams.yes,
-                        true
+                        true,
                     )
-                ) R.color.medium_high_risk_color else R.color.black
+                ) {
+                    R.color.medium_high_risk_color
+                } else {
+                    R.color.black
+                }
                 tvSuicidal.setTextColor(getColor(color))
             }
             data.cageAid?.toDoubleOrNull()?.toInt()?.let { cageId ->
@@ -201,15 +209,14 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
                     firstText = text,
                     data.age.toString(),
                     data.gender?.capitalizeFirstChar(),
-                    separator = "-"
-                )
+                    separator = "-",
+                ),
             )
         }
         viewModel.patientReference = data.patientId
 
         getCounselingList()
     }
-
 
     private fun setClickListener() {
         binding.apply {
@@ -223,21 +230,26 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
         val ncdCounselingDialog = NCDCounselingDialog.newInstance(
             viewModel.patientReference,
             viewModel.memberReference,
-            viewModel.encounterReference
+            viewModel.encounterReference,
         ) { response ->
-            if (response != null)
-                GeneralSuccessDialog.newInstance(
-                    title = response.first,
-                    message = response.second,
-                    okayButton = getString(R.string.done)
-                ) { getCounselingList() }.show(supportFragmentManager, GeneralSuccessDialog.TAG)
+            if (response != null) {
+                GeneralSuccessDialog
+                    .newInstance(
+                        title = response.first,
+                        message = response.second,
+                        okayButton = getString(R.string.done),
+                    ) { getCounselingList() }
+                    .show(supportFragmentManager, GeneralSuccessDialog.TAG)
+            }
         }
         ncdCounselingDialog.show(supportFragmentManager, NCDCounselingDialog.TAG)
     }
 
     private fun loadCounselingList() {
         binding.btnDone.isEnabled = false
-        val counselingList = viewModel.assessmentListLiveData.value?.data?.entityList
+        val counselingList = viewModel.assessmentListLiveData.value
+            ?.data
+            ?.entityList
         if (counselingList.isNullOrEmpty()) {
             counseling(false)
             historyCounseling(false)
@@ -256,8 +268,9 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
             binding.rvHistoryPsychological.adapter = historyAdapter
             historyAdapter.submitData(historyList)
             historyCounseling(true)
-        } else
+        } else {
             historyCounseling(false)
+        }
     }
 
     private fun loadList(list: ArrayList<NCDCounselingModel>) {
@@ -268,14 +281,19 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
             binding.rvCounselorAssessmentList.adapter = adapter
             adapter.submitData(list)
             counseling(true)
-        } else
+        } else {
             counseling(false)
+        }
     }
 
     private val validation = object : ValidationListener {
         override fun validate() {
             binding.btnDone.isEnabled =
-                viewModel.assessmentListLiveData.value?.data?.entityList?.firstOrNull { it.assessedBy.isNullOrBlank() && !it.counselorAssessment.isNullOrBlank() } != null
+                viewModel.assessmentListLiveData.value
+                    ?.data
+                    ?.entityList
+                    ?.firstOrNull { it.assessedBy.isNullOrBlank() && !it.counselorAssessment.isNullOrBlank() } !=
+                null
         }
     }
 
@@ -283,7 +301,7 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
         val request = NCDCounselingModel(
             patientReference = viewModel.patientReference,
             memberReference = viewModel.memberReference,
-            visitId = viewModel.encounterReference
+            visitId = viewModel.encounterReference,
         )
         viewModel.getAssessmentList(request, false)
     }
@@ -320,17 +338,20 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
 
     private fun updateCounseling() {
         val counselingList =
-            viewModel.assessmentListLiveData.value?.data?.entityList?.filter { it.assessedBy.isNullOrBlank() && !it.counselorAssessment.isNullOrBlank() }
-        if (counselingList.isNullOrEmpty())
+            viewModel.assessmentListLiveData.value
+                ?.data
+                ?.entityList
+                ?.filter { it.assessedBy.isNullOrBlank() && !it.counselorAssessment.isNullOrBlank() }
+        if (counselingList.isNullOrEmpty()) {
             return
-        else {
+        } else {
             val items = ArrayList<ResultModel>()
             counselingList.forEach {
                 items.add(
                     ResultModel(
                         id = it.id,
-                        counselorAssessment = it.counselorAssessment
-                    )
+                        counselorAssessment = it.counselorAssessment,
+                    ),
                 )
             }
             val request = AssessmentResultModel(
@@ -341,7 +362,7 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
                 patientVisitId = viewModel.encounterReference,
                 assessedBy = NCDMRUtil.currentUserId(),
                 assessedByDisplay = NCDMRUtil.getUserName(),
-                assessedDate = DateUtils.getTodayDateDDMMYYYY()
+                assessedDate = DateUtils.getTodayDateDDMMYYYY(),
             )
             viewModel.updateAssessment(request, false)
         }

@@ -11,5 +11,5 @@ class SymptomModel(
     var otherSymptom: String? = null,
     var value: String? = null,
     @SerializedName("culture_value")
-    val cultureValue:String? = null
+    val cultureValue: String? = null,
 )

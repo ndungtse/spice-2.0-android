@@ -5,5 +5,5 @@ import com.google.gson.annotations.SerializedName
 data class SyncRequest<T>(
     val requestId: String,
     @SerializedName("")
-    val houseHolds: List<T>
+    val houseHolds: List<T>,
 )

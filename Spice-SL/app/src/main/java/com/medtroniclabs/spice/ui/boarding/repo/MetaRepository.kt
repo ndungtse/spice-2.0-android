@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.boarding.repo
 
+import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.common.CommonUtils
@@ -22,6 +23,8 @@ import com.medtroniclabs.spice.data.MenuDetail
 import com.medtroniclabs.spice.data.ModelQuestion
 import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.UserProfile
+import com.medtroniclabs.spice.data.model.ShasthyaShebika
+import com.medtroniclabs.spice.data.model.SubVillage
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ConsentEntity
@@ -40,8 +43,6 @@ import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.SubVillageEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
-import com.medtroniclabs.spice.data.model.ShasthyaShebika
-import com.medtroniclabs.spice.data.model.SubVillage
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.CultureLocaleModel
@@ -62,40 +63,39 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanningMethods
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import java.lang.reflect.Type
 import javax.inject.Inject
-import  dagger.hilt.android.qualifiers.ApplicationContext
-import  android.content.Context
 
 class MetaRepository @Inject constructor(
     private var apiHelper: ApiHelper,
     private var roomHelper: RoomHelper,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) {
-
-    suspend fun updateDeviceDetails(deviceDetails: DeviceDetails): Resource<DeviceDetails> {
-        return try {
+    suspend fun updateDeviceDetails(deviceDetails: DeviceDetails): Resource<DeviceDetails> =
+        try {
             val response = apiHelper.updateDeviceDetails(deviceDetails)
             if (response.isSuccessful) {
                 val responseBody = response.body()
-                if (responseBody?.status == true)
+                if (responseBody?.status == true) {
                     Resource(state = ResourceState.SUCCESS)
-                else
+                } else {
                     Resource(state = ResourceState.ERROR)
-            } else
+                }
+            } else {
                 Resource(state = ResourceState.ERROR)
+            }
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     suspend fun getMetaDataInformation(
         workflowNames: MutableList<Long>,
         meta: MutableList<String>,
-        changeFacility: Boolean
+        changeFacility: Boolean,
     ): Resource<Boolean> {
         return try {
             withContext(Dispatchers.IO) {
@@ -107,12 +107,12 @@ class MetaRepository @Inject constructor(
                             saveHealthFacilityInDb(
                                 nearestHealthFacilities,
                                 defaultHealthFacility.id,
-                                userHealthFacilities
+                                userHealthFacilities,
                             )
                             saveUserLinkedVillages(userHealthFacilities)
                             SecuredPreference.putString(
                                 SecuredPreference.EnvironmentKey.DEFAULT_SITE_ID.name,
-                                defaultHealthFacility.fhirId
+                                defaultHealthFacility.fhirId,
                             )
                             deleteAllVillages()
                             saveVillage(modifiedVillages(villages, userProfile.villages))
@@ -125,25 +125,26 @@ class MetaRepository @Inject constructor(
                                 saveFrequencyList(it)
                             }
                             saveConsentForm(consentForm)
-                            saveFhirId(userProfile.fhirId, defaultHealthFacility,changeFacility)
+                            saveFhirId(userProfile.fhirId, defaultHealthFacility, changeFacility)
                             saveUserProfileDetailsInDb(userProfile)
                             appTypes?.forEach {
                                 when (it) {
                                     DefinedParams.COMMUNITY -> SecuredPreference.putBoolean(
                                         SecuredPreference.EnvironmentKey.IS_COMMUNITY.name,
-                                        true
+                                        true,
                                     )
                                     DefinedParams.NON_COMMUNITY -> SecuredPreference.putBoolean(
                                         SecuredPreference.EnvironmentKey.IS_NON_COMMUNITY.name,
-                                        true
+                                        true,
                                     )
                                 }
                             }
                             roomHelper.deleteAllMenus()
                             if (CommonUtils.isRolePresent()) {
                                 saveClinicalWorkflowsForProvider(defaultHealthFacility.clinicalWorkflows)
-                                if (CommonUtils.isNonCommunity())
+                                if (CommonUtils.isNonCommunity()) {
                                     handleMeta(menu, meta)
+                                }
                             } else {
                                 handleMeta(menu, meta)
                             }
@@ -168,8 +169,8 @@ class MetaRepository @Inject constructor(
                                         ProgramEntity(
                                             id = item.id,
                                             name = item.name,
-                                            healthFacilityIds = fetchIds(item.healthFacilities)
-                                        )
+                                            healthFacilityIds = fetchIds(item.healthFacilities),
+                                        ),
                                     )
                                 }
                                 roomHelper.savePrograms(list)
@@ -182,7 +183,7 @@ class MetaRepository @Inject constructor(
                             remainingAttemptsCount?.let { remAttempts ->
                                 SecuredPreference.putInt(
                                     SecuredPreference.EnvironmentKey.REMAINING_ATTEMPTS_COUNT.name,
-                                    remAttempts
+                                    remAttempts,
                                 )
                             }
                             medicationInstructions?.let { items ->
@@ -195,8 +196,8 @@ class MetaRepository @Inject constructor(
                             apiHelper.getForms(
                                 FormRequest(
                                     nonNcdWorkflowEnabled = CommonUtils.isCommunity(),
-                                    workflowNames
-                                )
+                                    workflowNames,
+                                ),
                             )
                         }.await()
                         if (formsResponse.isSuccessful && formsResponse.body()?.status == true) {
@@ -211,8 +212,7 @@ class MetaRepository @Inject constructor(
                                         return@with Resource(state = ResourceState.ERROR)
                                     }
                                 }
-                                if (CommonUtils.isNonCommunity())
-                                {
+                                if (CommonUtils.isNonCommunity()) {
                                     saveNcdFormsInDb(this)
                                     saveNcdModelQuestions(modelQuestions)
                                 }
@@ -243,8 +243,8 @@ class MetaRepository @Inject constructor(
                                                 data.comorbidities,
                                                 data.patientStatus,
                                                 data.patientType,
-                                                data.treatmentOutcome
-                                            )
+                                                data.treatmentOutcome,
+                                            ),
                                         )
                                         roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.TB.name)
                                         roomHelper.deleteDiagnosisList(MotherNeonateUtil.TB_SITE_OF_DISEASE)
@@ -252,7 +252,7 @@ class MetaRepository @Inject constructor(
                                         roomHelper.saveDiagnosisList(data.diseaseCategories)
                                         SecuredPreference.putBoolean(
                                             SecuredPreference.EnvironmentKey.IS_TB_LOADED.name,
-                                            true
+                                            true,
                                         )
                                     }
                                 } ?: run {
@@ -276,13 +276,15 @@ class MetaRepository @Inject constructor(
                                         it.filter { it.type != FamilyPlanningMethods }?.let {
                                             roomHelper.insertSymptoms(it)
                                         }
-                                        it.filter { it.type.equals(FamilyPlanningMethods, true) }.sortedBy { it.displayOrder }
+                                        it
+                                            .filter { it.type.equals(FamilyPlanningMethods, true) }
+                                            .sortedBy { it.displayOrder }
                                             ?.let { list ->
                                                 roomHelper.insertSymptoms(
                                                     convertFamilyPlanningMethodToSymptoms(
                                                         list,
-                                                        maxId
-                                                    )
+                                                        maxId,
+                                                    ),
                                                 )
                                             }
                                     }
@@ -301,7 +303,6 @@ class MetaRepository @Inject constructor(
                                         roomHelper.saveDosageFrequencyList(it)
                                     }
 
-
                                     res.diagnosis?.let {
                                         roomHelper.deleteNCDDiagnosisList()
                                         roomHelper.saveNCDDiagnosisList(it)
@@ -318,14 +319,14 @@ class MetaRepository @Inject constructor(
                                                 TypeToken<ArrayList<RiskClassificationModel>>() {}.type
                                         val resultString = Gson().toJson(
                                             nonLab,
-                                            baseType
+                                            baseType,
                                         )
                                         roomHelper.run {
                                             deleteRiskFactor()
                                             insertRiskFactor(
                                                 RiskFactorEntity(
-                                                    nonLabEntity = resultString
-                                                )
+                                                    nonLabEntity = resultString,
+                                                ),
                                             )
                                         }
                                     }
@@ -339,7 +340,7 @@ class MetaRepository @Inject constructor(
                         if (CommonUtils.isNonCommunity()) {
                             val userTermsAndConditionsMeta = async {
                                 apiHelper.getUserTermsAndConditions(
-                                    TermsAndConditionsModel(countryId = SecuredPreference.getCountryId())
+                                    TermsAndConditionsModel(countryId = SecuredPreference.getCountryId()),
                                 )
                             }.await()
                             if (userTermsAndConditionsMeta.isSuccessful && userTermsAndConditionsMeta.body()?.status == true) {
@@ -347,15 +348,16 @@ class MetaRepository @Inject constructor(
                                     return@with Resource(state = ResourceState.ERROR)
                                 }
                                 userTermsAndConditionsMeta.body()?.entity?.let { res ->
-                                    if (res.id != null && !res.formInput.isNullOrBlank())
+                                    if (res.id != null && !res.formInput.isNullOrBlank()) {
                                         roomHelper.saveConsent(
                                             ConsentEntity(
                                                 formType = DefinedParams.Landing,
-                                                formInput = res.formInput
-                                            )
+                                                formInput = res.formInput,
+                                            ),
                                         )
-                                    else
+                                    } else {
                                         return@with Resource(state = ResourceState.ERROR)
+                                    }
                                 }
                             } else {
                                 return@with Resource(state = ResourceState.ERROR)
@@ -385,8 +387,8 @@ class MetaRepository @Inject constructor(
                     category = MedicalReviewTypeEnums.PRESCRIPTION_INSTRUCTION.name,
                     type = MedicalReviewTypeEnums.PRESCRIPTION_INSTRUCTION.name,
                     displayOrder = itemId.toInt(),
-                    value = value
-                )
+                    value = value,
+                ),
             )
             itemId++
         }
@@ -402,7 +404,7 @@ class MetaRepository @Inject constructor(
                     SecuredPreference.setUserPreference(
                         cultureList[i].id,
                         cultureList[i].name,
-                        false
+                        false,
                     )
                     break
                 }
@@ -411,7 +413,7 @@ class MetaRepository @Inject constructor(
                 SecuredPreference.setUserPreference(
                     cultureList[i].id,
                     cultureList[i].name,
-                    isEnabled
+                    isEnabled,
                 )
                 break
             }
@@ -425,16 +427,16 @@ class MetaRepository @Inject constructor(
                 facility.clinicalWorkflows.find {
                     it.workflowName.equals(
                         DefinedParams.PregnancyANC,
-                        true
+                        true,
                     )
-                } != null
+                } != null,
             )
         }
     }
 
     private fun modifiedVillages(
         allVillages: List<VillageEntity>,
-        userVillages: List<VillageEntity>?
+        userVillages: List<VillageEntity>?,
     ): List<VillageEntity> {
         allVillages.forEach { root ->
             root.isUserVillage = userVillages?.firstOrNull { it.id == root.id } != null
@@ -457,19 +459,20 @@ class MetaRepository @Inject constructor(
         val linkedVillages = mutableListOf<LinkedVillageEntity>()
         userHealthFacilities?.let { facilities ->
             facilities.forEach { facility ->
-                val list = facility.linkedVillages.map {
-                    LinkedVillageEntity(
-                        villageId = it.id,
-                        tenantId = facility.tenantId,
-                        name = it.name,
-                        villagecode = it.code,
-                        chiefdomId = it.chiefdomId,
-                        countryId = it.countryId,
-                        districtId = it.districtId,
-                        districtCode = it.districtCode,
-                        chiefdomCode = it.chiefdomCode
-                    )
-                }.toList()
+                val list = facility.linkedVillages
+                    .map {
+                        LinkedVillageEntity(
+                            villageId = it.id,
+                            tenantId = facility.tenantId,
+                            name = it.name,
+                            villagecode = it.code,
+                            chiefdomId = it.chiefdomId,
+                            countryId = it.countryId,
+                            districtId = it.districtId,
+                            districtCode = it.districtCode,
+                            chiefdomCode = it.chiefdomCode,
+                        )
+                    }.toList()
 
                 linkedVillages.addAll(list)
             }
@@ -487,7 +490,10 @@ class MetaRepository @Inject constructor(
         return ids
     }
 
-    private suspend fun handleMeta(menu: Menu, meta: MutableList<String>) {
+    private suspend fun handleMeta(
+        menu: Menu,
+        meta: MutableList<String>,
+    ) {
         menu.menus?.let {
             saveMenusInDb(menu.menus, menu.roleName)
         }
@@ -506,8 +512,8 @@ class MetaRepository @Inject constructor(
                 MenuDetail(
                     name = it.workflowName,
                     order = it.displayOrder,
-                    workflowName = it.workflowName
-                )
+                    workflowName = it.workflowName,
+                ),
             )
         }
         saveMenusInDb(menuList, PROVIDER)
@@ -520,8 +526,8 @@ class MetaRepository @Inject constructor(
                 roomHelper.insertConsentForm(
                     ConsentForm(
                         type = ConsentFormType.Household,
-                        content = it
-                    )
+                        content = it,
+                    ),
                 )
             }
 
@@ -529,8 +535,8 @@ class MetaRepository @Inject constructor(
                 roomHelper.insertConsentForm(
                     ConsentForm(
                         type = ConsentFormType.EPI,
-                        content = it
-                    )
+                        content = it,
+                    ),
                 )
             }
 
@@ -538,8 +544,8 @@ class MetaRepository @Inject constructor(
                 roomHelper.insertConsentForm(
                     ConsentForm(
                         type = ConsentFormType.HIV,
-                        content = it
-                    )
+                        content = it,
+                    ),
                 )
             }
         }
@@ -548,7 +554,7 @@ class MetaRepository @Inject constructor(
     private suspend fun saveHealthFacilityInDb(
         list: List<HealthFacility>,
         defaultId: Long,
-        userHealthFacilities: List<HealthFacility>?
+        userHealthFacilities: List<HealthFacility>?,
     ) {
         roomHelper.deleteAllHealthFacility()
         list.forEach { healthFacility ->
@@ -563,15 +569,15 @@ class MetaRepository @Inject constructor(
                     isDefault = if (healthFacility.id == defaultId) {
                         SecuredPreference.putString(
                             SecuredPreference.EnvironmentKey.IS_DEFAULT_SITE_ID.name,
-                            healthFacility.fhirId
+                            healthFacility.fhirId,
                         )
                         true
                     } else {
                         false
                     },
                     isUserSite = userHealthFacilities?.any { userSiteFacility -> userSiteFacility.id == healthFacility.id } ?: false,
-                    phoneNumber = healthFacility.phuFocalPersonNumber?.toString() ?: ""
-                )
+                    phoneNumber = healthFacility.phuFocalPersonNumber?.toString() ?: "",
+                ),
             )
         }
         val otherUserHealthFacility = userHealthFacilities?.filterNot { it in list }
@@ -586,8 +592,8 @@ class MetaRepository @Inject constructor(
                     fhirId = healthFacility.fhirId,
                     isDefault = healthFacility.id == defaultId,
                     isUserSite = userHealthFacilities?.any { userSiteFacility -> userSiteFacility.id == healthFacility.id } ?: false,
-                    phoneNumber = healthFacility.phuFocalPersonNumber?.toString() ?: null
-                )
+                    phoneNumber = healthFacility.phuFocalPersonNumber?.toString() ?: null,
+                ),
             )
         }
     }
@@ -595,7 +601,7 @@ class MetaRepository @Inject constructor(
     private fun saveFhirId(
         userId: String?,
         healthFacility: HealthFacility,
-        changeFacility: Boolean
+        changeFacility: Boolean,
     ) {
         userId?.let {
             SecuredPreference.putString(SecuredPreference.EnvironmentKey.USER_FHIR_ID.name, it)
@@ -608,28 +614,28 @@ class MetaRepository @Inject constructor(
             healthFacility.id.let {
                 SecuredPreference.putLong(
                     SecuredPreference.EnvironmentKey.ORGANIZATION_ID.name,
-                    it
+                    it,
                 )
             }
 
             healthFacility.fhirId?.let {
                 SecuredPreference.putString(
                     SecuredPreference.EnvironmentKey.ORGANIZATION_FHIR_ID.name,
-                    it
+                    it,
                 )
             }
 
             SecuredPreference.putLong(
                 SecuredPreference.EnvironmentKey.TENANT_ID.name,
-                healthFacility.tenantId
+                healthFacility.tenantId,
             )
 
             healthFacility.district.id.let {
-                SecuredPreference.putLong(SecuredPreference.EnvironmentKey.DISTRICT_ID.name,it)
+                SecuredPreference.putLong(SecuredPreference.EnvironmentKey.DISTRICT_ID.name, it)
             }
 
             healthFacility.chiefdom?.id?.let {
-                SecuredPreference.putLong(SecuredPreference.EnvironmentKey.CHIEFDOM_ID.name,it)
+                SecuredPreference.putLong(SecuredPreference.EnvironmentKey.CHIEFDOM_ID.name, it)
             }
         }
     }
@@ -646,23 +652,25 @@ class MetaRepository @Inject constructor(
                     workflowName = clinicalWorkflow.workflowName,
                     countryId = clinicalWorkflow.countryId,
                     displayOrder = clinicalWorkflow.displayOrder,
-                )
+                ),
             )
-            clinicalWorkFlowConditions.addAll(clinicalWorkflow.conditions?.map { condition ->
-                ClinicalWorkflowConditionEntity(
-                    id = 0,
-                    gender = condition.gender,
-                    maxAge = condition.maxAge,
-                    minAge = condition.minAge,
-                    clinicalWorkflowId = clinicalWorkflow.id,
-                    subModule = condition.subModule,
-                    moduleType = condition.moduleType,
-                    groupName = condition.groupName,
-                    cultureGroupName = condition.displayGroupName,
-                    category = condition.category
-                )
-
-            }?.toList() ?: listOf())
+            clinicalWorkFlowConditions.addAll(
+                clinicalWorkflow.conditions
+                    ?.map { condition ->
+                        ClinicalWorkflowConditionEntity(
+                            id = 0,
+                            gender = condition.gender,
+                            maxAge = condition.maxAge,
+                            minAge = condition.minAge,
+                            clinicalWorkflowId = clinicalWorkflow.id,
+                            subModule = condition.subModule,
+                            moduleType = condition.moduleType,
+                            groupName = condition.groupName,
+                            cultureGroupName = condition.displayGroupName,
+                            category = condition.category,
+                        )
+                    }?.toList() ?: listOf(),
+            )
         }
         roomHelper.deleteAllClinicalWorkflow()
         roomHelper.deleteClinicalWorkflowConditions()
@@ -670,12 +678,12 @@ class MetaRepository @Inject constructor(
         roomHelper.insertClinicalWorkflowConditions(clinicalWorkFlowConditions)
         val psychologicalFlow = clinicalWorkFlowList.firstOrNull {
             it.workflowName?.contains(Screening.PHQ4) == true ||
-                    it.workflowName?.contains(Screening.suicideScreener) == true ||
-                    it.workflowName?.contains(Screening.substanceAbuse) == true
+                it.workflowName?.contains(Screening.suicideScreener) == true ||
+                it.workflowName?.contains(Screening.substanceAbuse) == true
         }
         SecuredPreference.putBoolean(
             SecuredPreference.EnvironmentKey.IS_PSYCHOLOGICAL_FLOW_ENABLED.name,
-            psychologicalFlow != null
+            psychologicalFlow != null,
         )
     }
 
@@ -690,12 +698,15 @@ class MetaRepository @Inject constructor(
         roomHelper.saveUserProfileDetails(
             UserProfileEntity(
                 id = 0,
-                profileData = Gson().toJson(userProfile)
-            )
+                profileData = Gson().toJson(userProfile),
+            ),
         )
     }
 
-    private suspend fun saveMenusInDb(menus: ArrayList<MenuDetail>, roleName: String) {
+    private suspend fun saveMenusInDb(
+        menus: ArrayList<MenuDetail>,
+        roleName: String,
+    ) {
         menus.forEach { menu ->
             roomHelper.saveMenus(
                 MenuEntity(
@@ -704,52 +715,54 @@ class MetaRepository @Inject constructor(
                     name = menu.name,
                     displayOrder = menu.order,
                     menuId = menu.workflowName ?: menu.name,
-                    displayValue = menu.displayValue
-                )
+                    displayValue = menu.displayValue,
+                ),
             )
         }
     }
 
     private suspend fun saveFormsInDb(formData: List<FormData>) {
         roomHelper.deleteAllForms()
-        roomHelper.saveForms(formData.map { data ->
-            // Override formInput for specific form types from assets
-            val formInput = when (data.formType) {
-                "household_registration" -> {
-                    try {
-                        CommonUtils.getStringFromAssets("household_registration.json", context.assets)
-                    } catch (e: Exception) {
-                        // If asset file not found, use server formInput
-                        data.formInput
+        roomHelper.saveForms(
+            formData.map { data ->
+                // Override formInput for specific form types from assets
+                val formInput = when (data.formType) {
+                    "household_registration" -> {
+                        try {
+                            CommonUtils.getStringFromAssets("household_registration.json", context.assets)
+                        } catch (e: Exception) {
+                            // If asset file not found, use server formInput
+                            data.formInput
+                        }
                     }
-                }
-                "household_member_registration" -> {
-                    try {
-                        CommonUtils.getStringFromAssets("member_registration.json", context.assets)
-                    } catch (e: Exception) {
-                        // If asset file not found, use server formInput
-                        data.formInput
+                    "household_member_registration" -> {
+                        try {
+                            CommonUtils.getStringFromAssets("member_registration.json", context.assets)
+                        } catch (e: Exception) {
+                            // If asset file not found, use server formInput
+                            data.formInput
+                        }
                     }
-                }
-                "family_planning_form", "family_planning_review" -> {
-                    try {
-                        CommonUtils.getStringFromAssets("family_planning_form.json", context.assets)
-                    } catch (e: Exception) {
-                        // If asset file not found, use server formInput
-                        data.formInput
+                    "family_planning_form", "family_planning_review" -> {
+                        try {
+                            CommonUtils.getStringFromAssets("family_planning_form.json", context.assets)
+                        } catch (e: Exception) {
+                            // If asset file not found, use server formInput
+                            data.formInput
+                        }
                     }
+                    else -> data.formInput
                 }
-                else -> data.formInput
-            }
-            
-            FormEntity(
-                id = data.id,
-                formInput = formInput,
-                formType = data.formType,
-                workflowName = data.workflowName,
-                clinicalWorkflowId = data.clinicalWorkflowId
-            )
-        })
+
+                FormEntity(
+                    id = data.id,
+                    formInput = formInput,
+                    formType = data.formType,
+                    workflowName = data.workflowName,
+                    clinicalWorkflowId = data.clinicalWorkflowId,
+                )
+            },
+        )
     }
 
     private suspend fun saveNcdFormsInDb(formResponse: FormResponse) {
@@ -760,15 +773,15 @@ class MetaRepository @Inject constructor(
                 FormEntity(
                     id = scr.id,
                     formType = DefinedParams.Screening,
-                    formInput = scr.inputForm
-                )
+                    formInput = scr.inputForm,
+                ),
             )
             roomHelper.saveConsent(
                 ConsentEntity(
                     id = scr.id,
                     formType = DefinedParams.Screening,
-                    formInput = scr.consentForm
-                )
+                    formInput = scr.consentForm,
+                ),
             )
         }
         formResponse.enrollment?.let { enr ->
@@ -776,15 +789,15 @@ class MetaRepository @Inject constructor(
                 FormEntity(
                     id = enr.id,
                     formType = DefinedParams.Registration,
-                    formInput = enr.inputForm
-                )
+                    formInput = enr.inputForm,
+                ),
             )
             roomHelper.saveConsent(
                 ConsentEntity(
                     id = enr.id,
                     formType = DefinedParams.Registration,
-                    formInput = enr.consentForm
-                )
+                    formInput = enr.consentForm,
+                ),
             )
         }
         formResponse.assessment?.let { ass ->
@@ -800,10 +813,10 @@ class MetaRepository @Inject constructor(
                     .filter {
                         it.viewType.equals(
                             AssessmentDefinedParams.CardView,
-                            true
-                        ) && (it.category?.contains(category) == true)
-                    }
-                    .map { it.id }
+                            true,
+                        ) &&
+                            (it.category?.contains(category) == true)
+                    }.map { it.id }
                 if (cardIdList.isNotEmpty()) {
                     val formLayoutList = formFields.formLayout.filter { formLayout ->
                         cardIdList.any { id -> formLayout.family == id || formLayout.id == id }
@@ -815,11 +828,11 @@ class MetaRepository @Inject constructor(
                             formInput = gson.toJson(
                                 com.medtroniclabs.spice.formgeneration.model.FormResponse(
                                     formLayout = formLayoutList,
-                                    time = formFields.time
-                                )
+                                    time = formFields.time,
+                                ),
                             ),
-                            workflowName = category
-                        )
+                            workflowName = category,
+                        ),
                     )
                 }
             }
@@ -827,21 +840,22 @@ class MetaRepository @Inject constructor(
                 ConsentEntity(
                     id = ass.id,
                     formType = DefinedParams.Assessment,
-                    formInput = ass.consentForm
-                )
+                    formInput = ass.consentForm,
+                ),
             )
         }
         formResponse.customizedWorkflow?.let { workflows ->
             if (workflows.isNotEmpty()) {
                 val moduleString = Gson().toJson(workflows)
-                if (!moduleString.isNullOrBlank())
+                if (!moduleString.isNullOrBlank()) {
                     roomHelper.saveForm(
                         FormEntity(
                             id = formResponse.id,
                             formType = DefinedParams.Workflow,
-                            formInput = moduleString
-                        )
+                            formInput = moduleString,
+                        ),
                     )
+                }
             }
         }
     }
@@ -854,8 +868,8 @@ class MetaRepository @Inject constructor(
                 mentalHealthList.add(
                     MentalHealthEntity(
                         formType = listItem.type,
-                        formInput = listItem.questions
-                    )
+                        formInput = listItem.questions,
+                    ),
                 )
             }
             if (mentalHealthList.isNotEmpty()) {
@@ -867,17 +881,19 @@ class MetaRepository @Inject constructor(
     private fun saveUserIsLogin() {
         SecuredPreference.putBoolean(
             SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
-            true
+            true,
         )
         SecuredPreference.putBoolean(
             SecuredPreference.EnvironmentKey.ISMETALOADED.name,
-            true
+            true,
         )
     }
 
-
-    suspend fun getMenuForClinicalWorkflows(selectedHouseholdMemberID: Long, gender: String?): Resource<List<MenuEntity>> {
-        return try {
+    suspend fun getMenuForClinicalWorkflows(
+        selectedHouseholdMemberID: Long,
+        gender: String?,
+    ): Resource<List<MenuEntity>> =
+        try {
             if (selectedHouseholdMemberID != -1L) {
                 val memberData = roomHelper.getDobAndGenderById(selectedHouseholdMemberID)
                 val calenderPeriod = DateUtils.getV2YearMonthAndWeek(memberData.dateOfBirth)
@@ -889,7 +905,6 @@ class MetaRepository @Inject constructor(
 
                 val list = roomHelper.getClinicalWorkflowId(memberData.gender, months)
 
-
                 /*val (months, weeks) = DateUtils.dateToMonthsAndWeeks(memberData.dateOfBirth) ?: Pair(0, 0)
                 val list = if (months == 15 && weeks == 0) {
                     roomHelper.getClinicalWorkflowId(memberData.gender, months.minus(1))
@@ -899,14 +914,14 @@ class MetaRepository @Inject constructor(
 
                 Resource(
                     state = ResourceState.SUCCESS,
-                    data = convertorClinicalWorkflowsToMenuEntity(list)
+                    data = convertorClinicalWorkflowsToMenuEntity(list),
                 )
-            } else if(!gender.isNullOrBlank()) {
+            } else if (!gender.isNullOrBlank()) {
                 val list = roomHelper.getAssessmentClinicalWorkflow(gender, DefinedParams.Assessment)
 
                 Resource(
                     state = ResourceState.SUCCESS,
-                    data = convertorClinicalWorkflowsToMenuEntity(list)
+                    data = convertorClinicalWorkflowsToMenuEntity(list),
                 )
             } else {
                 Resource(state = ResourceState.ERROR)
@@ -914,7 +929,6 @@ class MetaRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     private fun convertorClinicalWorkflowsToMenuEntity(clinicalWorkflows: List<NCDAssessmentClinicalWorkflow>): List<MenuEntity> {
         val (individualWorkflows, groupWorkflows) = clinicalWorkflows.partition { it.category.isNullOrBlank() }
@@ -924,22 +938,21 @@ class MetaRepository @Inject constructor(
                 menuId = workflow.category ?: workflow.workflowName,
                 name = workflow.cultureGroupName ?: workflow.groupName ?: workflow.name,
                 displayOrder = workflow.displayOrder ?: 0,
-                subModule = workflow.subModule
+                subModule = workflow.subModule,
             )
         }
     }
 
-    suspend fun getMenu(): Resource<List<MenuEntity>> {
-        return try {
+    suspend fun getMenu(): Resource<List<MenuEntity>> =
+        try {
             val data = roomHelper.getMenus()
             Resource(state = ResourceState.SUCCESS, data = data)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getUserProfile(): Resource<UserProfile> {
-        return try {
+    suspend fun getUserProfile(): Resource<UserProfile> =
+        try {
             val data = roomHelper.getUserProfile()
             val userProfile: UserProfile =
                 Gson().fromJson(data.profileData, UserProfile::class.java)
@@ -947,100 +960,89 @@ class MetaRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getAllVillagesName(): Resource<List<VillageEntity>> {
-        return try {
+    suspend fun getAllVillagesName(): Resource<List<VillageEntity>> =
+        try {
             val response = roomHelper.getAllVillageEntity()
             Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getDefaultHealthFacility(): Resource<HealthFacilityEntity> {
-        return try {
+    suspend fun getDefaultHealthFacility(): Resource<HealthFacilityEntity> =
+        try {
             val response = roomHelper.getDefaultHealthFacility()
             Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getAllVillageIds(): List<Long> {
-        return roomHelper.getAllVillageIds()
-    }
+    suspend fun getAllVillageIds(): List<Long> = roomHelper.getAllVillageIds()
 
-    suspend fun getUserHealthFacility(): Resource<ArrayList<HealthFacilityEntity>> {
-        return try {
+    suspend fun getUserHealthFacility(): Resource<ArrayList<HealthFacilityEntity>> =
+        try {
             val response = roomHelper.getUserHealthFacility(true)
             Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    fun getUnSyncedDataCountForNCDScreening() =
-        roomHelper.getUnSyncedDataCountForNCDScreening()
+    fun getUnSyncedDataCountForNCDScreening() = roomHelper.getUnSyncedDataCountForNCDScreening()
 
-    fun getUnSyncedNCDAssessmentCount() =
-        roomHelper.getUnSyncedNCDAssessmentCount()
+    fun getUnSyncedNCDAssessmentCount() = roomHelper.getUnSyncedNCDAssessmentCount()
 
     fun getUnSyncedNCDFollowUpCount() = roomHelper.getUnSyncedNCDFollowUpCount()
 
-    suspend fun getPatientListTransfer(request: NCDPatientTransferNotificationCountRequest): Resource<PatientTransferListResponse> {
-        return try {
+    suspend fun getPatientListTransfer(request: NCDPatientTransferNotificationCountRequest): Resource<PatientTransferListResponse> =
+        try {
             val response = apiHelper.getPatientListTransfer(request)
             Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun patientTransferNotificationCount(request: NCDPatientTransferNotificationCountRequest): Resource<NCDPatientTransferNotificationCountResponse> {
-        return try {
+    suspend fun patientTransferNotificationCount(request: NCDPatientTransferNotificationCountRequest): Resource<NCDPatientTransferNotificationCountResponse> =
+        try {
             val response = apiHelper.patientTransferNotificationCount(request)
             Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun patientTransferUpdate(request: NCDPatientTransferUpdateRequest): Resource<String> {
-        return try {
+    suspend fun patientTransferUpdate(request: NCDPatientTransferUpdateRequest): Resource<String> =
+        try {
             val response = apiHelper.patientTransferUpdate(request)
             Resource(state = ResourceState.SUCCESS, data = response.body()?.message)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getCultures(): Resource<List<CulturesEntity>> {
-        return try {
+    suspend fun getCultures(): Resource<List<CulturesEntity>> =
+        try {
             val response = roomHelper.getCultures()
             Resource(state = ResourceState.SUCCESS, response)
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun cultureLocaleUpdate(localeRequest: CultureLocaleModel) =
-        apiHelper.cultureLocaleUpdate(localeRequest)
+    suspend fun cultureLocaleUpdate(localeRequest: CultureLocaleModel) = apiHelper.cultureLocaleUpdate(localeRequest)
 
-    suspend fun createSupportRequest(request: NCDSupportRequest): Resource<String> {
-        return try {
+    suspend fun createSupportRequest(request: NCDSupportRequest): Resource<String> =
+        try {
             val response = apiHelper.createSupportRequest(request)
             Resource(state = ResourceState.SUCCESS, data = response.body()?.message)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    private fun convertFamilyPlanningMethodToSymptoms(inputList: List<SignsAndSymptomsEntity>, maxId: Long): List<SignsAndSymptomsEntity> {
+    private fun convertFamilyPlanningMethodToSymptoms(
+        inputList: List<SignsAndSymptomsEntity>,
+        maxId: Long,
+    ): List<SignsAndSymptomsEntity> {
         val resultList = mutableListOf<SignsAndSymptomsEntity>()
         val categoryMap = mutableMapOf<String, Int>()
         var idCounter = 1
-        var categoryId = maxId+1
+        var categoryId = maxId + 1
         for (item in inputList) {
             if (!categoryMap.containsKey(item.category)) {
                 item.category?.let { categoryName ->
@@ -1052,8 +1054,8 @@ class MetaRepository @Inject constructor(
                             displayValue = categoryName,
                             displayOrder = idCounter++,
                             value = categoryName,
-                            isTitle = true
-                        )
+                            isTitle = true,
+                        ),
                     )
                     categoryMap[categoryName] = idCounter
                 }
@@ -1067,17 +1069,15 @@ class MetaRepository @Inject constructor(
                     displayValue = item.displayValue,
                     displayOrder = idCounter++,
                     value = item.value,
-                    isTitle = false
-                )
+                    isTitle = false,
+                ),
             )
         }
         return resultList
     }
 
-    suspend fun getCBSNotificationDetails(
-        request: PeerSupervisorNotificationRequest
-    ): Resource<ArrayList<PeerSupervisorNotificationResponse>> {
-        return try {
+    suspend fun getCBSNotificationDetails(request: PeerSupervisorNotificationRequest): Resource<ArrayList<PeerSupervisorNotificationResponse>> =
+        try {
             val response = apiHelper.getCBSNotificationDetails(request)
             if (response.isSuccessful) {
                 val res = response.body()
@@ -1092,12 +1092,9 @@ class MetaRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun updateCBSNotification(
-        request: PeerSupervisorNotificationRequest
-    ): Resource<Unit> {
-        return try {
+    suspend fun updateCBSNotification(request: PeerSupervisorNotificationRequest): Resource<Unit> =
+        try {
             val response = apiHelper.updateCBSNotification(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, message = response.message())
@@ -1107,7 +1104,6 @@ class MetaRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     private fun generateChipItemByType(
         presentingComplaints: List<MedicalReviewMetaItems>,
@@ -1115,26 +1111,30 @@ class MetaRepository @Inject constructor(
         comorbidities: List<MedicalReviewMetaItems>,
         patientStatus: List<MedicalReviewMetaItems>,
         patientType: List<MedicalReviewMetaItems>,
-        treatmentOutcome: List<MedicalReviewMetaItems>
+        treatmentOutcome: List<MedicalReviewMetaItems>,
     ): List<MedicalReviewMetaItems> {
         val chipItemList = mutableListOf<MedicalReviewMetaItems>()
-        chipItemList.addAll(presentingComplaints.map {
-            it.apply {
-                category = MedicalReviewTypeEnums.PresentingComplaints.name
-            }
-        })
-        chipItemList.addAll(systemicExaminations.map {
-            it.apply {
-                category = MedicalReviewTypeEnums.SystemicExaminations.name
-            }
-        })
+        chipItemList.addAll(
+            presentingComplaints.map {
+                it.apply {
+                    category = MedicalReviewTypeEnums.PresentingComplaints.name
+                }
+            },
+        )
+        chipItemList.addAll(
+            systemicExaminations.map {
+                it.apply {
+                    category = MedicalReviewTypeEnums.SystemicExaminations.name
+                }
+            },
+        )
         chipItemList.addAll(
             comorbidities.map {
                 it.apply {
                     type = MedicalReviewTypeEnums.TB.name
                     category = MedicalReviewTypeEnums.comorbidities.name
                 }
-            }
+            },
         )
         chipItemList.addAll(
             patientStatus.map {
@@ -1142,21 +1142,21 @@ class MetaRepository @Inject constructor(
                     type = MedicalReviewTypeEnums.TB.name
                     category = MedicalReviewTypeEnums.patient_status.name
                 }
-            }
+            },
         )
         chipItemList.addAll(
             patientType.map {
                 it.apply {
                     category = MedicalReviewTypeEnums.patient_type.name
                 }
-            }
+            },
         )
         chipItemList.addAll(
             treatmentOutcome.map {
                 it.apply {
                     category = MedicalReviewTypeEnums.treatment_outcome.name
                 }
-            }
+            },
         )
         return chipItemList
     }
@@ -1168,7 +1168,7 @@ class MetaRepository @Inject constructor(
                     id = subVillage.id,
                     name = subVillage.name,
                     code = subVillage.code,
-                    villageId = subVillage.villageId
+                    villageId = subVillage.villageId,
                 )
             }
             roomHelper.deleteAllSubVillages()
@@ -1185,12 +1185,12 @@ class MetaRepository @Inject constructor(
                     name = shebika.name,
                     phoneNumber = shebika.phoneNumber,
                     ssId = shebika.ssId,
-                    shasthyaKormiId = shebika.shasthyaKormiId
+                    shasthyaKormiId = shebika.shasthyaKormiId,
                 )
             }
             roomHelper.deleteAllShasthyaShebikas()
             roomHelper.saveShasthyaShebikas(shasthyaShebikaEntities)
-            
+
             // Save linked subVillages in junction table
             val linkedVillages = mutableListOf<ShasthyaShebikaLinkedVillageEntity>()
             list.forEach { shebika ->
@@ -1198,8 +1198,8 @@ class MetaRepository @Inject constructor(
                     linkedVillages.add(
                         ShasthyaShebikaLinkedVillageEntity(
                             shasthyaShebikaId = shebika.id,
-                            subVillageId = subVillage.id
-                        )
+                            subVillageId = subVillage.id,
+                        ),
                     )
                 }
             }
@@ -1210,4 +1210,3 @@ class MetaRepository @Inject constructor(
         }
     }
 }
-

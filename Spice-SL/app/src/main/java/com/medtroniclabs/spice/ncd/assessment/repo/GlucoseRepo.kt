@@ -8,8 +8,8 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import javax.inject.Inject
 
 class GlucoseRepo @Inject constructor(private val apiHelper: ApiHelper) {
-    suspend fun glucoseLogCreate(hashMap: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> {
-        return try {
+    suspend fun glucoseLogCreate(hashMap: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> =
+        try {
             val response = apiHelper.glucoseLogCreate(hashMap)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body())
@@ -19,10 +19,9 @@ class GlucoseRepo @Inject constructor(private val apiHelper: ApiHelper) {
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun glucoseLogList(request: BPBGListModel): Resource<BPBGListModel> {
-        return try {
+    suspend fun glucoseLogList(request: BPBGListModel): Resource<BPBGListModel> =
+        try {
             val response = apiHelper.glucoseLogList(request)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
@@ -33,10 +32,9 @@ class GlucoseRepo @Inject constructor(private val apiHelper: ApiHelper) {
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun glucoseLogCreateForNurse(hashMap: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> {
-        return try {
+    suspend fun glucoseLogCreateForNurse(hashMap: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> =
+        try {
             val response = apiHelper.glucoseLogCreateForNurse(hashMap)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body())
@@ -46,5 +44,4 @@ class GlucoseRepo @Inject constructor(private val apiHelper: ApiHelper) {
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 }

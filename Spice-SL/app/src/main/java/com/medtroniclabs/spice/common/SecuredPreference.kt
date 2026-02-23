@@ -13,9 +13,7 @@ import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.CulturePreference
 import java.lang.reflect.Type
 
-
 object SecuredPreference {
-
     enum class EnvironmentKey {
         TOKEN,
         USERNAME,
@@ -77,9 +75,8 @@ object SecuredPreference {
         BACKGROUNDTIMESTAMP,
         PEER_SUPERVISOR_NOTIFICATION_TOKEN,
         IS_FAMILY_PLANNING_LOADED,
-        IS_HIV_DATA_LOADED
+        IS_HIV_DATA_LOADED,
     }
-
 
     private const val DEFAULT_SUFFIX = "_preferences"
 
@@ -89,13 +86,17 @@ object SecuredPreference {
 
     fun build(
         mKey: String,
-        context: Context
+        context: Context,
     ) {
         initPrefs(context, mKey + DEFAULT_SUFFIX)
     }
 
-    private fun initPrefs(context: Context, prefsName: String) {
-        val mainKeyAlias = MasterKey.Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+    private fun initPrefs(
+        context: Context,
+        prefsName: String,
+    ) {
+        val mainKeyAlias = MasterKey
+            .Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
 
@@ -104,7 +105,7 @@ object SecuredPreference {
             prefsName,
             mainKeyAlias,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
         )
     }
 
@@ -120,7 +121,7 @@ object SecuredPreference {
                 return mPrefs!!
             }
             throw RuntimeException(
-                "Prefs class not correctly instantiated. Please call Builder.setContext().build() in the Application class onCreate."
+                "Prefs class not correctly instantiated. Please call Builder.setContext().build() in the Application class onCreate.",
             )
         }
 
@@ -142,9 +143,10 @@ object SecuredPreference {
      * an int.
      * @see android.content.SharedPreferences.getInt
      */
-    fun getInt(key: String, defValue: Int): Int {
-        return preferences.getInt(key, defValue)
-    }
+    fun getInt(
+        key: String,
+        defValue: Int,
+    ): Int = preferences.getInt(key, defValue)
 
     /**
      * Retrieves a stored int value, or 0 if the preference does not exist.
@@ -155,10 +157,7 @@ object SecuredPreference {
      * an int.
      * @see android.content.SharedPreferences.getInt
      */
-    fun getInt(key: String): Int {
-        return preferences.getInt(key, 0)
-    }
-
+    fun getInt(key: String): Int = preferences.getInt(key, 0)
 
     /**
      * Retrieves a stored boolean value.
@@ -169,9 +168,10 @@ object SecuredPreference {
      * @throws ClassCastException if there is a preference with this name that is not a boolean.
      * @see android.content.SharedPreferences.getBoolean
      */
-    fun getBoolean(key: String, defValue: Boolean): Boolean {
-        return preferences.getBoolean(key, defValue)
-    }
+    fun getBoolean(
+        key: String,
+        defValue: Boolean,
+    ): Boolean = preferences.getBoolean(key, defValue)
 
     /**
      * Retrieves a stored boolean value, or false if the preference does not exist.
@@ -181,10 +181,7 @@ object SecuredPreference {
      * @throws ClassCastException if there is a preference with this name that is not a boolean.
      * @see android.content.SharedPreferences.getBoolean
      */
-    fun getBoolean(key: String): Boolean {
-        return preferences.getBoolean(key, false)
-    }
-
+    fun getBoolean(key: String): Boolean = preferences.getBoolean(key, false)
 
     /**
      * Retrieves a stored long value.
@@ -195,9 +192,10 @@ object SecuredPreference {
      * @throws ClassCastException if there is a preference with this name that is not a long.
      * @see android.content.SharedPreferences.getLong
      */
-    fun getLong(key: String, defValue: Long): Long {
-        return preferences.getLong(key, defValue)
-    }
+    fun getLong(
+        key: String,
+        defValue: Long,
+    ): Long = preferences.getLong(key, defValue)
 
     /**
      * Retrieves a stored long value, or 0 if the preference does not exist.
@@ -207,9 +205,7 @@ object SecuredPreference {
      * @throws ClassCastException if there is a preference with this name that is not a long.
      * @see android.content.SharedPreferences.getLong
      */
-    fun getLong(key: String): Long {
-        return preferences.getLong(key, 0L)
-    }
+    fun getLong(key: String): Long = preferences.getLong(key, 0L)
 
     /**
      * Returns the double that has been saved as a long raw bits value in the long preferences.
@@ -220,14 +216,16 @@ object SecuredPreference {
      * @throws ClassCastException if there is a preference with this name that is not a long.
      * @see android.content.SharedPreferences.getLong
      */
-    fun getDouble(key: String, defValue: Double): Double {
-        return java.lang.Double.longBitsToDouble(
+    fun getDouble(
+        key: String,
+        defValue: Double,
+    ): Double =
+        java.lang.Double.longBitsToDouble(
             preferences.getLong(
                 key,
-                java.lang.Double.doubleToLongBits(defValue)
-            )
+                java.lang.Double.doubleToLongBits(defValue),
+            ),
         )
-    }
 
     /**
      * Returns the double that has been saved as a long raw bits value in the long preferences.
@@ -238,14 +236,13 @@ object SecuredPreference {
      * @throws ClassCastException if there is a preference with this name that is not a long.
      * @see android.content.SharedPreferences.getLong
      */
-    fun getDouble(key: String): Double {
-        return java.lang.Double.longBitsToDouble(
+    fun getDouble(key: String): Double =
+        java.lang.Double.longBitsToDouble(
             preferences.getLong(
                 key,
-                java.lang.Double.doubleToLongBits(0.0)
-            )
+                java.lang.Double.doubleToLongBits(0.0),
+            ),
         )
-    }
 
     /**
      * Retrieves a stored float value.
@@ -256,9 +253,10 @@ object SecuredPreference {
      * @throws ClassCastException if there is a preference with this name that is not a float.
      * @see android.content.SharedPreferences.getFloat
      */
-    fun getFloat(key: String, defValue: Float): Float {
-        return preferences.getFloat(key, defValue)
-    }
+    fun getFloat(
+        key: String,
+        defValue: Float,
+    ): Float = preferences.getFloat(key, defValue)
 
     /**
      * Retrieves a stored float value, or 0 if the preference does not exist.
@@ -268,10 +266,7 @@ object SecuredPreference {
      * @throws ClassCastException if there is a preference with this name that is not a float.
      * @see android.content.SharedPreferences.getFloat
      */
-    fun getFloat(key: String): Float {
-        return preferences.getFloat(key, 0.0f)
-    }
-
+    fun getFloat(key: String): Float = preferences.getFloat(key, 0.0f)
 
     /**
      * Retrieves a stored String value.
@@ -282,9 +277,10 @@ object SecuredPreference {
      * @throws ClassCastException if there is a preference with this name that is not a String.
      * @see android.content.SharedPreferences.getString
      */
-    fun getString(key: String, defValue: String?): String? {
-        return preferences.getString(key, defValue)
-    }
+    fun getString(
+        key: String,
+        defValue: String?,
+    ): String? = preferences.getString(key, defValue)
 
     /**
      * Retrieves a stored String value, or an empty string if the preference does not exist.
@@ -294,9 +290,7 @@ object SecuredPreference {
      * @throws ClassCastException if there is a preference with this name that is not a String.
      * @see android.content.SharedPreferences.getString
      */
-    fun getString(key: String): String? {
-        return preferences.getString(key, null)
-    }
+    fun getString(key: String): String? = preferences.getString(key, null)
 
     /**
      * Stores a long value.
@@ -305,7 +299,10 @@ object SecuredPreference {
      * @param value The new value for the preference.
      * @see android.content.SharedPreferences.Editor.putLong
      */
-    fun putLong(key: String, value: Long) {
+    fun putLong(
+        key: String,
+        value: Long,
+    ) {
         val editor = preferences.edit()
         editor.putLong(key, value)
         editor.apply()
@@ -318,7 +315,10 @@ object SecuredPreference {
      * @param value The new value for the preference.
      * @see android.content.SharedPreferences.Editor.putInt
      */
-    fun putInt(key: String, value: Int) {
+    fun putInt(
+        key: String,
+        value: Int,
+    ) {
         val editor = preferences.edit()
         editor.putInt(key, value)
         editor.apply()
@@ -331,7 +331,10 @@ object SecuredPreference {
      * @param value The double value to be save in the preferences.
      * @see android.content.SharedPreferences.Editor.putLong
      */
-    fun putDouble(key: String, value: Double) {
+    fun putDouble(
+        key: String,
+        value: Double,
+    ) {
         val editor = preferences.edit()
         editor.putLong(key, java.lang.Double.doubleToRawLongBits(value))
         editor.apply()
@@ -344,7 +347,10 @@ object SecuredPreference {
      * @param value The new value for the preference.
      * @see android.content.SharedPreferences.Editor.putFloat
      */
-    fun putFloat(key: String, value: Float) {
+    fun putFloat(
+        key: String,
+        value: Float,
+    ) {
         val editor = preferences.edit()
         editor.putFloat(key, value)
         editor.apply()
@@ -357,7 +363,10 @@ object SecuredPreference {
      * @param value The new value for the preference.
      * @see android.content.SharedPreferences.Editor.putBoolean
      */
-    fun putBoolean(key: String, value: Boolean) {
+    fun putBoolean(
+        key: String,
+        value: Boolean,
+    ) {
         val editor = preferences.edit()
         editor.putBoolean(key, value)
         editor.apply()
@@ -370,7 +379,10 @@ object SecuredPreference {
      * @param value The new value for the preference.
      * @see android.content.SharedPreferences.Editor.putString
      */
-    fun putString(key: String, value: String?) {
+    fun putString(
+        key: String,
+        value: String?,
+    ) {
         val editor = preferences.edit()
         editor.putString(key, value)
         editor.apply()
@@ -396,11 +408,12 @@ object SecuredPreference {
      * @return `true` if the storage contains this key value, `false` otherwise.
      * @see android.content.SharedPreferences.contains
      */
-    operator fun contains(key: String): Boolean {
-        return preferences.contains(key)
-    }
+    operator fun contains(key: String): Boolean = preferences.contains(key)
 
-    fun saveStringArray(key: String, array: Array<String>) {
+    fun saveStringArray(
+        key: String,
+        array: Array<String>,
+    ) {
         val editor = preferences.edit()
         val set = HashSet<String>()
         set.addAll(array)
@@ -413,7 +426,10 @@ object SecuredPreference {
         return set?.toTypedArray()
     }
 
-    fun saveLongList(key: String, list: List<Long>) {
+    fun saveLongList(
+        key: String,
+        list: List<Long>,
+    ) {
         val editor = preferences.edit()
         val jsonString = Gson().toJson(list)
         editor.putString(key, jsonString)
@@ -497,29 +513,17 @@ object SecuredPreference {
         return Gson().fromJson(followUpCriteriaString, type)
     }
 
-    fun getUserId(): Long {
-        return getLong(EnvironmentKey.USER_ID.name)
-    }
+    fun getUserId(): Long = getLong(EnvironmentKey.USER_ID.name)
 
-    fun getOldUserId(): Long {
-        return getLong(EnvironmentKey.OLD_USER_ID.name)
-    }
+    fun getOldUserId(): Long = getLong(EnvironmentKey.OLD_USER_ID.name)
 
-    fun getDeviceId(): String? {
-        return getString(EnvironmentKey.DEVICE_ID.name)
-    }
+    fun getDeviceId(): String? = getString(EnvironmentKey.DEVICE_ID.name)
 
-    fun getPhoneNumberCode(): String? {
-        return getUserDetails()?.country?.phoneNumberCode
-    }
+    fun getPhoneNumberCode(): String? = getUserDetails()?.country?.phoneNumberCode
 
-    fun getRole(): String {
-        return getUserDetails()?.roles?.first()?.name?: ""
-    }
+    fun getRole(): String = getUserDetails()?.roles?.first()?.name ?: ""
 
-    fun getTermsAndConditionsStatus(): Boolean {
-        return getBoolean(EnvironmentKey.IS_TERMS_AND_CONDITIONS_APPROVED.name)
-    }
+    fun getTermsAndConditionsStatus(): Boolean = getBoolean(EnvironmentKey.IS_TERMS_AND_CONDITIONS_APPROVED.name)
 
     fun putIdentityTypes(types: List<IdentityType>) {
         val typesString = Gson().toJson(types)
@@ -559,35 +563,22 @@ object SecuredPreference {
         return true
     }
 
-    fun getUserFhirId(): String {
-        return getString(EnvironmentKey.USER_FHIR_ID.name) ?: ""
-    }
+    fun getUserFhirId(): String = getString(EnvironmentKey.USER_FHIR_ID.name) ?: ""
 
-    fun getOrganizationId(): Long {
-        return getLong(EnvironmentKey.ORGANIZATION_ID.name)
-    }
+    fun getOrganizationId(): Long = getLong(EnvironmentKey.ORGANIZATION_ID.name)
 
-    fun getOrganizationFhirId(): String {
-        return getString(EnvironmentKey.ORGANIZATION_FHIR_ID.name) ?: ""
-    }
+    fun getOrganizationFhirId(): String = getString(EnvironmentKey.ORGANIZATION_FHIR_ID.name) ?: ""
 
-    fun getTenantId(): Long {
-        return getLong(EnvironmentKey.TENANT_ID.name)
-    }
+    fun getTenantId(): Long = getLong(EnvironmentKey.TENANT_ID.name)
 
-    fun getDistrictId(): Long {
-        return getLong(EnvironmentKey.DISTRICT_ID.name)
-    }
+    fun getDistrictId(): Long = getLong(EnvironmentKey.DISTRICT_ID.name)
 
-    fun getChiefdomId(): Long {
-        return getLong(EnvironmentKey.CHIEFDOM_ID.name)
-    }
-
+    fun getChiefdomId(): Long = getLong(EnvironmentKey.CHIEFDOM_ID.name)
 
     fun getUnitMeasurementType(): String {
         getString(
             EnvironmentKey.MEASUREMENT_TYPE_KEY.name,
-            Screening.Unit_Measurement_Metric_Type
+            Screening.Unit_Measurement_Metric_Type,
         )?.let {
             return it
         } ?: kotlin.run {
@@ -604,23 +595,21 @@ object SecuredPreference {
         return null
     }
 
-    fun getDeviceID(): Long? {
-        return getUserDetails()?.deviceInfoId
-    }
+    fun getDeviceID(): Long? = getUserDetails()?.deviceInfoId
 
-    fun getCountryId(): Long? {
-        return getUserDetails()?.country?.id
-    }
+    fun getCountryId(): Long? = getUserDetails()?.country?.id
 
-    fun isAncEnabled(): Boolean {
-        return getBoolean(EnvironmentKey.PREGNANCY_ANC_ENABLED_SITE.name)
-    }
+    fun isAncEnabled(): Boolean = getBoolean(EnvironmentKey.PREGNANCY_ANC_ENABLED_SITE.name)
 
-    fun setUserPreference(locale: Long, name: String, enabled: Boolean) {
+    fun setUserPreference(
+        locale: Long,
+        name: String,
+        enabled: Boolean,
+    ) {
         val culture = getCulturePreference()
-        if (culture == null)
+        if (culture == null) {
             saveCulturePreference(CulturePreference(locale, name, enabled))
-        else {
+        } else {
             culture.cultureId = locale
             culture.name = name
             culture.isTranslationEnabled = enabled
@@ -629,6 +618,7 @@ object SecuredPreference {
     }
 
     fun getIsTranslationEnabled() = getCulturePreference()?.isTranslationEnabled ?: false
+
     fun getCultureName() = getCulturePreference()?.name ?: DefinedParams.EN_Locale
 
     private fun saveCulturePreference(model: CulturePreference) {
@@ -640,7 +630,11 @@ object SecuredPreference {
      * Saves culture preference synchronously (commit) so it is visible immediately
      * before navigating to login screen after language change.
      */
-    fun setUserPreferenceSync(locale: Long, name: String, enabled: Boolean) {
+    fun setUserPreferenceSync(
+        locale: Long,
+        name: String,
+        enabled: Boolean,
+    ) {
         val culture = getCulturePreference()
         val toSave = if (culture == null) {
             CulturePreference(locale, name, enabled)

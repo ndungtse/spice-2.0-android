@@ -7,17 +7,16 @@ import androidx.room.PrimaryKey
 data class UserJourneyAnalytics(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
-    val userId:String,
+    val userId: String,
     val sessionId: String,
     val userJourney: String,
     val startTime: String? = null,
-    val userRole: String? = null // 👈 nullable field
+    val userRole: String? = null, // 👈 nullable field
 )
-
 
 data class ScreenDetails(
     val userJourney: String,
     val startTime: String,
     val userID: String,
-    val userRole: String? = null
+    val userRole: String? = null,
 )

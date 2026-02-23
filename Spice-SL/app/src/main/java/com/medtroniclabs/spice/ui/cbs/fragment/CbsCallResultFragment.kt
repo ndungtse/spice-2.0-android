@@ -31,13 +31,13 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.followup.fragment.CallResultDialogFragment
 
 class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentBottomCallResultDialogBinding
     private val viewModel: AssessmentViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentBottomCallResultDialogBinding.inflate(inflater, container, false)
@@ -45,9 +45,7 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
         return binding.root
     }
 
-    override fun getTheme(): Int {
-        return R.style.DialogStyle
-    }
+    override fun getTheme(): Int = R.style.DialogStyle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +57,10 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -67,6 +68,7 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
 
     companion object {
         const val TAG = "CbsCallResultFragment"
+
         fun newInstance(type: String) =
             CbsCallResultFragment().apply {
                 val bundle = Bundle().apply {
@@ -90,14 +92,20 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
             }
         }
     }
+
     private fun initView() {
         val type = arguments?.getString(DefinedParams.type)
         viewModel.callResultHashMap[DefinedParams.CallResult] =
-            if (!type.isNullOrBlank() && type.equals(
+            if (!type.isNullOrBlank() &&
+                type.equals(
                     DefinedParams.ps,
-                    true
+                    true,
                 )
-            ) getString(R.string.informed_ps) else getString(R.string.informed_phu)
+            ) {
+                getString(R.string.informed_ps)
+            } else {
+                getString(R.string.informed_phu)
+            }
         getCallResultData().let {
             val view = SingleSelectionCustomView(binding.root.context)
             view.tag = CallResultDialogFragment.TAG
@@ -107,7 +115,7 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
                 viewModel.callResultHashMap,
                 Pair(DefinedParams.CallResult, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                callResultSelectionCallback
+                callResultSelectionCallback,
             )
             binding.selectionCallResult.addView(view)
         }
@@ -153,14 +161,16 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
 
             // Determine the type and result status
             val typeValue = arguments?.getString(DefinedParams.type)?.trim()?.lowercase()
-            val isPsType = typeValue.equals(DefinedParams.ps,true)
+            val isPsType = typeValue.equals(DefinedParams.ps, true)
 
             val selectedResult = viewModel.callResultHashMap[DefinedParams.CallResult] as? String
 
             val followUpStatus = when {
-                !selectedResult.isNullOrBlank() && selectedResult.equals(
-                    getString(if (isPsType) R.string.informed_ps else R.string.informed_phu), true
-                ) -> FollowUpCallStatus.SUCCESSFUL
+                !selectedResult.isNullOrBlank() &&
+                    selectedResult.equals(
+                        getString(if (isPsType) R.string.informed_ps else R.string.informed_phu),
+                        true,
+                    ) -> FollowUpCallStatus.SUCCESSFUL
                 else -> FollowUpCallStatus.UNSUCCESSFUL
             }
 
@@ -168,11 +178,10 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
             val phuAttempts = callResults.followUpDetails.filter { it.reason == PHU }.size + 1
 
             val followUpReason = if (isPsType) {
-               Pair(PeerSupervisor, psAttempts)
+                Pair(PeerSupervisor, psAttempts)
             } else {
                 Pair(PHU, phuAttempts)
             }
-
 
             val lat = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name)
             val lng = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name)
@@ -185,8 +194,8 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
                     status = followUpStatus.name,
                     reason = followUpReason.first,
                     latitude = lat,
-                    longitude = lng
-                )
+                    longitude = lng,
+                ),
             )
 
             // Update callResult JSON and save
@@ -194,5 +203,4 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
             viewModel.saveCallResult(data)
         }
     }
-
 }

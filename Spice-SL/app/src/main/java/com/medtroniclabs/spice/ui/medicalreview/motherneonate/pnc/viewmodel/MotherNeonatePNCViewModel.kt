@@ -1,8 +1,5 @@
 package com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.viewmodel
 
-import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
-import com.medtroniclabs.spice.data.model.PncChild
-import com.medtroniclabs.spice.data.model.PncMother
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -13,6 +10,9 @@ import com.medtroniclabs.spice.data.SummaryCreateRequest
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
+import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
+import com.medtroniclabs.spice.data.model.PncChild
+import com.medtroniclabs.spice.data.model.PncMother
 import com.medtroniclabs.spice.data.model.PncSubmitResponse
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -39,7 +39,7 @@ class MotherNeonatePNCViewModel @Inject constructor(
     private val motherNeonatePNCRepo: MotherNeonatePNCRepo,
     private val patientRepository: PatientRepository,
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-) :  BaseViewModel(dispatcherIO){
+) : BaseViewModel(dispatcherIO) {
     var motherLiveStatus: String? = null
     var aliveStatus: Boolean? = null
     val resultFlowHashMap = HashMap<String, Any>()
@@ -60,10 +60,10 @@ class MotherNeonatePNCViewModel @Inject constructor(
     var memberId: String? = null
     var childMemberId: String? = null
     val childDetailsLiveData = MutableLiveData<Resource<PatientListRespModel>>()
-    var labourDeliveryDetails:CreateLabourDeliveryRequest?=null
-    var neonateOutCome:String?=null
-    var neonatePatientId:String?=null
-    var isChildActive:Boolean?=false
+    var labourDeliveryDetails: CreateLabourDeliveryRequest? = null
+    var neonateOutCome: String? = null
+    var neonatePatientId: String? = null
+    var isChildActive: Boolean? = false
 
     fun getMotherPncStaticData() {
         viewModelScope.launch(dispatcherIO) {
@@ -83,9 +83,9 @@ class MotherNeonatePNCViewModel @Inject constructor(
             childDetailsLiveData.postValue(
                 patientRepository.getPatients(
                     PatientDetailRequest(
-                        patientId = childPatientId
-                    )
-                )
+                        patientId = childPatientId,
+                    ),
+                ),
             )
         }
     }
@@ -95,8 +95,8 @@ class MotherNeonatePNCViewModel @Inject constructor(
             pncSaveResponse.postLoading()
             pncSaveResponse.postValue(
                 motherNeonatePNCRepo.saveMotherNeonatePncData(
-                    motherNeonatePncRequest
-                )
+                    motherNeonatePncRequest,
+                ),
             )
         }
     }
@@ -105,7 +105,7 @@ class MotherNeonatePNCViewModel @Inject constructor(
         motherDetails: com.medtroniclabs.spice.data.PncMother?,
         motherPatientStatus: String?,
         motherNextVisitDate: String?,
-        details: PatientListRespModel
+        details: PatientListRespModel,
     ) {
         val patientId = details.patientId
         val memberId = details.memberId
@@ -116,7 +116,7 @@ class MotherNeonatePNCViewModel @Inject constructor(
                 motherNextVisitDate,
                 DateUtils.DATE_ddMMyyyy,
                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                inUTC = true
+                inUTC = true,
             )
             val summaryCreateRequest = MedicalReviewSummarySubmitRequest(
                 patientId = patientId,
@@ -129,14 +129,14 @@ class MotherNeonatePNCViewModel @Inject constructor(
                 householdId = houseHoldId,
                 villageId = villageId,
                 provenance = ProvanceDto(),
-                patientReference = motherDetails?.patientReference.toString()
+                patientReference = motherDetails?.patientReference.toString(),
             )
             viewModelScope.launch(dispatcherIO) {
                 summaryCreateResponse.postLoading()
                 summaryCreateResponse.postValue(
                     motherNeonatePNCRepo.summaryCreatePncData(
-                        summaryCreateRequest
-                    )
+                        summaryCreateRequest,
+                    ),
                 )
             }
         }
@@ -145,7 +145,7 @@ class MotherNeonatePNCViewModel @Inject constructor(
     private fun PncMother.setCommonFields(
         clinicalNotesViewModel: ClinicalNotesViewModel,
         presentingComplaintsViewModel: PresentingComplaintsViewModel,
-        systemicExaminationViewModel: GeneralExaminationViewModel
+        systemicExaminationViewModel: GeneralExaminationViewModel,
     ) {
         presentingComplaints =
             presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value }
@@ -160,7 +160,7 @@ class MotherNeonatePNCViewModel @Inject constructor(
         systemicExaminationViewModel: GeneralExaminationViewModel,
         clinicalNotesViewModel: ClinicalNotesViewModel,
         presentingComplaintsViewModel: PresentingComplaintsViewModel,
-        patientViewModel: PatientDetailViewModel
+        patientViewModel: PatientDetailViewModel,
     ) {
         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
             motherNeonatePncRequest.apply {
@@ -171,24 +171,28 @@ class MotherNeonatePNCViewModel @Inject constructor(
                     breastConditionNotes = systemicExaminationViewModel.specifyCondition,
                     involutionsOfTheUterus = systemicExaminationViewModel.uterusConditionValue,
                     involutionsOfTheUterusNotes = systemicExaminationViewModel.specifyConditionUterus,
-                    encounter = patientId?.let { createEncounter(
-                        it,
-                        patientViewModel.encounterId,
-                        details,
-                        true
-                    ) },labourDTO=labourDeliveryDetails?.motherDTO?.labourDTO,
-                    neonateOutcome = labourDeliveryDetails?.motherDTO?.neonateOutcome
+                    encounter = patientId?.let {
+                        createEncounter(
+                            it,
+                            patientViewModel.encounterId,
+                            details,
+                            true,
+                        )
+                    },
+                    labourDTO = labourDeliveryDetails?.motherDTO?.labourDTO,
+                    neonateOutcome = labourDeliveryDetails?.motherDTO?.neonateOutcome,
                 ).apply {
                     setCommonFields(
                         clinicalNotesViewModel,
                         presentingComplaintsViewModel,
-                        systemicExaminationViewModel
+                        systemicExaminationViewModel,
                     )
                 }
-                if (labourDeliveryDetails?.neonateDTO?.neonateOutcome== MedicalReviewDefinedParams.LiveBirth && !labourDeliveryDetails?.neonateDTO?.neonateOutcome.isNullOrEmpty()){
-                    child= labourDeliveryDetails?.child
+                if (labourDeliveryDetails?.neonateDTO?.neonateOutcome == MedicalReviewDefinedParams.LiveBirth &&
+                    !labourDeliveryDetails?.neonateDTO?.neonateOutcome.isNullOrEmpty()
+                ) {
+                    child = labourDeliveryDetails?.child
                 }
-
             }
         }
     }
@@ -210,14 +214,14 @@ class MotherNeonatePNCViewModel @Inject constructor(
         memberId = if (type) details.memberId else childMemberId,
         referred = true,
         visitNumber = pncVisit.toInt(),
-        villageId = details.villageId
+        villageId = details.villageId,
     )
 
     fun setNeonateDetailsReq(
         physicalExaminationViewModel: PhysicalExaminationViewModel,
         presentingComplaintsViewModel: PresentingComplaintsViewModel,
         patientViewModel: PatientDetailViewModel,
-        clinicalNotesViewModel: ClinicalNotesViewModel
+        clinicalNotesViewModel: ClinicalNotesViewModel,
     ) {
         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
             val childPatientEncounter = patientViewModel.getChildPatientName()?.takeIf { it.isNotEmpty() }?.let { name ->
@@ -225,19 +229,19 @@ class MotherNeonatePNCViewModel @Inject constructor(
             } ?: labourDeliveryDetails?.neonateDTO?.encounter
 
             motherNeonatePncRequest.apply {
-                pncMother?.encounter?.id=patientViewModel.encounterId
-                pncMother?.id=patientViewModel.encounterId
+                pncMother?.encounter?.id = patientViewModel.encounterId
+                pncMother?.id = patientViewModel.encounterId
                 pncChild = PncChild(
                     isChildAlive = aliveStatus,
                     breastFeeding = physicalExaminationViewModel.breastFeeding,
                     exclusiveBreastFeeding = physicalExaminationViewModel.exclusiveBreastFeeding,
                     congenitalDetect = physicalExaminationViewModel.congenitalDefect,
-                    encounter = childPatientEncounter
+                    encounter = childPatientEncounter,
                 ).apply {
                     setCommonFields(
                         presentingComplaintsViewModel,
                         physicalExaminationViewModel,
-                        clinicalNotesViewModel
+                        clinicalNotesViewModel,
                     )
                     setCordExamination(physicalExaminationViewModel)
                 }
@@ -249,7 +253,7 @@ class MotherNeonatePNCViewModel @Inject constructor(
     private fun PncChild.setCommonFields(
         presentingComplaintsViewModel: PresentingComplaintsViewModel,
         physicalExaminationViewModel: PhysicalExaminationViewModel,
-        clinicalNotesViewModel: ClinicalNotesViewModel
+        clinicalNotesViewModel: ClinicalNotesViewModel,
     ) {
         presentingComplaints =
             presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value }

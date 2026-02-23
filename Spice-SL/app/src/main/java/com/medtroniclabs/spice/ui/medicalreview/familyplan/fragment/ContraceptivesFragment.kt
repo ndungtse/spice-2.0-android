@@ -56,17 +56,21 @@ class ContraceptivesFragment : BaseFragment() {
     private lateinit var iucdTagView: TagListCustomView
     private val viewModel: ContraceptivesViewModel by activityViewModels()
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentContraceptivesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         initializeListener()
@@ -93,7 +97,6 @@ class ContraceptivesFragment : BaseFragment() {
             }
         }
 
-
         patientViewModel.patientCurrentStatus.observe(viewLifecycleOwner) { status ->
             initClientType()
         }
@@ -101,40 +104,43 @@ class ContraceptivesFragment : BaseFragment() {
 
     private fun initClientType() {
         viewModel.contraceptiveMetaList.value?.data?.let { metaItems ->
-            if (!binding.ClientTypeRoot.isVisible()){
+            if (!binding.ClientTypeRoot.isVisible()) {
                 binding.ClientTypeRoot.visible()
                 addCustomView(
-                    getSingleSelectionViewData(metaItems.filter {
-                        it.category.equals(
-                            MedicalReviewTypeEnums.client_type.name,
-                            true
-                        )
-                    }
-                        .sortedBy { it.displayOrder }),
+                    getSingleSelectionViewData(
+                        metaItems
+                            .filter {
+                                it.category.equals(
+                                    MedicalReviewTypeEnums.client_type.name,
+                                    true,
+                                )
+                            }.sortedBy { it.displayOrder },
+                    ),
                     ClientType,
                     getClientTypeResult(),
                     clientTypeSelectionCallBack,
-                    binding.ClientTypeRoot
+                    binding.ClientTypeRoot,
                 )
             }
         }
     }
 
     private fun initializeMetaItems(metaList: List<MedicalReviewMetaItems>) {
-
         addCustomView(
-            getSingleSelectionViewData(metaList.filter { it.category.equals(MedicalReviewTypeEnums.combined_oral_contraceptive.name, true) }.sortedBy { it.displayOrder }),
+            getSingleSelectionViewData(
+                metaList.filter { it.category.equals(MedicalReviewTypeEnums.combined_oral_contraceptive.name, true) }.sortedBy { it.displayOrder },
+            ),
             CombineOralContraceptive,
             viewModel.resultHashMap,
             combinedOralSelectionCallBack,
-            binding.CombinedOralContraceptiveRoot
+            binding.CombinedOralContraceptiveRoot,
         )
         addCustomView(
             getSingleSelectionViewData(metaList.filter { it.category.equals(MedicalReviewTypeEnums.progestin.name, true) }.sortedBy { it.displayOrder }),
             ProgestinOnlyOrals,
             viewModel.resultHashMap,
             progestinSelectionCallBack,
-            binding.ProgestinOnlyOralsRoot
+            binding.ProgestinOnlyOralsRoot,
         )
 
         addCustomView(
@@ -142,7 +148,7 @@ class ContraceptivesFragment : BaseFragment() {
             Injectables,
             viewModel.resultHashMap,
             injectableSelectionCallBack,
-            binding.InjectableRoot
+            binding.InjectableRoot,
         )
 
         addCustomView(
@@ -150,7 +156,7 @@ class ContraceptivesFragment : BaseFragment() {
             Implants,
             viewModel.resultHashMap,
             implantsSelectionCallBack,
-            binding.ImplantsRoot
+            binding.ImplantsRoot,
         )
 
         addCustomView(
@@ -158,15 +164,17 @@ class ContraceptivesFragment : BaseFragment() {
             Condoms,
             viewModel.resultHashMap,
             condomsSelectionCallBack,
-            binding.CondomsRoot
+            binding.CondomsRoot,
         )
 
         addCustomView(
-            getSingleSelectionViewData(metaList.filter { it.category.equals(MedicalReviewTypeEnums.emergency_contraceptive.name, true) }.sortedBy { it.displayOrder }),
+            getSingleSelectionViewData(
+                metaList.filter { it.category.equals(MedicalReviewTypeEnums.emergency_contraceptive.name, true) }.sortedBy { it.displayOrder },
+            ),
             EmergencyContraceptive,
             viewModel.resultHashMap,
             emergencyContraSelectionCallBack,
-            binding.EmergencyContraceptiveRoot
+            binding.EmergencyContraceptiveRoot,
         )
 
         addCustomView(
@@ -174,7 +182,7 @@ class ContraceptivesFragment : BaseFragment() {
             PermanentMethod,
             viewModel.resultHashMap,
             permanentMethodSelectionCallBack,
-            binding.PermanentMethodRoot
+            binding.PermanentMethodRoot,
         )
 
         val iucdListItem =
@@ -185,8 +193,8 @@ class ContraceptivesFragment : BaseFragment() {
                 ChipViewItemModel(
                     id = it.id,
                     name = it.name,
-                    value = it.value
-                )
+                    value = it.value,
+                ),
             )
             iucdTagView.addChipItemList(chipItemList, viewModel.selectedIUCD)
         }
@@ -199,8 +207,9 @@ class ContraceptivesFragment : BaseFragment() {
                 enablePostPartumChipView()
                 resultMapChanged()
                 viewModel.resultHashMap
-            } else
+            } else {
                 viewModel.resultHashMap
+            }
         } ?: kotlin.run {
             viewModel.resultHashMap
         }
@@ -233,17 +242,21 @@ class ContraceptivesFragment : BaseFragment() {
 
         iucdTagView = TagListCustomView(
             binding.root.context,
-            binding.tagViewIUCD
+            binding.tagViewIUCD,
         ) { _, _, _ ->
             viewModel.selectedIUCD = ArrayList(iucdTagView.getSelectedTags())
         }
 
         binding.etQuantity.addTextChangedListener { editable ->
             val quantityString = editable.toString()
-            viewModel.quantity = if (quantityString.isBlank()) null else try {
-                quantityString.toLong()
-            } catch (e: Exception) {
+            viewModel.quantity = if (quantityString.isBlank()) {
                 null
+            } else {
+                try {
+                    quantityString.toLong()
+                } catch (e: Exception) {
+                    null
+                }
             }
         }
     }
@@ -254,8 +267,8 @@ class ContraceptivesFragment : BaseFragment() {
             flowList.add(
                 getOptionMap(
                     it.value ?: it.name,
-                    it.name
-                )
+                    it.name,
+                ),
             )
         }
         return flowList
@@ -266,7 +279,7 @@ class ContraceptivesFragment : BaseFragment() {
         tag: String,
         hashMap: HashMap<String, Any>,
         callback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)?,
-        container: ViewGroup?
+        container: ViewGroup?,
     ) {
         SingleSelectionCustomView(binding.root.context).apply {
             this.tag = tag
@@ -276,7 +289,7 @@ class ContraceptivesFragment : BaseFragment() {
                 hashMap,
                 Pair(tag, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                callback
+                callback,
             )
             container?.addView(this)
         }
@@ -285,9 +298,9 @@ class ContraceptivesFragment : BaseFragment() {
     private var clientTypeSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[ClientType] = selectedID as String
-            if(selectedID.equals(PostPartum, true)){
+            if (selectedID.equals(PostPartum, true)) {
                 enablePostPartumChipView()
-            }else{
+            } else {
                 viewModel.resultHashMap.remove(PostPartum)
                 binding.tvPostPartum.gone()
                 binding.PostPartumRoot.removeAllViews()
@@ -297,20 +310,23 @@ class ContraceptivesFragment : BaseFragment() {
         }
 
     private fun enablePostPartumChipView() {
-        if (!(binding.tvPostPartum.isVisible())){
+        if (!(binding.tvPostPartum.isVisible())) {
             binding.tvPostPartum.visible()
             viewModel.contraceptiveMetaList.value?.data?.let { metaList ->
                 addCustomView(
-                    getSingleSelectionViewData(metaList.filter {
-                        it.category.equals(
-                            MedicalReviewTypeEnums.post_partum.name,
-                            true
-                        )
-                    }.sortedBy { it.displayOrder }),
+                    getSingleSelectionViewData(
+                        metaList
+                            .filter {
+                                it.category.equals(
+                                    MedicalReviewTypeEnums.post_partum.name,
+                                    true,
+                                )
+                            }.sortedBy { it.displayOrder },
+                    ),
                     PostPartum,
                     viewModel.resultHashMap,
                     postPartumSelectionCallBack,
-                    binding.PostPartumRoot
+                    binding.PostPartumRoot,
                 )
             }
             binding.PostPartumRoot.visible()
@@ -326,9 +342,9 @@ class ContraceptivesFragment : BaseFragment() {
     private var combinedOralSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[CombineOralContraceptive] = selectedID as String
-            if(selectedID.equals(OtherOralSpecify, true)){
+            if (selectedID.equals(OtherOralSpecify, true)) {
                 binding.etCombinedOralContraceptiveComments.visible()
-            }else{
+            } else {
                 binding.etCombinedOralContraceptiveComments.gone()
                 binding.etCombinedOralContraceptiveComments.text?.clear()
                 viewModel.resultHashMap.remove(CombinedOralContraceptiveComments)
@@ -339,7 +355,7 @@ class ContraceptivesFragment : BaseFragment() {
     private var progestinSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[ProgestinOnlyOrals] = selectedID as String
-            when(selectedID.lowercase()){
+            when (selectedID.lowercase()) {
                 Microlut.lowercase() -> {
                     binding.tvQuantityLabel.visible()
                     binding.etQuantity.visible()
@@ -361,9 +377,9 @@ class ContraceptivesFragment : BaseFragment() {
     private var injectableSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[Injectables] = selectedID as String
-            if(selectedID .equals(OtherInjectablesSpecify, true)){
+            if (selectedID.equals(OtherInjectablesSpecify, true)) {
                 binding.etOtherInjectableComments.visible()
-            }else{
+            } else {
                 binding.etOtherInjectableComments.gone()
                 binding.etOtherInjectableComments.text?.clear()
                 viewModel.resultHashMap.remove(OtherInjectableComments)
@@ -374,9 +390,9 @@ class ContraceptivesFragment : BaseFragment() {
     private var implantsSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultHashMap[Implants] = selectedID as String
-            if(selectedID.equals(OtherImplantSpecify, true)){
+            if (selectedID.equals(OtherImplantSpecify, true)) {
                 binding.etOtherImplantsComments.visible()
-            }else{
+            } else {
                 binding.etOtherImplantsComments.gone()
                 binding.etOtherImplantsComments.text?.clear()
                 viewModel.resultHashMap.remove(OtherImplantComments)
@@ -409,19 +425,22 @@ class ContraceptivesFragment : BaseFragment() {
             resultMapChanged()
         }
 
-    private fun resultMapChanged(){
+    private fun resultMapChanged() {
         setFragmentResult(
-            MedicalReviewDefinedParams.CONTRACEPTIVES_ITEMS, bundleOf(
-                MedicalReviewDefinedParams.CONTRACEPTIVES_VALUES to true)
+            MedicalReviewDefinedParams.CONTRACEPTIVES_ITEMS,
+            bundleOf(
+                MedicalReviewDefinedParams.CONTRACEPTIVES_VALUES to true,
+            ),
         )
     }
 
     fun validInputs(): Boolean {
         var isValid: Boolean
 
-        if (viewModel.resultHashMap.containsKey(ClientType) && (viewModel.resultHashMap[ClientType] as? String)?.equals(
+        if (viewModel.resultHashMap.containsKey(ClientType) &&
+            (viewModel.resultHashMap[ClientType] as? String)?.equals(
                 PostPartum,
-                true
+                true,
             ) == true
         ) {
             isValid = checkAndToggleError(PostPartum, binding.tvPostPartumErrorMessage)
@@ -436,7 +455,7 @@ class ContraceptivesFragment : BaseFragment() {
                 CombineOralContraceptive,
                 binding.etCombinedOralContraceptiveComments,
                 binding.tvContraceptivesErrorMessage,
-                viewModel.combinedOralContraceptiveComments
+                viewModel.combinedOralContraceptiveComments,
             )
             hideOtherErrorViews(binding.tvContraceptivesErrorMessage.id)
         }
@@ -451,7 +470,7 @@ class ContraceptivesFragment : BaseFragment() {
                 ProgestinOnlyOrals,
                 binding.etProgestinOnlyOralsComments,
                 binding.tvQuantityErrorMessage,
-                viewModel.otherProgestinOnlyOralsComments
+                viewModel.otherProgestinOnlyOralsComments,
             )
             hideOtherErrorViews(binding.tvQuantityErrorMessage.id)
         }
@@ -461,7 +480,7 @@ class ContraceptivesFragment : BaseFragment() {
                 Injectables,
                 binding.etOtherInjectableComments,
                 binding.tvInjectablesErrorMessage,
-                viewModel.otherInjectableComments
+                viewModel.otherInjectableComments,
             )
             hideOtherErrorViews(binding.tvInjectablesErrorMessage.id)
         }
@@ -471,7 +490,7 @@ class ContraceptivesFragment : BaseFragment() {
                 Implants,
                 binding.etOtherImplantsComments,
                 binding.tvImplantErrorMessage,
-                viewModel.otherImplantComments
+                viewModel.otherImplantComments,
             )
             hideOtherErrorViews(binding.tvImplantErrorMessage.id)
         }
@@ -481,7 +500,7 @@ class ContraceptivesFragment : BaseFragment() {
                 PermanentMethod,
                 binding.etOtherPermanentMethodComments,
                 binding.tvPermanentMethodErrorMessage,
-                viewModel.otherPermanentMethodComments
+                viewModel.otherPermanentMethodComments,
             )
             hideOtherErrorViews(binding.tvPermanentMethodErrorMessage.id)
         }
@@ -497,7 +516,7 @@ class ContraceptivesFragment : BaseFragment() {
             binding.tvProgestinErrorMessage.id,
             binding.tvInjectablesErrorMessage.id,
             binding.tvImplantErrorMessage.id,
-            binding.tvPermanentMethodErrorMessage.id
+            binding.tvPermanentMethodErrorMessage.id,
         )
 
         for (id in allErrorViews) {
@@ -508,8 +527,10 @@ class ContraceptivesFragment : BaseFragment() {
         }
     }
 
-
-    private fun checkAndToggleError(key: String, errorView: View) :Boolean{
+    private fun checkAndToggleError(
+        key: String,
+        errorView: View,
+    ): Boolean {
         if (viewModel.resultHashMap.containsKey(key)) {
             errorView.gone()
             return true
@@ -523,11 +544,16 @@ class ContraceptivesFragment : BaseFragment() {
         key: String,
         editView: View,
         errorView: View,
-        comments: String?
+        comments: String?,
     ): Boolean {
-        if ((viewModel.resultHashMap.containsKey(key) && ((viewModel.resultHashMap[key]) as? String)?.contains(
-                "other"
-            ) == true) && editView.isVisible() && comments.isNullOrEmpty()
+        if ((
+                viewModel.resultHashMap.containsKey(key) &&
+                    ((viewModel.resultHashMap[key]) as? String)?.contains(
+                        "other",
+                    ) == true
+            ) &&
+            editView.isVisible() &&
+            comments.isNullOrEmpty()
         ) {
             errorView.visible()
             return false
@@ -537,8 +563,8 @@ class ContraceptivesFragment : BaseFragment() {
         }
     }
 
-    private fun checkMicrolut():Boolean{
-       if ((viewModel.resultHashMap[ProgestinOnlyOrals] as? String)?.equals(Microlut, true) == true) {
+    private fun checkMicrolut(): Boolean {
+        if ((viewModel.resultHashMap[ProgestinOnlyOrals] as? String)?.equals(Microlut, true) == true) {
             if (viewModel.quantity == null) {
                 binding.tvQuantityErrorMessage.visible()
                 return false
@@ -548,10 +574,9 @@ class ContraceptivesFragment : BaseFragment() {
             }
         } else {
             binding.tvQuantityErrorMessage.gone()
-           return true
+            return true
         }
     }
-
 
     companion object {
         const val TAG = "ContraceptivesFragment"

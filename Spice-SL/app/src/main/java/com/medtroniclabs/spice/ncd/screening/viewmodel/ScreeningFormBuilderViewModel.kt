@@ -3,7 +3,6 @@ package com.medtroniclabs.spice.ncd.screening.viewmodel
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
@@ -28,9 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ScreeningFormBuilderViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private val screeningRepository: ScreeningRepository
+    private val screeningRepository: ScreeningRepository,
 ) : BaseViewModel(dispatcherIO) {
-
     private var getMentalQuestion = MutableLiveData<Pair<String, String>>()
     val villageSpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
     var screeningSaveResponse = SingleLiveEvent<Resource<ScreeningEntity>>()
@@ -49,7 +47,10 @@ class ScreeningFormBuilderViewModel @Inject constructor(
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 
-    fun getMentalQuestion(id: String, type: String) {
+    fun getMentalQuestion(
+        id: String,
+        type: String,
+    ) {
         getMentalQuestion.value = Pair(id, type)
     }
 
@@ -57,7 +58,7 @@ class ScreeningFormBuilderViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             villageSpinnerLiveData.postLoading()
             villageSpinnerLiveData.postValue(
-                screeningRepository.getVillagesByChiefDom(tag, SecuredPreference.getChiefdomId())
+                screeningRepository.getVillagesByChiefDom(tag, SecuredPreference.getChiefdomId()),
             )
         }
     }
@@ -68,17 +69,13 @@ class ScreeningFormBuilderViewModel @Inject constructor(
         this.lastLocation = location
     }
 
-    fun getCurrentLocation(): Location? {
-        return this.lastLocation
-    }
+    fun getCurrentLocation(): Location? = this.lastLocation
 
     fun setPhQ4Score(phQ4Score: Int) {
         this.phQ4Score = phQ4Score
     }
 
-    fun getPhQ4Score(): Int? {
-        return phQ4Score
-    }
+    fun getPhQ4Score(): Int? = phQ4Score
 
     fun setFbsBloodGlucose(glucose: Double) {
         fbsBloodGlucose = glucose
@@ -88,19 +85,18 @@ class ScreeningFormBuilderViewModel @Inject constructor(
         rbsBloodGlucose = glucose
     }
 
-    fun getFbsBloodGlucose(): Double {
-        return fbsBloodGlucose ?: 0.0
-    }
+    fun getFbsBloodGlucose(): Double = fbsBloodGlucose ?: 0.0
 
-    fun getRbsBloodGlucose(): Double {
-        return rbsBloodGlucose ?: 0.0
-    }
+    fun getRbsBloodGlucose(): Double = rbsBloodGlucose ?: 0.0
 
-    fun validatePatient(resp: HashMap<String, Any>, serverData: List<FormLayout?>?) {
+    fun validatePatient(
+        resp: HashMap<String, Any>,
+        serverData: List<FormLayout?>?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             validatePatientResponseLiveDate.postLoading()
             validatePatientResponseLiveDate.postValue(
-                screeningRepository.validatePatient(resp, Pair(resp, serverData))
+                screeningRepository.validatePatient(resp, Pair(resp, serverData)),
             )
         }
     }
@@ -109,10 +105,9 @@ class ScreeningFormBuilderViewModel @Inject constructor(
         screeningEntityRawString: String,
         generalDetail: String,
         eSignature: ByteArray?,
-        isReferred: Boolean
+        isReferred: Boolean,
     ) {
-        viewModelScope.launch(dispatcherIO)
-        {
+        viewModelScope.launch(dispatcherIO) {
             screeningSaveResponse.postLoading()
             try {
                 val screeningEntity = ScreeningEntity(
@@ -120,7 +115,7 @@ class ScreeningFormBuilderViewModel @Inject constructor(
                     generalDetails = generalDetail,
                     userId = SecuredPreference.getUserFhirId(),
                     signature = eSignature,
-                    isReferred = isReferred
+                    isReferred = isReferred,
                 )
                 val rowId = screeningRepository.savePatientScreeningInformation(screeningEntity)
                 screeningSaveResponse.postSuccess(rowId)
@@ -130,11 +125,8 @@ class ScreeningFormBuilderViewModel @Inject constructor(
         }
     }
 
-    fun updatePatientScreeningInformation(
-        generalDetail: String,
-    ) {
-        viewModelScope.launch(dispatcherIO)
-        {
+    fun updatePatientScreeningInformation(generalDetail: String) {
+        viewModelScope.launch(dispatcherIO) {
             try {
                 screeningUpdateResponse.postLoading()
                 screeningSaveResponse.value?.data?.let {

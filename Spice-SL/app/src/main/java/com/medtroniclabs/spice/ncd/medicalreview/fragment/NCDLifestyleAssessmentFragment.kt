@@ -31,13 +31,13 @@ import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDLifestyleAssessmen
 import com.medtroniclabs.spice.ui.BaseFragment
 
 class NCDLifestyleAssessmentFragment : BaseFragment() {
-
     private lateinit var binding: FragmentNcdLifestyleAssessmentBinding
     private val viewModel: NCDLifestyleAssessmentViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNcdLifestyleAssessmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -45,12 +45,14 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
 
     companion object {
         const val TAG = "NCDLifestyleAssessmentFragment"
-        fun newInstance(): NCDLifestyleAssessmentFragment {
-            return NCDLifestyleAssessmentFragment()
-        }
+
+        fun newInstance(): NCDLifestyleAssessmentFragment = NCDLifestyleAssessmentFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         setListener()
@@ -76,7 +78,8 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
             }
             val selectedItem =
                 viewModel.lifestyle?.find { it.id == style._id }
-            selectedItem?.let { style.lifestyleAnswer.find { it.name == selectedItem.lifestyleAnswer } }
+            selectedItem
+                ?.let { style.lifestyleAnswer.find { it.name == selectedItem.lifestyleAnswer } }
                 ?.apply {
                     isSelected = true
                     comments = selectedItem.comments
@@ -92,7 +95,7 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
     private fun loadDependant(
         model: LifeStyleUIModel,
         lifeStyleBinding: LayoutLifeStyleBinding,
-        answerModel: LifeStyleAnswerUIModel
+        answerModel: LifeStyleAnswerUIModel,
     ) {
         if (answerModel.isAnswerDependent) {
             lifeStyleBinding.llDependentHolder.visibility = View.VISIBLE
@@ -105,7 +108,7 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
 
     private fun getDependView(
         model: LifeStyleUIModel,
-        answerModel: LifeStyleAnswerUIModel
+        answerModel: LifeStyleAnswerUIModel,
     ): View {
         val binding = ChildViewLifeStyleBinding.inflate(LayoutInflater.from(context))
         when (model.lifestyleType) {
@@ -148,8 +151,9 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
             }
         }
         binding.tvChildTitle.markMandatory()
-        if (!answerModel.comments.isNullOrBlank())
+        if (!answerModel.comments.isNullOrBlank()) {
             binding.etChildUserInput.setText(answerModel.comments)
+        }
         binding.etChildUserInput.addTextChangedListener { childAnswer ->
             if (childAnswer.isNullOrBlank()) {
                 answerModel.comments = null
@@ -163,7 +167,7 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
 
     private fun addLifestyleAnswer(
         questionModel: LifeStyleUIModel,
-        answerModel: LifeStyleAnswerUIModel
+        answerModel: LifeStyleAnswerUIModel,
     ) {
         val model =
             viewModel.lifestyle?.find { it.id == questionModel._id }
@@ -173,7 +177,7 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
                 answerModel.name,
                 questionModel._id,
                 isAnswerDependent = answerModel.isAnswerDependent,
-                comments = answerModel.comments
+                comments = answerModel.comments,
             )
             viewModel.lifestyle?.add(listItem)
         } else {
@@ -183,14 +187,13 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
 
     private fun getAnswersView(
         style: LifeStyleUIModel,
-        callback: ((model: LifeStyleUIModel, answerModel: LifeStyleAnswerUIModel) -> Unit?)? = null
+        callback: ((model: LifeStyleUIModel, answerModel: LifeStyleAnswerUIModel) -> Unit?)? = null,
     ): View {
         val view = LifeStyleCustomView(requireContext())
         view.tag = style._id
         view.addViewElements(style, callback)
         return view
     }
-
 
     private fun getLifeStyleUIModel(list: List<LifestyleEntity>?): List<LifeStyleUIModel> {
         val lifeStyle = ArrayList<LifeStyleUIModel>()
@@ -203,8 +206,8 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
                     getAnswerLifeStyle(model.answers),
                     model.type,
                     null,
-                    model.value
-                )
+                    model.value,
+                ),
             )
         }
         return lifeStyle
@@ -219,15 +222,15 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
                     name = it.name,
                     cultureAnswerValue = it.displayValue,
                     isAnswerDependent = it.isAnswerDependent,
-                    value = it.value
-                )
+                    value = it.value,
+                ),
             )
         }
         return lifeStyleUIAnswer
     }
 
     private fun setListener() {
-        /* never used  */
+        // never used
     }
 
     private fun initView() {
@@ -247,8 +250,8 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
                         isAnswerDependent = selectedModel[0].isAnswerDependent,
                         comments = selectedModel[0].comments,
                         questionValue = model.value,
-                        answerValue = selectedModel[0].value
-                    )
+                        answerValue = selectedModel[0].value,
+                    ),
                 )
             } else {
                 resultList.add(InitialLifeStyle(id = model._id))
@@ -257,7 +260,10 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
         return resultList
     }
 
-    private fun showErrorMessage(message: String, view: TextView) {
+    private fun showErrorMessage(
+        message: String,
+        view: TextView,
+    ) {
         view.visible()
         view.text = message
     }
@@ -279,7 +285,7 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
                         isValid = false
                         showErrorMessage(
                             getString(R.string.validation_message_lifestyle),
-                            binding.tvErrorLifeStyle
+                            binding.tvErrorLifeStyle,
                         )
                     } else {
                         val unCommentedList =
@@ -288,22 +294,22 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
                             isValid = false
                             showErrorMessage(
                                 getString(R.string.validation_message_lifestyle),
-                                binding.tvErrorLifeStyle
+                                binding.tvErrorLifeStyle,
                             )
-                        } else
+                        } else {
                             hideErrorMessage(binding.tvErrorLifeStyle)
+                        }
                     }
                 }
             } else {
                 isValid = false
                 showErrorMessage(
                     getString(R.string.validation_message_lifestyle),
-                    binding.tvErrorLifeStyle
+                    binding.tvErrorLifeStyle,
                 )
             }
-        }else{
-            if (viewModel.lifestyle == null){
-
+        } else {
+            if (viewModel.lifestyle == null) {
             }
         }
         return Pair(isValid, binding.tvErrorLifeStyle)

@@ -9,15 +9,12 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.AutoCompleteAdapterBinding
 import com.medtroniclabs.spice.ncd.data.NCDSiteRoleResponse
 
-class NCDRoleUserAutoCompleteAdapter(context: Context): ArrayAdapter<String>(context, R.layout.spinner_drop_down_item)
-{
+class NCDRoleUserAutoCompleteAdapter(context: Context) : ArrayAdapter<String>(context, R.layout.spinner_drop_down_item) {
     private var itemList = ArrayList<NCDSiteRoleResponse>()
 
     override fun getCount(): Int = itemList.size
 
-    override fun getItem(position: Int): String =
-        "${itemList[position].firstName} ${itemList[position].lastName} (${itemList[position].username})"
-
+    override fun getItem(position: Int): String = "${itemList[position].firstName} ${itemList[position].lastName} (${itemList[position].username})"
 
     override fun getItemId(position: Int): Long = position.toLong()
 
@@ -25,7 +22,11 @@ class NCDRoleUserAutoCompleteAdapter(context: Context): ArrayAdapter<String>(con
         this.itemList = itemList
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getView(
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup,
+    ): View {
         val view: View
         val myHolder: ViewHolder
 
@@ -33,13 +34,13 @@ class NCDRoleUserAutoCompleteAdapter(context: Context): ArrayAdapter<String>(con
             val binding = AutoCompleteAdapterBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
+                false,
             )
             view = binding.root
             myHolder = ViewHolder(binding)
             myHolder.bind(getItem(position))
             view.tag = myHolder
-        } else{
+        } else {
             view = convertView
             myHolder = convertView.tag as ViewHolder
             myHolder.bind(getItem(position))

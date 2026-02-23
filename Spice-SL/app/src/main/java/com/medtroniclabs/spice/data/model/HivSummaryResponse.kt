@@ -14,14 +14,12 @@ data class HivSummaryResponse(
     val systemicExaminations: Map<String, String>? = null,
     val comorbiditiesCoinfections: List<String>? = null,
     val obstetricExaminations: List<String>? = null,
-    val obstetricExaminationNotes:String? = null,
+    val obstetricExaminationNotes: String? = null,
     val comorbiditiesCoinfectionsNotes: String? = null,
     val prescriptions: List<Prescription>? = null,
     val investigations: List<Investigation>? = null,
     val summaryStatus: List<PatientStatus>? = null,
     val clinicalNotes: String? = null,
-    val ancVisitNumber : Int? = null,
-    val emtctVisitStatus: String? = null
-
-
+    val ancVisitNumber: Int? = null,
+    val emtctVisitStatus: String? = null,
 )

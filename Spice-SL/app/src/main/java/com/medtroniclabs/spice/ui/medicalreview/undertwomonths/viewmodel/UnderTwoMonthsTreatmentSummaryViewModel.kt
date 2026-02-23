@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UnderTwoMonthsTreatmentSummaryViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var repository : UnderTwoMonthsRepository
+    private var repository: UnderTwoMonthsRepository,
 ) : ViewModel() {
     val summaryDetailsLiveData = MutableLiveData<Resource<SummaryDetails>>()
     var nextVisitDate: String? = null
@@ -28,17 +28,17 @@ class UnderTwoMonthsTreatmentSummaryViewModel @Inject constructor(
     val summaryMetaListItems = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
 
     fun getUnderTwoMonthsSummaryDetails(request: CreateUnderTwoMonthsResponse) {
-        summaryDetailsLiveData.postValue(Resource(state = ResourceState.SUCCESS, data = null))// Clear and post loading state
+        summaryDetailsLiveData.postValue(Resource(state = ResourceState.SUCCESS, data = null)) // Clear and post loading state
         viewModelScope.launch(dispatcherIO) {
-                  summaryDetailsLiveData.postLoading()
-                  summaryDetailsLiveData.postValue(
-                      repository.getMedicalReviewForUnderTwoMonths(
-                          request
-                      )
-                  )
-
-          }
+            summaryDetailsLiveData.postLoading()
+            summaryDetailsLiveData.postValue(
+                repository.getMedicalReviewForUnderTwoMonths(
+                    request,
+                ),
+            )
+        }
     }
+
     fun getSummaryListMetaItems(type: String) {
         viewModelScope.launch(dispatcherIO) {
             summaryMetaListItems.postLoading()
@@ -50,4 +50,3 @@ class UnderTwoMonthsTreatmentSummaryViewModel @Inject constructor(
         checkSubmitBtn.value = true
     }
 }
-

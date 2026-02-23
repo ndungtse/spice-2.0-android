@@ -15,9 +15,8 @@ import kotlinx.coroutines.withContext
 class ConnectionLiveData(
     context: Context,
     private val dispatchersIO: CoroutineDispatcher = Dispatchers.IO,
-    private val dispatcherMain: CoroutineDispatcher = Dispatchers.Main
+    private val dispatcherMain: CoroutineDispatcher = Dispatchers.Main,
 ) : LiveData<Boolean>() {
-
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     private val validNetworks: MutableSet<Network> = HashSet()
@@ -41,25 +40,26 @@ class ConnectionLiveData(
 
     override fun onActive() {
         networkCallback = createNetworkCallback()
-        val networkRequest = NetworkRequest.Builder()
+        val networkRequest = NetworkRequest
+            .Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
         cm.registerNetworkCallback(networkRequest, networkCallback)
     }
 
-    private fun createNetworkCallback() = object : ConnectivityManager.NetworkCallback() {
-        override fun onAvailable(network: Network) {
-            super.onAvailable(network)
-            checkNetworkCapabilities(network)
-        }
+    private fun createNetworkCallback() =
+        object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                checkNetworkCapabilities(network)
+            }
 
-
-        override fun onLost(network: Network) {
-            super.onLost(network)
-            validNetworks.remove(network)
-            checkValidNetworks()
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                validNetworks.remove(network)
+                checkValidNetworks()
+            }
         }
-    }
 
     private fun checkNetworkCapabilities(network: Network) {
         val networkCapabilities = cm.getNetworkCapabilities(network)
@@ -77,10 +77,7 @@ class ConnectionLiveData(
         }
     }
 
-
     override fun onInactive() {
         cm.unregisterNetworkCallback(networkCallback)
     }
-
-
 }

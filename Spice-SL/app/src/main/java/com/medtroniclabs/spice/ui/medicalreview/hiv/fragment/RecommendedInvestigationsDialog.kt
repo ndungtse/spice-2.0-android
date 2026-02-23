@@ -1,10 +1,8 @@
 package com.medtroniclabs.spice.ui.medicalreview.hiv.fragment
 
 import android.content.res.Configuration
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Spannable
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
@@ -21,7 +19,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class RecommendedInvestigationsDialog : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentRecommendedInvestigationsDialogBinding
 
     var onOkayClickListener: (() -> Unit)? = null
@@ -30,7 +27,7 @@ class RecommendedInvestigationsDialog : DialogFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentRecommendedInvestigationsDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -40,6 +37,7 @@ class RecommendedInvestigationsDialog : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "RecommendedInvestigationsDialog"
+
         fun newInstance() = RecommendedInvestigationsDialog()
     }
 
@@ -63,7 +61,10 @@ class RecommendedInvestigationsDialog : DialogFragment(), View.OnClickListener {
         setDialogPercent(width)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
     }
@@ -82,7 +83,7 @@ class RecommendedInvestigationsDialog : DialogFragment(), View.OnClickListener {
                 ForegroundColorSpan(redColor),
                 start,
                 length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
             )
         }
         binding.tvSubTitle.text = spannable

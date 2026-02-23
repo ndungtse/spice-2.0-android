@@ -10,15 +10,14 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 @HiltWorker
-class PostDataWorker  @AssistedInject constructor(
+class PostDataWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted userParameter: WorkerParameters,
     val roomHelper: RoomHelper,
-    val offlineSyncRepository: OfflineSyncRepository
+    val offlineSyncRepository: OfflineSyncRepository,
 ) : CoroutineWorker(context, userParameter) {
-
     override suspend fun doWork(): Result {
-        println("Worker Starts : ${id.toString()}")
+        println("Worker Starts : $id")
         for (i in 0..25) {
             if (isStopped) {
                 println("Failed... Interrupt by Other worker")

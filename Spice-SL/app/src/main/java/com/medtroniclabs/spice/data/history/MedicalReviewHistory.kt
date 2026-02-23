@@ -10,14 +10,14 @@ data class MedicalReviewHistory(
     val dateOfReview: String? = null,
     val reviewDetails: ReviewDetails? = null,
     val history: List<ReferredDate>? = null,
-    val type: String? = null
+    val type: String? = null,
 )
 
 data class NCDMedicalReviewHistory(
     val patientVisitId: String? = null,
     val history: List<ReferredDate>? = null,
     val medicalReview: MedicalReview? = null,
-    val dateOfReview: String? = null
+    val dateOfReview: String? = null,
 )
 
 data class MedicalReview(
@@ -25,12 +25,12 @@ data class MedicalReview(
     val complaints: List<String>? = null,
     val notes: List<String>? = null,
     val prescriptions: List<String>? = null,
-    val investigations: List<String>? = null
+    val investigations: List<String>? = null,
 )
 
 data class PhysicalExaminations(
     val physicalExaminations: List<String>? = null,
-    val physicalExaminationsNote: String? = null
+    val physicalExaminationsNote: String? = null,
 )
 
 data class ReviewDetails(
@@ -64,11 +64,11 @@ data class ReviewDetails(
     val a2TestResult: String? = null,
     val a3TestResult: String? = null,
     val eligibilities: Eligibility? = null,
-    val labourDTO:LabourDTO? = null,
-    val neonateOutcome:String?=null,
-    val stateOfBaby:String? = null,
-    val birthWeight:String? = null,
-    val signs:List<String?>? = null,
+    val labourDTO: LabourDTO? = null,
+    val neonateOutcome: String? = null,
+    val stateOfBaby: String? = null,
+    val birthWeight: String? = null,
+    val signs: List<String?>? = null,
     val vaccinated: List<String>? = null,
     val lastScheduledDate: String? = null,
     val lastScheduledDateReason: String? = null,
@@ -76,19 +76,21 @@ data class ReviewDetails(
     val nextVaccinationDose: List<String>? = null,
     val nextVaccinationDate: String? = null,
     val contraceptive: Contraceptive? = null,
-    val otherPopulationType: String? = null
+    val otherPopulationType: String? = null,
 )
+
 data class Eligibility(
     val hivPopulationType: List<String>? = null,
-    val Symptoms: List<String>? = null
+    val Symptoms: List<String>? = null,
 )
+
 data class DiseaseInfo(
     val diseaseCategoryId: Long? = null,
     val diseaseConditionId: Long? = null,
     val diseaseCategory: String? = null,
     val notes: String? = null,
     val diseaseCondition: String? = null,
-    val type: String? = null
+    val type: String? = null,
 ) : Serializable
 
 data class LabourDTO(
@@ -109,7 +111,7 @@ data class BirthDetails(
     val signs: List<String>?,
     val gestationalAge: String?,
     val total: Int?,
-    val apgarScoreFiveMinuteDTO: APGARScoreFiveMin?
+    val apgarScoreFiveMinuteDTO: APGARScoreFiveMin?,
 )
 
 data class APGARScoreFiveMin(
@@ -120,4 +122,3 @@ data class APGARScoreFiveMin(
     val respiration: Int,
     val fiveMinuteTotalScore: Int,
 )
-

@@ -7,5 +7,5 @@ data class NCDPatientRemoveRequest(
     val reason: String? = null,
     val provenance: ProvanceDto = ProvanceDto(),
     val otherReason: String? = null,
-    val memberId: String? = null
+    val memberId: String? = null,
 )

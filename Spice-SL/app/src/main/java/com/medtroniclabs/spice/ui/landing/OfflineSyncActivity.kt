@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ui.landing
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,10 +24,8 @@ import com.medtroniclabs.spice.ui.landing.viewmodel.OfflineSyncViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
 
-
 @AndroidEntryPoint
 class OfflineSyncActivity : SpiceRootActivity() {
-
     private val viewModel: OfflineSyncViewModel by viewModels()
     private lateinit var binding: FragmentOfflineSyncBinding
     private lateinit var unSyncedCountAdapter: OfflineSyncEntitiesAdapter
@@ -66,7 +63,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
                 showErrorDialogue(
                     getString(R.string.alert),
                     getString(R.string.background_sync_in_progress),
-                    isNegativeButtonNeed = false
+                    isNegativeButtonNeed = false,
                 ) {
                     finish()
                 }
@@ -88,14 +85,12 @@ class OfflineSyncActivity : SpiceRootActivity() {
                 requestIds?.let {
                     initiateGetStatus(it)
                 }
-            } else  {
+            } else {
                 viewModel.setUserJourney(AnalyticsDefinedParams.OKAYBUTTONTRIGGERED)
                 finish()
             }
         }
     }
-
-
 
     private fun initiateUpload() {
         if (viewModel.connectivityManager.isNetworkAvailable()) {
@@ -105,7 +100,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
             showErrorDialogue(
                 getString(R.string.title_no_network),
                 getString(R.string.message_no_network),
-                isNegativeButtonNeed = false
+                isNegativeButtonNeed = false,
             ) { _ -> }
         }
     }
@@ -113,7 +108,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
     private fun initObserver() {
         viewModel.unAssignedMembers.observe(this) {
             val ids = it.map { item -> item.memberId }
-            //viewModel.insertDummyCallHistory(ids)
+            // viewModel.insertDummyCallHistory(ids)
         }
 
         viewModel.unSyncedCountLiveData.observe(this) {
@@ -132,7 +127,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
                     showErrorDialogue(
                         getString(R.string.title_no_network),
                         getString(R.string.message_no_network),
-                        isNegativeButtonNeed = false
+                        isNegativeButtonNeed = false,
                     ) { _ ->
                         finish()
                     }
@@ -151,7 +146,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
                 showErrorDialogue(
                     getString(R.string.title_no_network),
                     getString(R.string.message_no_network),
-                    isNegativeButtonNeed = false
+                    isNegativeButtonNeed = false,
                 ) { _ ->
                     finish()
                 }
@@ -174,15 +169,20 @@ class OfflineSyncActivity : SpiceRootActivity() {
         startGetSyncStatusWorkManager(arr, 0)
     }
 
-    private fun startGetSyncStatusWorkManager(requestIds: Array<String>, duration: Long) {
+    private fun startGetSyncStatusWorkManager(
+        requestIds: Array<String>,
+        duration: Long,
+    ) {
         val workManager = WorkManager.getInstance(this)
 
-        val data = Data.Builder()
+        val data = Data
+            .Builder()
             .putStringArray(KEY_REQUESTS_ID, requestIds)
             .build()
 
-        val constrain = Constraints.Builder()
-            //.setRequiredNetworkType(NetworkType.CONNECTED)
+        val constrain = Constraints
+            .Builder()
+            // .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
         val getSyncStatusWorker = OneTimeWorkRequestBuilder<GetSyncStatusWorker>()
@@ -192,7 +192,6 @@ class OfflineSyncActivity : SpiceRootActivity() {
             .build()
 
         workManager.enqueue(getSyncStatusWorker)
-
 
         workManager.getWorkInfoByIdLiveData(getSyncStatusWorker.id).observe(this) { workerInfo ->
             if (workerInfo.state == WorkInfo.State.SUCCEEDED) {
@@ -217,7 +216,10 @@ class OfflineSyncActivity : SpiceRootActivity() {
         binding.clSyncInProgress.visible()
     }
 
-    private fun showCompletionView(isSuccess: Boolean = false, message: String? = null) {
+    private fun showCompletionView(
+        isSuccess: Boolean = false,
+        message: String? = null,
+    ) {
         binding.clAfterSync.gone()
         binding.clSyncInProgress.gone()
         binding.clAfterSync.visible()

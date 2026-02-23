@@ -13,9 +13,8 @@ import com.medtroniclabs.spice.databinding.TableRowLayoutBinding
 
 class TableRowAdapter(
     val context: Context,
-    private val infoList: ArrayList<DosageTableModel>
+    private val infoList: ArrayList<DosageTableModel>,
 ) : RecyclerView.Adapter<TableRowAdapter.InformationListViewHolder>() {
-
     inner class InformationListViewHolder(val binding: TableRowLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
@@ -23,34 +22,36 @@ class TableRowAdapter(
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
-    ): TableRowAdapter.InformationListViewHolder {
-        return InformationListViewHolder(
-            TableRowLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        viewType: Int,
+    ): TableRowAdapter.InformationListViewHolder =
+        InformationListViewHolder(
+            TableRowLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         )
-    }
 
-    override fun onBindViewHolder(holder: InformationListViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: InformationListViewHolder,
+        position: Int,
+    ) {
         val infoModel = infoList[position]
         if (position % 2 != 0) {
             holder.binding.apply {
                 tvDay.setBackgroundColor(
                     ContextCompat.getColor(
                         holder.context,
-                        R.color.table_row_color
-                    )
+                        R.color.table_row_color,
+                    ),
                 )
                 tvMorning.setBackgroundColor(
                     ContextCompat.getColor(
                         holder.context,
-                        R.color.table_row_color
-                    )
+                        R.color.table_row_color,
+                    ),
                 )
                 tvNight.setBackgroundColor(
                     ContextCompat.getColor(
                         holder.context,
-                        R.color.table_row_color
-                    )
+                        R.color.table_row_color,
+                    ),
                 )
             }
         }
@@ -59,13 +60,11 @@ class TableRowAdapter(
         infoModel.night?.let {
             holder.binding.tvNight.text = infoModel.night
         } ?: kotlin.run {
-            if (holder.binding.tvNight.isVisible())
+            if (holder.binding.tvNight.isVisible()) {
                 holder.binding.tvNight.gone()
+            }
         }
     }
 
-    override fun getItemCount(): Int {
-        return infoList.size
-    }
+    override fun getItemCount(): Int = infoList.size
 }
-

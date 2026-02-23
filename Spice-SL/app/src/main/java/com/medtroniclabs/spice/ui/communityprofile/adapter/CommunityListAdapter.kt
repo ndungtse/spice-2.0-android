@@ -8,9 +8,8 @@ import com.medtroniclabs.spice.data.community.CommunityProfileDetail
 import com.medtroniclabs.spice.databinding.ItemCommunityProfileBinding
 
 class CommunityListAdapter(
-    private val selectedItem: (CommunityProfileDetail) -> Unit
+    private val selectedItem: (CommunityProfileDetail) -> Unit,
 ) : RecyclerView.Adapter<CommunityListAdapter.CommunityViewHolder>() {
-
     private val communityList = mutableListOf<CommunityProfileDetail>()
 
     fun updateList(newCommunityList: List<CommunityProfileDetail>) {
@@ -28,8 +27,8 @@ class CommunityListAdapter(
             binding.tvNoOfHouseholdCount.text = " ".plus(
                 binding.root.context.getString(
                     R.string.no_of_households_count,
-                    profile.houseHoldCount
-                )
+                    profile.houseHoldCount,
+                ),
             )
             binding.root.setOnClickListener {
                 selectedItem(profile)
@@ -37,23 +36,27 @@ class CommunityListAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommunityViewHolder {
-        return CommunityViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): CommunityViewHolder =
+        CommunityViewHolder(
             ItemCommunityProfileBinding.inflate(
                 LayoutInflater.from(
-                    parent.context
-                ), parent, false
-            )
+                    parent.context,
+                ),
+                parent,
+                false,
+            ),
         )
-    }
 
-    override fun getItemCount(): Int {
-        return communityList.size
-    }
+    override fun getItemCount(): Int = communityList.size
 
-    override fun onBindViewHolder(holder: CommunityViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: CommunityViewHolder,
+        position: Int,
+    ) {
         val item = communityList[position]
         holder.bind(item)
     }
-
 }

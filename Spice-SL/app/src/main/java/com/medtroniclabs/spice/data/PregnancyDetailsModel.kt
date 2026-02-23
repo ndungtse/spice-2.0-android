@@ -32,5 +32,5 @@ data class PregnancyDetailsModel(
     var provenance: ProvanceDto = ProvanceDto(),
     var patientVisitId: String? = null,
     var pregnancyHistory: List<String>? = null,
-    var pregnancyHistoryNotes: String? = null
+    var pregnancyHistoryNotes: String? = null,
 )

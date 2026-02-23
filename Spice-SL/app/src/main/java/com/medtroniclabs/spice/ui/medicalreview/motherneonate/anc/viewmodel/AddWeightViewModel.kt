@@ -17,11 +17,11 @@ import javax.inject.Inject
 @HiltViewModel
 class AddWeightViewModel @Inject constructor(
     private val motherNeonateANCRepo: MotherNeonateANCRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
-
     val saveWeight = MutableLiveData<Resource<HashMap<String, Any>>>()
     var lastLocation: Location? = null
+
     fun saveWeight(bpAndWeightRequestModel: BpAndWeightRequestModel) {
         viewModelScope.launch(dispatcherIO) {
             saveWeight.postLoading()

@@ -10,8 +10,8 @@ data class CommunityProfile(
     val id: Long = 0,
     val villageId: Long,
     val communityDescription: String?,
-    val registeredDate:String?,
-    val payload:String?,
+    val registeredDate: String?,
+    val payload: String?,
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
-):BaseEntity()
+) : BaseEntity()

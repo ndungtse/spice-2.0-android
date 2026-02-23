@@ -6,7 +6,7 @@ data class PrescriptionCreateRequest(
     val patientReference: String? = null,
     val enrollmentType: String? = null,
     val identityValue: String? = null,
-    val prescriptions: ArrayList<PrescriptionDetails>
+    val prescriptions: ArrayList<PrescriptionDetails>,
 )
 
 data class PrescriptionDetails(
@@ -24,12 +24,8 @@ data class PrescriptionDetails(
     val dosageUnitValue: String?,
     val instructionNote: String?,
     val codeDetails: CodeDetailsObject? = null,
-    val memberId : String? = null,
-    val instructionUpdated : Boolean? = null,
-    val prescriptionFilledDays : Long? = null,
-    val reason : String? = null
-
+    val memberId: String? = null,
+    val instructionUpdated: Boolean? = null,
+    val prescriptionFilledDays: Long? = null,
+    val reason: String? = null,
 )
-
-
-

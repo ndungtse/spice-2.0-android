@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ui.dashboard.ncd.viewmodel
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
@@ -17,13 +16,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 @HiltViewModel
 class NCDDashBoardViewModel @Inject constructor(
     private val ncdDashBoardRepository: NCDDashBoardRepository,
     private val metaRepository: MetaRepository,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
-
     var userDashboardDetails = MutableLiveData<Resource<NCDUserDashboardResponse>>()
     val menuListLiveData = MutableLiveData<List<String>?>()
 
@@ -33,7 +32,7 @@ class NCDDashBoardViewModel @Inject constructor(
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDDashBoardCount,
-                isCompleted = true
+                isCompleted = true,
             )
             userDashboardDetails.postValue(ncdDashBoardRepository.getUserDashboardDetails(request))
         }

@@ -48,13 +48,16 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentRegistrationFormBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         loadJson()
@@ -63,8 +66,11 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
 
     private fun initViews() {
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, this, binding.scrollView,
-            translate = SecuredPreference.getIsTranslationEnabled()
+            requireContext(),
+            binding.llForm,
+            this,
+            binding.scrollView,
+            translate = SecuredPreference.getIsTranslationEnabled(),
         )
 
         binding.btnSubmit.safeClickListener(this)
@@ -85,10 +91,11 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                     (activity as? BaseActivity)?.hideLoading()
                     resources.data?.let { resData ->
                         val updatedResData = resData.map {
-                            if (isGenderOrPregnantField(it) && isPregnantFemale())
+                            if (isGenderOrPregnantField(it) && isPregnantFemale()) {
                                 it.copy(enableSingleSelection = false)
-                            else
+                            } else {
                                 it
+                            }
                         }
                         formGenerator.populateViews(updatedResData)
                         prePopulate()
@@ -120,12 +127,13 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                             val dialog =
                                 DuplicationNudgeDialog.newInstance(
                                     StringConverter.convertGivenMapToString(
-                                        responseMap
-                                    ), isFromEnrollment = true
+                                        responseMap,
+                                    ),
+                                    isFromEnrollment = true,
                                 ) { doAssessment ->
-                                    if (doAssessment)
+                                    if (doAssessment) {
                                         proceedAssessment(responseMap)
-                                    else {
+                                    } else {
                                         viewModel.isFromProceedEnrollment = true
                                         formGenerator.formSubmitAction(binding.btnSubmit)
                                     }
@@ -150,7 +158,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(
                             data,
-                            EntityMapper.getResultSpinnerMapList(data)
+                            EntityMapper.getResultSpinnerMapList(data),
                         )
                     }
                 }
@@ -171,7 +179,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(
                             data,
-                            EntityMapper.getResultSpinnerMapList(data)
+                            EntityMapper.getResultSpinnerMapList(data),
                         )
                     }
                 }
@@ -192,7 +200,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(
                             data,
-                            EntityMapper.getResultSpinnerMapList(data)
+                            EntityMapper.getResultSpinnerMapList(data),
                         )
                     }
                 }
@@ -213,7 +221,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(
                             data,
-                            EntityMapper.getResultSpinnerMapList(data)
+                            EntityMapper.getResultSpinnerMapList(data),
                         )
                     }
                 }
@@ -234,7 +242,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(
                             data,
-                            EntityMapper.getResultSpinnerMapList(data)
+                            EntityMapper.getResultSpinnerMapList(data),
                         )
                     }
                 }
@@ -267,7 +275,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                         (activity as? BaseActivity)?.showErrorDialogue(
                             getString(R.string.error),
                             it,
-                            isNegativeButtonNeed = false
+                            isNegativeButtonNeed = false,
                         ) {}
                     }
                 }
@@ -303,7 +311,11 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
         }
     }
 
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
         if (localDataCache is String) {
             viewModel.loadDataCacheByType(id, localDataCache, selectedParent)
         }
@@ -315,7 +327,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     override fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     ) {
     }
 
@@ -324,11 +336,14 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {
     }
 
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+    override fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
         withNetworkAvailability(online = {
             resultMap?.let {
                 CommonUtils.addAncEnableOrNot(it, BioMetrics)
@@ -337,10 +352,12 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                     it.apply {
                         viewModel.validatePatientResponseLiveDate.value?.data?.first?.let { validateData ->
                             if (validateData.containsKey(AssessmentDefinedParams.memberReference)) {
-                                validateData[AssessmentDefinedParams.memberReference]?.toString()
+                                validateData[AssessmentDefinedParams.memberReference]
+                                    ?.toString()
                                     .let { member ->
-                                        if (!member.isNullOrBlank())
+                                        if (!member.isNullOrBlank()) {
                                             put(AssessmentDefinedParams.memberReference, member)
+                                        }
                                     }
                             }
                             if (validateData.containsKey(Screening.Patient_Id)) {
@@ -372,10 +389,9 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
         })
     }
 
-    private fun isGenderOrPregnantField(formLayout: FormLayout): Boolean {
-        return formLayout.id.equals(DefinedParams.Gender, true) ||
-                formLayout.id.equals(Screening.isPregnant, true)
-    }
+    private fun isGenderOrPregnantField(formLayout: FormLayout): Boolean =
+        formLayout.id.equals(DefinedParams.Gender, true) ||
+            formLayout.id.equals(Screening.isPregnant, true)
 
     private fun isPregnantFemale(): Boolean {
         var isPregnantFemale = false
@@ -387,7 +403,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
 
     private fun proceedRegistration(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?
+        serverData: List<FormLayout?>?,
     ) {
         resultMap?.remove(Screening.identityType)
         withNetworkAvailability(online = {
@@ -397,7 +413,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                 val result = serverData?.let {
                     FormResultComposer().groupValues(
                         serverData = it,
-                        map
+                        map,
                     )
                 }
                 result?.second?.let {
@@ -409,15 +425,16 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
 
                     if (it.containsKey(AssessmentDefinedParams.memberReference)) {
                         it[AssessmentDefinedParams.memberReference]?.toString().let { member ->
-                            if (!member.isNullOrBlank())
+                            if (!member.isNullOrBlank()) {
                                 it[AssessmentDefinedParams.id] = member
+                            }
                         }
                     }
 
                     viewModel.registerPatient(
                         requireContext(),
                         it,
-                        arguments?.getByteArray(Screening.Signature)
+                        arguments?.getByteArray(Screening.Signature),
                     )
                 }
             }
@@ -427,14 +444,17 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     override fun onRenderingComplete() {
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
     }
 
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,
         enteredDays: Int?,
-        resultMap: HashMap<String, Any>?
+        resultMap: HashMap<String, Any>?,
     ) {
     }
 
@@ -442,17 +462,16 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     }
 
     override fun handleMandatoryCondition(formLayout: FormLayout?) {
-
     }
 
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
         /*
        Never used
-        */
+         */
     }
 
     companion object {

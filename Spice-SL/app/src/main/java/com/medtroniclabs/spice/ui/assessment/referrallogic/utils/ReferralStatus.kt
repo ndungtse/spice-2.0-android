@@ -4,5 +4,5 @@ enum class ReferralStatus {
     Referred,
     OnTreatment,
     Recovered,
-    Died
+    Died,
 }

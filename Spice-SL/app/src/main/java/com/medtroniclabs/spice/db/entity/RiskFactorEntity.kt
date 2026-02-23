@@ -9,5 +9,5 @@ data class RiskFactorEntity(
     var id: Int = 0,
     var nonLabEntity: String,
     var uploadStatus: Boolean = false,
-    var createdAt: Long = System.currentTimeMillis()
+    var createdAt: Long = System.currentTimeMillis(),
 )

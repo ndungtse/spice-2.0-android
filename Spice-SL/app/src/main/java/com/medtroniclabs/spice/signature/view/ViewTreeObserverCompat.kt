@@ -12,7 +12,7 @@ object ViewTreeObserverCompat {
     @SuppressLint("NewApi")
     fun removeOnGlobalLayoutListener(
         observer: ViewTreeObserver,
-        victim: ViewTreeObserver.OnGlobalLayoutListener?
+        victim: ViewTreeObserver.OnGlobalLayoutListener?,
     ) { // Future (API16+)...
         observer.removeOnGlobalLayoutListener(victim)
     }

@@ -3,7 +3,13 @@ package com.medtroniclabs.spice.ui
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowInsets
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -14,7 +20,6 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class DeleteReasonDialog() : DialogFragment(), View.OnClickListener {
-
     var callback: ((isPositiveResult: Boolean, comments: String?) -> Unit)? = null
     var postDismissAction: (() -> Unit)? = null
 
@@ -25,7 +30,6 @@ class DeleteReasonDialog() : DialogFragment(), View.OnClickListener {
     var isNegativeButtonNeed: Boolean = false
 
     companion object {
-
         const val TAG = "CommentsAlertDialog"
 
         private const val KEY_TITLE = "KEY_TITLE"
@@ -42,13 +46,12 @@ class DeleteReasonDialog() : DialogFragment(), View.OnClickListener {
             isNegativeButtonNeed: Boolean,
             buttonText: Pair<String, String> = Pair(
                 context.getString(R.string.ok),
-                context.getString(R.string.cancel)
+                context.getString(R.string.cancel),
             ),
             showComment: Boolean = true,
             callback: ((isPositiveResult: Boolean, comments: String?) -> Unit),
             message: Pair<String?, String?> = Pair(null, null),
         ): DeleteReasonDialog {
-
             val args = Bundle()
             args.putString(KEY_TITLE, title)
             args.putString(KEY_MESSAGE, message.first)
@@ -65,7 +68,6 @@ class DeleteReasonDialog() : DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: PrescriptionReasonDialogueBinding
 
-
     override fun onStart() {
         super.onStart()
     }
@@ -73,7 +75,7 @@ class DeleteReasonDialog() : DialogFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = PrescriptionReasonDialogueBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -97,7 +99,10 @@ class DeleteReasonDialog() : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         readArguments()
@@ -112,12 +117,11 @@ class DeleteReasonDialog() : DialogFragment(), View.OnClickListener {
     }
 
     private fun setupView() {
-
-       binding.tvTitle.text = requireArguments().getString(KEY_TITLE)
+        binding.tvTitle.text = requireArguments().getString(KEY_TITLE)
         binding.tvSubTitle.text = requireArguments().getString(KEY_MESSAGE)
         binding.btnOkay.text = requireArguments().getString(KEY_OKAY_BUTTON)
         binding.btnCancel.text = requireArguments().getString(KEY_CANCEL_BUTTON)
-      //  binding.tvErrorMessage.text = requireArguments().getString(ERROR_MESSAGE)
+        //  binding.tvErrorMessage.text = requireArguments().getString(ERROR_MESSAGE)
         arguments?.getBoolean(KEY_SHOW_COMMENT)?.let {
             binding.commentsGroup.visibility = if (it) View.VISIBLE else View.GONE
         }
@@ -142,10 +146,10 @@ class DeleteReasonDialog() : DialogFragment(), View.OnClickListener {
                 dismiss()
             }
             binding.btnOkay.id -> {
-                if(binding.commentsGroup.visibility == View.VISIBLE) {
-                    if (binding.etComments.text.isNullOrEmpty()){
+                if (binding.commentsGroup.visibility == View.VISIBLE) {
+                    if (binding.etComments.text.isNullOrEmpty()) {
                         binding.tvErrorMessage.visible()
-                    }else{
+                    } else {
                         binding.tvErrorMessage.gone()
                         callback?.invoke(true, binding.etComments.fetchString())
                         dismiss()
@@ -156,7 +160,6 @@ class DeleteReasonDialog() : DialogFragment(), View.OnClickListener {
                     dismiss()
                     postDismissAction?.invoke()
                 }
-
             }
             binding.btnCancel.id -> {
                 dismiss()

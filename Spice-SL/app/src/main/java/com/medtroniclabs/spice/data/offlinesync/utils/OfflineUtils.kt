@@ -7,7 +7,6 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import java.util.UUID
 
 object OfflineUtils {
-
     fun getRequestObject(): MutableMap<String, Any> {
         val map = mutableMapOf<String, Any>()
         map[OfflineConstant.REQUEST_ID] = UUID.randomUUID().toString()

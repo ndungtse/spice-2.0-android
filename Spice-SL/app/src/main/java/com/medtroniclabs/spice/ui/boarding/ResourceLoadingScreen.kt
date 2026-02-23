@@ -35,7 +35,7 @@ class ResourceLoadingScreen : BaseActivity() {
     }
 
     private fun initView() {
-        viewModel.changeFacility = intent.getBooleanExtra(DefinedParams.changeFacility,false)
+        viewModel.changeFacility = intent.getBooleanExtra(DefinedParams.changeFacility, false)
         syncAndDownloadInitialData()
     }
 
@@ -139,15 +139,14 @@ class ResourceLoadingScreen : BaseActivity() {
         }
     }
 
-
     private fun handleError() {
         SecuredPreference.putBoolean(
             SecuredPreference.EnvironmentKey.ISMETALOADED.name,
-            false
+            false,
         )
         SecuredPreference.putBoolean(
             SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
-            false
+            false,
         )
         binding.actionButton.visibility = View.VISIBLE
     }
@@ -160,27 +159,27 @@ class ResourceLoadingScreen : BaseActivity() {
     }
 
     private fun getMetaData() {
-        if (viewModel.changeFacility)
+        if (viewModel.changeFacility) {
             viewModel.updateDeviceDetails(this)
-        else
+        } else {
             viewModel.getMetaDataInformation()
+        }
     }
 
     private fun launchLandingScreen() {
         SecuredPreference.putBoolean(
             SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
-            true
+            true,
         )
         SecuredPreference.putBoolean(
             SecuredPreference.EnvironmentKey.ISMETALOADED.name,
-            true
+            true,
         )
-        if (CommonUtils.isNonCommunity() && !SecuredPreference.getTermsAndConditionsStatus())
+        if (CommonUtils.isNonCommunity() && !SecuredPreference.getTermsAndConditionsStatus()) {
             startActivity(Intent(this, UserTermsConditionsActivity::class.java))
-        else
+        } else {
             startActivity(Intent(this, LandingActivity::class.java))
+        }
         finish()
     }
-
-
 }

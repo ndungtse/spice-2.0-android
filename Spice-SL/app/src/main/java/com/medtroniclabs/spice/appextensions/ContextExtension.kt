@@ -20,7 +20,6 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.offlinesync.PostDataWorker
 import com.medtroniclabs.spice.offlinesync.GetSyncStatusWorker
 import com.medtroniclabs.spice.offlinesync.ScheduledSyncWork
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
@@ -37,20 +36,21 @@ const val imgFileNameExtension = "JPEG"
 
 const val workerUniqueName = "spicePostWorker"
 const val workerUniqueNameForNCD = "spicePostWorkerForNCD"
+
 fun Context.isGpsEnabled(): Boolean {
     val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 }
 
-fun Context.isFineAndCoarseLocationPermissionGranted(): Boolean {
-    return ContextCompat.checkSelfPermission(
+fun Context.isFineAndCoarseLocationPermissionGranted(): Boolean =
+    ContextCompat.checkSelfPermission(
         this,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-        this,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED
-}
+        Manifest.permission.ACCESS_FINE_LOCATION,
+    ) == PackageManager.PERMISSION_GRANTED &&
+        ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+        ) == PackageManager.PERMISSION_GRANTED
 
 fun Context.getPatientStatus(status: String?): String? {
     status?.let {
@@ -83,7 +83,8 @@ fun Context.changePatientStatus(input: String): String {
 fun Context.scheduleSyncWorker() {
     val workManager = WorkManager.getInstance(this)
 
-    val constraint = Constraints.Builder()
+    val constraint = Constraints
+        .Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
         .build()
 
@@ -97,16 +98,16 @@ fun Context.scheduleSyncWorker() {
     workManager.enqueueUniquePeriodicWork(
         syncWorkerName,
         ExistingPeriodicWorkPolicy.KEEP,
-        periodicWorkRequest
+        periodicWorkRequest,
     )
-
 }
 
 fun Context.triggerOneTimeWorker() {
     val workManager = WorkManager.getInstance(this)
-    //Only work that is in a terminal state (SUCCEEDED, FAILED, or CANCELLED) and has no unfinished dependent work will be pruned.
+    // Only work that is in a terminal state (SUCCEEDED, FAILED, or CANCELLED) and has no unfinished dependent work will be pruned.
     workManager.pruneWork()
-    val constraints = Constraints.Builder()
+    val constraints = Constraints
+        .Builder()
         .setRequiresBatteryNotLow(false) // Requires battery to not be low
         .setRequiredNetworkType(NetworkType.CONNECTED)
         .build()
@@ -115,7 +116,8 @@ fun Context.triggerOneTimeWorker() {
         .build()
     val workerInfos = workManager.getWorkInfosForUniqueWork(workerUniqueNameForNCD).get()
     val noPendingWorker =
-        workerInfos?.filter { it.state == WorkInfo.State.ENQUEUED || it.state == WorkInfo.State.BLOCKED }
+        workerInfos
+            ?.filter { it.state == WorkInfo.State.ENQUEUED || it.state == WorkInfo.State.BLOCKED }
             .isNullOrEmpty()
     val existingWorkPolicy =
         if (noPendingWorker) ExistingWorkPolicy.APPEND else ExistingWorkPolicy.KEEP
@@ -125,8 +127,8 @@ fun Context.triggerOneTimeWorker() {
 private fun observerStatus(workManager: WorkManager) {
     workManager.getWorkInfosForUniqueWorkLiveData(syncWorkerName).observeForever {
         for (woker in it) {
-            Log.e("WORKER_TEST","Id "+woker.id)
-            Log.e("WORKER_TEST","Status "+woker.state.name)
+            Log.e("WORKER_TEST", "Id " + woker.id)
+            Log.e("WORKER_TEST", "Status " + woker.state.name)
         }
     }
 }
@@ -146,7 +148,10 @@ fun Context.cancelAllWorker() {
     workManager.cancelUniqueWork(workerUniqueName) // For Automatic sync worker
 }
 
-fun Context.showNotification(title: String = "Background Task", message: String = "Syncing Offline data") {
+fun Context.showNotification(
+    title: String = "Background Task",
+    message: String = "Syncing Offline data",
+) {
     val notificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     val channelId = "worker_channel"
 
@@ -155,7 +160,8 @@ fun Context.showNotification(title: String = "Background Task", message: String 
         notificationManager.createNotificationChannel(channel)
     }
 
-    val notification = NotificationCompat.Builder(this, channelId)
+    val notification = NotificationCompat
+        .Builder(this, channelId)
         .setContentTitle(title)
         .setContentText(message)
         .setSmallIcon(R.drawable.ic_splash_icon)
@@ -169,7 +175,10 @@ fun Context.hideNotification() {
     notificationManager.cancel(notificationId)
 }
 
-fun Context.saveBitmapAsJpeg(bitmap: Bitmap, fileName: String): Boolean {
+fun Context.saveBitmapAsJpeg(
+    bitmap: Bitmap,
+    fileName: String,
+): Boolean {
     // Get the directory for the app's private files directory
     val directory = File(this.filesDir, signatureFolder)
     if (!directory.exists()) {
@@ -201,10 +210,11 @@ fun Context.saveBitmapAsJpeg(bitmap: Bitmap, fileName: String): Boolean {
 
 fun Context.startBackgroundOfflineSync() {
     val workManager = WorkManager.getInstance(this)
-    //Only work that is in a terminal state (SUCCEEDED, FAILED, or CANCELLED) and has no unfinished dependent work will be pruned.
+    // Only work that is in a terminal state (SUCCEEDED, FAILED, or CANCELLED) and has no unfinished dependent work will be pruned.
     workManager.pruneWork()
 
-    val constraint = Constraints.Builder()
+    val constraint = Constraints
+        .Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
         .build()
 
@@ -222,6 +232,4 @@ fun Context.startBackgroundOfflineSync() {
     workManager.enqueueUniqueWork(workerUniqueName, existingWorkPolicy, postWorker)
 }
 
-fun Double.toCleanString(): String {
-    return if (this % 1.0 == 0.0) this.toInt().toString() else this.toString()
-}
+fun Double.toCleanString(): String = if (this % 1.0 == 0.0) this.toInt().toString() else this.toString()

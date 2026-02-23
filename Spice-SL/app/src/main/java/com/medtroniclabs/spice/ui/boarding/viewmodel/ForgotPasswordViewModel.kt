@@ -12,12 +12,11 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private val forgotPasswordRepository: ForgotPasswordRepository) : ViewModel() {
-
+    private val forgotPasswordRepository: ForgotPasswordRepository,
+) : ViewModel() {
     val resetTokenLiveData = MutableLiveData<String?>()
     var resetEmailResponseLiveData = MutableLiveData<Resource<Boolean>>()
     var verifyTokenLiveData = MutableLiveData<Resource<Boolean>>()
@@ -48,8 +47,8 @@ class ForgotPasswordViewModel @Inject constructor(
                 resetPasswordLiveData.postValue(
                     forgotPasswordRepository.resetPassword(
                         token,
-                        password
-                    )
+                        password,
+                    ),
                 )
             }
         }

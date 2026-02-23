@@ -6,8 +6,8 @@ data class LifeStyleRequest(
 
 data class LifeStyleResponse(
     var comments: String? = null,
-    var lifestyleAnswer: String?= null,
-    var lifestyle: String?= null,
+    var lifestyleAnswer: String? = null,
+    var lifestyle: String? = null,
     var lifestyleType: String? = null,
-    var value:String? = null
+    var value: String? = null,
 )

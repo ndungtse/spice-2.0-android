@@ -15,8 +15,8 @@ data class MenuEntity(
     val displayOrder: Int,
     val subModule: String? = null,
     @ColumnInfo(name = "culture_value")
-    val displayValue: String? = null
-){
+    val displayValue: String? = null,
+) {
     @Ignore
     var isDisabled: Boolean = false
 }

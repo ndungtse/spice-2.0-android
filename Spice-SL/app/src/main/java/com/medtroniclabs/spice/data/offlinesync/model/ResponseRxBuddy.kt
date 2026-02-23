@@ -5,5 +5,5 @@ data class ResponseRxBuddy(
     val patientMemberId: String,
     val type: String,
     val registry: ResponseRxBuddyRegister,
-    val isActive: Boolean
+    val isActive: Boolean,
 )

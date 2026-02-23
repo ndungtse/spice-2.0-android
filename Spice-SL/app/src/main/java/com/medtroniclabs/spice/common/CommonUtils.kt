@@ -96,12 +96,13 @@ object CommonUtils {
         return res ?: false
     }
 
-    fun getStringFromAssets(fileName: String, assets: AssetManager): String {
-        return assets.open(fileName).bufferedReader().use { it.readText() }
-    }
+    fun getStringFromAssets(
+        fileName: String,
+        assets: AssetManager,
+    ): String = assets.open(fileName).bufferedReader().use { it.readText() }
 
-    fun getIntegerOrNull(answer: Any?): Int? {
-        return if (answer is Int) {
+    fun getIntegerOrNull(answer: Any?): Int? =
+        if (answer is Int) {
             answer
         } else if (answer is String) {
             val answerNumber = answer.toIntOrNull()
@@ -113,7 +114,6 @@ object CommonUtils {
         } else {
             null
         }
-    }
 
     fun getLongOrNull(answer: Any?): Long? {
         when (answer) {
@@ -137,9 +137,7 @@ object CommonUtils {
         }
     }
 
-    fun getBooleanFromString(answer: Any): Boolean? {
-        return (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
-    }
+    fun getBooleanFromString(answer: Any): Boolean? = (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
 
     fun getDoubleOrNull(answer: Any?): Double? {
         when (answer) {
@@ -167,17 +165,19 @@ object CommonUtils {
         }
     }
 
-    fun getStringOrEmptyString(answer: Any?): String {
-        return if (answer is String) {
+    fun getStringOrEmptyString(answer: Any?): String =
+        if (answer is String) {
             answer
-        } else ""
-    }
+        } else {
+            ""
+        }
 
-    fun getIsBooleanFromString(answer: Any?): Boolean {
-        return (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
-    }
+    fun getIsBooleanFromString(answer: Any?): Boolean = (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
 
-    fun displayAge(dobString: String, context: Context): String {
+    fun displayAge(
+        dobString: String,
+        context: Context,
+    ): String {
         val yearMonthWeek = DateUtils.getV2YearMonthAndWeek(dobString)
         val years = yearMonthWeek.years
         var months = yearMonthWeek.months
@@ -196,7 +196,6 @@ object CommonUtils {
             }
             return strBuilder.toString()
         }
-
 
         if (years < 5) {
             months += (years * 12)
@@ -228,24 +227,26 @@ object CommonUtils {
         return strBuilder.toString()
     }
 
-
-    fun convertListToString(dispensedList: ArrayList<String>): String {
-        return dispensedList.nullIfEmpty()
+    fun convertListToString(dispensedList: ArrayList<String>): String =
+        dispensedList
+            .nullIfEmpty()
             ?.joinToString(separator = ", ") { it.capitalizeFirstChar() } ?: "-"
-    }
 
     fun getYearMonthAndWeeks(dateString: String): Triple<String, String, String> {
         val parts = dateString.split("/")
         return Triple(parts[0], parts[1], parts[2])
     }
 
-    fun getDurationInYMD(input: String, context: Context): String {
+    fun getDurationInYMD(
+        input: String,
+        context: Context,
+    ): String {
         val parts = input.split('/')
 
         return when {
             parts[0] == DefinedParams.ZERO && parts[1] == DefinedParams.ZERO -> context.getString(
                 R.string.weeks_w,
-                parts[2]
+                parts[2],
             )
 
             parts[0] == DefinedParams.ZERO -> context.getString(R.string.months_m, parts[1])
@@ -261,15 +262,14 @@ object CommonUtils {
         return false
     }
 
-    fun offlineUsers(): Boolean {
-        return isNonCommunity() || (isCommunity() && isChw())
-    }
+    fun offlineUsers(): Boolean = isNonCommunity() || (isCommunity() && isChw())
 
     fun isChwChp(): Boolean {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
-        return userRole?.contains(COMMUNITY_HEALTH_WORKER) == true || userRole?.contains(
-            RoleConstant.COMMUNITY_HEALTH_PROVIDER
-        ) == true
+        return userRole?.contains(COMMUNITY_HEALTH_WORKER) == true ||
+            userRole?.contains(
+                RoleConstant.COMMUNITY_HEALTH_PROVIDER,
+            ) == true
     }
 
     fun isProvider(): Boolean {
@@ -287,8 +287,11 @@ object CommonUtils {
         return roleList.contains(currentRole)
     }
 
-
-    fun getOptionMap(value: String, name: String, culture: String? = null): Map<String, Any> {
+    fun getOptionMap(
+        value: String,
+        name: String,
+        culture: String? = null,
+    ): Map<String, Any> {
         val map = HashMap<String, Any>()
         map[DefinedParams.ID] = value
         map[DefinedParams.NAME] = name
@@ -296,14 +299,20 @@ object CommonUtils {
         return map
     }
 
-    fun getOptions(value: String, name: String): Map<String, Any> {
+    fun getOptions(
+        value: String,
+        name: String,
+    ): Map<String, Any> {
         val map = HashMap<String, Any>()
         map[DefinedParams.Value] = value
         map[DefinedParams.NAME] = name
         return map
     }
 
-    fun getAgeFromDOB(dateOfBirth: String?, context: Context): String {
+    fun getAgeFromDOB(
+        dateOfBirth: String?,
+        context: Context,
+    ): String {
         if (dateOfBirth != null) {
             val yearMonthWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth)
 
@@ -313,43 +322,59 @@ object CommonUtils {
 
             val months = (yearMonthWeek.years * 12) + yearMonthWeek.months
             if (months > 0) {
-                return if (months == 1) "$months ${context.getString(R.string.month)}" else "$months ${
-                    context.getString(
-                        R.string.months
-                    )
-                }"
+                return if (months == 1) {
+                    "$months ${context.getString(R.string.month)}"
+                } else {
+                    "$months ${
+                        context.getString(
+                            R.string.months,
+                        )
+                    }"
+                }
             }
 
             if (yearMonthWeek.weeks > 0) {
-                return if (yearMonthWeek.weeks == 1) "${yearMonthWeek.weeks} ${context.getString(R.string.week)}" else "${yearMonthWeek.weeks} ${
-                    context.getString(
-                        R.string.weeks
-                    )
-                }"
+                return if (yearMonthWeek.weeks == 1) {
+                    "${yearMonthWeek.weeks} ${context.getString(R.string.week)}"
+                } else {
+                    "${yearMonthWeek.weeks} ${
+                        context.getString(
+                            R.string.weeks,
+                        )
+                    }"
+                }
             }
 
             if (yearMonthWeek.days >= 0) {
-                return if (yearMonthWeek.days < 2) "${yearMonthWeek.days} ${context.getString(R.string.day)}" else "${yearMonthWeek.days} ${
-                    context.getString(
-                        R.string.days
-                    )
-                }"
+                return if (yearMonthWeek.days < 2) {
+                    "${yearMonthWeek.days} ${context.getString(R.string.day)}"
+                } else {
+                    "${yearMonthWeek.days} ${
+                        context.getString(
+                            R.string.days,
+                        )
+                    }"
+                }
             }
         }
         return ""
     }
 
-    fun getAgeFromDob(dateOfBirth: String?, month: String): String {
+    fun getAgeFromDob(
+        dateOfBirth: String?,
+        month: String,
+    ): String {
         if (dateOfBirth != null) {
             val age = calculateAge(dateOfBirth)
             return if (age != null && age > 5) {
                 "$age"
             } else {
                 val startDate = DateUtils.formatStringToDate(
-                    dateOfBirth, SimpleDateFormat(
+                    dateOfBirth,
+                    SimpleDateFormat(
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        Locale.ENGLISH
-                    )
+                        Locale.ENGLISH,
+                    ),
                 )
                 startDate?.let { date ->
                     "${DateUtils.calculateAgeInMonths(date)} $month"
@@ -362,40 +387,45 @@ object CommonUtils {
         }
     }
 
-
     private fun calculateAge(dateOfBirth: String): Int? {
         val ageTriplet = DateUtils.getYearMonthAndDate(
-            dateOfBirth, SimpleDateFormat(
+            dateOfBirth,
+            SimpleDateFormat(
                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
         val year = ageTriplet.first
         return year?.let { calculateAge(it) }
     }
 
-    fun getGenderText(gender: String?, context: Context): String {
-        return if (gender.equals(DefinedParams.male, true)) {
+    fun getGenderText(
+        gender: String?,
+        context: Context,
+    ): String =
+        if (gender.equals(DefinedParams.male, true)) {
             context.getString(R.string.male_prefix)
         } else {
             context.getString(R.string.female_prefix)
         }
-    }
 
-    fun translatedGender(context: Context, gender: String?): String {
-        return if (gender.equals(DefinedParams.male, true)) {
+    fun translatedGender(
+        context: Context,
+        gender: String?,
+    ): String =
+        if (gender.equals(DefinedParams.male, true)) {
             context.getString(R.string.male)
         } else {
             context.getString(R.string.female)
         }
-    }
 
-    fun getBooleanAsString(value: Boolean): String {
-        return if (value) HouseHoldRegistration.yes else HouseHoldRegistration.no
-    }
+    fun getBooleanAsString(value: Boolean): String = if (value) HouseHoldRegistration.yes else HouseHoldRegistration.no
 
-
-    fun getBMI(heightInCM: Double, weight: Double, context: Context): String {
+    fun getBMI(
+        heightInCM: Double,
+        weight: Double,
+        context: Context,
+    ): String {
         val heightInMeter = heightInCM / 100
         val bmi = weight / (heightInMeter * heightInMeter)
         if (bmi.isInfinite() || bmi.isNaN()) {
@@ -406,22 +436,25 @@ object CommonUtils {
 
     fun convertStringDobToMonths(dateOfBirth: String): Int? {
         val startDate = DateUtils.formatStringToDate(
-            dateOfBirth, SimpleDateFormat(
+            dateOfBirth,
+            SimpleDateFormat(
                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                Locale.ENGLISH
-            )
+                Locale.ENGLISH,
+            ),
         )
         return startDate?.let { date ->
             DateUtils.calculateAgeInMonths(date)
         }
     }
 
-    fun isAlphabetsWithSpace(input: String): Boolean {
-        return input.matches(Regex(RegexConstants.Contains_Alphabets_Space))
-    }
+    fun isAlphabetsWithSpace(input: String): Boolean = input.matches(Regex(RegexConstants.Contains_Alphabets_Space))
 
-    fun getDaysValue(enteredDays: String, maxDays: Int, context: Context): String {
-        return try {
+    fun getDaysValue(
+        enteredDays: String,
+        maxDays: Int,
+        context: Context,
+    ): String =
+        try {
             val days = enteredDays.toDouble().toInt()
             if (days > maxDays) {
                 context.getString(R.string.days_summary, days, maxDays + 1)
@@ -431,7 +464,6 @@ object CommonUtils {
         } catch (e: NumberFormatException) {
             enteredDays
         }
-    }
 
     fun convertStringToIntString(value: String): String {
         return try {
@@ -441,7 +473,10 @@ object CommonUtils {
         }
     }
 
-    fun getDecimalFormatted(value: Any?, pattern: String = "###.##"): String {
+    fun getDecimalFormatted(
+        value: Any?,
+        pattern: String = "###.##",
+    ): String {
         var formattedValue = ""
         try {
             value?.let {
@@ -449,23 +484,23 @@ object CommonUtils {
                 val df = DecimalFormat(pattern, DecimalFormatSymbols(Locale.ENGLISH))
                 df.roundingMode = RoundingMode.FLOOR
                 if (actualValue is String) {
-                    if (actualValue.isNotBlank())
+                    if (actualValue.isNotBlank()) {
                         formattedValue = df.format(actualValue)
-                } else
+                    }
+                } else {
                     formattedValue = df.format(actualValue)
+                }
             }
         } catch (_: Exception) {
-            //Exception - Catch block
+            // Exception - Catch block
         }
         return formattedValue
     }
 
-    fun Double?.toIntOrEmptyString(): String {
-        return this?.toInt().toString()
-    }
+    fun Double?.toIntOrEmptyString(): String = this?.toInt().toString()
 
-    fun Double?.toDoubleOrEmptyString(): String {
-        return if (this != null) {
+    fun Double?.toDoubleOrEmptyString(): String =
+        if (this != null) {
             if (this == this.toInt().toDouble()) {
                 this.toInt().toString()
             } else {
@@ -474,16 +509,18 @@ object CommonUtils {
         } else {
             ""
         }
-    }
 
-    fun getFilePath(id: String, context: Context): File {
+    fun getFilePath(
+        id: String,
+        context: Context,
+    ): File {
         val cw = ContextWrapper(context)
         val directory = cw.getDir(id, Context.MODE_PRIVATE)
         return File(directory, DefinedParams.SIGN_DIR)
     }
 
-    fun getTicketType(menuType: String): String? {
-        return when (menuType) {
+    fun getTicketType(menuType: String): String? =
+        when (menuType) {
             MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name, MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name, MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name -> {
                 MedicalReviewTypeEnums.ICCM.name
             }
@@ -504,69 +541,82 @@ object CommonUtils {
                 null
             }
         }
-    }
 
-    fun createPrescription(prescriptions: List<Prescription>?, context: Context): String? {
-        return prescriptions?.takeIf { it.isNotEmpty() }?.mapIndexed { index, prescription ->
-            "${index + 1}. ${prescription.medicationName} / ${prescription.frequencyName} / ${
-                dayPeriod(
-                    prescription.prescribedDays,
-                    context
-                )
-            }"
-        }?.joinToString("\n")
-    }
+    fun createPrescription(
+        prescriptions: List<Prescription>?,
+        context: Context,
+    ): String? =
+        prescriptions
+            ?.takeIf {
+                it.isNotEmpty()
+            }?.mapIndexed { index, prescription ->
+                "${index + 1}. ${prescription.medicationName} / ${prescription.frequencyName} / ${
+                    dayPeriod(
+                        prescription.prescribedDays,
+                        context,
+                    )
+                }"
+            }?.joinToString("\n")
 
-    fun createInvestigation(investigation: List<Investigation>?, context: Context): String? {
-        return investigation?.takeIf { it.isNotEmpty() }?.mapIndexed { index, investigation ->
-            "${index + 1}. ${investigation.testName} "
-        }?.joinToString("\n")
-    }
+    fun createInvestigation(
+        investigation: List<Investigation>?,
+        context: Context,
+    ): String? =
+        investigation
+            ?.takeIf {
+                it.isNotEmpty()
+            }?.mapIndexed { index, investigation ->
+                "${index + 1}. ${investigation.testName} "
+            }?.joinToString("\n")
 
     fun createMotherNeonateExamination(
         prescriptions: List<HashMap<String, Pair<String?, Any?>>>,
         context: Context,
-        type: Boolean
+        type: Boolean,
     ): String? {
         val maxKeyLength = prescriptions.flatMap { it.keys }.maxOfOrNull { it.length } ?: 0
         var formattedFirst = ""
-        return prescriptions.takeIf { it.isNotEmpty() }?.mapIndexed { index, prescription ->
-            prescription.entries.joinToString("\n") { (key, pair) ->
-                formattedFirst = if (key.length == maxKeyLength && type) {
-                    key.plus(":").padEnd(maxKeyLength)
-                } else if (!type) {
-                    key.plus(": ").padEnd(maxKeyLength)
-                } else {
-                    key.plus(":").padEnd((maxKeyLength + 6).toInt())
+        return prescriptions
+            .takeIf { it.isNotEmpty() }
+            ?.mapIndexed { index, prescription ->
+                prescription.entries.joinToString("\n") { (key, pair) ->
+                    formattedFirst = if (key.length == maxKeyLength && type) {
+                        key.plus(":").padEnd(maxKeyLength)
+                    } else if (!type) {
+                        key.plus(": ").padEnd(maxKeyLength)
+                    } else {
+                        key.plus(":").padEnd((maxKeyLength + 6).toInt())
+                    }
+                    val formattedPair = if (pair.second == null) {
+                        "${index + 1}. $formattedFirst ${pair.first}"
+                    } else {
+                        "${index + 1}. $formattedFirst ${pair.first}- (${pair.second})"
+                    }
+                    formattedPair
                 }
-                val formattedPair = if (pair.second == null) {
-                    "${index + 1}. $formattedFirst ${pair.first}"
-                } else {
-                    "${index + 1}. $formattedFirst ${pair.first}- (${pair.second})"
-                }
-                formattedPair
-            }
-        }?.joinToString("\n")
+            }?.joinToString("\n")
     }
 
-
-    private fun dayPeriod(prescribedDays: Long?, context: Context): String {
-        return if (prescribedDays == 1L) {
+    private fun dayPeriod(
+        prescribedDays: Long?,
+        context: Context,
+    ): String =
+        if (prescribedDays == 1L) {
             "$prescribedDays ${context.getString(R.string.day)}"
         } else {
             "$prescribedDays ${context.getString(R.string.days)}"
         }
-    }
 
-    fun getContactNumber(phNumber: String?): String? {
-        return SecuredPreference.getPhoneNumberCode()?.let { code ->
+    fun getContactNumber(phNumber: String?): String? =
+        SecuredPreference.getPhoneNumberCode()?.let { code ->
             val formattedCode = if (!code.startsWith("+")) "+$code" else code
             "$formattedCode $phNumber"
         }
-    }
 
-
-    fun getMaxDateLimit(menstrualPeriod: Boolean, minDays: Int?): Long? {
+    fun getMaxDateLimit(
+        menstrualPeriod: Boolean,
+        minDays: Int?,
+    ): Long? {
         return if (menstrualPeriod) {
             DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 287)
         } else {
@@ -598,7 +648,10 @@ object CommonUtils {
         }
     }
 
-    fun getMaxDateLimit(menstrualPeriod: Boolean, minDays: Long?): Long? {
+    fun getMaxDateLimit(
+        menstrualPeriod: Boolean,
+        minDays: Long?,
+    ): Long? {
         return if (menstrualPeriod) {
             DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 287)
         } else {
@@ -610,8 +663,11 @@ object CommonUtils {
         }
     }
 
-    fun convertAnyToString(value: Any?, context: Context): String {
-        return when (value) {
+    fun convertAnyToString(
+        value: Any?,
+        context: Context,
+    ): String =
+        when (value) {
             is String -> value
             is List<*> -> {
                 if (value.all { it is String }) {
@@ -625,24 +681,23 @@ object CommonUtils {
             null -> context.getString(R.string.separator_double_hyphen)
             else -> context.getString(R.string.separator_double_hyphen)
         }
-    }
 
-    private fun booleanToYesNo(value: Boolean, context: Context): String {
-        return if (value) context.getString(R.string.yes) else context.getString(R.string.no)
-    }
+    private fun booleanToYesNo(
+        value: Boolean,
+        context: Context,
+    ): String = if (value) context.getString(R.string.yes) else context.getString(R.string.no)
 
-    fun convertAnyToListOfString(value: Any?): List<String?> {
-        return when (value) {
+    fun convertAnyToListOfString(value: Any?): List<String?> =
+        when (value) {
             is String -> listOf(value)
             is List<*> -> value.filterIsInstance<String?>()
             else -> emptyList()
         }
-    }
 
     fun combineText(
         items: List<String?>?,
         notes: String?,
-        nullHandleString: String
+        nullHandleString: String,
     ): String {
         val combinedText = StringBuilder()
         items?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ", ")?.let {
@@ -657,20 +712,23 @@ object CommonUtils {
         return if (combinedText.isNotEmpty()) combinedText.toString() else nullHandleString
     }
 
-
-    fun composeLabelName(name: String, status: String?, context: Context): String {
-        return if (!(status.isNullOrEmpty())) {
+    fun composeLabelName(
+        name: String,
+        status: String?,
+        context: Context,
+    ): String =
+        if (!(status.isNullOrEmpty())) {
             context.getString(R.string.patient_status_append, name, status.trim())
         } else {
             name
         }
-    }
 
-    fun extractNumber(input: String): Int {
-        return input.split(" ").getOrNull(0)?.toIntOrNull() ?: 0
-    }
+    fun extractNumber(input: String): Int = input.split(" ").getOrNull(0)?.toIntOrNull() ?: 0
 
-    fun birthWeight(kg: Double, context: Context): String {
+    fun birthWeight(
+        kg: Double,
+        context: Context,
+    ): String {
         val grams = (kg * 1000).toInt()
         return when {
             grams < 1000 -> context.getString(R.string.elbw)
@@ -686,15 +744,14 @@ object CommonUtils {
         val yearMonthWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth)
         val months = (yearMonthWeek.years * 12) + yearMonthWeek.months
 
-        if (months >= 6)
+        if (months >= 6) {
             return VISIBLE
-        else
+        } else {
             return GONE
+        }
     }
 
-    fun formatConsent(consent: String): String {
-        return consent.replace("\\\"", "\"").replace("contenteditable=\"true\"", "")
-    }
+    fun formatConsent(consent: String): String = consent.replace("\\\"", "\"").replace("contenteditable=\"true\"", "")
 
     fun calculateBMI(map: HashMap<String, Any>): Double? {
         if (map.containsKey(Screening.Weight) &&
@@ -724,16 +781,19 @@ object CommonUtils {
         return null
     }
 
-    private fun fetchValue(map: HashMap<String, Any>, params: String): Double {
-        return if (map[params] is String)
+    private fun fetchValue(
+        map: HashMap<String, Any>,
+        params: String,
+    ): Double =
+        if (map[params] is String) {
             (map[params] as String).toDouble()
-        else
+        } else {
             map[params] as Double
-    }
+        }
 
     fun calculateAverageBloodPressure(
         resultMap: HashMap<String, Any>,
-        addDateTime: Boolean = false
+        addDateTime: Boolean = false,
     ) {
         if (resultMap.containsKey(Screening.BPLog_Details)) {
             val actualMapList = resultMap[Screening.BPLog_Details]
@@ -754,8 +814,9 @@ object CommonUtils {
                 val finalDia = (diastolic / enteredBGCount).roundToInt()
                 resultMap[Screening.Avg_Systolic] = finalSys
                 resultMap[Screening.Avg_Diastolic] = finalDia
-                if (addDateTime)
+                if (addDateTime) {
                     resultMap[Screening.BPTakenOn] = DateUtils.getTodayDateDDMMYYYY()
+                }
                 resultMap[Screening.Avg_Blood_pressure] = ("$finalSys/$finalDia")
                 resultMap[Screening.BPLog_Details] = parsedList(actualMapList)
             }
@@ -777,8 +838,9 @@ object CommonUtils {
                     record.pulse?.let { pul ->
                         data[Screening.Pulse] = parseDouble(pul)
                     }
-                    if (data.isNotEmpty())
+                    if (data.isNotEmpty()) {
                         modifiedList.add(data)
+                    }
                 }
             }
             return modifiedList.ifEmpty { actualList }
@@ -787,44 +849,45 @@ object CommonUtils {
         }
     }
 
-    fun parseDouble(dValue: Double): String {
-        return dValue.toString().replace(".0", "")
-    }
+    fun parseDouble(dValue: Double): String = dValue.toString().replace(".0", "")
 
     private fun getSystolicValue(map: Any?): Double {
         var returnValue = 0.0
-        if (map is Map<*, *> && map.containsKey(Screening.Systolic))
+        if (map is Map<*, *> && map.containsKey(Screening.Systolic)) {
             returnValue = map[Screening.Systolic] as Double
-        else if (map is BPModel)
+        } else if (map is BPModel) {
             map.systolic?.let {
                 returnValue = it
             }
+        }
         return returnValue
     }
 
     private fun getDiastolicValue(map: Any?): Double {
         var returnValue = 0.0
-        if (map is Map<*, *> && map.containsKey(Screening.Diastolic))
+        if (map is Map<*, *> && map.containsKey(Screening.Diastolic)) {
             returnValue = map[Screening.Diastolic] as Double
-        else if (map is BPModel)
+        } else if (map is BPModel) {
             map.diastolic?.let {
                 returnValue = it
             }
+        }
         return returnValue
     }
 
     fun mentalHealthKey(type: String): String {
         var key = Screening.MentalHealthDetails
-        if (type.equals(AssessmentDefinedParams.PHQ9, true))
+        if (type.equals(AssessmentDefinedParams.PHQ9, true)) {
             key = AssessmentDefinedParams.PHQ9_Mental_Health
-        else if (type.equals(AssessmentDefinedParams.GAD7, true))
+        } else if (type.equals(AssessmentDefinedParams.GAD7, true)) {
             key = AssessmentDefinedParams.GAD7_Mental_Health
+        }
         return key
     }
 
     fun calculatePHQScore(
         map: HashMap<String, Any>,
-        type: String = PHQ4
+        type: String = PHQ4,
     ): Int {
         val key = mentalHealthKey(type)
         if (map.containsKey(key)) {
@@ -863,7 +926,7 @@ object CommonUtils {
         type: String,
         map: HashMap<String, Any>,
         phqMap: ArrayList<HashMap<String, Any>>,
-        phqScore: Int
+        phqScore: Int,
     ) {
         when (type) {
             PHQ4 -> {
@@ -876,29 +939,29 @@ object CommonUtils {
                 map[AssessmentDefinedParams.PHQ9_Score] = phqScore
                 map[AssessmentDefinedParams.PHQ9_Risk_Level] = getPhQ4RiskLevel(phqScore)
                 map[AssessmentDefinedParams.PHQ9_Mental_Health] = phqMap
-                if (map.containsKey(Screening.MentalHealthDetails))
+                if (map.containsKey(Screening.MentalHealthDetails)) {
                     map.remove(Screening.MentalHealthDetails)
+                }
             }
 
             AssessmentDefinedParams.GAD7 -> {
                 map[AssessmentDefinedParams.GAD7_Score] = phqScore
                 map[AssessmentDefinedParams.GAD7_Risk_Level] = getPhQ4RiskLevel(phqScore)
                 map[AssessmentDefinedParams.GAD7_Mental_Health] = phqMap
-                if (map.containsKey(Screening.MentalHealthDetails))
+                if (map.containsKey(Screening.MentalHealthDetails)) {
                     map.remove(Screening.MentalHealthDetails)
+                }
             }
-
         }
     }
 
-    private fun getPhQ4RiskLevel(phq4Score: Int): String {
-        return when (phq4Score) {
+    private fun getPhQ4RiskLevel(phq4Score: Int): String =
+        when (phq4Score) {
             4, 5 -> Screening.Mild
             6, 7, 8 -> Screening.Moderate
             0, 1, 2, 3 -> Screening.Normal
             else -> Screening.Severe
         }
-    }
 
     fun calculateSuicidalIdeation(map: HashMap<String, Any>) {
         if (map.containsKey(Screening.SuicidalIdeationQuestion)) {
@@ -909,7 +972,10 @@ object CommonUtils {
         }
     }
 
-    fun calculateCAGEAIDSCore(map: HashMap<String, Any>, serverData: List<FormLayout?>?) {
+    fun calculateCAGEAIDSCore(
+        map: HashMap<String, Any>,
+        serverData: List<FormLayout?>?,
+    ) {
         var cageAid = 0
         if (serverData?.any { it?.id == substanceAbuse || it?.family == substanceAbuse } != true) {
             return
@@ -920,9 +986,11 @@ object CommonUtils {
                 formData?.let { data ->
                     if (map.containsKey(data.id)) {
                         val actualValue = map[data.id]
-                        if (actualValue != null && actualValue is String && actualValue.equals(
+                        if (actualValue != null &&
+                            actualValue is String &&
+                            actualValue.equals(
                                 DefinedParams.Yes,
-                                true
+                                true,
                             )
                         ) {
                             cageAid += 1
@@ -956,7 +1024,7 @@ object CommonUtils {
         unitGenericType: String,
         pregnantSymptoms: Int? = null,
         resultMapPair: Pair<Boolean?, HashMap<String, Any>>,
-        serverData: List<FormLayout?>?
+        serverData: List<FormLayout?>?,
     ): Pair<Boolean, java.util.ArrayList<String>> {
         var status = false
         var cageAId = 0
@@ -964,8 +1032,11 @@ object CommonUtils {
         if (resultMapPair.second.containsKey(CAGEAID)) {
             cageAId = (resultMapPair.second[CAGEAID] as? Int?) ?: 0
         }
-        if ((systolicAverage ?: 0) > Screening.UpperLimitSystolic || (diastolicAverage
-                ?: 0) > Screening.UpperLimitDiastolic
+        if ((systolicAverage ?: 0) > Screening.UpperLimitSystolic ||
+            (
+                diastolicAverage
+                    ?: 0
+            ) > Screening.UpperLimitDiastolic
         ) {
             referredReasonList.add(ReferredReason.bloodPressure)
             status = true
@@ -974,7 +1045,9 @@ object CommonUtils {
             referredReasonList.add(ReferredReason.PHQ4)
             status = true
         }
-        if (unitGenericType == Screening.mgdl && (glucoseValuePair.first > Screening.FBSMaximumMGDlValue || glucoseValuePair.second >= Screening.RBSMaximumMGDlValue)) {
+        if (unitGenericType == Screening.mgdl &&
+            (glucoseValuePair.first > Screening.FBSMaximumMGDlValue || glucoseValuePair.second >= Screening.RBSMaximumMGDlValue)
+        ) {
             referredReasonList.add(ReferredReason.bloodGlucose)
             status = true
         }
@@ -987,9 +1060,10 @@ object CommonUtils {
             referredReasonList.add(ReferredReason.pregnancySymptoms)
             status = true
         }
-        if (resultMapPair.second.containsKey(Screening.SuicidalIdeation) && (resultMapPair.second[Screening.SuicidalIdeation] as String).equals(
+        if (resultMapPair.second.containsKey(Screening.SuicidalIdeation) &&
+            (resultMapPair.second[Screening.SuicidalIdeation] as String).equals(
                 DefinedParams.Yes,
-                true
+                true,
             )
         ) {
             referredReasonList.add(ReferredReason.SuicidalIdeation)
@@ -1000,14 +1074,15 @@ object CommonUtils {
             status = true
         }
 
-        val hivQuestionViews = serverData?.filter {
-            it?.ageCondition?.isNotEmpty() == true && it.workflowType?.contains(ReferredReason.HIV) == true
-        }?.map { it?.id }
+        val hivQuestionViews = serverData
+            ?.filter {
+                it?.ageCondition?.isNotEmpty() == true && it.workflowType?.contains(ReferredReason.HIV) == true
+            }?.map { it?.id }
         hivQuestionViews?.let { hivQuestionList ->
             val matchedItem = hivQuestionList.firstOrNull { item ->
                 resultMapPair.second.containsKey(item) &&
-                        resultMapPair.second[item] is String &&
-                        (resultMapPair.second[item] as String).equals(DefinedParams.yes, true)
+                    resultMapPair.second[item] is String &&
+                    (resultMapPair.second[item] as String).equals(DefinedParams.yes, true)
             }
             if (matchedItem != null) {
                 status = true
@@ -1018,20 +1093,20 @@ object CommonUtils {
         return Pair(status, referredReasonList)
     }
 
-
     fun calculateBloodGlucose(
         map: HashMap<String, Any>,
         removeUnwantedKeys: Boolean = false,
         addDateTime: Boolean = false,
-        getRbsFbs: (Pair<Double?, Double?>) -> Unit
+        getRbsFbs: (Pair<Double?, Double?>) -> Unit,
     ) {
         if (map.containsKey(Screening.BloodGlucoseID)) {
             val bloodGlucoseString = map[Screening.BloodGlucoseID]
             val bloodGlucoseValue: Double? = parseGlucoseValue(bloodGlucoseString)
             if (bloodGlucoseValue != null) {
                 map[Screening.Glucose_Value] = bloodGlucoseValue
-                if (removeUnwantedKeys)
+                if (removeUnwantedKeys) {
                     map.keys.remove(Screening.BloodGlucoseID)
+                }
                 formatLastMealTime(map)
                 if (map.containsKey(lastMealTime) && map[lastMealTime] is String) {
                     setFBSAndRBSValues(map, bloodGlucoseValue, 1) {
@@ -1044,8 +1119,9 @@ object CommonUtils {
                 }
                 val dateTime = DateUtils.getTodayDateDDMMYYYY()
                 map[Screening.Glucose_Date_Time] = dateTime
-                if (addDateTime)
+                if (addDateTime) {
                     map[Screening.BGTakenOn] = dateTime
+                }
             }
         } else {
             formatLastMealTime(map)
@@ -1053,8 +1129,8 @@ object CommonUtils {
     }
 
     private fun formatLastMealTime(map: HashMap<String, Any>) {
-        if (map["${lastMealTime}${lastMealTypeMeridiem}"] is String &&
-            map["${lastMealTime}${lastMealTypeDateSuffix}"] is String &&
+        if (map["${lastMealTime}$lastMealTypeMeridiem"] is String &&
+            map["${lastMealTime}$lastMealTypeDateSuffix"] is String &&
             map[lastMealTime] is Map<*, *>
         ) {
             val hourMinMap = map[lastMealTime] as? Map<*, *> ?: emptyMap<Any, Any>()
@@ -1063,14 +1139,14 @@ object CommonUtils {
 
             val hourMinPair = Pair(hour, minute)
             val formattedDateTime = DateUtils.getFormattedDateTimeForLastMeal(
-                map["${lastMealTime}${lastMealTypeDateSuffix}"] as String,
-                map["${lastMealTime}${lastMealTypeMeridiem}"] as String,
-                hourMinPair
+                map["${lastMealTime}$lastMealTypeDateSuffix"] as String,
+                map["${lastMealTime}$lastMealTypeMeridiem"] as String,
+                hourMinPair,
             )
             formattedDateTime?.let {
                 map.apply {
-                    remove("${lastMealTime}${lastMealTypeMeridiem}")
-                    remove("${lastMealTime}${lastMealTypeDateSuffix}")
+                    remove("${lastMealTime}$lastMealTypeMeridiem")
+                    remove("${lastMealTime}$lastMealTypeDateSuffix")
                     remove(lastMealTime)
                     this[lastMealTime] = formattedDateTime
                 }
@@ -1082,7 +1158,7 @@ object CommonUtils {
         map: HashMap<String, Any>,
         bloodGlucoseValue: Double,
         code: Int,
-        getRbsFbs: (Pair<Double?, Double?>) -> Unit
+        getRbsFbs: (Pair<Double?, Double?>) -> Unit,
     ) {
         when (code) {
             1 -> {
@@ -1106,7 +1182,6 @@ object CommonUtils {
                             getRbsFbs.invoke(Pair(null, bloodGlucoseValue))
                         }
                     }
-
                 }
             }
         }
@@ -1130,8 +1205,8 @@ object CommonUtils {
         return false
     }
 
-    private fun parseGlucoseValue(bloodGlucoseString: Any?): Double? {
-        return when (bloodGlucoseString) {
+    private fun parseGlucoseValue(bloodGlucoseString: Any?): Double? =
+        when (bloodGlucoseString) {
             is String -> {
                 bloodGlucoseString.toDoubleOrNull()
             }
@@ -1142,42 +1217,43 @@ object CommonUtils {
 
             else -> null
         }
-    }
 
-    fun calculatePregnancySymptomCount(list: ArrayList<Map<*, *>>): Int {
-        return when {
+    fun calculatePregnancySymptomCount(list: ArrayList<Map<*, *>>): Int =
+        when {
             list.size > 1 -> list.size
             list.size == 1 && !((list).first().containsValue(Screening.NoSymptoms)) -> 1
             else -> 0
         }
-    }
 
-    fun getBMIInformation(context: Context, bmi: Double?): Pair<String, Int>? {
+    fun getBMIInformation(
+        context: Context,
+        bmi: Double?,
+    ): Pair<String, Int>? {
         bmi?.let {
             if (bmi <= 18.49) {
                 return Pair(
                     first = context.getString(R.string.under_weight),
-                    second = R.color.bmi_under_weight
+                    second = R.color.bmi_under_weight,
                 )
             } else if (bmi in 18.50..24.99) {
                 return Pair(
                     first = context.getString(R.string.normal_weight),
-                    second = R.color.bmi_normal_weight
+                    second = R.color.bmi_normal_weight,
                 )
             } else if (bmi in 25.00..29.99) {
                 return Pair(
                     first = context.getString(R.string.over_weight),
-                    second = R.color.bmi_over_weight
+                    second = R.color.bmi_over_weight,
                 )
             } else if (bmi in 30.00..34.99) {
                 return Pair(
                     first = context.getString(R.string.obese),
-                    second = R.color.bmi_obese
+                    second = R.color.bmi_obese,
                 )
             } else if (bmi >= 35.00) {
                 return Pair(
                     first = context.getString(R.string.extremely_obese),
-                    second = R.color.bmi_extremely_obese
+                    second = R.color.bmi_extremely_obese,
                 )
             } else {
                 return null
@@ -1194,20 +1270,22 @@ object CommonUtils {
         return identityTypes?.find { identityType == it.value }?.name ?: ""
     }
 
-    fun getGlucoseUnit(glucoseUnit: String?, withoutBracket: Boolean): String {
-        return if (glucoseUnit.isNullOrBlank()) {
+    fun getGlucoseUnit(
+        glucoseUnit: String?,
+        withoutBracket: Boolean,
+    ): String =
+        if (glucoseUnit.isNullOrBlank()) {
             ""
         } else if (withoutBracket) {
             "$glucoseUnit"
         } else {
-            "(${glucoseUnit})"
+            "($glucoseUnit)"
         }
-    }
 
     fun parseRequest(
         generalDetails: String,
         screeningDetails: String,
-        userId: String?
+        userId: String?,
     ): HashMap<String, Any>? {
         val generalData: Map<String, Any>? =
             StringConverter.convertStringToMap(generalDetails)
@@ -1230,15 +1308,19 @@ object CommonUtils {
             (givenMap[Screening.pregnancyAnc] as Map<*, *>?)?.let { ancMap ->
                 if (ancMap.containsKey(Screening.PregnancySymptoms) && ancMap[Screening.PregnancySymptoms] is List<*>) {
                     (ancMap[Screening.PregnancySymptoms] as? ArrayList<*>)?.forEach {
-                        if (it is LinkedTreeMap<*, *> && it.contains(DefinedParams.cultureValue))
+                        if (it is LinkedTreeMap<*, *> && it.contains(DefinedParams.cultureValue)) {
                             it.remove(DefinedParams.cultureValue)
+                        }
                     }
                 }
             }
         }
     }
 
-    private fun setType(hashMap: HashMap<String, Any>, generalData: Map<String, Any>?) {
+    private fun setType(
+        hashMap: HashMap<String, Any>,
+        generalData: Map<String, Any>?,
+    ) {
         generalData?.forEach { (key, value) ->
             when (key) {
                 CategoryDisplayName, CategoryDisplayType, SiteName, userSiteId -> Unit // Skip these keys
@@ -1269,15 +1351,17 @@ object CommonUtils {
                         (record[Screening.Pulse] as? Double?)?.let { pul ->
                             data[Screening.Pulse] = CommonUtils.parseDouble(pul)
                         }
-                        if (data.isNotEmpty())
+                        if (data.isNotEmpty()) {
                             newList.add(data)
+                        }
                     }
                 }
-                if (newList.isNotEmpty())
+                if (newList.isNotEmpty()) {
                     log[Screening.BPLog_Details] = newList
+                }
             }
         } catch (_: Exception) {
-            //Catch Block
+            // Catch Block
         }
     }
 
@@ -1289,11 +1373,15 @@ object CommonUtils {
         }
     }
 
-    private fun updateGlucoseLog(hashMap: HashMap<String, Any>, map: Map<*, *>) {
+    private fun updateGlucoseLog(
+        hashMap: HashMap<String, Any>,
+        map: Map<*, *>,
+    ) {
         var isChanged = false
         val subMap = HashMap(map)
-        if (!subMap.containsKey(Screening.Glucose_Value) && subMap.containsKey(
-                lastMealTime
+        if (!subMap.containsKey(Screening.Glucose_Value) &&
+            subMap.containsKey(
+                lastMealTime,
             )
         ) {
             isChanged = true
@@ -1308,8 +1396,9 @@ object CommonUtils {
         }
         if (subMap.containsKey(Screening.diabetes) && subMap[Screening.diabetes] is List<*>) {
             (subMap[Screening.diabetes] as? ArrayList<*>)?.forEach {
-                if (it is LinkedTreeMap<*, *> && it.contains(DefinedParams.cultureValue))
+                if (it is LinkedTreeMap<*, *> && it.contains(DefinedParams.cultureValue)) {
                     it.remove(DefinedParams.cultureValue)
+                }
             }
         }
         if (isChanged) {
@@ -1317,7 +1406,11 @@ object CommonUtils {
         }
     }
 
-    fun getBMIForNcd(heightInCM: Double, weight: Double, context: Context? = null): String? {
+    fun getBMIForNcd(
+        heightInCM: Double,
+        weight: Double,
+        context: Context? = null,
+    ): String? {
         val heightInMeter = heightInCM / 100
         val bmi = weight / (heightInMeter * heightInMeter)
         if (bmi.isInfinite() || bmi.isNaN()) {
@@ -1329,14 +1422,14 @@ object CommonUtils {
     fun calculateCVDRiskFactor(
         map: HashMap<String, Any>,
         list: ArrayList<RiskClassificationModel>,
-        avgSystolic: Int?
+        avgSystolic: Int?,
     ) {
         if (map.containsKey(Screening.BMI) && list.isNotEmpty()) {
             val riskFactor = calculateRiskFactor(
                 map,
                 list,
                 (map[Screening.BMI] as Double),
-                avgSystolic
+                avgSystolic,
             )
 
             riskFactor?.let { riskFactorMap ->
@@ -1354,9 +1447,8 @@ object CommonUtils {
         map: Map<String, Any>,
         list: ArrayList<RiskClassificationModel>,
         bmiValue: Double?,
-        systolicAverage: Int?
+        systolicAverage: Int?,
     ): Map<String, Any>? {
-
         val age: Double? = if (map.containsKey(Screening.DateOfBirth)) {
             when {
                 map.containsKey(Screening.DateOfBirth) -> {
@@ -1375,10 +1467,11 @@ object CommonUtils {
 
         val gender: String? = if (map.containsKey(DefinedParams.Gender)) {
             val value = map[DefinedParams.Gender] as String
-            if (value.equals(Screening.Female, ignoreCase = true))
+            if (value.equals(Screening.Female, ignoreCase = true)) {
                 value
-            else
+            } else {
                 Screening.Male
+            }
         } else {
             null
         }
@@ -1391,10 +1484,12 @@ object CommonUtils {
         }
 
         val resultModel = list.filter {
-            it.isSmoker == smoker && it.gender.equals(gender, true) && isAgeInLimit(
-                age,
-                it.age
-            )
+            it.isSmoker == smoker &&
+                it.gender.equals(gender, true) &&
+                isAgeInLimit(
+                    age,
+                    it.age,
+                )
         }
 
         if (resultModel.isNotEmpty()) {
@@ -1403,7 +1498,10 @@ object CommonUtils {
         return null
     }
 
-    private fun isAgeInLimit(age: Double?, limit: String): Boolean {
+    private fun isAgeInLimit(
+        age: Double?,
+        limit: String,
+    ): Boolean {
         var status = false
         val limitArray = limit.split("-")
         if (age != null && limitArray.size == 2) {
@@ -1419,14 +1517,16 @@ object CommonUtils {
     private fun getRiskBasedOnParams(
         riskFactors: ArrayList<RiskFactorModel>,
         bmiValue: Double?,
-        systolicAverage: Int?
+        systolicAverage: Int?,
     ): Map<String, Any>? {
-        if (bmiValue == null || systolicAverage == null)
+        if (bmiValue == null || systolicAverage == null) {
             return null
+        }
         riskFactors.forEach { riskFactorModel ->
-            if (checkBMIValue(riskFactorModel.bmi, bmiValue) && checkSystolicBPValue(
+            if (checkBMIValue(riskFactorModel.bmi, bmiValue) &&
+                checkSystolicBPValue(
                     riskFactorModel.sbp,
-                    systolicAverage
+                    systolicAverage,
                 )
             ) {
                 val resultMap = HashMap<String, Any>()
@@ -1441,7 +1541,10 @@ object CommonUtils {
         return null
     }
 
-    private fun checkBMIValue(bmi: String, bmiValue: Double): Boolean {
+    private fun checkBMIValue(
+        bmi: String,
+        bmiValue: Double,
+    ): Boolean {
         when {
             bmi.contains(">=") -> {
                 getCheckList(bmi, ">=")?.let {
@@ -1482,15 +1585,22 @@ object CommonUtils {
         return false
     }
 
-    private fun getCheckList(s: String, character: String): List<String>? {
+    private fun getCheckList(
+        s: String,
+        character: String,
+    ): List<String>? {
         s.split(character).let {
-            if (it.size > 1)
+            if (it.size > 1) {
                 return it
+            }
         }
         return null
     }
 
-    private fun checkSystolicBPValue(sbp: String, systolicAverage: Int): Boolean {
+    private fun checkSystolicBPValue(
+        sbp: String,
+        systolicAverage: Int,
+    ): Boolean {
         when {
             sbp.startsWith("<") -> {
                 getCheckList(sbp, "<")?.let {
@@ -1517,43 +1627,49 @@ object CommonUtils {
         return false
     }
 
-    fun cvdRiskColorCode(score: Long, context: Context): Int {
-        return when {
+    fun cvdRiskColorCode(
+        score: Long,
+        context: Context,
+    ): Int =
+        when {
             score < Screening.very_low_risk_limit -> context.getColor(R.color.very_low_risk_color)
             score < Screening.low_risk_limit -> context.getColor(R.color.low_risk_color)
             score < Screening.medium_risk_limit -> context.getColor(R.color.medium_risk_color)
             score < Screening.medium_high_risk_limit -> context.getColor(R.color.medium_high_risk_color)
             else -> context.getColor(R.color.high_risk_color)
         }
-    }
 
-    fun isPatientListRequired(origin: String?): Boolean {
-        return when (origin) {
+    fun isPatientListRequired(origin: String?): Boolean =
+        when (origin) {
             null,
             MenuConstants.LIFESTYLE.lowercase(),
             MenuConstants.PSYCHOLOGICAL.lowercase(),
             MenuConstants.DISPENSE.lowercase(),
             MenuConstants.INVESTIGATION.lowercase(),
-            MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> true
+            MenuConstants.MY_PATIENTS_MENU_ID.lowercase(),
+            -> true
 
             else -> false
         }
-    }
 
-    fun canShowToggle(gender: String?, pregnancyRisk: Boolean?): Boolean {
+    fun canShowToggle(
+        gender: String?,
+        pregnancyRisk: Boolean?,
+    ): Boolean {
         val role = SecuredPreference.getRole()
         return (role == PROVIDER || role == PHYSICIAN_PRESCRIBER) &&
-                gender.equals(Female, true) &&
-                (pregnancyRisk != null &&
-                        ((!pregnancyRisk && SecuredPreference.isAncEnabled()) || pregnancyRisk))
+            gender.equals(Female, true) &&
+            (
+                pregnancyRisk != null &&
+                    ((!pregnancyRisk && SecuredPreference.isAncEnabled()) || pregnancyRisk)
+            )
     }
 
-    fun requestFrom(): String {
-        return when {
+    fun requestFrom(): String =
+        when {
             isCommunity() -> SPICE.SIERRA_LEONE.name
             else -> SPICE.AFRICA.name
         }
-    }
 
     fun calculateProvisionalDiagnosis(
         map: HashMap<String, Any>,
@@ -1562,7 +1678,7 @@ object CommonUtils {
         avgDiastolic: Int? = null,
         fbsValue: Double = 0.0,
         rbsValue: Double = 0.0,
-        unitType: String
+        unitType: String,
     ) {
         if (isConfirmDiagnosis == false) {
             val diagnosisMap = ArrayList<String>()
@@ -1584,42 +1700,60 @@ object CommonUtils {
                     }
                 }
             }
-            if (diagnosisMap.size > 0)
+            if (diagnosisMap.size > 0) {
                 map[AssessmentDefinedParams.Provisional_Diagnosis] = diagnosisMap
+            }
         }
     }
 
-    private fun checkAvg(avgSystolic: Int?, avgDiastolic: Int?): String? {
-        if ((avgSystolic ?: 0) > AssessmentDefinedParams.UpperLimitSystolic || (avgDiastolic
-                ?: 0) > AssessmentDefinedParams.UpperLimitDiastolic
-        )
+    private fun checkAvg(
+        avgSystolic: Int?,
+        avgDiastolic: Int?,
+    ): String? {
+        if ((avgSystolic ?: 0) > AssessmentDefinedParams.UpperLimitSystolic ||
+            (
+                avgDiastolic
+                    ?: 0
+            ) > AssessmentDefinedParams.UpperLimitDiastolic
+        ) {
             return AssessmentDefinedParams.HTN_Diagnosis
+        }
         return null
     }
 
-    fun formatListToString(list: List<String?>?, default: String): String {
-        return if (list.isNullOrEmpty()) {
+    fun formatListToString(
+        list: List<String?>?,
+        default: String,
+    ): String =
+        if (list.isNullOrEmpty()) {
             default
         } else {
-            list.filter { !it.isNullOrBlank() }
+            list
+                .filter { !it.isNullOrBlank() }
                 .mapIndexed { index, item -> "${index + 1}. $item" }
                 .joinToString("\n")
         }
-    }
 
-    fun getDialogValue(value: Any?, otherSymptoms: String? = null): String {
+    fun getDialogValue(
+        value: Any?,
+        otherSymptoms: String? = null,
+    ): String {
         val result = (value as? List<*>)?.mapNotNull { getListActual(it) }?.joinToString(", ") ?: ""
         return if (result.isNotEmpty()) {
             result + otherSymptoms?.let { " - $it" }.orEmpty()
-        } else ""
+        } else {
+            ""
+        }
     }
 
-    fun getListActual(map: Any?): String? {
-        return (map as? Map<*, *>)?.get(DefinedParams.cultureValue) as? String
+    fun getListActual(map: Any?): String? =
+        (map as? Map<*, *>)?.get(DefinedParams.cultureValue) as? String
             ?: (map as? Map<*, *>)?.get(DefinedParams.NAME) as? String
-    }
 
-    fun getBMIFormattedText(context: Context, bmi: Double?): Pair<CharSequence?, Int?> {
+    fun getBMIFormattedText(
+        context: Context,
+        bmi: Double?,
+    ): Pair<CharSequence?, Int?> {
         if (bmi == null) return Pair(null, null)
         val bioCategoryInfo = getBMIInformation(context, bmi)
         val bmiInfo = getDecimalFormatted(bmi)
@@ -1629,8 +1763,9 @@ object CommonUtils {
         } else {
             Pair(
                 SpannableStringBuilder()
-                    .append(bmiInfo).append(" (${bioCategoryInfo.first})"),
-                context.getColor(bioCategoryInfo.second)
+                    .append(bmiInfo)
+                    .append(" (${bioCategoryInfo.first})"),
+                context.getColor(bioCategoryInfo.second),
             )
         }
     }
@@ -1659,9 +1794,7 @@ object CommonUtils {
         return false
     }
 
-    fun isPsychologicalFlowEnabled(): Boolean {
-        return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_PSYCHOLOGICAL_FLOW_ENABLED.name)
-    }
+    fun isPsychologicalFlowEnabled(): Boolean = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_PSYCHOLOGICAL_FLOW_ENABLED.name)
 
     fun convertBitmapToByteArray(bitmap: Bitmap): ByteArray {
         val byteArrayOutputStream = ByteArrayOutputStream()
@@ -1669,9 +1802,7 @@ object CommonUtils {
         return byteArrayOutputStream.toByteArray()
     }
 
-    fun convertByteArrayToBitmap(byteArray: ByteArray?): Bitmap? {
-        return byteArray?.let { BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size) }
-    }
+    fun convertByteArrayToBitmap(byteArray: ByteArray?): Bitmap? = byteArray?.let { BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size) }
 
     fun getIdentityValue(requestJson: Map<String, Any>?): String {
         requestJson?.let { req ->
@@ -1686,7 +1817,11 @@ object CommonUtils {
         return ""
     }
 
-    fun addAncEnableOrNot(map: HashMap<String, Any>, key: String, isPregnant: Boolean = false) {
+    fun addAncEnableOrNot(
+        map: HashMap<String, Any>,
+        key: String,
+        isPregnant: Boolean = false,
+    ) {
         if (SecuredPreference.isAncEnabled()) {
             (map[key] as? MutableMap<Any, Any>)?.let { pregnancyAnc ->
                 if (((pregnancyAnc[Screening.isPregnant] as? Boolean) == true) || isPregnant) {
@@ -1699,8 +1834,9 @@ object CommonUtils {
                 (map[Screening.bioMetrics] as? HashMap<*, *>)?.let { bioMetricMap ->
                     val isMale =
                         bioMetricMap[DefinedParams.Gender]?.toString().equals(Screening.Male, true)
-                    if (isMale)
+                    if (isMale) {
                         map.remove(Screening.pregnancyAnc)
+                    }
                 }
             }
         }
@@ -1723,8 +1859,9 @@ object CommonUtils {
     }
 
     fun getErrorMessage(errorBody: ResponseBody?): String? {
-        if (errorBody == null)
+        if (errorBody == null) {
             return null
+        }
         return try {
             val errorResponse = Gson().fromJson(errorBody.string(), ErrorResponse::class.java)
             return errorResponse.message
@@ -1740,12 +1877,12 @@ object CommonUtils {
         }
         val map = requestMap.filterKeys {
             it == Screening.firstName ||
-                    it == Screening.lastName ||
-                    it == Screening.phoneNumber ||
-                    it == Screening.identityType ||
-                    it == Screening.identityValue ||
-                    it == DefinedParams.Country ||
-                    it == AssessmentDefinedParams.memberReference
+                it == Screening.lastName ||
+                it == Screening.phoneNumber ||
+                it == Screening.identityType ||
+                it == Screening.identityValue ||
+                it == DefinedParams.Country ||
+                it == AssessmentDefinedParams.memberReference
         }
         return HashMap(map)
     }
@@ -1758,9 +1895,7 @@ object CommonUtils {
         return countryId
     }
 
-    fun canShowScheduleMenu(): Boolean {
-        return isNonCommunity() && isHRIO()
-    }
+    fun canShowScheduleMenu(): Boolean = isNonCommunity() && isHRIO()
 
     fun capitalize(str: String): String {
         val words = str.lowercase().split(" ")
@@ -1775,8 +1910,9 @@ object CommonUtils {
     }
 
     fun canShowSort(origin: String?): Boolean {
-        if (isTiberbuUser())
+        if (isTiberbuUser()) {
             return false
+        }
 
         val isFromMyPatients: Boolean =
             origin?.equals(MenuConstants.MY_PATIENTS_MENU_ID, true) ?: false
@@ -1785,16 +1921,21 @@ object CommonUtils {
 
         if (userRole != null) {
             return isFromMyPatients &&
-                    (userRole.contains(COMMUNITY_HEALTH_WORKER) || userRole.contains(PROVIDER) || userRole.contains(
-                        PHYSICIAN_PRESCRIBER
-                    ))
+                (
+                    userRole.contains(COMMUNITY_HEALTH_WORKER) ||
+                        userRole.contains(PROVIDER) ||
+                        userRole.contains(
+                            PHYSICIAN_PRESCRIBER,
+                        )
+                )
         }
         return false
     }
 
     fun canShowFilter(origin: String?): Boolean {
-        if (isTiberbuUser())
+        if (isTiberbuUser()) {
             return false
+        }
 
         val isFromInvestigation: Boolean =
             origin?.equals(MenuConstants.INVESTIGATION, true) ?: false
@@ -1808,26 +1949,21 @@ object CommonUtils {
         return false
     }
 
-    fun isCommunity(): Boolean {
-        return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_COMMUNITY.name)
-    }
+    fun isCommunity(): Boolean = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_COMMUNITY.name)
 
-    //Africa
-    fun isNonCommunity(): Boolean {
-        return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_NON_COMMUNITY.name)
-    }
+    // Africa
+    fun isNonCommunity(): Boolean = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_NON_COMMUNITY.name)
 
     fun isPharmacist(): Boolean {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
         return userRole != null && userRole.contains(PHARMACIST)
     }
 
-    fun isDispenseOrInvestigation(origin: String?): Boolean {
-        return when (origin?.lowercase()) {
+    fun isDispenseOrInvestigation(origin: String?): Boolean =
+        when (origin?.lowercase()) {
             MenuConstants.DISPENSE.lowercase(), MenuConstants.INVESTIGATION.lowercase() -> true
             else -> false
         }
-    }
 
     fun isPhysicianPrescriber(): Boolean {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
@@ -1840,23 +1976,30 @@ object CommonUtils {
     fun getPhysicalExaminationTitle(
         context: Context,
         workflow: String,
-        isFemalePregnant: Boolean
+        isFemalePregnant: Boolean,
     ): String {
-        if (workflow.equals(NCDMRUtil.MENTAL_HEALTH, true))
+        if (workflow.equals(NCDMRUtil.MENTAL_HEALTH, true)) {
             return context.getString(R.string.systemic_examinations)
+        }
 
         if (workflow.equals(
                 DefinedParams.PregnancyANC,
-                true
-            ) && SecuredPreference.isAncEnabled() && isFemalePregnant
-        )
+                true,
+            ) &&
+            SecuredPreference.isAncEnabled() &&
+            isFemalePregnant
+        ) {
             return context.getString(R.string.obstetric_examination)
+        }
 
         return context.getString(R.string.physical_examinations)
     }
 
-    fun getAssessmentType(context: Context, type: String): String {
-        return when (type) {
+    fun getAssessmentType(
+        context: Context,
+        type: String,
+    ): String =
+        when (type) {
             context.getString(R.string.phq4_score) -> AssessmentDefinedParams.phq4
             context.getString(R.string.phq9_score) -> AssessmentDefinedParams.phq9
             context.getString(R.string.gad7_score) -> AssessmentDefinedParams.gad7
@@ -1864,27 +2007,26 @@ object CommonUtils {
             context.getString(R.string.cage_aid) -> AssessmentDefinedParams.cageAid
             else -> ""
         }
-    }
 
     fun mentalHealths(
         questionarieId: String?,
         observationId: String?,
-        result: Pair<String?, HashMap<String, Any>>
+        result: Pair<String?, HashMap<String, Any>>,
     ) {
         result.second.let { mentalHealthMap ->
             (mentalHealthMap[AssessmentDefinedParams.phq4] as? HashMap<String, Any>)?.let { phq4Map ->
-                if (phq4Map.isEmpty())
+                if (phq4Map.isEmpty()) {
                     mentalHealthMap.remove(AssessmentDefinedParams.phq4)
-                else {
+                } else {
                     questionarieId?.let { qId ->
                         phq4Map[NCDMRUtil.questionnaireId] = qId
                     }
                 }
             }
             (mentalHealthMap[AssessmentDefinedParams.phq9] as? HashMap<String, Any>)?.let { phq9Map ->
-                if (phq9Map.isEmpty())
+                if (phq9Map.isEmpty()) {
                     mentalHealthMap.remove(AssessmentDefinedParams.phq9)
-                else {
+                } else {
                     (phq9Map[AssessmentDefinedParams.PHQ9_Score] as? Int)?.let { phq9Score ->
                         phq9Map[mentalHealthScore] = phq9Score
                         phq9Map.remove(AssessmentDefinedParams.PHQ9_Score)
@@ -1903,9 +2045,9 @@ object CommonUtils {
                 }
             }
             (mentalHealthMap[AssessmentDefinedParams.gad7] as? HashMap<String, Any>)?.let { gad7Map ->
-                if (gad7Map.isEmpty())
+                if (gad7Map.isEmpty()) {
                     mentalHealthMap.remove(AssessmentDefinedParams.gad7)
-                else {
+                } else {
                     (gad7Map[AssessmentDefinedParams.GAD7_Score] as? Int)?.let { gad7Score ->
                         gad7Map[mentalHealthScore] = gad7Score
                         gad7Map.remove(AssessmentDefinedParams.GAD7_Score)
@@ -1924,18 +2066,18 @@ object CommonUtils {
                 }
             }
             (mentalHealthMap[AssessmentDefinedParams.suicidalIdeation] as? HashMap<String, Any>)?.let { suicideScreener ->
-                if (suicideScreener.isEmpty())
+                if (suicideScreener.isEmpty()) {
                     mentalHealthMap.remove(AssessmentDefinedParams.suicidalIdeation)
-                else {
+                } else {
                     observationId?.let { oId ->
                         suicideScreener[AssessmentDefinedParams.ObservationID] = oId
                     }
                 }
             }
             (mentalHealthMap[AssessmentDefinedParams.cageAid] as? HashMap<String, Any>)?.let { substanceAbuse ->
-                if (substanceAbuse.isEmpty())
+                if (substanceAbuse.isEmpty()) {
                     mentalHealthMap.remove(AssessmentDefinedParams.cageAid)
-                else {
+                } else {
                     observationId?.let { oId ->
                         substanceAbuse[AssessmentDefinedParams.ObservationID] = oId
                     }
@@ -1968,13 +2110,12 @@ object CommonUtils {
         return false
     }
 
-    fun isCommunityOrNot(): String {
-        return if (isCommunity()) {
+    fun isCommunityOrNot(): String =
+        if (isCommunity()) {
             DefinedParams.COMMUNITY
         } else {
             DefinedParams.NON_COMMUNITY
         }
-    }
 
     fun isNutritionist(): Boolean {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
@@ -2027,9 +2168,7 @@ object CommonUtils {
         }
     }
 
-    fun checkIfTranslationEnabled(name: String): Boolean {
-        return name.contains(DefinedParams.BN_Locale, ignoreCase = true)
-    }
+    fun checkIfTranslationEnabled(name: String): Boolean = name.contains(DefinedParams.BN_Locale, ignoreCase = true)
 
     fun getAgeInYearsByDOB(dob: String): Int {
         val formatter = DateTimeFormatter
@@ -2041,12 +2180,12 @@ object CommonUtils {
         return Period.between(birthDate, currentDate).years
     }
 
+    fun mandatoryNotRequired(): Boolean = isNonCommunity() && (isProvider() || isPhysicianPrescriber())
 
-    fun mandatoryNotRequired(): Boolean {
-        return isNonCommunity() && (isProvider() || isPhysicianPrescriber())
-    }
-
-    fun isDateHigherThanInput(dateString: String, noOfDayFever: Int): Boolean {
+    fun isDateHigherThanInput(
+        dateString: String,
+        noOfDayFever: Int,
+    ): Boolean {
         // Parse the given date string
         val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
             .withLocale(Locale.ENGLISH)
@@ -2062,13 +2201,9 @@ object CommonUtils {
         return daysDifference >= noOfDayFever
     }
 
-    fun isAfrica(): Boolean {
-        return BuildConfig.FLAVOR == BUILD_FLAVOR_AFRICA
-    }
+    fun isAfrica(): Boolean = BuildConfig.FLAVOR == BUILD_FLAVOR_AFRICA
 
-    fun isSL(): Boolean {
-        return BuildConfig.FLAVOR == BUILD_FLAVOR_SL
-    }
+    fun isSL(): Boolean = BuildConfig.FLAVOR == BUILD_FLAVOR_SL
 
     fun formatDecimalValue(value: String?): String? {
         if (value.isNullOrEmpty()) return null
@@ -2093,21 +2228,18 @@ object CommonUtils {
         return false
     }
 
-    fun Map<String, String?>.toFormattedList(): List<String> {
-        return this.map { (key, value) ->
+    fun Map<String, String?>.toFormattedList(): List<String> =
+        this.map { (key, value) ->
             if (value.isNullOrBlank()) key else "$key : $value"
         }
-    }
 
-    fun Map<String, String>.toFormattedListWithHyphen(): List<String> {
-        return this.map { (key, value) -> "$key - $value" }
-    }
+    fun Map<String, String>.toFormattedListWithHyphen(): List<String> = this.map { (key, value) -> "$key - $value" }
 
-    fun convertListToIndexedString(dispensedList: ArrayList<String>): String {
-        return dispensedList.nullIfEmpty()
+    fun convertListToIndexedString(dispensedList: ArrayList<String>): String =
+        dispensedList
+            .nullIfEmpty()
             ?.mapIndexed { index, item -> "${index + 1}. ${item.capitalizeFirstChar()}" }
             ?.joinToString(separator = "\n") ?: "-"
-    }
 
     fun applyInsets(
         activity: Activity,
@@ -2173,11 +2305,10 @@ object CommonUtils {
                 systemBars.left + displayCutout.left,
                 0,
                 systemBars.right + displayCutout.right,
-                0
+                0,
             )
 
             insets
         }
     }
-
 }

@@ -10,5 +10,5 @@ data class SiteDetails(
     var categoryDisplayName: String? = null,
     var otherType: String? = null,
     var counselorId: Long? = null,
-    var userSiteId: Long? = null
+    var userSiteId: Long? = null,
 )

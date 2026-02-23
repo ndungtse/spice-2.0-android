@@ -23,20 +23,21 @@ import javax.inject.Inject
 class MotherNeonateBpWeightViewModel @Inject constructor(
     private val motherNeonateANCRepo: MotherNeonateANCRepo,
     private val tbMedicalReviewRepo: TbMedicalReviewRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
     val getBloodPressure = MutableLiveData<Resource<BpAndWeightResponse>>()
     val getWeight = MutableLiveData<Resource<BpAndWeightResponse>>()
     val getHeight = MutableLiveData<Resource<BpAndWeightResponse>>()
     val getBmi = MutableLiveData<Resource<BpAndWeightResponse>>()
     val getPatientType = MutableLiveData<Resource<HashMap<String, Any>>>()
+
     fun fetchBloodPressure(motherNeonateAncRequest: MotherNeonateAncRequest) {
         viewModelScope.launch(dispatcherIO) {
             getBloodPressure.postLoading()
             getBloodPressure.postValue(
                 motherNeonateANCRepo.fetchBloodPressure(
-                    motherNeonateAncRequest
-                )
+                    motherNeonateAncRequest,
+                ),
             )
         }
     }
@@ -48,19 +49,13 @@ class MotherNeonateBpWeightViewModel @Inject constructor(
         }
     }
 
-    fun getWeight(): Double? {
-        return getWeight.value?.data?.weight
-    }
-    fun getHeight(): Double? {
-        return getWeight.value?.data?.height
-    }
+    fun getWeight(): Double? = getWeight.value?.data?.weight
 
-    fun getBp(): BpAndWeightResponse? {
-        return getBloodPressure.value?.data
-    }
-    fun getHeights(): Double? {
-        return getHeight.value?.data?.height
-    }
+    fun getHeight(): Double? = getWeight.value?.data?.height
+
+    fun getBp(): BpAndWeightResponse? = getBloodPressure.value?.data
+
+    fun getHeights(): Double? = getHeight.value?.data?.height
 
     fun fetchHeight(motherNeonateAncRequest: MotherNeonateAncRequest) {
         viewModelScope.launch(dispatcherIO) {

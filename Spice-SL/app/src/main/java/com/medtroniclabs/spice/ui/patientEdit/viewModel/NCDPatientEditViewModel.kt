@@ -17,9 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDPatientEditViewModel @Inject constructor(
     private val repository: NCDPatientEditRepository,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
-
     var updatePatientMap = MutableLiveData<Resource<HashMap<String, Any>>>()
 
     fun ncdUpdatePatientDetail(request: HashMap<String, Any>) {
@@ -28,10 +27,9 @@ class NCDPatientEditViewModel @Inject constructor(
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDPatientEdit,
-                isCompleted = true
+                isCompleted = true,
             )
             updatePatientMap.postValue(repository.ncdUpdatePatientDetail(request))
         }
     }
-
 }

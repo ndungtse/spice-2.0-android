@@ -6,9 +6,9 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.medtroniclabs.spice.data.ShortageReasonEntity
-import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
+import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 
 @Dao
@@ -26,7 +26,10 @@ interface NcdMedicalReviewDao {
     suspend fun insertLifestyle(items: List<LifestyleEntity>)
 
     @Query("SELECT * FROM NCDMedicalReviewMetaEntity WHERE (LOWER(:type) IS NULL OR LOWER(type) = LOWER(:type)) AND LOWER(category) = LOWER(:category)  ORDER BY displayOrder ASC")
-    fun getComorbidities(type: String?, category: String): LiveData<List<NCDMedicalReviewMetaEntity>>
+    fun getComorbidities(
+        type: String?,
+        category: String,
+    ): LiveData<List<NCDMedicalReviewMetaEntity>>
 
     @Query("SELECT * FROM lifestyleentity ORDER BY displayOrder ASC")
     fun getLifeStyle(): LiveData<List<LifestyleEntity>>
@@ -39,16 +42,16 @@ interface NcdMedicalReviewDao {
 
     @Query(
         "SELECT * FROM NCDDiagnosisEntity " +
-                "WHERE" +
-                " (LOWER(type) IN (:types) OR type IS NULL) " +
-                "AND " +
-                "(((LOWER(gender) = LOWER(:gender) OR (LOWER(gender) = LOWER('Both')) OR (gender IS NULL)))" +
-                "AND ((:isPregnant = 1) OR (:isPregnant = 0 AND LOWER(value) != LOWER('gestationalDiabetes'))))ORDER BY displayOrder ASC"
+            "WHERE" +
+            " (LOWER(type) IN (:types) OR type IS NULL) " +
+            "AND " +
+            "(((LOWER(gender) = LOWER(:gender) OR (LOWER(gender) = LOWER('Both')) OR (gender IS NULL)))" +
+            "AND ((:isPregnant = 1) OR (:isPregnant = 0 AND LOWER(value) != LOWER('gestationalDiabetes'))))ORDER BY displayOrder ASC",
     )
     fun getNCDDiagnosisList(
         types: List<String>,
         gender: String,
-        isPregnant: Boolean
+        isPregnant: Boolean,
     ): LiveData<List<NCDDiagnosisEntity>>
 
     @Query("DELETE FROM TreatmentPlanEntity")

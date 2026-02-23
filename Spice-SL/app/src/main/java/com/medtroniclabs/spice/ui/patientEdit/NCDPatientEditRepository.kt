@@ -1,22 +1,22 @@
 package com.medtroniclabs.spice.ui.patientEdit
 
 import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
+import com.medtroniclabs.spice.ncd.data.NCDRegionSiteModel
+import com.medtroniclabs.spice.ncd.data.NCDSiteRoleModel
+import com.medtroniclabs.spice.ncd.data.NCDSiteRoleResponse
+import com.medtroniclabs.spice.ncd.data.NCDTransferCreateRequest
+import com.medtroniclabs.spice.ncd.data.RegionSiteResponse
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
-import com.medtroniclabs.spice.ncd.data.NCDTransferCreateRequest
-import com.medtroniclabs.spice.ncd.data.NCDRegionSiteModel
-import com.medtroniclabs.spice.ncd.data.RegionSiteResponse
-import com.medtroniclabs.spice.ncd.data.NCDSiteRoleModel
-import com.medtroniclabs.spice.ncd.data.NCDSiteRoleResponse
 import javax.inject.Inject
 
 class NCDPatientEditRepository @Inject constructor(
-    private var apiHelper: ApiHelper
+    private var apiHelper: ApiHelper,
 ) {
-    suspend fun ncdUpdatePatientDetail(request: HashMap<String, Any>): Resource<HashMap<String, Any>> {
-        return try {
+    suspend fun ncdUpdatePatientDetail(request: HashMap<String, Any>): Resource<HashMap<String, Any>> =
+        try {
             val response = apiHelper.ncdUpdatePatientDetail(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, response.body()?.entity)
@@ -27,27 +27,25 @@ class NCDPatientEditRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun validatePatientTransfer(request: NCDPatientTransferValidate): Resource<HashMap<String, Any>> {
-        return try {
+    suspend fun validatePatientTransfer(request: NCDPatientTransferValidate): Resource<HashMap<String, Any>> =
+        try {
             val response = apiHelper.validatePatientTransfer(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, response.body())
             } else {
                 Resource(
                     state = ResourceState.ERROR,
-                    message = StringConverter.getErrorMessage(response.errorBody())
+                    message = StringConverter.getErrorMessage(response.errorBody()),
                 )
             }
         } catch (e: Exception) {
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun createPatientTransfer(request: NCDTransferCreateRequest): Resource<String>? {
-        return try {
+    suspend fun createPatientTransfer(request: NCDTransferCreateRequest): Resource<String>? =
+        try {
             val response = apiHelper.createPatientTransfer(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, response.body()?.message)
@@ -58,10 +56,9 @@ class NCDPatientEditRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun searchSite(request: NCDRegionSiteModel): Resource<ArrayList<RegionSiteResponse>> {
-        return try {
+    suspend fun searchSite(request: NCDRegionSiteModel): Resource<ArrayList<RegionSiteResponse>> =
+        try {
             val response = apiHelper.searchSite(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, response.body()?.entityList)
@@ -72,10 +69,9 @@ class NCDPatientEditRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun searchRoleUser(request: NCDSiteRoleModel): Resource<ArrayList<NCDSiteRoleResponse>> {
-        return try {
+    suspend fun searchRoleUser(request: NCDSiteRoleModel): Resource<ArrayList<NCDSiteRoleResponse>> =
+        try {
             val response = apiHelper.searchRoleUser(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, response.body()?.entityList)
@@ -86,5 +82,4 @@ class NCDPatientEditRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-    }
 }

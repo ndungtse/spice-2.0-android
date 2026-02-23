@@ -15,13 +15,13 @@ data class AssessmentEntity(
     val patientId: String?, // member - patient Id
     val villageId: String, // Village Id of household
     val assessmentType: String,
-    var assessmentDetails:String,
+    var assessmentDetails: String,
     var otherDetails: String? = null,
     var callResult: String? = null,
     var isReferred: Boolean = false,
     val referralStatus: ReferralStatus,
-    val referredReason: ArrayList<String>?= null,
+    val referredReason: ArrayList<String>? = null,
     val followUpId: Long? = null,
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
-): BaseEntity()
+) : BaseEntity()

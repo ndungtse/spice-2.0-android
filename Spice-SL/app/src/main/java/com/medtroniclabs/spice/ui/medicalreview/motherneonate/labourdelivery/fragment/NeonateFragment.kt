@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.compose.material3.TimePicker
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -28,33 +27,35 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.AddAgparScoreDialog
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.adapter.AgparScoreAdapter
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.AddAgparScoreDialog
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
-import timber.log.Timber
 
 class NeonateFragment : BaseFragment() {
-
     private lateinit var binding: FragmentNeonateBinding
     private lateinit var cgNeonateOutcome: TagListCustomView
     private lateinit var cgSignSymptomsObserved: TagListCustomView
     private lateinit var agparScoreAdapter: AgparScoreAdapter
-    private lateinit var  viewGender:SingleSelectionCustomView
-    private lateinit var  viewStateOfBaby:SingleSelectionCustomView
+    private lateinit var viewGender: SingleSelectionCustomView
+    private lateinit var viewStateOfBaby: SingleSelectionCustomView
 
     private val viewModel: LabourDeliveryViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNeonateBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initUI()
         attachObserver()
@@ -81,7 +82,6 @@ class NeonateFragment : BaseFragment() {
                     hideProgress()
                 }
             }
-
         }
 
         viewModel.apgarScoreLiveData.observe(viewLifecycleOwner) {
@@ -89,14 +89,20 @@ class NeonateFragment : BaseFragment() {
         }
 
         viewModel.gestationalDate.observe(viewLifecycleOwner) { it ->
-            viewModel.gestationalAge= ((viewModel.lastMensurationDate?.let { it1 ->
-                DateUtils.calculateGestationalAgeWeeks(
-                    it1,it)
-            }).toString())
+            viewModel.gestationalAge = (
+                (
+                    viewModel.lastMensurationDate?.let { it1 ->
+                        DateUtils.calculateGestationalAgeWeeks(
+                            it1,
+                            it,
+                        )
+                    }
+                ).toString()
+            )
             when {
                 viewModel.gestationalAge.isNullOrBlank() || viewModel.gestationalAge!!.contains("-") -> {
                     binding.tvGestationalAge.text = getString(R.string.empty__)
-                    viewModel.gestationalAge=null
+                    viewModel.gestationalAge = null
                 }
                 else -> {
                     val gestationalAge = viewModel.gestationalAge?.toLongOrNull()
@@ -105,9 +111,9 @@ class NeonateFragment : BaseFragment() {
                     } ?: getString(R.string.hyphen_symbol)
 
                     val result = if (gestationalAge != null && gestationalAge < 36) {
-                          weeks.plus(getString(R.string._36_weeks))
+                        weeks.plus(getString(R.string._36_weeks))
                     } else {
-                         weeks
+                        weeks
                     }
 
                     binding.tvGestationalAge.text = result
@@ -124,8 +130,8 @@ class NeonateFragment : BaseFragment() {
                     id = it.id,
                     name = it.name,
                     type = it.type,
-                    value = it.value
-                )
+                    value = it.value,
+                ),
             )
         }
         cgSignSymptomsObserved.addChipItemList(chipItemList)
@@ -139,8 +145,8 @@ class NeonateFragment : BaseFragment() {
                     id = it.id,
                     name = it.name,
                     type = it.type,
-                    value = it.value
-                )
+                    value = it.value,
+                ),
             )
         }
         cgNeonateOutcome.addChipItemList(chipItemList)
@@ -156,7 +162,7 @@ class NeonateFragment : BaseFragment() {
                 viewModel.stateOfBaby,
                 Pair(DefinedParams.StateOfBaby, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                stateOfBabySingleSelectionCallback
+                stateOfBabySingleSelectionCallback,
             )
             binding.stateOfBabyGroup.addView(viewStateOfBaby)
         }
@@ -165,9 +171,7 @@ class NeonateFragment : BaseFragment() {
     companion object {
         const val TAG = "NeonateFragment"
 
-        fun newInstance(): NeonateFragment {
-            return NeonateFragment()
-        }
+        fun newInstance(): NeonateFragment = NeonateFragment()
     }
 
     private fun initializeGenderLabel() {
@@ -180,7 +184,7 @@ class NeonateFragment : BaseFragment() {
                 viewModel.genderFlow,
                 Pair(DefinedParams.Gender, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                genderSingleSelectionCallback
+                genderSingleSelectionCallback,
             )
             binding.genderLabelGroup.addView(viewGender)
         }
@@ -204,8 +208,8 @@ class NeonateFragment : BaseFragment() {
         flowList.add(
             CommonUtils.getOptionMap(
                 getString(R.string.female),
-                getString(R.string.female)
-            )
+                getString(R.string.female),
+            ),
         )
         return flowList
     }
@@ -215,14 +219,14 @@ class NeonateFragment : BaseFragment() {
         flowList.add(
             CommonUtils.getOptionMap(
                 getString(R.string.normal),
-                getString(R.string.normal)
-            )
+                getString(R.string.normal),
+            ),
         )
         flowList.add(
             CommonUtils.getOptionMap(
                 getString(R.string.abnormal),
-                getString(R.string.abnormal)
-            )
+                getString(R.string.abnormal),
+            ),
         )
         return flowList
     }
@@ -237,110 +241,108 @@ class NeonateFragment : BaseFragment() {
     private fun initUI() {
         binding.tvGenderLabel.markMandatory()
         binding.tvNeonateOutcomeLabel.markMandatory()
-        if (viewModel.isDirectPnc){
-            val constraintLayout =binding.tvGenderLabel // Replace with your actual ConstraintLayout ID
+        if (viewModel.isDirectPnc) {
+            val constraintLayout = binding.tvGenderLabel // Replace with your actual ConstraintLayout ID
             val params = constraintLayout.layoutParams as ConstraintLayout.LayoutParams
-            params.topToBottom =binding.etNameError.id
+            params.topToBottom = binding.etNameError.id
             constraintLayout.layoutParams = params
             constraintLayout.requestLayout()
-            binding.tvNeonateOutcomeLabel.text=getString(R.string.name)
+            binding.tvNeonateOutcomeLabel.text = getString(R.string.name)
             binding.etName.visible()
             binding.directPncGroup.gone()
             binding.cgNeonateOutcome.gone()
-        }else {
+        } else {
             binding.directPncGroup.gone()
             binding.genderPncGroup.gone()
             binding.etName.gone()
             binding.etNameError.gone()
         }
-            agparScoreAdapter = AgparScoreAdapter { rowType, columnType, selectedScore ->
-                viewModel.agparRowIdentifier = rowType
-                viewModel.agparColumnIdentifier = columnType
-                viewModel.agparSelectedScore = selectedScore
-                showAgparScoreDialog()
+        agparScoreAdapter = AgparScoreAdapter { rowType, columnType, selectedScore ->
+            viewModel.agparRowIdentifier = rowType
+            viewModel.agparColumnIdentifier = columnType
+            viewModel.agparSelectedScore = selectedScore
+            showAgparScoreDialog()
+        }
+        binding.rvAgparScores.adapter = agparScoreAdapter
+        viewModel.getAgparScoreData()
 
+        binding.etBirthWeight.filters = arrayOf(DecimalInputFilter())
+        binding.etBirthWeight.doAfterTextChanged {
+            val birthWeight = it?.trim().toString().toDoubleOrNull()
+            if (birthWeight != null) {
+                viewModel.neonateBirthWeight = birthWeight.toString()
+                binding.tvBirthWeightCal.text =
+                    CommonUtils.birthWeight(birthWeight, requireContext())
+                viewModel.validateSubmitButtonState()
+            } else {
+                viewModel.neonateBirthWeight = null
+                binding.tvBirthWeightCal.text = ""
+                viewModel.validateSubmitButtonState()
             }
-            binding.rvAgparScores.adapter = agparScoreAdapter
-            viewModel.getAgparScoreData()
-
-            binding.etBirthWeight.filters = arrayOf(DecimalInputFilter())
-            binding.etBirthWeight.doAfterTextChanged {
-                val birthWeight = it?.trim().toString().toDoubleOrNull()
-                if (birthWeight != null) {
-                    viewModel.neonateBirthWeight = birthWeight.toString()
-                    binding.tvBirthWeightCal.text =
-                        CommonUtils.birthWeight(birthWeight, requireContext())
-                    viewModel.validateSubmitButtonState()
-                } else {
-                    viewModel.neonateBirthWeight = null
-                    binding.tvBirthWeightCal.text = ""
-                    viewModel.validateSubmitButtonState()
-                }
-            }
+        }
         binding.etName.doAfterTextChanged {
             val name = it?.trim().toString()
-                viewModel.name = name
-                viewModel.validateSubmitButtonState()
-            //Validating the direct pnc child name contains only alphabets
-            if (viewModel.isDirectPnc&&!CommonUtils.isAlphabetsWithSpace(name)){
+            viewModel.name = name
+            viewModel.validateSubmitButtonState()
+            // Validating the direct pnc child name contains only alphabets
+            if (viewModel.isDirectPnc && !CommonUtils.isAlphabetsWithSpace(name)) {
                 binding.etNameError.apply {
                     visible()
                     text =
                         getString(R.string.entered_values_should_contain_only_alphabets)
                     requestFocus()
                 }
-            }else{
+            } else {
                 binding.etNameError.apply {
                     gone()
                 }
             }
         }
 
-            cgNeonateOutcome =
-                TagListCustomView(binding.root.context, binding.cgNeonateOutcome) { _, _, _ ->
-                    cgNeonateOutcome.getSelectedTags().let {
-                        if (it.isNotEmpty()) {
-                            viewModel.neonateOutcome = it[0].value
-                            if(viewModel.neonateOutcome ==  MedicalReviewDefinedParams.FreshStillBirth||viewModel.neonateOutcome ==MedicalReviewDefinedParams.MaceratedStillBirth || viewModel.neonateOutcome.isNullOrEmpty()){
-                                binding.directPncGroup.gone()
-                                binding.genderPncGroup.gone()
-                                binding.neonateOvercomePncGroup.visible()
-                                binding.tvGenderError.gone()
-                                viewModel.apply {
-                                    neonateBirthWeight=null
-                                    binding.tvBirthWeightCal.text =""
-                                    binding.etBirthWeight.text?.clear()
-                                    viewStateOfBaby.resetSingleSelectionChildViews()
-                                    viewGender.resetSingleSelectionChildViews()
-                                    viewModel.genderFlow.clear()
-                                    viewModel.stateOfBaby.clear()
-                                    gestationalAge=null
-                                    binding.tvGestationalAge.text=""
-                                    cgSignSymptomsObserved.clearSelection()
-                                    neonateSignsAndSymptoms= listOf()
-
-
-                                }
-                            }else {
-                                binding.directPncGroup.visible()
-                                binding.genderPncGroup.visible()
+        cgNeonateOutcome =
+            TagListCustomView(binding.root.context, binding.cgNeonateOutcome) { _, _, _ ->
+                cgNeonateOutcome.getSelectedTags().let {
+                    if (it.isNotEmpty()) {
+                        viewModel.neonateOutcome = it[0].value
+                        if (viewModel.neonateOutcome == MedicalReviewDefinedParams.FreshStillBirth ||
+                            viewModel.neonateOutcome == MedicalReviewDefinedParams.MaceratedStillBirth ||
+                            viewModel.neonateOutcome.isNullOrEmpty()
+                        ) {
+                            binding.directPncGroup.gone()
+                            binding.genderPncGroup.gone()
+                            binding.neonateOvercomePncGroup.visible()
+                            binding.tvGenderError.gone()
+                            viewModel.apply {
+                                neonateBirthWeight = null
+                                binding.tvBirthWeightCal.text = ""
+                                binding.etBirthWeight.text?.clear()
+                                viewStateOfBaby.resetSingleSelectionChildViews()
+                                viewGender.resetSingleSelectionChildViews()
+                                viewModel.genderFlow.clear()
+                                viewModel.stateOfBaby.clear()
+                                gestationalAge = null
+                                binding.tvGestationalAge.text = ""
+                                cgSignSymptomsObserved.clearSelection()
+                                neonateSignsAndSymptoms = listOf()
                             }
                         } else {
-                            viewModel.neonateOutcome = null
-
+                            binding.directPncGroup.visible()
+                            binding.genderPncGroup.visible()
                         }
+                    } else {
+                        viewModel.neonateOutcome = null
                     }
-                    viewModel.validateSubmitButtonState()
                 }
-            cgSignSymptomsObserved =
-                TagListCustomView(
-                    binding.root.context,
-                    binding.cgSignsSymptomsObserved
-                ) { _, _, _ ->
-                    viewModel.neonateSignsAndSymptoms = cgSignSymptomsObserved.getSelectedTags()
-                    viewModel.validateSubmitButtonState()
-                }
-
+                viewModel.validateSubmitButtonState()
+            }
+        cgSignSymptomsObserved =
+            TagListCustomView(
+                binding.root.context,
+                binding.cgSignsSymptomsObserved,
+            ) { _, _, _ ->
+                viewModel.neonateSignsAndSymptoms = cgSignSymptomsObserved.getSelectedTags()
+                viewModel.validateSubmitButtonState()
+            }
     }
 
     private fun showAgparScoreDialog() {
@@ -349,10 +351,12 @@ class NeonateFragment : BaseFragment() {
 
     fun validateInput(): Boolean {
         var isValid = false
-        if (validateCgNeonateOutcome() && validateTextView(
+        if (validateCgNeonateOutcome() &&
+            validateTextView(
                 viewModel.genderFlow,
-                binding.tvGenderError
-            ) && validateTextView(viewModel.stateOfBaby, binding.tvStateOfBabyError)
+                binding.tvGenderError,
+            ) &&
+            validateTextView(viewModel.stateOfBaby, binding.tvStateOfBabyError)
         ) {
             isValid = true
         }
@@ -361,7 +365,7 @@ class NeonateFragment : BaseFragment() {
 
     private fun validateTextView(
         flowData: HashMap<String, Any>,
-        textView: AppCompatTextView
+        textView: AppCompatTextView,
     ): Boolean {
         var isValidOrNot = true
         if (flowData.isEmpty()) {
@@ -390,21 +394,27 @@ class NeonateFragment : BaseFragment() {
 
         // Validate Gender
         if (viewModel.genderFlow[DefinedParams.Gender] == null) {
-            if (viewModel.neonateOutcome ==  MedicalReviewDefinedParams.FreshStillBirth||viewModel.neonateOutcome ==MedicalReviewDefinedParams.MaceratedStillBirth || viewModel.neonateOutcome.isNullOrEmpty()){
+            if (viewModel.neonateOutcome == MedicalReviewDefinedParams.FreshStillBirth ||
+                viewModel.neonateOutcome == MedicalReviewDefinedParams.MaceratedStillBirth ||
+                viewModel.neonateOutcome.isNullOrEmpty()
+            ) {
                 binding.tvGenderError.isVisible = false
-                isValid=true
-            }else {
+                isValid = true
+            } else {
                 binding.tvGenderError.isVisible = true
                 binding.tvGenderLabel.requestFocus()
                 isValid = false
             }
         } else {
-             if (viewModel.neonateOutcome ==  MedicalReviewDefinedParams.FreshStillBirth||viewModel.neonateOutcome ==MedicalReviewDefinedParams.MaceratedStillBirth || viewModel.neonateOutcome.isNullOrEmpty()){
-                 binding.tvGenderError.isVisible = false
-                 isValid=true
-            }else{
-                 binding.tvGenderError.isVisible = false
-             }
+            if (viewModel.neonateOutcome == MedicalReviewDefinedParams.FreshStillBirth ||
+                viewModel.neonateOutcome == MedicalReviewDefinedParams.MaceratedStillBirth ||
+                viewModel.neonateOutcome.isNullOrEmpty()
+            ) {
+                binding.tvGenderError.isVisible = false
+                isValid = true
+            } else {
+                binding.tvGenderError.isVisible = false
+            }
         }
 
         // Validate Neonate Outcome
@@ -420,7 +430,6 @@ class NeonateFragment : BaseFragment() {
         return isValid
     }
 
-
     class DecimalInputFilter : InputFilter {
         override fun filter(
             source: CharSequence?,
@@ -428,15 +437,15 @@ class NeonateFragment : BaseFragment() {
             end: Int,
             dest: Spanned?,
             dstart: Int,
-            dend: Int
+            dend: Int,
         ): CharSequence? {
             val newInput = StringBuilder(dest).replace(dstart, dend, source?.subSequence(start, end).toString())
             val newText = newInput.toString()
             val pattern = Regex("^\\d{0,2}(\\.\\d?)?$")
             return if (newText.matches(pattern)) {
-                null  // Accept the input
+                null // Accept the input
             } else {
-                ""    // Reject the input
+                "" // Reject the input
             }
         }
     }

@@ -16,30 +16,27 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentGeneralExaminationBinding
-import com.medtroniclabs.spice.databinding.FragmentSystemicExaminationsBinding
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
-import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.SystemicExaminationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isDataValid
 import com.medtroniclabs.spice.ui.medicalreview.viewmodel.GeneralExaminationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class GeneralExaminationFragment : BaseFragment() {
-
     private lateinit var binding: FragmentGeneralExaminationBinding
     private lateinit var examinationsTagView: TagListCustomView
     private val viewModel: GeneralExaminationViewModel by activityViewModels()
 
-    companion object{
+    companion object {
         const val TAG = "SystemicExaminationsFragment"
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -51,13 +48,16 @@ class GeneralExaminationFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentGeneralExaminationBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeViews()
         attachObserver()
@@ -68,8 +68,10 @@ class GeneralExaminationFragment : BaseFragment() {
             it?.let {
                 viewModel.specifyCondition = it.toString()
                 setFragmentResult(
-                    MedicalReviewDefinedParams.GENERAL_SE_ITEM, bundleOf(
-                        MedicalReviewDefinedParams.Notes to true)
+                    MedicalReviewDefinedParams.GENERAL_SE_ITEM,
+                    bundleOf(
+                        MedicalReviewDefinedParams.Notes to true,
+                    ),
                 )
             }
         }
@@ -77,8 +79,10 @@ class GeneralExaminationFragment : BaseFragment() {
             it?.let {
                 viewModel.specifyConditionUterus = it.toString()
                 setFragmentResult(
-                    MedicalReviewDefinedParams.GENERAL_SE_ITEM, bundleOf(
-                        MedicalReviewDefinedParams.Notes to true)
+                    MedicalReviewDefinedParams.GENERAL_SE_ITEM,
+                    bundleOf(
+                        MedicalReviewDefinedParams.Notes to true,
+                    ),
                 )
             }
         }
@@ -89,9 +93,10 @@ class GeneralExaminationFragment : BaseFragment() {
             it?.let {
                 viewModel.enteredExaminationNotes = it.trim().toString()
                 setFragmentResult(
-                    MedicalReviewDefinedParams.SE_ITEM, bundleOf(
-                        MedicalReviewDefinedParams.CHIP_ITEMS to true
-                    )
+                    MedicalReviewDefinedParams.SE_ITEM,
+                    bundleOf(
+                        MedicalReviewDefinedParams.CHIP_ITEMS to true,
+                    ),
                 )
             }
         }
@@ -108,14 +113,20 @@ class GeneralExaminationFragment : BaseFragment() {
                     resource.data?.let { listItems ->
                         val chipItemList = ArrayList<ChipViewItemModel>()
                         val category =
-                            if (viewModel.systemicExaminationsType == ANC.uppercase()) MedicalReviewTypeEnums.ObstetricExaminations.name else MedicalReviewTypeEnums.SystemicExaminations.name
+                            if (viewModel.systemicExaminationsType ==
+                                ANC.uppercase()
+                            ) {
+                                MedicalReviewTypeEnums.ObstetricExaminations.name
+                            } else {
+                                MedicalReviewTypeEnums.SystemicExaminations.name
+                            }
                         listItems.filter { it.category == category }.forEach {
                             chipItemList.add(
                                 ChipViewItemModel(
                                     id = it.id,
                                     name = it.name,
-                                    value = it.value
-                                )
+                                    value = it.value,
+                                ),
                             )
                         }
                         examinationsTagView.addChipItemList(chipItemList, viewModel.selectedSystemicExaminations)
@@ -132,7 +143,9 @@ class GeneralExaminationFragment : BaseFragment() {
 
     private fun initializeViews() {
         val (titleResId, showObstetricGroup) = when (viewModel.systemicExaminationsType) {
-            MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name -> {Pair(R.string.general_systemic_examinations, true)}
+            MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name -> {
+                Pair(R.string.general_systemic_examinations, true)
+            }
             else -> return // Handle other cases or provide a default behavior
         }
 
@@ -151,30 +164,31 @@ class GeneralExaminationFragment : BaseFragment() {
                 viewModel.selectedSystemicExaminations =
                     ArrayList(examinationsTagView.getSelectedTags())
                 setFragmentResult(
-                    MedicalReviewDefinedParams.SE_ITEM, bundleOf(
-                        MedicalReviewDefinedParams.CHIP_ITEMS to true
-                    )
+                    MedicalReviewDefinedParams.SE_ITEM,
+                    bundleOf(
+                        MedicalReviewDefinedParams.CHIP_ITEMS to true,
+                    ),
                 )
             }
         viewModel.getSystemicExaminationList(viewModel.systemicExaminationsType)
     }
-
 
     fun refreshFragment() {
         examinationsTagView.clearSelection()
         examinationsTagView.clearOtherChip()
         resetSelectionViews(DefinedParams.BreastCondition)
         resetSelectionViews(DefinedParams.UterusCondition)
-        viewModel.breastConditionValue=null
-        viewModel.uterusConditionValue=null
-        viewModel.specifyConditionUterus=null
-        viewModel.specifyCondition=null
+        viewModel.breastConditionValue = null
+        viewModel.uterusConditionValue = null
+        viewModel.specifyConditionUterus = null
+        viewModel.specifyCondition = null
         binding.etPhysicalExaminationComments.text?.clear()
         binding.specifyConditionGroupUterus.gone()
         binding.specifyConditionGroup.gone()
         binding.conditionSelector.text?.clear()
         binding.conditionSelectorUterus.text?.clear()
     }
+
     private fun initializeBreastCondition() {
         getBreastConditionFlowData().let {
             val view = SingleSelectionCustomView(binding.root.context)
@@ -185,13 +199,13 @@ class GeneralExaminationFragment : BaseFragment() {
                 viewModel.breastConditionMap,
                 Pair(DefinedParams.BreastCondition, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                breastConditionSelectionCallback
+                breastConditionSelectionCallback,
             )
             binding.breastConditionSelector.addView(view)
         }
         viewModel.specifyCondition?.let {
             if (viewModel.breastConditionMap[DefinedParams.BreastCondition] as? String == getString(
-                    R.string.abnormal
+                    R.string.abnormal,
                 )
             ) {
                 binding.specifyConditionGroup.visible()
@@ -199,6 +213,7 @@ class GeneralExaminationFragment : BaseFragment() {
             }
         }
     }
+
     private fun initializeUterusCondition() {
         getBreastConditionFlowData().let {
             val view = SingleSelectionCustomView(binding.root.context)
@@ -209,13 +224,13 @@ class GeneralExaminationFragment : BaseFragment() {
                 viewModel.uterusConditionMap,
                 Pair(DefinedParams.UterusCondition, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                uterusSelectionCallback
+                uterusSelectionCallback,
             )
             binding.uterusSelector.addView(view)
         }
         viewModel.specifyConditionUterus?.let {
             if (viewModel.uterusConditionMap[DefinedParams.UterusCondition] as? String == getString(
-                    R.string.abnormal
+                    R.string.abnormal,
                 )
             ) {
                 binding.specifyConditionGroupUterus
@@ -231,7 +246,7 @@ class GeneralExaminationFragment : BaseFragment() {
             resetSelectionViews(DefinedParams.BreastCondition)
             val flowValue =
                 viewModel.breastConditionMap[DefinedParams.BreastCondition] as? String
-            viewModel.breastConditionValue =selectedID
+            viewModel.breastConditionValue = selectedID
             if (selectedID == getString(R.string.abnormal)) {
                 binding.specifyConditionGroup.visible()
             } else {
@@ -245,7 +260,7 @@ class GeneralExaminationFragment : BaseFragment() {
             resetSelectionViews(DefinedParams.UterusCondition)
             val flowValue =
                 viewModel.uterusConditionMap[DefinedParams.UterusCondition] as? String
-            viewModel.uterusConditionValue =selectedID
+            viewModel.uterusConditionValue = selectedID
             if (selectedID == getString(R.string.abnormal)) {
                 binding.specifyConditionGroupUterus.visible()
             } else {
@@ -267,5 +282,4 @@ class GeneralExaminationFragment : BaseFragment() {
             view?.resetSingleSelectionChildViews()
         }
     }
-
 }

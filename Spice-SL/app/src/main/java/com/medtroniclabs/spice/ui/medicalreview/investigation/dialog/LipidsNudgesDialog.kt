@@ -65,21 +65,20 @@ class LipidsNudgesDialog : DialogFragment() {
 
     companion object {
         const val TAG = "LipidsNudgesDialog"
-        fun newInstance(): LipidsNudgesDialog {
-            return LipidsNudgesDialog()
-        }
+
+        fun newInstance(): LipidsNudgesDialog = LipidsNudgesDialog()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentHba1cNudgesDialogBinding.inflate(inflater, container, false)
         binding.composeView.setContent {
             Surface(
                 shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp)),
-                color = colorResource(id = R.color.white)
+                color = colorResource(id = R.color.white),
             ) {
                 DisplayCardContent()
             }
@@ -93,14 +92,14 @@ class LipidsNudgesDialog : DialogFragment() {
     private fun DisplayCardContent() {
         Column(Modifier.wrapContentHeight()) {
             DialogComposeUtils.TitleDialogueView(
-                title = stringResource(id = R.string.recommended_investigations)
+                title = stringResource(id = R.string.recommended_investigations),
             )
             Box {
                 Column(
                     Modifier
                         .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 70.dp)
                         .verticalScroll(rememberScrollState())
-                        .wrapContentHeight()
+                        .wrapContentHeight(),
                 ) {
                     val lipidsList by viewModel.labTestPredictionLiveData.observeAsState()
                     when (lipidsList?.state) {
@@ -109,7 +108,7 @@ class LipidsNudgesDialog : DialogFragment() {
                         }
 
                         else -> {
-                            //else block
+                            // else block
                         }
                     }
                 }
@@ -117,7 +116,7 @@ class LipidsNudgesDialog : DialogFragment() {
                     Modifier
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
-                        .background(colorResource(id = R.color.white))
+                        .background(colorResource(id = R.color.white)),
                 )
             }
         }
@@ -131,7 +130,9 @@ class LipidsNudgesDialog : DialogFragment() {
             if (it.isNotEmpty()) {
                 testText = getString(R.string.lipid_profile)
                 ArrayList(it)
-            } else null
+            } else {
+                null
+            }
         }
         val dataListRFT = hba1cList?.get(NCDMRUtil.RenalFunctionTest) as? ArrayList<*>?
         dataListRFT?.let {
@@ -149,7 +150,7 @@ class LipidsNudgesDialog : DialogFragment() {
         RowCell(
             stringResource(id = R.string.lipids_recommended_investigations, testText, testText),
             textStyle = TextStyles.labelTextStyle.copy(fontSize = TextStyles.FontSize_16),
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(10.dp),
         )
         if ((list?.size ?: 0) > 0) {
             val data = list?.map {
@@ -162,14 +163,14 @@ class LipidsNudgesDialog : DialogFragment() {
                 modifier = Modifier
                     .padding(15.dp)
                     .fillMaxWidth(1f),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
         GenerateDescription(
             testText,
             Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
+                .padding(10.dp),
         )
     }
 
@@ -179,12 +180,12 @@ class LipidsNudgesDialog : DialogFragment() {
             modifier = Modifier
                 .padding(horizontal = 10.dp, vertical = 10.dp)
                 .border(
-                    1.dp, colorResource(id = R.color.button_disabled),
+                    1.dp,
+                    colorResource(id = R.color.button_disabled),
                     shape = RoundedCornerShape(
-                        CornerSize(10.dp)
-                    )
-                )
-                .wrapContentHeight()
+                        CornerSize(10.dp),
+                    ),
+                ).wrapContentHeight(),
         ) {
             val listSize = (lipids?.size ?: 0) - 1
             AddTableHeader()
@@ -199,14 +200,15 @@ class LipidsNudgesDialog : DialogFragment() {
                             AddRowHeader(
                                 it,
                                 it1,
-                                iconModifier = Modifier.rotate(if (isExpanded) 180f else 0f)
+                                iconModifier = Modifier.rotate(if (isExpanded) 180f else 0f),
                             ) {
                                 isExpanded = !isExpanded
                             }
                         }
                     }
-                    if (itemIndex < listSize)
+                    if (itemIndex < listSize) {
                         DialogComposeUtils.DividerWidget()
+                    }
                     if (isExpanded) {
                         AddResultRowView(resultSize, item, itemIndex, listSize)
                     }
@@ -216,11 +218,16 @@ class LipidsNudgesDialog : DialogFragment() {
     }
 
     @Composable
-    fun AddResultRowView(size: Int, item: HBA1CModel, itemIndex: Int, listSize: Int) {
+    fun AddResultRowView(
+        size: Int,
+        item: HBA1CModel,
+        itemIndex: Int,
+        listSize: Int,
+    ) {
         if (size > 0) {
             AddResultRows(
                 item,
-                size
+                size,
             )
         } else {
             RowCell(
@@ -229,11 +236,12 @@ class LipidsNudgesDialog : DialogFragment() {
                     .background(colorResource(id = R.color.primary_medium_blue_bg))
                     .padding(vertical = 10.dp, horizontal = 40.dp)
                     .fillMaxWidth(),
-                textStyle = TextStyles.labelTextStyle
+                textStyle = TextStyles.labelTextStyle,
             )
         }
-        if (itemIndex < listSize)
+        if (itemIndex < listSize) {
             DialogComposeUtils.DividerWidget()
+        }
     }
 
     @Composable
@@ -241,14 +249,14 @@ class LipidsNudgesDialog : DialogFragment() {
         val headerTextStyle =
             TextStyles.rowHeaderStyle.copy(
                 color = colorResource(id = R.color.charcoal_grey),
-                fontSize = 16.sp
+                fontSize = 16.sp,
             )
         Row(
             modifier = Modifier
                 .padding(10.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             RowCell(
                 text = getString(R.string.test_name),
@@ -256,16 +264,17 @@ class LipidsNudgesDialog : DialogFragment() {
                     .weight(0.8f)
                     .padding(
                         horizontal =
-                        10.dp, vertical = 2.dp
+                            10.dp,
+                        vertical = 2.dp,
                     ),
-                headerTextStyle
+                headerTextStyle,
             )
             RowCell(
                 getString(R.string.review_date),
                 Modifier
                     .weight(0.2f)
                     .padding(horizontal = 10.dp, vertical = 2.dp),
-                headerTextStyle
+                headerTextStyle,
             )
         }
     }
@@ -273,7 +282,7 @@ class LipidsNudgesDialog : DialogFragment() {
     @Composable
     private fun AddResultRows(
         item: HBA1CModel,
-        listSize: Int
+        listSize: Int,
     ) {
         NonLazyGrid(
             columns = 2,
@@ -281,17 +290,18 @@ class LipidsNudgesDialog : DialogFragment() {
             modifier = Modifier
                 .background(colorResource(id = R.color.primary_medium_blue_bg))
                 .padding(vertical = 10.dp, horizontal = 5.dp)
-                .wrapContentWidth()
+                .wrapContentWidth(),
         ) { index ->
             item.labTestResults.get(index).let { resultItem ->
                 val style = TextStyles.cellsTextStyle.copy(
-                    fontSize = TextStyles.FontSize_14, color = colorResource(
-                        id = R.color.text_label_color
-                    )
+                    fontSize = TextStyles.FontSize_14,
+                    color = colorResource(
+                        id = R.color.text_label_color,
+                    ),
                 )
                 Row(
                     modifier = Modifier
-                        .padding(5.dp)
+                        .padding(5.dp),
                 ) {
                     RowCell(
                         resultItem.name ?: getString(R.string.hyphen_symbol),
@@ -301,23 +311,27 @@ class LipidsNudgesDialog : DialogFragment() {
                                 start = 10.dp,
                                 end = 5.dp,
                                 top = 2.dp,
-                                bottom = 2.dp
+                                bottom = 2.dp,
                             ),
-                        style
+                        style,
                     )
                     RowCell(
                         text = getString(R.string.separator_colon),
                         Modifier.padding(start = 10.dp, end = 10.dp, top = 2.dp, bottom = 2.dp),
-                        style
+                        style,
                     )
                     RowCell(
-                        if (resultItem.value?.isEmpty() == false) "${resultItem.value} ${resultItem.unit ?: ""}" else getString(
-                            R.string.hyphen_symbol
-                        ),
+                        if (resultItem.value?.isEmpty() == false) {
+                            "${resultItem.value} ${resultItem.unit ?: ""}"
+                        } else {
+                            getString(
+                                R.string.hyphen_symbol,
+                            )
+                        },
                         Modifier
                             .weight(0.5f)
                             .padding(start = 5.dp, end = 10.dp, top = 2.dp, bottom = 2.dp),
-                        style.copy(color = colorResource(id = R.color.secondary_black))
+                        style.copy(color = colorResource(id = R.color.secondary_black)),
                     )
                 }
             }
@@ -329,7 +343,7 @@ class LipidsNudgesDialog : DialogFragment() {
         title: String,
         date: String,
         iconModifier: Modifier,
-        onClick: () -> Unit
+        onClick: () -> Unit,
     ) {
         Row(
             modifier = Modifier
@@ -338,44 +352,45 @@ class LipidsNudgesDialog : DialogFragment() {
                 .clickable {
                     onClick.invoke()
                 },
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .weight(0.8f)
+                    .weight(0.8f),
             ) {
                 IconButton(
                     onClick = {
                         onClick.invoke()
-                    }, modifier = Modifier
+                    },
+                    modifier = Modifier
                         .padding(vertical = 5.dp)
-                        .size(24.dp, 24.dp)
+                        .size(24.dp, 24.dp),
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_arrow_down),
                         tint = colorResource(id = R.color.table_title),
                         contentDescription = null,
-                        modifier = iconModifier
+                        modifier = iconModifier,
                     )
                 }
                 RowCell(
                     title,
                     Modifier
                         .padding(horizontal = 5.dp, vertical = 2.dp),
-                    TextStyles.rowHeaderStyle
+                    TextStyles.rowHeaderStyle,
                 )
             }
             RowCell(
                 DateUtils.convertDateFormat(
                     date,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    DateUtils.DATE_FORMAT_ddMMMyyyy
+                    DateUtils.DATE_FORMAT_ddMMMyyyy,
                 ),
                 Modifier
                     .weight(0.2f)
                     .padding(horizontal = 10.dp, vertical = 2.dp),
-                TextStyles.rowHeaderStyle
+                TextStyles.rowHeaderStyle,
             )
         }
     }
@@ -385,7 +400,7 @@ class LipidsNudgesDialog : DialogFragment() {
         text: String,
         modifier: Modifier = Modifier,
         textStyle: TextStyle? = null,
-        textAlign: TextAlign? = null
+        textAlign: TextAlign? = null,
     ) {
         Text(
             text,
@@ -394,25 +409,29 @@ class LipidsNudgesDialog : DialogFragment() {
             fontFamily = textStyle?.fontFamily,
             fontWeight = textStyle?.fontWeight,
             fontSize = textStyle?.fontSize ?: TextUnit.Unspecified,
-            textAlign = textAlign
+            textAlign = textAlign,
         )
     }
 
     @Composable
-    private fun GenerateDescription(testText: String, modifier: Modifier) {
+    private fun GenerateDescription(
+        testText: String,
+        modifier: Modifier,
+    ) {
         Row(
-            modifier = modifier, verticalAlignment = Alignment.CenterVertically
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             val txStyle = TextStyles.labelTextStyle.copy(
                 color = colorResource(id = R.color.primary_medium_blue),
-                fontSize = TextStyles.FontSize_16
+                fontSize = TextStyles.FontSize_16,
             )
             RowCell(
                 stringResource(id = R.string.recommended_investigations),
                 textStyle = TextStyles.labelTextStyle,
                 modifier = Modifier
                     .weight(0.4f)
-                    .padding(end = 2.dp)
+                    .padding(end = 2.dp),
             )
             RowCell(
                 stringResource(id = R.string.separator_colon),
@@ -420,12 +439,15 @@ class LipidsNudgesDialog : DialogFragment() {
             )
             val toFindText = " and"
             RowCell(
-                if (testText.contains(toFindText))
-                    testText.replace(toFindText, ",") else testText,
+                if (testText.contains(toFindText)) {
+                    testText.replace(toFindText, ",")
+                } else {
+                    testText
+                },
                 textStyle = txStyle,
                 modifier = Modifier
                     .weight(0.6f)
-                    .padding(start = 10.dp)
+                    .padding(start = 10.dp),
             )
         }
     }
@@ -445,7 +467,7 @@ class LipidsNudgesDialog : DialogFragment() {
         super.onStart()
         dialog?.window?.setLayout(
             (resources.displayMetrics.density * DefinedParams.DialogWidth).roundToInt(),
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
@@ -454,7 +476,7 @@ class LipidsNudgesDialog : DialogFragment() {
         columns: Int,
         itemCount: Int,
         modifier: Modifier = Modifier,
-        content: @Composable() (Int) -> Unit
+        content: @Composable() (Int) -> Unit,
     ) {
         Column(modifier = modifier) {
             var rows = (itemCount / columns)
@@ -470,7 +492,7 @@ class LipidsNudgesDialog : DialogFragment() {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .weight(1f)
+                                .weight(1f),
                         ) {
                             if (index < itemCount) {
                                 content(index)
@@ -482,9 +504,11 @@ class LipidsNudgesDialog : DialogFragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
     }
-
 }

@@ -6,7 +6,6 @@ import androidx.appcompat.widget.AppCompatEditText
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
-import com.medtroniclabs.spice.appextensions.textOrEmpty
 import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
@@ -122,13 +121,13 @@ object NCDMRUtil {
         isMandatory: Boolean = false,
         chips: ArrayList<ChipViewItemModel>,
         etPhysicalExaminationComments: AppCompatEditText,
-        tvErrorMessage: TextView? = null
+        tvErrorMessage: TextView? = null,
     ): Boolean {
         val hasChips = chips.isNotEmpty() // Check if there are any chips selected
         val hasOtherChip = chips.any {
             it.name.equals(
                 DefinedParams.Other,
-                ignoreCase = true
+                ignoreCase = true,
             )
         } // Check if 'Other' chip is present
         val commentsNotBlank =
@@ -187,7 +186,7 @@ object NCDMRUtil {
         isMandatory: Boolean = false,
         chips: ArrayList<ChipViewItemModel>,
         etPhysicalExaminationComments: AppCompatEditText,
-        tvErrorMessage: TextView
+        tvErrorMessage: TextView,
     ): Boolean {
         val hasChips = chips.isNotEmpty() // Check if there are any chips selected
         val commentsNotBlank =
@@ -222,42 +221,42 @@ object NCDMRUtil {
         return true // If no other conditions matched, input is considered valid
     }
 
-    fun getTypeForDiagnoses(menu: String?): ArrayList<String> {
-        return when (menu?.lowercase()) {
-            NCD.lowercase() -> arrayListOf(HYPERTENSION, DIABETES,Other, HIV_DIAGNOSIS)
-            MENTAL_HEALTH.lowercase() -> arrayListOf(SUBSTANCE_DISORDER, MENTALHEALTH,Other, HIV_DIAGNOSIS)
-            DefinedParams.PregnancyANC.lowercase() -> arrayListOf(PREGNANCY,Other, HIV_DIAGNOSIS)
+    fun getTypeForDiagnoses(menu: String?): ArrayList<String> =
+        when (menu?.lowercase()) {
+            NCD.lowercase() -> arrayListOf(HYPERTENSION, DIABETES, Other, HIV_DIAGNOSIS)
+            MENTAL_HEALTH.lowercase() -> arrayListOf(SUBSTANCE_DISORDER, MENTALHEALTH, Other, HIV_DIAGNOSIS)
+            DefinedParams.PregnancyANC.lowercase() -> arrayListOf(PREGNANCY, Other, HIV_DIAGNOSIS)
             else -> arrayListOf()
         }
-    }
 
-    fun getConfirmDiagnoses(menu: String?): ArrayList<String> {
-        return when (menu?.lowercase()) {
+    fun getConfirmDiagnoses(menu: String?): ArrayList<String> =
+        when (menu?.lowercase()) {
             NCD.lowercase() -> arrayListOf(NCD, HIV)
             MENTAL_HEALTH.lowercase() -> arrayListOf(MENTALHEALTH, HIV)
             DefinedParams.PregnancyANC.lowercase() -> arrayListOf(maternalHealth, HIV)
             else -> arrayListOf()
         }
-    }
-    fun requestTypeForConfirmDiagnoses(menu: String?): String? {
-        return when (menu?.lowercase()) {
+
+    fun requestTypeForConfirmDiagnoses(menu: String?): String? =
+        when (menu?.lowercase()) {
             NCD.lowercase() -> NCD
             MENTAL_HEALTH.lowercase() -> MENTALHEALTH
             DefinedParams.PregnancyANC.lowercase() -> maternalHealth
             else -> null
         }
-    }
 
-    fun isNCDMRMetaLoaded(): Boolean {
-        return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_NCD_MEDICAL_REVIEW_LOADED.name)
-    }
+    fun isNCDMRMetaLoaded(): Boolean = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_NCD_MEDICAL_REVIEW_LOADED.name)
 
     fun getUserName(): String {
         val userDetails = SecuredPreference.getUserDetails()
         return "${userDetails?.firstName} ${userDetails?.lastName}"
     }
-    fun createPrescription(prescriptions: List<Prescription>?, context: Context): List<String>? {
-        return prescriptions?.map { prescription ->
+
+    fun createPrescription(
+        prescriptions: List<Prescription>?,
+        context: Context,
+    ): List<String>? =
+        prescriptions?.map { prescription ->
             buildString {
                 append(prescription.medicationName.textOrHyphen())
                 append(" - ")
@@ -269,25 +268,30 @@ object NCDMRUtil {
                     "${prescription.prescriptionRemainingDays ?: "-"} ${
                         dayPeriod(
                             prescription.prescriptionRemainingDays,
-                            context
+                            context,
                         )
-                    }"
+                    }",
                 )
-                if (!prescription.instructionNote.isNullOrBlank())
+                if (!prescription.instructionNote.isNullOrBlank()) {
                     append(" / " + prescription.instructionNote)
+                }
             }
         }
-    }
 
-    private fun dayPeriod(prescribedDays: Int?, context: Context): String {
-        return if (prescribedDays == 1) {
+    private fun dayPeriod(
+        prescribedDays: Int?,
+        context: Context,
+    ): String =
+        if (prescribedDays == 1) {
             context.getString(R.string.day)
         } else {
             context.getString(R.string.days)
         }
-    }
 
-    fun printNumberedListString(items: List<String>?, context: Context): String {
+    fun printNumberedListString(
+        items: List<String>?,
+        context: Context,
+    ): String {
         if (items.isNullOrEmpty()) {
             return context.getString(R.string.hyphen_symbol)
         }
@@ -296,10 +300,10 @@ object NCDMRUtil {
             return context.getString(R.string.hyphen_symbol)
         }
 
-        return items.filter { it.isNotBlank() }
+        return items
+            .filter { it.isNotBlank() }
             .mapIndexed { index, item -> "${index + 1}. $item" }
             .joinToString("\n")
-
     }
 
     fun currentUserId() = SecuredPreference.getUserFhirId()
@@ -309,23 +313,24 @@ object NCDMRUtil {
         patientData: PatientListRespModel,
         height: Double? = null,
         weight: Double? = null,
-        isGlucose: Boolean = false
+        isGlucose: Boolean = false,
     ) {
         result.apply {
             put(
-                Screening.bioData, hashMapOf(
+                Screening.bioData,
+                hashMapOf(
                     Screening.firstName to patientData.firstName,
                     Screening.lastName to patientData.lastName,
                     Screening.phoneNumber to patientData.phoneNumber,
                     AssessmentDefinedParams.phoneNumberCategory to patientData.phoneNumberCategory,
                     Screening.identityValue to patientData.identityValue,
-                    Screening.identityType to patientData.identityType
-                )
+                    Screening.identityType to patientData.identityType,
+                ),
             )
 
             val bioMetricsData = hashMapOf(
                 MemberRegistration.gender to patientData.gender,
-                Screening.Age to patientData.age
+                Screening.Age to patientData.age,
             )
             if (!isGlucose) {
                 bioMetricsData[Screening.Height] = height ?: patientData.height
@@ -337,4 +342,3 @@ object NCDMRUtil {
         }
     }
 }
-

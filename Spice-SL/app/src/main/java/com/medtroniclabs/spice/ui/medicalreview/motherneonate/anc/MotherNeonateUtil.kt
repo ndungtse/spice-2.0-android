@@ -16,24 +16,28 @@ object MotherNeonateUtil {
     const val TB_ORGAN_AFFECTED = "TB_ORGAN_AFFECTED"
     const val PATIENT_TYPE = "patient_type"
     const val PATIENT_TYPE_HYPHEN = "patient-type"
-    const val PATIENT_STATUS_HYPHEN ="patient_status"
+    const val PATIENT_STATUS_HYPHEN = "patient_status"
 
     const val EstimatedDeliveryDate: Long = 280
-    fun convertNullableIntToString(value: Int?, context: Context): String {
-        return value?.toString() ?: context.getString(R.string.hyphen_symbol)
-    }
 
-    fun convertNullableDoubleToString(value: Double?, context: Context): String {
-        return value?.toString() ?: context.getString(R.string.hyphen_symbol)
-    }
+    fun convertNullableIntToString(
+        value: Int?,
+        context: Context,
+    ): String = value?.toString() ?: context.getString(R.string.hyphen_symbol)
 
-    fun convertNullableStringToString(value: String?, context: Context): String {
-        return value?.takeIf { it.isNotBlank() } ?: context.getString(R.string.hyphen_symbol)
-    }
+    fun convertNullableDoubleToString(
+        value: Double?,
+        context: Context,
+    ): String = value?.toString() ?: context.getString(R.string.hyphen_symbol)
+
+    fun convertNullableStringToString(
+        value: String?,
+        context: Context,
+    ): String = value?.takeIf { it.isNotBlank() } ?: context.getString(R.string.hyphen_symbol)
 
     fun initTextWatcherForDouble(
         view: AppCompatEditText,
-        propertySetter: (Double?) -> Unit
+        propertySetter: (Double?) -> Unit,
     ) {
         view.doAfterTextChanged {
             val text = it.toString().trim()
@@ -42,7 +46,10 @@ object MotherNeonateUtil {
         }
     }
 
-    fun initTextWatcherForInt(view: AppCompatEditText, propertySetter: (Int?) -> Unit) {
+    fun initTextWatcherForInt(
+        view: AppCompatEditText,
+        propertySetter: (Int?) -> Unit,
+    ) {
         view.doAfterTextChanged {
             val text = it.toString().trim()
             val value = if (text.isNotBlank()) text.toIntOrNull() else null
@@ -50,7 +57,10 @@ object MotherNeonateUtil {
         }
     }
 
-    fun initTextWatcherForString(view: AppCompatEditText, propertySetter: (String) -> Unit) {
+    fun initTextWatcherForString(
+        view: AppCompatEditText,
+        propertySetter: (String) -> Unit,
+    ) {
         view.doAfterTextChanged {
             val text = it?.toString()?.trim() ?: ""
             propertySetter(text)
@@ -64,7 +74,7 @@ object MotherNeonateUtil {
         validRange: ClosedRange<Double>,
         errorMessageResId: Int,
         isMandatory: Boolean,
-        context: Context
+        context: Context,
     ): Boolean {
         val input = inputText.toDoubleOrNull()
         if (editText.text.isNullOrBlank()) {
@@ -93,7 +103,7 @@ object MotherNeonateUtil {
         text: AppCompatEditText? = null,
         minErrorMessage: String,
         maxErrorMessage: String,
-        context: Context
+        context: Context,
     ): Boolean {
         val value = valueText?.toIntOrNull()
         val diastolic = text?.text.toString().toIntOrNull()
@@ -133,7 +143,7 @@ object MotherNeonateUtil {
         maxValueError: String? = null,
         context: Context,
         isMandatory: Boolean = false,
-        isParity: Boolean = false
+        isParity: Boolean = false,
     ): Boolean {
         val value = valueText?.toIntOrNull()
         if (value == null) {
@@ -146,7 +156,6 @@ object MotherNeonateUtil {
             errorTextView.gone()
             return true
         }
-
 
         if (!isParity && value == minValue) {
             // Value is less than minimum allowed value, display error message
@@ -170,13 +179,13 @@ object MotherNeonateUtil {
         view: TextView,
         maxValue: Int,
         editText: AppCompatEditText,
-        context: Context
+        context: Context,
     ): Boolean {
         if (value == null) {
             view.gone()
             return true
         }
-        if (!(value >= 1 && value <= maxValue) ) {
+        if (!(value >= 1 && value <= maxValue)) {
             view.visible()
             view.text = context.getString(R.string.value_range_error, maxValue)
             editText.requestFocus()
@@ -186,16 +195,22 @@ object MotherNeonateUtil {
         return true
     }
 
-    fun calculateBp(valueOne: Double?, valueTwo: Double?, context: Context): String {
-        return if (valueOne != null && valueTwo != null) {
+    fun calculateBp(
+        valueOne: Double?,
+        valueTwo: Double?,
+        context: Context,
+    ): String =
+        if (valueOne != null && valueTwo != null) {
             "${valueOne.toInt()}/${valueTwo.toInt()} ${context.getString(R.string.mmHg)}"
         } else {
             "${context.getString(R.string.hyphen_symbol)}/${context.getString(R.string.hyphen_symbol)}"
         }
-    }
 
-    fun convertWeight(value: Double?, context: Context): String {
-        return if (value != null) {
+    fun convertWeight(
+        value: Double?,
+        context: Context,
+    ): String =
+        if (value != null) {
             val formattedValue = if (value % 1 == 0.0) {
                 value.toInt().toString()
             } else {
@@ -205,10 +220,12 @@ object MotherNeonateUtil {
         } else {
             context.getString(R.string.hyphen_symbol)
         }
-    }
 
-    fun convertHeight(value: Double?, context: Context): String {
-        return if (value != null) {
+    fun convertHeight(
+        value: Double?,
+        context: Context,
+    ): String =
+        if (value != null) {
             val formattedValue = if (value % 1 == 0.0) {
                 value.toInt().toString()
             } else {
@@ -218,41 +235,52 @@ object MotherNeonateUtil {
         } else {
             context.getString(R.string.hyphen_symbol)
         }
-    }
 
-    fun convertBmi(value: Double?, context: Context): String {
+    fun convertBmi(
+        value: Double?,
+        context: Context,
+    ): String {
         if (value == null) return context.getString(R.string.hyphen_symbol)
         val formattedValue = when {
             value % 1 == 0.0 -> value.toInt().toString() // Convert whole numbers to Int
             else -> String.format("%.2f", value).trimEnd('0').trimEnd('.') // Format decimal
         }
 
-        return CommonUtils.getBMIInformation(context, value)?.first
+        return CommonUtils
+            .getBMIInformation(context, value)
+            ?.first
             ?.takeIf { it.isNotBlank() }
             ?.let { "$formattedValue (${it.capitalizeFirstChar()})" } ?: formattedValue
     }
 
-    fun convertCMS(value: Double?, context: Context): String {
-        return if (value != null) {
+    fun convertCMS(
+        value: Double?,
+        context: Context,
+    ): String =
+        if (value != null) {
             "${value.toInt()} ${context.getString(R.string.cm)}"
         } else {
             context.getString(R.string.hyphen_symbol)
         }
-    }
 
-    fun convertBeatsPerMinute(value: Double?, context: Context): String {
-        return if (value != null) {
+    fun convertBeatsPerMinute(
+        value: Double?,
+        context: Context,
+    ): String =
+        if (value != null) {
             "${value.toInt()} ${context.getString(R.string.beats_per_minute)}"
         } else {
             context.getString(R.string.hyphen_symbol)
         }
-    }
 
-    fun Boolean?.toYesNoOrDefault(default: String,trueString: String, falseString: String): String {
-        return when (this) {
+    fun Boolean?.toYesNoOrDefault(
+        default: String,
+        trueString: String,
+        falseString: String,
+    ): String =
+        when (this) {
             true -> trueString.capitalizeFirstChar()
             false -> falseString.capitalizeFirstChar()
             else -> default
         }
-    }
 }

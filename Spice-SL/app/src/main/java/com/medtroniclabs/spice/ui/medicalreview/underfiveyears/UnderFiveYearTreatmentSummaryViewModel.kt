@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UnderFiveYearTreatmentSummaryViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var repository: UnderFiveYearsTreatmentSummaryRepository
+    private var repository: UnderFiveYearsTreatmentSummaryRepository,
 ) : ViewModel() {
     val summaryDetailsLiveData = MutableLiveData<Resource<SummaryDetails>>()
     var nextVisitDate: String? = null
@@ -32,7 +32,7 @@ class UnderFiveYearTreatmentSummaryViewModel @Inject constructor(
         getMetaPatientStatus.switchMap {
             repository.getExaminationsComplaints(
                 it,
-                MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name
+                MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name,
             )
         }
 
@@ -41,8 +41,8 @@ class UnderFiveYearTreatmentSummaryViewModel @Inject constructor(
             summaryDetailsLiveData.postLoading()
             summaryDetailsLiveData.postValue(
                 repository.getUnderFiveYearsSummaryDetails(
-                    request
-                )
+                    request,
+                ),
             )
         }
     }
@@ -50,5 +50,4 @@ class UnderFiveYearTreatmentSummaryViewModel @Inject constructor(
     fun setMetaPatientStatus(category: String) {
         getMetaPatientStatus.value = category
     }
-
 }

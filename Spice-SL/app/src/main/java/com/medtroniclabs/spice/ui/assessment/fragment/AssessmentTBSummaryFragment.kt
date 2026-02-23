@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -39,8 +38,6 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherRelationshipIC
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
-import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
-import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 
 class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -49,19 +46,21 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentAssessmentTBSummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
         viewModel.setUserJourney(AnalyticsDefinedParams.TBSummaryAssessement)
     }
-
 
     private fun initView() {
         binding.btnDone.safeClickListener(this)
@@ -83,25 +82,27 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun createTBListSummaryData(data: String): MutableList<AssessmentSummaryModel>? {
-        return viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }?.map { formLayout ->
-            AssessmentSummaryModel(
-                title = formLayout.titleSummary ?: formLayout.title,
-                id = formLayout.id,
-                cultureValue = formLayout.titleCulture,
-                value = getValueOfKeyFromMap(
-                    StringConverter.stringToMap(data),
-                    formLayout.id,
-                    TB
+    private fun createTBListSummaryData(data: String): MutableList<AssessmentSummaryModel>? =
+        viewModel.formLayoutsLiveData.value
+            ?.data
+            ?.formLayout
+            ?.filter {
+                it.isSummary == true
+            }?.map { formLayout ->
+                AssessmentSummaryModel(
+                    title = formLayout.titleSummary ?: formLayout.title,
+                    id = formLayout.id,
+                    cultureValue = formLayout.titleCulture,
+                    value = getValueOfKeyFromMap(
+                        StringConverter.stringToMap(data),
+                        formLayout.id,
+                        TB,
+                    ),
                 )
-            )
-        }?.toMutableList()
-    }
+            }?.toMutableList()
 
-    private fun createSummaryView(
-        listSummaryData: MutableList<AssessmentSummaryModel>?
-    ) {
-        listSummaryData?.let {summaryData ->
+    private fun createSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>?) {
+        listSummaryData?.let { summaryData ->
             binding.emptyErrorMessage.visibility = View.GONE
             binding.parentLayout.visibility = View.VISIBLE
             binding.parentLayout.removeAllViews()
@@ -113,10 +114,10 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
 
     private fun composeTbSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
         val isContactTrace = listSummaryData.any { it.id == RelationshipToIC }
-        if(isContactTrace){
+        if (isContactTrace) {
             binding.tvTitle.text = binding.root.context.getString(R.string.contact_tracing)
             val stringBuilder = StringBuilder()
-            listSummaryData.forEach{ item ->
+            listSummaryData.forEach { item ->
                 item.value?.let {
                     when (item.id) {
                         RelationshipToIC -> {
@@ -133,7 +134,7 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
 
                                 it.equals(
                                     HouseholdHead,
-                                    ignoreCase = true
+                                    ignoreCase = true,
                                 ) -> getString(R.string.household_head)
 
                                 else -> it
@@ -141,8 +142,8 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
                             bindTbSummaryView(item.title, displayValue)
                         }
                         SleepLocation -> bindTbSummaryView(removeTextInBrackets(item.title), it)
-                        PreviouslyTreatedForTB,hasCough -> bindTbSummaryView(item.title, capitalizeYesNo(it))
-                        HasCoughLastedLonger,HasNightSweatsTB, hasFever, HasWeightLoss ->
+                        PreviouslyTreatedForTB, hasCough -> bindTbSummaryView(item.title, capitalizeYesNo(it))
+                        HasCoughLastedLonger, HasNightSweatsTB, hasFever, HasWeightLoss ->
                             stringBuilder.appendWithComma(removeLastChar(item.title))
                         DateOfOnset -> {
                             bindTbSummaryView(
@@ -150,8 +151,8 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
                                 DateUtils.convertDateFormat(
                                     it,
                                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                    DateUtils.DATE_ddMMyyyy
-                                )
+                                    DateUtils.DATE_ddMMyyyy,
+                                ),
                             )
                         }
                     }
@@ -162,7 +163,7 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
             getStatus(viewModel.referralStatus)?.let {
                 bindTbSummaryView(
                     getString(R.string.patient_status),
-                    it
+                    it,
                 )
             }
 
@@ -178,8 +179,8 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
                                 DateUtils.convertDateFormat(
                                     it,
                                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                    DateUtils.DATE_ddMMyyyy
-                                )
+                                    DateUtils.DATE_ddMMyyyy,
+                                ),
                             )
                         }
                     }
@@ -193,30 +194,30 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
         append(text)
     }
 
-    private fun removeTextInBrackets(input: String?):String{
-        return input?.let {
+    private fun removeTextInBrackets(input: String?): String =
+        input?.let {
             if (it.isNotEmpty()) it.replace(Regex("\\(.*?\\)"), "").trim() else ""
         } ?: ""
-    }
 
-    private fun removeLastChar(input: String?): String {
-        return input?.let {
+    private fun removeLastChar(input: String?): String =
+        input?.let {
             if (it.isNotEmpty()) it.dropLast(1) else ""
         } ?: ""
-    }
 
-    private fun capitalizeYesNo(value: String): String {
-        return value.lowercase().replaceFirstChar { it.uppercase() }
-    }
+    private fun capitalizeYesNo(value: String): String = value.lowercase().replaceFirstChar { it.uppercase() }
 
-    private fun bindTbSummaryView(title: String?, value: String?, valueTextColor: Int? = null) {
+    private fun bindTbSummaryView(
+        title: String?,
+        value: String?,
+        valueTextColor: Int? = null,
+    ) {
         binding.parentLayout.addView(
             AssessmentCommonUtils.addViewSummaryLayout(
                 title,
                 value,
                 valueTextColor,
-                requireContext()
-            )
+                requireContext(),
+            ),
         )
     }
 
@@ -243,8 +244,8 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun getStatus(referralStatus: String?): String? {
-        return when (referralStatus) {
+    private fun getStatus(referralStatus: String?): String? =
+        when (referralStatus) {
             ReferralStatus.Referred.name -> getString(R.string.referred)
             ReferralStatus.OnTreatment.name -> getString(R.string.on_treatment)
             ReferralStatus.Recovered.name -> getString(R.string.recovered)
@@ -252,7 +253,6 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
                 null
             }
         }
-    }
 
     private fun loadPhuSitesList(healthFacilityList: ArrayList<Map<String, Any>>) {
         val adapter = CustomSpinnerAdapter(requireContext())
@@ -264,7 +264,7 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
                     adapterView: AdapterView<*>?,
                     view: View?,
                     pos: Int,
-                    itemId: Long
+                    itemId: Long,
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
@@ -272,8 +272,9 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
                         if (selectedId != DefaultID) {
                             viewModel.otherAssessmentDetails[ReferredPHUSiteID] = selectedId.toString()
                         } else {
-                            if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSiteID))
+                            if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSiteID)) {
                                 viewModel.otherAssessmentDetails.remove(ReferredPHUSiteID)
+                            }
                         }
                     }
                 }
@@ -288,9 +289,8 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "AssessmentTBSummaryFragment"
-        fun newInstance(): AssessmentTBSummaryFragment {
-            return AssessmentTBSummaryFragment()
-        }
+
+        fun newInstance(): AssessmentTBSummaryFragment = AssessmentTBSummaryFragment()
     }
 
     private fun showErrorInSummary() {
@@ -298,7 +298,5 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
         binding.parentLayout.visibility = View.GONE
     }
 
-    fun getCurrentAnsweredStatus():Boolean {
-        return viewModel.otherAssessmentDetails.isNotEmpty()
-    }
+    fun getCurrentAnsweredStatus(): Boolean = viewModel.otherAssessmentDetails.isNotEmpty()
 }

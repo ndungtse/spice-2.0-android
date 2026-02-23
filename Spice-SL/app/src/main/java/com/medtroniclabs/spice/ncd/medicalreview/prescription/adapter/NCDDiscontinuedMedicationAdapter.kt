@@ -13,13 +13,11 @@ import com.medtroniclabs.spice.ncd.medicalreview.MedicationListener
 
 class NCDDiscontinuedMedicationAdapter(
     private val medicationLists: ArrayList<Prescription>,
-    private val medicationListener: MedicationListener
+    private val medicationListener: MedicationListener,
 ) :
     RecyclerView.Adapter<NCDDiscontinuedMedicationAdapter.ViewHolder>() {
-
     inner class ViewHolder(val binding: NcdDiscontinuedMedicationAdapterBinding) :
         RecyclerView.ViewHolder(binding.root), View.OnClickListener {
-
         override fun onClick(mView: View?) {
             when (mView) {
                 binding.tvDaysPrescribed -> {
@@ -28,7 +26,10 @@ class NCDDiscontinuedMedicationAdapter(
             }
         }
 
-        fun bind(position: Int, item: Prescription) {
+        fun bind(
+            position: Int,
+            item: Prescription,
+        ) {
             binding.apply {
                 binding.tvDaysPrescribed.paintFlags = Paint.UNDERLINE_TEXT_FLAG
                 with(item) {
@@ -41,14 +42,14 @@ class NCDDiscontinuedMedicationAdapter(
                         tvStartedFrom.text = DateUtils.convertDateTimeToDate(
                             getTime(prescribedSince),
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmss,
-                            DateUtils.DATE_FORMAT_ddMMMyyyy
+                            DateUtils.DATE_FORMAT_ddMMMyyyy,
                         )
                     }
                     discontinuedDate?.let { discontinuedOn ->
                         tvDiscontinuedOn.text = DateUtils.convertDateTimeToDate(
                             getTime(discontinuedOn),
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmss,
-                            DateUtils.DATE_FORMAT_ddMMMyyyy
+                            DateUtils.DATE_FORMAT_ddMMMyyyy,
                         )
                     }
                     tvDaysPrescribed.text = prescribedDays.toString()
@@ -66,21 +67,24 @@ class NCDDiscontinuedMedicationAdapter(
         }
     }
 
-    private fun getTime(dateFormat: String): String {
-        return dateFormat.split("+")[0]
-    }
+    private fun getTime(dateFormat: String): String = dateFormat.split("+")[0]
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder =
+        ViewHolder(
             NcdDiscontinuedMedicationAdapterBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         medicationLists.let {
             holder.bind(position, it[position])
         }

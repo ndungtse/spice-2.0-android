@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
 import com.medtroniclabs.spice.data.ReferPatientNameNumber
-import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.mypatients.repo.ReferPatientRepository
@@ -18,19 +17,18 @@ import javax.inject.Inject
 @HiltViewModel
 class ReferPatientViewModel @Inject constructor(
     private val repository: ReferPatientRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
-    ): ViewModel() {
-
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+) : ViewModel() {
     var referToSelectedId: String? = null
     var clinicalSelectedId: String? = null
-    var enteredReferredReason: String? =null
+    var enteredReferredReason: String? = null
     var patientId: String? = null
     var villageId: String? = null
     var houseHoldId: String? = null
     var memberId: String? = null
     val healthFacilityLiveData = MutableLiveData<Resource<List<ReferPatientHealthFacilityItem>>>()
     val nameNumberListLiveData = MutableLiveData<Resource<List<ReferPatientNameNumber>>>()
-    val referPatientResultLiveData = MutableLiveData<Resource<HashMap<String,Any>>>()
+    val referPatientResultLiveData = MutableLiveData<Resource<HashMap<String, Any>>>()
 
     fun getHealthFacilityMetaData(districtId: String?) {
         districtId?.let {
@@ -40,12 +38,14 @@ class ReferPatientViewModel @Inject constructor(
             }
         }
     }
+
     fun getNameNumberFieldList(tenantId: String) {
-        viewModelScope.launch(dispatcherIO){
+        viewModelScope.launch(dispatcherIO) {
             healthFacilityLiveData.postLoading()
             nameNumberListLiveData.postValue(repository.getReferPatientMobileUserList(tenantId))
         }
     }
+
     fun createReferPatientResult(
         patientReference: String?,
         encounterId: String?,
@@ -54,7 +54,7 @@ class ReferPatientViewModel @Inject constructor(
         houseHoldId: String?,
         villageId: String?,
         memberId: String?,
-        tbIMRCompleted: Boolean? = null
+        tbIMRCompleted: Boolean? = null,
     ) {
         viewModelScope.launch(dispatcherIO) {
             referPatientResultLiveData.postLoading()
@@ -68,8 +68,8 @@ class ReferPatientViewModel @Inject constructor(
                     houseHoldId,
                     villageId,
                     memberId,
-                    tbIMRCompleted = tbIMRCompleted
-                )
+                    tbIMRCompleted = tbIMRCompleted,
+                ),
             )
         }
     }

@@ -10,5 +10,5 @@ data class LinkHouseholdMember(
     val id: Long = 0,
     val memberId: String,
     var status: String,
-    var syncStatus: OfflineSyncStatus? = OfflineSyncStatus.NotSynced
+    var syncStatus: OfflineSyncStatus? = OfflineSyncStatus.NotSynced,
 )

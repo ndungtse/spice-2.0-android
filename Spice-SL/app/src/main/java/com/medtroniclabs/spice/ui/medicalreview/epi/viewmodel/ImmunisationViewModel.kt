@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.epi.viewmodel
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.getLocalDate
 import com.medtroniclabs.spice.common.DateUtils
@@ -36,9 +35,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ImmunisationViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private val immunisationRepository: ImmunisationRepository
+    private val immunisationRepository: ImmunisationRepository,
 ) : BaseViewModel(dispatcherIO) {
-
     var encounterId: String = ""
     var patientReferenceId: String = ""
 
@@ -49,7 +47,7 @@ class ImmunisationViewModel @Inject constructor(
 
     val saveImmunisationListLiveData = MutableLiveData<Resource<ResponseCreateImmunisation>>()
     val immunisationSummaryLiveData = MutableLiveData<Resource<ResponseImmunisationSummaryDetails>>()
-    var nextVaccinationDetails :EpiNextVaccinationDetails? = null
+    var nextVaccinationDetails: EpiNextVaccinationDetails? = null
     var nextVisitDate: String? = null
     val updateScheduleDateAndVaccinationDate = MutableLiveData<Pair<LocalDate, LocalDate>>()
     val saveImmunisationSummaryLiveData = MutableLiveData<Resource<ResponseImmunisationSummaryCreate>>()
@@ -60,7 +58,12 @@ class ImmunisationViewModel @Inject constructor(
     private val daysDelay = "Days Delay"
     private val onTime = "On-Time"
 
-    fun getImmunisationDetails(id: String?, memberId: String?, patientId: String?, dob: String?) {
+    fun getImmunisationDetails(
+        id: String?,
+        memberId: String?,
+        patientId: String?,
+        dob: String?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             val request = RequestVaccinationList(id, memberId, patientId, dob)
             immunisationRepository.getImmunisationDetails(request, immunisationDetailListLiveData)
@@ -100,7 +103,10 @@ class ImmunisationViewModel @Inject constructor(
         }
     }
 
-    fun shouldShowMissedVaccinationDialog(flag: Boolean, reason: String?) {
+    fun shouldShowMissedVaccinationDialog(
+        flag: Boolean,
+        reason: String?,
+    ) {
         showMissedVaccinationDialog.postValue(Pair(flag, reason))
     }
 
@@ -151,7 +157,7 @@ class ImmunisationViewModel @Inject constructor(
                 if (vaccine.vaccinatedDate != null && vaccine.updatedScheduleDate != null) {
                     val vaccinatedDate = vaccine.vaccinatedDate!!.getLocalDate()
                     val scheduledDate = vaccine.updatedScheduleDate
-                    val delay =  ChronoUnit.DAYS.between(scheduledDate, vaccinatedDate)
+                    val delay = ChronoUnit.DAYS.between(scheduledDate, vaccinatedDate)
                     if (delay > maxDelay) {
                         lastScheduleDate = scheduledDate
                         lastVaccinatedDate = vaccinatedDate
@@ -159,9 +165,8 @@ class ImmunisationViewModel @Inject constructor(
                     }
                 }
             }
-            maxDelay = -1L //Reset for Next Group
+            maxDelay = -1L // Reset for Next Group
         }
-
 
         lastScheduleDate?.let { sDate ->
             lastVaccinatedDate?.let { vDate ->
@@ -184,7 +189,8 @@ class ImmunisationViewModel @Inject constructor(
                 val nextEpi = EpiNextVaccinationDetails(
                     EpiGroupName.getGroupName(first.value, first.type),
                     nextDoses,
-                    item.scheduleDate)
+                    item.scheduleDate,
+                )
                 nextVaccinationDetails = nextEpi
                 break
             } else {
@@ -192,8 +198,9 @@ class ImmunisationViewModel @Inject constructor(
                     if (vaccine.updatedScheduleDate != null) {
                         if (vaccine.isEdited == true) {
                             changesList.add(vaccine.copy())
-                        } else if (!vaccine.updatedScheduleDate!!.isAfter(ldToday)
-                            && vaccine.vaccinatedDate == null) {
+                        } else if (!vaccine.updatedScheduleDate!!.isAfter(ldToday) &&
+                            vaccine.vaccinatedDate == null
+                        ) {
                             containsAnyMissedVaccine = true
                             changesList.add(vaccine.copy(status = "Missed"))
                         }
@@ -206,22 +213,31 @@ class ImmunisationViewModel @Inject constructor(
             nextVisitDate = nextVaccinationDetails!!.nextVisitDate
         } else {
             if (hasAnyPendingVaccine()) {
-                val tomorrowDate = LocalDate.now().plusDays(1)
+                val tomorrowDate = LocalDate
+                    .now()
+                    .plusDays(1)
                     .format(DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy))
                 val stringTomorrowDate = DateUtils.convertDateTimeToDate(
                     tomorrowDate,
                     DateUtils.DATE_ddMMyyyy,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    inUTC = true
+                    inUTC = true,
                 )
                 nextVisitDate = stringTomorrowDate
             }
         }
 
-        showMissedVaccinationDialog.postValue(Pair(containsAnyMissedVaccine,null))
+        showMissedVaccinationDialog.postValue(Pair(containsAnyMissedVaccine, null))
     }
 
-    fun postVaccinationChanges(id: String?, memberId: String?, patientId: String?, missedReason: String?,householdId:String?, villageId: String?) {
+    fun postVaccinationChanges(
+        id: String?,
+        memberId: String?,
+        patientId: String?,
+        missedReason: String?,
+        householdId: String?,
+        villageId: String?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             val request = RequestCreateImmunisation(
                 immunisationList = changesList,
@@ -233,9 +249,9 @@ class ImmunisationViewModel @Inject constructor(
                     latitude = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name),
                     longitude = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name),
                     villageId = villageId,
-                    householdId = householdId
+                    householdId = householdId,
                 ),
-                missedReason = missedReason
+                missedReason = missedReason,
             )
 
             immunisationRepository.saveImmunisationList(request, saveImmunisationListLiveData)
@@ -254,7 +270,8 @@ class ImmunisationViewModel @Inject constructor(
         id: String?,
         memberId: String?,
         patientId: String?,
-        villageId: String?) {
+        villageId: String?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             immunisationSummaryLiveData.value?.data?.let { summaryDetails ->
                 val lastScheduleDetail = getLastScheduleReason()
@@ -272,7 +289,8 @@ class ImmunisationViewModel @Inject constructor(
                     nextVaccinationDate = nextVisitDate,
                     provenance = ProvanceDto(),
                     villageId = villageId,
-                    patientReference = id)
+                    patientReference = id,
+                )
                 immunisationRepository.saveImmunisationSummaryDetails(request, saveImmunisationSummaryLiveData)
             }
         }
@@ -293,7 +311,7 @@ class ImmunisationViewModel @Inject constructor(
                 scheduleDate,
                 DateUtils.DATE_ddMMyyyy,
                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                inUTC = true
+                inUTC = true,
             )
 
             return Pair(lasScheduleDate, status)

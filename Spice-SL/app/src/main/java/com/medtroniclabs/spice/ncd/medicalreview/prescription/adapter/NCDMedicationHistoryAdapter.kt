@@ -11,26 +11,27 @@ import com.medtroniclabs.spice.data.PatientPrescriptionHistoryResponse
 import com.medtroniclabs.spice.databinding.NcdMedicationHistoryAdapterBinding
 
 class NCDMedicationHistoryAdapter(
-    private val medicationLists: ArrayList<PatientPrescriptionHistoryResponse>
+    private val medicationLists: ArrayList<PatientPrescriptionHistoryResponse>,
 ) :
     RecyclerView.Adapter<NCDMedicationHistoryAdapter.ViewHolder>() {
-
     inner class ViewHolder(val binding: NcdMedicationHistoryAdapterBinding) :
         RecyclerView.ViewHolder(binding.root), View.OnClickListener {
-
         override fun onClick(mView: View?) {
-            //View - OnClickListener
+            // View - OnClickListener
         }
 
-        fun bind(position: Int, item: PatientPrescriptionHistoryResponse) {
-            val context : Context = binding.root.context
+        fun bind(
+            position: Int,
+            item: PatientPrescriptionHistoryResponse,
+        ) {
+            val context: Context = binding.root.context
             binding.apply {
                 with(item) {
                     tvPrescribedDate.text = createdAt?.let { prescribedAt ->
                         DateUtils.convertDateTimeToDate(
                             getTime(prescribedAt),
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmss,
-                            DateUtils.DATE_FORMAT_ddMMMyyyy
+                            DateUtils.DATE_FORMAT_ddMMMyyyy,
                         )
                     } ?: run { context.getString(R.string.hyphen_symbol) }
                     tvDosage.text = validateString(context, dosageUnitValue)
@@ -44,39 +45,47 @@ class NCDMedicationHistoryAdapter(
         }
     }
 
-    fun validateString(context: Context, value: String?): String {
-        return if (value.isNullOrBlank()) context.getString(R.string.hyphen_symbol) else value
-    }
+    fun validateString(
+        context: Context,
+        value: String?,
+    ): String = if (value.isNullOrBlank()) context.getString(R.string.hyphen_symbol) else value
 
-    fun validateInt(context: Context, value: Long?): String {
-        return value?.toString() ?: context.getString(R.string.hyphen_symbol)
-    }
+    fun validateInt(
+        context: Context,
+        value: Long?,
+    ): String = value?.toString() ?: context.getString(R.string.hyphen_symbol)
 
-    private fun getTime(dateFormat: String): String {
-        return dateFormat.split("+")[0]
-    }
+    private fun getTime(dateFormat: String): String = dateFormat.split("+")[0]
 
-    private fun getDosageUnit(context: Context, dosageUnit: String?): String {
-        return dosageUnit?.let {
+    private fun getDosageUnit(
+        context: Context,
+        dosageUnit: String?,
+    ): String =
+        dosageUnit?.let {
             var dosage = it
             val str = it.split(" ")
-            if (str.isNotEmpty())
+            if (str.isNotEmpty()) {
                 dosage = str[0].trim()
+            }
             dosage
         } ?: run { context.getString(R.string.hyphen_symbol) }
-    }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder =
+        ViewHolder(
             NcdMedicationHistoryAdapterBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         medicationLists.let {
             holder.bind(position, it[position])
         }

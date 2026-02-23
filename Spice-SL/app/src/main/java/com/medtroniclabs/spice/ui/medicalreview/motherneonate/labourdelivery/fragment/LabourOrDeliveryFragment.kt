@@ -10,7 +10,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.MutableLiveData
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
@@ -41,17 +40,17 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import java.util.Calendar
 
 class LabourOrDeliveryFragment : BaseFragment() {
-
     private lateinit var binding: FragmentLabourOrDeliveryBinding
     private val viewModel: LabourDeliveryViewModel by activityViewModels()
     private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
     private lateinit var cgNeonateOutcome: TagListCustomView
-    private lateinit var  viewTimeOfDelivery:SingleSelectionCustomView
-    private lateinit var  viewTimeOfDeliveryOnset:SingleSelectionCustomView
+    private lateinit var viewTimeOfDelivery: SingleSelectionCustomView
+    private lateinit var viewTimeOfDeliveryOnset: SingleSelectionCustomView
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentLabourOrDeliveryBinding.inflate(inflater, container, false)
         return binding.root
@@ -60,12 +59,13 @@ class LabourOrDeliveryFragment : BaseFragment() {
     companion object {
         const val TAG = "LabourOrDeliveryFragment"
 
-        fun newInstance(): LabourOrDeliveryFragment {
-            return LabourOrDeliveryFragment()
-        }
+        fun newInstance(): LabourOrDeliveryFragment = LabourOrDeliveryFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         mandatoryFields()
         attachObserver()
@@ -99,7 +99,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
 
                 val hasSelectedTags = selectedTags.isNotEmpty()
                 with(binding) {
-                    cgNeonateOutcomeError.showIf(viewModel.neonateOutcome.isNullOrEmpty() )
+                    cgNeonateOutcomeError.showIf(viewModel.neonateOutcome.isNullOrEmpty())
                 }
 
                 if (hasSelectedTags) {
@@ -107,7 +107,6 @@ class LabourOrDeliveryFragment : BaseFragment() {
                     val selectedValue = selectedTags[0].value
                     viewModel.neonateOutcome = selectedValue
                     viewModel.neonateOutComeStateLiveData.value = selectedTags
-
 
                     with(binding) {
                         hideAllGroup.gone()
@@ -134,7 +133,6 @@ class LabourOrDeliveryFragment : BaseFragment() {
                         tvOtherPlaceError.gone()
                     }
                 }
-
             }
 
 //            viewModel.validateSubmitButtonState()
@@ -151,7 +149,6 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 viewModel.timeOfDeliveryInHour = null
                 viewModel.validateSubmitButtonState()
             }
-
         }
 
         binding.etOtherDeliveryPlace.doAfterTextChanged {
@@ -207,7 +204,6 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 viewModel.noOfNeonates = null
                 viewModel.validateSubmitButtonState()
             }
-
         }
         binding.etDeliveryByOthers.doAfterTextChanged {
             val deliveryByOthers = it?.trim().toString()
@@ -218,7 +214,6 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 viewModel.deliveryByOthers = null
                 viewModel.validateSubmitButtonState()
             }
-
         }
     }
 
@@ -237,7 +232,6 @@ class LabourOrDeliveryFragment : BaseFragment() {
         binding.tvOtherDeliveryAt.markMandatory()
     }
 
-
     private fun initializeTimeOfLabourOnset() {
         getDataFlowData().let {
             viewTimeOfDeliveryOnset = SingleSelectionCustomView(binding.root.context)
@@ -248,7 +242,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 viewModel.timeOfLabourOnsetMap,
                 Pair(DefinedParams.TimeOfLabourOnset, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                timeOfLabourOnsetSingleSelectionCallback
+                timeOfLabourOnsetSingleSelectionCallback,
             )
             binding.timeOfLabourOnsetGroup.addView(viewTimeOfDeliveryOnset)
         }
@@ -268,9 +262,9 @@ class LabourOrDeliveryFragment : BaseFragment() {
                     id = "",
                     title = "",
                     visibility = "",
-                    optionsList = null
+                    optionsList = null,
                 ),
-                timeOfDeliverySingleSelectionCallback
+                timeOfDeliverySingleSelectionCallback,
             )
             binding.timeOfDeliveryGroup.addView(viewTimeOfDelivery)
         }
@@ -304,16 +298,23 @@ class LabourOrDeliveryFragment : BaseFragment() {
         }
     }
 
-    private fun setListenerToDatePicker(textView: AppCompatTextView, isDelivery: Boolean = false) {
+    private fun setListenerToDatePicker(
+        textView: AppCompatTextView,
+        isDelivery: Boolean = false,
+    ) {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (textView.text.isNotEmpty())
+        if (textView.text.isNotEmpty()) {
             yearMonthDate = DateUtils.convertedMMMToddMM(textView.text.toString())
+        }
         ViewUtils.showDatePicker(
             requireContext(),
             date = yearMonthDate,
             maxDate = if (isDelivery) Calendar.getInstance().timeInMillis else getMaxDateForOnset(),
-            minDate = patientDetailViewModel.patientDetailsLiveData.value?.data?.birthDate?.let { convertDateTimeToMillisUsingLocal(it) },
-            cancelCallBack = { }
+            minDate = patientDetailViewModel.patientDetailsLiveData.value
+                ?.data
+                ?.birthDate
+                ?.let { convertDateTimeToMillisUsingLocal(it) },
+            cancelCallBack = { },
         ) { _, year, month, dayOfMonth ->
             val stringDate = "$dayOfMonth-$month-$year"
             if (isDelivery) {
@@ -328,7 +329,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 DateUtils.convertDateTimeToDate(
                     stringDate,
                     DateUtils.DATE_FORMAT_ddMMyyyy,
-                    DateUtils.DATE_ddMMyyyy
+                    DateUtils.DATE_ddMMyyyy,
                 )
             viewModel.validateSubmitButtonState()
         }
@@ -338,13 +339,12 @@ class LabourOrDeliveryFragment : BaseFragment() {
         if (binding.etDateOfDelivery.text.isNotEmpty()) {
             return getCalendarFromString(
                 binding.etDateOfDelivery.text.toString(),
-                DateUtils.DATE_ddMMyyyy
+                DateUtils.DATE_ddMMyyyy,
             )
         } else {
             return Calendar.getInstance().timeInMillis
         }
     }
-
 
     private fun attachObserver() {
         viewModel.labourDeliveryMetaList.observe(viewLifecycleOwner) { resource ->
@@ -368,7 +368,6 @@ class LabourOrDeliveryFragment : BaseFragment() {
                     hideProgress()
                 }
             }
-
         }
     }
 
@@ -377,26 +376,30 @@ class LabourOrDeliveryFragment : BaseFragment() {
         list.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.ID to DefinedParams.DefaultID
-            )
+                DefinedParams.ID to DefinedParams.DefaultID,
+            ),
         )
         listItems.filter { it.category == MedicalReviewTypeEnums.DeliveryStatus.name }.forEach {
             list.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to it.name,
                     DefinedParams.ID to it.id,
-                    DefinedParams.Value to it.value
-                )
+                    DefinedParams.Value to it.value,
+                ),
             )
         }
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(list)
         binding.etDeliveryStatus.adapter = adapter
 
-
         binding.etDeliveryStatus.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, pos: Int, p3: Long) {
+                override fun onItemSelected(
+                    p0: AdapterView<*>?,
+                    p1: View?,
+                    pos: Int,
+                    p3: Long,
+                ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
                         val selectedName = it[DefinedParams.Value] as String?
@@ -412,7 +415,6 @@ class LabourOrDeliveryFragment : BaseFragment() {
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
                 }
-
             }
     }
 
@@ -421,16 +423,16 @@ class LabourOrDeliveryFragment : BaseFragment() {
         list.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.ID to DefinedParams.DefaultID
-            )
+                DefinedParams.ID to DefinedParams.DefaultID,
+            ),
         )
         listItems.filter { it.category == MedicalReviewTypeEnums.DeliveryAt.name }.forEach {
             list.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to it.name,
                     DefinedParams.ID to it.id,
-                    DefinedParams.Value to it.value
-                )
+                    DefinedParams.Value to it.value,
+                ),
             )
         }
         val adapter = CustomSpinnerAdapter(requireContext())
@@ -438,17 +440,21 @@ class LabourOrDeliveryFragment : BaseFragment() {
         binding.etDeliveryAt.adapter = adapter
 
         binding.etDeliveryAt.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, pos: Int, p3: Long) {
+            override fun onItemSelected(
+                p0: AdapterView<*>?,
+                p1: View?,
+                pos: Int,
+                p3: Long,
+            ) {
                 val selectedItem = adapter.getData(position = pos)
                 selectedItem?.let {
                     val selectedName = it[DefinedParams.Value] as String?
                     if (selectedName != DefinedParams.DefaultIDLabel) {
                         viewModel.deliveryAt = selectedName
                         viewModel.validateSubmitButtonState()
-                        if (selectedName?.contains(DefinedParams.Other,true) == true){
+                        if (selectedName?.contains(DefinedParams.Other, true) == true) {
                             binding.deliveryPlaceOtherGroup.visible()
-                        }
-                        else{
+                        } else {
                             validateOtherDeliveryAt()
                         }
                     } else {
@@ -461,14 +467,11 @@ class LabourOrDeliveryFragment : BaseFragment() {
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
             }
-
         }
-
-
     }
 
     private fun validateOtherDeliveryAt() {
-        if (binding.deliveryPlaceOtherGroup.isVisible() || binding.tvOtherPlaceError.isVisible()){
+        if (binding.deliveryPlaceOtherGroup.isVisible() || binding.tvOtherPlaceError.isVisible()) {
             binding.deliveryPlaceOtherGroup.gone()
             binding.etOtherDeliveryPlace.text = null
             binding.tvOtherPlaceError.gone()
@@ -481,15 +484,15 @@ class LabourOrDeliveryFragment : BaseFragment() {
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
                 DefinedParams.ID to DefinedParams.DefaultID,
-            )
+            ),
         )
         listItems.filter { it.category == MedicalReviewTypeEnums.DeliveryBy.name }.forEach {
             list.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to it.name,
                     DefinedParams.ID to it.id,
-                    DefinedParams.Value to it.value
-                )
+                    DefinedParams.Value to it.value,
+                ),
             )
         }
         val adapter = CustomSpinnerAdapter(requireContext())
@@ -497,7 +500,12 @@ class LabourOrDeliveryFragment : BaseFragment() {
         binding.etDeliveryBy.adapter = adapter
 
         binding.etDeliveryBy.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, pos: Int, p3: Long) {
+            override fun onItemSelected(
+                p0: AdapterView<*>?,
+                p1: View?,
+                pos: Int,
+                p3: Long,
+            ) {
                 val selectedItem = adapter.getData(position = pos)
                 selectedItem?.let {
                     val selectedName = it[DefinedParams.Value] as String?
@@ -536,7 +544,6 @@ class LabourOrDeliveryFragment : BaseFragment() {
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
             }
-
         }
     }
 
@@ -545,17 +552,16 @@ class LabourOrDeliveryFragment : BaseFragment() {
         list.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.ID to DefinedParams.DefaultID
-            )
+                DefinedParams.ID to DefinedParams.DefaultID,
+            ),
         )
         listItems.filter { it.category == MedicalReviewTypeEnums.DeliveryType.name }.forEach {
             list.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to it.name,
                     DefinedParams.ID to it.id,
-                    DefinedParams.Value to it.value
-
-                )
+                    DefinedParams.Value to it.value,
+                ),
             )
         }
         val adapter = CustomSpinnerAdapter(requireContext())
@@ -564,7 +570,12 @@ class LabourOrDeliveryFragment : BaseFragment() {
 
         binding.etDeliveryType.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, pos: Int, p3: Long) {
+                override fun onItemSelected(
+                    p0: AdapterView<*>?,
+                    p1: View?,
+                    pos: Int,
+                    p3: Long,
+                ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
                         val selectedName = it[DefinedParams.Value] as String?
@@ -580,14 +591,12 @@ class LabourOrDeliveryFragment : BaseFragment() {
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
                 }
-
             }
     }
 
     private fun valid12ClockMinuteRange(minute: String?): Boolean {
         if (minute.isNullOrEmpty()) {
             return false
-
         }
         val minuteInt = minute.toInt()
         return minuteInt in 0..59
@@ -627,10 +636,9 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 tvDeliveryByOthersError.showIf(deliveryByOthers?.isEmpty() == true)
             }
 
-            if (viewModel.deliveryAt?.contains(DefinedParams.Other,true) == true) {
+            if (viewModel.deliveryAt?.contains(DefinedParams.Other, true) == true) {
                 tvOtherPlaceError.showIf(viewModel.deliveryPlaceOthers?.isEmpty() == true)
             }
-
         }
     }
 
@@ -644,22 +652,30 @@ class LabourOrDeliveryFragment : BaseFragment() {
             } else {
                 return labourDeliveryFieldValidation()
             }
-        }else {
-          return  labourDeliveryFieldValidation()
+        } else {
+            return labourDeliveryFieldValidation()
         }
     }
 
-    private fun labourDeliveryFieldValidation():Boolean{
+    private fun labourDeliveryFieldValidation(): Boolean {
         showLabourDeliveryErrors(false)
 
-        val etHourTimeOfDelivery = binding.etHrsTimeOfDelivery.text?.trim().toString()
+        val etHourTimeOfDelivery = binding.etHrsTimeOfDelivery.text
+            ?.trim()
+            .toString()
         val etMinutesTimeOfDelivery =
-            binding.etMinutesTimeOfDelivery.text?.trim().toString()
+            binding.etMinutesTimeOfDelivery.text
+                ?.trim()
+                .toString()
         val dateOfDelivery = viewModel.dateOfDelivery
 
-        val etHourTimeOfLabourOnset = binding.etHrsTimeOfLabourOnset.text?.trim().toString()
+        val etHourTimeOfLabourOnset = binding.etHrsTimeOfLabourOnset.text
+            ?.trim()
+            .toString()
         val etMinutesTimeOfLabourOnSet =
-            binding.etMinutesTimeOfLabourOnset.text?.trim().toString()
+            binding.etMinutesTimeOfLabourOnset.text
+                ?.trim()
+                .toString()
         val dateOfLabourOnset = viewModel.dateOfLabourOnset
         val noOfNeonate = viewModel.noOfNeonates?.toInt()
         val deliveryByOthers = viewModel.deliveryByOthers
@@ -668,42 +684,49 @@ class LabourOrDeliveryFragment : BaseFragment() {
             (deliveryOthers == DefinedParams.Others_Specify && deliveryByOthers?.isNotEmpty() == true || deliveryOthers != DefinedParams.Others_Specify)
         val otherDeliveryPlace = viewModel.deliveryPlaceOthers
         val otherDeliveryAt =
-            (viewModel.deliveryAt?.contains(DefinedParams.Other,true) == true
-                    && otherDeliveryPlace?.isNotEmpty() == true || (viewModel.deliveryAt!=null &&
-                    viewModel.deliveryAt?.contains(DefinedParams.Other,true) != true))
+            (
+                viewModel.deliveryAt?.contains(DefinedParams.Other, true) == true &&
+                    otherDeliveryPlace?.isNotEmpty() == true ||
+                    (
+                        viewModel.deliveryAt != null &&
+                            viewModel.deliveryAt?.contains(DefinedParams.Other, true) != true
+                    )
+            )
         var isValidDeliveryBy = viewModel.deliveryBy != null &&
-                viewModel.deliveryAt != null &&
-                viewModel.deliveryStatus != null
+            viewModel.deliveryAt != null &&
+            viewModel.deliveryStatus != null
         var isValidDelivery = etHourTimeOfDelivery.isNotEmpty() &&
-                etMinutesTimeOfDelivery.isNotEmpty() &&
-                dateOfDelivery != null &&
-                deliveryOther &&
-                timeValidation(
-                    etHourTimeOfLabourOnset,
-                    etHourTimeOfDelivery,
-                    etMinutesTimeOfLabourOnSet,
-                    etMinutesTimeOfDelivery
-                ) &&
-                viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] != null &&
-                etHourTimeOfLabourOnset.isNotEmpty() &&
-                etMinutesTimeOfLabourOnSet.isNotEmpty() &&
-                dateOfLabourOnset != null &&
-                viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] != null &&
-                viewModel.deliveryType != null &&
-                viewModel.deliveryBy != null &&
-                otherDeliveryAt &&
-                viewModel.deliveryStatus != null &&
-                viewModel.noOfNeonates != null && noOfNeonate != 0
-
-
+            etMinutesTimeOfDelivery.isNotEmpty() &&
+            dateOfDelivery != null &&
+            deliveryOther &&
+            timeValidation(
+                etHourTimeOfLabourOnset,
+                etHourTimeOfDelivery,
+                etMinutesTimeOfLabourOnSet,
+                etMinutesTimeOfDelivery,
+            ) &&
+            viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] != null &&
+            etHourTimeOfLabourOnset.isNotEmpty() &&
+            etMinutesTimeOfLabourOnSet.isNotEmpty() &&
+            dateOfLabourOnset != null &&
+            viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] != null &&
+            viewModel.deliveryType != null &&
+            viewModel.deliveryBy != null &&
+            otherDeliveryAt &&
+            viewModel.deliveryStatus != null &&
+            viewModel.noOfNeonates != null &&
+            noOfNeonate != 0
 
         if (!isValidDeliveryBy) {
             showLabourDeliveryErrors(true)
         }
 
-
         with(binding) {
-            if (etHourTimeOfDelivery.isEmpty() || etMinutesTimeOfDelivery.isEmpty() || etHourTimeOfLabourOnset.isEmpty() || etMinutesTimeOfLabourOnSet.isEmpty()) {
+            if (etHourTimeOfDelivery.isEmpty() ||
+                etMinutesTimeOfDelivery.isEmpty() ||
+                etHourTimeOfLabourOnset.isEmpty() ||
+                etMinutesTimeOfLabourOnSet.isEmpty()
+            ) {
                 tvTimeOfDeliveryError.showIf(true)
                 tvTimeOfLabourOnsetError.showIf(true)
             }
@@ -711,14 +734,20 @@ class LabourOrDeliveryFragment : BaseFragment() {
             tvDeliveryStatusError.showIf(viewModel.deliveryStatus == null)
 
             if (etHourTimeOfDelivery.isNotEmpty() && etMinutesTimeOfDelivery.isNotEmpty()) {
-                if (etHourTimeOfDelivery.toInt() <= 12 && etMinutesTimeOfDelivery.toInt() <= 59 && viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] != null) {
+                if (etHourTimeOfDelivery.toInt() <= 12 &&
+                    etMinutesTimeOfDelivery.toInt() <= 59 &&
+                    viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] != null
+                ) {
                     tvTimeOfDeliveryError.showIf(false)
                 } else {
                     tvTimeOfDeliveryError.showIf(true)
                 }
             }
             if (etHourTimeOfLabourOnset.isNotEmpty() && etMinutesTimeOfLabourOnSet.isNotEmpty()) {
-                if (etHourTimeOfLabourOnset.toInt() <= 12 && etMinutesTimeOfLabourOnSet.toInt() <= 59 && viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] != null) {
+                if (etHourTimeOfLabourOnset.toInt() <= 12 &&
+                    etMinutesTimeOfLabourOnSet.toInt() <= 59 &&
+                    viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] != null
+                ) {
                     tvTimeOfLabourOnsetError.showIf(false)
                 } else {
                     tvTimeOfLabourOnsetError.showIf(true)
@@ -727,67 +756,75 @@ class LabourOrDeliveryFragment : BaseFragment() {
 
             if (viewModel.dateOfDelivery == viewModel.dateOfLabourOnset) {
                 if (viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] == getString(
-                        R.string.am
-                    ) && viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == getString(
-                        R.string.am
-                    )
-                    || viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] == getString(
-                        R.string.pm
-                    ) && viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == getString(
-                        R.string.pm
-                    )
-                    || viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] == getString(
-                        R.string.pm
-                    ) && viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == getString(
-                        R.string.am
+                        R.string.am,
+                    ) &&
+                    viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == getString(
+                        R.string.am,
+                    ) ||
+                    viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] == getString(
+                        R.string.pm,
+                    ) &&
+                    viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == getString(
+                        R.string.pm,
+                    ) ||
+                    viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] == getString(
+                        R.string.pm,
+                    ) &&
+                    viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == getString(
+                        R.string.am,
                     )
                 ) {
-                    if (etHourTimeOfLabourOnset.isEmpty() && etHourTimeOfDelivery.isEmpty() && etMinutesTimeOfLabourOnSet.isEmpty() && etMinutesTimeOfDelivery.isEmpty()) {
+                    if (etHourTimeOfLabourOnset.isEmpty() &&
+                        etHourTimeOfDelivery.isEmpty() &&
+                        etMinutesTimeOfLabourOnSet.isEmpty() &&
+                        etMinutesTimeOfDelivery.isEmpty()
+                    ) {
                         tvTimeOfLabourOnsetError.showIf(true)
                         tvTimeOfDeliveryError.showIf(true)
-                        isValidDelivery=false
+                        isValidDelivery = false
                     } else {
                         if (etHourTimeOfDelivery == "" || etMinutesTimeOfDelivery == "") {
                             tvTimeOfDeliveryError.showIf(true)
-                            isValidDelivery=false
+                            isValidDelivery = false
                         } else if (etHourTimeOfLabourOnset == "" || etMinutesTimeOfLabourOnSet == "") {
                             tvTimeOfLabourOnsetError.showIf(true)
-                            isValidDelivery=false
+                            isValidDelivery = false
                         } else {
                             if (etHourTimeOfLabourOnset.toInt() > etHourTimeOfDelivery.toInt()) {
                                 tvTimeOfLabourOnsetError.showIf(true)
                                 tvTimeOfDeliveryError.showIf(true)
-                                isValidDelivery=false
+                                isValidDelivery = false
                             }
                             if (etHourTimeOfDelivery.toInt() == 12 && etHourTimeOfLabourOnset.toInt() < etHourTimeOfDelivery.toInt()) {
                                 tvTimeOfLabourOnsetError.showIf(true)
                                 tvTimeOfDeliveryError.showIf(true)
-                                isValidDelivery=false
+                                isValidDelivery = false
                             }
                             if (etHourTimeOfLabourOnset.toInt() == 12 && etHourTimeOfLabourOnset.toInt() > etHourTimeOfDelivery.toInt()) {
                                 tvTimeOfLabourOnsetError.showIf(false)
                                 tvTimeOfDeliveryError.showIf(false)
-                                isValidDelivery=true
+                                isValidDelivery = true
                             }
-                            if (etHourTimeOfLabourOnset.toInt() == etHourTimeOfDelivery.toInt() && etMinutesTimeOfLabourOnSet.toInt() > etMinutesTimeOfDelivery.toInt()) {
+                            if (etHourTimeOfLabourOnset.toInt() == etHourTimeOfDelivery.toInt() &&
+                                etMinutesTimeOfLabourOnSet.toInt() > etMinutesTimeOfDelivery.toInt()
+                            ) {
                                 tvTimeOfLabourOnsetError.showIf(true)
                                 tvTimeOfDeliveryError.showIf(true)
-                                isValidDelivery=false
+                                isValidDelivery = false
                             }
                             if (viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] == getString(
-                                    R.string.pm
-                                ) && viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == getString(
-                                    R.string.am
+                                    R.string.pm,
+                                ) &&
+                                viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == getString(
+                                    R.string.am,
                                 )
                             ) {
                                 tvTimeOfLabourOnsetError.showIf(true)
                                 tvTimeOfDeliveryError.showIf(true)
-                                isValidDelivery=false
+                                isValidDelivery = false
                             }
-
                         }
                     }
-
                 }
             }
 
@@ -805,7 +842,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
             if (deliveryOthers == DefinedParams.Others_Specify) {
                 tvDeliveryByOthersError.showIf(deliveryByOthers == null)
             }
-            if (viewModel.deliveryAt?.contains(DefinedParams.Other,true) == true) {
+            if (viewModel.deliveryAt?.contains(DefinedParams.Other, true) == true) {
                 tvOtherPlaceError.showIf(viewModel.deliveryPlaceOthers == null)
             }
             if (viewModel.deliveryAt == null && viewModel.deliveryBy == DefinedParams.Others_Specify && viewModel.deliveryByOthers != null) {
@@ -819,26 +856,26 @@ class LabourOrDeliveryFragment : BaseFragment() {
             }
         }
         return isValidDelivery
-
     }
 
     private fun timeValidation(
         etHourTimeOfLabourOnset: String,
         etHourTimeOfDelivery: String,
         etMinutesTimeOfLabourOnSet: String,
-        etMinutesTimeOfDelivery: String
+        etMinutesTimeOfDelivery: String,
     ): Boolean {
         val labourOnsetTime = viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset]
         val deliveryTime = viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery]
 
         val isSamePeriod = (labourOnsetTime == deliveryTime) ||
-                (labourOnsetTime == getString(R.string.pm) && deliveryTime == getString(R.string.am))
+            (labourOnsetTime == getString(R.string.pm) && deliveryTime == getString(R.string.am))
 
         if (viewModel.dateOfDelivery == viewModel.dateOfLabourOnset && isSamePeriod) {
-            if (etHourTimeOfLabourOnset.isNotEmpty() && etHourTimeOfDelivery.isNotEmpty() &&
-                etMinutesTimeOfLabourOnSet.isNotEmpty() && etMinutesTimeOfDelivery.isNotEmpty()
+            if (etHourTimeOfLabourOnset.isNotEmpty() &&
+                etHourTimeOfDelivery.isNotEmpty() &&
+                etMinutesTimeOfLabourOnSet.isNotEmpty() &&
+                etMinutesTimeOfDelivery.isNotEmpty()
             ) {
-
                 val labourOnsetHour = etHourTimeOfLabourOnset.toInt()
                 val deliveryHour = etHourTimeOfDelivery.toInt()
                 val labourOnsetMinute = etMinutesTimeOfLabourOnSet.toInt()
@@ -854,6 +891,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
         }
         return true
     }
+
     private fun initializeNeonateOutcomeItems(listItems: List<LabourDeliveryMetaEntity>) {
         val chipItemList = ArrayList<ChipViewItemModel>()
         if (viewModel.isDirectPnc) {
@@ -863,19 +901,19 @@ class LabourOrDeliveryFragment : BaseFragment() {
                         id = it.id,
                         name = it.name,
                         type = it.type,
-                        value = it.value
-                    )
+                        value = it.value,
+                    ),
                 )
             }
-        }else{
+        } else {
             listItems.filter { it.category == MedicalReviewTypeEnums.NeonateOutcome.name }.forEach {
                 chipItemList.add(
                     ChipViewItemModel(
                         id = it.id,
                         name = it.name,
                         type = it.type,
-                        value = it.value
-                    )
+                        value = it.value,
+                    ),
                 )
             }
         }

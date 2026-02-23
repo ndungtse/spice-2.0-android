@@ -6,12 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
-import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
@@ -27,7 +27,6 @@ class HouseRegistrationViewModel @Inject constructor(
     private val houseHoldRepository: HouseHoldRepository,
     private val houseHoldRepositoryMember: HouseholdMemberRepository,
 ) : BaseViewModel(dispatcherIO) {
-
     var houseHoldRegistrationLiveData = MutableLiveData<Resource<Long>>()
     var isMemberRegistration: Boolean = false
     var householdEntityDetail: HouseholdEntity? = null
@@ -44,7 +43,6 @@ class HouseRegistrationViewModel @Inject constructor(
     var memberID: Long = -1L
     private var lastLocation: Location? = null
     var eventName: String = ""
-
 
     var signatureFilename: String? = null
     var initialValue: String? = null
@@ -64,7 +62,10 @@ class HouseRegistrationViewModel @Inject constructor(
         }
     }
 
-    fun loadDataCacheByType(type: String, tag: String) {
+    fun loadDataCacheByType(
+        type: String,
+        tag: String,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             when (type) {
                 villageId -> {
@@ -75,7 +76,10 @@ class HouseRegistrationViewModel @Inject constructor(
         }
     }
 
-    fun loadVillageDataCacheByType(type: String, tag: String) {
+    fun loadVillageDataCacheByType(
+        type: String,
+        tag: String,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             when (type) {
                 villageId -> {
@@ -86,20 +90,25 @@ class HouseRegistrationViewModel @Inject constructor(
         }
     }
 
-    fun loadShasthyaShebikaDataCacheByType(type: String, tag: String) {
+    fun loadShasthyaShebikaDataCacheByType(
+        type: String,
+        tag: String,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             val userId = SecuredPreference.getUserId()
             shasthyaShebikaListResponse.postLoading()
             shasthyaShebikaListResponse.postValue(houseHoldRepository.getShasthyaShebikasByKormiId(userId))
-
         }
     }
 
-    fun loadSubVillageDataCacheByType(type: String, tag: String, shasthyaShebikaId: Long) {
+    fun loadSubVillageDataCacheByType(
+        type: String,
+        tag: String,
+        shasthyaShebikaId: Long,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             subVillageListResponse.postLoading()
             subVillageListResponse.postValue(houseHoldRepository.getSubVillagesByShasthyaShebikaId(shasthyaShebikaId))
-
         }
     }
 
@@ -145,11 +154,13 @@ class HouseRegistrationViewModel @Inject constructor(
         this.lastLocation = location
     }
 
-    fun getCurrentLocation(): Location? {
-        return this.lastLocation
-    }
+    fun getCurrentLocation(): Location? = this.lastLocation
 
-    fun updateMemberAsAssigned(memberID: Long?, hhmId: Long? = null, hhId: Long? = null) {
+    fun updateMemberAsAssigned(
+        memberID: Long?,
+        hhmId: Long? = null,
+        hhId: Long? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             if (hhmId != null && hhId != null) {
                 val tbPatientIds = houseHoldRepositoryMember.getTbPatientLocalIdByHouseholdId(hhId)
@@ -160,7 +171,7 @@ class HouseRegistrationViewModel @Inject constructor(
                         // Household has TB patients but this member is not one — update contact tracing status
                         houseHoldRepositoryMember.updateContactTracingStatus(
                             hhmId,
-                            OfflineConstant.CONTACT_TRACING_YET_TO_TAKE
+                            OfflineConstant.CONTACT_TRACING_YET_TO_TAKE,
                         )
                     }
                     tbPatientIds.isEmpty() && isTbPatient -> {

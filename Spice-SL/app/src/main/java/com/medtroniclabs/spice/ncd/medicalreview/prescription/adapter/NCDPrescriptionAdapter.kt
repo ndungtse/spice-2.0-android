@@ -10,7 +10,6 @@ import com.medtroniclabs.spice.databinding.MedicationSerachAdapterLayoutBinding
 
 class NCDPrescriptionAdapter(context: Context) :
     ArrayAdapter<Pair<String, String>>(context, R.layout.spinner_drop_down_item) {
-
     private var itemList = ArrayList<Pair<String, String>>()
 
     override fun getCount(): Int = itemList.size
@@ -23,7 +22,11 @@ class NCDPrescriptionAdapter(context: Context) :
         this.itemList = itemList
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getView(
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup,
+    ): View {
         val view: View
         val myHolder: ViewHolder
 
@@ -31,7 +34,7 @@ class NCDPrescriptionAdapter(context: Context) :
             val binding = MedicationSerachAdapterLayoutBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
+                false,
             )
             view = binding.root
             myHolder = ViewHolder(binding)
@@ -48,7 +51,6 @@ class NCDPrescriptionAdapter(context: Context) :
 
     class ViewHolder(val binding: MedicationSerachAdapterLayoutBinding) {
         fun bind(item: Pair<String, String>) {
-
             binding.tvMedicationName.text = item.first
             binding.tvClassification.text = item.second
         }

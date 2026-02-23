@@ -43,7 +43,6 @@ import org.json.JSONObject
 
 @AndroidEntryPoint
 class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentAssessmentSLNCDSummaryBinding
     private val viewModel: AssessmentViewModel by activityViewModels()
     private var riskFactors: Boolean = false
@@ -51,13 +50,16 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentAssessmentSLNCDSummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -73,7 +75,7 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                 viewModel.otherAssessmentDetails,
                 Pair(AssessmentDefinedParams.IsClinicTaken, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                singleSelectionCallback
+                singleSelectionCallback,
             )
             binding.llClinicTakenGroup.addView(view)
         }
@@ -100,20 +102,24 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun createListSummaryData(data: String): MutableList<AssessmentSummaryModel>? {
-        return viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }?.map { formLayout ->
-            AssessmentSummaryModel(
-                title = formLayout.titleSummary ?: formLayout.title,
-                id = formLayout.id,
-                cultureValue = formLayout.titleCulture,
-                value = AssessmentCommonUtils.getValueOfKeyFromMap(
-                    StringConverter.stringToMap(data),
-                    formLayout.id,
-                    menuType = NCD_MENU_ID
+    private fun createListSummaryData(data: String): MutableList<AssessmentSummaryModel>? =
+        viewModel.formLayoutsLiveData.value
+            ?.data
+            ?.formLayout
+            ?.filter {
+                it.isSummary == true
+            }?.map { formLayout ->
+                AssessmentSummaryModel(
+                    title = formLayout.titleSummary ?: formLayout.title,
+                    id = formLayout.id,
+                    cultureValue = formLayout.titleCulture,
+                    value = AssessmentCommonUtils.getValueOfKeyFromMap(
+                        StringConverter.stringToMap(data),
+                        formLayout.id,
+                        menuType = NCD_MENU_ID,
+                    ),
                 )
-            )
-        }?.toMutableList()
-    }
+            }?.toMutableList()
 
     override fun onClick(view: View?) {
         when (view?.id) {
@@ -157,7 +163,7 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                     adapterView: AdapterView<*>?,
                     view: View?,
                     pos: Int,
-                    itemId: Long
+                    itemId: Long,
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
@@ -165,8 +171,9 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                         if (selectedId != DefinedParams.DefaultID) {
                             viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] = selectedId.toString()
                         } else {
-                            if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSiteID))
+                            if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSiteID)) {
                                 viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSiteID)
+                            }
                         }
                     }
                 }
@@ -179,10 +186,8 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
             }
     }
 
-    private fun createSummaryView(
-        listSummaryData: MutableList<AssessmentSummaryModel>?
-    ) {
-        listSummaryData?.let {summaryData ->
+    private fun createSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>?) {
+        listSummaryData?.let { summaryData ->
             binding.emptyErrorMessage.visibility = View.GONE
             binding.parentLayout.visibility = View.VISIBLE
             binding.parentLayout.removeAllViews()
@@ -196,7 +201,7 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         getStatus(viewModel.referralStatus)?.let {
             bindSummaryView(
                 getString(R.string.patient_status),
-                it
+                it,
             )
         }
 
@@ -220,14 +225,14 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
 
         if (height != null && weight != null) {
             val bmi = CommonUtils.getBMIForNcd(height.toDouble(), weight.toDouble())
-            CommonUtils.getBMIInformation(requireContext(), bmi?.toDoubleOrNull())
+            CommonUtils
+                .getBMIInformation(requireContext(), bmi?.toDoubleOrNull())
                 ?.let { info ->
                     bmiText = "$bmi (${info.first})"
                 }
         }
         return bmiText
     }
-
 
     private fun renderDangerSigns(summaryData: MutableList<AssessmentSummaryModel>) {
         /*
@@ -243,7 +248,7 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         val otherConcernSymptoms = viewModel.assessmentStringLiveData.value?.let {
             val jsonObject = JSONObject(it)
             val feverObject = jsonObject.optJSONObject(MenuConstants.NCD_MENU_ID)?.optJSONObject(
-                signsAndSymptoms
+                signsAndSymptoms,
             )
             feverObject?.optString(otherConcerningSymptoms)
         }
@@ -251,10 +256,12 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         summaryData.find { it.id == symptomsDTO }?.let { item ->
             val result = if (!otherConcernSymptoms.isNullOrBlank()) {
                 requireContext().getString(R.string.other_value, item.value, otherConcernSymptoms)
-            } else item.value
+            } else {
+                item.value
+            }
             bindSummaryView(
                 getString(R.string.symptoms),
-                result ?: getString(R.string.seperator_hyphen)
+                result ?: getString(R.string.seperator_hyphen),
             )
         }
     }
@@ -271,8 +278,8 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                 }
             }
             riskFactors = true
-            if (risks.isNotEmpty()){
-                bindSummaryView(getString(R.string.ncd_risk_factor),risks.joinToString(", "))
+            if (risks.isNotEmpty()) {
+                bindSummaryView(getString(R.string.ncd_risk_factor), risks.joinToString(", "))
             }
         }
     }
@@ -282,8 +289,8 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         binding.parentLayout.visibility = View.GONE
     }
 
-    fun getStatus(referralStatus: String?): String? {
-        return when (referralStatus) {
+    fun getStatus(referralStatus: String?): String? =
+        when (referralStatus) {
             ReferralStatus.Referred.name -> getString(R.string.referred)
             ReferralStatus.OnTreatment.name -> getString(R.string.on_treatment)
             ReferralStatus.Recovered.name -> getString(R.string.recovered)
@@ -291,27 +298,27 @@ class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                 null
             }
         }
-    }
 
-    private fun bindSummaryView(title: String?, value: String?, valueTextColor: Int? = null) {
+    private fun bindSummaryView(
+        title: String?,
+        value: String?,
+        valueTextColor: Int? = null,
+    ) {
         binding.parentLayout.addView(
             AssessmentCommonUtils.addViewSummaryLayout(
                 title,
                 value,
                 valueTextColor,
-                requireContext()
-            )
+                requireContext(),
+            ),
         )
     }
 
     companion object {
         const val TAG = "AssessmentSLNCDSummaryFragment"
-        fun newInstance(): AssessmentSLNCDSummaryFragment {
-            return AssessmentSLNCDSummaryFragment()
-        }
+
+        fun newInstance(): AssessmentSLNCDSummaryFragment = AssessmentSLNCDSummaryFragment()
     }
 
-    fun getCurrentAnsweredStatus():Boolean {
-        return viewModel.otherAssessmentDetails.isNotEmpty()
-    }
+    fun getCurrentAnsweredStatus(): Boolean = viewModel.otherAssessmentDetails.isNotEmpty()
 }

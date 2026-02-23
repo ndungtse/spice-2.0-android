@@ -18,7 +18,6 @@ import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
-import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.NAME
 import com.medtroniclabs.spice.common.DefinedParams.Value
@@ -50,11 +49,12 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
 
     companion object {
         const val TAG = "NCDTreatmentPlanDialog"
+
         fun newInstance(
             patientId: String?,
             fhirId: String?,
             showCHO: Boolean,
-            callback: ((isPositiveResult: Boolean, message: String) -> Unit)
+            callback: ((isPositiveResult: Boolean, message: String) -> Unit),
         ): NCDTreatmentPlanDialog {
             val dialog = NCDTreatmentPlanDialog(callback)
             val bundle = Bundle()
@@ -66,7 +66,10 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
@@ -76,7 +79,9 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogNcdTreatmentPlanBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -136,7 +141,8 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     callback.invoke(
-                        true, resourceState.data?.message ?: ""
+                        true,
+                        resourceState.data?.message ?: "",
                     )
                     dismiss()
                 }
@@ -145,7 +151,7 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
                     hideLoading()
                     callback.invoke(
                         false,
-                        resourceState.message ?: getString(R.string.something_went_wrong_try_later)
+                        resourceState.message ?: getString(R.string.something_went_wrong_try_later),
                     )
                     dismiss()
                 }
@@ -187,20 +193,24 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
             val dropDownList = ArrayList<Map<String, Any>>()
             dropDownList.add(
                 hashMapOf<String, Any>(
-                    NAME to getString(R.string.please_select), ID to DefaultID
-                )
+                    NAME to getString(R.string.please_select),
+                    ID to DefaultID,
+                ),
             )
             for (item in list) {
                 dropDownList.add(
                     item.displayValue?.let { culture ->
                         hashMapOf(
-                            NAME to item.name, Value to item, cultureValue to culture
+                            NAME to item.name,
+                            Value to item,
+                            cultureValue to culture,
                         )
                     } ?: run {
                         hashMapOf(
-                            NAME to item.name, Value to item
+                            NAME to item.name,
+                            Value to item,
                         )
-                    }
+                    },
                 )
             }
 
@@ -227,8 +237,8 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
             getNCDTreatmentPlan(
                 NCDTreatmentPlanModelDetails(
                     patientReference = patientReference,
-                    memberReference = memberReference
-                )
+                    memberReference = memberReference,
+                ),
             )
         }
     }
@@ -237,7 +247,10 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
         binding.etMedicalReviewFrequency.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
-                    adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long,
                 ) {
                     medicalReviewAdapter.getData(pos)?.let { selectedItem ->
                         viewModel.medicalReviewFrequency =
@@ -251,7 +264,10 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
         binding.etBPCheckFrequency.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
-                    adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long,
                 ) {
                     bPCheckAdapter.getData(pos)?.let { selectedItem ->
                         viewModel.bpCheckFrequency = selectedItem[Value] as? TreatmentPlanEntity?
@@ -264,7 +280,10 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
         binding.etBGCheckFrequency.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
-                    adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long,
                 ) {
                     bGCheckAdapter.getData(pos)?.let { selectedItem ->
                         viewModel.bgCheckFrequency = selectedItem[Value] as? TreatmentPlanEntity?
@@ -277,7 +296,10 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
         binding.etHbA1cFrequency.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
-                    adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long,
                 ) {
                     hbA1cAdapter.getData(pos)?.let { selectedItem ->
                         viewModel.hba1cCheckFrequency = selectedItem[Value] as? TreatmentPlanEntity?
@@ -290,7 +312,10 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
         binding.etCHOCheckFrequency.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
-                    adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long,
                 ) {
                     choAdapter.getData(pos)?.let { selectedItem ->
                         viewModel.choCheckFrequency = selectedItem[Value] as? TreatmentPlanEntity?
@@ -304,7 +329,10 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
 
     private fun validateInputs() {
         val haveValidInputs =
-            viewModel.medicalReviewFrequency != null && viewModel.bpCheckFrequency != null && viewModel.bgCheckFrequency != null && viewModel.hba1cCheckFrequency != null
+            viewModel.medicalReviewFrequency != null &&
+                viewModel.bpCheckFrequency != null &&
+                viewModel.bgCheckFrequency != null &&
+                viewModel.hba1cCheckFrequency != null
         binding.btnSubmit.isEnabled =
             if (binding.choGroup.isVisible()) haveValidInputs && viewModel.choCheckFrequency != null else haveValidInputs
     }
@@ -327,8 +355,8 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
                     bgCheckFrequency = bgCheckFrequency,
                     hba1cCheckFrequency = hba1cCheckFrequency,
                     choCheckFrequency = choCheckFrequency,
-                    carePlanId = carePlanId
-                )
+                    carePlanId = carePlanId,
+                ),
             )
         }
     }

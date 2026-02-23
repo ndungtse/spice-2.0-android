@@ -61,8 +61,9 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentNcdCallResultBottomDialogBinding.inflate(inflater, container, false)
@@ -70,9 +71,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
         return binding.root
     }
 
-    override fun getTheme(): Int {
-        return R.style.DialogStyle
-    }
+    override fun getTheme(): Int = R.style.DialogStyle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,6 +84,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
 
     companion object {
         const val TAG = "NCDCallResultBottomDialog"
+
         fun newInstance() =
             NCDCallResultBottomDialog().apply {
             }
@@ -93,7 +93,6 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
             NCDCallResultBottomDialog().apply {
                 setFollowUpData(data)
             }
-
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
@@ -101,8 +100,10 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeTagView()
         initView()
@@ -120,38 +121,42 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
             data?.let { value ->
                 SecuredPreference.putBoolean(
                     SecuredPreference.EnvironmentKey.INITIAL_CALL.name,
-                    false
+                    false,
                 )
                 val isSuccess = viewModel.callResultHashMap[DefinedParams.CallResult] == FollowUpCallStatus.SUCCESSFUL.name
 
-                    var otherReason: String? = null
-                    val reason = when {
-                        !isSuccess -> viewModel.unSuccessfulHashMap[DefinedParams.UnSuccessful] as? String
-                        (viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String)
-                            ?.equals(wont_visit_facility, true) == true -> {
-                            val selectedTagName = reasonListCustomView.getSelectedTags().firstOrNull()?.name
-                            if (selectedTagName.equals(DefinedParams.Other, true)) {
-                                otherReason = binding.etOther.text?.trim().toString()
-                                DefinedParams.Other
-                            } else {
-                                selectedTagName
-                            }
+                var otherReason: String? = null
+                val reason = when {
+                    !isSuccess -> viewModel.unSuccessfulHashMap[DefinedParams.UnSuccessful] as? String
+                    (viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String)
+                        ?.equals(wont_visit_facility, true) == true -> {
+                        val selectedTagName = reasonListCustomView.getSelectedTags().firstOrNull()?.name
+                        if (selectedTagName.equals(DefinedParams.Other, true)) {
+                            otherReason = binding.etOther.text
+                                ?.trim()
+                                .toString()
+                            DefinedParams.Other
+                        } else {
+                            selectedTagName
                         }
-                        else -> null
                     }
+                    else -> null
+                }
 
-                    val patientStatus = viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String
-                    val visitedFacilityId = if (patientStatus.equals(visited_facility, true)) {
-                        viewModel.selectedHealthFacilityId
-                    } else {
-                        null
-                    }
+                val patientStatus = viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String
+                val visitedFacilityId = if (patientStatus.equals(visited_facility, true)) {
+                    viewModel.selectedHealthFacilityId
+                } else {
+                    null
+                }
 
-                    val otherVisitedFacilityName = if (viewModel.selectedHealthFacilityName.equals(DefinedParams.Other, true)) {
-                        binding.etOther.text?.trim().toString()
-                    } else {
-                        null
-                    }
+                val otherVisitedFacilityName = if (viewModel.selectedHealthFacilityName.equals(DefinedParams.Other, true)) {
+                    binding.etOther.text
+                        ?.trim()
+                        .toString()
+                } else {
+                    null
+                }
                 viewModel.insertNCDCallDetails(
                     NCDCallDetails(
                         id = value.id,
@@ -173,8 +178,8 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                         createdAt = System.currentTimeMillis(),
                         createdBy = SecuredPreference.getUserId(),
                         updatedAt = System.currentTimeMillis(),
-                        updatedBy = SecuredPreference.getUserId()
-                    )
+                        updatedBy = SecuredPreference.getUserId(),
+                    ),
                 )
             }
         }
@@ -203,7 +208,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                 viewModel.callResultHashMap,
                 Pair(DefinedParams.CallResult, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                callResultSelectionCallback
+                callResultSelectionCallback,
             )
             binding.selectionCallResult.addView(view)
         }
@@ -217,7 +222,10 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
         binding.tvHealthFacilitySpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
-                    adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long,
                 ) {
                     adapter.getData(pos)?.let {
                         val selectedItem = adapter.getData(position = pos)
@@ -255,17 +263,18 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
         val list = arrayListOf<Map<String, Any>>(
             hashMapOf(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.ID to DefinedParams.DefaultSelectID
-            )
+                DefinedParams.ID to DefinedParams.DefaultSelectID,
+            ),
         )
-        data?.map { site ->
-            hashMapOf(
-                DefinedParams.ID to site.id,
-                DefinedParams.NAME to site.name,
-                DefinedParams.TenantId to site.tenantId,
-                DefinedParams.FhirId to (site.fhirId ?: 0)
-            )
-        }?.let { list.addAll(it) }
+        data
+            ?.map { site ->
+                hashMapOf(
+                    DefinedParams.ID to site.id,
+                    DefinedParams.NAME to site.name,
+                    DefinedParams.TenantId to site.tenantId,
+                    DefinedParams.FhirId to (site.fhirId ?: 0),
+                )
+            }?.let { list.addAll(it) }
         list.add(hashMapOf(DefinedParams.NAME to DefinedParams.Other))
         adapter.setData(list)
         binding.tvHealthFacilitySpinner.post {
@@ -280,7 +289,8 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
             binding.cgReason,
             otherSingleSelect = true,
             callBack = { name, _, _ ->
-                if (reasonListCustomView.getSelectedTags()
+                if (reasonListCustomView
+                        .getSelectedTags()
                         .firstOrNull { it.name.equals(DefinedParams.Other, true) } != null
                 ) {
                     binding.OtherGroup.visible()
@@ -294,7 +304,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                     binding.tvOtherError.gone()
                 }
                 enableForSuccessFul()
-            }
+            },
         )
     }
 
@@ -307,16 +317,17 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                     name = element.name,
                     cultureValue = element.displayValue,
                     type = element.type,
-                    value = element.value
-                )
+                    value = element.value,
+                ),
             )
         }
         reasonListCustomView.addChipItemList(chipItems, null, diagnosisGrouping(chipItems))
     }
 
-    private fun diagnosisGrouping(list: List<ChipViewItemModel>?): HashMap<String, MutableList<ChipViewItemModel>>? {
-        return list?.groupByTo(HashMap(), { it.type.toString() }, { it })
-    }
+    private fun diagnosisGrouping(list: List<ChipViewItemModel>?): HashMap<String, MutableList<ChipViewItemModel>>? =
+        list?.groupByTo(HashMap(), {
+            it.type.toString()
+        }, { it })
 
     private fun enableForSuccessFul() {
         val isCallResultEnabled = viewModel.callResultHashMap.isNotEmpty()
@@ -328,30 +339,40 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
 
         val selectedTags = reasonListCustomView.getSelectedTags()
         val hasOtherTag = selectedTags.any { it.name.equals(DefinedParams.Other, true) }
-        val isOtherReasonValid = hasOtherTag && !binding.etOther.text?.trim().isNullOrBlank()
+        val isOtherReasonValid = hasOtherTag &&
+            !binding.etOther.text
+                ?.trim()
+                .isNullOrBlank()
 
         val isWontVisitConditionValid = !isWontVisitFacility ||
-                (isWontVisitFacility && (selectedTags.isEmpty() || !hasOtherTag || isOtherReasonValid))
+            (isWontVisitFacility && (selectedTags.isEmpty() || !hasOtherTag || isOtherReasonValid))
 
         val isHealthFacilitySelected = viewModel.selectedHealthFacilityId != null &&
-                !viewModel.selectedHealthFacilityName.isNullOrBlank() && !viewModel.selectedHealthFacilityName.equals(DefinedParams.DefaultIDLabel,true)
+            !viewModel.selectedHealthFacilityName.isNullOrBlank() &&
+            !viewModel.selectedHealthFacilityName.equals(DefinedParams.DefaultIDLabel, true)
 
         val isOtherHealthFacility = viewModel.selectedHealthFacilityId == null &&
-                !viewModel.selectedHealthFacilityName.isNullOrBlank() && !viewModel.selectedHealthFacilityName.equals(DefinedParams.DefaultIDLabel,true)
+            !viewModel.selectedHealthFacilityName.isNullOrBlank() &&
+            !viewModel.selectedHealthFacilityName.equals(DefinedParams.DefaultIDLabel, true)
         val isOtherHealthFacilityValid =
             viewModel.selectedHealthFacilityName.equals(DefinedParams.Other, true).not() ||
-                    (viewModel.selectedHealthFacilityName.equals(
+                (
+                    viewModel.selectedHealthFacilityName.equals(
                         DefinedParams.Other,
-                        true
-                    ) && !binding.etOther.text?.trim().isNullOrBlank())
+                        true,
+                    ) &&
+                        !binding.etOther.text
+                            ?.trim()
+                            .isNullOrBlank()
+                )
 
         val isVisitFacilityConditionValid = !isVisitFacility ||
-                (isVisitFacility && ((isHealthFacilitySelected && !isOtherHealthFacility)  || (isOtherHealthFacility && isOtherHealthFacilityValid)))
+            (isVisitFacility && ((isHealthFacilitySelected && !isOtherHealthFacility) || (isOtherHealthFacility && isOtherHealthFacilityValid)))
 
         binding.btnDone.isEnabled = isCallResultEnabled &&
-                isReasonEnabled &&
-                isWontVisitConditionValid &&
-                isVisitFacilityConditionValid
+            isReasonEnabled &&
+            isWontVisitConditionValid &&
+            isVisitFacilityConditionValid
     }
 
     private var callResultSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
@@ -394,9 +415,9 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                     id = "",
                     title = "",
                     visibility = "",
-                    optionsList = null
+                    optionsList = null,
                 ),
-                unsuccessfulSelectionCallback
+                unsuccessfulSelectionCallback,
             )
             binding.selectionPatientStatus.addView(view)
         }
@@ -407,7 +428,6 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
             viewModel.unSuccessfulHashMap[DefinedParams.UnSuccessful] = selectedID as String
             enableForUnSuccessful()
         }
-
 
     private fun enableForUnSuccessful() {
         val isCallResultEnabled = viewModel.callResultHashMap.isNotEmpty()
@@ -421,14 +441,14 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
         flowList.add(
             getOptionMap(
                 FollowUpCallReason.UNREACHABLE.name,
-                getString(R.string.un_reachable)
-            )
+                getString(R.string.un_reachable),
+            ),
         )
         flowList.add(
             getOptionMap(
                 FollowUpCallReason.WRONG_NUMBER.name,
-                getString(R.string.wrong_number)
-            )
+                getString(R.string.wrong_number),
+            ),
         )
         return flowList
     }
@@ -438,18 +458,17 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
         flowList.add(
             getOptionMap(
                 FollowUpCallStatus.SUCCESSFUL.name,
-                getString(R.string.successful)
-            )
+                getString(R.string.successful),
+            ),
         )
         flowList.add(
             getOptionMap(
                 FollowUpCallStatus.UNSUCCESSFUL.name,
-                getString(R.string.un_successful)
-            )
+                getString(R.string.un_successful),
+            ),
         )
         return flowList
     }
-
 
     override fun onClick(v: View?) {
         when (v?.id) {
@@ -470,7 +489,9 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                                 ?.equals(wont_visit_facility, true) == true -> {
                                 val selectedTagName = reasonListCustomView.getSelectedTags().firstOrNull()?.name
                                 if (selectedTagName.equals(DefinedParams.Other, true)) {
-                                    otherReason = binding.etOther.text?.trim().toString()
+                                    otherReason = binding.etOther.text
+                                        ?.trim()
+                                        .toString()
                                     DefinedParams.Other
                                 } else {
                                     selectedTagName
@@ -487,7 +508,9 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                         }
 
                         val otherVisitedFacilityName = if (viewModel.selectedHealthFacilityName.equals(DefinedParams.Other, true)) {
-                            binding.etOther.text?.trim().toString()
+                            binding.etOther.text
+                                ?.trim()
+                                .toString()
                         } else {
                             null
                         }
@@ -499,7 +522,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                             otherReason = otherReason,
                             patientStatus = patientStatus,
                             visitedFacilityId = visitedFacilityId,
-                            otherVisitedFacilityName = otherVisitedFacilityName
+                            otherVisitedFacilityName = otherVisitedFacilityName,
                         )
 
                         val request = FollowUpUpdateRequest(
@@ -510,7 +533,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                             villageId = data.villageId,
                             isInitiated = false,
                             provenance = ProvanceDto(),
-                            followUpDetails = listOf(callDetails)
+                            followUpDetails = listOf(callDetails),
                         )
                         // Proceed with the request object
                         viewModel.updatePatientCallRegister(request)
@@ -519,7 +542,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                 viewModel.setAnalyticsData(
                     UserDetail.startDateTime,
                     eventName = AnalyticsDefinedParams.NCDCallResult + " " + viewModel.type,
-                    isCompleted = true
+                    isCompleted = true,
                 )
             }
         }
@@ -537,7 +560,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                 viewModel.patientStatusHashMap,
                 Pair(DefinedParams.PatientStatus, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                patientStatusForSuccessSelectionCallback
+                patientStatusForSuccessSelectionCallback,
             )
             binding.selectionPatientStatus.addView(view)
         }
@@ -553,7 +576,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
     private fun showReason() {
         if ((viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String)?.equals(
                 wont_visit_facility,
-                true
+                true,
             ) == true
         ) {
             binding.tvHealthFacilitySpinner.post {
@@ -568,7 +591,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
             binding.healthFacilityGroup.gone()
         } else if ((viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String)?.equals(
                 visited_facility,
-                true
+                true,
             ) == true
         ) {
             binding.tvHealthFacilitySpinner.post {
@@ -595,28 +618,28 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
         }
     }
 
-
     private fun getPatientStatusForSuccessData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
         flowList.add(
             getOptionMap(
                 visited_facility,
                 visited_facility,
-                getString(R.string.visited_facility)
-            )
+                getString(R.string.visited_facility),
+            ),
         )
         flowList.add(
             getOptionMap(
                 will_visit_facility,
-                will_visit_facility, getString(R.string.will_visit_facility)
-            )
+                will_visit_facility,
+                getString(R.string.will_visit_facility),
+            ),
         )
         flowList.add(
             getOptionMap(
                 wont_visit_facility,
                 wont_visit_facility,
-                getString(R.string.wont_visit_facility)
-            )
+                getString(R.string.wont_visit_facility),
+            ),
         )
         return flowList
     }

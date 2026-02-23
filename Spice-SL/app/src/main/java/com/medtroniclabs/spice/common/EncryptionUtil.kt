@@ -10,7 +10,6 @@ import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
 object EncryptionUtil {
-
     /**
      * Gets sha 256 secure password.
      *
@@ -21,13 +20,13 @@ object EncryptionUtil {
         try {
             val secretKeySpec = SecretKeySpec(
                 BuildConfig.SALT.toByteArray(StandardCharsets.UTF_8),
-                AppConstants.SHA_MAC
+                AppConstants.SHA_MAC,
             )
             val mac = Mac.getInstance(AppConstants.SHA_MAC)
             try {
                 mac.init(secretKeySpec)
             } catch (e: InvalidKeyException) {
-               Timber.d(e)
+                Timber.d(e)
             }
             val bytes = mac.doFinal(passwordToHash.toByteArray(StandardCharsets.UTF_8))
             val hash = BigInteger(1, bytes)
@@ -40,5 +39,4 @@ object EncryptionUtil {
             return ""
         }
     }
-
 }

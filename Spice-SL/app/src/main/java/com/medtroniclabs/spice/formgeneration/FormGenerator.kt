@@ -155,9 +155,8 @@ class FormGenerator(
     private val listener: FormEventListener,
     var scrollView: NestedScrollView? = null,
     val translate: Boolean = false,
-    private val callback: ((HashMap<String, Any>,String) -> Unit)? = null
+    private val callback: ((HashMap<String, Any>, String) -> Unit)? = null,
 ) : ContextWrapper(context) {
-
     private var serverData: List<FormLayout>? = null
     val rootSuffix = "rootView"
     val titleSuffix = "titleTextView"
@@ -174,14 +173,12 @@ class FormGenerator(
     private val diastolicSuffix = "DiastolicSuffix"
     private val systolicSuffix = "SystolicSuffix"
     private val pulseSuffix = "PulseSuffix"
-    val lastMealTypeMeridiem  = "Meridiem"
-    val lastMealTypeDateSuffix  = "Date"
+    val lastMealTypeMeridiem = "Meridiem"
+    val lastMealTypeDateSuffix = "Date"
     private var mentalHealthQuestions: HashMap<String, ArrayList<MentalHealthOption>>? = null
     private var mentalHealthEditList: ArrayList<Map<String, Any>>? = null
 
-    fun populateViews(
-        serverData: List<FormLayout>,
-    ) {
+    fun populateViews(serverData: List<FormLayout>) {
         this.serverData = serverData
         parentLayout.removeAllViews()
         serverData.forEach { formLayout ->
@@ -236,7 +233,7 @@ class FormGenerator(
 
                         // Trigger callback
                         callback?.invoke(resultHashMap, id)
-                    }
+                    },
                 ).show()
             }
 
@@ -249,7 +246,7 @@ class FormGenerator(
             (binding.etUserInput.background as? GradientDrawable)?.apply {
                 setStroke(
                     resources.getDimensionPixelSize(R.dimen._1sdp),
-                    context.getColor(R.color.edittext_stroke)
+                    context.getColor(R.color.edittext_stroke),
                 )
             }
             setViewVisibility(visibility, binding.root)
@@ -299,7 +296,7 @@ class FormGenerator(
                 listener.onInstructionClicked(
                     id,
                     title,
-                    dosageListModel = formLayout.dosageListItems
+                    dosageListModel = formLayout.dosageListItems,
                 )
             }
 
@@ -328,8 +325,9 @@ class FormGenerator(
                     if (enteredValue != null) {
                         resultHashMap[id] = enteredValue
                     } else {
-                        if (resultHashMap.containsKey(id))
+                        if (resultHashMap.containsKey(id)) {
                             resultHashMap.remove(id)
+                        }
                     }
                 }
             }
@@ -344,14 +342,12 @@ class FormGenerator(
         }
     }
 
-    private fun getVisibility(visibility: String): Int {
-        return when (visibility) {
+    private fun getVisibility(visibility: String): Int =
+        when (visibility) {
             VISIBLE -> View.VISIBLE
             INVISIBLE -> View.INVISIBLE
             else -> View.GONE
         }
-    }
-
 
     private fun createEditText(formLayout: FormLayout) {
         val binding = EdittextLayoutBinding.inflate(LayoutInflater.from(context))
@@ -371,11 +367,12 @@ class FormGenerator(
             }
             binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
 
-            if (formLayout.id.contains(Screening.phoneNumber) || formLayout.id.contains(phoneNumber)
-                || formLayout.id.contains(CommunityDetails.EmergencyContactPhu)
-                || formLayout.id.contains(CommunityDetails.EmergencyTransportContactNo)
-                || formLayout.id.contains(CommunityDetails.AmbulanceDriverContactNo)
-                || formLayout.id.contains(RxBuddy.rxBuddyPhoneNumber)
+            if (formLayout.id.contains(Screening.phoneNumber) ||
+                formLayout.id.contains(phoneNumber) ||
+                formLayout.id.contains(CommunityDetails.EmergencyContactPhu) ||
+                formLayout.id.contains(CommunityDetails.EmergencyTransportContactNo) ||
+                formLayout.id.contains(CommunityDetails.AmbulanceDriverContactNo) ||
+                formLayout.id.contains(RxBuddy.rxBuddyPhoneNumber)
             ) {
                 SecuredPreference.getPhoneNumberCode()?.let { phoneNumberCode ->
                     binding.llCountryCode.visibility = View.VISIBLE
@@ -412,7 +409,6 @@ class FormGenerator(
                 }
             }
 
-
             isEnabled?.let {
                 binding.etUserInput.isEnabled = it
             }
@@ -426,8 +422,9 @@ class FormGenerator(
                 inputFilter.add(InputFilter.LengthFilter(it))
             }
 
-            if (applyDecimalFilter == true)
+            if (applyDecimalFilter == true) {
                 inputFilter.add(DigitsInputFilter())
+            }
 
             if (id == Screening.identityValue) {
                 inputFilter.add(InputFilter.AllCaps())
@@ -441,17 +438,19 @@ class FormGenerator(
                 try {
                     binding.etUserInput.filters = inputFilter.toTypedArray()
                 } catch (_: Exception) {
-                    //Exception - Catch block
+                    // Exception - Catch block
                 }
             }
 
             inputType?.let {
                 when (it) {
-                    InputType.TYPE_CLASS_PHONE, InputType.TYPE_CLASS_NUMBER -> binding.etUserInput.inputType =
-                        InputType.TYPE_CLASS_NUMBER
+                    InputType.TYPE_CLASS_PHONE, InputType.TYPE_CLASS_NUMBER ->
+                        binding.etUserInput.inputType =
+                            InputType.TYPE_CLASS_NUMBER
 
-                    InputType.TYPE_NUMBER_FLAG_DECIMAL -> binding.etUserInput.inputType =
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                    InputType.TYPE_NUMBER_FLAG_DECIMAL ->
+                        binding.etUserInput.inputType =
+                            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
 
                     else -> {
                         binding.etUserInput.inputType = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
@@ -467,8 +466,13 @@ class FormGenerator(
                 when {
                     editable.isNullOrBlank() -> {
                         if (editScreen == true) {
-                            if ((inputType != null && (inputType == InputType.TYPE_CLASS_NUMBER ||
-                                        inputType == InputType.TYPE_NUMBER_FLAG_DECIMAL))
+                            if ((
+                                    inputType != null &&
+                                        (
+                                            inputType == InputType.TYPE_CLASS_NUMBER ||
+                                                inputType == InputType.TYPE_NUMBER_FLAG_DECIMAL
+                                        )
+                                )
                             ) {
                                 resultHashMap.remove(id)
                             } else {
@@ -482,22 +486,28 @@ class FormGenerator(
                     }
 
                     else -> {
-                        if ((inputType != null && (inputType == InputType.TYPE_CLASS_NUMBER ||
-                                    inputType == InputType.TYPE_NUMBER_FLAG_DECIMAL))
+                        if ((
+                                inputType != null &&
+                                    (
+                                        inputType == InputType.TYPE_CLASS_NUMBER ||
+                                            inputType == InputType.TYPE_NUMBER_FLAG_DECIMAL
+                                    )
+                            )
                         ) {
                             val resultValue = editable.trim().toString().toDoubleOrNull()
                             resultValue?.let {
                                 resultHashMap[id] = resultValue
                             }
-                        } else
+                        } else {
                             resultHashMap[id] = editable.trim().toString()
+                        }
                         setConditionalVisibility(formLayout, editable.trim().toString())
                         unitMeasurement?.let {
                             it.also { resultHashMap[id + Screening.unitMeasurement_KEY] = it }
                         }
                     }
                 }
-                callback?.invoke(resultHashMap,id)
+                callback?.invoke(resultHashMap, id)
             }
             (binding.etUserInput.background as? GradientDrawable)?.apply {
                 setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), context.getColor(R.color.edittext_stroke))
@@ -563,31 +573,44 @@ class FormGenerator(
             (tvError as TextView).apply {
                 text = getString(R.string.default_user_input_error)
                 visibility = errorVisibility
-                if (errorVisibility == View.VISIBLE && focusNeeded == null) focusNeeded =
-                    getViewByTag(Screening.phoneNumber + titleSuffix) ?: this
+                if (errorVisibility == View.VISIBLE && focusNeeded == null) {
+                    focusNeeded =
+                        getViewByTag(Screening.phoneNumber + titleSuffix) ?: this
+                }
             }
         }
     }
 
-    private fun firstNameError(nationalId: String, id: String, errorMessage: String) {
+    private fun firstNameError(
+        nationalId: String,
+        id: String,
+        errorMessage: String,
+    ) {
         getViewByTag(id + errorSuffix)?.let { tvError ->
             (tvError as TextView).apply {
                 text = errorMessage
                 if (nationalId.isEmpty()) {
                     visibility = View.VISIBLE
                     focusNeeded = getViewByTag(id + titleSuffix) ?: this
-                } else visibility = View.GONE
+                } else {
+                    visibility = View.GONE
+                }
             }
         }
     }
 
-    private fun lastNameError(errorVisibility: Int, errorMessage: String) {
+    private fun lastNameError(
+        errorVisibility: Int,
+        errorMessage: String,
+    ) {
         getViewByTag("${Screening.lastName}$errorSuffix")?.let { tvError ->
             (tvError as TextView).apply {
                 text = errorMessage
                 visibility = errorVisibility
-                if (errorVisibility == View.VISIBLE && focusNeeded == null) focusNeeded =
-                    getViewByTag("${Screening.lastName}$titleSuffix") ?: this
+                if (errorVisibility == View.VISIBLE && focusNeeded == null) {
+                    focusNeeded =
+                        getViewByTag("${Screening.lastName}$titleSuffix") ?: this
+                }
             }
         }
     }
@@ -597,8 +620,10 @@ class FormGenerator(
         var errorVisibility: Int? = null
         try {
             getViewByTag(Screening.phoneNumber)?.let { editText ->
-                if (editText is AppCompatEditText && (!editText.text.isNullOrBlank()) && Validator.isValidMobileNumber(
-                        editText.text.toString()
+                if (editText is AppCompatEditText &&
+                    (!editText.text.isNullOrBlank()) &&
+                    Validator.isValidMobileNumber(
+                        editText.text.toString(),
                     )
                 ) {
                     errorVisibility = View.GONE
@@ -610,7 +635,9 @@ class FormGenerator(
                             "$nId${
                                 input.substring(phnStartIndex)
                             }"
-                        } else "$nId$input"
+                        } else {
+                            "$nId$input"
+                        }
                     }
                 } else {
                     nId = ""
@@ -618,28 +645,39 @@ class FormGenerator(
                 }
             }
         } catch (_: Exception) {
-            //Exception - Catch block
+            // Exception - Catch block
         }
         return Pair(nId, errorVisibility)
     }
 
-    private fun validateNationalId(input: String, nId: String): String {
-        return if (input.length >= 4) "$nId${
-            input.substring(
-                0, 4
-            )
-        }"
-        else "$nId$input"
-    }
+    private fun validateNationalId(
+        input: String,
+        nId: String,
+    ): String =
+        if (input.length >= 4) {
+            "$nId${
+                input.substring(
+                    0,
+                    4,
+                )
+            }"
+        } else {
+            "$nId$input"
+        }
 
     private fun lastName(nationalId: String): Triple<String?, Int?, String> {
         var nId = nationalId
         var errorVisibility: Int? = null
         var errorMessage: String = getString(R.string.error_label)
         getViewByTag(Screening.lastName)?.let { editText ->
-            if (editText is AppCompatEditText && ((!editText.text.isNullOrBlank()) && checkMinLength(
-                    Screening.lastName, editText.text?.trim()?.length
-                ))
+            if (editText is AppCompatEditText &&
+                (
+                    (!editText.text.isNullOrBlank()) &&
+                        checkMinLength(
+                            Screening.lastName,
+                            editText.text?.trim()?.length,
+                        )
+                )
             ) {
                 errorVisibility = View.GONE
                 if (nId.isNotEmpty()) {
@@ -662,30 +700,43 @@ class FormGenerator(
 
     private fun firstName(
         id: String,
-        defaultError: String = getString(R.string.default_user_input_error)
+        defaultError: String = getString(R.string.default_user_input_error),
     ): Pair<String?, String> {
         var nationalId: String? = null
         var errorMessage: String = defaultError
         getViewByTag(id)?.let { editText ->
-            if (editText is AppCompatEditText && ((!editText.text.isNullOrBlank()) && checkMinLength(
-                    id, editText.text?.trim()?.length
-                ))
+            if (editText is AppCompatEditText &&
+                (
+                    (!editText.text.isNullOrBlank()) &&
+                        checkMinLength(
+                            id,
+                            editText.text?.trim()?.length,
+                        )
+                )
             ) {
                 val input = editText.text!!.trim().replace("\\s".toRegex(), "")
                 if (onlyAlphabet(id, input)) {
                     nationalId =
-                        if (input.length >= 4) input.substring(
-                            0, 4
-                        )
-                        else input
-                } else errorMessage = getString(R.string.only_alphabets_validation)
+                        if (input.length >= 4) {
+                            input.substring(
+                                0,
+                                4,
+                            )
+                        } else {
+                            input
+                        }
+                } else {
+                    errorMessage = getString(R.string.only_alphabets_validation)
+                }
             }
         }
         return Pair(nationalId, errorMessage)
     }
 
-
-    private fun checkMinLength(name: String, actualLength: Int?): Boolean {
+    private fun checkMinLength(
+        name: String,
+        actualLength: Int?,
+    ): Boolean {
         val minLength = serverData?.first { it.id == name }?.minLength
         if (minLength == null) {
             return true
@@ -703,15 +754,15 @@ class FormGenerator(
             binding.root.tag = id + rootSuffix
             binding.tvErrorMessage.tag = id + errorSuffix
             binding.tvInstructionBloodPressure.tag = id + titleSuffix
-            "${0}-${diastolicSuffix}".also { binding.etDiastolicOne.tag = it }
-            "${0}-${systolicSuffix}".also { binding.etSystolicOne.tag = it }
-            "${0}-${pulseSuffix}".also { binding.etPulseOne.tag = it }
-            "${1}-${diastolicSuffix}".also { binding.etDiastolicTwo.tag = it }
-            "${1}-${systolicSuffix}".also { binding.etSystolicTwo.tag = it }
-            "${1}-${pulseSuffix}".also { binding.etPulseTwo.tag = it }
-            "${2}-${diastolicSuffix}".also { binding.etDiastolicThree.tag = it }
-            "${2}-${systolicSuffix}".also { binding.etSystolicThree.tag = it }
-            "${2}-${pulseSuffix}".also { binding.etPulseThree.tag = it }
+            "${0}-$diastolicSuffix".also { binding.etDiastolicOne.tag = it }
+            "${0}-$systolicSuffix".also { binding.etSystolicOne.tag = it }
+            "${0}-$pulseSuffix".also { binding.etPulseOne.tag = it }
+            "${1}-$diastolicSuffix".also { binding.etDiastolicTwo.tag = it }
+            "${1}-$systolicSuffix".also { binding.etSystolicTwo.tag = it }
+            "${1}-$pulseSuffix".also { binding.etPulseTwo.tag = it }
+            "${2}-$diastolicSuffix".also { binding.etDiastolicThree.tag = it }
+            "${2}-$systolicSuffix".also { binding.etSystolicThree.tag = it }
+            "${2}-$pulseSuffix".also { binding.etPulseThree.tag = it }
             binding.tvSnoReadingTwo.isEnabled = false
             binding.etSystolicTwo.isEnabled = false
             binding.etDiastolicTwo.isEnabled = false
@@ -730,7 +781,7 @@ class FormGenerator(
                         id = id,
                         title = titleCulture ?: title,
                         informationList = it,
-                        description = getString(R.string.bp_measure)
+                        description = getString(R.string.bp_measure),
                     )
                 }
             }
@@ -794,7 +845,9 @@ class FormGenerator(
     }
 
     private fun checkInputsAndEnableNextField(
-        text: CharSequence, binding: BpReadingLayoutBinding, list: ArrayList<BPModel>
+        text: CharSequence,
+        binding: BpReadingLayoutBinding,
+        list: ArrayList<BPModel>,
     ) {
         if (text == getString(R.string.sno_1)) {
             val systolicReadingOne = binding.etSystolicOne.text?.toString()
@@ -863,7 +916,7 @@ class FormGenerator(
                     resultHashMap,
                     Pair(id + lastMealTypeDateSuffix, null),
                     formLayout,
-                    singleSelectionCallbackForDate
+                    singleSelectionCallbackForDate,
                 )
                 binding.llDate.addView(view)
             }
@@ -876,7 +929,7 @@ class FormGenerator(
                     resultHashMap,
                     Pair(id + lastMealTypeMeridiem, null),
                     formLayout,
-                    singleSelectionCallbackForTime
+                    singleSelectionCallbackForTime,
                 )
                 binding.llTimeGroup.addView(view)
             }
@@ -907,7 +960,11 @@ class FormGenerator(
             saveSelectedOptionValue(elementID, selectedId, formLayout, name)
         }
 
-    private fun storeTimeValue(key: String, value: String?, id: String) {
+    private fun storeTimeValue(
+        key: String,
+        value: String?,
+        id: String,
+    ) {
         if (resultHashMap.containsKey(id)) {
             if (resultHashMap[id] is Map<*, *>) {
                 if (!value.isNullOrBlank()) {
@@ -927,6 +984,7 @@ class FormGenerator(
             }
         }
     }
+
     private fun createEditTextArea(formLayout: FormLayout) {
         val binding = EdittextAreaLayoutBinding.inflate(LayoutInflater.from(context))
         formLayout.apply {
@@ -938,7 +996,7 @@ class FormGenerator(
             binding.tvKey.tag = id + tvKey
             binding.tvValue.tag = id + tvValue
             binding.bgLastMeal.tag = id + rootSummary
-           // checkGenerateAction(this, binding)
+            // checkGenerateAction(this, binding)
             binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
 
            /* maxLines?.let { binding.etUserInput.setLines(it) }
@@ -963,7 +1021,6 @@ class FormGenerator(
                 }
             }
 
-
             isEnabled?.let {
                 binding.etUserInput.isEnabled = it
             }
@@ -977,8 +1034,9 @@ class FormGenerator(
                 inputFilter.add(InputFilter.LengthFilter(it))
             }
 
-            if (applyDecimalFilter == true)
+            if (applyDecimalFilter == true) {
                 inputFilter.add(DigitsInputFilter())
+            }
 
             if (id == DefinedParams.NationalId) {
                 inputFilter.add(InputFilter.AllCaps())
@@ -990,9 +1048,9 @@ class FormGenerator(
 
             if (inputFilter.isNotEmpty()) {
                 try {
-                   binding.etUserInput.filters = inputFilter.toTypedArray()
+                    binding.etUserInput.filters = inputFilter.toTypedArray()
                 } catch (_: Exception) {
-                    //Exception - Catch block
+                    // Exception - Catch block
                 }
             }
 
@@ -1026,8 +1084,13 @@ class FormGenerator(
                 when {
                     editable.isNullOrBlank() -> {
                         if (editScreen == true) {
-                            if ((inputType != null && (inputType == InputType.TYPE_CLASS_NUMBER ||
-                                        inputType == InputType.TYPE_NUMBER_FLAG_DECIMAL))
+                            if ((
+                                    inputType != null &&
+                                        (
+                                            inputType == InputType.TYPE_CLASS_NUMBER ||
+                                                inputType == InputType.TYPE_NUMBER_FLAG_DECIMAL
+                                        )
+                                )
                             ) {
                                 resultHashMap.remove(id)
                             } else {
@@ -1040,15 +1103,21 @@ class FormGenerator(
                     }
 
                     else -> {
-                        if ((inputType != null && (inputType == InputType.TYPE_CLASS_NUMBER ||
-                                    inputType == InputType.TYPE_NUMBER_FLAG_DECIMAL))
+                        if ((
+                                inputType != null &&
+                                    (
+                                        inputType == InputType.TYPE_CLASS_NUMBER ||
+                                            inputType == InputType.TYPE_NUMBER_FLAG_DECIMAL
+                                    )
+                            )
                         ) {
                             val resultValue = editable.trim().toString().toDoubleOrNull()
                             resultValue?.let {
                                 resultHashMap[id] = resultValue
                             }
-                        } else
+                        } else {
                             resultHashMap[id] = editable.trim().toString()
+                        }
                         setConditionalVisibility(formLayout, editable.trim().toString())
 
                         val textWatcher = object : TextWatcher {
@@ -1056,7 +1125,7 @@ class FormGenerator(
                                 s: CharSequence?,
                                 start: Int,
                                 count: Int,
-                                after: Int
+                                after: Int,
                             ) {
                             }
 
@@ -1064,7 +1133,7 @@ class FormGenerator(
                                 s: CharSequence?,
                                 start: Int,
                                 before: Int,
-                                count: Int
+                                count: Int,
                             ) {
                             }
 
@@ -1077,7 +1146,7 @@ class FormGenerator(
                                         it.replace(
                                             0,
                                             1,
-                                            inputText[0].uppercase()
+                                            inputText[0].uppercase(),
                                         ) // Capitalize first character
                                         binding.etUserInput.addTextChangedListener(this)
                                     }
@@ -1093,7 +1162,10 @@ class FormGenerator(
         }
     }
 
-    private fun checkGenerateAction(formLayout: FormLayout, binding: EdittextLayoutBinding) {
+    private fun checkGenerateAction(
+        formLayout: FormLayout,
+        binding: EdittextLayoutBinding,
+    ) {
         formLayout.apply {
             if (isNeedAction) {
                 when (id) {
@@ -1115,7 +1187,8 @@ class FormGenerator(
                         index = if (index >= 0) index + 1 else 0
                         binding.tvNationalIdAction.text = getSpannableString(
                             clickableSpan,
-                            text, index
+                            text,
+                            index,
                         )
                         binding.tvNationalIdAction.movementMethod = LinkMovementMethod.getInstance()
                     }
@@ -1124,7 +1197,10 @@ class FormGenerator(
         }
     }
 
-    private fun checkGenerateAction(formLayout: FormLayout, binding: EdittextAreaLayoutBinding) {
+    private fun checkGenerateAction(
+        formLayout: FormLayout,
+        binding: EdittextAreaLayoutBinding,
+    ) {
         formLayout.apply {
             if (isNeedAction) {
                 when (id) {
@@ -1146,7 +1222,8 @@ class FormGenerator(
                         index = if (index >= 0) index + 1 else 0
                         binding.tvNationalIdAction.text = getSpannableString(
                             clickableSpan,
-                            text, index
+                            text,
+                            index,
                         )
                         binding.tvNationalIdAction.movementMethod = LinkMovementMethod.getInstance()
                     }
@@ -1174,29 +1251,31 @@ class FormGenerator(
                         arrayOf(
                             intArrayOf(-android.R.attr.state_enabled),
                             intArrayOf(-android.R.attr.state_checked),
-                            intArrayOf(android.R.attr.state_checked)
-                        ), intArrayOf(
+                            intArrayOf(android.R.attr.state_checked),
+                        ),
+                        intArrayOf(
                             ContextCompat.getColor(
                                 context,
-                                R.color.navy_blue_20_alpha
-                            ),  // disabled
-                            ContextCompat.getColor(context, R.color.purple),  // disabled
-                            ContextCompat.getColor(context, R.color.purple) // enabled
-                        )
+                                R.color.navy_blue_20_alpha,
+                            ), // disabled
+                            ContextCompat.getColor(context, R.color.purple), // disabled
+                            ContextCompat.getColor(context, R.color.purple), // enabled
+                        ),
                     )
                     val textColorStateList = ColorStateList(
                         arrayOf(
                             intArrayOf(-android.R.attr.state_enabled),
                             intArrayOf(-android.R.attr.state_checked),
-                            intArrayOf(android.R.attr.state_checked)
-                        ), intArrayOf(
+                            intArrayOf(android.R.attr.state_checked),
+                        ),
+                        intArrayOf(
                             ContextCompat.getColor(
                                 context,
-                                R.color.navy_blue_20_alpha
-                            ),  // disabled
+                                R.color.navy_blue_20_alpha,
+                            ), // disabled
                             ContextCompat.getColor(context, R.color.navy_blue), // enabled
-                            ContextCompat.getColor(context, R.color.purple)
-                        )
+                            ContextCompat.getColor(context, R.color.purple),
+                        ),
                     )
                     radioButton.setTextColor(textColorStateList)
                     radioButton.buttonTintList = colorStateList
@@ -1208,7 +1287,7 @@ class FormGenerator(
                     radioButton.layoutParams = RadioGroup.LayoutParams(
                         RadioGroup.LayoutParams.WRAP_CONTENT,
                         RadioGroup.LayoutParams.WRAP_CONTENT,
-                        1f
+                        1f,
                     )
                     radioButton.typeface = ResourcesCompat.getFont(context, R.font.inter_regular)
                     binding.rgGroup.addView(radioButton)
@@ -1216,8 +1295,9 @@ class FormGenerator(
             }
             binding.rgGroup.orientation = orientation ?: LinearLayout.HORIZONTAL
 
-            if (isMandatory)
+            if (isMandatory) {
                 binding.tvTitle.markMandatory()
+            }
 
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
                 parentLayout.addView(binding.root)
@@ -1236,7 +1316,7 @@ class FormGenerator(
         checkedId: Int,
         optionsList: java.util.ArrayList<Map<String, Any>>?,
         id: String,
-        formLayout: FormLayout
+        formLayout: FormLayout,
     ) {
         if (checkedId >= 0) {
             optionsList?.let {
@@ -1244,14 +1324,16 @@ class FormGenerator(
                 resultHashMap[id] = map[DefinedParams.ID] as Any
                 setConditionalVisibility(
                     formLayout,
-                    it[checkedId][DefinedParams.NAME] as String? ?: ""
+                    it[checkedId][DefinedParams.NAME] as String? ?: "",
                 )
             }
         }
     }
 
-    private fun changeRadioGroupTypeFace(radioButtonId: Int, rootView: RadioGroup) {
-
+    private fun changeRadioGroupTypeFace(
+        radioButtonId: Int,
+        rootView: RadioGroup,
+    ) {
         rootView.let {
             rootView.children.iterator().forEach {
                 val child = it as RadioButton
@@ -1264,12 +1346,14 @@ class FormGenerator(
         }
     }
 
-    private fun setOptionVisibility(optionVisibility: Any?, radioButton: View) {
+    private fun setOptionVisibility(
+        optionVisibility: Any?,
+        radioButton: View,
+    ) {
         if (optionVisibility is String) {
             setViewVisibility(optionVisibility, radioButton)
         }
     }
-
 
     private fun createSingleSelectionView(formLayout: FormLayout) {
         formLayout.apply {
@@ -1287,12 +1371,13 @@ class FormGenerator(
                     resultHashMap,
                     Pair(id, null),
                     formLayout,
-                    singleSelectionCallback
+                    singleSelectionCallback,
                 )
                 binding.selectionGroup.addView(view)
             }
-            if (isMandatory)
+            if (isMandatory) {
                 binding.tvTitle.markMandatory()
+            }
 
             isInfo?.let {
                 binding.ivInfo.text = infoTitle ?: getString(R.string.job_aid)
@@ -1303,7 +1388,7 @@ class FormGenerator(
                 listener.onInstructionClicked(
                     id,
                     title,
-                    dosageListModel = formLayout.dosageListItems
+                    dosageListModel = formLayout.dosageListItems,
                 )
             }
 
@@ -1321,21 +1406,18 @@ class FormGenerator(
             if ((selectedId as? String).equals(female, true)) {
                 listener.onAgeCheckForPregnancy()
             }
-            callback?.invoke(resultHashMap,elementID.first)
+            callback?.invoke(resultHashMap, elementID.first)
             listener.onUpdateInstruction(elementID.first, selectedId)
         }
 
-    private fun isResultAvailable(key: String, value: String): Boolean {
-        return resultHashMap.contains(gender) && resultHashMap[gender] == female
-    }
+    private fun isResultAvailable(
+        key: String,
+        value: String,
+    ): Boolean = resultHashMap.contains(gender) && resultHashMap[gender] == female
 
-    fun getResultMap(): HashMap<String, Any> {
-        return resultHashMap
-    }
+    fun getResultMap(): HashMap<String, Any> = resultHashMap
 
-    fun getServerData(): List<FormLayout>? {
-        return serverData
-    }
+    fun getServerData(): List<FormLayout>? = serverData
 
     fun setServerData(serverData: List<FormLayout>) {
         this.serverData = serverData
@@ -1345,18 +1427,18 @@ class FormGenerator(
         id: Pair<String, String?>,
         idValue: Any?,
         formLayout: FormLayout,
-        name: String?
+        name: String?,
     ) {
         idValue?.let {
             resultHashMap[id.first] = it
             setConditionalVisibility(
                 formLayout,
-                name
+                name,
             )
         } ?: kotlin.run {
             setConditionalVisibility(
                 formLayout,
-                null
+                null,
             )
         }
     }
@@ -1377,8 +1459,8 @@ class FormGenerator(
             dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to getString(R.string.please_select),
-                    DefinedParams.ID to DefaultID
-                )
+                    DefinedParams.ID to DefaultID,
+                ),
             )
             if (isMandatory) {
                 binding.tvTitle.markMandatory()
@@ -1392,12 +1474,12 @@ class FormGenerator(
                 listener.onInstructionClicked(
                     id,
                     title,
-                    dosageListModel = formLayout.dosageListItems
+                    dosageListModel = formLayout.dosageListItems,
                 )
             }
-            if (id==muacCode ||id== MUAC){
-                binding.etUserInput.background= ContextCompat.getDrawable(context,R.drawable.edittext_background)
-                val adapter =  CustomSpinnerAdapterCustomLayout(context, translate)
+            if (id == muacCode || id == MUAC) {
+                binding.etUserInput.background = ContextCompat.getDrawable(context, R.drawable.edittext_background)
+                val adapter = CustomSpinnerAdapterCustomLayout(context, translate)
                 optionsList?.let { list ->
                     addDropDownList(list, dropDownList)
                 }
@@ -1410,13 +1492,13 @@ class FormGenerator(
                             adapterView: AdapterView<*>?,
                             view: View?,
                             pos: Int,
-                            itemId: Long
+                            itemId: Long,
                         ) {
                             handleSelectedItem(
                                 adapter.getData(position = pos),
                                 id,
                                 dependentID,
-                                formLayout
+                                formLayout,
                             )
                             onPopulateCondition(condition)
                         }
@@ -1428,8 +1510,8 @@ class FormGenerator(
                         }
                     }
             } else {
-                binding.etUserInput.background=null
-                val adapter=CustomSpinnerAdapter(context, translate)
+                binding.etUserInput.background = null
+                val adapter = CustomSpinnerAdapter(context, translate)
                 optionsList?.let { list ->
                     addDropDownList(list, dropDownList)
                 }
@@ -1442,14 +1524,14 @@ class FormGenerator(
                             adapterView: AdapterView<*>?,
                             view: View?,
                             pos: Int,
-                            itemId: Long
+                            itemId: Long,
                         ) {
-                            callback?.invoke(resultHashMap,id)
+                            callback?.invoke(resultHashMap, id)
                             handleSelectedItem(
                                 adapter.getData(position = pos),
                                 id,
                                 dependentID,
-                                formLayout
+                                formLayout,
                             )
                             onPopulateCondition(condition)
                         }
@@ -1461,8 +1543,6 @@ class FormGenerator(
                         }
                     }
             }
-
-
 
             defaultValue?.let { value ->
                 val selectedMapIndex =
@@ -1485,8 +1565,9 @@ class FormGenerator(
             setViewVisibility(visibility, binding.root)
             setViewEnableDisable(isEnabled, binding.root)
             disableSpinner?.let {
-                if (it)
+                if (it) {
                     binding.etUserInput.isEnabled = false
+                }
             }
             localDataCache?.let { localCache ->
                 listener.loadLocalCache(id, localCache)
@@ -1498,7 +1579,7 @@ class FormGenerator(
         selectedItem: Map<String, Any>?,
         id: String,
         dependentID: String?,
-        formLayout: FormLayout
+        formLayout: FormLayout,
     ) {
         selectedItem?.let {
             val selectedId = it[DefinedParams.ID]
@@ -1510,21 +1591,23 @@ class FormGenerator(
                         resetDependantSpinnerView(deptId)
                     }
                 } else {
-                    if (editScreen == true)
+                    if (editScreen == true) {
                         resultHashMap[id] = ""
+                    }
                 }
             } else {
-                if (formLayout.spinnerAsObject)
+                if (formLayout.spinnerAsObject) {
                     resultHashMap[id] = it
-                else
+                } else {
                     resultHashMap[id] =
                         it[DefinedParams.ID] as Any
+                }
                 dependentID?.let { deptId ->
                     resetDependantSpinnerView(deptId)
                     listener.loadLocalCache(
                         deptId,
                         deptId,
-                        it[DefinedParams.ID] as Long
+                        it[DefinedParams.ID] as Long,
                     )
                 }
             }
@@ -1545,25 +1628,27 @@ class FormGenerator(
     private fun selectedIdVisibility(
         selectedId: Any?,
         formLayout: FormLayout,
-        selectedName: Any?
+        selectedName: Any?,
     ) {
-        if (selectedId is String)
+        if (selectedId is String) {
             setConditionalVisibility(formLayout, selectedId)
-        else if (selectedId is Long && selectedName is String)
+        } else if (selectedId is Long && selectedName is String) {
             setConditionalVisibility(formLayout, selectedName)
+        }
     }
 
     private fun onPopulateCondition(condition: java.util.ArrayList<ConditionalModel>?) {
         if (!condition.isNullOrEmpty()) {
             val id = condition[0].targetId
-            if (!id.isNullOrBlank())
+            if (!id.isNullOrBlank()) {
                 listener.onPopulate(id)
+            }
         }
     }
 
     private fun addDropDownList(
         list: ArrayList<Map<String, Any>>,
-        dropDownList: ArrayList<Map<String, Any>>
+        dropDownList: ArrayList<Map<String, Any>>,
     ) {
         if (list.isNotEmpty()) {
             dropDownList.addAll(list)
@@ -1577,14 +1662,13 @@ class FormGenerator(
             dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to getString(R.string.please_select),
-                    DefinedParams.ID to DefaultID
-                )
+                    DefinedParams.ID to DefaultID,
+                ),
             )
             (view.adapter as CustomSpinnerAdapter).setData(dropDownList)
             view.setSelection(0, true)
         }
     }
-
 
     private fun createCheckboxDialogView(formLayout: FormLayout) {
         val binding = CheckboxDialogSpinnerLayoutBinding.inflate(LayoutInflater.from(context))
@@ -1630,7 +1714,7 @@ class FormGenerator(
             backgroundColor?.let { color ->
                 if (color.startsWith(getString(R.string.hash_symbol))) {
                     binding.llBase.setBackgroundColor(
-                        Color.parseColor(color)
+                        Color.parseColor(color),
                     )
                 }
             }
@@ -1642,12 +1726,12 @@ class FormGenerator(
         }
     }
 
-
     private fun createInstructionView(formLayout: FormLayout) {
         formLayout.apply {
             var instructionsList = instructions
-            if (translate && !instructionsCulture.isNullOrEmpty())
+            if (translate && !instructionsCulture.isNullOrEmpty()) {
                 instructionsList = instructionsCulture
+            }
 
             val binding = InstructionLayoutBinding.inflate(LayoutInflater.from(context))
             binding.root.tag = id + rootSuffix
@@ -1659,13 +1743,13 @@ class FormGenerator(
                         id,
                         title,
                         it,
-                        dosageListModel = formLayout.dosageListItems
+                        dosageListModel = formLayout.dosageListItems,
                     )
                 } ?: kotlin.run {
                     listener.onInstructionClicked(
                         id,
                         title,
-                        dosageListModel = formLayout.dosageListItems
+                        dosageListModel = formLayout.dosageListItems,
                     )
                 }
             }
@@ -1674,10 +1758,8 @@ class FormGenerator(
             }
             setViewVisibility(visibility, binding.root)
             setViewEnableDisable(isEnabled, binding.root)
-
         }
     }
-
 
     private fun createTextLabel(formLayout: FormLayout) {
         val binding = TextLabelLayoutBinding.inflate(LayoutInflater.from(context))
@@ -1689,14 +1771,15 @@ class FormGenerator(
             } else {
                 binding.tvTitle.text = title
             }
-            if (displayAsterisk)
+            if (displayAsterisk) {
                 binding.tvTitle.markMandatory()
-            else
+            } else {
                 binding.tvTitle.markNonMandatory()
+            }
             textLabelColor?.let {
                 binding.tvTitle.setTextColor(Color.parseColor(it))
             }
-            textLabelStyle?.let {style ->
+            textLabelStyle?.let { style ->
                 binding.tvTitle.apply {
                     when (style) {
                         BOLD -> setTypeface(null, Typeface.BOLD)
@@ -1713,7 +1796,6 @@ class FormGenerator(
             setViewEnableDisable(isEnabled, binding.root)
         }
     }
-
 
     private fun createMentalHealthView(formLayout: FormLayout) {
         val binding = MentalHealthLayoutBinding.inflate(LayoutInflater.from(context))
@@ -1755,14 +1837,20 @@ class FormGenerator(
             binding.tvTitle.tag = id + titleSuffix
 
             binding.etUserInputHolder.safeClickListener {
-                val dateInput = if (binding.etUserInput.text.toString().isNotEmpty())
-                    DateUtils.getYearMonthAndDate(binding.etUserInput.text.toString()) else null
+                val dateInput = if (binding.etUserInput.text
+                        .toString()
+                        .isNotEmpty()
+                ) {
+                    DateUtils.getYearMonthAndDate(binding.etUserInput.text.toString())
+                } else {
+                    null
+                }
                 showDatePicker(
                     context = context,
                     disableFutureDate = disableFutureDate ?: false,
                     minDate = getMaxDateLimit(menstrualPeriod, minDays),
                     maxDate = maxDate,
-                    date = dateInput
+                    date = dateInput,
                 ) { _, year, month, dayOfMonth ->
                     val stringDate = "$dayOfMonth-$month-$year"
                     val parsedDate = DateUtils.getDatePatternDDMMYYYY().parse(stringDate)
@@ -1771,10 +1859,10 @@ class FormGenerator(
                         resultHashMap[id] = DateUtils.getDateString(
                             parsedDate.time,
                             inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
-                            outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                            outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                         )
                     }
-                    callback?.invoke(resultHashMap,id)
+                    callback?.invoke(resultHashMap, id)
                 }
             }
 
@@ -1795,6 +1883,7 @@ class FormGenerator(
 
     private lateinit var textWatcher: TextWatcher
     private var isDOBUpdated = false
+
     private fun createAgeView(formLayout: FormLayout) {
         val binding = AgeDobLayoutBinding.inflate(LayoutInflater.from(context))
         formLayout.apply {
@@ -1817,7 +1906,7 @@ class FormGenerator(
                     s: CharSequence?,
                     start: Int,
                     count: Int,
-                    after: Int
+                    after: Int,
                 ) {
                 }
 
@@ -1825,16 +1914,22 @@ class FormGenerator(
                     s: CharSequence?,
                     start: Int,
                     before: Int,
-                    count: Int
+                    count: Int,
                 ) {
-                    val years = binding.etYears.text.toString().toIntOrNull() ?: 0
-                    val months = binding.etMonths.text.toString().toIntOrNull() ?: 0
-                    val weeks = binding.etWeeks.text.toString().toIntOrNull() ?: 0
+                    val years = binding.etYears.text
+                        .toString()
+                        .toIntOrNull() ?: 0
+                    val months = binding.etMonths.text
+                        .toString()
+                        .toIntOrNull() ?: 0
+                    val weeks = binding.etWeeks.text
+                        .toString()
+                        .toIntOrNull() ?: 0
 
                     fillDetailsOnEditText(years, months, weeks, id, binding.etDateOfBirth)
 
                     listener.onAgeCheckForPregnancy()
-                    callback?.invoke(resultHashMap,id)
+                    callback?.invoke(resultHashMap, id)
                 }
 
                 override fun afterTextChanged(s: Editable?) {
@@ -1845,21 +1940,23 @@ class FormGenerator(
             binding.etDateOfBirth.safeClickListener {
                 val yearMonthWeek = if (binding.etDateOfBirth.text.isNotEmpty()) {
                     DateUtils.getYearMonthAndDate(binding.etDateOfBirth.text.toString())
-                } else null
+                } else {
+                    null
+                }
                 formLayout.run {
                     showDatePicker(
                         context = context,
                         disableFutureDate = disableFutureDate ?: false,
                         minDate = minDate,
                         maxDate = maxDate,
-                        date = yearMonthWeek
+                        date = yearMonthWeek,
                     ) { _, year, month, dayOfMonth ->
                         val stringDate = "$dayOfMonth-$month-$year"
                         val parsedDate = DateUtils.getDatePatternDDMMYYYY().parse(stringDate)
                         parsedDate?.let {
                             binding.etDateOfBirth.text = DateUtils.getDateDDMMYYYY().format(it)
                             fillDetailsOnDatePickerSet(it, true, id)
-                            callback?.invoke(resultHashMap,id)
+                            callback?.invoke(resultHashMap, id)
                         }
                     }
                 }
@@ -1868,7 +1965,7 @@ class FormGenerator(
                 listener.onAgeUpdateListener(
                     if (dob.isNullOrBlank()) 0 else CommonUtils.getAgeInYearsByDOB(dob.toString()),
                     serverData,
-                    resultHashMap
+                    resultHashMap,
                 )
             }
 
@@ -1888,12 +1985,17 @@ class FormGenerator(
         }
     }
 
-    fun fillDetailsOnDatePickerSet(date: Date, isEnabled: Boolean, id: String = dateOfBirth) {
+    fun fillDetailsOnDatePickerSet(
+        date: Date,
+        isEnabled: Boolean,
+        id: String = dateOfBirth,
+    ) {
         val yearView = getViewByTag(id + Year)
         val monthView = getViewByTag(id + Month)
         val weekView = getViewByTag(id + Week)
-        if (yearView is AppCompatEditText && monthView is AppCompatEditText && weekView is AppCompatEditText)
+        if (yearView is AppCompatEditText && monthView is AppCompatEditText && weekView is AppCompatEditText) {
             removeWatcher(yearView, monthView, weekView)
+        }
 
         isDOBUpdated = true
 
@@ -1928,7 +2030,7 @@ class FormGenerator(
     fun removeWatcher(
         etYears: AppCompatEditText,
         etMonths: AppCompatEditText,
-        etWeeks: AppCompatEditText
+        etWeeks: AppCompatEditText,
     ) {
         etYears.removeTextChangedListener(textWatcher)
         etMonths.removeTextChangedListener(textWatcher)
@@ -1938,7 +2040,7 @@ class FormGenerator(
     private fun addWatcher(
         etYears: AppCompatEditText,
         etMonths: AppCompatEditText,
-        etWeeks: AppCompatEditText
+        etWeeks: AppCompatEditText,
     ) {
         etYears.addTextChangedListener(textWatcher)
         etMonths.addTextChangedListener(textWatcher)
@@ -1951,7 +2053,7 @@ class FormGenerator(
         months: Int,
         weeks: Int,
         id: String,
-        etDateOfBirth: AppCompatTextView
+        etDateOfBirth: AppCompatTextView,
     ) {
         if (years == 0 && months == 0 && weeks == 0) {
             etDateOfBirth.text = ""
@@ -1969,7 +2071,7 @@ class FormGenerator(
             etDateOfBirth.text = convertDateFormat(
                 calculatedBirthDate,
                 DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                DATE_ddMMyyyy
+                DATE_ddMMyyyy,
             )
             addOrUpdateDOB(calculatedBirthDate, id)
         }
@@ -1997,7 +2099,10 @@ class FormGenerator(
         }
     }
 
-    private fun addOrUpdateDOB(dateOfBirth: String, id: String) {
+    private fun addOrUpdateDOB(
+        dateOfBirth: String,
+        id: String,
+    ) {
         resultHashMap[id] = dateOfBirth
     }
 
@@ -2010,7 +2115,6 @@ class FormGenerator(
         cancelCallBack: (() -> Unit)? = null,
         callBack: (dialog: DatePicker, year: Int, month: Int, dayOfMonth: Int) -> Unit,
     ): DatePickerDialog {
-
         val calendar = Calendar.getInstance()
         var thisYear = calendar.get(Calendar.YEAR)
         var thisMonth = calendar.get(Calendar.MONTH)
@@ -2033,7 +2137,7 @@ class FormGenerator(
             dateSetListener,
             thisYear,
             thisMonth,
-            thisDay
+            thisDay,
         )
 
         if (cancelCallBack != null) {
@@ -2064,7 +2168,6 @@ class FormGenerator(
         dialog.show()
 
         return dialog
-
     }
 
     private fun getFamilyView(family: String?): LinearLayout? {
@@ -2072,28 +2175,27 @@ class FormGenerator(
         return parentLayout.findViewWithTag(family)
     }
 
-
     private fun setConditionalVisibility(
         model: FormLayout,
         actualValue: String?,
         isCheckBox: Boolean = false,
-        selectedValues: ArrayList<String>? = null
+        selectedValues: ArrayList<String>? = null,
     ) {
         val conditionList = model.condition
-        if (conditionList.isNullOrEmpty())
+        if (conditionList.isNullOrEmpty()) {
             return
+        }
 
         conditionList.forEach { conditionalModel ->
             validateConditionModel(conditionalModel, actualValue, isCheckBox, selectedValues)
         }
     }
 
-
     private fun validateConditionModel(
         conditionalModel: ConditionalModel,
         actualValue: String?,
         isCheckBox: Boolean,
-        selectedValues: ArrayList<String>? = null
+        selectedValues: ArrayList<String>? = null,
     ) {
         conditionalModel.apply {
             if (targetId != null && targetOption != null) {
@@ -2106,7 +2208,7 @@ class FormGenerator(
                         targetedView,
                         targetOption,
                         isCheckBox,
-                        selectedValues
+                        selectedValues,
                     )
                 } else if (enabled != null) {
                     checkConditionBasedRendering(
@@ -2116,7 +2218,7 @@ class FormGenerator(
                         targetedView,
                         targetOption,
                         isCheckBox,
-                        selectedValues
+                        selectedValues,
                     )
                 }
             } else if (targetId != null) {
@@ -2128,14 +2230,13 @@ class FormGenerator(
                     actualValue,
                     targetedView,
                     isCheckBox,
-                    selectedValues
+                    selectedValues,
                 )
             } else {
                 return@apply
             }
         }
     }
-
 
     private fun checkConditionBasedRendering(
         conditionalModel: ConditionalModel,
@@ -2144,7 +2245,7 @@ class FormGenerator(
         targetedView: View,
         targetOption: String? = null,
         isCheckBox: Boolean,
-        selectedValues: ArrayList<String>? = null
+        selectedValues: ArrayList<String>? = null,
     ) {
         conditionalModel.apply {
             if (!eq.isNullOrBlank()) {
@@ -2155,7 +2256,7 @@ class FormGenerator(
                     // For single-value fields: Check if actualValue matches eq
                     eq == actualValue
                 }
-                
+
                 if (conditionMatches) {
                     handleConfig(true, config, visibility, enabled, targetedView)
                 } else if (!isCheckBox) {
@@ -2168,7 +2269,7 @@ class FormGenerator(
                     targetOption,
                     targetedView,
                     config,
-                    isCheckBox
+                    isCheckBox,
                 )
             } else if (greaterThanOrEqual != null) {
                 isGreaterThanOrEqual(
@@ -2178,7 +2279,7 @@ class FormGenerator(
                     targetedView,
                     config,
                     isCheckBox,
-                    selectedValues
+                    selectedValues,
                 )
             } else if (lessThanOrEqual != null) {
                 isLessThanOrEqual(
@@ -2188,7 +2289,7 @@ class FormGenerator(
                     targetedView,
                     config,
                     isCheckBox,
-                    selectedValues
+                    selectedValues,
                 )
             } else if (!eqList.isNullOrEmpty()) {
                 val conditionMatches = if (isCheckBox && !selectedValues.isNullOrEmpty()) {
@@ -2198,7 +2299,7 @@ class FormGenerator(
                     // For single-value fields: Check if actualValue is in eqList
                     eqList!!.contains(actualValue)
                 }
-                
+
                 if (conditionMatches) {
                     handleConfig(true, config, visibility, enabled, targetedView)
                 } else if (!isCheckBox) {
@@ -2214,13 +2315,14 @@ class FormGenerator(
         targetOption: String?,
         targetedView: View,
         config: ConditionModelConfig,
-        isCheckBox: Boolean
+        isCheckBox: Boolean,
     ) {
         conditionalModel.apply {
-            if (actualValue != null && actualValue.length > lengthGreaterThan!!)
+            if (actualValue != null && actualValue.length > lengthGreaterThan!!) {
                 handleConfig(false, config, visibility, enabled, targetedView)
-            else if (!isCheckBox)
+            } else if (!isCheckBox) {
                 handleTargetConfig(serverData, targetId, targetedView, config, targetOption)
+            }
         }
     }
 
@@ -2231,7 +2333,7 @@ class FormGenerator(
         targetedView: View,
         config: ConditionModelConfig,
         isCheckBox: Boolean,
-        selectedValues: ArrayList<String>? = null
+        selectedValues: ArrayList<String>? = null,
     ) {
         conditionalModel.apply {
             val conditionMatches = if (isCheckBox && !selectedValues.isNullOrEmpty()) {
@@ -2243,7 +2345,7 @@ class FormGenerator(
                 // For single-value fields: Check if actualValue is >= threshold
                 actualValue?.toDoubleOrNull()?.let { it >= greaterThanOrEqual!! } ?: false
             }
-            
+
             if (conditionMatches) {
                 handleConfig(true, config, visibility, enabled, targetedView)
             } else if (!isCheckBox) {
@@ -2259,7 +2361,7 @@ class FormGenerator(
         targetedView: View,
         config: ConditionModelConfig,
         isCheckBox: Boolean,
-        selectedValues: ArrayList<String>? = null
+        selectedValues: ArrayList<String>? = null,
     ) {
         conditionalModel.apply {
             val conditionMatches = if (isCheckBox && !selectedValues.isNullOrEmpty()) {
@@ -2271,7 +2373,7 @@ class FormGenerator(
                 // For single-value fields: Check if actualValue is <= threshold
                 actualValue?.toDoubleOrNull()?.let { it <= lessThanOrEqual!! } ?: false
             }
-            
+
             if (conditionMatches) {
                 handleConfig(true, config, visibility, enabled, targetedView)
             } else if (!isCheckBox) {
@@ -2285,12 +2387,13 @@ class FormGenerator(
         config: ConditionModelConfig,
         visibility: String?,
         enabled: Boolean?,
-        targetedView: View
+        targetedView: View,
     ) {
-        if (config == ConditionModelConfig.VISIBILITY)
+        if (config == ConditionModelConfig.VISIBILITY) {
             setViewVisibility(visibility, targetedView, resetValue)
-        else
+        } else {
             setViewEnableDisable(enabled, targetedView, resetValue)
+        }
     }
 
     private fun handleTargetConfig(
@@ -2298,7 +2401,7 @@ class FormGenerator(
         targetId: String?,
         targetedView: View,
         config: ConditionModelConfig,
-        targetOption: String?
+        targetOption: String?,
     ) {
         val targetModel = serverData?.find { it.id == targetId }
         if (config == ConditionModelConfig.VISIBILITY) {
@@ -2326,7 +2429,7 @@ class FormGenerator(
     private fun setViewEnableDisable(
         enabled: Boolean?,
         rootLyt: View,
-        resetValue: Boolean = false
+        resetValue: Boolean = false,
     ) {
         recursiveLoopChildren(rootLyt as ViewGroup, { view ->
             view?.apply {
@@ -2360,7 +2463,7 @@ class FormGenerator(
     private fun targetModelVisibility(
         targetModel: FormLayout?,
         targetOption: String,
-        visibility: String?
+        visibility: String?,
     ): String? {
         var visibleOrNot = visibility
         targetModel?.optionsList?.forEach { map ->
@@ -2377,7 +2480,7 @@ class FormGenerator(
     private fun targetModelStatus(
         targetModel: FormLayout?,
         status: Boolean?,
-        targetOption: String
+        targetOption: String,
     ): Boolean? {
         var enableOrNot = status
         targetModel?.optionsList?.forEach { map ->
@@ -2391,7 +2494,11 @@ class FormGenerator(
         return enableOrNot
     }
 
-    private fun removeTargetId(targetId: String?, visibility: String?, targetedView: View) {
+    private fun removeTargetId(
+        targetId: String?,
+        visibility: String?,
+        targetedView: View,
+    ) {
         if (visibility == GONE && targetId != null) {
             val view = getViewByTag(targetId)
             if (view is RadioGroup && targetedView.isEnabled) {
@@ -2408,7 +2515,7 @@ class FormGenerator(
         actualValue: String?,
         targetedView: View,
         isCheckBox: Boolean,
-        selectedValues: ArrayList<String>? = null
+        selectedValues: ArrayList<String>? = null,
     ) {
         if (visibility != null) {
             checkConditionBasedRendering(
@@ -2417,7 +2524,7 @@ class FormGenerator(
                 actualValue,
                 targetedView,
                 isCheckBox = isCheckBox,
-                selectedValues = selectedValues
+                selectedValues = selectedValues,
             )
         } else if (enabled != null) {
             checkConditionBasedRendering(
@@ -2426,7 +2533,7 @@ class FormGenerator(
                 actualValue,
                 targetedView,
                 isCheckBox = isCheckBox,
-                selectedValues = selectedValues
+                selectedValues = selectedValues,
             )
         }
     }
@@ -2463,8 +2570,11 @@ class FormGenerator(
         }
     }
 
-    private fun setViewVisibility(visibility: String?, root: View, resetValue: Boolean = false) {
-
+    private fun setViewVisibility(
+        visibility: String?,
+        root: View,
+        resetValue: Boolean = false,
+    ) {
         if (resetValue && visibility != null && visibility != VISIBLE) {
             resetChildViews(root)
         }
@@ -2496,11 +2606,10 @@ class FormGenerator(
         }
     }
 
-
     private fun recursiveLoopChildren(
         parent: ViewGroup,
         viewItem: (view: View?) -> Unit,
-        viewGroupItem: (viewGroup: ViewGroup?) -> Unit
+        viewGroupItem: (viewGroup: ViewGroup?) -> Unit,
     ) {
         for (i in 0 until parent.childCount) {
             val child = parent.getChildAt(i)
@@ -2513,7 +2622,6 @@ class FormGenerator(
                 if (child.tag != null) {
                     viewGroupItem.invoke(child)
                 }
-
             } else {
                 if (child != null && child.tag != null) {
                     // DO SOMETHING WITH VIEW
@@ -2529,9 +2637,10 @@ class FormGenerator(
             when (model?.viewType) {
                 VIEW_TYPE_FORM_DATEPICKER,
                 VIEW_TYPE_FORM_SPINNER,
-                VIEW_TYPE_FORM_EDITTEXT, VIEW_TYPE_NO_OF_DAYS -> resetEditTextDatePicker(
+                VIEW_TYPE_FORM_EDITTEXT, VIEW_TYPE_NO_OF_DAYS,
+                -> resetEditTextDatePicker(
                     this,
-                    model
+                    model,
                 )
                 VIEW_TYPE_FORM_AGE -> resetAgeView(this, model)
                 VIEW_TYPE_DIALOG_CHECKBOX -> resetCheckBoxDialogView(this, model)
@@ -2539,7 +2648,11 @@ class FormGenerator(
                     resetInformationLabel(this, model)
                 }
                 else -> {
-                    if (view.tag.toString().lowercase().let { it.contains(VIEW_TYPE_TIME) || view.tag in listOf(R.id.etMinute, R.id.etHour) }) {
+                    if (view.tag
+                            .toString()
+                            .lowercase()
+                            .let { it.contains(VIEW_TYPE_TIME) || view.tag in listOf(R.id.etMinute, R.id.etHour) }
+                    ) {
                         val specialChildView = listOf(VIEW_TYPE_TIME)
                         val model = serverData?.find { specialChildView.contains(it.viewType) }
                         if (VIEW_TYPE_TIME == model?.viewType) {
@@ -2551,7 +2664,10 @@ class FormGenerator(
         }
     }
 
-    private fun resetInformationLabel(view: View, model: FormLayout) {
+    private fun resetInformationLabel(
+        view: View,
+        model: FormLayout,
+    ) {
         getViewByTag(model.id + tvKey)?.let {
             if ((view is TextView)) {
                 view.text = model.defaultValue ?: getString(R.string.empty)
@@ -2572,7 +2688,10 @@ class FormGenerator(
         }
     }
 
-    fun disableView(view: View, context: Context) {
+    fun disableView(
+        view: View,
+        context: Context,
+    ) {
         view.isEnabled = false
         view.setBackgroundColor(ContextCompat.getColor(context, R.color.border_gray))
     }
@@ -2583,9 +2702,10 @@ class FormGenerator(
             model?.let {
                 when (model.viewType) {
                     VIEW_TYPE_FORM_DATEPICKER,
-                    VIEW_TYPE_FORM_EDITTEXT, VIEW_TYPE_NO_OF_DAYS -> resetEditTextDatePicker(
+                    VIEW_TYPE_FORM_EDITTEXT, VIEW_TYPE_NO_OF_DAYS,
+                    -> resetEditTextDatePicker(
                         this,
-                        model
+                        model,
                     )
                     VIEW_TYPE_FORM_SPINNER -> resetSpinner(this)
                     VIEW_TYPE_FORM_RADIOGROUP -> resetRadioGroup(this, model)
@@ -2598,11 +2718,13 @@ class FormGenerator(
                     //  VIEW_TYPE_FORM_CHECKBOX -> resetCheckbox(this, model)
                 }
             }
-
         }
     }
 
-    private fun resetEditTextDatePicker(view: View, model: FormLayout) {
+    private fun resetEditTextDatePicker(
+        view: View,
+        model: FormLayout,
+    ) {
         if (view is EditText) {
             model.defaultValue?.let {
                 view.setText(it)
@@ -2640,11 +2762,13 @@ class FormGenerator(
         }
     }
 
-    fun getViewByTag(tag: Any): View? {
-        return parentLayout.findViewWithTag(tag)
-    }
+    fun getViewByTag(tag: Any): View? = parentLayout.findViewWithTag(tag)
 
-    private fun resetRadioGroup(rgGroup: View, model: FormLayout, button: Int? = null) {
+    private fun resetRadioGroup(
+        rgGroup: View,
+        model: FormLayout,
+        button: Int? = null,
+    ) {
         if (rgGroup is RadioGroup) {
             val default = model.defaultValue
             if (default != null || button != null) {
@@ -2659,7 +2783,11 @@ class FormGenerator(
         }
     }
 
-    private fun resetRg(rgGroup: RadioGroup, default: String?, button: Int?) {
+    private fun resetRg(
+        rgGroup: RadioGroup,
+        default: String?,
+        button: Int?,
+    ) {
         rgGroup.forEach {
             if (it is RadioButton) {
                 when {
@@ -2670,7 +2798,10 @@ class FormGenerator(
         }
     }
 
-    private fun resetAgeView(view: View, model: FormLayout) {
+    private fun resetAgeView(
+        view: View,
+        model: FormLayout,
+    ) {
         resetEditTextDatePicker(view, model)
         getViewByTag(R.id.etDateOfBirth)?.let {
             resetEditTextDatePicker(it, model)
@@ -2686,7 +2817,10 @@ class FormGenerator(
         }
     }
 
-    private fun resetCheckBoxDialogView(view: View, model: FormLayout) {
+    private fun resetCheckBoxDialogView(
+        view: View,
+        model: FormLayout,
+    ) {
         (view as TextView).text = model.defaultValue ?: ""
         resultHashMap.remove(model.id)
     }
@@ -2697,8 +2831,8 @@ class FormGenerator(
         }
     }
 
-    fun formSubmitAction(view: View): Boolean {
-        return if (validateInputs()) {
+    fun formSubmitAction(view: View): Boolean =
+        if (validateInputs()) {
             hideKeyboard(view)
             listener.onFormSubmit(resultMap = resultHashMap, serverData = serverData)
             true
@@ -2710,8 +2844,6 @@ class FormGenerator(
             }
             false
         }
-    }
-
 
     /**
      * Used to scroll to the given view.
@@ -2719,7 +2851,10 @@ class FormGenerator(
      * @param scrollViewParent Parent ScrollView
      * @param view View to which we need to scroll.
      */
-    fun scrollToView(scrollViewParent: NestedScrollView, view: View) {
+    fun scrollToView(
+        scrollViewParent: NestedScrollView,
+        view: View,
+    ) {
         // Get deepChild Offset
         val childOffset = Point()
         getDeepChildOffset(scrollViewParent, view.parent, view, childOffset)
@@ -2743,7 +2878,7 @@ class FormGenerator(
         mainParent: ViewGroup,
         parent: ViewParent,
         child: View,
-        accumulatedOffset: Point
+        accumulatedOffset: Point,
     ) {
         val parentGroup = parent as ViewGroup
         accumulatedOffset.x += child.left
@@ -2754,44 +2889,59 @@ class FormGenerator(
         getDeepChildOffset(mainParent, parentGroup.parent, parentGroup, accumulatedOffset)
     }
 
-
     fun validateInputs(): Boolean {
         var isValid = true
         focusNeeded = null
         serverData?.forEach { data ->
             data.apply {
-                if ((isMandatory && !resultHashMap.containsKey(id)
-                            && isViewVisible(id) && isViewEnabled(id))
-                    ||
-                    (isMandatory && resultHashMap.containsKey(id)
-                            && resultHashMap[id] is String && (resultHashMap[id] as String).isEmpty())
+                if ((
+                        isMandatory &&
+                            !resultHashMap.containsKey(id) &&
+                            isViewVisible(id) &&
+                            isViewEnabled(id)
+                    ) ||
+                    (
+                        isMandatory &&
+                            resultHashMap.containsKey(id) &&
+                            resultHashMap[id] is String &&
+                            (resultHashMap[id] as String).isEmpty()
+                    )
                 ) {
                     isValid = false
                     requestFocusView(data)
-                } else if ((id == Screening.phoneNumber || id == phoneNumber
-                            || id == CommunityDetails.EmergencyContactPhu || id == CommunityDetails.EmergencyTransportContactNo
-                            || id == CommunityDetails.AmbulanceDriverContactNo || id == RxBuddy.rxBuddyPhoneNumber) && isMandatory && resultHashMap.containsKey(
-                        id
+                } else if ((
+                        id == Screening.phoneNumber ||
+                            id == phoneNumber ||
+                            id == CommunityDetails.EmergencyContactPhu ||
+                            id == CommunityDetails.EmergencyTransportContactNo ||
+                            id == CommunityDetails.AmbulanceDriverContactNo ||
+                            id == RxBuddy.rxBuddyPhoneNumber
+                    ) &&
+                    isMandatory &&
+                    resultHashMap.containsKey(
+                        id,
                     )
                 ) {
                     val actualValue = resultHashMap[id] as? String
                     actualValue?.let {
-                        if (!startsWith.isNullOrEmpty() && !checkPhoneNumberValidOrNot(
+                        if (!startsWith.isNullOrEmpty() &&
+                            !checkPhoneNumberValidOrNot(
                                 it,
-                                startsWith
+                                startsWith,
                             )
                         ) {
                             isValid = false
                             requestFocusView(
-                                data, getString(
+                                data,
+                                getString(
                                     R.string.start_with_validation,
                                     startsWith?.joinToString(separator = " ${getString(R.string.or)} ")
-                                        ?: ""
-                                )
+                                        ?: "",
+                                ),
                             )
                         } else if (!phoneNumberConatinMaxLength(
                                 contentLength ?: maxLength,
-                                it
+                                it,
                             )
                         ) {
                             isValid = false
@@ -2799,9 +2949,10 @@ class FormGenerator(
                         } else if (!FormFieldValidator.isValidMobileNumber(it)) {
                             isValid = false
                             requestFocusView(
-                                data, getString(
-                                    R.string.phone_number_invalid
-                                )
+                                data,
+                                getString(
+                                    R.string.phone_number_invalid,
+                                ),
                             )
                         } else {
                             hideValidationField(data)
@@ -2835,7 +2986,9 @@ class FormGenerator(
                 } else if (data.viewType.equals(VIEW_TYPE_FORM_BP, true)) {
                     val list = resultHashMap[id] as ArrayList<BPModel>
                     val validationBPResultModel = Validator.checkValidBPInput(
-                        context, list, data
+                        context,
+                        list,
+                        data,
                     )
                     if (validationBPResultModel.status) {
                         hideValidationField(data)
@@ -2862,17 +3015,23 @@ class FormGenerator(
                                 val isValidMinute =
                                     minMinute != null && maxMinute != null && minute in minMinute..maxMinute
 
-                                if (((!(minHour != null && maxHour != null)) && (!(minMinute != null && maxMinute != null))) || (isValidHour && isValidMinute)) {
+                                if (((!(minHour != null && maxHour != null)) && (!(minMinute != null && maxMinute != null))) ||
+                                    (isValidHour && isValidMinute)
+                                ) {
                                     val res = (resultHashMap[dateKey] as? String)?.let { date ->
                                         if (date.equals(
                                                 Screening.Today,
-                                                ignoreCase = true
-                                            ) && hour != null && minute != null && hour != 0 && resultHashMap[timeKey] != null
+                                                ignoreCase = true,
+                                            ) &&
+                                            hour != null &&
+                                            minute != null &&
+                                            hour != 0 &&
+                                            resultHashMap[timeKey] != null
                                         ) {
                                             DateUtils.isValidTimeForLastMealTime(
                                                 hour,
                                                 minute,
-                                                resultHashMap[timeKey] as String
+                                                resultHashMap[timeKey] as String,
                                             )
                                         } else {
                                             true
@@ -2893,8 +3052,8 @@ class FormGenerator(
                                             minHour,
                                             maxHour,
                                             minMinute,
-                                            maxMinute
-                                        )
+                                            maxMinute,
+                                        ),
                                     )
                                 }
                             } else {
@@ -2907,27 +3066,29 @@ class FormGenerator(
                         }
                     }
                 } else {
-                    if (resultHashMap.containsKey(id) && data.viewType.equals(
-                            VIEW_TYPE_FORM_EDITTEXT, true
+                    if (resultHashMap.containsKey(id) &&
+                        data.viewType.equals(
+                            VIEW_TYPE_FORM_EDITTEXT,
+                            true,
                         )
                     ) {
                         val actualValue = resultHashMap[id]
                         if (actualValue is String && actualValue.isEmpty() && !isMandatory) {
                             hideValidationField(data)
-                        }else if (id == Screening.NoOfNeonates && resultHashMap[id].toString().toIntOrNull() == 0) {
+                        } else if (id == Screening.NoOfNeonates && resultHashMap[id].toString().toIntOrNull() == 0) {
                             isValid = false
                             requestFocusView(data)
-                        }else {
+                        } else {
                             isValid = validateMinMaxLength(
                                 actualValue,
                                 isValid,
-                                data
+                                data,
                             )
                             if (isValid && data.onlyAlphabets == true) {
                                 isValid = checkOnlyAlphabets(
                                     actualValue,
                                     isValid,
-                                    data
+                                    data,
                                 )
                             }
                         }
@@ -2949,7 +3110,6 @@ class FormGenerator(
                         }
                     }
                 }
-
 
                 /* if ((id == headPhoneNumber || id == phoneNumber) && isMandatory && resultHashMap.containsKey(
                          id
@@ -3029,13 +3189,14 @@ class FormGenerator(
         return view != null && view.isEnabled
     }
 
-    private fun phoneNumberConatinMaxLength(maxLength: Int?, actualValue: String): Boolean {
-        return (maxLength != null && actualValue.length == maxLength)
-    }
+    private fun phoneNumberConatinMaxLength(
+        maxLength: Int?,
+        actualValue: String,
+    ): Boolean = (maxLength != null && actualValue.length == maxLength)
 
     private fun checkPhoneNumberValidOrNot(
         actualValue: String,
-        startsWithArray: ArrayList<String>?
+        startsWithArray: ArrayList<String>?,
     ): Boolean {
         var valid = false
         startsWithArray?.forEach { value ->
@@ -3046,7 +3207,10 @@ class FormGenerator(
         return valid
     }
 
-    private fun requestFocusView(formLayout: FormLayout, message: String? = null) {
+    private fun requestFocusView(
+        formLayout: FormLayout,
+        message: String? = null,
+    ) {
         if (focusNeeded == null) {
             focusNeeded = showValidationMessage(formLayout, message)
         } else {
@@ -3057,21 +3221,23 @@ class FormGenerator(
     private fun validateMinMaxLength(
         actualValue: Any?,
         valid: Boolean,
-        formLayout: FormLayout
+        formLayout: FormLayout,
     ): Boolean {
         var isValid = valid
         formLayout.apply {
-            if (minLength != null && viewType == VIEW_TYPE_FORM_EDITTEXT
-                && actualValue != null && actualValue is String
-                && actualValue.length < minLength!!
+            if (minLength != null &&
+                viewType == VIEW_TYPE_FORM_EDITTEXT &&
+                actualValue != null &&
+                actualValue is String &&
+                actualValue.length < minLength!!
             ) {
                 isValid = false
                 requestFocusView(
                     formLayout,
                     getString(
                         R.string.min_char_length_validation,
-                        minLength!!.toString()
-                    )
+                        minLength!!.toString(),
+                    ),
                 )
             } else if (maxValue != null || minValue != null) {
                 if (maxValue != null && minValue != null) {
@@ -3084,12 +3250,12 @@ class FormGenerator(
                                     getString(
                                         R.string.general_min_max_validation,
                                         CommonUtils.getDecimalFormatted(
-                                            minValue!!
+                                            minValue!!,
                                         ),
                                         CommonUtils.getDecimalFormatted(
-                                            maxValue!!
-                                        )
-                                    )
+                                            maxValue!!,
+                                        ),
+                                    ),
                                 )
                             } else {
                                 hideValidationField(formLayout)
@@ -3104,12 +3270,12 @@ class FormGenerator(
                                     getString(
                                         R.string.general_min_max_validation,
                                         CommonUtils.getDecimalFormatted(
-                                            minValue!!
+                                            minValue!!,
                                         ),
                                         CommonUtils.getDecimalFormatted(
-                                            maxValue!!
-                                        )
-                                    )
+                                            maxValue!!,
+                                        ),
+                                    ),
                                 )
                             } else {
                                 hideValidationField(formLayout)
@@ -3128,9 +3294,9 @@ class FormGenerator(
                                     getString(
                                         R.string.general_min_validation,
                                         CommonUtils.getDecimalFormatted(
-                                            minValue!!
-                                        )
-                                    )
+                                            minValue!!,
+                                        ),
+                                    ),
                                 )
                             } else {
                                 hideValidationField(formLayout)
@@ -3145,9 +3311,9 @@ class FormGenerator(
                                     getString(
                                         R.string.general_min_validation,
                                         CommonUtils.getDecimalFormatted(
-                                            minValue!!
-                                        )
-                                    )
+                                            minValue!!,
+                                        ),
+                                    ),
                                 )
                             } else {
                                 hideValidationField(formLayout)
@@ -3166,9 +3332,9 @@ class FormGenerator(
                                     getString(
                                         R.string.general_max_validation,
                                         CommonUtils.getDecimalFormatted(
-                                            maxValue!!
-                                        )
-                                    )
+                                            maxValue!!,
+                                        ),
+                                    ),
                                 )
                             } else {
                                 hideValidationField(formLayout)
@@ -3183,9 +3349,9 @@ class FormGenerator(
                                     getString(
                                         R.string.general_max_validation,
                                         CommonUtils.getDecimalFormatted(
-                                            maxValue!!
-                                        )
-                                    )
+                                            maxValue!!,
+                                        ),
+                                    ),
                                 )
                             } else {
                                 hideValidationField(formLayout)
@@ -3221,7 +3387,10 @@ class FormGenerator(
         return isValid
     }
 
-    private fun showValidationMessage(formLayout: FormLayout, message: String? = null): View? {
+    private fun showValidationMessage(
+        formLayout: FormLayout,
+        message: String? = null,
+    ): View? {
         formLayout.apply {
             val view = getViewByTag(formLayout.id + errorSuffix)
             if (view is TextView) {
@@ -3239,15 +3408,15 @@ class FormGenerator(
 
     private fun getErrorMessageFromJSON(
         errorMessage: String?,
-        cultureErrorMessage: String?
-    ): String {
-
-        return if (translate && !(cultureErrorMessage.isNullOrEmpty() || cultureErrorMessage.isBlank()))
+        cultureErrorMessage: String?,
+    ): String =
+        if (translate && !(cultureErrorMessage.isNullOrEmpty() || cultureErrorMessage.isBlank())) {
             cultureErrorMessage
-        else if (!(errorMessage.isNullOrEmpty() || errorMessage.isBlank()))
+        } else if (!(errorMessage.isNullOrEmpty() || errorMessage.isBlank())) {
             errorMessage
-        else getString(R.string.default_user_input_error)
-    }
+        } else {
+            getString(R.string.default_user_input_error)
+        }
 
     private fun hideValidationField(formLayout: FormLayout) {
         formLayout.apply {
@@ -3262,7 +3431,7 @@ class FormGenerator(
         id: String,
         formLayout: FormLayout,
         resultMap: ArrayList<HashMap<String, Any>>,
-        isListenerEnable: Boolean = true
+        isListenerEnable: Boolean = true,
     ) {
         if (resultMap.isEmpty()) {
             if (resultHashMap.containsKey(id)) {
@@ -3273,68 +3442,68 @@ class FormGenerator(
         }
         getViewByTag(id)?.let { view ->
             if (view is AppCompatTextView) {
-                val checkBoxText = when(id){
+                val checkBoxText = when (id) {
                     FamilyPlanningMethods -> getString(R.string.methods_selected)
                     else -> getString(R.string.symptoms_selected)
                 }
                 view.text = setCheckBoxDialogText(resultHashMap, id, checkBoxText)
             }
         }
-        
+
         // Extract selected values for condition evaluation
         // Prioritize 'value' (JSON id) over 'ID' (database id) for condition matching
         val selectedValues = ArrayList<String>()
         resultMap.forEach { item ->
-            val selectedId = item[DefinedParams.value]?.toString() 
+            val selectedId = item[DefinedParams.value]?.toString()
                 ?: item[DefinedParams.ID]?.toString()
             selectedId?.let { selectedValues.add(it) }
         }
-        
+
         if (isContainsOther(resultMap)) {
             setConditionalVisibility(
                 formLayout,
                 DefinedParams.Other,
                 isCheckBox = true,
-                selectedValues = selectedValues
+                selectedValues = selectedValues,
             )
         } else {
             setConditionalVisibility(
                 formLayout,
                 null,
                 isCheckBox = true,
-                selectedValues = selectedValues
+                selectedValues = selectedValues,
             )
         }
         if (isListenerEnable) {
-            callback?.invoke(resultHashMap,id)
+            callback?.invoke(resultHashMap, id)
         }
     }
 
     private fun setCheckBoxDialogText(
         resultHashMap: HashMap<String, Any>,
         id: String,
-        checkBoxText: String
+        checkBoxText: String,
     ): String {
         var text = ""
-        if(id.equals(getString(R.string.market_days_key),true)){
+        if (id.equals(getString(R.string.market_days_key), true)) {
             val mapList = resultHashMap[id]
-            if(mapList is ArrayList<*>){
-                text = if(mapList.size == 1){
+            if (mapList is ArrayList<*>) {
+                text = if (mapList.size == 1) {
                     "${mapList.size} ${getString(R.string.market_day_selected)}"
-                }else{
+                } else {
                     "${mapList.size} ${getString(R.string.market_days_selected)}"
                 }
             }
-        } else if(id.equals(SelectedNetwork,true)){
+        } else if (id.equals(SelectedNetwork, true)) {
             val mapList = resultHashMap[id]
-            if(mapList is ArrayList<*>){
-                text = if(mapList.size == 1){
+            if (mapList is ArrayList<*>) {
+                text = if (mapList.size == 1) {
                     "${mapList.size} ${getString(R.string.network_selected)}"
-                }else{
+                } else {
                     "${mapList.size} ${getString(R.string.networks_selected)}"
                 }
             }
-        }else {
+        } else {
             if (resultHashMap.containsKey(id)) {
                 val mapList = resultHashMap[id]
                 if (mapList is java.util.ArrayList<*>) {
@@ -3355,15 +3524,17 @@ class FormGenerator(
         return text
     }
 
-    private fun setDialogText(mapList: java.util.ArrayList<*>, checkBoxText: String): String {
-        return if (isContainsOther(mapList)) {
+    private fun setDialogText(
+        mapList: java.util.ArrayList<*>,
+        checkBoxText: String,
+    ): String =
+        if (isContainsOther(mapList)) {
             "${DefinedParams.Other} $checkBoxText"
         } else if (isNoSymptomContain(mapList)) {
             getString(R.string.no_symptom_selected)
         } else {
             "${mapList.size} $checkBoxText"
         }
-    }
 
     private fun isNoSymptomContain(mapList: java.util.ArrayList<*>): Boolean {
         var status = false
@@ -3393,7 +3564,10 @@ class FormGenerator(
         return status
     }
 
-    fun setValueForView(value: Any?, view: View) {
+    fun setValueForView(
+        value: Any?,
+        view: View,
+    ) {
         if (view is AppCompatEditText) {
             when (value) {
                 is String -> {
@@ -3430,18 +3604,23 @@ class FormGenerator(
             val adapter = view.adapter
             if (adapter != null && adapter is CustomSpinnerAdapter && value is Long) {
                 val selectedIndex = adapter.getIndexOfItem(value)
-                if (selectedIndex != -1)
+                if (selectedIndex != -1) {
                     view.setSelection(selectedIndex, true)
+                }
             }
             if (adapter != null && adapter is CustomSpinnerAdapter && value is String) {
                 val selectedIndex = adapter.getIndexOfItemByName(value)
-                if (selectedIndex != -1)
+                if (selectedIndex != -1) {
                     view.setSelection(selectedIndex, true)
+                }
             }
         }
     }
 
-    fun spinnerDataInjection(data: LocalSpinnerResponse, mapList: ArrayList<Map<String, Any>>) {
+    fun spinnerDataInjection(
+        data: LocalSpinnerResponse,
+        mapList: ArrayList<Map<String, Any>>,
+    ) {
         val spinner = getViewByTag(data.tag) as? AppCompatSpinner ?: return
         val mandatory = serverData?.find { it.id == data.tag }?.isMandatory ?: false
         if (spinner.adapter is CustomSpinnerAdapter) {
@@ -3453,17 +3632,16 @@ class FormGenerator(
                 spinner,
                 spinner.selectedView,
                 0,
-                spinner.selectedItemId
+                spinner.selectedItemId,
             )
         }
     }
 
-    private fun createDefaultMap(): Map<String, Any> {
-        return hashMapOf(
+    private fun createDefaultMap(): Map<String, Any> =
+        hashMapOf(
             DefinedParams.NAME to getString(R.string.please_select),
-            DefinedParams.ID to DefaultID
+            DefinedParams.ID to DefaultID,
         )
-    }
 
     fun resetSingleSelection(id: String) {
         getViewByTag(id)?.let {
@@ -3484,7 +3662,7 @@ class FormGenerator(
 
         if (DateUtils.calculateAge(
                 dateOfBirth,
-                DATE_ddMMyyyy
+                DATE_ddMMyyyy,
             ) !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE
         ) {
             handleAgeBelowThreshold()
@@ -3492,6 +3670,7 @@ class FormGenerator(
             handleAgeAboveThreshold()
         }
     }
+
     fun handlePregnancyCardBasedOnAgeAndWeeks() {
         val dateOfBirthView =
             getViewByTag(MemberRegistration.dateOfBirth) as? AppCompatTextView ?: return
@@ -3543,12 +3722,15 @@ class FormGenerator(
     private fun checkOnlyAlphabets(
         actualValue: Any?,
         valid: Boolean,
-        formLayout: FormLayout
+        formLayout: FormLayout,
     ): Boolean {
         var isValid = valid
         formLayout.apply {
-            if (viewType == VIEW_TYPE_FORM_EDITTEXT && actualValue is String && actualValue.isNotBlank() && !CommonUtils.isAlphabetsWithSpace(
-                    actualValue
+            if (viewType == VIEW_TYPE_FORM_EDITTEXT &&
+                actualValue is String &&
+                actualValue.isNotBlank() &&
+                !CommonUtils.isAlphabetsWithSpace(
+                    actualValue,
                 )
             ) {
                 isValid = false
@@ -3560,13 +3742,19 @@ class FormGenerator(
         return isValid
     }
 
-    private fun onlyAlphabet(itemId: String, input: String): Boolean {
+    private fun onlyAlphabet(
+        itemId: String,
+        input: String,
+    ): Boolean {
         val serverItem = serverData?.firstOrNull { it.id == itemId }
         return serverItem?.let { it.onlyAlphabets == true && CommonUtils.isAlphabetsWithSpace(input) }
             ?: true
     }
 
-    fun checkValidMentalHealth(formLayout: FormLayout, id: String): Boolean {
+    fun checkValidMentalHealth(
+        formLayout: FormLayout,
+        id: String,
+    ): Boolean {
         val totalQuestions = mentalHealthQuestions?.get(id)?.size
         formLayout.optionsList?.forEach { option ->
             val isMandatory =
@@ -3583,8 +3771,9 @@ class FormGenerator(
                 }
             }
         }
-        if (mentalHealthQuestions == null || (mentalHealthQuestions?.containsKey(id) == false))
+        if (mentalHealthQuestions == null || (mentalHealthQuestions?.containsKey(id) == false)) {
             listener.loadLocalCache(id, localDataCache = Screening.Fetch_MH_Questions)
+        }
         mentalHealthQuestions(id)?.let {
             return it
         }
@@ -3610,7 +3799,10 @@ class FormGenerator(
         return null
     }
 
-    fun fetchMHQuestions(id: String, questions: LocalSpinnerResponse?) {
+    fun fetchMHQuestions(
+        id: String,
+        questions: LocalSpinnerResponse?,
+    ) {
         questions?.let {
             questions.response as MentalHealthEntity
             val map = questions.response.formInput?.let {
@@ -3625,7 +3817,7 @@ class FormGenerator(
     fun loadMentalHealthQuestions(
         questions: LocalSpinnerResponse?,
         mentalHealthEditList: java.util.ArrayList<Map<String, Any>>? = null,
-        isViewOnly: Boolean = false
+        isViewOnly: Boolean = false,
     ) {
         val recyclerView = questions?.tag?.let { getViewByTag(it) } ?: return
         if (recyclerView.visibility == View.VISIBLE) {
@@ -3649,14 +3841,14 @@ class FormGenerator(
                                 isViewOnly = isViewOnly,
                                 editList = this.mentalHealthEditList,
                                 resultMap = resultHashMap,
-                                translate = translate
+                                translate = translate,
                             ) { id, question, result, isUnselect, isClicked ->
                                 processMentalHealthResult(
                                     id,
                                     question,
                                     result,
                                     isUnselect,
-                                    isClicked
+                                    isClicked,
                                 )
                             }
                         }
@@ -3671,7 +3863,7 @@ class FormGenerator(
         question: String,
         result: HashMap<String, Any>,
         isUnselect: Boolean,
-        isClicked: Boolean
+        isClicked: Boolean,
     ) {
         if (resultHashMap.containsKey(id)) {
             updateResultMap(resultHashMap, result, question, isUnselect, id, isClicked)
@@ -3688,7 +3880,7 @@ class FormGenerator(
         question: String,
         isUnselect: Boolean,
         id: String,
-        isClicked: Boolean
+        isClicked: Boolean,
     ) {
         val mhResultMap = resultHashMap[id] as? HashMap<String, Any>
         mhResultMap?.let {
@@ -3707,7 +3899,7 @@ class FormGenerator(
     private fun areAnswersSame(
         mhResultMap: HashMap<String, Any>,
         selectedAnswerMap: HashMap<String, Any>,
-        question: String
+        question: String,
     ): Boolean {
         if (mhResultMap.containsKey(question)) {
             val questionResultHashMap = mhResultMap[question] as HashMap<String, Any>
@@ -3728,9 +3920,13 @@ class FormGenerator(
         return optionListUI
     }
 
-    private fun saveMentalHealthQuestions(id: String, questions: java.util.ArrayList<MentalHealthOption>) {
-        if (mentalHealthQuestions == null)
+    private fun saveMentalHealthQuestions(
+        id: String,
+        questions: java.util.ArrayList<MentalHealthOption>,
+    ) {
+        if (mentalHealthQuestions == null) {
             mentalHealthQuestions = HashMap()
+        }
         mentalHealthQuestions?.put(id, questions)
     }
 
@@ -3750,7 +3946,10 @@ class FormGenerator(
         return status
     }
 
-    fun showHideCardFamily(status: Boolean, family: String) {
+    fun showHideCardFamily(
+        status: Boolean,
+        family: String,
+    ) {
         serverData?.let { serverDataList ->
             val familyList = serverDataList.filter { it.id == family }
             familyList.forEach { formLayout ->
@@ -3766,17 +3965,20 @@ class FormGenerator(
         }
     }
 
-    fun showMHView(showView: Boolean, types: List<String>) {
+    fun showMHView(
+        showView: Boolean,
+        types: List<String>,
+    ) {
         types.forEach { type ->
             val mhType = when (type) {
                 AssessmentDefinedParams.PHQ9 -> Pair(
                     AssessmentDefinedParams.PHQ9.lowercase(),
-                    AssessmentDefinedParams.PHQ9_Mental_Health
+                    AssessmentDefinedParams.PHQ9_Mental_Health,
                 )
 
                 AssessmentDefinedParams.GAD7 -> Pair(
                     AssessmentDefinedParams.GAD7.lowercase(),
-                    AssessmentDefinedParams.GAD7_Mental_Health
+                    AssessmentDefinedParams.GAD7_Mental_Health,
                 )
 
                 else -> Pair(Screening.PHQ4.lowercase(), Screening.MentalHealthDetails)
@@ -3785,13 +3987,16 @@ class FormGenerator(
             getViewByTag(mhType.first + rootSuffix)?.let {
                 if (showView) {
                     it.visible()
-                } else parentLayout.removeView(it)
+                } else {
+                    parentLayout.removeView(it)
+                }
             }
         }
     }
 
     fun populateEditableViews(
-        serverData: List<FormLayout>, mentalHealthEditList: java.util.ArrayList<Map<String, Any>>? = null
+        serverData: List<FormLayout>,
+        mentalHealthEditList: java.util.ArrayList<Map<String, Any>>? = null,
     ) {
         this.serverData =
             serverData.filter { it.viewType != VIEW_TYPE_FORM_CARD_FAMILY && it.isEditable }
@@ -3832,8 +4037,5 @@ class FormGenerator(
         }
     }
 
-    fun isViewGone(tag: Any): Boolean {
-        return getViewByTag(tag)?.visibility == View.GONE
-    }
-
+    fun isViewGone(tag: Any): Boolean = getViewByTag(tag)?.visibility == View.GONE
 }

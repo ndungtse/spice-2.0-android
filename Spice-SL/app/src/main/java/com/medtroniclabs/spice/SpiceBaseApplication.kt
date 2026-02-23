@@ -11,9 +11,13 @@ import androidx.fragment.app.FragmentManager
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
+import com.medtroniclabs.spice.app.analytics.model.ScreenDetails
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.model.UserJourneyAnalytics
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils
 import com.medtroniclabs.spice.appextensions.isDebug
+import com.medtroniclabs.spice.common.SPICE
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.log.CrashReportingTree
 import dagger.hilt.android.HiltAndroidApp
@@ -23,30 +27,22 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
-import com.medtroniclabs.spice.app.analytics.model.ScreenDetails
-import com.medtroniclabs.spice.app.analytics.model.UserDetail
-import com.medtroniclabs.spice.app.analytics.model.UserJourneyAnalytics
-import com.medtroniclabs.spice.common.SPICE
-
 
 const val ACTIVITY_LIFECYCLE = "ActivityLifeCycle"
 const val FRAGMENT_LIFECYCLE = "FragmentLifecycle"
 
 @HiltAndroidApp
 class SpiceBaseApplication : Application(), Configuration.Provider {
-
     @Inject
     lateinit var hiltWorkerFactory: HiltWorkerFactory
 
     @Inject
     lateinit var analyticsRepository: AnalyticsRepository
 
-
     private var activityCount = 0
 
     private var fragmentCallbacks =
         mutableMapOf<Activity, FragmentManager.FragmentLifecycleCallbacks>()
-
 
     override fun onCreate() {
         super.onCreate()
@@ -57,13 +53,22 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
         handleAppForeground()
     }
 
-    private fun logActivityState(activity: Activity, state: String) {
-        Timber.tag(ACTIVITY_LIFECYCLE)
+    private fun logActivityState(
+        activity: Activity,
+        state: String,
+    ) {
+        Timber
+            .tag(ACTIVITY_LIFECYCLE)
             .d("$state : ${activity.javaClass.name} ${activity.hashCode()}")
     }
 
-    private fun logFragmentState(activity: Activity, fragment: Fragment, state: String) {
-        Timber.tag(FRAGMENT_LIFECYCLE)
+    private fun logFragmentState(
+        activity: Activity,
+        fragment: Fragment,
+        state: String,
+    ) {
+        Timber
+            .tag(FRAGMENT_LIFECYCLE)
             .d("$state : ${fragment.javaClass.name} ${fragment.hashCode()} in ${activity.javaClass.name} ${activity.hashCode()}")
     }
 
@@ -75,7 +80,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
                 if (activityCount == 1) {
                     val backgroundTime = SecuredPreference.getLong(
                         SecuredPreference.EnvironmentKey.BACKGROUNDTIMESTAMP.name,
-                        0L
+                        0L,
                     )
                     val currentTime = System.currentTimeMillis()
                     if (backgroundTime != 0L) {
@@ -83,7 +88,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
                         if (diffInMinutes >= 2) {
                             SecuredPreference.putLong(
                                 SecuredPreference.EnvironmentKey.BACKGROUNDTIMESTAMP.name,
-                                0L
+                                0L,
                             )
                             getUserJourneyAnalytics()
                         }
@@ -99,21 +104,30 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
                     Log.d("SpiceApp", "🌙 App in BACKGROUND")
                     SecuredPreference.putLong(
                         SecuredPreference.EnvironmentKey.BACKGROUNDTIMESTAMP.name,
-                        System.currentTimeMillis()
+                        System.currentTimeMillis(),
                     )
                     // End session tracking, etc.
                 }
             }
 
             // Other lifecycle methods — no-op
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+            override fun onActivityCreated(
+                activity: Activity,
+                savedInstanceState: Bundle?,
+            ) {
                 logActivityState(activity, "onActivityCreated")
                 registerFragmentLifecycleCallbacks(activity as? AppCompatActivity)
             }
 
             override fun onActivityResumed(activity: Activity) {}
+
             override fun onActivityPaused(activity: Activity) {}
-            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+
+            override fun onActivitySaveInstanceState(
+                activity: Activity,
+                outState: Bundle,
+            ) {}
+
             override fun onActivityDestroyed(activity: Activity) {
                 logActivityState(activity, "onActivityDestroyed")
                 unRegisterFragmentLifecycleCallbacks(activity as? AppCompatActivity)
@@ -128,13 +142,16 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
                 fm: FragmentManager,
                 fragment: Fragment,
                 v: View,
-                savedInstanceState: Bundle?
+                savedInstanceState: Bundle?,
             ) {
                 super.onFragmentViewCreated(fm, fragment, v, savedInstanceState)
                 logFragmentState(activity, fragment, "onFragmentViewCreated")
             }
 
-            override fun onFragmentViewDestroyed(fm: FragmentManager, fragment: Fragment) {
+            override fun onFragmentViewDestroyed(
+                fm: FragmentManager,
+                fragment: Fragment,
+            ) {
                 super.onFragmentViewDestroyed(fm, fragment)
                 logFragmentState(activity, fragment, "onFragmentViewDestroyed")
             }
@@ -152,7 +169,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
     private fun saveApplicationType() {
         SecuredPreference.putString(
             SecuredPreference.EnvironmentKey.APPLICATION.name,
-            getApplicationName()
+            getApplicationName(),
         )
     }
 
@@ -177,10 +194,11 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
      */
     private fun initTimber() {
         isDebug { debug ->
-            if (debug)
+            if (debug) {
                 Timber.plant(Timber.DebugTree())
-            else
+            } else {
                 Timber.plant(CrashReportingTree())
+            }
         }
     }
 
@@ -203,7 +221,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
             UserDetail.role = SecuredPreference.getRole() ?: ""
             SecuredPreference.putString(
                 AnalyticsDefinedParams.SessionId,
-                UserDetail.referenceId
+                UserDetail.referenceId,
             )
 
             userAnalytics?.second?.forEach {
@@ -211,8 +229,9 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
                     userId = it.value[0].userID,
                     eventName = AnalyticsDefinedParams.SessionTracking,
                     referenceId = it.key,
-                    userJourney = it.value, analyticsRepository = analyticsRepository,
-                    lastSyncedAt = lastSyncDate()
+                    userJourney = it.value,
+                    analyticsRepository = analyticsRepository,
+                    lastSyncedAt = lastSyncDate(),
                 )
             }
             analyticsRepository.deleteAllUserJourneys(UserDetail.referenceId)
@@ -229,17 +248,19 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
         return when {
             list.isNotEmpty() -> {
                 Pair(
-                    list[0].userId, list.groupBy(UserJourneyAnalytics::sessionId)
+                    list[0].userId,
+                    list
+                        .groupBy(UserJourneyAnalytics::sessionId)
                         .mapValues { (_, analyticsList) ->
                             analyticsList.map {
                                 ScreenDetails(
                                     it.userJourney,
                                     it.startTime ?: "",
                                     it.userId,
-                                    it.userRole
+                                    it.userRole,
                                 )
                             }
-                        }.toMutableMap()
+                        }.toMutableMap(),
                 )
             }
 
@@ -249,10 +270,6 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
         }
     }
 
-
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder().setWorkerFactory(hiltWorkerFactory).build()
-
-
 }
-

@@ -37,9 +37,8 @@ class OfflineSyncViewModel @Inject constructor(
     private val communityProfileRepository: CommunityProfileRepository,
     private val offlineSyncRepository: OfflineSyncRepository,
     private val rxBuddyRepository: RxBuddyRepository,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
-) :  BaseViewModel(dispatcherIO) {
-
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
+) : BaseViewModel(dispatcherIO) {
     private val entityList = mutableListOf(
         OfflineSyncEntityDetail("Households", 0),
         OfflineSyncEntityDetail("Household Member", 0),
@@ -47,7 +46,7 @@ class OfflineSyncViewModel @Inject constructor(
         OfflineSyncEntityDetail("Follow-Up", 0),
         OfflineSyncEntityDetail("Community Profile", 0),
         OfflineSyncEntityDetail("RxBuddy Register", 0),
-        OfflineSyncEntityDetail("RxBuddy FollowUp", 0)
+        OfflineSyncEntityDetail("RxBuddy FollowUp", 0),
     )
 
     @Inject
@@ -96,7 +95,10 @@ class OfflineSyncViewModel @Inject constructor(
         }
     }
 
-    private fun updateSyncedCount(index: Int, unSyncedCount: Int) {
+    private fun updateSyncedCount(
+        index: Int,
+        unSyncedCount: Int,
+    ) {
         entityList[index].unSyncedCount = unSyncedCount
         unSyncedCountLiveData.postValue(entityList)
     }
@@ -121,7 +123,7 @@ class OfflineSyncViewModel @Inject constructor(
                 if (requestIds.isNotEmpty()) { // Has some changes in local
                     SecuredPreference.saveStringArray(
                         SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name,
-                        requestIds.toTypedArray()
+                        requestIds.toTypedArray(),
                     )
                     postRequestIdsLiveData.postValue(requestIds!!)
                 } else { // no changes in local. Need to download data from server.
@@ -149,7 +151,10 @@ class OfflineSyncViewModel @Inject constructor(
         }
     }
 
-    fun syncCompleted(isSuccess: Boolean = false, message: String? = null) {
+    fun syncCompleted(
+        isSuccess: Boolean = false,
+        message: String? = null,
+    ) {
         getLastSyncedAt()
         progressLiveData.postValue(100)
         progressJob?.cancel()

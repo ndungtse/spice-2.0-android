@@ -1,8 +1,6 @@
 package com.medtroniclabs.spice.network
 
 import com.google.gson.JsonObject
-import com.medtroniclabs.spice.data.HivVitalDetailsRequest
-import com.medtroniclabs.spice.data.HivVitalDetailsResponse
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
@@ -66,8 +64,6 @@ import com.medtroniclabs.spice.data.model.FamilyPlanningContraceptivesRequest
 import com.medtroniclabs.spice.data.model.FamilyPlanningCreateResponse
 import com.medtroniclabs.spice.data.model.FamilyPlanningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
-import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryRequest
-import com.medtroniclabs.spice.data.model.HivMedicalReviewSummaryResponse
 import com.medtroniclabs.spice.data.model.HivMetaResponse
 import com.medtroniclabs.spice.data.model.HivRequestData
 import com.medtroniclabs.spice.data.model.HivScreeningRequest
@@ -192,38 +188,58 @@ import retrofit2.http.Path
 
 interface ApiService {
     @POST("/auth-service/session")
-    suspend fun doLogin(@Body request: RequestBody): Response<LoginResponse>
+    suspend fun doLogin(
+        @Body request: RequestBody,
+    ): Response<LoginResponse>
 
     @POST("/spice-service/static-data/user-data")
     suspend fun getMetaDataInformation(): Response<APIResponse<MetaDataResponse>>
 
     @POST("/spice-service/static-data/form-data")
-    suspend fun getForms(@Body formRequest: FormRequest): Response<APIResponse<FormResponse>>
+    suspend fun getForms(
+        @Body formRequest: FormRequest,
+    ): Response<APIResponse<FormResponse>>
 
     @POST("/spice-service/static-data/meta-data")
-    suspend fun getFormMetadata(@Body request: FormMetaRequest): Response<APIResponse<UserSymptomsEntity>>
+    suspend fun getFormMetadata(
+        @Body request: FormMetaRequest,
+    ): Response<APIResponse<UserSymptomsEntity>>
 
     @POST("/offline-service/offline-sync/create")
     @JvmSuppressWildcards
-    suspend fun postOfflineSyncData(@Body map: Map<String, Any>): Response<SyncResponse>
+    suspend fun postOfflineSyncData(
+        @Body map: Map<String, Any>,
+    ): Response<SyncResponse>
 
     @POST("/offline-service/offline-sync/status")
-    suspend fun getOfflineSyncStatus(@Body request: RequestGetSyncStatus): Response<SyncResponse>
+    suspend fun getOfflineSyncStatus(
+        @Body request: RequestGetSyncStatus,
+    ): Response<SyncResponse>
 
     @POST("/spice-service/household/list")
-    suspend fun getHouseholdDetails(@Body request: RequestAllEntities): Response<APIResponse<List<HouseHold>>>
+    suspend fun getHouseholdDetails(
+        @Body request: RequestAllEntities,
+    ): Response<APIResponse<List<HouseHold>>>
 
     @POST("/offline-service/offline-sync/fetch-synced-data")
-    suspend fun fetchSyncedData(@Body request: RequestAllEntities): Response<ResponseBody>
+    suspend fun fetchSyncedData(
+        @Body request: RequestAllEntities,
+    ): Response<ResponseBody>
 
     @POST("spice-service/patient/list")
-    suspend fun getPatients(@Body request: PatientsDataModel): APIResponse<SearchAndListResponse>
+    suspend fun getPatients(
+        @Body request: PatientsDataModel,
+    ): APIResponse<SearchAndListResponse>
 
     @POST("spice-service/patient/search")
-    suspend fun patientSearch(@Body request: PatientsDataModel): APIResponse<SearchAndListResponse>
+    suspend fun patientSearch(
+        @Body request: PatientsDataModel,
+    ): APIResponse<SearchAndListResponse>
 
     @POST("spice-service/patient/patientDetails")
-    suspend fun getPatient(@Body request: PatientDetailRequest): Response<APIResponse<PatientListRespModel>>
+    suspend fun getPatient(
+        @Body request: PatientDetailRequest,
+    ): Response<APIResponse<PatientListRespModel>>
 
     @POST("/spice-service/static-data/meta-data/iccm-abovefive")
     suspend fun getAboveFiveYearsMetaData(): Response<APIResponse<AboveFiveYearsMetaResponse>>
@@ -232,19 +248,27 @@ interface ApiService {
     suspend fun getUnderFiveYearsMetaData(): Response<APIResponse<UnderFiveYearsMetaResponse>>
 
     @POST("/spice-service/patient/referral-tickets")
-    suspend fun getReferralsDetails(@Body request: ReferralDetailRequest): Response<APIResponse<ReferralData>>
+    suspend fun getReferralsDetails(
+        @Body request: ReferralDetailRequest,
+    ): Response<APIResponse<ReferralData>>
 
     @POST("/spice-service/medical-review/iccm-general/create")
-    suspend fun createAboveFiveYearsResult(@Body request: AboveFiveYearsSubmitRequest): Response<APIResponse<AboveFiveYearsSummaryDetails>>
+    suspend fun createAboveFiveYearsResult(
+        @Body request: AboveFiveYearsSubmitRequest,
+    ): Response<APIResponse<AboveFiveYearsSummaryDetails>>
 
     @POST("/spice-service/medical-review/iccm-general/details")
-    suspend fun getAboveFiveYearsSummaryDetails(@Body id: AboveFiveYearsSummaryRequest): Response<APIResponse<AboveFiveYearsSummaryDetails>>
+    suspend fun getAboveFiveYearsSummaryDetails(
+        @Body id: AboveFiveYearsSummaryRequest,
+    ): Response<APIResponse<AboveFiveYearsSummaryDetails>>
 
     @POST("/spice-service/static-data/meta-data/mother-neonate-anc")
     suspend fun getMotherNeoNateAncStaticData(): Response<APIResponse<MotherNeonateAncMetaResponse>>
 
     @POST("/spice-service/medical-review/labour-mother-neonate/create")
-    suspend fun createMedicalReviewForLaborDelivery(@Body labourDeliveryRequest: CreateLabourDeliveryRequest): Response<APIResponse<CreateLabourDeliveryResponse>>
+    suspend fun createMedicalReviewForLaborDelivery(
+        @Body labourDeliveryRequest: CreateLabourDeliveryRequest,
+    ): Response<APIResponse<CreateLabourDeliveryResponse>>
 
     @POST("/spice-service/static-data/meta-data/iccm-under-two-months")
     suspend fun getUnderTwoMonthsMetaData(): Response<APIResponse<UnderTwoMonthsMetaResponse>>
@@ -256,469 +280,761 @@ interface ApiService {
     suspend fun getNeonatePncStaticData(): Response<APIResponse<NeonatePncResponse>>
 
     @POST("/spice-service/medical-review/summary-create")
-    suspend fun createSummarySubmit(@Body request: MedicalReviewSummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createSummarySubmit(
+        @Body request: MedicalReviewSummarySubmitRequest,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/static-data/meta-data/mother-delivery")
     suspend fun getLabourDeliveryMetaData(): Response<APIResponse<LabourDeliveryMetaResponse>>
 
     @POST("/spice-service/medical-review/labour-mother-neonate/details")
-    suspend fun getLabourDeliverySummaryDetails(@Body request: LabourDeliverySummaryDetails): Response<APIResponse<CreateLabourDeliveryRequest>>
+    suspend fun getLabourDeliverySummaryDetails(
+        @Body request: LabourDeliverySummaryDetails,
+    ): Response<APIResponse<CreateLabourDeliveryRequest>>
 
     @POST("/admin-service/medication/search")
-    suspend fun searchMedicationByName(@Body request: MedicationSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>>
+    suspend fun searchMedicationByName(
+        @Body request: MedicationSearchRequest,
+    ): Response<APIResponse<ArrayList<MedicationResponse>>>
 
     @POST("/admin-service/medication/list-by-group")
-    suspend fun searchMedicationGroupByName(@Body request: MedicationGroupSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>>
+    suspend fun searchMedicationGroupByName(
+        @Body request: MedicationGroupSearchRequest,
+    ): Response<APIResponse<ArrayList<MedicationResponse>>>
 
     @POST("/spice-service/medical-review/iccm-under-2months/create")
-    suspend fun createMedicalReviewForUnderTwoMonths(@Body request: CreateUnderTwoMonthsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>>
+    suspend fun createMedicalReviewForUnderTwoMonths(
+        @Body request: CreateUnderTwoMonthsRequest,
+    ): Response<APIResponse<CreateUnderTwoMonthsResponse>>
 
     @POST("/spice-service/patient/patient-status")
-    suspend fun getPatientStatus(@Body request: PatientStatusRequest): Response<APIResponse<PatientStatusResponse>>
+    suspend fun getPatientStatus(
+        @Body request: PatientStatusRequest,
+    ): Response<APIResponse<PatientStatusResponse>>
 
     @POST("/spice-service/medical-review/iccm-under-2months/details")
-    suspend fun getUnderTwoMonthsSummaryDetails(@Body request: CreateUnderTwoMonthsResponse): Response<APIResponse<SummaryDetails>>
+    suspend fun getUnderTwoMonthsSummaryDetails(
+        @Body request: CreateUnderTwoMonthsResponse,
+    ): Response<APIResponse<SummaryDetails>>
 
     @POST("/spice-service/medical-review/anc-pregnancy/create")
-    suspend fun saveMotherNeonateAnc(@Body motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<PatientEncounterResponse>>
+    suspend fun saveMotherNeonateAnc(
+        @Body motherNeonateAncRequest: MotherNeonateAncRequest,
+    ): Response<APIResponse<PatientEncounterResponse>>
 
     @POST("/spice-service/medical-review/pnc/create")
-    suspend fun saveMotherNeonatePnc(@Body motherNeonatePncRequest: MotherNeonatePncRequest): Response<APIResponse<PncSubmitResponse>>
+    suspend fun saveMotherNeonatePnc(
+        @Body motherNeonatePncRequest: MotherNeonatePncRequest,
+    ): Response<APIResponse<PncSubmitResponse>>
 
     @POST("/spice-service/medical-review/anc-pregnancy/details")
-    suspend fun fetchSummary(@Body motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<MotherNeonateAncSummaryModel>>
+    suspend fun fetchSummary(
+        @Body motherNeonateAncRequest: MotherNeonateAncRequest,
+    ): Response<APIResponse<MotherNeonateAncSummaryModel>>
 
     @POST("/spice-service/medical-review/weight")
-    suspend fun fetchWeight(@Body motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>>
+    suspend fun fetchWeight(
+        @Body motherNeonateAncRequest: MotherNeonateAncRequest,
+    ): Response<APIResponse<BpAndWeightResponse>>
 
     @POST("/spice-service/medical-review/bp")
-    suspend fun fetchBloodPressure(@Body motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>>
+    suspend fun fetchBloodPressure(
+        @Body motherNeonateAncRequest: MotherNeonateAncRequest,
+    ): Response<APIResponse<BpAndWeightResponse>>
 
     @POST("/spice-service/medical-review/weight/create")
-    suspend fun createWeight(@Body bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createWeight(
+        @Body bpAndWeightRequestModel: BpAndWeightRequestModel,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/medical-review/bp/create")
-    suspend fun createBloodPressure(@Body bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createBloodPressure(
+        @Body bpAndWeightRequestModel: BpAndWeightRequestModel,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/patient/confirm-diagnosis")
-    suspend fun saveUpdateDiagnosis(@Body request: DiagnosisSaveUpdateRequest): Response<APIResponse<ArrayList<DiagnosisDiseaseModel>>>
+    suspend fun saveUpdateDiagnosis(
+        @Body request: DiagnosisSaveUpdateRequest,
+    ): Response<APIResponse<ArrayList<DiagnosisDiseaseModel>>>
 
     @POST("/spice-service/patient/diagnosis-details")
-    suspend fun getDiagnosisDetails(@Body request: CreateUnderTwoMonthsResponse): Response<APIResponse<ArrayList<DiagnosisDiseaseModel>>>
+    suspend fun getDiagnosisDetails(
+        @Body request: CreateUnderTwoMonthsResponse,
+    ): Response<APIResponse<ArrayList<DiagnosisDiseaseModel>>>
 
     @POST("/admin-service/healthfacilities-by-district-id")
-    suspend fun getHealthFacilityMetaData(@Body request: ReferPatientAPIRequest): Response<APIResponse<List<ReferPatientHealthFacilityItem>>>
+    suspend fun getHealthFacilityMetaData(
+        @Body request: ReferPatientAPIRequest,
+    ): Response<APIResponse<List<ReferPatientHealthFacilityItem>>>
 
     @POST("/user-service/user/users-by-tenant-id")
-    suspend fun getReferPatientMobileUserList(@Body tenantId: ReferPatientRequest): Response<APIResponse<List<ReferPatientNameNumber>>>
+    suspend fun getReferPatientMobileUserList(
+        @Body tenantId: ReferPatientRequest,
+    ): Response<APIResponse<List<ReferPatientNameNumber>>>
 
     @POST("/spice-service/patient/referral-tickets/create")
-    suspend fun createReferPatientResult(@Body request: ReferPatientResult): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createReferPatientResult(
+        @Body request: ReferPatientResult,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("spice-service/prescription-request/create")
-    suspend fun createPrescriptionRequest(@Body request: RequestBody): Response<APIResponse<Map<String, Any>>>
+    suspend fun createPrescriptionRequest(
+        @Body request: RequestBody,
+    ): Response<APIResponse<Map<String, Any>>>
 
     @POST("spice-service/prescription-request/list")
-    suspend fun getPrescriptionList(@Body request: PrescriptionListRequest): Response<APIResponse<ArrayList<Prescription>>>
+    suspend fun getPrescriptionList(
+        @Body request: PrescriptionListRequest,
+    ): Response<APIResponse<ArrayList<Prescription>>>
 
     @POST("spice-service/prescription-request/remove")
-    suspend fun removePrescription(@Body request: RemovePrescriptionRequest): Response<APIResponse<Map<String, Any>>>
+    suspend fun removePrescription(
+        @Body request: RemovePrescriptionRequest,
+    ): Response<APIResponse<Map<String, Any>>>
 
     @POST("spice-service/prescription-request/remove")
-    suspend fun removeCommunityPrescription(@Body request: List<RemovePrescriptionRequest>): Response<APIResponse<Map<String, Any>>>
+    suspend fun removeCommunityPrescription(
+        @Body request: List<RemovePrescriptionRequest>,
+    ): Response<APIResponse<Map<String, Any>>>
 
     @POST("/spice-service/medical-review/iccm-under-5years/details")
-    suspend fun getUnderFiveYearsSummaryDetails(@Body request: CreateUnderTwoMonthsResponse): Response<APIResponse<SummaryDetails>>
+    suspend fun getUnderFiveYearsSummaryDetails(
+        @Body request: CreateUnderTwoMonthsResponse,
+    ): Response<APIResponse<SummaryDetails>>
 
     @POST("/spice-service/medical-review/iccm-under-5years/create")
-    suspend fun createMedicalReviewForUnderFiveYears(@Body request: CreateUnderFiveYearsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>>
+    suspend fun createMedicalReviewForUnderFiveYears(
+        @Body request: CreateUnderFiveYearsRequest,
+    ): Response<APIResponse<CreateUnderTwoMonthsResponse>>
 
     @POST("/spice-service/prescription-request/prescribed-details")
-    suspend fun getPrescription(@Body request: ReferralDetailRequest): Response<APIResponse<HistoryEntity>>
+    suspend fun getPrescription(
+        @Body request: ReferralDetailRequest,
+    ): Response<APIResponse<HistoryEntity>>
 
     @POST("/spice-service/medical-review/history")
-    suspend fun getMedicalReviewHistory(@Body request: ReferralDetailRequest): Response<APIResponse<MedicalReviewHistory>>
+    suspend fun getMedicalReviewHistory(
+        @Body request: ReferralDetailRequest,
+    ): Response<APIResponse<MedicalReviewHistory>>
 
     @POST("/spice-service/medical-review/pnc/details")
-    suspend fun getPncSummaryDetails(@Body request: MotherNeonatePncSummaryRequest): Response<APIResponse<MotherNeonatePncSummaryResponse>>
+    suspend fun getPncSummaryDetails(
+        @Body request: MotherNeonatePncSummaryRequest,
+    ): Response<APIResponse<MotherNeonatePncSummaryResponse>>
 
     @POST("/spice-service/medical-review/mother-neonate/summary-create")
-    suspend fun summaryCreatePncData(@Body request: SummaryCreateRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun summaryCreatePncData(
+        @Body request: SummaryCreateRequest,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("spice-service/medical-review/birth-history")
-    suspend fun getBirthHistoryDetails(@Body request: BirthHistoryRequest): Response<APIResponse<BirthHistoryResponse>>
+    suspend fun getBirthHistoryDetails(
+        @Body request: BirthHistoryRequest,
+    ): Response<APIResponse<BirthHistoryResponse>>
 
     @POST("spice-service/household/create-member")
-    suspend fun addNewMember(@Body request: AddMemberRegRequest): Response<APIResponse<String>>
+    suspend fun addNewMember(
+        @Body request: AddMemberRegRequest,
+    ): Response<APIResponse<String>>
 
     @POST("/admin-service/lab-test-customization/list")
-    suspend fun searchLabTestByName(@Body request: SearchRequestLabTest): Response<APIResponse<ArrayList<SearchLabTestResponse>>>
+    suspend fun searchLabTestByName(
+        @Body request: SearchRequestLabTest,
+    ): Response<APIResponse<ArrayList<SearchLabTestResponse>>>
 
     @POST("spice-service/investigation/create")
-    suspend fun createLabTest(@Body request: LabTestCreateRequest): Response<APIResponse<Map<String, Any>>>
+    suspend fun createLabTest(
+        @Body request: LabTestCreateRequest,
+    ): Response<APIResponse<Map<String, Any>>>
 
     @POST("spice-service/investigation/result/create")
-    suspend fun updateLabTest(@Body request: LabTestCreateRequest): Response<APIResponse<Map<String, Any>>>
+    suspend fun updateLabTest(
+        @Body request: LabTestCreateRequest,
+    ): Response<APIResponse<Map<String, Any>>>
 
     @POST("spice-service/investigation/list")
-    suspend fun getLabTestList(@Body request: LabTestListRequest): Response<APIResponse<ArrayList<LabTestListResponse>>>
+    suspend fun getLabTestList(
+        @Body request: LabTestListRequest,
+    ): Response<APIResponse<ArrayList<LabTestListResponse>>>
 
     @POST("/spice-service/investigation/remove")
-    suspend fun removeLabTest(@Body request: RemoveLabTestRequest): Response<APIResponse<Map<String, Any>>>
+    suspend fun removeLabTest(
+        @Body request: RemoveLabTestRequest,
+    ): Response<APIResponse<Map<String, Any>>>
 
     @POST("/spice-service/medical-review/mother-neonate/summary-create")
-    suspend fun summaryCreateMotherNeonate(@Body request: LabourDeliverySummaryRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun summaryCreateMotherNeonate(
+        @Body request: LabourDeliverySummaryRequest,
+    ): Response<APIResponse<HashMap<String, Any>>>
+
     @GET("user-service/user/peer-supervisor/linked-chw")
     suspend fun getPeerSupervisorLinkedChwList(): Response<APIResponse<List<ChwVillageFilterModel>>>
 
     @POST("spice-service/report/chw-performance")
-    suspend fun getPeerSupervisorReport(@Body request: PerformanceReportRequest): Response<APIResponse<List<CHWPerformanceMonitoring>>>
+    suspend fun getPeerSupervisorReport(
+        @Body request: PerformanceReportRequest,
+    ): Response<APIResponse<List<CHWPerformanceMonitoring>>>
 
     @POST("user-service/user/preferences")
-    suspend fun getUserFilterPreference(@Body request: FilterPreference): Response<APIResponse<FilterPreference>>
+    suspend fun getUserFilterPreference(
+        @Body request: FilterPreference,
+    ): Response<APIResponse<FilterPreference>>
 
     @POST("user-service/user/preferences/save")
-    suspend fun saveUserFilterPreference(@Body request: FilterPreference): Response<APIResponse<FilterPreference>>
-
+    suspend fun saveUserFilterPreference(
+        @Body request: FilterPreference,
+    ): Response<APIResponse<FilterPreference>>
 
     @POST("/spice-service/medical-review/pnc-history")
-    suspend fun getMedicalReviewHistoryPNC(@Body request: ReferralDetailRequest): Response<APIResponse<PncChildMedicalReview>>
+    suspend fun getMedicalReviewHistoryPNC(
+        @Body request: ReferralDetailRequest,
+    ): Response<APIResponse<PncChildMedicalReview>>
 
     @POST("/spice-service/investigation/history-list")
-    suspend fun getInvestigationHistoryList(@Body request: ReferralDetailRequest): Response<APIResponse<HistoryEntity>>
+    suspend fun getInvestigationHistoryList(
+        @Body request: ReferralDetailRequest,
+    ): Response<APIResponse<HistoryEntity>>
 
     @POST("/user-service/user/forgot-password/{email}/{client}")
-    suspend fun forgotPassword(@Path("email") email: String, @Path("client") client: String): Response<APIResponse<String?>>
+    suspend fun forgotPassword(
+        @Path("email") email: String,
+        @Path("client") client: String,
+    ): Response<APIResponse<String?>>
 
     @POST("/user-service/user/verify-token/{token}")
-    suspend fun verifyToken(@Path("token") token: String): Response<APIResponse<String?>>
+    suspend fun verifyToken(
+        @Path("token") token: String,
+    ): Response<APIResponse<String?>>
 
     @POST("/user-service/user/reset-password/{token}")
-    suspend fun resetPassword(@Path("token") token: String, @Body request: RequestChangePassword): Response<APIResponse<ResponseChangePassword>>
+    suspend fun resetPassword(
+        @Path("token") token: String,
+        @Body request: RequestChangePassword,
+    ): Response<APIResponse<ResponseChangePassword>>
 
     @POST("/offline-service/offline-sync/upload-signatures")
-    suspend fun uploadAllConsentSignatures(@Body request: RequestBody): Response<APIResponse<List<ResponseSignatureUpload>>>
+    suspend fun uploadAllConsentSignatures(
+        @Body request: RequestBody,
+    ): Response<APIResponse<List<ResponseSignatureUpload>>>
 
     @POST("spice-service/static-data/app-version")
     suspend fun checkAppVersion(): Response<APIResponse<Boolean>>
 
     @POST("/spice-service/screening/create")
-    suspend fun createScreening(@Body createRequest: RequestBody): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createScreening(
+        @Body createRequest: RequestBody,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("spice-service/patient/register")
-    suspend fun registerPatient(@Body request: RequestBody): Response<APIResponse<RegistrationResponse>>
+    suspend fun registerPatient(
+        @Body request: RequestBody,
+    ): Response<APIResponse<RegistrationResponse>>
 
     @POST("spice-service/static-data/ncd-medical-review")
     suspend fun getNcdMRStaticData(): Response<APIResponse<NcdMRStaticDataModel>>
 
     @POST("spice-service/bplog/create")
-    suspend fun bpLogCreate(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun bpLogCreate(
+        @Body request: HashMap<String, Any>,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("spice-service/glucoselog/create")
-    suspend fun glucoseLogCreate(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun glucoseLogCreate(
+        @Body request: HashMap<String, Any>,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("spice-service/bplog/list")
-    suspend fun bpLogList(@Body request: BPBGListModel): Response<APIResponse<BPBGListModel>>
+    suspend fun bpLogList(
+        @Body request: BPBGListModel,
+    ): Response<APIResponse<BPBGListModel>>
 
     @POST("spice-service/glucoselog/list")
-    suspend fun glucoseLogList(@Body request: BPBGListModel): Response<APIResponse<BPBGListModel>>
+    suspend fun glucoseLogList(
+        @Body request: BPBGListModel,
+    ): Response<APIResponse<BPBGListModel>>
 
     @POST("spice-service/assessment/create")
-    suspend fun createAssessmentNCD(@Body request: JsonObject): Response<HashMap<String, Any>>
+    suspend fun createAssessmentNCD(
+        @Body request: JsonObject,
+    ): Response<HashMap<String, Any>>
 
     @POST("spice-service/patient/pregnancy/create")
-    suspend fun ncdPregnancyCreate(@Body request: PregnancyDetailsModel): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun ncdPregnancyCreate(
+        @Body request: PregnancyDetailsModel,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("spice-service/patient/pregnancy/details")
-    suspend fun ncdPregnancyDetails(@Body request: HashMap<String, Any>): Response<APIResponse<PregnancyDetailsModel>>
+    suspend fun ncdPregnancyDetails(
+        @Body request: HashMap<String, Any>,
+    ): Response<APIResponse<PregnancyDetailsModel>>
 
     @POST("/spice-service/patientvisit/create")
-    suspend fun createPatientVisit(@Body request: PatientVisitRequest): Response<APIResponse<PatientVisitResponse>>
+    suspend fun createPatientVisit(
+        @Body request: PatientVisitRequest,
+    ): Response<APIResponse<PatientVisitResponse>>
 
     @POST("/spice-service/medical-review/ncd/create")
-    suspend fun createNCDMedicalReview(@Body request: MedicalReviewRequestResponse): Response<APIResponse<MedicalReviewResponse>>
+    suspend fun createNCDMedicalReview(
+        @Body request: MedicalReviewRequestResponse,
+    ): Response<APIResponse<MedicalReviewResponse>>
 
     @POST("/spice-service/medical-review/ncd/details")
-    suspend fun fetchNCDMRSummary(@Body request: MedicalReviewResponse): Response<APIResponse<MRSummaryResponse>>
+    suspend fun fetchNCDMRSummary(
+        @Body request: MedicalReviewResponse,
+    ): Response<APIResponse<MRSummaryResponse>>
 
     @POST("spice-service/prescription-request/history-list")
-    suspend fun getPatientPrescriptionHistoryList(@Body request: RemovePrescriptionRequest) : Response<APIResponse<ArrayList<Prescription>>>
+    suspend fun getPatientPrescriptionHistoryList(
+        @Body request: RemovePrescriptionRequest,
+    ): Response<APIResponse<ArrayList<Prescription>>>
 
     @POST("/spice-service/medical-review/confirm-diagnosis/update")
-    suspend fun createConfirmDiagonsis(@Body request: NCDDiagnosisRequestResponse): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createConfirmDiagonsis(
+        @Body request: NCDDiagnosisRequestResponse,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/patient/get-diagnosis-details")
-    suspend fun getConfirmDiagonsis(@Body request: NCDDiagnosisGetRequest): Response<APIResponse<NCDDiagnosisGetResponse>>
+    suspend fun getConfirmDiagonsis(
+        @Body request: NCDDiagnosisGetRequest,
+    ): Response<APIResponse<NCDDiagnosisGetResponse>>
 
     @POST("/spice-service/medical-review/patient-status/create")
-    suspend fun createNCDPatientStatus(@Body request: NCDPatientStatusRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createNCDPatientStatus(
+        @Body request: NCDPatientStatusRequest,
+    ): Response<APIResponse<HashMap<String, Any>>>
+
     @POST("/spice-service/patient-treatment-plan/update")
-    suspend fun updateNCDTreatmentPlan(@Body request: NCDTreatmentPlanModel): Response<APIResponse<NCDTreatmentPlanModel>>
+    suspend fun updateNCDTreatmentPlan(
+        @Body request: NCDTreatmentPlanModel,
+    ): Response<APIResponse<NCDTreatmentPlanModel>>
 
     @POST("/spice-service/patient-treatment-plan/details")
-    suspend fun getNCDTreatmentPlan(@Body request: NCDTreatmentPlanModelDetails): Response<APIResponse<NCDTreatmentPlanModelDetails>>
+    suspend fun getNCDTreatmentPlan(
+        @Body request: NCDTreatmentPlanModelDetails,
+    ): Response<APIResponse<NCDTreatmentPlanModelDetails>>
 
     @POST("/spice-service/medical-review/ncd/summary-create")
-    suspend fun createNCDMRSummaryCreate(@Body request: NCDMRSummaryRequestResponse): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createNCDMRSummaryCreate(
+        @Body request: NCDMRSummaryRequestResponse,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("spice-service/patient-nutrition-lifestyle/create")
-    suspend fun createLifestyle(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun createLifestyle(
+        @Body request: NCDCounselingModel,
+    ): Response<APIResponse<NCDCounselingModel>>
 
     @PUT("spice-service/patient-nutrition-lifestyle/update")
-    suspend fun updateLifestyle(@Body request: AssessmentResultModel): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun updateLifestyle(
+        @Body request: AssessmentResultModel,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("spice-service/patient-nutrition-lifestyle/list")
-    suspend fun getLifestyleList(@Body request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>>
+    suspend fun getLifestyleList(
+        @Body request: NCDCounselingModel,
+    ): Response<APIResponse<ArrayList<NCDCounselingModel>>>
 
     @POST("spice-service/patient-nutrition-lifestyle/remove")
-    suspend fun removeLifestyle(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun removeLifestyle(
+        @Body request: NCDCounselingModel,
+    ): Response<APIResponse<NCDCounselingModel>>
 
     @POST("spice-service/medical-review/patient-psychology/create")
-    suspend fun createPsychological(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun createPsychological(
+        @Body request: NCDCounselingModel,
+    ): Response<APIResponse<NCDCounselingModel>>
 
     @PUT("spice-service/medical-review/patient-psychology/update")
-    suspend fun updatePsychological(@Body request: AssessmentResultModel): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun updatePsychological(
+        @Body request: AssessmentResultModel,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("spice-service/medical-review/patient-psychology/list")
-    suspend fun getPsychological(@Body request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>>
+    suspend fun getPsychological(
+        @Body request: NCDCounselingModel,
+    ): Response<APIResponse<ArrayList<NCDCounselingModel>>>
 
     @POST("spice-service/medical-review/patient-psychology/remove")
-    suspend fun removePsychological(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun removePsychological(
+        @Body request: NCDCounselingModel,
+    ): Response<APIResponse<NCDCounselingModel>>
 
     @POST("/spice-service/prescription-request/fill-prescription/list")
-    suspend fun getPrescriptionDispenseList(@Body request: DispenseUpdateRequest): Response<APIResponse<ArrayList<DispensePrescriptionResponse>>>
+    suspend fun getPrescriptionDispenseList(
+        @Body request: DispenseUpdateRequest,
+    ): Response<APIResponse<ArrayList<DispensePrescriptionResponse>>>
 
     @POST("/spice-service/prescription-request/fill-prescription/update")
-    suspend fun updateDispensePrescription(@Body request: DispensePrescriptionRequest):  Response<APIResponse<DispenseUpdateResponse>>
+    suspend fun updateDispensePrescription(
+        @Body request: DispensePrescriptionRequest,
+    ): Response<APIResponse<DispenseUpdateResponse>>
 
     @POST("/spice-service/prescription-request/refill-prescription/history")
-    suspend fun getDispensePrescriptionHistory(@Body request: DispenseUpdateRequest): Response<APIResponse<ArrayList<DispensePrescriptionResponse>>>
-
+    suspend fun getDispensePrescriptionHistory(
+        @Body request: DispenseUpdateRequest,
+    ): Response<APIResponse<ArrayList<DispensePrescriptionResponse>>>
 
     @POST("/spice-service/medical-review/ncd/history-list")
-    suspend fun getNCDMedicalReviewHistory(@Body request: ReferralDetailRequest): Response<APIResponse<NCDMedicalReviewHistory>>
+    suspend fun getNCDMedicalReviewHistory(
+        @Body request: ReferralDetailRequest,
+    ): Response<APIResponse<NCDMedicalReviewHistory>>
 
     @POST("spice-service/patient/validate")
-    suspend fun validatePatient(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun validatePatient(
+        @Body request: HashMap<String, Any>,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @GET("/spice-service/medical-review/get-instructions")
     suspend fun ncdGetInstructions(): Response<APIResponse<NCDInstructionModel>>
 
     @PUT("/spice-service/patient/pregnancy-anc-risk/update")
-    suspend fun ncdUpdatePregnancyRisk(@Body request: NCDPregnancyRiskUpdate): Response<APIResponse<Boolean>>
+    suspend fun ncdUpdatePregnancyRisk(
+        @Body request: NCDPregnancyRiskUpdate,
+    ): Response<APIResponse<Boolean>>
 
     @POST("/spice-service/patient/calculate-wgs")
-    suspend fun getWazWhzScore(@Body request: WazWhzScoreRequest): Response<APIResponse<WazWhzScoreResponse>>
-
+    suspend fun getWazWhzScore(
+        @Body request: WazWhzScoreRequest,
+    ): Response<APIResponse<WazWhzScoreResponse>>
 
     @POST("/spice-service/screening/dashboard-count")
-    suspend fun getUserDashboardDetails(@Body request: NCDUserDashboardRequest): Response<APIResponse<NCDUserDashboardResponse>>
+    suspend fun getUserDashboardDetails(
+        @Body request: NCDUserDashboardRequest,
+    ): Response<APIResponse<NCDUserDashboardResponse>>
 
     @POST("spice-service/medical-review/count")
-    suspend fun getBadgeNotifications(@Body request: BadgeNotificationModel): Response<APIResponse<BadgeNotificationModel>>
+    suspend fun getBadgeNotifications(
+        @Body request: BadgeNotificationModel,
+    ): Response<APIResponse<BadgeNotificationModel>>
 
     @PUT("spice-service/medical-review/update-view-status")
-    suspend fun updateBadgeNotifications(@Body request: BadgeNotificationModel): Response<APIResponse<Boolean>>
+    suspend fun updateBadgeNotifications(
+        @Body request: BadgeNotificationModel,
+    ): Response<APIResponse<Boolean>>
 
     @POST("/spice-service/medical-review/patient-lifestyle-details")
-    suspend fun getNcdLifeStyleDetails(@Body request: LifeStyleRequest): Response<APIResponse<ArrayList<LifeStyleResponse>>>
+    suspend fun getNcdLifeStyleDetails(
+        @Body request: LifeStyleRequest,
+    ): Response<APIResponse<ArrayList<LifeStyleResponse>>>
 
     @POST("/spice-service/patient/delete")
-    suspend fun ncdPatientRemove(@Body request: NCDPatientRemoveRequest): Response<APIResponse<Boolean>>
+    suspend fun ncdPatientRemove(
+        @Body request: NCDPatientRemoveRequest,
+    ): Response<APIResponse<Boolean>>
 
     @POST("/spice-service/assessment/bp-log-create")
-    suspend fun bpLogCreateForNurse(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun bpLogCreateForNurse(
+        @Body request: HashMap<String, Any>,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/assessment/glucose-log-create")
-    suspend fun glucoseLogCreateForNurse(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun glucoseLogCreateForNurse(
+        @Body request: HashMap<String, Any>,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/patient/update")
-    suspend fun ncdUpdatePatientDetail(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun ncdUpdatePatientDetail(
+        @Body request: HashMap<String, Any>,
+    ): Response<APIResponse<HashMap<String, Any>>>
+
     @POST("admin-service/terms-and-conditions/details")
-    suspend fun getUserTermsAndConditions(@Body request: TermsAndConditionsModel): Response<APIResponse<TermsAndConditionsModel>>
+    suspend fun getUserTermsAndConditions(
+        @Body request: TermsAndConditionsModel,
+    ): Response<APIResponse<TermsAndConditionsModel>>
 
     @POST("user-service/user/terms-and-conditions/update")
-    suspend fun updateTermsAndConditionsStatus(@Body request: TermsAndConditionsModel): Response<APIResponse<TermsAndConditionsModel>>
+    suspend fun updateTermsAndConditionsStatus(
+        @Body request: TermsAndConditionsModel,
+    ): Response<APIResponse<TermsAndConditionsModel>>
 
     @POST("/spice-service/medical-review/ncd/date/update")
-    suspend fun ncdUpdateNextVisitDate(@Body request: NCDMedicalReviewUpdateModel): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun ncdUpdateNextVisitDate(
+        @Body request: NCDMedicalReviewUpdateModel,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/patient-transfer/validate")
-    suspend fun validatePatientTransfer(@Body request: NCDPatientTransferValidate): Response<HashMap<String, Any>>
+    suspend fun validatePatientTransfer(
+        @Body request: NCDPatientTransferValidate,
+    ): Response<HashMap<String, Any>>
 
     @POST("/spice-service/patient-transfer/create")
-    suspend fun createPatientTransfer(@Body request: NCDTransferCreateRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createPatientTransfer(
+        @Body request: NCDTransferCreateRequest,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/admin-service/country/healthfacility-list")
-    suspend fun searchSite(@Body request: NCDRegionSiteModel): Response<APIResponse<ArrayList<RegionSiteResponse>>>
+    suspend fun searchSite(
+        @Body request: NCDRegionSiteModel,
+    ): Response<APIResponse<ArrayList<RegionSiteResponse>>>
 
     @POST("/user-service/user/role-user-list")
-    suspend fun searchRoleUser(@Body request: NCDSiteRoleModel): Response<APIResponse<ArrayList<NCDSiteRoleResponse>>>
+    suspend fun searchRoleUser(
+        @Body request: NCDSiteRoleModel,
+    ): Response<APIResponse<ArrayList<NCDSiteRoleResponse>>>
 
     @POST("/spice-service/patient-transfer/list")
-    suspend fun getPatientListTransfer(@Body request: NCDPatientTransferNotificationCountRequest): Response<APIResponse<PatientTransferListResponse>>
+    suspend fun getPatientListTransfer(
+        @Body request: NCDPatientTransferNotificationCountRequest,
+    ): Response<APIResponse<PatientTransferListResponse>>
 
     @POST("/spice-service/patient-transfer/notification-count")
-    suspend fun patientTransferNotificationCount(@Body request: NCDPatientTransferNotificationCountRequest): Response<APIResponse<NCDPatientTransferNotificationCountResponse>>
+    suspend fun patientTransferNotificationCount(
+        @Body request: NCDPatientTransferNotificationCountRequest,
+    ): Response<APIResponse<NCDPatientTransferNotificationCountResponse>>
 
     @POST("/spice-service/patient-transfer/update")
-    suspend fun patientTransferUpdate(@Body request: NCDPatientTransferUpdateRequest): Response<APIResponse<String>>
+    suspend fun patientTransferUpdate(
+        @Body request: NCDPatientTransferUpdateRequest,
+    ): Response<APIResponse<String>>
 
     @POST("/spice-service/prescription-request/prediction")
-    suspend fun getNudgesList(@Body prescriptionNudgeRequest: PredictionRequest): Response<APIResponse<PrescriptionNudgeResponse>>
+    suspend fun getNudgesList(
+        @Body prescriptionNudgeRequest: PredictionRequest,
+    ): Response<APIResponse<PrescriptionNudgeResponse>>
 
     @POST("/spice-service/investigation/prediction")
-    suspend fun getLabTestNudgeList(@Body predictionRequest: PredictionRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun getLabTestNudgeList(
+        @Body predictionRequest: PredictionRequest,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/follow-up/ncd/list")
-    suspend fun ncdFollowUpList(@Body request: FollowUpRequest): APIResponse<List<PatientFollowUpEntity>>
+    suspend fun ncdFollowUpList(
+        @Body request: FollowUpRequest,
+    ): APIResponse<List<PatientFollowUpEntity>>
 
     @GET("/spice-service/follow-up")
     suspend fun getPatientCallRegister(): Response<APIResponse<RegisterCallResponse>>
 
     @POST("/spice-service/follow-up/ncd/update")
-    suspend fun updatePatientCallRegister(@Body request: FollowUpUpdateRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun updatePatientCallRegister(
+        @Body request: FollowUpUpdateRequest,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/devicedetails")
-    suspend fun updateDeviceDetails(@Body request: DeviceDetails): Response<APIResponse<DeviceDetails>>
+    suspend fun updateDeviceDetails(
+        @Body request: DeviceDetails,
+    ): Response<APIResponse<DeviceDetails>>
 
     @POST("/spice-service/medical-review/patient-status/create")
-    suspend fun createMentalHealthStatus(@Body request: NCDMentalHealthStatusRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createMentalHealthStatus(
+        @Body request: NCDMentalHealthStatusRequest,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/medical-review/patient-status/details")
-    suspend fun ncdPatientDiagnosisStatus(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun ncdPatientDiagnosisStatus(
+        @Body request: HashMap<String, Any>,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/mentalhealth/create")
-    suspend fun ncdMentalHealthMedicalReviewCreateA(@Body request: JsonObject): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun ncdMentalHealthMedicalReviewCreateA(
+        @Body request: JsonObject,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/mentalhealth/condition-create")
-    suspend fun ncdMentalHealthMedicalReviewCreateS(@Body request: JsonObject): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun ncdMentalHealthMedicalReviewCreateS(
+        @Body request: JsonObject,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/mentalhealth/details")
-    suspend fun ncdMentalHealthMedicalReviewDetailsA(@Body request: NCDMentalHealthMedicalReviewDetails): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun ncdMentalHealthMedicalReviewDetailsA(
+        @Body request: NCDMentalHealthMedicalReviewDetails,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/mentalhealth/condition-details")
-    suspend fun ncdMentalHealthMedicalReviewDetailsS(@Body request: NCDMentalHealthMedicalReviewDetails): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun ncdMentalHealthMedicalReviewDetailsS(
+        @Body request: NCDMentalHealthMedicalReviewDetails,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("spice-service/investigation/review")
-    suspend fun markAsReviewed(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun markAsReviewed(
+        @Body request: HashMap<String, Any>,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/user-service/user/update-culture")
-    suspend fun cultureLocaleUpdate(@Body request: CultureLocaleModel): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun cultureLocaleUpdate(
+        @Body request: CultureLocaleModel,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/immunisation/list")
-    suspend fun getImmunisationList(@Body request: RequestVaccinationList): Response<APIResponse<ArrayList<VaccinationDetail>>>
+    suspend fun getImmunisationList(
+        @Body request: RequestVaccinationList,
+    ): Response<APIResponse<ArrayList<VaccinationDetail>>>
 
     @POST("/spice-service/immunisation/create")
-    suspend fun saveImmunisationList(@Body request: RequestCreateImmunisation): Response<APIResponse<ResponseCreateImmunisation>>
+    suspend fun saveImmunisationList(
+        @Body request: RequestCreateImmunisation,
+    ): Response<APIResponse<ResponseCreateImmunisation>>
 
     @POST("/spice-service/immunisation/detail")
-    suspend fun getImmunisationSummaryDetails(@Body request: RequestImmunisationSummaryDetail): Response<APIResponse<ResponseImmunisationSummaryDetails>>
+    suspend fun getImmunisationSummaryDetails(
+        @Body request: RequestImmunisationSummaryDetail,
+    ): Response<APIResponse<ResponseImmunisationSummaryDetails>>
 
     @POST("/spice-service/immunisation/summary-create")
-    suspend fun saveImmunisationSummaryDetails(@Body request: RequestImmunisationSummaryCreate): Response<APIResponse<ResponseImmunisationSummaryCreate>>
-
+    suspend fun saveImmunisationSummaryDetails(
+        @Body request: RequestImmunisationSummaryCreate,
+    ): Response<APIResponse<ResponseImmunisationSummaryCreate>>
 
     @POST("/spice-service/community-profile/get-community-profile")
-    suspend fun getCommunityProfileDetails(@Body request: HashMap<String, Any>): Response<APIResponse<CommunityProfileDetails>>
+    suspend fun getCommunityProfileDetails(
+        @Body request: HashMap<String, Any>,
+    ): Response<APIResponse<CommunityProfileDetails>>
 
     @POST("/spice-service/community-profile/create")
-    suspend fun createCommunityProfile(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createCommunityProfile(
+        @Body request: HashMap<String, Any>,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/community-profile/update")
-    suspend fun updateCommunityProfile(@Body request:HashMap<String,Any>): Response<APIResponse<HashMap<String,Any>>>
+    suspend fun updateCommunityProfile(
+        @Body request: HashMap<String, Any>,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/user-service/user/support")
-    suspend fun createSupportRequest(@Body request: NCDSupportRequest): Response<APIResponse<String>>
+    suspend fun createSupportRequest(
+        @Body request: NCDSupportRequest,
+    ): Response<APIResponse<String>>
 
     @POST("/spice-service/static-data/meta-data/tb")
     suspend fun getTbStaticData(): Response<APIResponse<TbMetaResponse>>
 
     @POST("/spice-service/medical-review/height/create")
-    suspend fun createHeight(@Body request: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createHeight(
+        @Body request: BpAndWeightRequestModel,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/medical-review/height")
-    suspend fun fetchHeight(@Body motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>>
+    suspend fun fetchHeight(
+        @Body motherNeonateAncRequest: MotherNeonateAncRequest,
+    ): Response<APIResponse<BpAndWeightResponse>>
 
     @POST("/spice-service/medical-review/bmi")
-    suspend fun fetchBmi(@Body motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>>
+    suspend fun fetchBmi(
+        @Body motherNeonateAncRequest: MotherNeonateAncRequest,
+    ): Response<APIResponse<BpAndWeightResponse>>
 
     @POST("/spice-service/medical-review/bmi-history")
-    suspend fun fetchList(@Body motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<List<BpAndWeightResponse>>>
+    suspend fun fetchList(
+        @Body motherNeonateAncRequest: MotherNeonateAncRequest,
+    ): Response<APIResponse<List<BpAndWeightResponse>>>
 
     @POST("/spice-service/medical-review/tb/details")
-    suspend fun fetchTbAssessmentDetails(@Body request: MotherNeonateAncRequest): Response<APIResponse<TbHistory>>
+    suspend fun fetchTbAssessmentDetails(
+        @Body request: MotherNeonateAncRequest,
+    ): Response<APIResponse<TbHistory>>
 
     @POST("/spice-service/medical-review/tb/create")
-    suspend fun saveTbMedicalReview(@Body request: TbMedicalReviewCreateRequest): Response<APIResponse<PatientEncounterResponse>>
+    suspend fun saveTbMedicalReview(
+        @Body request: TbMedicalReviewCreateRequest,
+    ): Response<APIResponse<PatientEncounterResponse>>
 
     @POST("/spice-service/medical-review/patient-type/create")
-    suspend fun createPatientType(@Body request: PatientTypeCreateRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createPatientType(
+        @Body request: PatientTypeCreateRequest,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/medical-review/patient-type")
-    suspend fun getPatientType(@Body request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun getPatientType(
+        @Body request: MotherNeonateAncRequest,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/medical-review/birth-details")
-    suspend fun getBirthDetails(@Body request: RequestBirthDetails): Response<APIResponse<BirthDetails>>
+    suspend fun getBirthDetails(
+        @Body request: RequestBirthDetails,
+    ): Response<APIResponse<BirthDetails>>
 
     @POST("spice-service/static-data/meta-data/hiv")
     suspend fun getHIVStaticData(): Response<APIResponse<HivMetaResponse>>
 
     @POST("/spice-service/hiv/screening/create")
-    suspend fun createHivScreening(@Body request: HivScreeningRequest) : Response<APIResponse<HivScreeningResponse>>
+    suspend fun createHivScreening(
+        @Body request: HivScreeningRequest,
+    ): Response<APIResponse<HivScreeningResponse>>
 
     @POST("/spice-service/hiv/screening/detail")
-    suspend fun getHivScreeningDetails(@Body request: HivScreeningResponse) : Response<APIResponse<HivCreateScreeningSummaryResponse>>
+    suspend fun getHivScreeningDetails(
+        @Body request: HivScreeningResponse,
+    ): Response<APIResponse<HivCreateScreeningSummaryResponse>>
 
     @POST("/notification-service/inapp-notification/list")
-    suspend fun getCBSNotificationDetails(@Body peerSupervisorNotificationRequest: PeerSupervisorNotificationRequest) : Response<APIResponse<ArrayList<PeerSupervisorNotificationResponse>>>
+    suspend fun getCBSNotificationDetails(
+        @Body peerSupervisorNotificationRequest: PeerSupervisorNotificationRequest,
+    ): Response<APIResponse<ArrayList<PeerSupervisorNotificationResponse>>>
 
     @POST(" /notification-service/inapp-notification/clear")
-    suspend fun updateCBSNotification(@Body peerSupervisorNotificationRequest: PeerSupervisorNotificationRequest) :  Response<APIResponse<Unit>>
+    suspend fun updateCBSNotification(
+        @Body peerSupervisorNotificationRequest: PeerSupervisorNotificationRequest,
+    ): Response<APIResponse<Unit>>
 
     @POST("/spice-service/medical-review/bmi/create")
-    suspend fun createBMI(@Body bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createBMI(
+        @Body bpAndWeightRequestModel: BpAndWeightRequestModel,
+    ): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/medical-review/family-planning/create")
-    suspend fun createFamilyPlanningMR(@Body request: FamilyPlanningContraceptivesRequest): Response<APIResponse<FamilyPlanningCreateResponse>>
+    suspend fun createFamilyPlanningMR(
+        @Body request: FamilyPlanningContraceptivesRequest,
+    ): Response<APIResponse<FamilyPlanningCreateResponse>>
 
     @POST("/spice-service/static-data/meta-data/family-planning")
     suspend fun getFamilyPlanningStaticData(): Response<APIResponse<FamilyPlanningMetaResponse>>
 
     @POST("/spice-service/medical-review/family-planning/details")
-    suspend fun getFamilyPlanningMRSummaryDetails(@Body id: AboveFiveYearsSummaryRequest): Response<APIResponse<FamilyPlanningSummaryResponse>>
+    suspend fun getFamilyPlanningMRSummaryDetails(
+        @Body id: AboveFiveYearsSummaryRequest,
+    ): Response<APIResponse<FamilyPlanningSummaryResponse>>
 
     @POST("/spice-service/hiv/medical-review/create")
-    suspend fun createHivImrCmr(@Body request: HivRequestData): Response<APIResponse<PatientEncounterResponse>>
+    suspend fun createHivImrCmr(
+        @Body request: HivRequestData,
+    ): Response<APIResponse<PatientEncounterResponse>>
 
     @POST("/spice-service/hiv/medical-review/details")
-    suspend fun fetchHivSummaryDetails(@Body request: MotherNeonateAncRequest): Response<APIResponse<HivSummaryResponse>>
+    suspend fun fetchHivSummaryDetails(
+        @Body request: MotherNeonateAncRequest,
+    ): Response<APIResponse<HivSummaryResponse>>
 
     @POST("/spice-service/hiv/opportunistic-infection-details")
-    suspend fun getOpportunisticInfection(@Body request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, HashMap<String, String>?>>>
+    suspend fun getOpportunisticInfection(
+        @Body request: MotherNeonateAncRequest,
+    ): Response<APIResponse<HashMap<String, HashMap<String, String>?>>>
 
     @POST("/spice-service/medical-review/emtct-visit/create")
-    suspend fun createEmtct(@Body eMTCTVisitStatusRequest : EMTCTVisitStatusRequest) : Response<APIResponse<EMTCTVisitStatusResponse>>
+    suspend fun createEmtct(
+        @Body eMTCTVisitStatusRequest: EMTCTVisitStatusRequest,
+    ): Response<APIResponse<EMTCTVisitStatusResponse>>
 
     @POST("/spice-service/medical-review/vital-details")
-    suspend fun getHivVitalsDetails(@Body hivVitalsRequest: HivVitalsRequest) : Response<APIResponse<HivVitalsResponse>>
+    suspend fun getHivVitalsDetails(
+        @Body hivVitalsRequest: HivVitalsRequest,
+    ): Response<APIResponse<HivVitalsResponse>>
 
     @POST("/spice-service/medical-review/who-clinical-stage/create")
-    suspend fun createWhoClinicalStage(@Body request: WhoClinicalStageCreateRequest): Response<APIResponse<HivClinicalInfoResponse>>
+    suspend fun createWhoClinicalStage(
+        @Body request: WhoClinicalStageCreateRequest,
+    ): Response<APIResponse<HivClinicalInfoResponse>>
 
     @POST("/spice-service/hiv/cd4-details")
-    suspend fun getHivCD4Details(@Body request: CD4DetailsRequest): Response<APIResponse<ArrayList<CD4DetailsResponse>>>
+    suspend fun getHivCD4Details(
+        @Body request: CD4DetailsRequest,
+    ): Response<APIResponse<ArrayList<CD4DetailsResponse>>>
 
     @POST("/spice-service/hiv/viral-load/recommendation")
-    suspend fun checkRecommendationInvestigations(@Body request: MotherNeonateAncRequest): Response<APIResponse<HashMap<String, Boolean?>?>>
+    suspend fun checkRecommendationInvestigations(
+        @Body request: MotherNeonateAncRequest,
+    ): Response<APIResponse<HashMap<String, Boolean?>?>>
 
     @POST("/spice-service/hiv/viral-load/list")
-    suspend fun getViralLoadData(@Body request: ViralLoadRequest): Response<APIResponse<List<ViralLoadResponse>>>
+    suspend fun getViralLoadData(
+        @Body request: ViralLoadRequest,
+    ): Response<APIResponse<List<ViralLoadResponse>>>
 
     @POST("/spice-service/prescription-request/regimen-list")
-    suspend fun getARTData(@Body request: ArtRequest): Response<APIResponse<List<ARTResponse>>>
+    suspend fun getARTData(
+        @Body request: ArtRequest,
+    ): Response<APIResponse<List<ARTResponse>>>
 
     @POST("/spice-service/patient/pregnancy-details")
-    suspend fun getPatientSummaryDetails(@Body request: PregnancySummaryRequest): Response<APIResponse<PregnancyDetailsModel>>
-
+    suspend fun getPatientSummaryDetails(
+        @Body request: PregnancySummaryRequest,
+    ): Response<APIResponse<PregnancyDetailsModel>>
 }

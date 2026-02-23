@@ -11,7 +11,6 @@ import com.medtroniclabs.spice.ncd.data.BPLogList
 
 class BPLogListAdapter(private val bpLogs: ArrayList<BPLogList>) :
     RecyclerView.Adapter<BPLogListAdapter.BPLogListViewHolder>() {
-
     inner class BPLogListViewHolder(val binding: ListItemBpLogBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
@@ -19,16 +18,15 @@ class BPLogListAdapter(private val bpLogs: ArrayList<BPLogList>) :
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
-    ): BPLogListViewHolder {
-        return BPLogListViewHolder(
-            ListItemBpLogBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        viewType: Int,
+    ): BPLogListViewHolder =
+        BPLogListViewHolder(
+            ListItemBpLogBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         )
-    }
 
     override fun onBindViewHolder(
         holder: BPLogListViewHolder,
-        position: Int
+        position: Int,
     ) {
         val bpLog = bpLogs[position]
 
@@ -36,16 +34,14 @@ class BPLogListAdapter(private val bpLogs: ArrayList<BPLogList>) :
             val date = DateUtils.convertDateFormat(
                 it,
                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                DATE_FORMAT_ddMMMyyyy
+                DATE_FORMAT_ddMMMyyyy,
             )
             holder.binding.tvAssessmentDate.text = date
         }
 
-        val value = "${bpLog.avgSystolic.toString()} / ${bpLog.avgDiastolic.toString()}"
+        val value = "${bpLog.avgSystolic} / ${bpLog.avgDiastolic}"
         holder.binding.tvSystolicDiastolic.text = value
     }
 
-    override fun getItemCount(): Int {
-        return bpLogs.size
-    }
+    override fun getItemCount(): Int = bpLogs.size
 }

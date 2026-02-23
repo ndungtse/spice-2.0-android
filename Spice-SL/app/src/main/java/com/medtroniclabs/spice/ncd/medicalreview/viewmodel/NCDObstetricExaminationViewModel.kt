@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NCDObstetricExaminationViewModel @Inject constructor(
-    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
+    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
 ) : ViewModel() {
     var comments: String = ""
     var chips: ArrayList<ChipViewItemModel> = ArrayList()

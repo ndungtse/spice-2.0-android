@@ -5,27 +5,22 @@ import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-fun String?.textOrHyphen(): String {
-    return if (this.isNullOrBlank()) "-" else this.trim()
-}
+fun String?.textOrHyphen(): String = if (this.isNullOrBlank()) "-" else this.trim()
 
-fun String?.textOrEmpty(): String {
-    return if (this.isNullOrBlank()) "" else this.trim()
-}
+fun String?.textOrEmpty(): String = if (this.isNullOrBlank()) "" else this.trim()
 
-fun Int?.numberOrZero(): Int {
-    return if (this == null || this < 0) 0 else this
-}
+fun Int?.numberOrZero(): Int = if (this == null || this < 0) 0 else this
 
-fun Double?.removeTrailingPointZero(): String {
-    return if (this == null) "" else {
+fun Double?.removeTrailingPointZero(): String =
+    if (this == null) {
+        ""
+    } else {
         if (this % 1.0 == 0.0) {
             this.toInt().toString()
         } else {
             this.toString()
         }
     }
-}
 
 fun String.getLocalDate(): LocalDate {
     val offsetDateTime = OffsetDateTime.parse(this)

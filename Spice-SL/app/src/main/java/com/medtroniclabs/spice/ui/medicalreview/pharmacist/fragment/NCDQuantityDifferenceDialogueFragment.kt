@@ -34,7 +34,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentNcdQuantityDifferenceDialogueBinding
     private val viewModel: NCDPharmacistViewModel by activityViewModels()
 
@@ -43,15 +42,14 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
 
     companion object {
         const val TAG = "NCDQuantityDifferenceDialogueFragment"
-        fun newInstance(): NCDQuantityDifferenceDialogueFragment {
-            return NCDQuantityDifferenceDialogueFragment()
-        }
+
+        fun newInstance(): NCDQuantityDifferenceDialogueFragment = NCDQuantityDifferenceDialogueFragment()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNcdQuantityDifferenceDialogueBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -59,8 +57,10 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
         return binding.root
     }
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
     }
@@ -92,7 +92,7 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
         viewModel.shortageReasonList.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
-                    //Invoked if the response is in loading state
+                    // Invoked if the response is in loading state
                 }
 
                 ResourceState.SUCCESS -> {
@@ -109,7 +109,9 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
     private fun loadMedicationDifferenceDate() {
         binding.rvDifferenceList.removeAllViews()
         val list =
-            viewModel.prescriptionDispenseLiveData.value?.data?.filter { it.prescriptionFilledDays.numberOrZero() < it.dispenseRemainingDays.numberOrZero() }
+            viewModel.prescriptionDispenseLiveData.value
+                ?.data
+                ?.filter { it.prescriptionFilledDays.numberOrZero() < it.dispenseRemainingDays.numberOrZero() }
         list?.forEach { model ->
             val lifeStyleBinding = LayoutQuantityDifferenceBinding.inflate(layoutInflater)
             lifeStyleBinding.tvMedicationName.text = model.medicationName.textOrHyphen()
@@ -120,7 +122,12 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
             lifeStyleBinding.etReasonSpinner.adapter = adapter
             lifeStyleBinding.etReasonSpinner.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                    override fun onItemSelected(
+                        p0: AdapterView<*>?,
+                        p1: View?,
+                        p2: Int,
+                        p3: Long,
+                    ) {
                         adapter.getData(p2)?.let {
                             model.reason = it[DefinedParams.NAME] as String
                             loadOtherBasedOnReason(lifeStyleBinding, model)
@@ -139,7 +146,7 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
 
     private fun loadOtherBasedOnReason(
         lifeStyleBinding: LayoutQuantityDifferenceBinding,
-        model: DispensePrescriptionResponse
+        model: DispensePrescriptionResponse,
     ) {
         if (model.reason.isNullOrBlank() || (!model.reason.equals(MenuConstants.Other_Reason))) {
             lifeStyleBinding.clOtherHolder.gone()
@@ -166,8 +173,8 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
                     prescriptionId = it.prescriptionId,
                     instructionNote = it.instructionNote,
                     prescriptionFilledDays = it.prescriptionFilledDays,
-                    reason = it.reason
-                )
+                    reason = it.reason,
+                ),
             )
         }
         return prescriptionList
@@ -181,29 +188,34 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
 
             R.id.btnDone -> {
                 val filterList =
-                    viewModel.prescriptionDispenseLiveData.value?.data?.filter { it.prescriptionFilledDays.numberOrZero() < it.dispenseRemainingDays.numberOrZero() }
+                    viewModel.prescriptionDispenseLiveData.value?.data?.filter {
+                        it.prescriptionFilledDays.numberOrZero() <
+                            it.dispenseRemainingDays.numberOrZero()
+                    }
                 if (!filterList.isNullOrEmpty()) {
                     val listWithoutReason = filterList.filter {
                         it.reason != null && it.reason.equals(DefinedParams.DefaultIDLabel)
                     }
                     if (listWithoutReason.isEmpty()) {
                         dialog?.dismiss()
-                        if ((!viewModel.patientVisitId.isNullOrBlank()
-                                    && !viewModel.patientReference.isNullOrBlank())
-                            && !viewModel.memberId.isNullOrBlank()
+                        if ((
+                                !viewModel.patientVisitId.isNullOrBlank() &&
+                                    !viewModel.patientReference.isNullOrBlank()
+                            ) &&
+                            !viewModel.memberId.isNullOrBlank()
                         ) {
                             if (connectivityManager.isNetworkAvailable()) {
                                 viewModel.updateDispensePrescription(
                                     patientVisitId = viewModel.patientVisitId,
                                     patientReference = viewModel.patientReference,
                                     memberId = viewModel.memberId,
-                                    request = getReqBody()
+                                    request = getReqBody(),
                                 )
                             } else {
                                 (activity as BaseActivity).showErrorDialogue(
                                     getString(R.string.error),
                                     getString(R.string.reason_error),
-                                    false
+                                    false,
                                 ) {}
                             }
                         }
@@ -211,17 +223,16 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
                         (activity as BaseActivity).showErrorDialogue(
                             getString(R.string.error),
                             getString(R.string.reason_error),
-                            false
+                            false,
                         ) {}
                     }
                 } else {
                     (activity as BaseActivity).showErrorDialogue(
                         getString(R.string.error),
                         getString(R.string.fill_prescription),
-                        false
+                        false,
                     ) {}
                 }
-
             }
 
             R.id.btnCancel -> {
@@ -235,8 +246,8 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
         dropDownList.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to getString(R.string.please_select),
-                DefinedParams.ID to DefinedParams.DefaultID
-            )
+                DefinedParams.ID to DefinedParams.DefaultID,
+            ),
         )
 
         viewModel.shortageReasonList.value?.data?.forEach {
@@ -244,8 +255,8 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to it.name,
                     DefinedParams.ID to it.id,
-                    DefinedParams.cultureValue to it.displayValue
-                )
+                    DefinedParams.cultureValue to it.displayValue,
+                ),
             )
         }
         return dropDownList

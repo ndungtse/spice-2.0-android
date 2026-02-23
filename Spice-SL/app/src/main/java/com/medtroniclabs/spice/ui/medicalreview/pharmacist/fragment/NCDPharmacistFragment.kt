@@ -17,31 +17,32 @@ import com.medtroniclabs.spice.ui.medicalreview.pharmacist.adapter.NCDPrescripti
 import com.medtroniclabs.spice.ui.medicalreview.pharmacist.viewModel.NCDPharmacistViewModel
 
 class NCDPharmacistFragment : BaseFragment() {
-
     private lateinit var binding: FragmentNcdPharmacistBinding
     private lateinit var prescriptionRefillAdapter: NCDPrescriptionRefillAdapter
     private val ncdPharmacistViewModel: NCDPharmacistViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNcdPharmacistBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
     }
 
-
     companion object {
         const val TAG = "NCDPharmacistFragment"
-        fun newInstance(): NCDPharmacistFragment {
-            return NCDPharmacistFragment()
-        }
+
+        fun newInstance(): NCDPharmacistFragment = NCDPharmacistFragment()
     }
 
     private fun initView() {
@@ -49,14 +50,13 @@ class NCDPharmacistFragment : BaseFragment() {
         binding.rvPrescriptionRefillList.addItemDecoration(
             DividerItemDecoration(
                 requireContext(),
-                DividerItemDecoration.VERTICAL
-            )
+                DividerItemDecoration.VERTICAL,
+            ),
         )
 
         prescriptionRefillAdapter = NCDPrescriptionRefillAdapter()
         binding.rvPrescriptionRefillList.adapter = prescriptionRefillAdapter
     }
-
 
     private fun attachObserver() {
         ncdPharmacistViewModel.prescriptionDispenseLiveData.observe(viewLifecycleOwner) { resourceState ->
@@ -90,5 +90,4 @@ class NCDPharmacistFragment : BaseFragment() {
             }
         }
     }
-
 }

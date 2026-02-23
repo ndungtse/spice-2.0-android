@@ -12,15 +12,12 @@ data class RxBuddyFollowUpEntity(
     val rxBuddyLocalId: Long,
     val rxBuddyId: Long? = null,
     var patientMemberId: String,
-
-
     var followUp: String? = "",
     var nextVisitDate: String = "",
-
     val followUpId: Long? = null,
     var syncStatus: OfflineSyncStatus = OfflineSyncStatus.NotSynced,
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
     val createdBy: Long = SecuredPreference.getUserId(),
-    var updatedAt: Long = System.currentTimeMillis()
+    var updatedAt: Long = System.currentTimeMillis(),
 )

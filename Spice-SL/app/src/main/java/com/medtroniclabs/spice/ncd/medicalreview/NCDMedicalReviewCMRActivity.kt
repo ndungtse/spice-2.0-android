@@ -15,8 +15,8 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setError
 import com.medtroniclabs.spice.appextensions.setVisible
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ORIGIN
 import com.medtroniclabs.spice.common.GeneralErrorDialog
@@ -26,33 +26,33 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.PatientListRespModel
-import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
-import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDTreatmentPlanDialog
-import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDAssessmentHistoryFragment
-import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
-import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
-import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselingActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleDialog
-import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDMedicalReviewHistoryFragment
 import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
 import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDTreatmentPlanDialog
+import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDAssessmentHistoryFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDInvestigationHistoryFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDLifeStyleStatusFragment
+import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDMedicalReviewHistoryFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDPrescriptionHistoryFragment
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.activity.NCDPrescriptionActivity
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewCMRViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
+import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
+import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
+import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.patientDelete.NCDDeleteConfirmationDialog
 import com.medtroniclabs.spice.ui.patientDelete.viewModel.NCDPatientDeleteViewModel
 import com.medtroniclabs.spice.ui.patientEdit.NCDPatientEditActivity
-import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
 import com.medtroniclabs.spice.ui.patientTransfer.dialog.NCDTransferArchiveDialog
 import com.medtroniclabs.spice.ui.patientTransfer.viewModel.NCDPatientTransferViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,6 +65,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
     private val patientDetailViewModel: PatientDetailViewModel by viewModels()
     private val patientDeleteViewModel: NCDPatientDeleteViewModel by viewModels()
     private val patientTransferViewModel: NCDPatientTransferViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -87,11 +88,14 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         val popupMenu = PopupMenu(this@NCDMedicalReviewCMRActivity, view)
         popupMenu.menuInflater.inflate(R.menu.ncd_menu_patient_edit, popupMenu.menu)
         popupMenu.menu.findItem(R.id.patient_delete).isVisible =
-            CommonUtils.isNonCommunity() && !CommonUtils.isChp()
+            CommonUtils.isNonCommunity() &&
+            !CommonUtils.isChp()
         popupMenu.menu.findItem(R.id.schedule).isVisible =
             CommonUtils.canShowScheduleMenu()
         popupMenu.menu.findItem(R.id.transfer_patient).isVisible =
-            CommonUtils.isNonCommunity() && !CommonUtils.isNURSE() && !CommonUtils.isChp()
+            CommonUtils.isNonCommunity() &&
+            !CommonUtils.isNURSE() &&
+            !CommonUtils.isChp()
         popupMenu.safePopupMenuClickListener(object :
             android.widget.PopupMenu.OnMenuItemClickListener,
             PopupMenu.OnMenuItemClickListener {
@@ -116,7 +120,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                 intent.putExtra(NCDMRUtil.PATIENT_REFERENCE, patientDetailViewModel.getPatientId())
                 intent.putExtra(
                     NCDMRUtil.MEMBER_REFERENCE,
-                    patientDetailViewModel.getPatientFHIRId()
+                    patientDetailViewModel.getPatientFHIRId(),
                 )
                 intent.putExtra(DefinedParams.ORIGIN, patientDetailViewModel.origin)
                 startActivity(intent)
@@ -126,7 +130,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                 patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
                     data.patientId?.let {
                         val request = NCDPatientTransferValidate(
-                            patientReference = it
+                            patientReference = it,
                         )
                         patientTransferViewModel.validatePatientTransfer(request)
                     }
@@ -142,33 +146,33 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                 getString(
                     R.string.patient_delete_confirmation,
                     model.firstName,
-                    model.lastName
+                    model.lastName,
                 ),
                 { _, reason, otherReason ->
                     val request = NCDPatientRemoveRequest(
                         patientId = model.patientId.toString(),
                         reason = reason,
                         otherReason = otherReason,
-                        memberId = model.id
+                        memberId = model.id,
                     )
                     patientDeleteViewModel.ncdPatientRemove(request)
                 },
                 this,
                 true,
                 okayButton = getString(R.string.yes),
-                cancelButton = getString(R.string.no)
+                cancelButton = getString(R.string.no),
             )
             deleteConfirmationDialog.show(
                 supportFragmentManager,
-                NCDDeleteConfirmationDialog.TAG
+                NCDDeleteConfirmationDialog.TAG,
             )
         }
     }
 
     private fun initializeStaticDataSave() {
-        if (NCDMRUtil.isNCDMRMetaLoaded())
+        if (NCDMRUtil.isNCDMRMetaLoaded()) {
             initView()
-        else {
+        } else {
             withNetworkAvailability(online = {
                 viewModel.getStaticMetaData()
             }, offline = {
@@ -240,11 +244,13 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
             when (resourceState.state) {
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    GeneralSuccessDialog.newInstance(
-                        title = getString(R.string.delete),
-                        message = getString(R.string.patient_delete_message),
-                        okayButton = getString(R.string.done)
-                    ) {  redirectToHome() }.show(supportFragmentManager, GeneralSuccessDialog.TAG)
+                    GeneralSuccessDialog
+                        .newInstance(
+                            title = getString(R.string.delete),
+                            message = getString(R.string.patient_delete_message),
+                            okayButton = getString(R.string.done),
+                        ) { redirectToHome() }
+                        .show(supportFragmentManager, GeneralSuccessDialog.TAG)
                 }
 
                 ResourceState.LOADING -> {
@@ -281,7 +287,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                                 this,
                                 false,
                                 okayButton = getString(R.string.ok),
-                                messageBtnData = Pair(message, true)
+                                messageBtnData = Pair(message, true),
                             )
                         val errorFragment = supportFragmentManager.findFragmentByTag(GeneralErrorDialog.TAG)
                         if (errorFragment == null) {
@@ -294,7 +300,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                     hideLoading()
                     NCDTransferArchiveDialog.newInstance().show(
                         supportFragmentManager,
-                        NCDTransferArchiveDialog.TAG
+                        NCDTransferArchiveDialog.TAG,
                     )
                 }
             }
@@ -319,7 +325,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (isPositive) {
                 onBackPressPopStack()
@@ -342,10 +348,11 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
 
     private fun initView() {
         // FOR Nurse ,Visit id(is always null) for other role always have value
-        if (CommonUtils.isNutritionist())
+        if (CommonUtils.isNutritionist()) {
             binding.btnMedicalReview.setImageDrawable(getDrawable(R.drawable.start_session))
-        else
+        } else {
             binding.btnLayout.root.setVisible(!getEncounterReference().isNullOrBlank())
+        }
         binding.btnMedicalReview.setVisible(!getEncounterReference().isNullOrBlank())
         val isPsycho = CommonUtils.isPsychologicalFlowEnabled()
         binding.btnLayout.apply {
@@ -377,7 +384,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         viewModel.getBadgeNotifications(BadgeNotificationModel(patientReference = patientDetailViewModel.getPatientId()))
     }
 
-     fun swipeRefresh() {
+    fun swipeRefresh() {
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
             details.id?.let { id ->
                 patientDetailViewModel.getPatients(id, origin = patientDetailViewModel.origin)
@@ -393,7 +400,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         replaceFragment(
             R.id.patientDetailFragment,
             PatientInfoFragment.TAG,
-            fragment
+            fragment,
         )
         hideLoading()
     }
@@ -417,7 +424,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                         val ncdLifestyleDialog = NCDLifestyleDialog.newInstance(
                             patientDetailViewModel.getPatientId(),
                             patientDetailViewModel.getPatientFHIRId(),
-                            getEncounterReference()
+                            getEncounterReference(),
                         ) {}
                         ncdLifestyleDialog.show(supportFragmentManager, NCDLifestyleDialog.TAG)
                     }
@@ -425,7 +432,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                     viewModel.setAnalyticsData(
                         UserDetail.startDateTime,
                         eventName = AnalyticsDefinedParams.NCDCMRMedicalReviewCreation,
-                        isCompleted = true
+                        isCompleted = true,
                     )
                     val intent = Intent(this, AssessmentToolsActivity::class.java)
                     intent.putExtra(DefinedParams.FhirId, getFhirId())
@@ -442,19 +449,20 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                     NCDTreatmentPlanDialog.newInstance(
                         getPatientId(),
                         getFhirId(),
-                        showCHO = showCHO()
+                        showCHO = showCHO(),
                     ) { isPositiveResult, message ->
-                        if (isPositiveResult)
+                        if (isPositiveResult) {
                             showSuccessDialogue(
                                 title = getString(R.string.treatment_plan),
-                                message = message
+                                message = message,
                             ) {}
-                        else
+                        } else {
                             showErrorDialogue(
                                 title = getString(R.string.error),
                                 message = message,
                                 positiveButtonName = getString(R.string.ok),
                             ) {}
+                        }
                     }
                 dialog.show(supportFragmentManager, NCDTreatmentPlanDialog.TAG)
             }
@@ -472,15 +480,15 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
             binding.btnLayout.ivLifestyle.id -> navigateUser(
                 Intent(
                     this,
-                    NCDLifestyleActivity::class.java
-                )
+                    NCDLifestyleActivity::class.java,
+                ),
             )
 
             binding.btnLayout.clPsycMenu.id -> navigateUser(
                 Intent(
                     this,
-                    NCDCounselingActivity::class.java
-                )
+                    NCDCounselingActivity::class.java,
+                ),
             )
 
             binding.btnLayout.ivPrescriptionImgView.id -> {
@@ -507,38 +515,26 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         getResult.launch(intent)
     }
 
-    private fun getMenuOrigin(): String? {
-        return intent.getStringExtra(DefinedParams.ORIGIN)
-    }
+    private fun getMenuOrigin(): String? = intent.getStringExtra(DefinedParams.ORIGIN)
 
     private val getResult =
         registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
+            ActivityResultContracts.StartActivityForResult(),
         ) {
             if (it.resultCode == Activity.RESULT_OK) {
                 swipeRefresh()
             }
         }
 
-    private fun getFhirId(): String? {
-        return intent.getStringExtra(DefinedParams.FhirId)
-    }
+    private fun getFhirId(): String? = intent.getStringExtra(DefinedParams.FhirId)
 
-    private fun getPatientId(): String? {
-        return intent.getStringExtra(DefinedParams.PatientId)
-    }
+    private fun getPatientId(): String? = intent.getStringExtra(DefinedParams.PatientId)
 
-    private fun getOrigin(): String? {
-        return intent.getStringExtra(DefinedParams.ORIGIN)
-    }
+    private fun getOrigin(): String? = intent.getStringExtra(DefinedParams.ORIGIN)
 
-    private fun getGender(): String? {
-        return intent.getStringExtra(DefinedParams.Gender)
-    }
+    private fun getGender(): String? = intent.getStringExtra(DefinedParams.Gender)
 
-    private fun getEncounterReference(): String? {
-        return intent.getStringExtra(EncounterReference)
-    }
+    private fun getEncounterReference(): String? = intent.getStringExtra(EncounterReference)
 
     override fun onDataLoaded(details: PatientListRespModel) {
         val bpBundle = Bundle().apply {
@@ -561,27 +557,28 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         replaceFragment(
             R.id.medicalReviewHistory,
             NCDMedicalReviewHistoryFragment.TAG,
-            medicalReview
+            medicalReview,
         )
         val prescription = NCDPrescriptionHistoryFragment.newInstance(details.patientId)
         replaceFragment(
             R.id.prescriptionHistory,
             NCDPrescriptionHistoryFragment.TAG,
-            prescription
+            prescription,
         )
         val investigation = NCDInvestigationHistoryFragment.newInstance(details.patientId)
         replaceFragment(
             R.id.investigationHistory,
             NCDInvestigationHistoryFragment.TAG,
-            investigation
+            investigation,
         )
         val lifeStyle = NCDLifeStyleStatusFragment.newInstance()
         replaceFragment(
             R.id.lifestyleStatusHistory,
             NCDLifeStyleStatusFragment.TAG,
-            lifeStyle
+            lifeStyle,
         )
     }
+
     override fun onResume() {
         super.onResume()
         initializeStaticDataSave()
@@ -591,10 +588,10 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
     private fun showCHO(): Boolean {
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let {
             return SecuredPreference.isAncEnabled() &&
-                    it.gender.equals(Screening.Female, true) &&
-                    it.isPregnant == true &&
-                    it.pregnancyDetails?.isDangerSymptoms == true &&
-                    CommonUtils.gestationalWeekLimitCheck(it.pregnancyDetails.lastMenstrualPeriod)
+                it.gender.equals(Screening.Female, true) &&
+                it.isPregnant == true &&
+                it.pregnancyDetails?.isDangerSymptoms == true &&
+                CommonUtils.gestationalWeekLimitCheck(it.pregnancyDetails.lastMenstrualPeriod)
         }
         return false
     }

@@ -7,15 +7,17 @@ import java.util.Locale
 
 class LocaleHelper {
     companion object {
-        fun onAttach(ctx: Context): Context {
-            return setLocale(ctx, DefinedParams.EN)
-        }
+        fun onAttach(ctx: Context): Context = setLocale(ctx, DefinedParams.EN)
 
-        fun onAttach(context: Context, defaultLanguage: String): Context {
-            return setLocale(context, defaultLanguage)
-        }
+        fun onAttach(
+            context: Context,
+            defaultLanguage: String,
+        ): Context = setLocale(context, defaultLanguage)
 
-        fun setLocale(context: Context, language: String): Context {
+        fun setLocale(
+            context: Context,
+            language: String,
+        ): Context {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 return updateResources(context, language)
             }
@@ -23,7 +25,10 @@ class LocaleHelper {
         }
 
         @TargetApi(Build.VERSION_CODES.N)
-        fun updateResources(context: Context, language: String): Context {
+        fun updateResources(
+            context: Context,
+            language: String,
+        ): Context {
             val locale = Locale(language)
             Locale.setDefault(locale)
             val configuration = context.resources.configuration
@@ -33,7 +38,10 @@ class LocaleHelper {
         }
 
         @SuppressWarnings("deprecation")
-        fun updateResourcesLegacy(context: Context, language: String): Context {
+        fun updateResourcesLegacy(
+            context: Context,
+            language: String,
+        ): Context {
             val locale = Locale(language)
             Locale.setDefault(locale)
             val resources = context.resources

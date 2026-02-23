@@ -17,14 +17,15 @@ import javax.inject.Inject
 @HiltViewModel
 class TbPatientHistoryAndPresumptiveViewModel @Inject constructor(
     private val tbMedicalReviewRepo: TbMedicalReviewRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
     val getHistory = MutableLiveData<Resource<TbHistory>>()
+
     fun fetchPatientHistory(motherNeonateAncRequest: MotherNeonateAncRequest) {
         viewModelScope.launch(dispatcherIO) {
             getHistory.postLoading()
             getHistory.postValue(
-                tbMedicalReviewRepo.fetchTbAssessmentDetails(motherNeonateAncRequest)
+                tbMedicalReviewRepo.fetchTbAssessmentDetails(motherNeonateAncRequest),
             )
         }
     }

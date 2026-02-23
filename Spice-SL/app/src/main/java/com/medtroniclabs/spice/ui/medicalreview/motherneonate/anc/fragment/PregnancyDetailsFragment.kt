@@ -20,7 +20,6 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMdd
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
-import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAgeWeeks
 import com.medtroniclabs.spice.common.DateUtils.formatGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.LMB
@@ -31,18 +30,17 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.EstimatedDeliveryDate
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.initTextWatcherForDouble
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.initTextWatcherForInt
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isBasicValid
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isValidInput
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isValidMeasurement
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyDetailsViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentPregnancyDetailsBinding
     private var datePickerDialog: DatePickerDialog? = null
     private val pregnancyDetailsViewModel: PregnancyDetailsViewModel by activityViewModels()
@@ -50,6 +48,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "PregnancyDetailsFragment"
+
         fun newInstance(lmb: String?): PregnancyDetailsFragment {
             val fragment = PregnancyDetailsFragment()
             val bundle = Bundle()
@@ -59,29 +58,27 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun isHeightValid(): Boolean {
-        return isValidInput(
+    private fun isHeightValid(): Boolean =
+        isValidInput(
             binding.etHeight.text.toString(),
             binding.etHeight,
             binding.tvHeightError,
             50.0..300.0,
             R.string.height_error,
             true,
-            requireContext()
+            requireContext(),
         )
-    }
 
-    private fun isWeightValid(): Boolean {
-        return isValidInput(
+    private fun isWeightValid(): Boolean =
+        isValidInput(
             binding.etWeight.text.toString(),
             binding.etWeight,
             binding.tvKgError,
             10.0..400.0,
             R.string.weight_error,
             true,
-            requireContext()
+            requireContext(),
         )
-    }
 
     fun validateInput(): Boolean {
         val isWeightValid = isWeightValid()
@@ -94,7 +91,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             binding.etDiastolic,
             minErrorMessage = getString(R.string.systolic_error_min),
             maxErrorMessage = getString(R.string.systolic_error_max),
-            requireContext()
+            requireContext(),
         )
         val isDiastolicValid = isValidMeasurement(
             binding.etDiastolic.text.toString(),
@@ -104,7 +101,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             binding.etDiastolic,
             getString(R.string.diastolic_error_min),
             maxErrorMessage = getString(R.string.diastolic_error_max),
-            requireContext()
+            requireContext(),
         )
         val isPulseValid = isValidMeasurement(
             binding.etPulse.text.toString(),
@@ -113,21 +110,21 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             300,
             minErrorMessage = getString(R.string.pulse_error_min),
             maxErrorMessage = getString(R.string.pulse_error_max),
-            context = requireContext()
+            context = requireContext(),
         )
         val isNoFoFetusValid = isBasicValid(
             binding.etNoOfFetus.text.toString(),
             binding.tvNoOfFetusError,
             0,
             getString(R.string.error_label),
-            context = requireContext()
+            context = requireContext(),
         )
         val isGravidaValid = isBasicValid(
             binding.etGravida.text.toString(),
             binding.tvGravidaError,
             0,
             getString(R.string.error_label),
-            context = requireContext()
+            context = requireContext(),
         )
         val isParityFirstValid = isBasicValid(
             binding.etParityFirst.text.toString(),
@@ -135,7 +132,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             0,
             getString(R.string.error_label),
             context = requireContext(),
-            isParity = true
+            isParity = true,
         )
         val isParitySecondValid = isBasicValid(
             binding.etParitySecond.text.toString(),
@@ -143,9 +140,12 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             0,
             getString(R.string.error_label),
             context = requireContext(),
-            isParity = true
+            isParity = true,
         )
-        val isLmbValid = binding.tvLastMenstrualPeriodDate.text?.toString()?.trim()?.isBlank() == true
+        val isLmbValid = binding.tvLastMenstrualPeriodDate.text
+            ?.toString()
+            ?.trim()
+            ?.isBlank() == true
         binding.tvLastMenstrualPeriodError.apply { if (isLmbValid) visible() else gone() }
         findFirstInvalidField(
             isSystolicValid,
@@ -155,10 +155,19 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             isGravidaValid,
             isParityFirstValid,
             isParitySecondValid,
-            isLmbValid
+            isLmbValid,
         )
         // Return true only if all validations pass
-        return isWeightValid && isHeightValid && isSystolicValid && isDiastolicValid && isPulseValid && isNoFoFetusValid && isGravidaValid && isParityFirstValid && isParitySecondValid && !isLmbValid
+        return isWeightValid &&
+            isHeightValid &&
+            isSystolicValid &&
+            isDiastolicValid &&
+            isPulseValid &&
+            isNoFoFetusValid &&
+            isGravidaValid &&
+            isParityFirstValid &&
+            isParitySecondValid &&
+            !isLmbValid
     }
 
     private fun findFirstInvalidField(
@@ -169,7 +178,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
         isGravidaValid: Boolean,
         isParityFirstValid: Boolean,
         isParitySecondValid: Boolean,
-        isLmbValid: Boolean
+        isLmbValid: Boolean,
     ) {
         // Find and return the first invalid field
         val view = if (!isWeightValid()) {
@@ -190,7 +199,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             binding.etParityFirst
         } else if (!isParitySecondValid) {
             binding.etParitySecond
-        }  else if (isLmbValid) {
+        } else if (isLmbValid) {
             binding.tvLastMenstrualPeriodDate
         } else {
             null
@@ -199,8 +208,12 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
     }
 
     fun getParity(): Int? {
-        val firstValue = binding.etParityFirst.text.toString().toIntOrNull()
-        val secondValue = binding.etParitySecond.text.toString().toIntOrNull()
+        val firstValue = binding.etParityFirst.text
+            .toString()
+            .toIntOrNull()
+        val secondValue = binding.etParitySecond.text
+            .toString()
+            .toIntOrNull()
 
         return when {
             firstValue != null && secondValue != null -> firstValue + secondValue
@@ -211,8 +224,12 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun updateBMI() {
-        val height = binding.etHeight.text.toString().toDoubleOrNull()
-        val weight = binding.etWeight.text.toString().toDoubleOrNull()
+        val height = binding.etHeight.text
+            .toString()
+            .toDoubleOrNull()
+        val weight = binding.etWeight.text
+            .toString()
+            .toDoubleOrNull()
         val bmiValue = if (height != null && weight != null) {
             val value = CommonUtils.getBMI(height, weight, requireContext())
             pregnancyDetailsViewModel.pregnancyDetailsModel.bmi = value.toDoubleOrNull()
@@ -225,14 +242,18 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPregnancyDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -243,7 +264,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             val complaintList = ArrayList<Map<String, Any>>()
             for (i in it) {
                 complaintList.add(
-                    CommonUtils.getOptionMap(i.name, i.name)
+                    CommonUtils.getOptionMap(i.name, i.name),
                 )
             }
             setSpinner(complaintList)
@@ -311,7 +332,8 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
                     binding.tvLastMenstrualPeriodDate.text =
                         DateUtils.convertDateFormat(
                             lmb,
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            DATE_ddMMyyyy,
                         )
                     calculateGestationalAgeAndEstimationDeliveryDate()
                     binding.tvLastMenstrualPeriodDate.isEnabled = false
@@ -339,8 +361,8 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
         dropDownList.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.id to DefinedParams.DefaultID
-            )
+                DefinedParams.id to DefinedParams.DefaultID,
+            ),
         )
         dropDownList.addAll(complaintList)
         adapter?.setData(dropDownList)
@@ -352,7 +374,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
                     adapterView: AdapterView<*>?,
                     view: View?,
                     pos: Int,
-                    itemId: Long
+                    itemId: Long,
                 ) {
                     val selectedItem = adapter?.getData(position = pos)
                     selectedItem?.let {
@@ -392,9 +414,10 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.tvLastMenstrualPeriodDate.id -> {
-                showDatePickerDialog(binding.tvLastMenstrualPeriodDate,
+                showDatePickerDialog(
+                    binding.tvLastMenstrualPeriodDate,
                     disableFuture = true,
-                    isLmp = true
+                    isLmp = true,
                 )
             }
 
@@ -407,12 +430,13 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
     private fun showDatePickerDialog(
         textView: AppCompatTextView,
         disableFuture: Boolean = false,
-        isLmp: Boolean = false
+        isLmp: Boolean = false,
     ) {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (!textView.text.isNullOrBlank())
+        if (!textView.text.isNullOrBlank()) {
             yearMonthDate =
                 DateUtils.convertedMMMToddMM(textView.text.toString())
+        }
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
@@ -420,21 +444,23 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
                 date = yearMonthDate,
                 isMenstrualPeriod = true,
                 disableFutureDate = disableFuture,
-                cancelCallBack = { datePickerDialog = null }
+                cancelCallBack = { datePickerDialog = null },
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 textView.text =
                     DateUtils.convertDateTimeToDate(
                         stringDate,
                         DATE_FORMAT_ddMMyyyy,
-                        DATE_ddMMyyyy
+                        DATE_ddMMyyyy,
                     )
                 if (isLmp) {
-                    pregnancyDetailsViewModel.pregnancyDetailsModel.lastMenstrualPeriod = DateUtils.convertDateFormat(textView.text.toString(), DATE_ddMMyyyy, DATE_FORMAT_yyyyMMdd)
+                    pregnancyDetailsViewModel.pregnancyDetailsModel.lastMenstrualPeriod =
+                        DateUtils.convertDateFormat(textView.text.toString(), DATE_ddMMyyyy, DATE_FORMAT_yyyyMMdd)
                     calculateGestationalAgeAndEstimationDeliveryDate()
                     pregnancyDetailsViewModel.setSharedValue(textView.text.toString())
                 } else {
-                    pregnancyDetailsViewModel.pregnancyDetailsModel.estimatedDeliveryDate = DateUtils.convertDateFormat(textView.text.toString(), DATE_ddMMyyyy, DATE_FORMAT_yyyyMMdd)
+                    pregnancyDetailsViewModel.pregnancyDetailsModel.estimatedDeliveryDate =
+                        DateUtils.convertDateFormat(textView.text.toString(), DATE_ddMMyyyy, DATE_FORMAT_yyyyMMdd)
                 }
                 pregnancyDetailsViewModel.checkSubmitBtn()
                 datePickerDialog = null
@@ -443,7 +469,9 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun calculateGestationalAgeAndEstimationDeliveryDate() {
-        val lmpText = binding.tvLastMenstrualPeriodDate.text.toString().trim()
+        val lmpText = binding.tvLastMenstrualPeriodDate.text
+            .toString()
+            .trim()
 
         if (lmpText.isNotEmpty()) {
             val lmpDate = LocalDate.parse(lmpText, DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
@@ -451,7 +479,8 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             val formattedEstimatedDeliveryDate =
                 estimatedDeliveryDate.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
             binding.tvEstimatedDeliveryDate.text = formattedEstimatedDeliveryDate
-            pregnancyDetailsViewModel.pregnancyDetailsModel.estimatedDeliveryDate = estimatedDeliveryDate.format(DateTimeFormatter.ofPattern( DATE_FORMAT_yyyyMMdd))
+            pregnancyDetailsViewModel.pregnancyDetailsModel.estimatedDeliveryDate =
+                estimatedDeliveryDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMdd))
             val gestationalAgeInWeeks = calculateGestationalAge(lmpDate)
             pregnancyDetailsViewModel.pregnancyDetailsModel.gestationalAge =
                 gestationalAgeInWeeks

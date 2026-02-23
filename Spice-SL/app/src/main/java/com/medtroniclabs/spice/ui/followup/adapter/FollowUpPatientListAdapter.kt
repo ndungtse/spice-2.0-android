@@ -8,12 +8,7 @@ import com.medtroniclabs.spice.ui.followup.fragment.FollowUpPatientListFragment
 
 class FollowUpPatientListAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(fragmentManager, lifecycle) {
-    override fun getItemCount(): Int {
-        return 3
-    }
+    override fun getItemCount(): Int = 3
 
-    override fun createFragment(p0: Int): Fragment {
-        return FollowUpPatientListFragment()
-    }
-
+    override fun createFragment(p0: Int): Fragment = FollowUpPatientListFragment()
 }

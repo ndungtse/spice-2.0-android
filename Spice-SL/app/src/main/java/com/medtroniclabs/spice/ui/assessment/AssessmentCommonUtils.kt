@@ -17,12 +17,14 @@ import com.medtroniclabs.spice.model.AssessmentSummaryModel
 object AssessmentCommonUtils {
     fun getListItemValue(
         givenId: String,
-        listSummaryData: MutableList<AssessmentSummaryModel>
-    ): AssessmentSummaryModel? {
-        return listSummaryData.find { it.id == givenId }
-    }
+        listSummaryData: MutableList<AssessmentSummaryModel>,
+    ): AssessmentSummaryModel? = listSummaryData.find { it.id == givenId }
 
-    fun getValueOfKeyFromMap(stringToMap: Map<String, Any>, keys: String, menuType: String): String? {
+    fun getValueOfKeyFromMap(
+        stringToMap: Map<String, Any>,
+        keys: String,
+        menuType: String,
+    ): String? {
         val mapDataByType = stringToMap[menuType.lowercase()] as Map<*, *>
         for (entry in mapDataByType.entries) {
             if (entry.value is Map<*, *>) {
@@ -47,7 +49,10 @@ object AssessmentCommonUtils {
         return null
     }
 
-    private fun getDialogValue(value: Any?, otherSymptoms: String? = null): String {
+    private fun getDialogValue(
+        value: Any?,
+        otherSymptoms: String? = null,
+    ): String {
         val result = StringBuilder()
         if (value is ArrayList<*>) {
             value.forEach { map ->
@@ -59,7 +64,10 @@ object AssessmentCommonUtils {
         }
         if (result.isNotEmpty()) {
             otherSymptoms?.let {
-                return result.delete(result.length - 2, result.length).append(" - ").append(it)
+                return result
+                    .delete(result.length - 2, result.length)
+                    .append(" - ")
+                    .append(it)
                     .toString()
             }
             return result.delete(result.length - 2, result.length).toString()
@@ -70,13 +78,24 @@ object AssessmentCommonUtils {
     fun getListActual(map: Any?): String? {
         if (map is Map<*, *> && map.containsKey(DefinedParams.NAME)) {
             val actual = map[DefinedParams.NAME]
-            if (actual is String)
+            if (actual is String) {
                 return actual
+            }
         }
         return null
     }
 
-    fun addViewSummaryLayout(title: String?, value: String?, valueTextColor: Int? = null, context:Context, isCallShown:Boolean = false, callBtnTag : String? = null,   callback: ((String?,String?) -> Unit)? = null, forCbs:Boolean = false, countryCode:String? = null): ConstraintLayout {
+    fun addViewSummaryLayout(
+        title: String?,
+        value: String?,
+        valueTextColor: Int? = null,
+        context: Context,
+        isCallShown: Boolean = false,
+        callBtnTag: String? = null,
+        callback: ((String?, String?) -> Unit)? = null,
+        forCbs: Boolean = false,
+        countryCode: String? = null,
+    ): ConstraintLayout {
         val summaryBinding = AssessmentSummaryLayoutBinding.inflate(LayoutInflater.from(context))
         summaryBinding.tvKey.text = title ?: context.getString(R.string.separator_hyphen)
         val formattedTitle = countryCode?.let { "$it $value" } ?: value
@@ -107,28 +126,36 @@ object AssessmentCommonUtils {
         return summaryBinding.root
     }
 
-    private fun getSummaryValue(context: Context, input: String?): String {
-        if (input !=null && input.trim().isNotEmpty()) {
+    private fun getSummaryValue(
+        context: Context,
+        input: String?,
+    ): String {
+        if (input != null && input.trim().isNotEmpty()) {
             return input
         } else {
             return context.getString(R.string.separator_hyphen)
         }
     }
 
-    fun getNutritionStatus(selectedId: String?, context: Context): String {
-        return when (selectedId) {
+    fun getNutritionStatus(
+        selectedId: String?,
+        context: Context,
+    ): String =
+        when (selectedId) {
             AssessmentDefinedParams.Green -> context.getString(R.string.normal)
             AssessmentDefinedParams.Yellow -> context.getString(R.string.moderate_malnutrition)
             AssessmentDefinedParams.Red -> context.getString(R.string.severe_nutrition)
             else -> context.getString(R.string.hyphen_symbol)
         }
-    }
-    fun getMuacColorCode(selectedId: String?, context: Context): Int {
-        return when (selectedId) {
-            AssessmentDefinedParams.Green -> context.getColor( R.color.bmi_normal_weight)
-            AssessmentDefinedParams.Yellow -> context.getColor( R.color.bmi_over_weight)
-            AssessmentDefinedParams.Red ->context.getColor( R.color.medium_high_risk_color)
-            else ->context.getColor( R.color.edittext_stroke)
+
+    fun getMuacColorCode(
+        selectedId: String?,
+        context: Context,
+    ): Int =
+        when (selectedId) {
+            AssessmentDefinedParams.Green -> context.getColor(R.color.bmi_normal_weight)
+            AssessmentDefinedParams.Yellow -> context.getColor(R.color.bmi_over_weight)
+            AssessmentDefinedParams.Red -> context.getColor(R.color.medium_high_risk_color)
+            else -> context.getColor(R.color.edittext_stroke)
         }
-    }
 }

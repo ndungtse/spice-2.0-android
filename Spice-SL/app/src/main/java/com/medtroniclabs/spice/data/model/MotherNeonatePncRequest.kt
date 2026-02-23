@@ -1,17 +1,13 @@
 package com.medtroniclabs.spice.data.model
 
-import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
-
-
 data class MotherNeonatePncRequest(
     var pncMother: PncMother? = null,
     var pncChild: PncChild? = null,
-    var child: Child? = null
+    var child: Child? = null,
 )
 
-
 data class PncMother(
-    var id:String?=null,
+    var id: String? = null,
     var isMotherAlive: Boolean? = null,
     var breastCondition: String? = null,
     var breastConditionNotes: String? = null,
@@ -23,13 +19,12 @@ data class PncMother(
     var systemicExaminationsNotes: String? = null,
     var clinicalNotes: String? = null,
     var encounter: MedicalReviewEncounter? = null,
-    var labourDTO: LabourDTO?=null,
-    var neonateOutcome: String?=null
+    var labourDTO: LabourDTO? = null,
+    var neonateOutcome: String? = null,
 )
 
-
 data class PncChild(
-    var id:String?=null,
+    var id: String? = null,
     var isChildAlive: Boolean? = null,
     var breastFeeding: Boolean? = null,
     var exclusiveBreastFeeding: Boolean? = null,
@@ -40,5 +35,5 @@ data class PncChild(
     var physicalExaminations: List<String?>? = null,
     var physicalExaminationsNotes: String? = null,
     var clinicalNotes: String? = null,
-    var encounter: MedicalReviewEncounter? = null
+    var encounter: MedicalReviewEncounter? = null,
 )

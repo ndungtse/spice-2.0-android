@@ -28,20 +28,23 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View.OnClickListener {
-
     private lateinit var binding: FragmentAssessmentBinding
     private lateinit var formGenerator: FormGenerator
     private val viewModel: AssessmentViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentAssessmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         getFormDataForWorkflow()
@@ -53,16 +56,19 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
     private fun initView() {
         replaceFragmentInId<BioDataFragment>(
             binding.bioDataFragmentContainer.id,
-            tag = BioDataFragment.TAG
+            tag = BioDataFragment.TAG,
         )
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, this, binding.scrollView,
+            requireContext(),
+            binding.llForm,
+            this,
+            binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled(),
             callback = { resultMap, fieldId ->
                 if (fieldId == AssessmentDefinedParams.NumberOfLivingChildren || fieldId == AssessmentDefinedParams.DesireForChildrenInFuture) {
                     updateCounsellingMessages(resultMap)
                 }
-            }
+            },
         )
     }
 
@@ -80,8 +86,8 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resourceState.data?.let { data ->
-                        val filteredFormLayout = data.formLayout.filterNot { 
-                            it.id == AssessmentDefinedParams.ReferralFacilityType 
+                        val filteredFormLayout = data.formLayout.filterNot {
+                            it.id == AssessmentDefinedParams.ReferralFacilityType
                         }
                         formGenerator.populateViews(filteredFormLayout)
                     }
@@ -94,7 +100,11 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
         }
     }
 
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
     }
 
     override fun onPopulate(targetId: String) {
@@ -103,11 +113,12 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
     override fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     ) {
-        CheckBoxDialog.newInstance(id, resultMap,title = getString(R.string.methods)) { resultMap ->
-            formGenerator.validateCheckboxDialogue(id, formLayout, resultMap)
-        }.show(childFragmentManager, CheckBoxDialog.TAG)
+        CheckBoxDialog
+            .newInstance(id, resultMap, title = getString(R.string.methods)) { resultMap ->
+                formGenerator.validateCheckboxDialogue(id, formLayout, resultMap)
+            }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
     override fun onInstructionClicked(
@@ -115,19 +126,22 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {
         showInstructionDialog(id)
     }
 
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+    override fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
         resultMap?.let { details ->
             val referralResult = ReferralResultGenerator().calculateFamilyPlanningStatus(details)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
                     serverData = it,
                     details,
-                    DefinedParams.familyPlanning.lowercase()
+                    DefinedParams.familyPlanning.lowercase(),
                 )
             }
             result?.second?.let {
@@ -143,32 +157,31 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
         }
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
     }
 
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,
         enteredDays: Int?,
-        resultMap: HashMap<String, Any>?
+        resultMap: HashMap<String, Any>?,
     ) {
-
     }
 
     override fun onAgeCheckForPregnancy() {
-
     }
 
     override fun handleMandatoryCondition(formLayout: FormLayout?) {
-
     }
 
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
-
     }
 
     override fun onClick(view: View?) {
@@ -194,28 +207,27 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
     private fun showInstructionDialog(id: String) {
         val titleById = getTitleById(id)
         when (id) {
-            Contraceptive-> {
-                InformationLayoutFragment.newInstance(id, titleById)
+            Contraceptive -> {
+                InformationLayoutFragment
+                    .newInstance(id, titleById)
                     .show(childFragmentManager, InformationLayoutFragment.TAG)
             }
         }
     }
 
     private fun getTitleById(id: String): String {
-        return when(id){
+        return when (id) {
             Contraceptive -> return getString(R.string.job_aid_contraceptive)
             else -> ""
         }
     }
 
-    fun getCurrentAnsweredStatus(): Boolean {
-        return formGenerator.getResultMap().isNotEmpty()
-    }
+    fun getCurrentAnsweredStatus(): Boolean = formGenerator.getResultMap().isNotEmpty()
 
     /**
      * Updates counselling messages visibility based on number of living children
      * and desire for children in future.
-     * 
+     *
      * Business Rules:
      * 1. SARCs: Show if (Children = 0) OR (Desire = "yes_within_2_yrs")
      * 2. LARCs: Show if (Children ≥ 1) OR (Desire = "yes_after_2_yrs")
@@ -229,13 +241,13 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
             is String -> childrenValue.toIntOrNull() ?: 0
             else -> 0
         }
-        
+
         // Extract desire for children in future
         val desire = resultMap[AssessmentDefinedParams.DesireForChildrenInFuture] as? String
-        
+
         // Handle unsure special case - ignore desire field
         val isUnsure = desire == AssessmentDefinedParams.DesireUnsure
-        
+
         // Evaluate conditions with OR logic
         val showSARCs = if (isUnsure) {
             // Unsure case: use only children logic
@@ -244,7 +256,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
             // Normal case: (Children = 0) OR (Desire = "yes_within_2_yrs")
             numChildren == 0 || desire == AssessmentDefinedParams.DesireYesWithin2Yrs
         }
-        
+
         val showLARCs = if (isUnsure) {
             // Unsure case: use only children logic
             numChildren >= 1
@@ -252,7 +264,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
             // Normal case: (Children ≥ 1) OR (Desire = "yes_after_2_yrs")
             numChildren >= 1 || desire == AssessmentDefinedParams.DesireYesAfter2Yrs
         }
-        
+
         val showPermanent = if (isUnsure) {
             // Unsure case: use only children logic
             numChildren >= 2
@@ -260,7 +272,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
             // Normal case: (Children ≥ 2) OR (Desire = "no_more_children")
             numChildren >= 2 || desire == AssessmentDefinedParams.DesireNoMore
         }
-        
+
         // Update visibility of counselling message views
         updateCounsellingMessageVisibility(AssessmentDefinedParams.CounsellingMessageSarcs, showSARCs)
         updateCounsellingMessageVisibility(AssessmentDefinedParams.CounsellingMessageLarcs, showLARCs)
@@ -269,11 +281,14 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
 
     /**
      * Updates the visibility of a counselling message view.
-     * 
+     *
      * @param messageId The ID of the counselling message field
      * @param show True to show (VISIBLE), false to hide (GONE)
      */
-    private fun updateCounsellingMessageVisibility(messageId: String, show: Boolean) {
+    private fun updateCounsellingMessageVisibility(
+        messageId: String,
+        show: Boolean,
+    ) {
         val viewTag = messageId + AssessmentDefinedParams.rootSuffix
         val view = formGenerator.getViewByTag(viewTag)
         view?.visibility = if (show) View.VISIBLE else View.GONE

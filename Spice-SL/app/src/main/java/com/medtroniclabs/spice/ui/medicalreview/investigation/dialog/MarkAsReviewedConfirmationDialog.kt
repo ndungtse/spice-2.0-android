@@ -19,7 +19,7 @@ class MarkAsReviewedConfirmationDialog(private val callback: (userConfirmed: Boo
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogConfirmationMarkAsReviewedBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -27,7 +27,10 @@ class MarkAsReviewedConfirmationDialog(private val callback: (userConfirmed: Boo
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setClickListener()
     }
@@ -66,9 +69,8 @@ class MarkAsReviewedConfirmationDialog(private val callback: (userConfirmed: Boo
 
     companion object {
         const val TAG = "MarkAsReviewedConfirmationDialog"
-        fun newInstance(callback: (userConfirmed: Boolean) -> Unit): MarkAsReviewedConfirmationDialog {
-            return MarkAsReviewedConfirmationDialog(callback)
-        }
+
+        fun newInstance(callback: (userConfirmed: Boolean) -> Unit): MarkAsReviewedConfirmationDialog = MarkAsReviewedConfirmationDialog(callback)
     }
 
     override fun onClick(view: View?) {

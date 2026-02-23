@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityCommunityProfileBinding
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -16,7 +15,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CommunityProfileActivity : BaseActivity() {
-
     private lateinit var binding: ActivityCommunityProfileBinding
     private val communityViewModel: CommunityProfileViewModel by viewModels()
 
@@ -35,7 +33,7 @@ class CommunityProfileActivity : BaseActivity() {
             homeAndBackVisibility = Pair(true, true),
             callbackMore = {
                 navigateToEditScreen()
-            }
+            },
         )
         initView()
         addObservers()
@@ -52,12 +50,15 @@ class CommunityProfileActivity : BaseActivity() {
         }
     }
 
-    private fun loadFragment(status: Int, bundle: Bundle? = null) {
+    private fun loadFragment(
+        status: Int,
+        bundle: Bundle? = null,
+    ) {
         when (status) {
             1 -> {
                 replaceFragmentInId<CommunityProfileSearchFragment>(
                     binding.communityProfileContainer.id,
-                    tag = CommunityProfileSearchFragment::class.simpleName
+                    tag = CommunityProfileSearchFragment::class.simpleName,
                 )
             }
 
@@ -65,7 +66,7 @@ class CommunityProfileActivity : BaseActivity() {
                 replaceFragmentInId<EditCommunityProfileFragment>(
                     binding.communityProfileContainer.id,
                     tag = EditCommunityProfileFragment::class.simpleName,
-                    bundle = bundle
+                    bundle = bundle,
                 )
             }
 
@@ -73,9 +74,8 @@ class CommunityProfileActivity : BaseActivity() {
                 replaceFragmentInId<CommunityProfileSummaryFragment>(
                     binding.communityProfileContainer.id,
                     tag = CommunityProfileSummaryFragment::class.simpleName,
-                    bundle = bundle
+                    bundle = bundle,
                 )
-
             }
         }
     }
@@ -93,7 +93,7 @@ class CommunityProfileActivity : BaseActivity() {
             showErrorDialogue(
                 getString(R.string.alert),
                 getString(R.string.exit_reason),
-                isNegativeButtonNeed = true
+                isNegativeButtonNeed = true,
             ) { isPositive ->
                 if (isPositive) {
                     backNavigationFlow(status.second)
@@ -128,5 +128,4 @@ class CommunityProfileActivity : BaseActivity() {
             fragment.navigateToEditScreen()
         }
     }
-
 }

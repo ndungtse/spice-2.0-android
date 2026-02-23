@@ -1,14 +1,13 @@
 package com.medtroniclabs.spice.data
 
-
 data class PrescriptionRequest(
     val encounter: EncounterDetails,
     val prescriptions: List<Prescription>,
-    val reasonsForChange : String? = null,
-    val regimenLine: Int? = null
+    val reasonsForChange: String? = null,
+    val regimenLine: Int? = null,
 )
 
-data class  Prescription(
+data class Prescription(
     val prescribedDays: Long? = null,
     val medicationName: String,
     val medicationId: String,
@@ -33,17 +32,14 @@ data class  Prescription(
     val dosageFormName: String? = null,
     val prescriptionRemainingDays: Int? = null,
     val prescriptionFilledDays: Any? = null,
-    val discontinuedOn : String? =null,
+    val discontinuedOn: String? = null,
     val reason: String? = null,
-    val instructionUpdated : String? = null,
+    val instructionUpdated: String? = null,
     val groupName: String? = null,
     var category: Category? = null,
     val categoryName: String? = null,
-    val isGroup : Boolean? = null,
+    val isGroup: Boolean? = null,
     val groupUniqueId: String? = null,
-    val instruction: String ? = null,
-    val regimenLine: Int?= null
+    val instruction: String? = null,
+    val regimenLine: Int? = null,
 )
-
-
-

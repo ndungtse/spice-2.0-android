@@ -14,7 +14,6 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setDialogPercent
-import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -37,10 +36,10 @@ class BMIListDialog : DialogFragment(), View.OnClickListener {
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentBmiListDialogBinding.inflate(inflater, container, false)
@@ -51,6 +50,7 @@ class BMIListDialog : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "BMIListDialog"
+
         fun newInstance(memberID: String?) =
             BMIListDialog().apply {
                 this.arguments = Bundle().apply {
@@ -59,7 +59,10 @@ class BMIListDialog : DialogFragment(), View.OnClickListener {
             }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
@@ -75,13 +78,10 @@ class BMIListDialog : DialogFragment(), View.OnClickListener {
         binding.rvBmiList.layoutManager = LinearLayoutManager(requireContext())
         binding.rvBmiList.adapter = adapter
         binding.loadingProgress.safeClickListener {
-
         }
     }
 
-    private fun getMemberId(): String {
-        return arguments?.getString(DefinedParams.MemberID, "") ?: ""
-    }
+    private fun getMemberId(): String = arguments?.getString(DefinedParams.MemberID, "") ?: ""
 
     fun attachObserver() {
         viewModel.getBmiList.observe(viewLifecycleOwner) { resourceState ->
@@ -131,7 +131,6 @@ class BMIListDialog : DialogFragment(), View.OnClickListener {
         }
         setDialogPercent(width)
     }
-
 
     override fun onStart() {
         super.onStart()

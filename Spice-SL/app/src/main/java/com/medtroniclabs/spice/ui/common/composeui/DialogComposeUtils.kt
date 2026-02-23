@@ -25,28 +25,31 @@ import androidx.compose.ui.unit.dp
 import com.medtroniclabs.spice.R
 
 object DialogComposeUtils {
-
     @Composable
     fun TitleDialogueView(title: String) {
         Surface(
-            modifier = Modifier.fillMaxWidth(), color = colorResource(id = R.color.gray_bg_site)
+            modifier = Modifier.fillMaxWidth(),
+            color = colorResource(id = R.color.gray_bg_site),
         ) {
             Surface(
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
-                color = Color.Unspecified
+                color = Color.Unspecified,
             ) {
                 Text(
                     text = title,
                     color = colorResource(id = R.color.secondary_black),
                     fontFamily = FontFamily(Font(R.font.inter_bold)),
-                    fontSize = TextUnit(16f, TextUnitType.Sp)
+                    fontSize = TextUnit(16f, TextUnitType.Sp),
                 )
             }
         }
     }
 
     @Composable
-    fun CardBottomView(modifier: Modifier, onClick: (() -> Unit?)? = null) {
+    fun CardBottomView(
+        modifier: Modifier,
+        onClick: (() -> Unit?)? = null,
+    ) {
         Surface(modifier = modifier) {
             DividerWidget()
             Row(
@@ -54,18 +57,18 @@ object DialogComposeUtils {
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 15.dp, vertical = 10.dp)
+                    .padding(horizontal = 15.dp, vertical = 10.dp),
             ) {
                 Button(
                     modifier = Modifier.widthIn(min = 100.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(id = R.color.cobalt_blue),
-                        contentColor = colorResource(id = R.color.white)
+                        contentColor = colorResource(id = R.color.white),
                     ),
                     shape = RoundedCornerShape(4.dp),
                     onClick = {
                         onClick?.invoke()
-                    }
+                    },
                 ) {
                     TextStyles.buttonTextStyle.let {
                         Text(
@@ -73,7 +76,7 @@ object DialogComposeUtils {
                             style = it,
                             fontFamily = it.fontFamily,
                             fontWeight = it.fontWeight,
-                            fontSize = it.fontSize
+                            fontSize = it.fontSize,
                         )
                     }
                 }
@@ -86,7 +89,7 @@ object DialogComposeUtils {
         Divider(
             modifier = modifier,
             color = colorResource(id = R.color.button_disabled),
-            thickness = 1.dp
+            thickness = 1.dp,
         )
     }
 }

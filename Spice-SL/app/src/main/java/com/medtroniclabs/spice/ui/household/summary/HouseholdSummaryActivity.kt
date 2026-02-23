@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.household.summary
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
@@ -10,24 +9,19 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat.startActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.isVisible
-import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
 import com.medtroniclabs.spice.databinding.ActivityHouseholdSummaryBinding
-import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.MenuConstants
-import com.medtroniclabs.spice.ui.MenuConstants.WorkFlowName
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.dialog.LinkPatientDialogFragment
 import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
@@ -40,12 +34,8 @@ import com.medtroniclabs.spice.ui.household.MemberSelectionListener
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.OnClickListener, OnDialogDismissListener {
-
     private lateinit var binding: ActivityHouseholdSummaryBinding
 
     private val householdSummaryViewModel: HouseHoldSummaryViewModel by viewModels()
@@ -59,12 +49,13 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         binding = ActivityHouseholdSummaryBinding.inflate(layoutInflater)
         showLoading()
         setMainContentView(
-            binding.root, isToolbarVisible = true, title = getString(R.string.households)
+            binding.root,
+            isToolbarVisible = true,
+            title = getString(R.string.households),
         )
         initializeView()
         setListener()
         attachObserver()
-
     }
 
     override fun onResume() {
@@ -75,7 +66,6 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     }
 
     private fun attachObserver() {
-
         householdSummaryViewModel.householdCardDetailLiveData.observe(this) {
             setTitle(getString(R.string.household_family, it.name.capitalizeFirstChar()))
             initializePhuLinkFlow()
@@ -89,7 +79,8 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                         val existingFragment =
                             supportFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
                         if (existingFragment == null) {
-                            SuccessDialogFragment.newInstance(isMember = true)
+                            SuccessDialogFragment
+                                .newInstance(isMember = true)
                                 .show(supportFragmentManager, SuccessDialogFragment.TAG)
                         }
                     }
@@ -107,7 +98,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                 GridLayoutManager(this@HouseholdSummaryActivity, DefinedParams.span_count_1)
             adapter = householdListAdapter
             adapter?.let {
-                    hideLoading()
+                hideLoading()
             }
         }
     }
@@ -117,53 +108,57 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         val householdId = intent.getLongExtra(ID, -1)
         linkHouseholdId = householdId
         linkMemberId = intent.getLongExtra(MemberID, -1)
-        linkFhirMemberId = intent.getLongExtra(DefinedParams.FhirMemberID,-1)
+        linkFhirMemberId = intent.getLongExtra(DefinedParams.FhirMemberID, -1)
         householdSummaryViewModel.setHouseholdId(householdId)
         householdSummaryViewModel.isFromHouseHoldRegistration = intent.getBooleanExtra(
-            isFromHouseHoldRegistration, false
+            isFromHouseHoldRegistration,
+            false,
         )
-        supportFragmentManager.beginTransaction()
-            .add(binding.fragmentContainer.id, HouseholdDetailsFragment()).commit()
+        supportFragmentManager
+            .beginTransaction()
+            .add(binding.fragmentContainer.id, HouseholdDetailsFragment())
+            .commit()
         handleBottomNavigation()
     }
 
-    private fun initializePhuLinkFlow(){
-        householdSummaryViewModel.isPhuWalkInsFlow=intent.getBooleanExtra(isPhuWalkInsFlow, false)
-        if ( householdSummaryViewModel.isPhuWalkInsFlow){
+    private fun initializePhuLinkFlow() {
+        householdSummaryViewModel.isPhuWalkInsFlow = intent.getBooleanExtra(isPhuWalkInsFlow, false)
+        if (householdSummaryViewModel.isPhuWalkInsFlow) {
             changeBottomConstraint()
             onHomeClick { onBackNav() }
             hideHomeButton(false)
             setTitle(getString(R.string.link_patient))
         }
     }
+
     private fun changeBottomConstraint() {
         val constraintLayout = findViewById<ConstraintLayout>(R.id.constraintLayout)
         val constraintSet = ConstraintSet()
         constraintSet.clone(constraintLayout)
-                 constraintSet.connect(
-                R.id.scrollContainer,
-                ConstraintSet.BOTTOM,
-                R.id.bottomNavigationViewLinkPatient,
-                ConstraintSet.TOP,
-                0
-            )
+        constraintSet.connect(
+            R.id.scrollContainer,
+            ConstraintSet.BOTTOM,
+            R.id.bottomNavigationViewLinkPatient,
+            ConstraintSet.TOP,
+            0,
+        )
         constraintSet.applyTo(constraintLayout)
     }
 
-    private fun onBackNav(){
+    private fun onBackNav() {
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (isPositive) {
                 val intent = Intent(this, LandingActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 startActivity(intent)
-                finish()            }
+                finish()
+            }
         }
     }
-
 
     private fun handleBottomNavigation() {
         if (householdSummaryViewModel.isFromHouseHoldRegistration) {
@@ -173,18 +168,17 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             binding.bottomNavigationView.visibility = View.GONE
             showHideVerticalIcon(true)
         }
-        if (householdSummaryViewModel.isPhuWalkInsFlow){
+        if (householdSummaryViewModel.isPhuWalkInsFlow) {
             binding.bottomNavigationViewLinkPatient.visibility = View.VISIBLE
             showHideVerticalIcon(false)
-        }else{
+        } else {
             binding.bottomNavigationViewLinkPatient.visibility = View.GONE
             showHideVerticalIcon(false)
         }
 
-        if (!binding.bottomNavigationView.isVisible() && !binding.bottomNavigationViewLinkPatient.isVisible()){
+        if (!binding.bottomNavigationView.isVisible() && !binding.bottomNavigationViewLinkPatient.isVisible()) {
             showHideVerticalIcon(true)
         }
-
     }
 
     private fun showHideVerticalIcon(visibility: Boolean) {
@@ -192,7 +186,6 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             onMoreIconClicked(it)
         }
     }
-
 
     private fun onMoreIconClicked(view: View) {
         val popupMenu = PopupMenu(this@HouseholdSummaryActivity, view)
@@ -209,11 +202,13 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                         editHouseholdDetails()
                     }
                     R.id.editMember -> {
-                        MemberEditDialogFragment.newInstance(this@HouseholdSummaryActivity)
+                        MemberEditDialogFragment
+                            .newInstance(this@HouseholdSummaryActivity)
                             .show(supportFragmentManager, MemberEditDialogFragment.TAG)
                     }
                     R.id.memberDeceased -> {
-                        MemberDeceasedDialogFragment.newInstance(this@HouseholdSummaryActivity)
+                        MemberDeceasedDialogFragment
+                            .newInstance(this@HouseholdSummaryActivity)
                             .show(supportFragmentManager, MemberDeceasedDialogFragment.TAG)
                     }
                 }
@@ -224,8 +219,14 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         popupMenu.show()
     }
 
-    override fun onMemberSelected(item: Long, isEdit: Boolean, dateOfBirth: String?,isContactTrace:Boolean,householdId:Long?) {
-        if(isContactTrace){
+    override fun onMemberSelected(
+        item: Long,
+        isEdit: Boolean,
+        dateOfBirth: String?,
+        isContactTrace: Boolean,
+        householdId: Long?,
+    ) {
+        if (isContactTrace) {
             val intent = Intent(this, AssessmentActivity::class.java)
             intent.putExtra(DefinedParams.MemberID, item)
             intent.putExtra(DefinedParams.DOB, dateOfBirth)
@@ -233,14 +234,14 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             intent.putExtra(DefinedParams.FhirId, linkFhirMemberId)
             intent.putExtra(DefinedParams.CONTACT_TRACING, true)
             startActivity(intent)
-        }else {
+        } else {
             if (isEdit) {
                 val intent = Intent(this, HouseholdActivity::class.java)
                 intent.putExtra(DefinedParams.MemberID, item)
                 startActivity(intent)
             } else {
                 val intent = Intent(this, AssessmentToolsActivity::class.java)
-                intent.putExtra(DefinedParams.HouseholdId,householdId)
+                intent.putExtra(DefinedParams.HouseholdId, householdId)
                 intent.putExtra(DefinedParams.MemberID, item)
                 intent.putExtra(DefinedParams.DOB, dateOfBirth)
                 startActivity(intent)
@@ -266,8 +267,8 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             R.id.btnAddNewMember -> {
                 withLocationCheck(::addNewMember)
             }
-            R.id.btnLinkPatient->{
-                withLocationCheck (::linkPatient)
+            R.id.btnLinkPatient -> {
+                withLocationCheck(::linkPatient)
             }
         }
     }
@@ -278,7 +279,8 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             val existingFragment =
                 supportFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
             if (existingFragment == null) {
-                SuccessDialogFragment.newInstance(isHousehold = true)
+                SuccessDialogFragment
+                    .newInstance(isHousehold = true)
                     .show(supportFragmentManager, SuccessDialogFragment.TAG)
             }
         }
@@ -288,7 +290,8 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         val existingFragment =
             supportFragmentManager.findFragmentByTag(LinkPatientDialogFragment.TAG)
         if (existingFragment == null) {
-            LinkPatientDialogFragment.newInstance(linkHouseholdId, linkMemberId, linkFhirMemberId)
+            LinkPatientDialogFragment
+                .newInstance(linkHouseholdId, linkMemberId, linkFhirMemberId)
                 .show(supportFragmentManager, LinkPatientDialogFragment.TAG)
         }
     }
@@ -297,7 +300,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         super.onNewIntent(intent)
         linkHouseholdId = intent.getLongExtra(ID, -1)
         linkMemberId = intent.getLongExtra(MemberID, -1)
-        linkFhirMemberId = intent.getLongExtra(DefinedParams.FhirMemberID,-1)
+        linkFhirMemberId = intent.getLongExtra(DefinedParams.FhirMemberID, -1)
     }
 
     private fun addNewMember() {
@@ -309,6 +312,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             startActivity(intent)
         }
     }
+
     private fun editHouseholdDetails() {
         if (householdSummaryViewModel.houseHoldId != -1L) {
             val intent =
@@ -320,7 +324,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     }
 
     override fun onDialogDismissListener(isFinish: Boolean) {
-        if (isFinish){
+        if (isFinish) {
             finish()
         }
     }

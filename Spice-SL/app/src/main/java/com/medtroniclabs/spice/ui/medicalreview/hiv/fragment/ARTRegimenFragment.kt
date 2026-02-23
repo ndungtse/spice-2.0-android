@@ -46,26 +46,27 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ARTRegimenFragment : BaseFragment() {
-
     private val viewModel: HivViewModel by viewModels()
     private var aRTRecordsState = mutableStateOf<List<ARTLoadRecord>>(emptyList())
 
     // viewModel.isViralLoad true means Viral Load fragment false means ART regimen fragment
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return ComposeView(requireContext()).apply {
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View =
+        ComposeView(requireContext()).apply {
             setContent {
                 MaterialTheme {
                     ARTLoadTable(records = aRTRecordsState.value)
                 }
             }
         }
-    }
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getARTData(
             arguments?.getString(DefinedParams.ID),
@@ -103,7 +104,7 @@ class ARTRegimenFragment : BaseFragment() {
                                 endDate,
                                 regimen,
                                 regimenLine ?: getString(R.string.empty__),
-                                reasonForChange ?: getString(R.string.empty__)
+                                reasonForChange ?: getString(R.string.empty__),
                             )
                         }
                         aRTRecordsState.value = responseList
@@ -114,14 +115,13 @@ class ARTRegimenFragment : BaseFragment() {
                                 getString(R.string.empty__),
                                 getString(R.string.empty__),
                                 getString(R.string.empty__),
-                                getString(R.string.empty__)
-                            )
+                                getString(R.string.empty__),
+                            ),
                         )
                     }
                 }
             }
         }
-
     }
 
     @Composable
@@ -131,11 +131,11 @@ class ARTRegimenFragment : BaseFragment() {
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             modifier = Modifier
                 .padding(16.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {
             Column(
                 modifier = Modifier
-                    .background(Color.White)
+                    .background(Color.White),
             ) {
                 // Card Heading
                 Box(
@@ -143,14 +143,13 @@ class ARTRegimenFragment : BaseFragment() {
                         .fillMaxWidth()
                         .background(colorResource(id = R.color.card_background))
                         .padding(vertical = 12.dp, horizontal = 16.dp),
-                    contentAlignment = Alignment.Center
-
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         text = stringResource(R.string.current_medication),
                         fontSize = 16.sp,
                         color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.inter_bold))
+                        fontFamily = FontFamily(Font(R.font.inter_bold)),
                     )
                 }
 
@@ -162,24 +161,23 @@ class ARTRegimenFragment : BaseFragment() {
                         .clip(
                             RoundedCornerShape(
                                 topStart = 4.dp,
-                                topEnd = 4.dp
-                            )
+                                topEnd = 4.dp,
+                            ),
                         ) // Only top corners curved
                         .background(Color(0xFFE6DDF3))
                         .border(
                             1.dp,
                             colorResource(id = R.color.edittext_stroke),
-                            RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)
-                        )
+                            RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp),
+                        ),
                 ) {
-
                     val headers =
                         listOf(
                             stringResource(R.string.start_date).uppercase(),
                             stringResource(R.string.end_date).uppercase(),
                             stringResource(R.string.regimen),
                             stringResource(R.string.regimen_line).uppercase(),
-                            stringResource(R.string.reasons_for_change)
+                            stringResource(R.string.reasons_for_change),
                         )
 
                     headers.forEach { label ->
@@ -190,15 +188,13 @@ class ARTRegimenFragment : BaseFragment() {
                                 .border(.2.dp, colorResource(id = R.color.edittext_stroke))
                                 .padding(6.dp)
                                 .fillMaxHeight(),
-                            contentAlignment = Alignment.Center
-
+                            contentAlignment = Alignment.Center,
                         ) {
                             Text(
                                 text = label,
                                 fontSize = 14.sp,
                                 fontFamily = FontFamily(Font(R.font.inter_medium)),
-
-                                )
+                            )
                         }
                     }
                 }
@@ -211,7 +207,7 @@ class ARTRegimenFragment : BaseFragment() {
                         record.endDate ?: "--",
                         record.regimen ?: "--",
                         record.regimenLine ?: "--",
-                        record.reasonForChange ?: "--"
+                        record.reasonForChange ?: "--",
                     )
 
                     Row(
@@ -219,13 +215,11 @@ class ARTRegimenFragment : BaseFragment() {
                             .absolutePadding(
                                 left = 16.dp,
                                 bottom = if (isLastRow) 12.dp else 0.dp,
-                                right = 16.dp
-                            )
-                            .fillMaxWidth()
+                                right = 16.dp,
+                            ).fillMaxWidth()
                             .height(IntrinsicSize.Min) // ensure full height row
-                            .background(colorResource(id = R.color.table_row_color))
+                            .background(colorResource(id = R.color.table_row_color)),
                     ) {
-
                         data.forEachIndexed { cellIndex, cell ->
 
                             val isLastCell = cellIndex == 3
@@ -245,46 +239,43 @@ class ARTRegimenFragment : BaseFragment() {
                                     .border(
                                         0.2.dp,
                                         colorResource(id = R.color.edittext_stroke),
-                                        shape = cellShape
-                                    )
-                                    .background(colorResource(id = R.color.table_row_color))
+                                        shape = cellShape,
+                                    ).background(colorResource(id = R.color.table_row_color))
                                     .padding(6.dp),
-                                contentAlignment = Alignment.Center
-
+                                contentAlignment = Alignment.Center,
                             ) {
                                 if (cell != null) {
                                     Text(
                                         text = cell,
                                         fontSize = 16.sp,
-                                        fontFamily = FontFamily(Font(R.font.inter_regular))
+                                        fontFamily = FontFamily(Font(R.font.inter_regular)),
                                     )
                                 }
                             }
                         }
                     }
                 }
-
             }
         }
     }
-
-
 
     companion object {
         const val TAG = "ARTRegimenFragment"
     }
 
-    private fun getOrdinal(number: Int): String {
-        return when {
+    private fun getOrdinal(number: Int): String =
+        when {
             number % 100 in 11..13 -> "${number}th"
             number % 10 == 1 -> "${number}st"
             number % 10 == 2 -> "${number}nd"
             number % 10 == 3 -> "${number}rd"
             else -> "${number}th"
         }
-    }
 
-    fun refreshFragment(patientReference: String?, id: String?) {
+    fun refreshFragment(
+        patientReference: String?,
+        id: String?,
+    ) {
         viewModel.getARTData(
             id,
             limit = 5,
@@ -293,5 +284,4 @@ class ARTRegimenFragment : BaseFragment() {
             memberId = arguments?.getString(MemberID),
         )
     }
-
 }

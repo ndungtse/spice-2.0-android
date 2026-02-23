@@ -46,16 +46,17 @@ import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class HIVStatusFragment : BaseFragment() {
-
     val adapter: CustomSpinnerAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
     private val viewModel: HIVStatusViewModel by activityViewModels()
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
     private lateinit var binding: FragmentHivStatusBinding
     private var datePickerDialog: DatePickerDialog? = null
     private val pregnancyDetailsViewModel: PregnancyDetailsViewModel by activityViewModels()
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentHivStatusBinding.inflate(inflater, container, false)
         return binding.root
@@ -63,11 +64,14 @@ class HIVStatusFragment : BaseFragment() {
 
     companion object {
         const val TAG = "HIVStatusFragment"
-        fun newInstance() =
-            HIVStatusFragment()
+
+        fun newInstance() = HIVStatusFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
@@ -101,25 +105,23 @@ class HIVStatusFragment : BaseFragment() {
 
                 ResourceState.SUCCESS -> {
                     resource.data?.let { listItems ->
-                        fun filterAndMap(category: String): ArrayList<Map<String, Any>> {
-                            return listItems
+                        fun filterAndMap(category: String): ArrayList<Map<String, Any>> =
+                            listItems
                                 .filter { it.category == category }
                                 .map { item ->
                                     CommonUtils.getOptionMap(
                                         value = item.value.orEmpty(),
-                                        name = item.name
+                                        name = item.name,
                                     )
-                                }
-                                .toCollection(ArrayList())
-                        }
+                                }.toCollection(ArrayList())
 
-                        if(viewModel.isEMTCT) {
+                        if (viewModel.isEMTCT) {
                             binding.tbGroup.visible()
                             initTBStatus(listItems)
 //                            binding.lmbGroup.gone()
 //                            binding.gestationalAgeGroup.gone()
 //                            binding.expectedDateGroup.gone()
-                        }else{
+                        } else {
                             binding.tbGroup.gone()
                         }
                         initPregnancyStatus(filterAndMap(MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name))
@@ -137,7 +139,9 @@ class HIVStatusFragment : BaseFragment() {
     }
 
     private fun getSelectModelMeta(isEstablished: Boolean) {
-        val listItems = viewModel.getHivStatusMetaList.value?.data.orEmpty()
+        val listItems = viewModel.getHivStatusMetaList.value
+            ?.data
+            .orEmpty()
         val categoryKey = if (isEstablished) {
             MedicalReviewTypeEnums.establishedModels.name
         } else {
@@ -147,8 +151,8 @@ class HIVStatusFragment : BaseFragment() {
             add(
                 mapOf(
                     DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                    DefinedParams.Value to DefinedParams.DefaultID
-                )
+                    DefinedParams.Value to DefinedParams.DefaultID,
+                ),
             )
             addAll(
                 listItems
@@ -156,16 +160,16 @@ class HIVStatusFragment : BaseFragment() {
                     .map { item ->
                         mapOf(
                             DefinedParams.NAME to item.name,
-                            DefinedParams.Value to (item.value ?: item.name)
+                            DefinedParams.Value to (item.value ?: item.name),
                         )
-                    }
+                    },
             )
         }
         setSpinner(ArrayList(dropDownList))
     }
 
     private fun initAHD(data: ArrayList<Map<String, Any>>?) {
-        if (data.isNullOrEmpty()) return  // Exit if null or empty
+        if (data.isNullOrEmpty()) return // Exit if null or empty
 
         val view = SingleSelectionCustomView(requireContext()).apply {
             tag = MedicalReviewTypeEnums.ahdStatus.name
@@ -175,7 +179,7 @@ class HIVStatusFragment : BaseFragment() {
                 viewModel.resultAHD,
                 Pair(MedicalReviewTypeEnums.ahdStatus.name, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                singleSelectionAHDCallback
+                singleSelectionAHDCallback,
             )
         }
 
@@ -183,7 +187,7 @@ class HIVStatusFragment : BaseFragment() {
     }
 
     private fun initDSD(data: ArrayList<Map<String, Any>>?) {
-        if (data.isNullOrEmpty()) return  // Exit if null or empty
+        if (data.isNullOrEmpty()) return // Exit if null or empty
 
         val view = SingleSelectionCustomView(requireContext()).apply {
             tag = MedicalReviewTypeEnums.dsdStatus.name
@@ -193,7 +197,7 @@ class HIVStatusFragment : BaseFragment() {
                 viewModel.resultDSD,
                 Pair(MedicalReviewTypeEnums.dsdStatus.name, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                singleSelectionDSDCallback
+                singleSelectionDSDCallback,
             )
         }
 
@@ -201,7 +205,7 @@ class HIVStatusFragment : BaseFragment() {
     }
 
     private fun initView() {
-        viewModel.isEMTCT = arguments?.getBoolean(DefinedParams.EMTCTMR,false) == true
+        viewModel.isEMTCT = arguments?.getBoolean(DefinedParams.EMTCTMR, false) == true
         viewModel.getHivStatusMeta(MedicalReviewTypeEnums.HIV.name)
         binding.etSelectModel.setVisible(false)
         binding.tvSelectModelLabel.setVisible(false)
@@ -218,7 +222,7 @@ class HIVStatusFragment : BaseFragment() {
             val ageDays = ageAndWeek.days
 
             ageYears in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE &&
-                    !(ageYears == PREGNANCY_MAX_AGE && (ageMonths + ageWeeks + ageDays) != 0)
+                !(ageYears == PREGNANCY_MAX_AGE && (ageMonths + ageWeeks + ageDays) != 0)
         } else {
             false
         }
@@ -230,13 +234,11 @@ class HIVStatusFragment : BaseFragment() {
             showDatePickerDialog(binding.tvLastMenstrualPeriodDate)
         }
         autoPopulatePregnantDetails()
-
-
-
     }
 
     private fun autoPopulatePregnantDetails() {
-        if (patientViewModel.getPregnancyBreastFeedStatus()
+        if (patientViewModel
+                .getPregnancyBreastFeedStatus()
                 ?.equals(DefinedParams.yes, true) == true
         ) {
             viewModel.resultPregnantStatus[MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name] =
@@ -244,37 +246,40 @@ class HIVStatusFragment : BaseFragment() {
             binding.lmbGroup.setVisible(true)
             binding.gestationalAgeGroup.setVisible(true)
             binding.expectedDateGroup.setVisible(true)
-        } else if (patientViewModel.getPregnancyBreastFeedStatus()
+        } else if (patientViewModel
+                .getPregnancyBreastFeedStatus()
                 ?.equals(DefinedParams.no, true) == true
         ) {
             viewModel.resultPregnantStatus[MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name] =
                 DefinedParams.no
-        }else if (patientViewModel.getPregnancyBreastFeedStatus()
+        } else if (patientViewModel
+                .getPregnancyBreastFeedStatus()
                 ?.equals(DefinedParams.not_applicable, true) == true
         ) {
             viewModel.resultPregnantStatus[MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name] =
                 DefinedParams.not_applicable
         }
 
-        patientViewModel.getPregnantDetails()?.lastMenstrualPeriod?.takeIf { it.isNotBlank() }
+        patientViewModel
+            .getPregnantDetails()
+            ?.lastMenstrualPeriod
+            ?.takeIf { it.isNotBlank() }
             ?.let { lmp ->
                 binding.apply {
                     tvLastMenstrualPeriodDate.text = DateUtils.convertDateFormat(
                         lmp,
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        DateUtils.DATE_ddMMyyyy
+                        DateUtils.DATE_ddMMyyyy,
                     )
                     lmpVisibility()
 //                    tvLastMenstrualPeriodDate.isEnabled = false
                 }
                 calculateGestationalAgeAndEstimationDeliveryDate()
             }
-
-
     }
 
     private fun initPregnancyStatus(data: ArrayList<Map<String, Any>>?) {
-        if (data.isNullOrEmpty()) return  // Exit if null or empty
+        if (data.isNullOrEmpty()) return // Exit if null or empty
 
         val view = SingleSelectionCustomView(requireContext()).apply {
             tag = MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name
@@ -284,7 +289,7 @@ class HIVStatusFragment : BaseFragment() {
                 viewModel.resultPregnantStatus,
                 Pair(MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                singleSelectionCallback
+                singleSelectionCallback,
             )
         }
 
@@ -298,9 +303,10 @@ class HIVStatusFragment : BaseFragment() {
             val isValid = (selectedID as? String).equals(DefinedParams.yes, ignoreCase = true)
             showPregnantRelatedViews(isValid)
             setFragmentResult(
-                MedicalReviewDefinedParams.HIV_STATUS, bundleOf(
-                    MedicalReviewDefinedParams.CHIP_ITEMS to true
-                )
+                MedicalReviewDefinedParams.HIV_STATUS,
+                bundleOf(
+                    MedicalReviewDefinedParams.CHIP_ITEMS to true,
+                ),
             )
         }
 
@@ -325,9 +331,10 @@ class HIVStatusFragment : BaseFragment() {
 
     private fun showDatePickerDialog(textView: AppCompatTextView) {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (!textView.text.isNullOrBlank())
+        if (!textView.text.isNullOrBlank()) {
             yearMonthDate =
                 DateUtils.convertedMMMToddMM(textView.text.toString())
+        }
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
@@ -335,19 +342,21 @@ class HIVStatusFragment : BaseFragment() {
                 date = yearMonthDate,
                 isMenstrualPeriod = true,
                 disableFutureDate = true,
-                cancelCallBack = { datePickerDialog = null }
+                cancelCallBack = { datePickerDialog = null },
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 textView.text =
                     DateUtils.convertDateTimeToDate(
                         stringDate,
                         DateUtils.DATE_FORMAT_ddMMyyyy,
-                        DateUtils.DATE_ddMMyyyy
+                        DateUtils.DATE_ddMMyyyy,
                     )
                 calculateGestationalAgeAndEstimationDeliveryDate()
                 setFragmentResult(
-                    MedicalReviewDefinedParams.HIV_STATUS, bundleOf(
-                        MedicalReviewDefinedParams.CHIP_ITEMS to true)
+                    MedicalReviewDefinedParams.HIV_STATUS,
+                    bundleOf(
+                        MedicalReviewDefinedParams.CHIP_ITEMS to true,
+                    ),
                 )
                 datePickerDialog = null
             }
@@ -355,7 +364,9 @@ class HIVStatusFragment : BaseFragment() {
     }
 
     private fun calculateGestationalAgeAndEstimationDeliveryDate() {
-        val lmpText = binding.tvLastMenstrualPeriodDate.text.toString().trim()
+        val lmpText = binding.tvLastMenstrualPeriodDate.text
+            .toString()
+            .trim()
         if (lmpText.isNotEmpty()) {
             val lmpDate =
                 LocalDate.parse(lmpText, DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy))
@@ -374,8 +385,10 @@ class HIVStatusFragment : BaseFragment() {
             viewModel.resultAHD[MedicalReviewTypeEnums.ahdStatus.name] =
                 selectedID as? String ?: ""
             setFragmentResult(
-                MedicalReviewDefinedParams.HIV_STATUS, bundleOf(
-                    MedicalReviewDefinedParams.CHIP_ITEMS to true)
+                MedicalReviewDefinedParams.HIV_STATUS,
+                bundleOf(
+                    MedicalReviewDefinedParams.CHIP_ITEMS to true,
+                ),
             )
         }
 
@@ -389,8 +402,10 @@ class HIVStatusFragment : BaseFragment() {
                 showModel(isValid)
             }
             setFragmentResult(
-                MedicalReviewDefinedParams.HIV_STATUS, bundleOf(
-                    MedicalReviewDefinedParams.CHIP_ITEMS to true)
+                MedicalReviewDefinedParams.HIV_STATUS,
+                bundleOf(
+                    MedicalReviewDefinedParams.CHIP_ITEMS to true,
+                ),
             )
         }
 
@@ -415,14 +430,15 @@ class HIVStatusFragment : BaseFragment() {
                     adapterView: AdapterView<*>?,
                     view: View?,
                     pos: Int,
-                    itemId: Long
+                    itemId: Long,
                 ) {
                     val selectedItem = adapter.getData(pos)
                     val selectedModel = selectedItem?.get(DefinedParams.Value) as? String
                     viewModel.selectModel =
-                        if (!selectedModel.isNullOrEmpty() && !selectedModel.equals(
+                        if (!selectedModel.isNullOrEmpty() &&
+                            !selectedModel.equals(
                                 DefinedParams.DefaultID,
-                                ignoreCase = true
+                                ignoreCase = true,
                             )
                         ) {
                             selectedModel
@@ -431,7 +447,7 @@ class HIVStatusFragment : BaseFragment() {
                         }
                     setFragmentResult(
                         MedicalReviewDefinedParams.HIV_STATUS,
-                        bundleOf(MedicalReviewDefinedParams.CHIP_ITEMS to true)
+                        bundleOf(MedicalReviewDefinedParams.CHIP_ITEMS to true),
                     )
                 }
 
@@ -447,31 +463,40 @@ class HIVStatusFragment : BaseFragment() {
         val isValidPregnantStatus = viewModel.resultPregnantStatus.isNotEmpty()
         val isValidAHD = viewModel.resultAHD.isNotEmpty()
         val isValidDSD = viewModel.resultDSD.isNotEmpty()
-        val isLMB = binding.tvLastMenstrualPeriodDate.text.toString().trim().isNotBlank()
+        val isLMB = binding.tvLastMenstrualPeriodDate.text
+            .toString()
+            .trim()
+            .isNotBlank()
         val isSelectModel = viewModel.selectModel != DefinedParams.DefaultID && viewModel.selectModel != null
         val isTBStatus = viewModel.tbStatus != DefinedParams.DefaultID && viewModel.tbStatus != null
         return isValidPregnantStatus || isValidAHD || isValidDSD || isLMB || isSelectModel || isTBStatus
     }
 
     fun getRequest(): HivStatus {
-        val lmpText = binding.tvLastMenstrualPeriodDate.text.toString().trim()
-        val expectedDateText = binding.etExpectedDate.text.toString().trim()
+        val lmpText = binding.tvLastMenstrualPeriodDate.text
+            .toString()
+            .trim()
+        val expectedDateText = binding.etExpectedDate.text
+            .toString()
+            .trim()
 
         val lmpDate = lmpText.takeIf { it.isNotBlank() }?.let {
             LocalDate.parse(it, DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy))
         }
 
-        val lastMenstrualPeriodFormatted = DateUtils.convertDateTimeToDate(
-            lmpText.takeIf { it.isNotBlank() },
-            DateUtils.DATE_ddMMyyyy,
-            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-        ).takeIf { it.isNotBlank() }
+        val lastMenstrualPeriodFormatted = DateUtils
+            .convertDateTimeToDate(
+                lmpText.takeIf { it.isNotBlank() },
+                DateUtils.DATE_ddMMyyyy,
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+            ).takeIf { it.isNotBlank() }
 
-        val expectedDeliveryDateFormatted = DateUtils.convertDateTimeToDate(
-            expectedDateText.takeIf { it.isNotBlank() },
-            DateUtils.DATE_ddMMyyyy,
-            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-        ).takeIf { it.isNotBlank() }
+        val expectedDeliveryDateFormatted = DateUtils
+            .convertDateTimeToDate(
+                expectedDateText.takeIf { it.isNotBlank() },
+                DateUtils.DATE_ddMMyyyy,
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+            ).takeIf { it.isNotBlank() }
 
         return HivStatus(
             pregnancyBreastfeedStatus = viewModel.resultPregnantStatus[MedicalReviewTypeEnums.hivPreganancyBreastFeedingStatus.name] as? String,
@@ -480,26 +505,29 @@ class HIVStatusFragment : BaseFragment() {
             model = viewModel.selectModel,
             lastMenstrualPeriod = lastMenstrualPeriodFormatted,
             gestationalInWeeks = lmpDate?.let { DateUtils.calculateGestationalAge(it) },
-            expectedDateOfDelivery = expectedDeliveryDateFormatted ,
-            tbStatus = viewModel.tbStatus
+            expectedDateOfDelivery = expectedDeliveryDateFormatted,
+            tbStatus = viewModel.tbStatus,
         )
     }
+
     private fun initTBStatus(data: List<MedicalReviewMetaItems>) {
         val dropDownList = ArrayList<Map<String, Any>>()
         dropDownList.add(
             mapOf(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.Value to DefinedParams.DefaultID
-            )
+                DefinedParams.Value to DefinedParams.DefaultID,
+            ),
         )
-        dropDownList.addAll(data
-            .filter { it.category == MedicalReviewTypeEnums.tbStatus.name }
-            .map { item ->
-                mapOf(
-                    DefinedParams.NAME to item.name,
-                    DefinedParams.Value to (item.value ?: item.name)
-                )
-            })
+        dropDownList.addAll(
+            data
+                .filter { it.category == MedicalReviewTypeEnums.tbStatus.name }
+                .map { item ->
+                    mapOf(
+                        DefinedParams.NAME to item.name,
+                        DefinedParams.Value to (item.value ?: item.name),
+                    )
+                },
+        )
         if (dropDownList.isNotEmpty()) {
             adapter.setData(dropDownList)
             binding.etTBStatus.adapter = adapter
@@ -513,7 +541,7 @@ class HIVStatusFragment : BaseFragment() {
                         adapterView: AdapterView<*>?,
                         view: View?,
                         pos: Int,
-                        itemId: Long
+                        itemId: Long,
                     ) {
                         val selectedItem = adapter.getData(position = pos)
                         selectedItem?.let {
@@ -527,8 +555,10 @@ class HIVStatusFragment : BaseFragment() {
                                 viewModel.tbStatus = null
                             }
                             setFragmentResult(
-                                MedicalReviewDefinedParams.HIV_STATUS, bundleOf(
-                                    MedicalReviewDefinedParams.CHIP_ITEMS to true)
+                                MedicalReviewDefinedParams.HIV_STATUS,
+                                bundleOf(
+                                    MedicalReviewDefinedParams.CHIP_ITEMS to true,
+                                ),
                             )
                         }
                     }
@@ -538,6 +568,7 @@ class HIVStatusFragment : BaseFragment() {
                          * this method is not used
                          */
                     }
-                }        }
+                }
+        }
     }
 }

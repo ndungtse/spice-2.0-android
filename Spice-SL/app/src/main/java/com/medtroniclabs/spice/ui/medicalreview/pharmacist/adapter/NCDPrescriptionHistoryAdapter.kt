@@ -9,15 +9,17 @@ import com.medtroniclabs.spice.data.DispensePrescriptionResponse
 import com.medtroniclabs.spice.databinding.PrescriptionHistoryAdapterBinding
 
 class NCDPrescriptionHistoryAdapter(
-    private val prescriptionList: ArrayList<DispensePrescriptionResponse>
+    private val prescriptionList: ArrayList<DispensePrescriptionResponse>,
 ) :
     RecyclerView.Adapter<NCDPrescriptionHistoryAdapter.ViewHolder>() {
-
     inner class ViewHolder(val binding: PrescriptionHistoryAdapterBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
 
-        fun bind(position: Int, item: DispensePrescriptionResponse) {
+        fun bind(
+            position: Int,
+            item: DispensePrescriptionResponse,
+        ) {
             binding.apply {
                 with(item) {
                     tvMedicationName.text = getValidValue(context, medicationName)
@@ -32,12 +34,16 @@ class NCDPrescriptionHistoryAdapter(
         }
     }
 
-    private fun getValidValue(context: Context, modelValue: Any?): String {
+    private fun getValidValue(
+        context: Context,
+        modelValue: Any?,
+    ): String {
         var value = context.getString(R.string.separator_hyphen)
         modelValue?.let { text ->
             text.toString().isNotBlank().let {
-                if (it)
+                if (it) {
                     value = text.toString()
+                }
             }
         }
         return value
@@ -45,18 +51,20 @@ class NCDPrescriptionHistoryAdapter(
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
-    ): NCDPrescriptionHistoryAdapter.ViewHolder {
-        return ViewHolder(
+        viewType: Int,
+    ): NCDPrescriptionHistoryAdapter.ViewHolder =
+        ViewHolder(
             PrescriptionHistoryAdapterBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: NCDPrescriptionHistoryAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: NCDPrescriptionHistoryAdapter.ViewHolder,
+        position: Int,
+    ) {
         prescriptionList.let {
             holder.bind(position, it[position])
         }

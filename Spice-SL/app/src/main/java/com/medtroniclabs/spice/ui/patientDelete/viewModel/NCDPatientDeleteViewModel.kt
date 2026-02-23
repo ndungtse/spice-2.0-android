@@ -1,13 +1,10 @@
 package com.medtroniclabs.spice.ui.patientDelete.viewModel
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
-import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
-import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.ShortageReasonEntity
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -26,11 +23,11 @@ import javax.inject.Inject
 class NCDPatientDeleteViewModel @Inject constructor(
     private var ncdMedicalReviewRepo: NCDMedicalReviewRepository,
     private val patientRepository: PatientRepository,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
-
     val deleteReasonList = MutableLiveData<List<ShortageReasonEntity>>()
     val patientRemoveResponse = MutableLiveData<Resource<Boolean>>()
+
     fun getDeleteReasonList() {
         viewModelScope.launch(dispatcherIO) {
             val deleteList = ncdMedicalReviewRepo.getNCDShortageReason(NCDMRUtil.TYPE_DELETE)
@@ -53,10 +50,9 @@ class NCDPatientDeleteViewModel @Inject constructor(
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDPatientDelete,
-                isCompleted = true
+                isCompleted = true,
             )
             patientRemoveResponse.postValue(patientRepository.ncdPatientRemove(request))
         }
     }
-
 }

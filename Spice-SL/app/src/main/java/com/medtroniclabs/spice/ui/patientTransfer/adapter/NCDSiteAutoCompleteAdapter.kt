@@ -9,8 +9,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.AutoCompleteAdapterBinding
 import com.medtroniclabs.spice.ncd.data.RegionSiteResponse
 
-class NCDSiteAutoCompleteAdapter(context: Context): ArrayAdapter<String>(context, R.layout.spinner_drop_down_item)
-{
+class NCDSiteAutoCompleteAdapter(context: Context) : ArrayAdapter<String>(context, R.layout.spinner_drop_down_item) {
     private var itemList = ArrayList<RegionSiteResponse>()
 
     override fun getCount(): Int = itemList.size
@@ -23,7 +22,11 @@ class NCDSiteAutoCompleteAdapter(context: Context): ArrayAdapter<String>(context
         this.itemList = itemList
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getView(
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup,
+    ): View {
         val view: View
         val myHolder: ViewHolder
 
@@ -31,13 +34,13 @@ class NCDSiteAutoCompleteAdapter(context: Context): ArrayAdapter<String>(context
             val binding = AutoCompleteAdapterBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
+                false,
             )
             view = binding.root
             myHolder = ViewHolder(binding)
             myHolder.bind(getItem(position))
             view.tag = myHolder
-        } else{
+        } else {
             view = convertView
             myHolder = convertView.tag as ViewHolder
             myHolder.bind(getItem(position))
@@ -48,7 +51,6 @@ class NCDSiteAutoCompleteAdapter(context: Context): ArrayAdapter<String>(context
 
     class ViewHolder(val binding: AutoCompleteAdapterBinding) {
         fun bind(item: String) {
-
             binding.tvTitle.text = item
         }
     }

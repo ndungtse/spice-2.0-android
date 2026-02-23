@@ -28,9 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LandingViewModel @Inject constructor(
     private val metaRepository: MetaRepository,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
-
     val menuListLiveData = MutableLiveData<Resource<List<MenuEntity>>>()
     val userProfileLiveData = MutableLiveData<Resource<UserProfile>>()
     val userHealthFacilityLiveData = MutableLiveData<Resource<ArrayList<HealthFacilityEntity>>>()
@@ -38,10 +37,10 @@ class LandingViewModel @Inject constructor(
     val patientTransferNotificationCountResponse =
         MutableLiveData<Resource<NCDPatientTransferNotificationCountResponse>>()
 
-    var selectedSiteEntity: HealthFacilityEntity ?= null
+    var selectedSiteEntity: HealthFacilityEntity? = null
     val patientUpdateResponse = SingleLiveEvent<Resource<String>>()
     var transferPatientViewId: Long? = null
-    var enteredSupportReason: String? =null
+    var enteredSupportReason: String? = null
     private val supportResponseMutableLiveData = SingleLiveEvent<Resource<String>>()
     val supportResponseLiveData: LiveData<Resource<String>>
         get() = supportResponseMutableLiveData

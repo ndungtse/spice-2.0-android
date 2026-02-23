@@ -5,5 +5,5 @@ data class Prescription(
     val prescribedDays: Long,
     val medicationName: String,
     val frequency: Int,
-    val isActive: Boolean
+    val isActive: Boolean,
 )

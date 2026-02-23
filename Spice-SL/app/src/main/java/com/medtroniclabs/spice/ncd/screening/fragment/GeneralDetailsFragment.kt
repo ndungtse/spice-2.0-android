@@ -32,30 +32,34 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateU
 
 // --- FIX 1: Remove the conflicting listener interfaces from the class declaration ---
 class GeneralDetailsFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentGeneralDetailsBinding
     private val viewModel: GeneralDetailsViewModel by activityViewModels()
 
     private val adapter by lazy { CustomSpinnerAdapter(requireContext()) }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentGeneralDetailsBinding.inflate(
             inflater,
             container,
-            false
+            false,
         )
         return binding.root
     }
 
     companion object {
         const val TAG = "GeneralDetailsFragment"
+
         fun newInstance() = GeneralDetailsFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -120,24 +124,25 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener {
         val list = arrayListOf<Map<String, Any>>(
             hashMapOf(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.ID to DefinedParams.DefaultSelectID
-            )
+                DefinedParams.ID to DefinedParams.DefaultSelectID,
+            ),
         )
         var defaultPosition = 0
-        data?.mapIndexed { index, site ->
-            hashMapOf(
-                DefinedParams.ID to site.id,
-                DefinedParams.NAME to site.name,
-                DefinedParams.TenantId to site.tenantId,
-                DefinedParams.FhirId to (site.fhirId ?: 0)
-            ).also {
-                if (viewModel.siteDetail.siteId == site.id) {
-                    defaultPosition = index + 1
-                } else if (site.isDefault) {
-                    defaultPosition = index + 1
+        data
+            ?.mapIndexed { index, site ->
+                hashMapOf(
+                    DefinedParams.ID to site.id,
+                    DefinedParams.NAME to site.name,
+                    DefinedParams.TenantId to site.tenantId,
+                    DefinedParams.FhirId to (site.fhirId ?: 0),
+                ).also {
+                    if (viewModel.siteDetail.siteId == site.id) {
+                        defaultPosition = index + 1
+                    } else if (site.isDefault) {
+                        defaultPosition = index + 1
+                    }
                 }
-            }
-        }?.let { list.addAll(it) }
+            }?.let { list.addAll(it) }
         adapter.setData(list)
         binding.etSiteChange.post {
             binding.etSiteChange.setSelection(defaultPosition, false)
@@ -148,7 +153,10 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener {
     private fun setListeners() {
         binding.etSiteChange.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
-                adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
+                adapterView: AdapterView<*>?,
+                view: View?,
+                pos: Int,
+                itemId: Long,
             ) {
                 adapter.getData(pos)?.let {
                     processSiteSelection(it)
@@ -193,7 +201,8 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener {
         when (view?.id) {
             R.id.btnNext -> {
                 if (binding.etOthers.isVisible()) {
-                    viewModel.siteDetail.otherType = binding.etOthers.takeIf { it.isVisible() }
+                    viewModel.siteDetail.otherType = binding.etOthers
+                        .takeIf { it.isVisible() }
                         ?.text
                         ?.trim()
                         ?.takeIf { it.isNotBlank() }
@@ -202,14 +211,17 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener {
                 replaceFragmentIfExists<StatsFragment>(
                     R.id.screeningParentLayout,
                     bundle = null,
-                    tag = StatsFragment.TAG
+                    tag = StatsFragment.TAG,
                 )
             }
         }
     }
 
     // --- FIX 2: Renamed method for the standard RadioGroup, remove 'override' ---
-    private fun onCategoryGroupChanged(radioGroup: android.widget.RadioGroup, radioButton: Int) {
+    private fun onCategoryGroupChanged(
+        radioGroup: android.widget.RadioGroup,
+        radioButton: Int,
+    ) {
         when (radioGroup.id) {
             R.id.rgCategoryRow -> {
                 when (radioButton) {
@@ -264,7 +276,10 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener {
     }
 
     // --- FIX 2: Renamed method for the FlexBoxRadioGroup, remove 'override' ---
-    private fun onFlexBoxGroupChanged(radioGroup: FlexBoxRadioGroup, radioButton: Int) {
+    private fun onFlexBoxGroupChanged(
+        radioGroup: FlexBoxRadioGroup,
+        radioButton: Int,
+    ) {
         when (radioGroup.checkedRadioButtonId) {
             R.id.rbTypeBtn1 -> configureCategoryType(R.string.opd_triage, OPDTriage)
             R.id.rbTypeBtn2 -> configureCategoryType(R.string.outpatient, outpatient)
@@ -280,13 +295,18 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener {
             else -> {
                 val facilityList = listOf(Other, OPDTriage, outpatient, inpatient, Pharmacy)
                 val communityList = listOf(DoorToDoor, Camp)
-                if (viewModel.siteDetail.category == Community && (viewModel.siteDetail.categoryType == null || facilityList.contains(
-                        viewModel.siteDetail.categoryType
-                    ))
+                if (viewModel.siteDetail.category == Community &&
+                    (
+                        viewModel.siteDetail.categoryType == null ||
+                            facilityList.contains(
+                                viewModel.siteDetail.categoryType,
+                            )
+                    )
                 ) {
                     binding.rbTypeBtn6.isChecked = true
-                } else if (viewModel.siteDetail.category == Facility && communityList.contains(
-                        viewModel.siteDetail.categoryType
+                } else if (viewModel.siteDetail.category == Facility &&
+                    communityList.contains(
+                        viewModel.siteDetail.categoryType,
                     )
                 ) {
                     viewModel.siteDetail.categoryType = null
@@ -298,7 +318,7 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener {
 
     private fun configureCategoryType(
         displayResId: Int,
-        type: String
+        type: String,
     ) {
         binding.etOthers.gone()
         binding.etOthers.text = null
@@ -313,9 +333,13 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener {
         val categorySelected = binding.rgCategoryRow.checkedRadioButtonId != -1
         var typeSelected = binding.rgType.checkedRadioButtonId != -1
         if (viewModel.siteDetail.categoryType.equals(Other, true)) {
-            typeSelected = !binding.etOthers.text?.trim().isNullOrBlank()
+            typeSelected = !binding.etOthers.text
+                ?.trim()
+                .isNullOrBlank()
         }
         binding.btnNext.isEnabled =
-            categorySelected && typeSelected && viewModel.siteDetail.siteId != -1L
+            categorySelected &&
+            typeSelected &&
+            viewModel.siteDetail.siteId != -1L
     }
 }

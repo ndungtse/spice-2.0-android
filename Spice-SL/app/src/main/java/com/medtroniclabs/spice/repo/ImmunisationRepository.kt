@@ -27,12 +27,11 @@ import javax.inject.Inject
 
 class ImmunisationRepository @Inject constructor(
     private var apiHelper: ApiHelper,
-    private var roomHelper: RoomHelper
+    private var roomHelper: RoomHelper,
 ) {
-
     suspend fun getImmunisationDetails(
         request: RequestVaccinationList,
-        response: MutableLiveData<Resource<List<VaccinationGroupItem>>>
+        response: MutableLiveData<Resource<List<VaccinationGroupItem>>>,
     ) {
         response.postLoading()
         try {
@@ -46,7 +45,6 @@ class ImmunisationRepository @Inject constructor(
             response.postError(e.message)
         }
     }
-
 
     private fun getVaccinationGroupItems(vaccinationList: ArrayList<VaccinationDetail>?): List<VaccinationGroupItem> {
         // Need to do Schedule Date based on Date of Birth
@@ -90,7 +88,7 @@ class ImmunisationRepository @Inject constructor(
 
     suspend fun saveImmunisationList(
         request: RequestCreateImmunisation,
-        response: MutableLiveData<Resource<ResponseCreateImmunisation>>
+        response: MutableLiveData<Resource<ResponseCreateImmunisation>>,
     ) {
         response.postLoading()
         try {
@@ -107,7 +105,7 @@ class ImmunisationRepository @Inject constructor(
 
     suspend fun getImmunisationSummaryDetails(
         request: RequestImmunisationSummaryDetail,
-        response: MutableLiveData<Resource<ResponseImmunisationSummaryDetails>>
+        response: MutableLiveData<Resource<ResponseImmunisationSummaryDetails>>,
     ) {
         response.postLoading()
         try {
@@ -124,7 +122,7 @@ class ImmunisationRepository @Inject constructor(
 
     suspend fun saveImmunisationSummaryDetails(
         request: RequestImmunisationSummaryCreate,
-        response: MutableLiveData<Resource<ResponseImmunisationSummaryCreate>>
+        response: MutableLiveData<Resource<ResponseImmunisationSummaryCreate>>,
     ) {
         response.postLoading()
         try {
@@ -139,18 +137,15 @@ class ImmunisationRepository @Inject constructor(
         }
     }
 
-    suspend fun getCatchUpPolicyItems(
-        response: MutableLiveData<Resource<List<EpiCatchUpPolicyItem>>>
-    ) {
+    suspend fun getCatchUpPolicyItems(response: MutableLiveData<Resource<List<EpiCatchUpPolicyItem>>>) {
         response.postLoading()
         roomHelper.getConsentFormByType(ConsentFormType.EPI)?.let { consentForm ->
             val responseType = object : TypeToken<List<EpiCatchUpPolicyItem>>() {}.type
             val result: MutableList<EpiCatchUpPolicyItem> = Gson().fromJson(consentForm.content, responseType)
-            result.add(0, EpiCatchUpPolicyItem("","","",""))
+            result.add(0, EpiCatchUpPolicyItem("", "", "", ""))
             response.postSuccess(result)
         } ?: run {
             response.postError()
         }
     }
-
 }

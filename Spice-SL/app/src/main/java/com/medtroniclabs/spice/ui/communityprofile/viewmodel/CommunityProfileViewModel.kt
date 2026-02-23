@@ -13,7 +13,6 @@ import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.entity.CommunityProfile
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
-import com.medtroniclabs.spice.model.communityprofile.CommunityProfileDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.CommunityProfileRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
@@ -25,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CommunityProfileViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private val repository: CommunityProfileRepository
+    private val repository: CommunityProfileRepository,
 ) : BaseViewModel(dispatcherIO) {
     var chwHome = ""
     var isChwHome = false
@@ -39,14 +38,16 @@ class CommunityProfileViewModel @Inject constructor(
     var searchFilter = MutableLiveData<String>().apply { value = value ?: "" }
     val formLayoutLiveData = MutableLiveData<Resource<FormResponse>>()
     val nearestHealthFacilityLiveData = MutableLiveData<Resource<ArrayList<Map<String, Any>>>>()
-    var marketDays = mutableListOf<Pair<String,Boolean>>()
-    var selectedNetworks = mutableListOf<Pair<String,Boolean>>()
+    var marketDays = mutableListOf<Pair<String, Boolean>>()
+    var selectedNetworks = mutableListOf<Pair<String, Boolean>>()
     val getCommunityDetailsLiveDataLocal = MutableLiveData<Resource<CommunityProfile>>()
     var saveCommunityDetailsLiveDataLocal = MutableLiveData<Resource<Long>>()
-    val combinedLiveData = MediatorLiveData<Pair<
+    val combinedLiveData = MediatorLiveData<
+        Pair<
             Resource<CommunityPopulationStatistics>?,
-            Resource<CommunityProfile>?
-            >>().apply {
+            Resource<CommunityProfile>?,
+        >,
+    >().apply {
         addSource(communityStatistics) { stats ->
             value = Pair(stats, getCommunityDetailsLiveDataLocal.value)
         }
@@ -59,7 +60,10 @@ class CommunityProfileViewModel @Inject constructor(
         saveCommunityDetailsLiveDataLocal = MutableLiveData<Resource<Long>>()
     }
 
-    fun updateCurrentFragment(fragment: Int, bundle: Bundle? = null) {
+    fun updateCurrentFragment(
+        fragment: Int,
+        bundle: Bundle? = null,
+    ) {
         val value = Pair(fragment, bundle)
         currentFragment.postValue(value)
     }
@@ -67,7 +71,7 @@ class CommunityProfileViewModel @Inject constructor(
     fun getPopulationStatistics(villageId: Long) {
         viewModelScope.launch(dispatcherIO) {
             communityStatistics.postValue(
-                repository.getCommunityStatistics(villageId)
+                repository.getCommunityStatistics(villageId),
             )
         }
     }
@@ -75,7 +79,7 @@ class CommunityProfileViewModel @Inject constructor(
     val searchFilterLiveData: LiveData<List<CommunityProfileDetail>> =
         searchFilter.switchMap { search ->
             repository.getFilterVillageWithHouseholds(
-                searchText = search
+                searchText = search,
             )
         }
 
@@ -83,14 +87,12 @@ class CommunityProfileViewModel @Inject constructor(
         searchFilter.value = search
     }
 
-    fun getSearchFilter(): String? {
-        return searchFilter.value
-    }
+    fun getSearchFilter(): String? = searchFilter.value
 
     fun getFormData(type: String) {
         viewModelScope.launch(dispatcherIO) {
             formLayoutLiveData.postValue(
-                repository.getFormData(type)
+                repository.getFormData(type),
             )
         }
     }
@@ -98,7 +100,7 @@ class CommunityProfileViewModel @Inject constructor(
     fun getNearestHealthFacility(villageId: Long? = null) {
         viewModelScope.launch(dispatcherIO) {
             nearestHealthFacilityLiveData.postValue(
-                repository.getNearestHealthFacility(villageId)
+                repository.getNearestHealthFacility(villageId),
             )
         }
     }
@@ -130,16 +132,18 @@ class CommunityProfileViewModel @Inject constructor(
         villageId: Long,
         description: String,
         regDate: String,
-        payload: String
+        payload: String,
     ) {
         viewModelScope.launch(dispatcherIO) {
             saveCommunityDetailsLiveDataLocal.postLoading()
             saveCommunityDetailsLiveDataLocal.postValue(
                 repository.insertOrUpdateCommunityProfile(
                     villageId,
-                    description, regDate, payload,
-                    getCommunityDetailsLiveDataLocal
-                )
+                    description,
+                    regDate,
+                    payload,
+                    getCommunityDetailsLiveDataLocal,
+                ),
             )
         }
     }
@@ -148,12 +152,12 @@ class CommunityProfileViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             getCommunityDetailsLiveDataLocal.postLoading()
             getCommunityDetailsLiveDataLocal.postValue(
-                repository.getCommunityProfileDetails(villageId)
+                repository.getCommunityProfileDetails(villageId),
             )
         }
     }
 
-    fun updateUnSynStatus(villageId: Long){
+    fun updateUnSynStatus(villageId: Long) {
         viewModelScope.launch(dispatcherIO) {
             repository.updateUnSynStatus(villageId, OfflineSyncStatus.NotSynced.name)
         }

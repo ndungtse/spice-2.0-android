@@ -10,7 +10,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -25,7 +24,6 @@ import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.model.Eligibilities
 import com.medtroniclabs.spice.data.model.HivCreateScreeningSummaryResponse
 import com.medtroniclabs.spice.data.model.HivScreeningResponse
-import com.medtroniclabs.spice.data.resource.ExaminationResult
 import com.medtroniclabs.spice.databinding.FragmentHivSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -38,7 +36,6 @@ import com.medtroniclabs.spice.ui.medicalreview.hiv.activity.HivMedicalReviewBas
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
-import com.medtroniclabs.spice.ui.mypatients.adapter.ExaminationSummaryAdapter
 
 class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentHivSummaryBinding
@@ -46,8 +43,9 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     private var datePickerDialog: DatePickerDialog? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentHivSummaryBinding.inflate(inflater, container, false)
         return binding.root
@@ -55,6 +53,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "HivSummaryFragment"
+
         fun newInstance(): HivSummaryFragment {
             val args = Bundle()
             val fragment = HivSummaryFragment()
@@ -63,7 +62,10 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         setListeners()
@@ -75,7 +77,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         binding.tvPatientStatus.markMandatory()
         if (arguments?.getBoolean(
                 DefinedParams.EMTCT,
-                false
+                false,
             ) == false
         ) {
             binding.groupHivHbsag?.gone()
@@ -83,11 +85,9 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         hivViewModel.getHivScreeningDetails(
             HivScreeningResponse(
                 encounterId = arguments?.getString(DefinedParams.EncounterId) ?: "",
-                patientReference = arguments?.getString(DefinedParams.PatientReference) ?: ""
-            )
+                patientReference = arguments?.getString(DefinedParams.PatientReference) ?: "",
+            ),
         )
-
-
     }
 
     private fun attachObserver() {
@@ -123,24 +123,22 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun renderSummaryDetails(response: HivCreateScreeningSummaryResponse) {
-
         with(binding) {
-            groupA3.visibility = if ( hivViewModel.isEMTCT) View.GONE else View.VISIBLE
+            groupA3.visibility = if (hivViewModel.isEMTCT) View.GONE else View.VISIBLE
 //             Diagnosis Text
             val diagnosisList = response.diagnosis ?: emptyList()
             if (diagnosisList.isNotEmpty()) {
                 tvDiagnosesText.setTextColor(
                     ContextCompat.getColor(
                         requireContext(),
-                        R.color.a_red_error
-                    )
+                        R.color.a_red_error,
+                    ),
                 )
             }
             tvDiagnosesText.text = diagnosisList
                 .filter {
                     it.diseaseCategory.lowercase() != DefinedParams.OtherNotes.lowercase()
-                }
-                .map { it.diseaseCategory }
+                }.map { it.diseaseCategory }
                 .distinct()
                 .takeIf { it.isNotEmpty() }
                 ?.let { CommonUtils.convertListToString(ArrayList(it)) }
@@ -149,12 +147,12 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
             SecuredPreference.getUserDetails()?.firstName,
-            SecuredPreference.getUserDetails()?.lastName
+            SecuredPreference.getUserDetails()?.lastName,
         )
         binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
             DateUtils.getTodayDateDDMMYYYY(),
             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            DateUtils.DATE_ddMMyyyy
+            DateUtils.DATE_ddMMyyyy,
         )
         binding.tvA1TestText.text = response.a1TestResult?.takeIf { it.isNotEmpty() } ?: "-"
         binding.tvA2TestText.text = response.a2TestResult?.takeIf { it.isNotEmpty() } ?: "-"
@@ -164,7 +162,7 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
             response.hivSyphilisDuoTest?.takeIf { it.isNotEmpty() } ?: "-"
         binding.tvHbsgText.text =
             response.hbsAGTest?.takeIf { it.isNotEmpty() } ?: "-"
-        binding.tvClinicalNotesText.text =  response.clinicalNotes?.takeIf { it.isNotEmpty() } ?: "-"
+        binding.tvClinicalNotesText.text = response.clinicalNotes?.takeIf { it.isNotEmpty() } ?: "-"
 
         // Prescription
         binding.tvPrescrptionText.text = response.prescriptions
@@ -178,20 +176,22 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
             ?.takeIf { it.isNotEmpty() }
             ?: getString(R.string.hyphen_symbol)
         val dropDownList = ArrayList<Map<String, Any>>()
-        val (test1, test2, test3) = if (response.hbsAGTest.isNullOrEmpty())
+        val (test1, test2, test3) = if (response.hbsAGTest.isNullOrEmpty()) {
             Triple(response.a1TestResult, response.a2TestResult, response.a3TestResult)
-        else
+        } else {
             Triple(response.hbsAGTest, response.a2TestResult, response.a3TestResult)
+        }
 
         val nextVisitType = getTestResultStatus(test1, test2, test3)
 
         binding.tvNextMedicalReviewLabelText.text = when (nextVisitType) {
             1 -> DateUtils.getFormattedDateAfterDays(3)
-            2,4 -> DateUtils.getFormattedDateAfterDays(14)
+            2, 4 -> DateUtils.getFormattedDateAfterDays(14)
             else -> DateUtils.getFormattedDateAfterMonths(1)
         }
-        hivViewModel.nextVisitDate = binding.tvNextMedicalReviewLabelText.text.toString().trim()
-
+        hivViewModel.nextVisitDate = binding.tvNextMedicalReviewLabelText.text
+            .toString()
+            .trim()
 
         if (!response.summaryStatus.isNullOrEmpty()) {
             for (item in response.summaryStatus) {
@@ -199,8 +199,8 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
                 dropDownList.add(
                     hashMapOf<String, Any>(
                         DefinedParams.NAME to item.name,
-                        DefinedParams.Value to item.value
-                    )
+                        DefinedParams.Value to item.value,
+                    ),
                 )
             }
             setListenerToDeliveryStatus(dropDownList, nextVisitType)
@@ -208,7 +208,11 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         renderSymptoms(response)
     }
 
-    private fun getTestResultStatus(a1: String?, a2: String?, a3: String?): Int {
+    private fun getTestResultStatus(
+        a1: String?,
+        a2: String?,
+        a3: String?,
+    ): Int {
         val testResults = listOfNotNull(a1, a2, a3)
 
         return when {
@@ -234,14 +238,20 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun renderSymptoms(response: HivCreateScreeningSummaryResponse) {
         hivViewModel.getHivPatientStatusByCategory(MedicalReviewTypeEnums.patient_status.name)
-        binding.flExaminationContainer.text = (response.eligibilities?.let {
-            formatEligibility(it, otherPopulationType = response.otherPopulationType)
-        }.takeIf { !it.isNullOrBlank() }
-            ?: getString(R.string.hyphen_symbol))
+        binding.flExaminationContainer.text = (
+            response.eligibilities
+                ?.let {
+                    formatEligibility(it, otherPopulationType = response.otherPopulationType)
+                }.takeIf { !it.isNullOrBlank() }
+                ?: getString(R.string.hyphen_symbol)
+        )
     }
 
-    private fun formatEligibility(eligibility: Eligibilities, otherPopulationType:String? = null): String {
-        return buildString {
+    private fun formatEligibility(
+        eligibility: Eligibilities,
+        otherPopulationType: String? = null,
+    ): String =
+        buildString {
             // Handle Symptoms
             eligibility.Symptoms?.takeIf { it.isNotEmpty() }?.let { symptoms ->
                 val label = "${getString(R.string.history)} - "
@@ -258,8 +268,9 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
                 append(label)
                 val padding = " ".repeat(8)
                 types.forEach { type ->
-                    val line = if (type.equals(Other, ignoreCase = true)
-                        && !otherPopulationType.isNullOrBlank()) {
+                    val line = if (type.equals(Other, ignoreCase = true) &&
+                        !otherPopulationType.isNullOrBlank()
+                    ) {
                         "$type - ${otherPopulationType.trim()}"
                     } else {
                         type
@@ -268,7 +279,6 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
                 }
             }
         }.trim()
-    }
 
     private fun setListeners() {
         binding.tvNextMedicalReviewLabelText.safeClickListener(this)
@@ -283,21 +293,26 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun showDatePickerDialog() {
-        val yearMonthDate = binding.tvNextMedicalReviewLabelText.text?.takeIf { it.isNotBlank() }
+        val yearMonthDate = binding.tvNextMedicalReviewLabelText.text
+            ?.takeIf { it.isNotBlank() }
             ?.let { DateUtils.convertedMMMToddMM(it.toString()) }
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
                 minDate = DateUtils.getTomorrowDate(),
                 date = yearMonthDate,
-                cancelCallBack = { datePickerDialog = null }
+                cancelCallBack = { datePickerDialog = null },
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 binding.tvNextMedicalReviewLabelText.text = DateUtils.convertDateTimeToDate(
-                    stringDate, DateUtils.DATE_FORMAT_ddMMyyyy, DateUtils.DATE_ddMMyyyy
+                    stringDate,
+                    DateUtils.DATE_FORMAT_ddMMyyyy,
+                    DateUtils.DATE_ddMMyyyy,
                 )
                 hivViewModel.nextVisitDate =
-                    binding.tvNextMedicalReviewLabelText.text.toString().trim()
+                    binding.tvNextMedicalReviewLabelText.text
+                        .toString()
+                        .trim()
                         .takeIf { it.isNotBlank() }
                 datePickerDialog = null
                 binding.tvNextMedicalReviewError.invisible()
@@ -306,40 +321,43 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-
-    private fun setListenerToDeliveryStatus(list: ArrayList<Map<String, Any>>, nextVisitType: Int) {
+    private fun setListenerToDeliveryStatus(
+        list: ArrayList<Map<String, Any>>,
+        nextVisitType: Int,
+    ) {
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(list)
         var defaultPosition = 0
         if (nextVisitType == 1) {
-            defaultPosition = list.indexOfFirst {
-                (it[DefinedParams.Value] as? String).equals(
-                    getString(R.string.referred),
-                    ignoreCase = true
-                )
-            }.takeIf { it != -1 } ?: 0
+            defaultPosition = list
+                .indexOfFirst {
+                    (it[DefinedParams.Value] as? String).equals(
+                        getString(R.string.referred),
+                        ignoreCase = true,
+                    )
+                }.takeIf { it != -1 } ?: 0
             binding.tvPatientStatusSpinner.isEnabled = false
         } else if (nextVisitType == 2 || nextVisitType == 4) {
             // Auto-populate "Retest (HTS)"
-            defaultPosition = list.indexOfFirst {
-                (it[DefinedParams.Value] as? String)?.equals(
-                    "retest",
-                    ignoreCase = true
-                ) ?: false
-            }.takeIf { it != -1 } ?: 0
+            defaultPosition = list
+                .indexOfFirst {
+                    (it[DefinedParams.Value] as? String)?.equals(
+                        "retest",
+                        ignoreCase = true,
+                    ) ?: false
+                }.takeIf { it != -1 } ?: 0
             binding.tvPatientStatusSpinner.isEnabled = false
         } else {
             for ((index, patientStatus) in list.withIndex()) {
                 if ((patientStatus[DefinedParams.Value] as? String).equals(
                         ReferralStatus.OnTreatment.name,
-                        true
+                        true,
                     )
                 ) {
                     defaultPosition = index
                 }
             }
         }
-
 
         binding.tvPatientStatusSpinner.post {
             binding.tvPatientStatusSpinner.setSelection(defaultPosition, false)
@@ -349,7 +367,10 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         binding.tvPatientStatusSpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long,
                 ) {
                     val selectedItem = adapter.getData(position = position)
                     selectedItem?.let {
@@ -367,17 +388,17 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
                      * this method is not used
                      */
                 }
-
             }
     }
 
     private fun updateNextFollowUpDate() {
         if (hivViewModel.selectedPatientStatus?.equals(
                 ReferralStatus.Recovered.name,
-                true
-            ) == true || hivViewModel.selectedPatientStatus?.equals(
+                true,
+            ) == true ||
+            hivViewModel.selectedPatientStatus?.equals(
                 ReferralStatus.Died.name,
-                true
+                true,
             ) == true
         ) {
             if (hivViewModel.nextVisitDate != null) {
@@ -394,9 +415,10 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun summaryListener() {
         setFragmentResult(
-            MedicalReviewDefinedParams.SUMMARY_ITEM, bundleOf(
-                MedicalReviewDefinedParams.SUMMARY_ITEM to true
-            )
+            MedicalReviewDefinedParams.SUMMARY_ITEM,
+            bundleOf(
+                MedicalReviewDefinedParams.SUMMARY_ITEM to true,
+            ),
         )
     }
 
@@ -412,10 +434,10 @@ class HivSummaryFragment : BaseFragment(), View.OnClickListener {
         if (hivViewModel.selectedPatientStatus.isNullOrEmpty()) {
             binding.tvPatientError.visible()
             isValid = false
-        } else binding.tvPatientError.gone()
+        } else {
+            binding.tvPatientError.gone()
+        }
 
         return isValid
     }
-
-
 }

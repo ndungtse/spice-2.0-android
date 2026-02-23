@@ -28,7 +28,6 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.PATIENT_STATUS_HYPHEN
 import com.medtroniclabs.spice.ui.medicalreview.tb.activity.TBMedicalReviewActivity
 import com.medtroniclabs.spice.ui.medicalreview.tb.viewmodel.TbSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.respiratory
@@ -38,24 +37,27 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class TbSummaryFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentTbSummaryBinding
     val adapter: CustomSpinnerAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
-    val adapterForTreatmentOutCome : CustomSpinnerAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
+    val adapterForTreatmentOutCome: CustomSpinnerAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
     private var datePickerDialog: DatePickerDialog? = null
     val viewModel: TbSummaryViewModel by activityViewModels()
     val patientViewModel: PatientDetailViewModel by activityViewModels()
     private var encounterId: String? = null
     private var fhirId: String? = null
 
-    fun setIds(encounterId: String?, fhirId: String?) {
+    fun setIds(
+        encounterId: String?,
+        fhirId: String?,
+    ) {
         this.encounterId = encounterId
         this.fhirId = fhirId
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentTbSummaryBinding.inflate(inflater, container, false)
@@ -64,17 +66,23 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "TbSummaryFragment"
-        fun newInstance() =
-            TbSummaryFragment()
 
-        fun newInstance(encounterId: String?, fhirId: String?): TbSummaryFragment {
+        fun newInstance() = TbSummaryFragment()
+
+        fun newInstance(
+            encounterId: String?,
+            fhirId: String?,
+        ): TbSummaryFragment {
             val fragment = TbSummaryFragment()
             fragment.setIds(encounterId = encounterId, fhirId = fhirId)
             return fragment
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
@@ -86,16 +94,17 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
             SecuredPreference.getUserDetails()?.firstName,
-            SecuredPreference.getUserDetails()?.lastName
+            SecuredPreference.getUserDetails()?.lastName,
         )
         binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
             DateUtils.getTodayDateDDMMYYYY(),
             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            DateUtils.DATE_ddMMyyyy
+            DateUtils.DATE_ddMMyyyy,
         )
         binding.tvNextMedicalReviewLabelText.safeClickListener(this)
         viewModel.fetchTbAssessmentDetails(
-            encounterId, fhirId
+            encounterId,
+            fhirId,
         )
     }
 
@@ -105,18 +114,18 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                 add(
                     mapOf(
                         DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                        DefinedParams.ID to -1L
-                    )
+                        DefinedParams.ID to -1L,
+                    ),
                 )
 
                 items?.forEach { item ->
-                    if (!item.value.equals(ReferralStatus.Died.name , true)) {
+                    if (!item.value.equals(ReferralStatus.Died.name, true)) {
                         add(
                             mapOf(
                                 DefinedParams.id to item.id,
                                 DefinedParams.NAME to item.name,
-                                DefinedParams.Value to (item.value ?: item.name)
-                            )
+                                DefinedParams.Value to (item.value ?: item.name),
+                            ),
                         )
                     }
                 }
@@ -147,10 +156,15 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun populate(data: TbHistory) {
         with(binding) {
             val views = listOf(
-                tvDiagnosesLabel, tvDiagnosesText, tvDiagnosesSeparator,
-                tvSiteLabel, tvSiteSeparator, tvSiteText,
+                tvDiagnosesLabel,
+                tvDiagnosesText,
+                tvDiagnosesSeparator,
+                tvSiteLabel,
+                tvSiteSeparator,
+                tvSiteText,
                 tvTreatmentText,
-                tvTreatmentLabel, tvTreatmentSeparator
+                tvTreatmentLabel,
+                tvTreatmentSeparator,
             )
             tvDiagnosesLabel.text = getText(R.string.diagnosis_tb)
             views.forEach { it.setVisible(patientViewModel.getTbMedicalReviewStatus()) }
@@ -161,16 +175,17 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                 tvDiagnosesText.setTextColor(
                     ContextCompat.getColor(
                         requireContext(),
-                        R.color.a_red_error
-                    )
+                        R.color.a_red_error,
+                    ),
                 )
             }
             tvDiagnosesText.text = diagnosisList
                 .filter {
-                    it.diseaseCategory.equals(DefinedParams.OtherNotes, ignoreCase = true)
-                        .not() && (it.type.equals(DefinedParams.TB,true) || it.type.isNullOrBlank() )
-                }
-                .map { it.diseaseCategory }
+                    it.diseaseCategory
+                        .equals(DefinedParams.OtherNotes, ignoreCase = true)
+                        .not() &&
+                        (it.type.equals(DefinedParams.TB, true) || it.type.isNullOrBlank())
+                }.map { it.diseaseCategory }
                 .distinct()
                 .takeIf { it.isNotEmpty() }
                 ?.let { CommonUtils.convertListToString(ArrayList(it)) }
@@ -179,10 +194,11 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
             // Site Text
             tvSiteText.text = diagnosisList
                 .filter {
-                    it.diseaseCategory.equals(DefinedParams.OtherNotes, ignoreCase = true)
-                        .not() && it.type.equals(SiteOfDisease,true)
-                }
-                .map { it.diseaseCategory }
+                    it.diseaseCategory
+                        .equals(DefinedParams.OtherNotes, ignoreCase = true)
+                        .not() &&
+                        it.type.equals(SiteOfDisease, true)
+                }.map { it.diseaseCategory }
                 .distinct()
                 .takeIf { it.isNotEmpty() }
                 ?.let { CommonUtils.convertListToString(ArrayList(it)) }
@@ -193,11 +209,11 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                 fullText = CommonUtils.combineText(
                     data.presentingComplaints,
                     data.presentingComplaintsNotes,
-                    getString(R.string.hyphen_symbol)
+                    getString(R.string.hyphen_symbol),
                 ),
                 moreColorResId = R.color.purple_700,
                 title = tvPresentingLabel.text.toString(),
-                activity = requireActivity() as BaseActivity
+                activity = requireActivity() as BaseActivity,
             )
 
             // Clinical Notes
@@ -206,7 +222,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                     ?: getString(R.string.hyphen_symbol),
                 moreColorResId = R.color.purple_700,
                 title = tvClinicalNotesLabel.text.toString(),
-                activity = requireActivity() as BaseActivity
+                activity = requireActivity() as BaseActivity,
             )
 
             // Comorbidities
@@ -214,11 +230,11 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                 fullText = CommonUtils.combineText(
                     data.comorbidities,
                     data.comorbiditiesNotes,
-                    getString(R.string.hyphen_symbol)
+                    getString(R.string.hyphen_symbol),
                 ),
                 moreColorResId = R.color.purple_700,
                 title = tvComborbiditiesLabel.text.toString(),
-                activity = requireActivity() as BaseActivity
+                activity = requireActivity() as BaseActivity,
             )
 
             // Systematic Examination
@@ -232,11 +248,11 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                         }
                     } ?: emptyList(),
                     "",
-                    getString(R.string.hyphen_symbol)
+                    getString(R.string.hyphen_symbol),
                 ),
                 moreColorResId = R.color.purple_700,
                 title = tvGeneralLabel.text.toString(),
-                activity = requireActivity() as BaseActivity
+                activity = requireActivity() as BaseActivity,
             )
 
             // Prescription
@@ -258,8 +274,8 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                 dropDownList.add(
                     hashMapOf<String, Any>(
                         DefinedParams.NAME to item.name,
-                        DefinedParams.Value to item.value
-                    )
+                        DefinedParams.Value to item.value,
+                    ),
                 )
             }
             setSpinner(dropDownList)
@@ -275,7 +291,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
         for ((index, patientStatus) in statusList.withIndex()) {
             if ((patientStatus[DefinedParams.Value] as? String).equals(
                     ReferralStatus.OnTreatment.name,
-                    true
+                    true,
                 )
             ) {
                 defaultPosition = index
@@ -291,7 +307,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                     adapterView: AdapterView<*>?,
                     view: View?,
                     pos: Int,
-                    itemId: Long
+                    itemId: Long,
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
@@ -325,7 +341,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                     adapterView: AdapterView<*>?,
                     view: View?,
                     pos: Int,
-                    itemId: Long
+                    itemId: Long,
                 ) {
                     val selectedItem = adapterForTreatmentOutCome.getData(position = pos)
                     selectedItem?.let {
@@ -352,8 +368,10 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun showHideNextVisit() {
         // Enable next medical review label unless patient is Recovered or Died
         binding.tvNextMedicalReviewLabelText.isEnabled =
-            !(viewModel.patientStatus.equals(ReferralStatus.Recovered.name, true) ||
-                    viewModel.patientStatus.equals(ReferralStatus.Died.name, true))
+            !(
+                viewModel.patientStatus.equals(ReferralStatus.Recovered.name, true) ||
+                    viewModel.patientStatus.equals(ReferralStatus.Died.name, true)
+            )
 
         if (viewModel.patientStatus.equals(ReferralStatus.OnTreatment.name, true)) {
             binding.tvNextMedicalReviewLabelText.text = DateUtils.getFormattedDateAfterMonths(1)
@@ -370,17 +388,18 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
         }
 
         // Special case: Patient status is Recovered but treatment outcome is Died
-        if ((viewModel.patientStatus.equals(ReferralStatus.Recovered.name, true)
-                    || viewModel.patientStatus.equals(ReferralStatus.OnTreatment.name, true))
-            &&
+        if ((
+                viewModel.patientStatus.equals(ReferralStatus.Recovered.name, true) ||
+                    viewModel.patientStatus.equals(ReferralStatus.OnTreatment.name, true)
+            ) &&
             viewModel.treatmentOutCome.equals(ReferralStatus.Died.name, true)
         ) {
             val treatmentList = arrayListOf<Map<String, Any>>().apply {
                 add(
                     mapOf(
                         DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                        DefinedParams.ID to -1L
-                    )
+                        DefinedParams.ID to -1L,
+                    ),
                 )
 
                 viewModel.getTreatmentOutComeLiveData.value?.forEach { item ->
@@ -389,8 +408,8 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                             mapOf(
                                 DefinedParams.id to item.id,
                                 DefinedParams.NAME to item.name,
-                                DefinedParams.Value to (item.value ?: item.name)
-                            )
+                                DefinedParams.Value to (item.value ?: item.name),
+                            ),
                         )
                     }
                 }
@@ -409,16 +428,16 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
                 add(
                     mapOf(
                         DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                        DefinedParams.ID to -1L
-                    )
+                        DefinedParams.ID to -1L,
+                    ),
                 )
                 viewModel.getTreatmentOutComeLiveData.value?.forEach { item ->
                     add(
                         mapOf(
                             DefinedParams.id to item.id,
                             DefinedParams.NAME to item.name,
-                            DefinedParams.Value to (item.value ?: item.name)
-                        )
+                            DefinedParams.Value to (item.value ?: item.name),
+                        ),
                     )
                 }
             }
@@ -437,7 +456,7 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
             }
         }
         (requireActivity() as? TBMedicalReviewActivity)?.enableRefer(
-            !viewModel.patientStatus.equals(ReferralStatus.Died.name, true)
+            !viewModel.patientStatus.equals(ReferralStatus.Died.name, true),
         )
     }
 
@@ -451,22 +470,23 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun showDatePickerDialog() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (!binding.tvNextMedicalReviewLabelText.text.isNullOrBlank())
+        if (!binding.tvNextMedicalReviewLabelText.text.isNullOrBlank()) {
             yearMonthDate =
                 DateUtils.convertedMMMToddMM(binding.tvNextMedicalReviewLabelText.text.toString())
+        }
 
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
                 minDate = DateUtils.getTomorrowDate(),
                 date = yearMonthDate,
-                cancelCallBack = { datePickerDialog = null }
+                cancelCallBack = { datePickerDialog = null },
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 binding.tvNextMedicalReviewLabelText.text = DateUtils.convertDateTimeToDate(
                     stringDate,
                     DateUtils.DATE_FORMAT_ddMMyyyy,
-                    DateUtils.DATE_ddMMyyyy
+                    DateUtils.DATE_ddMMyyyy,
                 )
                 viewModel.nextFollowupDate = binding.tvNextMedicalReviewLabelText.text.toString()
                 datePickerDialog = null
@@ -475,9 +495,13 @@ class TbSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     fun validateInput(): Boolean {
-        val value = binding.tvNextMedicalReviewLabelText.text?.trim().toString()
+        val value = binding.tvNextMedicalReviewLabelText.text
+            ?.trim()
+            .toString()
         if (value.isBlank()) {
-            if (viewModel.patientStatus?.equals(ReferralStatus.Recovered.name, true) == true || viewModel.patientStatus?.equals(ReferralStatus.Died.name, true) == true) {
+            if (viewModel.patientStatus?.equals(ReferralStatus.Recovered.name, true) == true ||
+                viewModel.patientStatus?.equals(ReferralStatus.Died.name, true) == true
+            ) {
                 binding.tvNextMedicalReviewError.invisible()
                 return true
             }

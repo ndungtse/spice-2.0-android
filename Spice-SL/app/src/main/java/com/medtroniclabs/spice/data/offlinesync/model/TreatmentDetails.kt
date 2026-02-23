@@ -7,5 +7,5 @@ data class TreatmentDetails(
     val diagnosis: String?,
     val prescriptions: List<Prescription>?,
     val isTbConfirmed: Boolean?,
-    val tbConfirmationDate: String?
+    val tbConfirmationDate: String?,
 )

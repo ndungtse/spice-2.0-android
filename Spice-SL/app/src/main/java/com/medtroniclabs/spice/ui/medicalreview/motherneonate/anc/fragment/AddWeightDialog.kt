@@ -44,11 +44,15 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "AddWeightDialog"
-        fun newInstance(): AddWeightDialog {
-            return AddWeightDialog()
-        }
 
-        fun newInstance(patientId: String?,villageId:String?, householdId:String?, memberId:String?): AddWeightDialog {
+        fun newInstance(): AddWeightDialog = AddWeightDialog()
+
+        fun newInstance(
+            patientId: String?,
+            villageId: String?,
+            householdId: String?,
+            memberId: String?,
+        ): AddWeightDialog {
             val fragment = AddWeightDialog()
             fragment.arguments = Bundle().apply {
                 putString(DefinedParams.PatientId, patientId)
@@ -60,7 +64,10 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -73,6 +80,7 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
             viewModel.lastLocation = it
         }
     }
+
     private fun attachObservers() {
         viewModel.saveWeight.observe(viewLifecycleOwner) { resourcesState ->
             when (resourcesState.state) {
@@ -89,16 +97,15 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
 
                 ResourceState.ERROR -> {
                     binding.loader.gone()
-
                 }
             }
         }
     }
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentAddWeightDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -136,17 +143,17 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
         handleDialogSize()
     }
 
-    private fun isWeightValid(): Boolean {
-        return isValidInput(
+    private fun isWeightValid(): Boolean =
+        isValidInput(
             binding.etWeight.text.toString(),
             binding.etWeight,
             binding.tvWeightErrorLabel,
             10.0..400.0,
             R.string.weight_error,
             false,
-            requireContext()
+            requireContext(),
         )
-    }
+
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnOkay.id -> handleOkayClick()
@@ -163,16 +170,18 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
             (activity as BaseActivity?)?.showErrorDialogue(
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
+                isNegativeButtonNeed = false,
             ) {
-
             }
         }
     }
 
-    private fun createBpAndWeightRequestModel(): BpAndWeightRequestModel {
-        return BpAndWeightRequestModel(
-            weight = binding.etWeight.text?.trim().toString().toDoubleOrNull(),
+    private fun createBpAndWeightRequestModel(): BpAndWeightRequestModel =
+        BpAndWeightRequestModel(
+            weight = binding.etWeight.text
+                ?.trim()
+                .toString()
+                .toDoubleOrNull(),
             encounter = MedicalReviewEncounter(
                 provenance = ProvanceDto(),
                 latitude = viewModel.lastLocation?.latitude,
@@ -182,17 +191,26 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
                 endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
                 villageId = arguments?.getString(DefinedParams.villageId),
                 householdId = arguments?.getString(DefinedParams.householdId),
-                memberId = arguments?.getString(DefinedParams.MemberID, "")
-            )
+                memberId = arguments?.getString(DefinedParams.MemberID, ""),
+            ),
         )
-    }
 
     private val textWatcher = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        override fun beforeTextChanged(
+            s: CharSequence?,
+            start: Int,
+            count: Int,
+            after: Int,
+        ) {
             // Not needed for your use case
         }
 
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        override fun onTextChanged(
+            s: CharSequence?,
+            start: Int,
+            before: Int,
+            count: Int,
+        ) {
             // Not needed for your use case
         }
 

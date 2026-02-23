@@ -12,14 +12,14 @@ data class MedicalReviewRequestResponse(
     val enrollmentType: String? = null,
     var identityValue: String? = null,
     var provenance: ProvanceDto? = null,
-    val memberReference: String? = null
+    val memberReference: String? = null,
 )
 
 data class InitialMedicalReview(
-    var currentMedications : CurrentMedications? = null,
+    var currentMedications: CurrentMedications? = null,
     var comorbidities: List<Chip>? = null,
     var complications: List<Chip>? = null,
-    var lifestyle: List<Chip>? = null
+    var lifestyle: List<Chip>? = null,
 )
 
 data class CurrentMedications(
@@ -27,16 +27,15 @@ data class CurrentMedications(
     val drugAllergies: Boolean? = null,
     val adheringCurrentMed: Boolean? = null,
     val adheringMedComment: String? = null,
-    val allergiesComment: String? = null
+    val allergiesComment: String? = null,
 )
-
 
 data class ContinuousMedicalReview(
     val physicalExams: List<Chip>? = null,
     val complaints: List<Chip>? = null,
     val complaintComments: String? = null,
     val physicalExamComments: String? = null,
-    var clinicalNote: String? = null
+    var clinicalNote: String? = null,
 )
 
 data class Chip(
@@ -45,12 +44,12 @@ data class Chip(
     val value: String? = null,
     val other: Boolean? = null,
     val comments: String? = null,
-    val answer: Answer? = null
+    val answer: Answer? = null,
 )
 
 data class Answer(
     var name: String? = null,
-    val value: String? = null
+    val value: String? = null,
 )
 
 data class MedicalReviewResponse(
@@ -58,7 +57,7 @@ data class MedicalReviewResponse(
     val encounterReference: String? = null,
     val patientReference: String? = null,
     val patientVisitId: String? = null,
-    val diagnosisType: List<String>? = null
+    val diagnosisType: List<String>? = null,
 )
 
 data class MRSummaryResponse(
@@ -78,12 +77,12 @@ data class MRSummaryResponse(
     val complications: List<String?>? = emptyList(),
     val prescriptions: List<Prescription>? = emptyList(),
     val investigations: List<String>? = emptyList(),
-    val confirmDiagnosis: Diagnosis? = null
+    val confirmDiagnosis: Diagnosis? = null,
 )
+
 data class Diagnosis(
     val provenanceDTO: ProvanceDto? = null,
     val diagnosis: List<NCDDiagnosisItem>? = null,
     val diagnosisNotes: String? = null,
-    val patientReference: String? = null
+    val patientReference: String? = null,
 )
-

@@ -1,32 +1,29 @@
 package com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel
 
-import com.medtroniclabs.spice.model.medicalreview.ClinicalSummaryAndSigns
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.MeasurementDefinedParams
-import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.model.medicalreview.ClinicalSummaryAndSigns
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreRequest
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.repo.UnderTwoMonthsRepository
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class ClinicalSummaryViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var repository: UnderTwoMonthsRepository
+    private var repository: UnderTwoMonthsRepository,
 ) : ViewModel() {
     val resultBreastFeedingHashMap = HashMap<String, Any>()
     val resultMotherVitaminHashMap = HashMap<String, Any>()
@@ -35,7 +32,6 @@ class ClinicalSummaryViewModel @Inject constructor(
     var clinicalSummaryAndSigns = ClinicalSummaryAndSigns()
     val summaryMetaListItems = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
     val wazWhzScoreResponseLiveData = MutableLiveData<Resource<WazWhzScoreResponse>>()
-
 
     fun updateWeight(weight: String) {
         val isEmpty = weight.isEmpty()
@@ -105,13 +101,15 @@ class ClinicalSummaryViewModel @Inject constructor(
 
     fun updateTemperature(temperature: String) {
         val isEmpty = temperature.isEmpty()
-        val temperatureInt = if (isEmpty) null else {
+        val temperatureInt = if (isEmpty) {
+            null
+        } else {
             temperature.toIntOrNull()
         }
         val temperatureUnit = if (isEmpty) null else MeasurementDefinedParams.Celsius
         clinicalSummaryAndSigns = clinicalSummaryAndSigns.copy(
             temperature = temperatureInt,
-            temperatureUnit = temperatureUnit
+            temperatureUnit = temperatureUnit,
         )
     }
 
@@ -120,11 +118,14 @@ class ClinicalSummaryViewModel @Inject constructor(
             clinicalSummaryAndSigns.copy(immunisationStatus = selectedImmunisationStatus)
     }
 
-    fun updateRespiratoryRate(rate: String, repeatRate: String) {
+    fun updateRespiratoryRate(
+        rate: String,
+        repeatRate: String,
+    ) {
         val rateInt = rate.toIntOrNull()
         val repeatInt = repeatRate.toIntOrNull()
         clinicalSummaryAndSigns = clinicalSummaryAndSigns.copy(
-            respirationRate = listOfNotNull(rateInt, repeatInt)
+            respirationRate = listOfNotNull(rateInt, repeatInt),
         )
     }
 
@@ -139,9 +140,8 @@ class ClinicalSummaryViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             wazWhzScoreResponseLiveData.postLoading()
             wazWhzScoreResponseLiveData.postValue(
-                repository.getWazWhzScore(request)
+                repository.getWazWhzScore(request),
             )
         }
     }
-
 }

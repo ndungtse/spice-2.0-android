@@ -10,5 +10,5 @@ data class ExaminationListItems(
     val name: String,
     val type: String,
     val formInput: String? = null,
-    val displayOrder: Int? = null
+    val displayOrder: Int? = null,
 )

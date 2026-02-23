@@ -23,10 +23,12 @@ class NCDFormViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
     private val ncdFormsRepo: NCDFormsRepo,
 ) : ViewModel() {
-
     val ncdFormResponse = SingleLiveEvent<Resource<List<FormLayout>>>()
 
-    fun getNCDForm(type: String, workFlow: String? = null) {
+    fun getNCDForm(
+        type: String,
+        workFlow: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             ncdFormResponse.postLoading()
             try {
@@ -43,13 +45,16 @@ class NCDFormViewModel @Inject constructor(
                                         if (hasVs) {
                                             val id = (listItem[DefinedParams.id] as? Double)
                                             (listItem[DefinedParams.FormInput] as? String)?.let { responseStr ->
-                                                gson.fromJson(responseStr, FormResponse::class.java)
+                                                gson
+                                                    .fromJson(responseStr, FormResponse::class.java)
                                                     ?.let { formResponse ->
-                                                        formLayouts.addAll(formResponse.formLayout.map { form ->
-                                                            form.copy(
-                                                                customizedWorkflowId = id
-                                                            )
-                                                        })
+                                                        formLayouts.addAll(
+                                                            formResponse.formLayout.map { form ->
+                                                                form.copy(
+                                                                    customizedWorkflowId = id,
+                                                                )
+                                                            },
+                                                        )
                                                     }
                                             }
                                         }

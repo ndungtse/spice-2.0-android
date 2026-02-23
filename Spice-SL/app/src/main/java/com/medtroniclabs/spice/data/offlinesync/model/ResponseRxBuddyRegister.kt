@@ -7,5 +7,5 @@ data class ResponseRxBuddyRegister(
     var householdMemberId: String? = null,
     var rxBuddyDetails: RxBuddyMember? = null,
     val nextVisitDate: String = "",
-    val isActive: Boolean? = null
+    val isActive: Boolean? = null,
 )

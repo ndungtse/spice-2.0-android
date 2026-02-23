@@ -6,5 +6,5 @@ data class ChipViewItemModel(
     val cultureValue: String? = null,
     val diseaseId: Long? = null,
     val type: String? = null,
-    val value: String? = null
+    val value: String? = null,
 )

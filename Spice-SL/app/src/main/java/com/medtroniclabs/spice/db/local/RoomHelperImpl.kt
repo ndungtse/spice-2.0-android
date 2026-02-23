@@ -77,9 +77,6 @@ import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 import com.medtroniclabs.spice.db.entity.LinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
-import com.medtroniclabs.spice.db.entity.ShasthyaShebikaEntity
-import com.medtroniclabs.spice.db.entity.ShasthyaShebikaLinkedVillageEntity
-import com.medtroniclabs.spice.db.entity.SubVillageEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
@@ -94,7 +91,10 @@ import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.RxBuddyDetails
 import com.medtroniclabs.spice.db.entity.RxBuddyFollowUpEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaEntity
+import com.medtroniclabs.spice.db.entity.ShasthyaShebikaLinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.SubVillageEntity
 import com.medtroniclabs.spice.db.entity.TreatmentDetailsEntity
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
@@ -136,97 +136,63 @@ class RoomHelperImpl @Inject constructor(
     private val rxBuddyDetailsDAO: RxBuddyDetailsDAO,
     private val treatmentDetailsDAO: TreatmentDetailsDAO,
     private val rxBuddyFollowUpDAO: RxBuddyFollowUpDAO,
-    private val hivMetaDataDAO: HivMetaDataDAO
+    private val hivMetaDataDAO: HivMetaDataDAO,
 ) : RoomHelper {
-    override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
-        return householdDAO.insertHouseHold(householdEntity)
-    }
+    override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long = householdDAO.insertHouseHold(householdEntity)
 
-    override suspend fun updateHousehold(householdEntity: HouseholdEntity) {
-        return householdDAO.updateHouseHold(householdEntity)
-    }
+    override suspend fun updateHousehold(householdEntity: HouseholdEntity) = householdDAO.updateHouseHold(householdEntity)
 
+    override suspend fun getLastHouseholdNo(villageId: Long): Long? = householdDAO.getLastHouseholdNo(villageId)
 
+    override suspend fun checkHouseholdNumberExists(householdNo: Long): Boolean = householdDAO.checkHouseholdNumberExists(householdNo) > 0
 
-    override suspend fun getLastHouseholdNo(villageId: Long): Long? {
-        return householdDAO.getLastHouseholdNo(villageId)
-    }
+    override suspend fun getHouseHoldDetailsById(houseHoldId: Long): HouseholdEntity = householdDAO.getHouseHoldDetailsById(houseHoldId)
 
-    override suspend fun checkHouseholdNumberExists(householdNo: Long): Boolean {
-        return householdDAO.checkHouseholdNumberExists(householdNo) > 0
-    }
+    override fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount> =
+        householdDAO.getHouseholdMemberCountLiveData(houseHoldId)
 
-    override suspend fun getHouseHoldDetailsById(houseHoldId: Long): HouseholdEntity {
-        return householdDAO.getHouseHoldDetailsById(houseHoldId)
-    }
+    override suspend fun registerMember(householdMemberEntity: HouseholdMemberEntity): Long = memberDAO.insertMember(householdMemberEntity)
 
-    override fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount> {
-        return householdDAO.getHouseholdMemberCountLiveData(houseHoldId)
-    }
+    override suspend fun getAllHouseHoldMemberList(houseHoldId: Long): ArrayList<HouseholdMemberEntity> =
+        ArrayList(memberDAO.getAllHouseHoldMemberList(houseHoldId))
 
-    override suspend fun registerMember(householdMemberEntity: HouseholdMemberEntity): Long {
-        return memberDAO.insertMember(householdMemberEntity)
-    }
+    override suspend fun getMemberDetailsByID(memberId: Long): HouseholdMemberEntity = memberDAO.getMemberDetailsById(memberId)
 
-    override suspend fun getAllHouseHoldMemberList(houseHoldId: Long): ArrayList<HouseholdMemberEntity> {
-        return ArrayList(memberDAO.getAllHouseHoldMemberList(houseHoldId))
-    }
+    override suspend fun getMemberDetailsByParentId(memberId: String): List<HouseholdMemberEntity> = memberDAO.getMemberDetailsByParentId(memberId)
 
-    override suspend fun getMemberDetailsByID(memberId: Long): HouseholdMemberEntity {
-        return memberDAO.getMemberDetailsById(memberId)
-    }
+    override suspend fun getMemberCountPerHouseHold(householdId: Long): Int = memberDAO.getMemberCountPerHouseHold(householdId)
 
-    override suspend fun getMemberDetailsByParentId(memberId: String): List<HouseholdMemberEntity> {
-        return memberDAO.getMemberDetailsByParentId(memberId)
-    }
+    override suspend fun getLastPatientId(patientIdStarts: String): String? = memberDAO.getLastPatientId(patientIdStarts)
 
-    override suspend fun getMemberCountPerHouseHold(householdId: Long): Int {
-        return memberDAO.getMemberCountPerHouseHold(householdId)
-    }
+    override suspend fun getAllUnSyncedHouseHolds(hhIds: List<String>): List<HouseHold> = householdDAO.getAllUnSyncedHouseHolds(hhIds)
 
-    override suspend fun getLastPatientId(patientIdStarts: String): String? {
-        return memberDAO.getLastPatientId(patientIdStarts)
-    }
+    override suspend fun getAllUnSyncedHouseHoldMembers(
+        houseHoldId: Long,
+        memberIds: List<Long>,
+    ): List<HouseHoldMember> = memberDAO.getAllUnSyncedHouseHoldMembers(houseHoldId, memberIds)
 
-    override suspend fun getAllUnSyncedHouseHolds(hhIds: List<String>): List<HouseHold> {
-        return householdDAO.getAllUnSyncedHouseHolds(hhIds)
-    }
+    override suspend fun getOtherHouseholdMembers(memberIds: List<String>): List<HouseHoldMember> = memberDAO.getOtherHouseholdMembers(memberIds)
 
-    override suspend fun getAllUnSyncedHouseHoldMembers(houseHoldId: Long, memberIds: List<Long>): List<HouseHoldMember> {
-        return memberDAO.getAllUnSyncedHouseHoldMembers(houseHoldId, memberIds)
-    }
+    override suspend fun saveAssessment(assessmentEntity: AssessmentEntity): Long = assessmentDAO.insertAssessment(assessmentEntity)
 
-    override suspend fun getOtherHouseholdMembers(memberIds: List<String>): List<HouseHoldMember> {
-        return memberDAO.getOtherHouseholdMembers(memberIds)
-    }
+    override suspend fun updateOtherAssessmentDetails(assessmentEntity: AssessmentEntity) = assessmentDAO.updateOtherAssessmentDetails(assessmentEntity)
 
-    override suspend fun saveAssessment(assessmentEntity: AssessmentEntity): Long {
-        return assessmentDAO.insertAssessment(assessmentEntity)
-    }
-
-    override suspend fun updateOtherAssessmentDetails(assessmentEntity: AssessmentEntity) {
-        return assessmentDAO.updateOtherAssessmentDetails(assessmentEntity)
-    }
-
-    override suspend fun getLatestAssessmentForMember(memberId: Long): AssessmentEntity? {
-        return assessmentDAO.getLatestAssessmentForMember(memberId)
-    }
+    override suspend fun getLatestAssessmentForMember(memberId: Long): AssessmentEntity? = assessmentDAO.getLatestAssessmentForMember(memberId)
 
     override suspend fun insertSymptomList(symptoms: List<SignsAndSymptomsEntity>) {
         assessmentDAO.insertSymptoms(symptoms)
     }
 
-    override suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity> {
-        return assessmentDAO.getSymptomListByType(type)
-    }
+    override suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity> = assessmentDAO.getSymptomListByType(type)
 
     override suspend fun saveHealthFacility(healthFacilityEntityList: HealthFacilityEntity) {
         metaDataDAO.insertHealthFacility(healthFacilityEntityList)
     }
 
-    override suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int) {
-        return householdDAO.updateHeadCount(householdId, newNoOfPeople)
-    }
+    override suspend fun updateHeadCount(
+        householdId: Long,
+        newNoOfPeople: Int,
+    ) = householdDAO.updateHeadCount(householdId, newNoOfPeople)
 
     override suspend fun deleteAllHealthFacility() {
         metaDataDAO.deleteAllHealthFacility()
@@ -236,17 +202,11 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.insertVillages(villageEntityList)
     }
 
-    override suspend fun getAllVillageEntity(): List<VillageEntity> {
-        return metaDataDAO.getVillages()
-    }
+    override suspend fun getAllVillageEntity(): List<VillageEntity> = metaDataDAO.getVillages()
 
-    override suspend fun getAllLinkedVillageEntity(): List<VillageEntity> {
-        return metaDataDAO.getLinkedVillages(SecuredPreference.getTenantId())
-    }
+    override suspend fun getAllLinkedVillageEntity(): List<VillageEntity> = metaDataDAO.getLinkedVillages(SecuredPreference.getTenantId())
 
-    override suspend fun getVillagesByChiefDom(chiefdomId: Long): List<VillageEntity> {
-        return metaDataDAO.getVillagesByChiefDom(chiefdomId)
-    }
+    override suspend fun getVillagesByChiefDom(chiefdomId: Long): List<VillageEntity> = metaDataDAO.getVillagesByChiefDom(chiefdomId)
 
     override suspend fun saveSubVillages(subVillageEntityList: List<SubVillageEntity>) {
         metaDataDAO.insertSubVillages(subVillageEntityList)
@@ -264,9 +224,8 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.deleteAllShasthyaShebikas()
     }
 
-    override suspend fun getShasthyaShebikaByShasthyaKormiId(shasthyaKormiId: Long): List<ShasthyaShebikaEntity> {
-        return metaDataDAO.getShasthyaShebikaByShasthyaKormiId(shasthyaKormiId)
-    }
+    override suspend fun getShasthyaShebikaByShasthyaKormiId(shasthyaKormiId: Long): List<ShasthyaShebikaEntity> =
+        metaDataDAO.getShasthyaShebikaByShasthyaKormiId(shasthyaKormiId)
 
     override suspend fun insertShasthyaShebikaLinkedVillages(linkedVillages: List<ShasthyaShebikaLinkedVillageEntity>) {
         metaDataDAO.insertShasthyaShebikaLinkedVillages(linkedVillages)
@@ -276,20 +235,15 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.deleteAllShasthyaShebikaLinkedVillages()
     }
 
-    override suspend fun getSubVillagesByShasthyaShebikaId(shasthyaShebikaId: Long): List<SubVillageEntity> {
-        return metaDataDAO.getSubVillagesByShasthyaShebikaId(shasthyaShebikaId)
-    }
+    override suspend fun getSubVillagesByShasthyaShebikaId(shasthyaShebikaId: Long): List<SubVillageEntity> =
+        metaDataDAO.getSubVillagesByShasthyaShebikaId(shasthyaShebikaId)
 
-    override suspend fun getDefaultHealthFacility(): HealthFacilityEntity? {
-        return metaDataDAO.getDefaultHealthFacility()
-    }
+    override suspend fun getDefaultHealthFacility(): HealthFacilityEntity? = metaDataDAO.getDefaultHealthFacility()
 
     override suspend fun getClinicalWorkflowId(
         gender: String,
-        age: Int
-    ): List<NCDAssessmentClinicalWorkflow> {
-        return metaDataDAO.getClinicalWorkflowId(gender, age, MenuTypeEnums.assessment.name)
-    }
+        age: Int,
+    ): List<NCDAssessmentClinicalWorkflow> = metaDataDAO.getClinicalWorkflowId(gender, age, MenuTypeEnums.assessment.name)
 
     override suspend fun deleteAllVillages() {
         metaDataDAO.deleteAllVillages()
@@ -307,25 +261,15 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.insertMenus(menuEntity)
     }
 
-    override suspend fun saveClinicalWorkflows(clinicalWorkflows: List<ClinicalWorkflowEntity>) {
-        return metaDataDAO.saveClinicalWorkflows(clinicalWorkflows)
-    }
+    override suspend fun saveClinicalWorkflows(clinicalWorkflows: List<ClinicalWorkflowEntity>) = metaDataDAO.saveClinicalWorkflows(clinicalWorkflows)
 
-    override suspend fun deleteAllClinicalWorkflow() {
-        return metaDataDAO.deleteAllClinicalWorkflow()
-    }
+    override suspend fun deleteAllClinicalWorkflow() = metaDataDAO.deleteAllClinicalWorkflow()
 
-    override suspend fun saveForms(forms: List<FormEntity>) {
-        return metaDataDAO.saveForms(forms)
-    }
+    override suspend fun saveForms(forms: List<FormEntity>) = metaDataDAO.saveForms(forms)
 
-    override suspend fun deleteAllForms() {
-        return metaDataDAO.deleteAllForms()
-    }
+    override suspend fun deleteAllForms() = metaDataDAO.deleteAllForms()
 
-    override suspend fun getAllClinicalWorkflowIds(): List<Int> {
-        return metaDataDAO.getAllClinicalWorkflowIds()
-    }
+    override suspend fun getAllClinicalWorkflowIds(): List<Int> = metaDataDAO.getAllClinicalWorkflowIds()
 
     override suspend fun insertSymptoms(symptomEntity: List<SignsAndSymptomsEntity>) {
         metaDataDAO.insertSymptoms(symptomEntity)
@@ -335,10 +279,7 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.deleteAllSymptoms()
     }
 
-
-    override suspend fun getFormData(formType: String): String {
-        return metaDataDAO.getFormData(formType)
-    }
+    override suspend fun getFormData(formType: String): String = metaDataDAO.getFormData(formType)
 
     override suspend fun deleteAllMenus() {
         metaDataDAO.deleteAllMenus()
@@ -352,20 +293,13 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.deleteAllUserProfileDetails()
     }
 
-    override suspend fun getMenus(): List<MenuEntity> {
-        return metaDataDAO.getMenus()
-    }
+    override suspend fun getMenus(): List<MenuEntity> = metaDataDAO.getMenus()
 
-    override suspend fun getUserProfile(): UserProfileEntity {
-        return metaDataDAO.getUserProfile()
-    }
+    override suspend fun getUserProfile(): UserProfileEntity = metaDataDAO.getUserProfile()
 
-    override suspend fun getVillageByID(villageId: Long): VillageEntity =
-        metaDataDAO.getVillageByID(villageId)
+    override suspend fun getVillageByID(villageId: Long): VillageEntity = metaDataDAO.getVillageByID(villageId)
 
-    override suspend fun getMenuForClinicalWorkflows(): List<ClinicalWorkflowEntity> {
-        return metaDataDAO.getMenuForClinicalWorkflows()
-    }
+    override suspend fun getMenuForClinicalWorkflows(): List<ClinicalWorkflowEntity> = metaDataDAO.getMenuForClinicalWorkflows()
 
     override suspend fun deleteClinicalWorkflowConditions() {
         metaDataDAO.deleteClinicalWorkflowConditions()
@@ -375,15 +309,13 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.insertClinicalWorkflowConditions(clinicalWorkflowConditions)
     }
 
-    override suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel {
-        return memberDAO.getDobAndGenderById(memberId)
-    }
+    override suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel = memberDAO.getDobAndGenderById(memberId)
 
     override suspend fun updateFhirId(
         tableName: String,
         id: String,
         fhirId: String?,
-        status: String
+        status: String,
     ) {
         when (tableName) {
             EntitiesName.RX_BUDDY -> {
@@ -400,8 +332,8 @@ class RoomHelperImpl @Inject constructor(
                 householdDAO.updateFhirId(
                     SimpleSQLiteQuery(
                         query,
-                        arrayOf(fhirId, updatedAt, status, status, id)
-                    )
+                        arrayOf(fhirId, updatedAt, status, status, id),
+                    ),
                 )
             }
         }
@@ -411,55 +343,46 @@ class RoomHelperImpl @Inject constructor(
         searchInput: String,
         filterByVillage: List<Long>,
         filterBySs: List<Long>,
-        filterByStatus: String
-    ): LiveData<List<HouseHoldEntityWithMemberCount>> {
-        return if (filterByVillage.isEmpty() && filterBySs.isEmpty()) {
+        filterByStatus: String,
+    ): LiveData<List<HouseHoldEntityWithMemberCount>> =
+        if (filterByVillage.isEmpty() && filterBySs.isEmpty()) {
             householdDAO.getHouseholdsWithFilterLiveData(searchInput, filterByStatus)
-        } else if(filterBySs.isEmpty()) {
-             householdDAO.getHouseholdsWithFilterLiveData(
+        } else if (filterBySs.isEmpty()) {
+            householdDAO.getHouseholdsWithFilterLiveData(
                 searchInput,
                 filterByStatus,
-                filterByVillage
+                filterByVillage,
             )
-        } else if(filterByVillage.isEmpty()){
+        } else if (filterByVillage.isEmpty()) {
             householdDAO.getHouseHoldsWithStatusAndSsFilterLiveData(
                 searchInput,
                 filterByStatus,
-                filterBySs
+                filterBySs,
             )
         } else {
             householdDAO.getHouseholdsWithFilterLiveData(
                 searchInput,
                 filterByStatus,
                 filterByVillage,
-                filterBySs
+                filterBySs,
             )
         }
 
-    }
+    override suspend fun getUnSyncedHouseholdCount(): Int = householdDAO.getUnSyncedCount()
 
-    override suspend fun getUnSyncedHouseholdCount(): Int {
-        return householdDAO.getUnSyncedCount()
-    }
+    override suspend fun getUnSyncedHouseholdMemberCount(): Int = memberDAO.getUnSyncedCount()
 
-    override suspend fun getUnSyncedHouseholdMemberCount(): Int {
-        return memberDAO.getUnSyncedCount()
-    }
-
-    override suspend fun getNearestHealthFacility(): List<HealthFacilityEntity> {
-        return metaDataDAO.getNearestHealthFacility()
-    }
+    override suspend fun getNearestHealthFacility(): List<HealthFacilityEntity> = metaDataDAO.getNearestHealthFacility()
 
     override suspend fun getPatientVisitCountByType(
         type: String,
         hhmLocalId: Long,
-    ): MemberClinicalEntity? {
-        return when (type) {
+    ): MemberClinicalEntity? =
+        when (type) {
             RMNCH.ANC -> pregnancyDetailDao.getAncDetail(hhmLocalId)
             RMNCH.PNC -> pregnancyDetailDao.getPncDetail(hhmLocalId)
             else -> pregnancyDetailDao.getChildhoodVisitDetail(hhmLocalId)
         }
-    }
 
     override suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity) {
         //  return memberClinicalDAO.savePatientVisitCountByType(memberClinicalEntity = memberClinicalEntity)
@@ -481,14 +404,12 @@ class RoomHelperImpl @Inject constructor(
         diagnosisDAO.saveDiagnosisList(diagnosisList)
     }
 
-
-    override suspend fun getHouseholdIdByFhirId(fhirId: String?): Long? {
-        return if (fhirId != null) {
+    override suspend fun getHouseholdIdByFhirId(fhirId: String?): Long? =
+        if (fhirId != null) {
             householdDAO.getHouseholdIdByFhirId(fhirId)
         } else {
             null
         }
-    }
 
     override suspend fun getHouseholdMemberIdByFhirId(fhirId: String?): Long? {
         return if (fhirId != null) {
@@ -498,37 +419,27 @@ class RoomHelperImpl @Inject constructor(
         }
     }
 
-    override suspend fun getExaminationsComplaintByType(type: String): List<MedicalReviewMetaItems> {
-        return examinationsComplaintsDAO.getExaminationsComplaintByType(type)
-    }
+    override suspend fun getExaminationsComplaintByType(type: String): List<MedicalReviewMetaItems> =
+        examinationsComplaintsDAO.getExaminationsComplaintByType(type)
 
-    override suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails {
-        return memberDAO.getAssessmentMemberDetails(id)
-    }
+    override suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails = memberDAO.getAssessmentMemberDetails(id)
 
-    override suspend fun getOtherUnSyncedAssessments(addedAssessmentIds: List<String>): List<AssessmentDetails> {
-        return assessmentDAO.getOtherUnSyncedAssessments(addedAssessmentIds)
-    }
+    override suspend fun getOtherUnSyncedAssessments(addedAssessmentIds: List<String>): List<AssessmentDetails> =
+        assessmentDAO.getOtherUnSyncedAssessments(addedAssessmentIds)
 
-    override suspend fun getUnSyncedAssessmentByHHMId(hhmId: Long): List<AssessmentDetails> {
-        return assessmentDAO.getUnSyncedAssessmentByHHMId(hhmId)
-    }
+    override suspend fun getUnSyncedAssessmentByHHMId(hhmId: Long): List<AssessmentDetails> = assessmentDAO.getUnSyncedAssessmentByHHMId(hhmId)
 
-    override suspend fun getUnSyncedAssessmentCount(): Int {
-        return assessmentDAO.getUnSyncedCount()
-    }
+    override suspend fun getUnSyncedAssessmentCount(): Int = assessmentDAO.getUnSyncedCount()
 
     override suspend fun updatePregnancyAncDetail(
         hhmLocalId: Long,
         visitCount: Long,
-        clinicalDate: String?
+        clinicalDate: String?,
     ) {
         pregnancyDetailDao.updatePregnancyAnc(hhmLocalId)
     }
 
-    override suspend fun getSummaryDetailMetaItems(type: String): List<MedicalReviewMetaItems> {
-        return aboveFiveYearsDAO.getSummaryDetailMetaItems(type)
-    }
+    override suspend fun getSummaryDetailMetaItems(type: String): List<MedicalReviewMetaItems> = aboveFiveYearsDAO.getSummaryDetailMetaItems(type)
 
     override suspend fun deleteExaminationsComplaintsForAnc(type: String) {
         examinationsComplaintsDAO.deleteExaminationsComplaintsForAnc(type)
@@ -536,10 +447,8 @@ class RoomHelperImpl @Inject constructor(
 
     override fun getExaminationsComplaintsForAnc(
         category: String,
-        type: String
-    ): LiveData<List<MedicalReviewMetaItems>> {
-        return examinationsComplaintsDAO.getExaminationsComplaintsForAnc(category, type)
-    }
+        type: String,
+    ): LiveData<List<MedicalReviewMetaItems>> = examinationsComplaintsDAO.getExaminationsComplaintsForAnc(category, type)
 
     override suspend fun deleteExaminationsList(menuType: String) {
         examinationsDAO.deleteExaminationsList(menuType)
@@ -557,17 +466,11 @@ class RoomHelperImpl @Inject constructor(
         labourDeliveryDAO.deleteLabourDelivery()
     }
 
-    override suspend fun getLabourDelivery(): List<LabourDeliveryMetaEntity> {
-        return labourDeliveryDAO.getLabourDelivery()
-    }
+    override suspend fun getLabourDelivery(): List<LabourDeliveryMetaEntity> = labourDeliveryDAO.getLabourDelivery()
 
-    override suspend fun getDiagnosisList(diagnosisType: String): List<DiseaseCategoryItems> {
-        return diagnosisDAO.getDiagnosisList(diagnosisType)
-    }
+    override suspend fun getDiagnosisList(diagnosisType: String): List<DiseaseCategoryItems> = diagnosisDAO.getDiagnosisList(diagnosisType)
 
-    override suspend fun insertFollowUp(followUp: FollowUp): Long {
-        return followUpDao.insertFollowUp(followUp)
-    }
+    override suspend fun insertFollowUp(followUp: FollowUp): Long = followUpDao.insertFollowUp(followUp)
 
     override suspend fun deleteAllFollowUps() {
         followUpDao.deleteAllFollowUps()
@@ -590,7 +493,7 @@ class RoomHelperImpl @Inject constructor(
         search: String?,
         villageIds: List<Long>,
         fromDate: String,
-        toDate: String
+        toDate: String,
     ): LiveData<List<FollowUpPatientModel>> {
         if (type == FollowUpDefinedParams.FU_TYPE_REFERRED) {
             return followUpDao.getReferredFollowUpPatientListLiveData(
@@ -598,7 +501,7 @@ class RoomHelperImpl @Inject constructor(
                 search = search,
                 villageIds = villageIds,
                 fromDate = fromDate,
-                toDate = toDate
+                toDate = toDate,
             )
         } else {
             return followUpDao.getOtherFollowUpPatientListLiveData(
@@ -606,22 +509,16 @@ class RoomHelperImpl @Inject constructor(
                 search = search,
                 villageIds = villageIds,
                 fromDate = fromDate,
-                toDate = toDate
+                toDate = toDate,
             )
         }
     }
 
-    override suspend fun getAllVillageIds(): List<Long> {
-        return metaDataDAO.getVillageIds()
-    }
+    override suspend fun getAllVillageIds(): List<Long> = metaDataDAO.getVillageIds()
 
-    override suspend fun getExaminationQuestionsByWorkFlow(workFlowType: String): ExaminationListItems {
-        return examinationsDAO.getExaminationsByType(workFlowType)
-    }
+    override suspend fun getExaminationQuestionsByWorkFlow(workFlowType: String): ExaminationListItems = examinationsDAO.getExaminationsByType(workFlowType)
 
-    override suspend fun getPatientIdByFhirId(fhirId: String): String? {
-        return memberDAO.getPatientIdByFhirId(fhirId)
-    }
+    override suspend fun getPatientIdByFhirId(fhirId: String): String? = memberDAO.getPatientIdByFhirId(fhirId)
 
     override suspend fun deleteAllPregnancyDetails() {
         pregnancyDetailDao.deleteAllPregnancyDetails()
@@ -634,7 +531,7 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun addCallHistory(
         oldFollowUp: FollowUp,
         history: FollowUpCall,
-        newFollowUp: FollowUp?
+        newFollowUp: FollowUp?,
     ) {
         followUpCallsDao.insertFollowUpCall(history)
         followUpDao.insertFollowUp(oldFollowUp)
@@ -643,73 +540,54 @@ class RoomHelperImpl @Inject constructor(
         }
     }
 
+    override suspend fun getAllFollowUpRequests(): List<FollowUp> = followUpDao.getAllFollowUps()
 
-    override suspend fun getAllFollowUpRequests(): List<FollowUp> {
-        return followUpDao.getAllFollowUps()
-    }
+    override suspend fun getAllFollowUpCalls(id: Long): List<FollowUpCall> = followUpCallsDao.getAllFollowUpCalls(id)
 
-    override suspend fun getAllFollowUpCalls(id: Long): List<FollowUpCall> {
-        return followUpCallsDao.getAllFollowUpCalls(id)
-    }
+    override suspend fun getFollowUpById(id: Long): FollowUp = followUpDao.getFollowUpDetailsById(id)
 
-    override suspend fun getFollowUpById(id: Long): FollowUp {
-        return followUpDao.getFollowUpDetailsById(id)
-    }
+    override suspend fun deleteAllFollowUpCalls() = followUpCallsDao.deleteAllFollowUpCalls()
 
-    override suspend fun deleteAllFollowUpCalls() {
-        return followUpCallsDao.deleteAllFollowUpCalls()
-    }
+    override suspend fun getUnSyncedFollowUpCount(): Int = followUpDao.getUnSyncedCount()
 
-    override suspend fun getUnSyncedFollowUpCount(): Int {
-        return followUpDao.getUnSyncedCount()
-    }
+    override suspend fun getUnSyncedCommunityProfileCount(): Int = communityDAO.getUnSyncedCount()
 
-    override suspend fun getUnSyncedCommunityProfileCount(): Int {
-        return communityDAO.getUnSyncedCount()
-    }
+    override suspend fun deleteAllAssessments() = assessmentDAO.deleteAllAssessments()
 
-    override suspend fun deleteAllAssessments() {
-        return assessmentDAO.deleteAllAssessments()
-    }
+    override fun getExaminationsComplaintByTypeLiveData(category: String): LiveData<List<MedicalReviewMetaItems>> =
+        examinationsComplaintsDAO.getExaminationsComplaintByTypeLiveData(category)
 
-    override fun getExaminationsComplaintByTypeLiveData(category: String): LiveData<List<MedicalReviewMetaItems>> {
-        return examinationsComplaintsDAO.getExaminationsComplaintByTypeLiveData(category)
-    }
+    override fun getHouseholdCardDetailLiveData(id: Long): LiveData<HouseholdCardDetail> = householdDAO.getHouseholdCardDetailLiveData(id)
 
-    override fun getHouseholdCardDetailLiveData(id: Long): LiveData<HouseholdCardDetail> {
-        return householdDAO.getHouseholdCardDetailLiveData(id)
-    }
+    override fun getAllHouseHoldMembersLiveData(hhId: Long): LiveData<List<HouseholdMemberWithTb>> = memberDAO.getAllHouseHoldMembersLiveData(hhId)
 
-    override fun getAllHouseHoldMembersLiveData(hhId: Long): LiveData<List<HouseholdMemberWithTb>> {
-        return memberDAO.getAllHouseHoldMembersLiveData(hhId)
-    }
-
-    override fun getAliveHouseHoldMembersLiveData(hhId: Long): List<HouseholdMemberEntity> {
-      return memberDAO.getAliveHouseHoldMembers(hhId,true)
-    }
+    override fun getAliveHouseHoldMembersLiveData(hhId: Long): List<HouseholdMemberEntity> = memberDAO.getAliveHouseHoldMembers(hhId, true)
 
     override suspend fun updateOtherDuplicateTickets(
         id: Long,
-        followUp: FollowUp
+        followUp: FollowUp,
     ) {
         followUpDao.updateOtherDuplicateTickets(
             id,
             followUp.memberId,
             followUp.type,
             followUp.encounterType,
-            followUp.reason
+            followUp.reason,
         )
     }
 
-    override suspend fun updateDuplicateTicketsAsCompleted(id: Long, followUp: FollowUp) {
+    override suspend fun updateDuplicateTicketsAsCompleted(
+        id: Long,
+        followUp: FollowUp,
+    ) {
         if (followUp.type == FollowUpDefinedParams.FU_TYPE_HH_VISIT) {
-            followUpDao.updateHHVisitTicketsOnRecovered(id,followUp.memberId, followUp.type, followUp.encounterType, followUp.reason)
+            followUpDao.updateHHVisitTicketsOnRecovered(id, followUp.memberId, followUp.type, followUp.encounterType, followUp.reason)
         } else {
             val types = listOf(FollowUpDefinedParams.FU_TYPE_REFERRED, FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW)
             if (followUp.encounterType == FollowUpDefinedParams.FU_ENCOUNTER_TYPE_RMNCH) {
                 followUpDao.closeTicketsForRMNCH(id, followUp.memberId, types, followUp.encounterType)
             } else {
-                followUpDao.closeTicketsForNonRMNCH(id,followUp.memberId, followUp.type, types, followUp.encounterType)
+                followUpDao.closeTicketsForNonRMNCH(id, followUp.memberId, followUp.type, types, followUp.encounterType)
             }
         }
     }
@@ -717,7 +595,7 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun updateOnTreatmentStatus(
         id: Long,
         followUp: FollowUp,
-        updateAt: Long
+        updateAt: Long,
     ) {
         followUpDao.updateOnTreatmentStatus(
             id,
@@ -725,66 +603,64 @@ class RoomHelperImpl @Inject constructor(
             followUp.type,
             updateAt,
             followUp.encounterType,
-            followUp.reason
+            followUp.reason,
         )
     }
 
-    override suspend fun insertOrUpdateHHFromBE(entity: HouseholdEntity): Long {
-        return householdDAO.insertOrUpdateFromBE(entity)
-    }
+    override suspend fun insertOrUpdateHHFromBE(entity: HouseholdEntity): Long = householdDAO.insertOrUpdateFromBE(entity)
 
-    override suspend fun insertOrUpdateHHMFromBE(entity: HouseholdMemberEntity): Long {
-        return memberDAO.insertOrUpdateFromBE(entity)
-    }
+    override suspend fun insertOrUpdateHHMFromBE(entity: HouseholdMemberEntity): Long = memberDAO.insertOrUpdateFromBE(entity)
 
-    override suspend fun changeHouseholdStatus(idList: List<String>,  syncStatus: String) {
+    override suspend fun changeHouseholdStatus(
+        idList: List<String>,
+        syncStatus: String,
+    ) {
         householdDAO.updateInProgress(idList, syncStatus)
     }
 
-    override suspend fun changeHouseholdMemberStatus(idList: List<String>, syncStatus: String) {
+    override suspend fun changeHouseholdMemberStatus(
+        idList: List<String>,
+        syncStatus: String,
+    ) {
         memberDAO.updateInProgress(idList, syncStatus)
     }
 
-    override suspend fun changeAssessmentStatus(idList: List<String>, syncStatus: String) {
+    override suspend fun changeAssessmentStatus(
+        idList: List<String>,
+        syncStatus: String,
+    ) {
         assessmentDAO.updateInProgress(idList, syncStatus)
     }
 
-    override suspend fun changeFollowUpStatus(idList: List<Long>, syncStatus: String) {
+    override suspend fun changeFollowUpStatus(
+        idList: List<Long>,
+        syncStatus: String,
+    ) {
         followUpDao.updateInProgress(idList, syncStatus)
     }
 
-    override suspend fun getPregnancyDetailByPatientId(hhmLocalId: Long): PregnancyDetail? {
-        return pregnancyDetailDao.getPregnancyDetailByPatientId(hhmLocalId)
-    }
+    override suspend fun getPregnancyDetailByPatientId(hhmLocalId: Long): PregnancyDetail? = pregnancyDetailDao.getPregnancyDetailByPatientId(hhmLocalId)
 
-    override suspend fun savePregnancyDetail(detail: PregnancyDetail): Long {
-        return pregnancyDetailDao.savePregnancyDetail(detail)
-    }
+    override suspend fun savePregnancyDetail(detail: PregnancyDetail): Long = pregnancyDetailDao.savePregnancyDetail(detail)
 
-    override suspend fun deleteAllFrequencyList() {
-        return frequencyDAO.deleteAllVillages()
-    }
+    override suspend fun deleteAllFrequencyList() = frequencyDAO.deleteAllVillages()
 
-    override suspend fun saveFrequencyList(frequencyList: List<FrequencyEntity>): List<Long> {
-        return frequencyDAO.insertFrequencyList(frequencyList)
-    }
+    override suspend fun saveFrequencyList(frequencyList: List<FrequencyEntity>): List<Long> = frequencyDAO.insertFrequencyList(frequencyList)
 
-    override suspend fun getFrequencyList(): List<FrequencyEntity> {
-        return frequencyDAO.getFrequencyList()
-    }
+    override suspend fun getFrequencyList(): List<FrequencyEntity> = frequencyDAO.getFrequencyList()
 
-    override suspend fun getInstructionList(): List<MedicalReviewMetaItems> {
-        return aboveFiveYearsDAO.getSummaryDetailMetaItems(MedicalReviewTypeEnums.PRESCRIPTION_INSTRUCTION.name)
-    }
+    override suspend fun getInstructionList(): List<MedicalReviewMetaItems> =
+        aboveFiveYearsDAO.getSummaryDetailMetaItems(MedicalReviewTypeEnums.PRESCRIPTION_INSTRUCTION.name)
 
     override fun getExaminationsComplaintsForPnc(
         category: String,
-        type: String
-    ): LiveData<List<MedicalReviewMetaItems>> {
-        return examinationsComplaintsDAO.getExaminationsComplaintsForPnc(category, type)
-    }
+        type: String,
+    ): LiveData<List<MedicalReviewMetaItems>> = examinationsComplaintsDAO.getExaminationsComplaintsForPnc(category, type)
 
-    override suspend fun updateOtherFollowUpForWrongNumber(id: Long, fhirId: String) {
+    override suspend fun updateOtherFollowUpForWrongNumber(
+        id: Long,
+        fhirId: String,
+    ) {
         followUpDao.updateOtherFollowUpForWrongNumber(id, fhirId)
     }
 
@@ -796,92 +672,83 @@ class RoomHelperImpl @Inject constructor(
         followUpDao.deleteCompletedFollowUp()
     }
 
-    override suspend fun getUserHealthFacility(isUserSite: Boolean): ArrayList<HealthFacilityEntity> {
-        return ArrayList(metaDataDAO.getUserHealthFacility(isUserSite))
-    }
+    override suspend fun getUserHealthFacility(isUserSite: Boolean): ArrayList<HealthFacilityEntity> = ArrayList(metaDataDAO.getUserHealthFacility(isUserSite))
 
-    override suspend fun updateMemberDeceasedStatus(id: Long, status: Boolean) {
+    override suspend fun updateMemberDeceasedStatus(
+        id: Long,
+        status: Boolean,
+    ) {
         memberDAO.updateMemberDeceasedStatus(id, status, OfflineSyncStatus.NotSynced)
         rxBuddyDetailsDAO.updateRxBuddyStatus(id, status)
     }
 
-    override suspend fun saveForm(forms: FormEntity) {
-        return metaDataDAO.saveForm(forms)
-    }
+    override suspend fun saveForm(forms: FormEntity) = metaDataDAO.saveForm(forms)
 
-    override suspend fun saveConsent(consentEntity: ConsentEntity) {
-        return metaDataDAO.insertConsent(consentEntity)
-    }
+    override suspend fun saveConsent(consentEntity: ConsentEntity) = metaDataDAO.insertConsent(consentEntity)
 
-    override fun getConsent(formType: String): LiveData<String> {
-        return metaDataDAO.getConsent(formType)
-    }
+    override fun getConsent(formType: String): LiveData<String> = metaDataDAO.getConsent(formType)
 
-    override suspend fun deleteConsent() {
-        return metaDataDAO.deleteConsent()
-    }
+    override suspend fun deleteConsent() = metaDataDAO.deleteConsent()
 
-    override suspend fun saveModelQuestions(mentalHealthEntity: List<MentalHealthEntity>) {
-        return metaDataDAO.insertModelQuestions(mentalHealthEntity)
-    }
+    override suspend fun saveModelQuestions(mentalHealthEntity: List<MentalHealthEntity>) = metaDataDAO.insertModelQuestions(mentalHealthEntity)
 
-    override suspend fun getModelQuestions(formType: String): MentalHealthEntity {
-        return metaDataDAO.getModelQuestions(formType)
-    }
+    override suspend fun getModelQuestions(formType: String): MentalHealthEntity = metaDataDAO.getModelQuestions(formType)
 
-    override suspend fun deleteModelQuestions() {
-        return metaDataDAO.deleteModelQuestions()
-    }
+    override suspend fun deleteModelQuestions() = metaDataDAO.deleteModelQuestions()
 
     override suspend fun changeFollowUpCallStatus(idList: List<Long>) {
         followUpCallsDao.updateSyncSuccess(idList)
     }
 
-    override suspend fun updateNeonatePatientId(hhmLocalId: Long, neonateId: Long) {
+    override suspend fun updateNeonatePatientId(
+        hhmLocalId: Long,
+        neonateId: Long,
+    ) {
         pregnancyDetailDao.updateNeonatePatientId(hhmLocalId, neonateId)
     }
 
-    override suspend fun changeHHMLinkCallStatus(idList: List<String>, syncStatus: String) {
+    override suspend fun changeHHMLinkCallStatus(
+        idList: List<String>,
+        syncStatus: String,
+    ) {
         callHistoryDao.updateInProgress(idList, syncStatus)
     }
 
-    override suspend fun changeCommunityProfileStatus(idList: List<Long>, syncStatus: String) {
+    override suspend fun changeCommunityProfileStatus(
+        idList: List<Long>,
+        syncStatus: String,
+    ) {
         communityDAO.updateInStatus(idList, syncStatus)
     }
 
-    override suspend fun changeAssignHHMStatus(idList: List<String>, syncStatus: String) {
+    override suspend fun changeAssignHHMStatus(
+        idList: List<String>,
+        syncStatus: String,
+    ) {
         linkHouseholdMemberDao.updateInProgress(idList, syncStatus)
     }
 
-    override suspend fun getMemberDetailsByPatientId(patientId: String): HouseholdMemberEntity? {
-       return memberDAO.getMemberDetailsByPatientId(patientId)
-    }
+    override suspend fun getMemberDetailsByPatientId(patientId: String): HouseholdMemberEntity? = memberDAO.getMemberDetailsByPatientId(patientId)
 
-    override suspend fun getChildPatientId(parentId: Long): Long? {
-        return pregnancyDetailDao.getChildPatientId(parentId)
-    }
+    override suspend fun getChildPatientId(parentId: Long): Long? = pregnancyDetailDao.getChildPatientId(parentId)
 
-    override suspend fun getPatientIdById(id: Long): String {
-        return memberDAO.getPatientIdById(id)
-    }
+    override suspend fun getPatientIdById(id: Long): String = memberDAO.getPatientIdById(id)
 
-    override suspend fun insertConsentForm(form: ConsentForm): Long {
-        return consentFormDao.insert(form)
-    }
-    override suspend fun getConsentFormByType(type: String): ConsentForm? {
-        return consentFormDao.getConsentFormByType(type)
-    }
+    override suspend fun insertConsentForm(form: ConsentForm): Long = consentFormDao.insert(form)
+
+    override suspend fun getConsentFormByType(type: String): ConsentForm? = consentFormDao.getConsentFormByType(type)
 
     override suspend fun deleteAllConsentForm() {
         consentFormDao.delete()
     }
 
-    override suspend fun getHHSignatureDetails(): List<HHSignatureDetail> {
-        return memberDAO.getHHSignatureDetails()
-    }
-    override suspend fun updatePhoneNumberForHouseholdHead(id: Long, phoneNumber: String?, phoneNumberCategory: String?) {
-        return memberDAO.updatePhoneNumberForHouseholdHead(id, phoneNumber)
-    }
+    override suspend fun getHHSignatureDetails(): List<HHSignatureDetail> = memberDAO.getHHSignatureDetails()
+
+    override suspend fun updatePhoneNumberForHouseholdHead(
+        id: Long,
+        phoneNumber: String?,
+        phoneNumberCategory: String?,
+    ) = memberDAO.updatePhoneNumberForHouseholdHead(id, phoneNumber)
 
     override suspend fun insertLinkHouseholdMembers(insertList: List<LinkHouseholdMember>) {
         linkHouseholdMemberDao.insert(insertList)
@@ -891,17 +758,12 @@ class RoomHelperImpl @Inject constructor(
         linkHouseholdMemberDao.delete(deleteListIds)
     }
 
-    override fun getUnAssignedHouseholdMembersLiveData(): LiveData<List<UnAssignedHouseholdMemberDetail>> {
-        return linkHouseholdMemberDao.getUnAssignedHouseholdMembersLiveData()
-    }
+    override fun getUnAssignedHouseholdMembersLiveData(): LiveData<List<UnAssignedHouseholdMemberDetail>> =
+        linkHouseholdMemberDao.getUnAssignedHouseholdMembersLiveData()
 
-    override suspend fun addLinkMemberCall(callHistory: CallHistory): Long {
-        return callHistoryDao.insert(callHistory)
-    }
+    override suspend fun addLinkMemberCall(callHistory: CallHistory): Long = callHistoryDao.insert(callHistory)
 
-    override suspend fun getUnSyncedCallHistoryForHHMLink(): List<HouseholdMemberCallRegisterDto> {
-        return callHistoryDao.getUnSyncedCallHistoryForHHMLink()
-    }
+    override suspend fun getUnSyncedCallHistoryForHHMLink(): List<HouseholdMemberCallRegisterDto> = callHistoryDao.getUnSyncedCallHistoryForHHMLink()
 
     override suspend fun changeMemberDetailsToNotSynced(id: Long) {
         memberDAO.changeMemberDetailsToNotSynced(id)
@@ -915,13 +777,9 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.insertMedicalCompliance(list)
     }
 
-    override suspend fun getMedicalParentComplianceList(): List<MedicalComplianceEntity> {
-        return metaDataDAO.getMedicalComplianceList()
-    }
+    override suspend fun getMedicalParentComplianceList(): List<MedicalComplianceEntity> = metaDataDAO.getMedicalComplianceList()
 
-    override suspend fun getMedicalChildComplianceList(parentId: Long): List<MedicalComplianceEntity> {
-        return metaDataDAO.getMedicalComplianceList(parentId)
-    }
+    override suspend fun getMedicalChildComplianceList(parentId: Long): List<MedicalComplianceEntity> = metaDataDAO.getMedicalComplianceList(parentId)
 
     override suspend fun deleteMedicalCompliance() {
         metaDataDAO.deleteMedicalComplianceList()
@@ -931,9 +789,7 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.insertDistricts(districts)
     }
 
-    override suspend fun getDistricts(countryId: Long): List<DistrictEntity> {
-        return metaDataDAO.getDistricts(countryId)
-    }
+    override suspend fun getDistricts(countryId: Long): List<DistrictEntity> = metaDataDAO.getDistricts(countryId)
 
     override suspend fun deleteDistricts() {
         metaDataDAO.deleteCounties()
@@ -943,9 +799,7 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.insertChiefDoms(chiefdoms)
     }
 
-    override suspend fun getChiefDoms(districtId: Long): List<ChiefDomEntity> {
-        return metaDataDAO.getChiefDoms(districtId)
-    }
+    override suspend fun getChiefDoms(districtId: Long): List<ChiefDomEntity> = metaDataDAO.getChiefDoms(districtId)
 
     override suspend fun deleteChiefDoms() {
         metaDataDAO.deleteChiefDoms()
@@ -955,21 +809,15 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.insertPrograms(programs)
     }
 
-    override suspend fun getPrograms(): List<ProgramEntity> {
-        return metaDataDAO.getPrograms()
-    }
+    override suspend fun getPrograms(): List<ProgramEntity> = metaDataDAO.getPrograms()
 
     override suspend fun deletePrograms() {
         metaDataDAO.deletePrograms()
     }
 
-    override fun getMentalQuestion(formType: String): LiveData<MentalHealthEntity?> {
-        return metaDataDAO.getMentalQuestion(formType)
-    }
+    override fun getMentalQuestion(formType: String): LiveData<MentalHealthEntity?> = metaDataDAO.getMentalQuestion(formType)
 
-    override fun getSites(): LiveData<List<HealthFacilityEntity>> {
-        return metaDataDAO.getSites()
-    }
+    override fun getSites(): LiveData<List<HealthFacilityEntity>> = metaDataDAO.getSites()
 
     override suspend fun savePatientScreeningInformation(screeningEntity: ScreeningEntity): ScreeningEntity {
         val id = screeningDAO.insertScreening(screeningEntity)
@@ -979,186 +827,129 @@ class RoomHelperImpl @Inject constructor(
     override fun getScreenedPatientCount(
         startDate: Long,
         endDate: Long,
-        userId: String
-    ): LiveData<Long> {
-        return screeningDAO.getScreenedPatientCount(startDate, endDate, userId)
-    }
+        userId: String,
+    ): LiveData<Long> = screeningDAO.getScreenedPatientCount(startDate, endDate, userId)
 
     override fun getScreenedPatientReferredCount(
         startDate: Long,
         endDate: Long,
         userId: String,
-        isReferred: Boolean
-    ): LiveData<Long> {
-        return screeningDAO.getScreenedPatientReferredCount(startDate, endDate,userId, isReferred)
-    }
+        isReferred: Boolean,
+    ): LiveData<Long> = screeningDAO.getScreenedPatientReferredCount(startDate, endDate, userId, isReferred)
 
-    override suspend fun getAllScreeningRecords(uploadStatus: Boolean): List<ScreeningEntity> {
-        return screeningDAO.getAllScreeningRecords(uploadStatus)
-    }
-    override suspend fun deleteUploadedScreeningRecords(todayDateTimeInMilliSeconds: Long) {
-        return screeningDAO.deleteUploadedScreeningRecords(todayDateTimeInMilliSeconds)
-    }
+    override suspend fun getAllScreeningRecords(uploadStatus: Boolean): List<ScreeningEntity> = screeningDAO.getAllScreeningRecords(uploadStatus)
 
-    override suspend fun updateScreeningRecordById(id: Long, uploadStatus: Boolean) {
-        return screeningDAO.updateScreeningRecordById(id, uploadStatus)
-    }
+    override suspend fun deleteUploadedScreeningRecords(todayDateTimeInMilliSeconds: Long) =
+        screeningDAO.deleteUploadedScreeningRecords(todayDateTimeInMilliSeconds)
 
-    override fun getAssessmentFormData(formType: String, workFlow: String): LiveData<String> {
-        return metaDataDAO.getAssessmentFormData(formType, workFlow)
-    }
+    override suspend fun updateScreeningRecordById(
+        id: Long,
+        uploadStatus: Boolean,
+    ) = screeningDAO.updateScreeningRecordById(id, uploadStatus)
+
+    override fun getAssessmentFormData(
+        formType: String,
+        workFlow: String,
+    ): LiveData<String> = metaDataDAO.getAssessmentFormData(formType, workFlow)
 
     override suspend fun insertRiskFactor(riskFactorEntity: RiskFactorEntity) {
         riskFactorDAO.insertRiskFactor(riskFactorEntity)
     }
 
-    override fun getRiskFactorEntity(): LiveData<List<RiskFactorEntity>> {
-        return riskFactorDAO.getAllRiskFactorEntity()
-    }
+    override fun getRiskFactorEntity(): LiveData<List<RiskFactorEntity>> = riskFactorDAO.getAllRiskFactorEntity()
 
-    override suspend fun deleteRiskFactor() {
-        return riskFactorDAO.deleteRiskFactor()
-    }
+    override suspend fun deleteRiskFactor() = riskFactorDAO.deleteRiskFactor()
 
-    override fun getSymptomListByTypeForNCD(type: String): LiveData<List<SignsAndSymptomsEntity>> {
-        return assessmentDAO.getSymptomListByTypeForNCD(type)
-    }
+    override fun getSymptomListByTypeForNCD(type: String): LiveData<List<SignsAndSymptomsEntity>> = assessmentDAO.getSymptomListByTypeForNCD(type)
 
-    override suspend fun deleteTreatmentPlan() {
-        return ncdMedicalReviewDao.deleteTreatmentPlan()
-    }
+    override suspend fun deleteTreatmentPlan() = ncdMedicalReviewDao.deleteTreatmentPlan()
 
-    override suspend fun insertTreatmentPlan(items: List<TreatmentPlanEntity>) {
-        return ncdMedicalReviewDao.insertTreatmentPlan(items)
-    }
+    override suspend fun insertTreatmentPlan(items: List<TreatmentPlanEntity>) = ncdMedicalReviewDao.insertTreatmentPlan(items)
 
-    override suspend fun deleteNCDMedicalReviewMeta() {
-        return ncdMedicalReviewDao.deleteNCDMedicalReviewMeta()
-    }
+    override suspend fun deleteNCDMedicalReviewMeta() = ncdMedicalReviewDao.deleteNCDMedicalReviewMeta()
 
-    override suspend fun insertNCDMedicalReviewMeta(items: List<NCDMedicalReviewMetaEntity>) {
-        return ncdMedicalReviewDao.insertNCDMedicalReviewMeta(items)
-    }
+    override suspend fun insertNCDMedicalReviewMeta(items: List<NCDMedicalReviewMetaEntity>) = ncdMedicalReviewDao.insertNCDMedicalReviewMeta(items)
 
-    override fun getComorbidities(type: String?,category: String): LiveData<List<NCDMedicalReviewMetaEntity>> {
-       return  ncdMedicalReviewDao.getComorbidities(type,category)
-    }
+    override fun getComorbidities(
+        type: String?,
+        category: String,
+    ): LiveData<List<NCDMedicalReviewMetaEntity>> = ncdMedicalReviewDao.getComorbidities(type, category)
 
-    override suspend fun deleteLifestyle() {
-        return ncdMedicalReviewDao.deleteLifestyle()
-    }
+    override suspend fun deleteLifestyle() = ncdMedicalReviewDao.deleteLifestyle()
 
-    override suspend fun insertLifestyle(items: List<LifestyleEntity>) {
-        return ncdMedicalReviewDao.insertLifestyle(items)
-    }
+    override suspend fun insertLifestyle(items: List<LifestyleEntity>) = ncdMedicalReviewDao.insertLifestyle(items)
 
-    override fun getLifeStyle(): LiveData<List<LifestyleEntity>> {
-        return ncdMedicalReviewDao.getLifeStyle()
-    }
+    override fun getLifeStyle(): LiveData<List<LifestyleEntity>> = ncdMedicalReviewDao.getLifeStyle()
 
     override fun getAssessmentFormData(
         formTypes: List<String>,
-        workFlow: String
-    ): List<String> {
-        return metaDataDAO.getAssessmentFormData(formTypes, workFlow)
-    }
+        workFlow: String,
+    ): List<String> = metaDataDAO.getAssessmentFormData(formTypes, workFlow)
 
-    override suspend fun getSymptomList(): List<SignsAndSymptomsEntity> {
-        return assessmentDAO.getSymptomList()
-    }
+    override suspend fun getSymptomList(): List<SignsAndSymptomsEntity> = assessmentDAO.getSymptomList()
 
-    override suspend fun saveAssessmentInformation(assessmentOfflineEntity: AssessmentNCDEntity):
-            AssessmentNCDEntity {
+    override suspend fun saveAssessmentInformation(assessmentOfflineEntity: AssessmentNCDEntity): AssessmentNCDEntity {
         val id = assessmentDAO.saveAssessmentInformation(assessmentOfflineEntity)
         return assessmentDAO.getAssessmentById(id)
     }
 
-    override suspend fun getAllAssessmentRecords(uploadStatus: Boolean): List<AssessmentNCDEntity> {
-        return assessmentDAO.getAllAssessmentRecords(uploadStatus)
-    }
+    override suspend fun getAllAssessmentRecords(uploadStatus: Boolean): List<AssessmentNCDEntity> = assessmentDAO.getAllAssessmentRecords(uploadStatus)
 
-    override suspend fun updateAssessmentUploadStatus(id: Long, uploadStatus: Boolean) {
-        return assessmentDAO.updateAssessmentUploadStatus(id, uploadStatus)
-    }
+    override suspend fun updateAssessmentUploadStatus(
+        id: Long,
+        uploadStatus: Boolean,
+    ) = assessmentDAO.updateAssessmentUploadStatus(id, uploadStatus)
 
     override suspend fun deleteAssessmentList(isUploaded: Boolean) = assessmentDAO.deleteAssessmentList()
+
     override suspend fun getAssessmentClinicalWorkflow(
         gender: String,
-        name: String
-    ): List<NCDAssessmentClinicalWorkflow> {
-        return metaDataDAO.getAssessmentClinicalWorkflow(gender, name)
-    }
+        name: String,
+    ): List<NCDAssessmentClinicalWorkflow> = metaDataDAO.getAssessmentClinicalWorkflow(gender, name)
 
-    override fun getUnSyncedDataCountForNCDScreening(): LiveData<Long> {
-        return screeningDAO.getUnSyncedDataCountForNCDScreening()
-    }
+    override fun getUnSyncedDataCountForNCDScreening(): LiveData<Long> = screeningDAO.getUnSyncedDataCountForNCDScreening()
 
-    override fun getUnSyncedNCDAssessmentCount(): LiveData<Long> {
-        return assessmentDAO.getUnSyncedNCDAssessmentCount()
-    }
+    override fun getUnSyncedNCDAssessmentCount(): LiveData<Long> = assessmentDAO.getUnSyncedNCDAssessmentCount()
 
-    override suspend fun saveNCDDiagnosisList(diseaseEntityList: ArrayList<NCDDiagnosisEntity>) {
-        return ncdMedicalReviewDao.saveNCDDiagnosisList(diseaseEntityList)
-    }
+    override suspend fun saveNCDDiagnosisList(diseaseEntityList: ArrayList<NCDDiagnosisEntity>) = ncdMedicalReviewDao.saveNCDDiagnosisList(diseaseEntityList)
 
-    override suspend fun deleteNCDDiagnosisList() {
-        return ncdMedicalReviewDao.deleteNCDDiagnosisList()
-    }
+    override suspend fun deleteNCDDiagnosisList() = ncdMedicalReviewDao.deleteNCDDiagnosisList()
 
     override fun getNCDDiagnosisList(
         types: List<String>,
         gender: String,
-        isPregnant: Boolean
-    ): LiveData<List<NCDDiagnosisEntity>> {
-        return ncdMedicalReviewDao.getNCDDiagnosisList(types, gender, isPregnant)
-    }
+        isPregnant: Boolean,
+    ): LiveData<List<NCDDiagnosisEntity>> = ncdMedicalReviewDao.getNCDDiagnosisList(types, gender, isPregnant)
 
-    override fun getFrequencies(): LiveData<List<TreatmentPlanEntity>> {
-        return ncdMedicalReviewDao.getFrequencies()
-    }
+    override fun getFrequencies(): LiveData<List<TreatmentPlanEntity>> = ncdMedicalReviewDao.getFrequencies()
 
-    override suspend fun getNCDShortageReason(type: String): List<ShortageReasonEntity> {
-        return ncdMedicalReviewDao.getNCDShortageEntries(type)
-    }
+    override suspend fun getNCDShortageReason(type: String): List<ShortageReasonEntity> = ncdMedicalReviewDao.getNCDShortageEntries(type)
 
-    override suspend fun deleteNCDShortageReason() {
-        return ncdMedicalReviewDao.deleteNCDShortageReason()
-    }
+    override suspend fun deleteNCDShortageReason() = ncdMedicalReviewDao.deleteNCDShortageReason()
 
-    override suspend fun saveNCDShortageReason(shortageReasonEntity: List<ShortageReasonEntity>) {
-         return ncdMedicalReviewDao.saveNCDShortageReason(shortageReasonEntity)
-    }
+    override suspend fun saveNCDShortageReason(shortageReasonEntity: List<ShortageReasonEntity>) =
+        ncdMedicalReviewDao.saveNCDShortageReason(shortageReasonEntity)
 
-    override suspend fun getNCDForm(type: String, customizedType: String): List<String> {
-        return metaDataDAO.getNCDForm(type, customizedType)
-    }
+    override suspend fun getNCDForm(
+        type: String,
+        customizedType: String,
+    ): List<String> = metaDataDAO.getNCDForm(type, customizedType)
 
-    override suspend fun getUserVillages(): List<VillageEntity> {
-        return metaDataDAO.getUserVillages(true)
-    }
+    override suspend fun getUserVillages(): List<VillageEntity> = metaDataDAO.getUserVillages(true)
 
-    override suspend fun deleteDosageDurations() {
-        return metaDataDAO.deleteDosageDurations()
-    }
+    override suspend fun deleteDosageDurations() = metaDataDAO.deleteDosageDurations()
 
-    override suspend fun insertDosageDurations(items: List<DosageDurationEntity>) {
-        return metaDataDAO.insertDosageDurations(items)
-    }
+    override suspend fun insertDosageDurations(items: List<DosageDurationEntity>) = metaDataDAO.insertDosageDurations(items)
 
-    override suspend fun getDosageDurations(): List<DosageDurationEntity> {
-        return metaDataDAO.getDosageDurationsList()
-    }
+    override suspend fun getDosageDurations(): List<DosageDurationEntity> = metaDataDAO.getDosageDurationsList()
 
-    override suspend fun getUnitList(type: String): List<UnitMetricEntity> {
-        return metaDataDAO.getUnitList(type)
-    }
+    override suspend fun getUnitList(type: String): List<UnitMetricEntity> = metaDataDAO.getUnitList(type)
+
     override suspend fun saveUnitMetric(list: ArrayList<UnitMetricEntity>) {
         metaDataDAO.insertUnitMetricList(list)
     }
 
-    override suspend fun getDosageFrequencyList(): List<DosageFrequency> {
-        return metaDataDAO.getDosageFrequencyList()
-    }
+    override suspend fun getDosageFrequencyList(): List<DosageFrequency> = metaDataDAO.getDosageFrequencyList()
 
     override suspend fun deleteUnitMetric() {
         metaDataDAO.deleteUnitMetric()
@@ -1172,17 +963,13 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.deleteDosageFrequencyList()
     }
 
-    override suspend fun getUnAssignedChildFhirIds(patientId: String): List<HouseholdMemberFhirId> {
-        return linkHouseholdMemberDao.getUnAssignedChildFhirIds(patientId)
-    }
+    override suspend fun getUnAssignedChildFhirIds(patientId: String): List<HouseholdMemberFhirId> = linkHouseholdMemberDao.getUnAssignedChildFhirIds(patientId)
 
-    override suspend fun getUnAssignedParentFhirId(parentId: String): List<HouseholdMemberFhirId> {
-        return linkHouseholdMemberDao.getUnAssignedParentFhirId(parentId)
-    }
+    override suspend fun getUnAssignedParentFhirId(parentId: String): List<HouseholdMemberFhirId> = linkHouseholdMemberDao.getUnAssignedParentFhirId(parentId)
 
     override suspend fun updateHouseholdHeadAndRelationShip(
         fhirIds: List<String>,
-        householdId: Long
+        householdId: Long,
     ) {
         memberDAO.updateHouseholdHeadAndRelationShip(fhirIds, householdId)
     }
@@ -1190,40 +977,36 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun updateMembersAsAssigned(fhirIds: List<String>) {
         linkHouseholdMemberDao.updateMembersAsAssigned(fhirIds)
     }
+
     override suspend fun deleteAllNCDFollowUp() {
         ncdFollowUpDao.deleteAllNCDFollowUps()
     }
-    override suspend fun insertNCDFollowUp(followUp: NCDFollowUp): Long {
-        return ncdFollowUpDao.insertNCDFollowUp(followUp)
-    }
+
+    override suspend fun insertNCDFollowUp(followUp: NCDFollowUp): Long = ncdFollowUpDao.insertNCDFollowUp(followUp)
 
     override fun getNCDFollowUpData(
         type: String,
         searchText: String,
         dateBasedOnChip: Pair<Long?, Long?>?,
         isScreened: Boolean?,
-        reason: String?
-    ): LiveData<List<NCDFollowUp>> {
-        return ncdFollowUpDao.getFilteredNCDFollowUp(
+        reason: String?,
+    ): LiveData<List<NCDFollowUp>> =
+        ncdFollowUpDao.getFilteredNCDFollowUp(
             type,
             searchText,
             dateBasedOnChip?.first,
             dateBasedOnChip?.second,
             isScreened,
             reason,
-            DateUtils.dateToLong()
+            DateUtils.dateToLong(),
         )
-    }
 
     override suspend fun updatedCallInitiatedCall(ncdFollowUp: NCDFollowUp): NCDFollowUp {
         ncdFollowUpDao.updatedCallInitiated(ncdFollowUp) // Perform the update/insert
         return ncdFollowUpDao.getNCDFollowUpById(ncdFollowUp.id) // Retrieve the updated object
     }
 
-
-    override suspend fun getNCDInitiatedCallFollowUp(): NCDFollowUp? {
-        return ncdFollowUpDao.getNCDInitiatedCallFollowUp()
-    }
+    override suspend fun getNCDInitiatedCallFollowUp(): NCDFollowUp? = ncdFollowUpDao.getNCDInitiatedCallFollowUp()
 
     @Transaction
     override suspend fun insertNCDCallDetails(followUp: NCDCallDetails): NCDCallDetails? {
@@ -1236,49 +1019,32 @@ class RoomHelperImpl @Inject constructor(
         return ncdFollowUpDao.getNCDCallDetails(id)
     }
 
-    override suspend fun updateRetryAttempts(id: Long, retryAttempts: Long) {
-        return ncdFollowUpDao.updateRetryAttempts(id, retryAttempts)
-    }
+    override suspend fun updateRetryAttempts(
+        id: Long,
+        retryAttempts: Long,
+    ) = ncdFollowUpDao.updateRetryAttempts(id, retryAttempts)
 
-    override suspend fun getAttemptsById(id: Long): Long? {
-        return ncdFollowUpDao.getAttemptsById(id)
-    }
+    override suspend fun getAttemptsById(id: Long): Long? = ncdFollowUpDao.getAttemptsById(id)
 
-    override suspend fun getNCDFollowUpById(id: Long): NCDFollowUp {
-        return ncdFollowUpDao.getNCDFollowUpById(id)
-    }
+    override suspend fun getNCDFollowUpById(id: Long): NCDFollowUp = ncdFollowUpDao.getNCDFollowUpById(id)
 
-    override suspend fun getAllNCDCallDetails(): List<NCDCallDetails> {
-        return ncdFollowUpDao.getAllNCDCallDetails()
-    }
+    override suspend fun getAllNCDCallDetails(): List<NCDCallDetails> = ncdFollowUpDao.getAllNCDCallDetails()
 
-    override suspend fun insertNCDPatientDetails(patients: NCDPatientDetailsEntity): Long {
-        return ncdFollowUpDao.insertNCDPatientDetails(patients)
-    }
+    override suspend fun insertNCDPatientDetails(patients: NCDPatientDetailsEntity): Long = ncdFollowUpDao.insertNCDPatientDetails(patients)
 
-    override suspend fun deleteAllNCDPatientDetails() {
-        return ncdFollowUpDao.deleteAllNCDPatientDetails()
-    }
+    override suspend fun deleteAllNCDPatientDetails() = ncdFollowUpDao.deleteAllNCDPatientDetails()
 
-    override suspend fun getPatientBasedOnId(id: String): NCDPatientDetailsEntity {
-        return ncdFollowUpDao.getPatientBasedOnId(id)
-    }
+    override suspend fun getPatientBasedOnId(id: String): NCDPatientDetailsEntity = ncdFollowUpDao.getPatientBasedOnId(id)
 
-    override suspend fun deleteCallDetails(id: Long) {
-        return ncdFollowUpDao.deleteCallDetails(id)
-    }
+    override suspend fun deleteCallDetails(id: Long) = ncdFollowUpDao.deleteCallDetails(id)
 
-    override fun getUnSyncedNCDFollowUpCount(): LiveData<Long> {
-        return ncdFollowUpDao.getUnSyncedNCDFollowUpCount()
-    }
+    override fun getUnSyncedNCDFollowUpCount(): LiveData<Long> = ncdFollowUpDao.getUnSyncedNCDFollowUpCount()
 
     override suspend fun saveCultures(cultures: List<CulturesEntity>) {
         metaDataDAO.insertCultures(cultures)
     }
 
-    override suspend fun getCultures(): List<CulturesEntity> {
-        return metaDataDAO.getCultures()
-    }
+    override suspend fun getCultures(): List<CulturesEntity> = metaDataDAO.getCultures()
 
     override suspend fun deleteCultures() {
         metaDataDAO.deleteCultures()
@@ -1292,138 +1058,101 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.deleteAllLinkedVillages()
     }
 
-    override suspend fun updateMemberDeceasedReason(id: Long, status: Boolean,deceasedReason: String?) {
-        memberDAO.updateMemberDeceasedReason(id, status, OfflineSyncStatus.NotSynced,deceasedReason)
+    override suspend fun updateMemberDeceasedReason(
+        id: Long,
+        status: Boolean,
+        deceasedReason: String?,
+    ) {
+        memberDAO.updateMemberDeceasedReason(id, status, OfflineSyncStatus.NotSynced, deceasedReason)
         rxBuddyDetailsDAO.updateRxBuddyStatus(id, status)
     }
 
-    override suspend fun getHouseholdHeadDob(householdId: Long): String {
-       return memberDAO.getHouseholdHeadDob(householdId)
-    }
+    override suspend fun getHouseholdHeadDob(householdId: Long): String = memberDAO.getHouseholdHeadDob(householdId)
 
-    override fun getFilterVillagesWithHouseholdsCount(searchInput: String): LiveData<List<CommunityProfileDetail>> {
-        return metaDataDAO.filterCommunityProfile(searchInput)
-    }
+    override fun getFilterVillagesWithHouseholdsCount(searchInput: String): LiveData<List<CommunityProfileDetail>> =
+        metaDataDAO.filterCommunityProfile(searchInput)
 
-    override suspend fun  getCommunityStatistics(villageId: Long): CommunityPopulationStatistics {
-        return metaDataDAO.getCommunityPopulationStatistics(villageId)
-    }
+    override suspend fun getCommunityStatistics(villageId: Long): CommunityPopulationStatistics = metaDataDAO.getCommunityPopulationStatistics(villageId)
 
-    override suspend fun insertCommunityDetails(communityProfile: CommunityProfile): Long {
-        return communityDAO.insertCommunity(communityProfile)
-    }
+    override suspend fun insertCommunityDetails(communityProfile: CommunityProfile): Long = communityDAO.insertCommunity(communityProfile)
 
-    override suspend fun getCommunityDetails(id: Long): CommunityProfile? {
-        return communityDAO.getCommunityDetailsById(id)
-    }
+    override suspend fun getCommunityDetails(id: Long): CommunityProfile? = communityDAO.getCommunityDetailsById(id)
 
-    override suspend fun getCommunityProfileId(villageId: Long): Long? {
-        return communityDAO.getCommunityProfileId(villageId)
-    }
+    override suspend fun getCommunityProfileId(villageId: Long): Long? = communityDAO.getCommunityProfileId(villageId)
 
-    override suspend fun updateCommunityDetails(communityProfile: CommunityProfile){
-        return communityDAO.updateCommunity(communityProfile)
-    }
+    override suspend fun updateCommunityDetails(communityProfile: CommunityProfile) = communityDAO.updateCommunity(communityProfile)
 
-    override suspend fun updateUnSynStatus(villageId: Long, synStatus: String) {
-        return communityDAO.updateSyncStatus(villageId,synStatus  )
-    }
+    override suspend fun updateUnSynStatus(
+        villageId: Long,
+        synStatus: String,
+    ) = communityDAO.updateSyncStatus(villageId, synStatus)
 
-    override suspend fun getHealthFacilityBasedOnVillageId(villageId: Long): List<HealthFacilityEntity> {
-        return metaDataDAO.getHealthFacilityBasedOnVillageId(villageId)
-    }
+    override suspend fun getHealthFacilityBasedOnVillageId(villageId: Long): List<HealthFacilityEntity> =
+        metaDataDAO.getHealthFacilityBasedOnVillageId(villageId)
 
-    override suspend fun getAssessment(assessmentId: Long): AssessmentEntity {
-        return assessmentDAO.getAssessment(assessmentId)
-    }
+    override suspend fun getAssessment(assessmentId: Long): AssessmentEntity = assessmentDAO.getAssessment(assessmentId)
 
-    override suspend fun getUnSyncedCommunityDetails(): List<CommunityProfile> {
-        return communityDAO.getUnSyncedCommunityDetails()
-    }
+    override suspend fun getUnSyncedCommunityDetails(): List<CommunityProfile> = communityDAO.getUnSyncedCommunityDetails()
 
-    override suspend fun insertOrUpdateFromBE(communityProfile: CommunityProfile): Long {
-        return communityDAO.insertOrUpdateFromBE(communityProfile)
-    }
+    override suspend fun insertOrUpdateFromBE(communityProfile: CommunityProfile): Long = communityDAO.insertOrUpdateFromBE(communityProfile)
 
-    override fun householdMemberWithTbStatus(hhId: Long): LiveData<List<HouseholdMemberEntity>> {
-        return memberDAO.getHouseholdMemberWithTBContactTraceStatus(hhId)
-    }
+    override fun householdMemberWithTbStatus(hhId: Long): LiveData<List<HouseholdMemberEntity>> = memberDAO.getHouseholdMemberWithTBContactTraceStatus(hhId)
 
-    override suspend fun updateTBContactTraceStatus(hhmId: Long, tbContactTracingStatus: Int){
-        return memberDAO.updateTBContactTraceStatus(hhmId,tbContactTracingStatus)
-    }
+    override suspend fun updateTBContactTraceStatus(
+        hhmId: Long,
+        tbContactTracingStatus: Int,
+    ) = memberDAO.updateTBContactTraceStatus(hhmId, tbContactTracingStatus)
 
-    override suspend fun updatePregnantStatus(memberId: Long, isPregnant: Boolean) {
-        return memberDAO.updatePregnantStatus(memberId, isPregnant, syncStatus = OfflineSyncStatus.NotSynced.name)
-    }
+    override suspend fun updatePregnantStatus(
+        memberId: Long,
+        isPregnant: Boolean,
+    ) = memberDAO.updatePregnantStatus(memberId, isPregnant, syncStatus = OfflineSyncStatus.NotSynced.name)
 
-    override suspend fun getSymptomListByTypes(types: List<String>): List<SignsAndSymptomsEntity> {
-        return assessmentDAO.getSymptomListByTypes(types)
-    }
+    override suspend fun getSymptomListByTypes(types: List<String>): List<SignsAndSymptomsEntity> = assessmentDAO.getSymptomListByTypes(types)
 
-    override suspend fun insertRxBuddyDetails(rxBuddyDetails: RxBuddyDetails): Long {
-        return rxBuddyDetailsDAO.insertRxBuddyDetails(rxBuddyDetails)
-    }
+    override suspend fun insertRxBuddyDetails(rxBuddyDetails: RxBuddyDetails): Long = rxBuddyDetailsDAO.insertRxBuddyDetails(rxBuddyDetails)
 
-    override suspend fun getRxBuddyDetails(patientMemberId: String): RxBuddyDetails? {
-        return rxBuddyDetailsDAO.getRxBuddyDetailsByPatientMemberId(patientMemberId)
-    }
+    override suspend fun getRxBuddyDetails(patientMemberId: String): RxBuddyDetails? = rxBuddyDetailsDAO.getRxBuddyDetailsByPatientMemberId(patientMemberId)
 
     override suspend fun getOtherHouseholdExcludeTBPatient(
         householdId: Long,
-        patientId: Long
-    ): List<HouseholdMemberEntity> {
-        return memberDAO.getOtherHouseholdExcludeTBPatient(householdId, patientId)
-    }
+        patientId: Long,
+    ): List<HouseholdMemberEntity> = memberDAO.getOtherHouseholdExcludeTBPatient(householdId, patientId)
 
-    override suspend fun insertTreatmentDetails(treatmentDetails: TreatmentDetailsEntity): Long {
-        return treatmentDetailsDAO.insertTreatmentDetails(treatmentDetails)
-    }
+    override suspend fun insertTreatmentDetails(treatmentDetails: TreatmentDetailsEntity): Long = treatmentDetailsDAO.insertTreatmentDetails(treatmentDetails)
 
-    override suspend fun updateTreatmentDetails(treatmentDetails: TreatmentDetailsEntity): Int {
-        return treatmentDetailsDAO.updateTreatmentDetails(treatmentDetails)
-    }
+    override suspend fun updateTreatmentDetails(treatmentDetails: TreatmentDetailsEntity): Int = treatmentDetailsDAO.updateTreatmentDetails(treatmentDetails)
 
-    override suspend fun getTreatmentDetails(memberId: String): TreatmentDetailsEntity? {
-        return treatmentDetailsDAO.getTreatmentDetailsByMemberId(memberId)
-    }
+    override suspend fun getTreatmentDetails(memberId: String): TreatmentDetailsEntity? = treatmentDetailsDAO.getTreatmentDetailsByMemberId(memberId)
 
-    override suspend fun insertRxBuddyFollowUp(rxBuddyFollowUp: RxBuddyFollowUpEntity): Long {
-        return rxBuddyFollowUpDAO.insertRxBuddyFollowUp(rxBuddyFollowUp)
-    }
+    override suspend fun insertRxBuddyFollowUp(rxBuddyFollowUp: RxBuddyFollowUpEntity): Long = rxBuddyFollowUpDAO.insertRxBuddyFollowUp(rxBuddyFollowUp)
 
-    override suspend fun getHivMetaData(): List<MedicalReviewMetaItems> {
-        return hivMetaDataDAO.getHivMetaItems()
-    }
+    override suspend fun getHivMetaData(): List<MedicalReviewMetaItems> = hivMetaDataDAO.getHivMetaItems()
 
+    override suspend fun getAllUnSyncedRxBuddyRegister(): List<RxBuddyRegisterDetail> = rxBuddyDetailsDAO.getAllUnSyncedRxBuddyRegister()
 
-    override suspend fun getAllUnSyncedRxBuddyRegister(): List<RxBuddyRegisterDetail> {
-        return rxBuddyDetailsDAO.getAllUnSyncedRxBuddyRegister()
-    }
+    override suspend fun getHouseholdMemberForRxBuddy(hhmId: Long): HouseHoldMember = memberDAO.getHouseholdMemberForRxBuddy(hhmId)
 
-    override suspend fun getHouseholdMemberForRxBuddy(hhmId: Long): HouseHoldMember {
-        return memberDAO.getHouseholdMemberForRxBuddy(hhmId)
-    }
+    override suspend fun getUnSyncedRxBuddyFollowUpWithoutRxBuddyId(rxBuddyLocalId: Long): List<RxBuddyFollowUpEntity> =
+        rxBuddyFollowUpDAO.getUnSyncedRxBuddyFollowUpWithoutRxBuddyId(rxBuddyLocalId)
 
-    override suspend fun getUnSyncedRxBuddyFollowUpWithoutRxBuddyId(rxBuddyLocalId: Long): List<RxBuddyFollowUpEntity> {
-        return rxBuddyFollowUpDAO.getUnSyncedRxBuddyFollowUpWithoutRxBuddyId(rxBuddyLocalId)
-    }
+    override suspend fun getUnSyncedRxBuddyFollowUpWithRxBuddyId(): List<RxBuddyFollowUpDetails> = rxBuddyFollowUpDAO.getUnSyncedRxBuddyFollowUpWithRxBuddyId()
 
-    override suspend fun getUnSyncedRxBuddyFollowUpWithRxBuddyId(): List<RxBuddyFollowUpDetails> {
-        return rxBuddyFollowUpDAO.getUnSyncedRxBuddyFollowUpWithRxBuddyId()
-    }
-
-    override suspend fun updateNextVisitDateRxBuddyRegister(nextVisitDate: String, id: Long) {
+    override suspend fun updateNextVisitDateRxBuddyRegister(
+        nextVisitDate: String,
+        id: Long,
+    ) {
         rxBuddyDetailsDAO.updateNextVisitDate(id, nextVisitDate)
     }
 
-    override suspend fun updateNextVisitDateRxBuddyFollowUp(nextVisitDate: String, id: Long) {
+    override suspend fun updateNextVisitDateRxBuddyFollowUp(
+        nextVisitDate: String,
+        id: Long,
+    ) {
         rxBuddyFollowUpDAO.updateNextVisitDate(id, nextVisitDate)
     }
 
-    override suspend fun insertOrUpdateRxBuddyFromBE(entity: RxBuddyDetails): Long {
-        return rxBuddyDetailsDAO.insertOrUpdateFromBE(entity)
-    }
+    override suspend fun insertOrUpdateRxBuddyFromBE(entity: RxBuddyDetails): Long = rxBuddyDetailsDAO.insertOrUpdateFromBE(entity)
 
     override suspend fun deleteAllTreatmentDetails() {
         treatmentDetailsDAO.deleteAllTreatmentDetails()
@@ -1437,19 +1166,21 @@ class RoomHelperImpl @Inject constructor(
         rxBuddyFollowUpDAO.deleteAllRxBuddyFollowUp()
     }
 
-    override suspend fun getUnSyncedRxBuddyRegisterCount(): Int {
-        return rxBuddyDetailsDAO.getUnSyncedCount()
-    }
+    override suspend fun getUnSyncedRxBuddyRegisterCount(): Int = rxBuddyDetailsDAO.getUnSyncedCount()
 
-    override suspend fun getUnSyncedRxBuddyFollowUpCount(): Int {
-        return rxBuddyFollowUpDAO.getUnSyncedCount()
-    }
+    override suspend fun getUnSyncedRxBuddyFollowUpCount(): Int = rxBuddyFollowUpDAO.getUnSyncedCount()
 
-    override suspend fun updateRxBuddyRegisterSyncStatus(idList: List<Long>, syncStatus: String) {
+    override suspend fun updateRxBuddyRegisterSyncStatus(
+        idList: List<Long>,
+        syncStatus: String,
+    ) {
         rxBuddyDetailsDAO.updateSyncStatus(idList, syncStatus)
     }
 
-    override suspend fun updateRxBuddyFollowUpSyncStatus(idList: List<Long>, syncStatus: String) {
+    override suspend fun updateRxBuddyFollowUpSyncStatus(
+        idList: List<Long>,
+        syncStatus: String,
+    ) {
         rxBuddyFollowUpDAO.updateSyncStatus(idList, syncStatus)
     }
 
@@ -1457,38 +1188,32 @@ class RoomHelperImpl @Inject constructor(
         rxBuddyDetailsDAO.deleteAllDisabledRxBuddies(ids)
     }
 
-    override suspend fun getHouseholdMemberIdAndStatusByFhirId(fhirId: String): HouseholdMemberStatus? {
-        return memberDAO.getHouseholdMemberIdAndStatusByFhirId(fhirId)
-    }
+    override suspend fun getHouseholdMemberIdAndStatusByFhirId(fhirId: String): HouseholdMemberStatus? = memberDAO.getHouseholdMemberIdAndStatusByFhirId(fhirId)
 
-    override suspend fun getUnSyncedHouseHoldByMemberId(hhmId: Long): HouseHold? {
-        return householdDAO.getUnSyncedHouseHoldByMemberId(hhmId)
-    }
+    override suspend fun getUnSyncedHouseHoldByMemberId(hhmId: Long): HouseHold? = householdDAO.getUnSyncedHouseHoldByMemberId(hhmId)
 
-    override suspend fun getHouseholdsWithMemberCountsExceeding(): List<HouseholdWithMemberCount> {
-        return memberDAO.getHouseholdsWithMemberCountsExceeding()
-    }
+    override suspend fun getHouseholdsWithMemberCountsExceeding(): List<HouseholdWithMemberCount> = memberDAO.getHouseholdsWithMemberCountsExceeding()
 
-    override suspend fun getMemberFhirIdByLocalId(hhmId: Long): String? {
-        return memberDAO.getMemberFhirIdByLocalId(hhmId)
-    }
+    override suspend fun getMemberFhirIdByLocalId(hhmId: Long): String? = memberDAO.getMemberFhirIdByLocalId(hhmId)
 
     override suspend fun getAllUnSyncedRxBuddyDetailWithHHM(
         hhmId: Long,
-        rxBuddiesId: List<Long>
-    ): List<RxBuddyRegisterDetail> {
-        return rxBuddyDetailsDAO.getAllUnSyncedRxBuddyDetailWithHHM(hhmId, rxBuddiesId)
-    }
+        rxBuddiesId: List<Long>,
+    ): List<RxBuddyRegisterDetail> = rxBuddyDetailsDAO.getAllUnSyncedRxBuddyDetailWithHHM(hhmId, rxBuddiesId)
 
-    override suspend fun getTbPatientLocalIdByHouseholdId(householdId: Long): MutableList<Long> {
-        return memberDAO.getTbPatientLocalIdByHouseholdId(householdId)
-    }
+    override suspend fun getTbPatientLocalIdByHouseholdId(householdId: Long): MutableList<Long> = memberDAO.getTbPatientLocalIdByHouseholdId(householdId)
 
-    override suspend fun updateContactTracingStatus(memberId: Long, status: Int?) {
+    override suspend fun updateContactTracingStatus(
+        memberId: Long,
+        status: Int?,
+    ) {
         memberDAO.updateContactTracingStatus(memberId, status)
     }
 
-    override suspend fun updateContactTracingForLinkTbPatient(tbHHMId: Long, householdId: Long) {
+    override suspend fun updateContactTracingForLinkTbPatient(
+        tbHHMId: Long,
+        householdId: Long,
+    ) {
         memberDAO.updateContactTracingForLinkTbPatient(tbHHMId, householdId)
     }
 }

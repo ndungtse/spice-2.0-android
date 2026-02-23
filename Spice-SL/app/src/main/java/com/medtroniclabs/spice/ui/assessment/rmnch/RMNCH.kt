@@ -51,8 +51,8 @@ object RMNCH {
     const val otherPncMotherSigns = "otherPncMotherSigns"
     const val PREGNANCY_MIN_AGE = 10
     const val PREGNANCY_MAX_AGE = 49
-    const val PNCMOTHER="PNC-Mother"
-    const val PNCNEONATE="PNC-Baby"
+    const val PNCMOTHER = "PNC-Mother"
+    const val PNCNEONATE = "PNC-Baby"
     const val pnc_mother_key = "PNC_MOTHER"
     const val pnc_neonate_key = "PNC_NEONATE"
     const val muac = "muac"
@@ -69,9 +69,7 @@ object RMNCH {
     const val isDeceased = "isDeceased"
     const val deceasedReason = "deceasedReason"
 
-    const val otherPlaceOfDelivery="otherPlaceOfDelivery"
-
-
+    const val otherPlaceOfDelivery = "otherPlaceOfDelivery"
 
     fun getValueFromMap(
         resultMap: HashMap<String, Any>,
@@ -80,7 +78,7 @@ object RMNCH {
         workflowName: String?,
         isBooleanAnswer: Boolean,
         triple: Triple<String, String, String>,
-        context: Context
+        context: Context,
     ): String {
         if (resultMap.containsKey(workflowName)) {
             val actualMap = resultMap[workflowName]
@@ -90,7 +88,7 @@ object RMNCH {
                     return DateUtils.convertDateFormat(
                         value,
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        DateUtils.DATE_ddMMyyyy
+                        DateUtils.DATE_ddMMyyyy,
                     )
                 } else if (viewType == ViewType.VIEW_TYPE_DIALOG_CHECKBOX) {
                     return getDangerSignValue(value, triple.third, actualMap)
@@ -103,17 +101,16 @@ object RMNCH {
                                     value,
                                     AssessmentCommonUtils.getNutritionStatus(
                                         value,
-                                        context
-                                    )
+                                        context,
+                                    ),
                                 )
-                            }else if(id==PlaceOfDelivery){
+                            } else if (id == PlaceOfDelivery) {
                                 return if (actualMap.containsKey(otherPlaceOfDelivery)) {
-                                     ("$value - ${actualMap[otherPlaceOfDelivery]}")
-                                }else{
+                                    ("$value - ${actualMap[otherPlaceOfDelivery]}")
+                                } else {
                                     value
                                 }
-                            }
-                            else {
+                            } else {
                                 value
                             }
                         }
@@ -136,24 +133,25 @@ object RMNCH {
                         }
                     }
                 }
-
             }
         }
         return triple.third
     }
 
-    private fun getWeekPeriod(gestationWeek: Double, context: Context): String {
-        return if (gestationWeek == 1.0){
+    private fun getWeekPeriod(
+        gestationWeek: Double,
+        context: Context,
+    ): String =
+        if (gestationWeek == 1.0) {
             context.getString(R.string.week)
-        } else{
+        } else {
             context.getString(R.string.weeks)
         }
-    }
 
     private fun getDangerSignValue(
         value: Any?,
         hyphenSymbol: String,
-        actualMap: Map<*, *>
+        actualMap: Map<*, *>,
     ): String {
         val result = ArrayList<String>()
         if (value is List<*>) {
@@ -196,7 +194,10 @@ object RMNCH {
         return (weeks / 4.0)
     }
 
-    fun calculateNextANCVisitDate(lmp: Date, isMedicalReview: Boolean = false): Date? {
+    fun calculateNextANCVisitDate(
+        lmp: Date,
+        isMedicalReview: Boolean = false,
+    ): Date? {
         return when (calculatePregnancyMonth(lmp)) {
             in 0.0..4.0 -> {
                 if (isMedicalReview) {
@@ -244,7 +245,10 @@ object RMNCH {
         }
     }
 
-    fun calculateNextChildHoodVisitDate(age: Int, birthDate: Date): Date? {
+    fun calculateNextChildHoodVisitDate(
+        age: Int,
+        birthDate: Date,
+    ): Date? {
         return when (age) {
             in 0..4 -> {
                 DateUtils.addMonthsToDate(birthDate, 5)
@@ -267,7 +271,6 @@ object RMNCH {
             }
         }
     }
-
 
     fun calculateNextPNCVisitDate(deliveryDate: Date): Date? {
         when (DateUtils.daysBetweenDates(deliveryDate, Date())) {
@@ -303,7 +306,7 @@ object RMNCH {
     fun getDeathStatus(
         map: HashMap<String, Any>,
         workFlowName: String,
-        keyName: String
+        keyName: String,
     ): Boolean {
         var deathOfMother = false
         val workFlowMap = map[workFlowName]
@@ -314,5 +317,4 @@ object RMNCH {
         }
         return deathOfMother
     }
-
 }

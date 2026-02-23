@@ -22,7 +22,6 @@ import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
 import timber.log.Timber
 
 class MemberDeceasedDialogFragment() : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentMemberDeceasedDialogBinding
     private var listener: MemberSelectionListener? = null
     private val householdSummaryViewModel: HouseHoldSummaryViewModel by activityViewModels()
@@ -33,15 +32,14 @@ class MemberDeceasedDialogFragment() : DialogFragment(), View.OnClickListener {
 
     companion object {
         val TAG = "MemberEditDialogFragment"
-        fun newInstance(listener: MemberSelectionListener): MemberDeceasedDialogFragment {
-            return MemberDeceasedDialogFragment(listener)
-        }
+
+        fun newInstance(listener: MemberSelectionListener): MemberDeceasedDialogFragment = MemberDeceasedDialogFragment(listener)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentMemberDeceasedDialogBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -49,7 +47,10 @@ class MemberDeceasedDialogFragment() : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         householdSummaryViewModel.setUserJourney(MemberDeceased)
@@ -60,7 +61,7 @@ class MemberDeceasedDialogFragment() : DialogFragment(), View.OnClickListener {
 
     private fun onEnterReason() {
         binding.etReason.addTextChangedListener {
-            Timber.d("onEnterReason = ${it.toString()}")
+            Timber.d("onEnterReason = $it")
             binding.btnOkay.isEnabled = it.toString().isNotEmpty() && householdSummaryViewModel.hasDeceasedReason
         }
     }
@@ -71,8 +72,8 @@ class MemberDeceasedDialogFragment() : DialogFragment(), View.OnClickListener {
         dropDownList.add(
             MemberDetailsSpinnerModel(
                 id = DefinedParams.DefaultSelectID,
-                name = DefinedParams.DefaultIDLabel
-            )
+                name = DefinedParams.DefaultIDLabel,
+            ),
         )
         householdSummaryViewModel.householdMembersLiveData.value?.let { data ->
             data.forEach { item ->
@@ -83,8 +84,8 @@ class MemberDeceasedDialogFragment() : DialogFragment(), View.OnClickListener {
                             name = item.name,
                             age = "",
                             gender = item.gender,
-                            dob = item.dateOfBirth
-                        )
+                            dob = item.dateOfBirth,
+                        ),
                     )
                 }
             }
@@ -93,26 +94,32 @@ class MemberDeceasedDialogFragment() : DialogFragment(), View.OnClickListener {
         binding.etMemberInput.adapter = memberAdapter
         binding.etMemberInput.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                override fun onItemSelected(
+                    p0: AdapterView<*>?,
+                    p1: View?,
+                    p2: Int,
+                    p3: Long,
+                ) {
                     val selectedItem = memberAdapter.getData(position = p2)
-                    Timber.d("onEnterReason 123= ${selectedItem}")
+                    Timber.d("onEnterReason 123= $selectedItem")
 
                     selectedItem?.let {
                         if (it.id != -1L) {
-                            Timber.d("onEnterReason = ${selectedItem}")
+                            Timber.d("onEnterReason = $selectedItem")
                             householdSummaryViewModel.hasDeceasedReason = true
                             householdSummaryViewModel.selectedMemberId = it.id
                             householdSummaryViewModel.selectedMemberDob = it.dob
-                            if (binding.etReason.text.toString().isNotEmpty()) {
+                            if (binding.etReason.text
+                                    .toString()
+                                    .isNotEmpty()
+                            ) {
                                 binding.btnOkay.isEnabled = true
                             }
                         } else {
-                            Timber.d("onEnterReason = ${selectedItem}")
+                            Timber.d("onEnterReason = $selectedItem")
                             householdSummaryViewModel.hasDeceasedReason = false
                             binding.btnOkay.isEnabled = false
-
                         }
-
                     }
                 }
 
@@ -135,7 +142,7 @@ class MemberDeceasedDialogFragment() : DialogFragment(), View.OnClickListener {
                 householdSummaryViewModel.updateMemberDeceasedReason(
                     householdSummaryViewModel.selectedMemberId,
                     false,
-                    binding.etReason.text.toString()
+                    binding.etReason.text.toString(),
                 )
                 requireActivity().startBackgroundOfflineSync()
                 householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.MEMBERDECEASEDSUMBITTRIGGERED)
@@ -153,7 +160,7 @@ class MemberDeceasedDialogFragment() : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 }

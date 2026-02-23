@@ -2,13 +2,11 @@ package com.medtroniclabs.spice.db.entity
 
 import com.google.gson.annotations.SerializedName
 
-
 data class RiskClassificationModel(
-    var age:String,
+    var age: String,
     @SerializedName("is_smoker")
-    var isSmoker:Boolean,
-    var gender:String,
+    var isSmoker: Boolean,
+    var gender: String,
     @SerializedName("risk_factors")
-    var riskFactors:ArrayList<RiskFactorModel>
+    var riskFactors: ArrayList<RiskFactorModel>,
 )
-

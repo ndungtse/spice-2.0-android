@@ -31,7 +31,7 @@ class CbsCheckBoxDialog() : DialogFragment(), View.OnClickListener {
         callback: (result: ArrayList<HashMap<String, Any>>) -> Unit,
         resultMap: Any?,
         title: String?,
-        autoPopulate: List<Pair<String, Boolean>> = emptyList()
+        autoPopulate: List<Pair<String, Boolean>> = emptyList(),
     ) : this() {
         this.callback = callback
         this.resultMap = resultMap
@@ -45,12 +45,13 @@ class CbsCheckBoxDialog() : DialogFragment(), View.OnClickListener {
     companion object {
         const val TAG = "CbsCheckBoxDialog"
         private const val KEY_TYPE = "KEY_TYPE"
+
         fun newInstance(
             key: String,
             resultMap: Any?,
             title: String? = null,
             autoPopulate: List<Pair<String, Boolean>> = emptyList(),
-            callback: (result: ArrayList<HashMap<String, Any>>) -> Unit
+            callback: (result: ArrayList<HashMap<String, Any>>) -> Unit,
         ): CbsCheckBoxDialog {
             val args = Bundle()
             args.putString(KEY_TYPE, key)
@@ -63,7 +64,7 @@ class CbsCheckBoxDialog() : DialogFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = CheckboxDialogLayoutBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -76,7 +77,10 @@ class CbsCheckBoxDialog() : DialogFragment(), View.OnClickListener {
         isCancelable = false
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeView()
         getRespectiveList(requireArguments().getString(KEY_TYPE))
@@ -107,18 +111,20 @@ class CbsCheckBoxDialog() : DialogFragment(), View.OnClickListener {
 
             val adapterList = if (resultMap != null && resultMap is ArrayList<*>) {
                 getSelectedSymptomList(list, resultMap as ArrayList<*>)
-            } else list
+            } else {
+                list
+            }
 
             binding.rvItems.adapter = CheckboxDialogAdapter(
                 adapterList,
-                translate = SecuredPreference.getIsTranslationEnabled()
+                translate = SecuredPreference.getIsTranslationEnabled(),
             )
         }
     }
 
     private fun getSelectedSymptomList(
         list: List<SignsAndSymptomsEntity>,
-        resultMap: ArrayList<*>
+        resultMap: ArrayList<*>,
     ): List<SignsAndSymptomsEntity> {
         var value = emptyList<SignsAndSymptomsEntity>()
         if (resultMap.isNotEmpty()) {
@@ -145,7 +151,11 @@ class CbsCheckBoxDialog() : DialogFragment(), View.OnClickListener {
     }
 
     private fun getRespectiveList(key: String?) {
-        key?.let { viewModel.getSymptomListByTypes(listOf(IccmDiarrheaNotifiableCondition.lowercase(),IccmFeverNotifiableCondition.lowercase(),CbsNotifiableCondition.lowercase())) }
+        key?.let {
+            viewModel.getSymptomListByTypes(
+                listOf(IccmDiarrheaNotifiableCondition.lowercase(), IccmFeverNotifiableCondition.lowercase(), CbsNotifiableCondition.lowercase()),
+            )
+        }
     }
 
     private fun initializeView() {
@@ -158,7 +168,7 @@ class CbsCheckBoxDialog() : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
@@ -172,7 +182,7 @@ class CbsCheckBoxDialog() : DialogFragment(), View.OnClickListener {
                 val adapter = binding.rvItems.adapter
                 if (adapter != null && adapter is CheckboxDialogAdapter) {
                     callback?.invoke(
-                        adapter.getSelectedItems()
+                        adapter.getSelectedItems(),
                     )
                     dismiss()
                 }

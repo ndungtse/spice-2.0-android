@@ -29,13 +29,15 @@ import com.medtroniclabs.spice.ui.landing.viewmodel.LanguagePreferenceViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class LanguagePreferenceDialog(private val listener: OnDialogDismissListener) : DialogFragment(),
+class LanguagePreferenceDialog(private val listener: OnDialogDismissListener) :
+    DialogFragment(),
     View.OnClickListener {
     private lateinit var binding: DialogLanguagePreferenceBinding
     private val viewModel: LanguagePreferenceViewModel by viewModels()
 
     companion object {
         const val TAG = "LanguagePreferenceDialog"
+
         fun newInstance(listener: OnDialogDismissListener): LanguagePreferenceDialog {
             val fragment = LanguagePreferenceDialog(listener)
             val args = Bundle()
@@ -50,7 +52,9 @@ class LanguagePreferenceDialog(private val listener: OnDialogDismissListener) : 
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogLanguagePreferenceBinding.inflate(inflater, container, false)
         binding.btnConfirm.safeClickListener(this)
@@ -61,13 +65,19 @@ class LanguagePreferenceDialog(private val listener: OnDialogDismissListener) : 
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getCultures()
         attachObserver()
     }
 
-    private fun initializeRadioGroup(langList: ArrayList<CulturesEntity>, cultureSelected: Long) {
+    private fun initializeRadioGroup(
+        langList: ArrayList<CulturesEntity>,
+        cultureSelected: Long,
+    ) {
         for (i in langList.indices) {
             val radioButton = RadioButton(requireContext())
             radioButton.text = langList[i].name
@@ -98,12 +108,14 @@ class LanguagePreferenceDialog(private val listener: OnDialogDismissListener) : 
                     hideLoading()
                     val cultureId = viewModel.selectedCultureId
                         ?: (binding.radioGroup.findViewById<RadioButton>(binding.radioGroup.checkedRadioButtonId)?.tag as? Long)
-                    val culture = viewModel.cultureList.value?.data?.firstOrNull { it.id == cultureId }
+                    val culture = viewModel.cultureList.value
+                        ?.data
+                        ?.firstOrNull { it.id == cultureId }
                     culture?.let {
                         SecuredPreference.setUserPreferenceSync(
                             it.id,
                             it.name,
-                            CommonUtils.checkIfTranslationEnabled(it.name)
+                            CommonUtils.checkIfTranslationEnabled(it.name),
                         )
                     }
                     listener.onDialogDismissListener(true)
@@ -118,7 +130,6 @@ class LanguagePreferenceDialog(private val listener: OnDialogDismissListener) : 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         handleConfiguration()
-
     }
 
     override fun onStart() {
@@ -154,8 +165,9 @@ class LanguagePreferenceDialog(private val listener: OnDialogDismissListener) : 
         viewModel.cultureList.value?.data?.firstOrNull { it.id == viewModel.selectedCultureId }?.let {
             viewModel.cultureLocaleUpdate(
                 CultureLocaleModel(
-                    SecuredPreference.getUserId(), it
-                )
+                    SecuredPreference.getUserId(),
+                    it,
+                ),
             )
         }
     }

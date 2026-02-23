@@ -11,8 +11,8 @@ import com.medtroniclabs.spice.common.CommonUtils.getDecimalFormatted
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.databinding.FragmentNeonateSummaryBinding
 import com.medtroniclabs.spice.data.model.NeonateDTO
+import com.medtroniclabs.spice.databinding.FragmentNeonateSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -20,19 +20,23 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.vie
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 
 class NeonateSummaryFragment : BaseFragment() {
-
     private lateinit var binding: FragmentNeonateSummaryBinding
     private val viewModel: LabourDeliverySummaryViewModel by activityViewModels()
-    private val viewModelLabour:LabourDeliveryViewModel by activityViewModels()
+    private val viewModelLabour: LabourDeliveryViewModel by activityViewModels()
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNeonateSummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         attachObserver()
     }
@@ -62,12 +66,12 @@ class NeonateSummaryFragment : BaseFragment() {
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
             SecuredPreference.getUserDetails()?.firstName,
-            SecuredPreference.getUserDetails()?.lastName
+            SecuredPreference.getUserDetails()?.lastName,
         )
         binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
             DateUtils.getTodayDateDDMMYYYY(),
             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            DateUtils.DATE_ddMMyyyy
+            DateUtils.DATE_ddMMyyyy,
         )
         binding.tvNeonateOutcome.text =
             neonateDTO?.neonateOutcome ?: getString(R.string.hyphen_symbol)
@@ -75,47 +79,49 @@ class NeonateSummaryFragment : BaseFragment() {
             neonateDTO?.gender?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
         if (!neonateDTO?.birthWeight.isNullOrEmpty()) {
             var weight = getDecimalFormatted(neonateDTO?.birthWeight)
-            binding.tvBirthWeight.text = if (weight.toDouble()== 0.0){
+            binding.tvBirthWeight.text = if (weight.toDouble() == 0.0) {
                 (getString(R.string.na))
-            }else if (weight.toDouble() < DefinedParams.LowBirthWeight){
-                weight.plus(" ").plus(getString(R.string.kg)).plus(" ").plus("(${CommonUtils.birthWeight(
-                    weight.toDouble(),
-                    requireContext()
-                )})")
-            } else{
-                weight.plus(" ").plus(getString(R.string.kg)).plus(" ").plus("(${CommonUtils.birthWeight(
-                    weight.toDouble(),
-                    requireContext()
-                )})")
+            } else if (weight.toDouble() < DefinedParams.LowBirthWeight) {
+                weight.plus(" ").plus(getString(R.string.kg)).plus(" ").plus(
+                    "(${CommonUtils.birthWeight(
+                        weight.toDouble(),
+                        requireContext(),
+                    )})",
+                )
+            } else {
+                weight.plus(" ").plus(getString(R.string.kg)).plus(" ").plus(
+                    "(${CommonUtils.birthWeight(
+                        weight.toDouble(),
+                        requireContext(),
+                    )})",
+                )
             }
-        }else{
-            binding.tvBirthWeight.text= (getString(R.string.na))
+        } else {
+            binding.tvBirthWeight.text = (getString(R.string.na))
         }
 
         binding.tvStateOfBaby.text = neonateDTO?.stateOfBaby ?: getString(R.string.hyphen_symbol)
         binding.tvGestationalAge.text =
-            neonateDTO?.gestationalAge?.let { DateUtils.formatGestationalAge(it.toLong(),requireContext()) }
+            neonateDTO?.gestationalAge?.let { DateUtils.formatGestationalAge(it.toLong(), requireContext()) }
                 ?: getString(R.string.hyphen_symbol)
-        viewModelLabour.gestationalAge =  neonateDTO?.gestationalAge
+        viewModelLabour.gestationalAge = neonateDTO?.gestationalAge
         binding.tvAPGARScore.text =
             if (neonateDTO?.apgarScoreFiveMinuteDTO?.fiveMinuteTotalScore == null) {
                 getString(R.string.hyphen_symbol)
             } else {
                 neonateDTO.apgarScoreFiveMinuteDTO.fiveMinuteTotalScore.toString().plus(
                     getString(
-                        R.string.five_minutes
-                    )
+                        R.string.five_minutes,
+                    ),
                 )
             }
-        binding.tvSignsSymptomsObserved.text = neonateDTO?.signs?.joinToString(separator = "\n")?:getString(R.string.hyphen_symbol)
+        binding.tvSignsSymptomsObserved.text = neonateDTO?.signs?.joinToString(separator = "\n") ?: getString(R.string.hyphen_symbol)
         binding.tvPatientStatus.text = getString(R.string.title_neonate)
     }
 
     companion object {
         const val TAG = "NeonateSummaryFragment"
 
-        fun newInstance(): NeonateSummaryFragment {
-            return NeonateSummaryFragment()
-        }
+        fun newInstance(): NeonateSummaryFragment = NeonateSummaryFragment()
     }
 }

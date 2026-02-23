@@ -3,14 +3,14 @@ package com.medtroniclabs.spice.model.medicalreview
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 
 data class CreateUnderFiveYearsRequest(
-    val id:String?=null,
+    val id: String? = null,
     val clinicalNotes: String? = null,
     val clinicalSummaryAndSigns: ClinicalSummaryAndSigns? = null,
     val examination: UnderFiveExamination? = null,
     val presentingComplaints: String? = null,
     val encounter: MedicalReviewEncounter? = null,
     var systemicExamination: List<String?>? = null,
-    var systemicExaminationNotes: String? = null
+    var systemicExaminationNotes: String? = null,
 )
 
 data class UnderFiveExamination(
@@ -20,14 +20,14 @@ data class UnderFiveExamination(
     val fever: Fever? = null,
     val earProblem: EarProblem? = null,
     val anaemia: MalnutritionOrAnaemia? = null,
-    val hivRDT: HivAndAids? = null
+    val hivRDT: HivAndAids? = null,
 )
 
 data class UnderFiveDiarrhoea(
     val hasDiarrhoea: Boolean? = null,
     val bloodyDiarrhoea: Boolean? = null,
     val signs: List<String?>? = null,
-    val timePeriod: Int? = null
+    val timePeriod: Int? = null,
 )
 
 data class GeneralDangerSings(
@@ -35,14 +35,14 @@ data class GeneralDangerSings(
     val historyOfConvulsion: Boolean? = null,
     val lethargicOrUnconscious: Boolean? = null,
     val vomitingEverything: Boolean? = null,
-    val convulsingNow: Boolean? = null
+    val convulsingNow: Boolean? = null,
 )
 
 data class CoughOrDifficultBreathing(
     val coughOrDIfficultBreathing: Boolean? = null,
     val chestIndrawing: Boolean? = null,
     val stridor: Boolean? = null,
-    val noOfDays: Int? = null
+    val noOfDays: Int? = null,
 )
 
 data class Fever(
@@ -50,21 +50,21 @@ data class Fever(
     val isMotherHasFever: String? = null,
     val signs: List<String>? = null,
     var microscopyResult: String? = null,
-    val noOfDays: Int? = null
+    val noOfDays: Int? = null,
 )
 
 data class EarProblem(
     val noOfDays: Int? = null,
     val hasEarPain: Boolean? = null,
-    val earDischarge: String? = null
+    val earDischarge: String? = null,
 )
 
 data class MalnutritionOrAnaemia(
     val appetiteTest: Boolean? = null,
-    val signs: List<String?>? = null
+    val signs: List<String?>? = null,
 )
 
 data class HivAndAids(
     val mother: String? = null,
-    val child: String? = null
+    val child: String? = null,
 )

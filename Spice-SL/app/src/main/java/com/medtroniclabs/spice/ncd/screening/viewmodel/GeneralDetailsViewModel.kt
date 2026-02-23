@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GeneralDetailsViewModel @Inject constructor(
-    private val screeningRepository: ScreeningRepository
+    private val screeningRepository: ScreeningRepository,
 ) : ViewModel() {
     val siteDetail = SiteDetails()
     private var getSites = MutableLiveData<Boolean>()
@@ -29,7 +29,7 @@ class GeneralDetailsViewModel @Inject constructor(
             screeningRepository.getScreenedPatientCount(
                 DateUtils.getStartDate(),
                 DateUtils.getEndDate(),
-                SecuredPreference.getUserFhirId()
+                SecuredPreference.getUserFhirId(),
             )
         }
     val referredPatientCount: LiveData<Long> =
@@ -37,9 +37,11 @@ class GeneralDetailsViewModel @Inject constructor(
             screeningRepository.getScreenedPatientReferredCount(
                 DateUtils.getStartDate(),
                 DateUtils.getEndDate(),
-                SecuredPreference.getUserFhirId(), true
+                SecuredPreference.getUserFhirId(),
+                true,
             )
         }
+
     fun getSites(isTrigger: Boolean) {
         getSites.value = isTrigger
     }

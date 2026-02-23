@@ -27,9 +27,8 @@ import javax.inject.Inject
 class DiagnosisViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
     private var repository: DiagnosisRepository,
-    private var hivRepository: HivMedicalReviewRepo
+    private var hivRepository: HivMedicalReviewRepo,
 ) : ViewModel() {
-
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 
@@ -38,7 +37,7 @@ class DiagnosisViewModel @Inject constructor(
     val diagnosisDetailsList = MutableLiveData<Resource<ArrayList<DiagnosisDiseaseModel>>>()
     val diagnosisSaveUpdateResponse = MutableLiveData<Resource<ArrayList<DiagnosisDiseaseModel>>>()
     var viewDiagnosis: Boolean = true
-    var diagnosisType:String = ""
+    var diagnosisType: String = ""
     val hivVitalsDetailLiveData = MutableLiveData<Resource<HivVitalsResponse>>()
 
     fun getDiagnosisMetaList(diagnosisType: String) {
@@ -54,10 +53,10 @@ class DiagnosisViewModel @Inject constructor(
     }
 
     fun diagnosisCreate(request: DiagnosisSaveUpdateRequest) {
-            viewModelScope.launch(dispatcherIO) {
-                diagnosisSaveUpdateResponse.postLoading()
-                diagnosisSaveUpdateResponse.postValue(repository.saveUpdateDiagnosis(request))
-            }
+        viewModelScope.launch(dispatcherIO) {
+            diagnosisSaveUpdateResponse.postLoading()
+            diagnosisSaveUpdateResponse.postValue(repository.saveUpdateDiagnosis(request))
+        }
     }
 
     fun getDiagnosisDetails(request: CreateUnderTwoMonthsResponse) {
@@ -69,7 +68,10 @@ class DiagnosisViewModel @Inject constructor(
         }
     }
 
-    fun getHivVitalsDetails(patientReference: String?, memberId: String?) {
+    fun getHivVitalsDetails(
+        patientReference: String?,
+        memberId: String?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             hivVitalsDetailLiveData.postLoading()
             hivVitalsDetailLiveData.postValue(
@@ -83,13 +85,11 @@ class DiagnosisViewModel @Inject constructor(
                             cd4_percentage,
                             MedicalReviewTypeEnums.weight.name,
                             MedicalReviewTypeEnums.height.name,
-                            emtctVisitStatus
-                        )
-                    )
-                )
+                            emtctVisitStatus,
+                        ),
+                    ),
+                ),
             )
         }
     }
-
-
 }

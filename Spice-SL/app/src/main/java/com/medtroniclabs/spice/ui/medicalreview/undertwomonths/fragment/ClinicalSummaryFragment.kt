@@ -17,8 +17,8 @@ import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.NAME
-import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.common.DefinedParams.Value
+import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.databinding.FragmentClinicalSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -37,7 +37,6 @@ import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.Clinica
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.BREAST_FEEDING_TAG
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.EXCLUSIVE_BREAST_FEED_TAG
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.MOTHER_VITAMIN_TAG
-import timber.log.Timber
 
 class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentClinicalSummaryBinding
@@ -50,14 +49,17 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding =
             FragmentClinicalSummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initListeners()
@@ -84,8 +86,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
                 }
             }
         }
-        viewModel.wazWhzScoreResponseLiveData.observe(viewLifecycleOwner) {
-                resourceState ->
+        viewModel.wazWhzScoreResponseLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
                     showProgress()
@@ -125,14 +126,18 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
         initTextWatcherForString(binding.etRespirationRate) {
             viewModel.updateRespiratoryRate(
                 it,
-                binding.etRepeat.text?.trim().toString()
+                binding.etRepeat.text
+                    ?.trim()
+                    .toString(),
             )
             showHideRepeatField(it.toDoubleOrNull())
         }
         binding.etRepeat.doAfterTextChanged {
             viewModel.updateRespiratoryRate(
-                binding.etRespirationRate.text?.trim().toString(),
-                it?.trim().toString()
+                binding.etRespirationRate.text
+                    ?.trim()
+                    .toString(),
+                it?.trim().toString(),
             )
         }
         initTextWatcherForString(binding.etWAZ) {
@@ -151,6 +156,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.repeatGroup.invisible()
         }
     }
+
     private fun clickListener() {
         binding.etVitaminAForMother.safeClickListener(this)
         binding.llExclusiveBreastFeedingStatus.safeClickListener(this)
@@ -163,7 +169,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             BREAST_FEEDING_TAG,
             viewModel.resultBreastFeedingHashMap,
             breastFeedingSelectionCallback,
-            binding.llBreastFeedingStatus
+            binding.llBreastFeedingStatus,
         )
 
         addCustomView(
@@ -171,7 +177,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             MOTHER_VITAMIN_TAG,
             viewModel.resultMotherVitaminHashMap,
             vitaminAMotherSelectionCallBack,
-            binding.etVitaminAForMother
+            binding.etVitaminAForMother,
         )
 
         addCustomView(
@@ -179,7 +185,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             EXCLUSIVE_BREAST_FEED_TAG,
             viewModel.resultExclusiveBreastFeedHashMap,
             exclusiveBreastFeedingSelectionCallBack,
-            binding.llExclusiveBreastFeedingStatus
+            binding.llExclusiveBreastFeedingStatus,
         )
         viewModel.getImmunisationStatusMetaItems()
     }
@@ -189,7 +195,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
         tag: String,
         hashMap: HashMap<String, Any>,
         callback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)?,
-        container: ViewGroup
+        container: ViewGroup,
     ) {
         SingleSelectionCustomView(binding.root.context).apply {
             this.tag = tag
@@ -199,7 +205,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
                 hashMap,
                 Pair(tag, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                callback
+                callback,
             )
             container.addView(this)
         }
@@ -224,7 +230,6 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             viewModel.resultExclusiveBreastFeedHashMap[EXCLUSIVE_BREAST_FEED_TAG] = selectedID as String
             viewModel.updateExclusiveBreastFeeding()
         }
-
 
     private fun enableExclusiveBreastFeeding(selectedID: Any?) {
         if (selectedID == Yes) {
@@ -261,16 +266,16 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
         dropDownList.add(
             hashMapOf<String, Any>(
                 NAME to DefaultIDLabel,
-                ID to DefaultID
-            )
+                ID to DefaultID,
+            ),
         )
         for (item in status) {
             dropDownList.add(
                 hashMapOf<String, Any>(
                     NAME to item.name,
                     DefinedParams.id to item.id.toString(),
-                    Value to (item.value ?: item.name)
-                )
+                    Value to (item.value ?: item.name),
+                ),
             )
         }
         setListenerToDeliveryStatus(dropDownList)
@@ -287,7 +292,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
                     parent: AdapterView<*>?,
                     view: View?,
                     position: Int,
-                    id: Long
+                    id: Long,
                 ) {
                     val selectedItem = adapter.getData(position = position)
                     selectedItem?.let {
@@ -311,20 +316,18 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-
     }
 
-    fun isAnyEditTextFilled(): Boolean {
-        return binding.etWeight.text?.isNotBlank() == true &&
-                binding.etHeight.text?.isNotBlank() == true &&
-                binding.etTemperature.text?.isNotBlank() == true &&
-                binding.etRepeat.text?.isNotBlank() == true &&
-                binding.etRespirationRate.text?.isNotBlank() == true &&
-                viewModel.selectedImmunisationStatus != null &&
-                viewModel.resultMotherVitaminHashMap[MOTHER_VITAMIN_TAG] != null &&
-                viewModel.resultBreastFeedingHashMap[BREAST_FEEDING_TAG] != null ||
-                viewModel.resultExclusiveBreastFeedHashMap[EXCLUSIVE_BREAST_FEED_TAG] != null
-    }
+    fun isAnyEditTextFilled(): Boolean =
+        binding.etWeight.text?.isNotBlank() == true &&
+            binding.etHeight.text?.isNotBlank() == true &&
+            binding.etTemperature.text?.isNotBlank() == true &&
+            binding.etRepeat.text?.isNotBlank() == true &&
+            binding.etRespirationRate.text?.isNotBlank() == true &&
+            viewModel.selectedImmunisationStatus != null &&
+            viewModel.resultMotherVitaminHashMap[MOTHER_VITAMIN_TAG] != null &&
+            viewModel.resultBreastFeedingHashMap[BREAST_FEEDING_TAG] != null ||
+            viewModel.resultExclusiveBreastFeedHashMap[EXCLUSIVE_BREAST_FEED_TAG] != null
 
     fun validateEditFields(): Boolean {
         val weight = weightValidate()
@@ -336,88 +339,81 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
 //        val waz=wazValidate()
         return weight && height && temperature && respirationRate && repeat
     }
-    private fun whzValidate(): Boolean {
-        return MotherNeonateUtil.isBasicValid(
+
+    private fun whzValidate(): Boolean =
+        MotherNeonateUtil.isBasicValid(
             binding.etWHZ.text.toString(),
             binding.tvWHZError,
             0,
             getString(R.string.error_label),
             context = requireContext(),
-            isMandatory = true
+            isMandatory = true,
         )
-    }
 
-    private fun wazValidate(): Boolean {
-        return MotherNeonateUtil.isBasicValid(
+    private fun wazValidate(): Boolean =
+        MotherNeonateUtil.isBasicValid(
             binding.etWAZ.text.toString(),
             binding.tvWAZError,
             0,
             getString(R.string.error_label),
             context = requireContext(),
-            isMandatory = true
+            isMandatory = true,
         )
-    }
 
-    private fun heightValidate(): Boolean {
-        return isValidInput(
+    private fun heightValidate(): Boolean =
+        isValidInput(
             binding.etHeight.text.toString(),
             binding.etHeight,
             binding.tvHeightError,
             45.0..120.0,
             R.string.please_enter_valid_value_between_45_to_120,
             true,
-            requireContext()
+            requireContext(),
         )
-    }
 
-    private fun respirationRateValidate(): Boolean {
-        return isValidInput(
+    private fun respirationRateValidate(): Boolean =
+        isValidInput(
             binding.etRespirationRate.text.toString(),
             binding.etRespirationRate,
             binding.tvRespirationRateError,
             1.0..99.9,
             (R.string.respiratory_error),
             false,
-            requireContext()
+            requireContext(),
         )
-    }
 
-    private fun repeatValidate(): Boolean {
-        return isValidInput(
+    private fun repeatValidate(): Boolean =
+        isValidInput(
             binding.etRepeat.text.toString(),
             binding.etRepeat,
             binding.tvRepeatError,
             1.0..99.9,
             (R.string.please_enter_repeat_between_0_to_100),
             false,
-            requireContext()
+            requireContext(),
         )
-    }
 
-    private fun temperatureValidate(): Boolean {
-        return isValidInput(
+    private fun temperatureValidate(): Boolean =
+        isValidInput(
             binding.etTemperature.text.toString(),
             binding.etTemperature,
             binding.tvTemperatureLabelError,
             10.0..200.0,
             (R.string.please_enter_temperature_between_10_to_200),
             false,
-            requireContext()
+            requireContext(),
         )
-    }
 
-
-    private fun weightValidate(): Boolean {
-        return isValidInput(
+    private fun weightValidate(): Boolean =
+        isValidInput(
             binding.etWeight.text.toString(),
             binding.etWeight,
             binding.tvWeightError,
             0.1..400.0,
             R.string.weight_error_0_400,
             true,
-            requireContext()
+            requireContext(),
         )
-    }
 
     private fun resetSelectionViews(vararg viewTags: String) {
         viewTags.forEach { tag ->
@@ -425,6 +421,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             view?.resetSingleSelectionChildViews()
         }
     }
+
     private fun wazPopulateScore() {
         binding.apply {
             etWAZ.isEnabled = false
@@ -441,14 +438,14 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
                             gender = gender,
                             ageInMonths = age,
                             weight = if (weight.isNullOrEmpty()) null else weight,
-                            height = if (height.isNullOrEmpty()) null else height
+                            height = if (height.isNullOrEmpty()) null else height,
                         )
                         val heightText = etHeight.text.toString()
                         val heightInt = heightText.toIntOrNull()
 
                         val isHeightValid = heightInt == null || (heightInt in 45..120)
 
-                        if (weight.isNullOrEmpty() || weight=="0") {
+                        if (weight.isNullOrEmpty() || weight == "0") {
                             etWAZ.setText("")
                             etWHZ.setText("")
                             tvHeightError.visibility = if (isHeightValid) View.GONE else View.VISIBLE
@@ -460,12 +457,10 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
                                 etWHZ.setText("")
                             }
                         }
-
                     }
                 }
                 etWeight.onFocusChangeListener = onFocusChangeListener
                 etHeight.onFocusChangeListener = onFocusChangeListener
-
             } else {
                 etWAZ.setText("0")
                 etWHZ.setText("0")
@@ -477,6 +472,4 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
         super.onResume()
         wazPopulateScore()
     }
-
-
 }

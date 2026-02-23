@@ -4,14 +4,18 @@ import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 
 interface FormEventListener {
+    fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long? = null,
+    )
 
-    fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long? = null)
     fun onPopulate(targetId: String)
 
     fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     )
 
     fun onInstructionClicked(
@@ -19,17 +23,35 @@ interface FormEventListener {
         title: String,
         informationList: ArrayList<String>? = null,
         description: String? = null,
-        dosageListModel: ArrayList<RecommendedDosageListModel>? = null
+        dosageListModel: ArrayList<RecommendedDosageListModel>? = null,
     )
 
-    fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>? = null)
+    fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>? = null,
+    )
+
     fun onRenderingComplete()
-    fun onUpdateInstruction(id:String, selectedId:Any? = null)
-    fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int?, resultMap: HashMap<String, Any>? = null)
+
+    fun onUpdateInstruction(
+        id: String,
+        selectedId: Any? = null,
+    )
+
+    fun onInformationHandling(
+        id: String,
+        noOfDays: Int,
+        enteredDays: Int?,
+        resultMap: HashMap<String, Any>? = null,
+    )
 
     fun onAgeCheckForPregnancy()
 
     fun handleMandatoryCondition(formLayout: FormLayout? = null)
 
-    fun onAgeUpdateListener(age: Int, serverData: List<FormLayout?>? = null, resultHashMap: HashMap<String, Any>)
+    fun onAgeUpdateListener(
+        age: Int,
+        serverData: List<FormLayout?>? = null,
+        resultHashMap: HashMap<String, Any>,
+    )
 }

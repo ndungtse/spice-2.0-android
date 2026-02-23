@@ -19,26 +19,20 @@ import javax.inject.Inject
 
 class CommunityProfileRepository @Inject constructor(
     private var roomHelper: RoomHelper,
-    private var apiHelper: ApiHelper
+    private var apiHelper: ApiHelper,
 ) {
+    fun getFilterVillageWithHouseholds(searchText: String): LiveData<List<CommunityProfileDetail>> = roomHelper.getFilterVillagesWithHouseholdsCount(searchText)
 
-    fun getFilterVillageWithHouseholds(searchText: String): LiveData<List<CommunityProfileDetail>> {
-        return roomHelper.getFilterVillagesWithHouseholdsCount(searchText)
-    }
-
-    suspend fun getCommunityStatistics(villageId: Long): Resource<CommunityPopulationStatistics> {
-        return try {
+    suspend fun getCommunityStatistics(villageId: Long): Resource<CommunityPopulationStatistics> =
+        try {
             val response = roomHelper.getCommunityStatistics(villageId)
             Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR, data = null)
         }
-    }
 
-    suspend fun getFormData(
-        formType: String
-    ): Resource<FormResponse> {
-        return try {
+    suspend fun getFormData(formType: String): Resource<FormResponse> =
+        try {
             val response = roomHelper.getFormData(formType)
             val formFieldsType = object : TypeToken<FormResponse>() {}.type
             val formFields: FormResponse = Gson().fromJson(response, formFieldsType)
@@ -46,7 +40,6 @@ class CommunityProfileRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
     suspend fun getNearestHealthFacility(villageId: Long? = null): Resource<ArrayList<Map<String, Any>>> {
         val villageEntity = villageId?.let {
@@ -56,26 +49,26 @@ class CommunityProfileRepository @Inject constructor(
 
         val dropDownList = ArrayList<Map<String, Any>>()
 
-
         for ((_, healthFacilityEntity) in healthFacilityList.withIndex()) {
             dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to healthFacilityEntity.name,
                     DefinedParams.id to healthFacilityEntity.fhirId.toString(),
-                    DefinedParams.isDefault to (villageEntity?.healthFacilityId?.let { it == healthFacilityEntity.id }
-                        ?: healthFacilityEntity.isDefault)
-                )
+                    DefinedParams.isDefault to (
+                        villageEntity?.healthFacilityId?.let { it == healthFacilityEntity.id }
+                            ?: healthFacilityEntity.isDefault
+                    ),
+                ),
             )
         }
         return Resource(
             state = ResourceState.SUCCESS,
-            data = dropDownList
+            data = dropDownList,
         )
     }
 
-
-    suspend fun createCommunityProfile(request: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> {
-        return try {
+    suspend fun createCommunityProfile(request: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> =
+        try {
             val response = apiHelper.createCommunityProfile(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body())
@@ -85,20 +78,18 @@ class CommunityProfileRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR, data = null)
         }
-    }
 
-    suspend fun updateCommunityProfile(request: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> {
-        return try {
+    suspend fun updateCommunityProfile(request: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> =
+        try {
             val response = apiHelper.updateCommunityProfile(request)
-            if(response.isSuccessful){
+            if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body())
-            }else{
+            } else {
                 Resource(state = ResourceState.ERROR, data = null)
             }
-        }catch (e:Exception){
+        } catch (e: Exception) {
             Resource(state = ResourceState.ERROR, data = null)
         }
-    }
 
     /*suspend fun getCommunityProfile(villageId: Long): Resource<APIResponse<CommunityProfileDetails>> {
         val requestMap = HashMap<String, Any>()
@@ -115,30 +106,29 @@ class CommunityProfileRepository @Inject constructor(
         }
     }*/
 
-    suspend fun getCommunityProfileDetails(villageId: Long): Resource<com.medtroniclabs.spice.db.entity.CommunityProfile>{
-        return try {
+    suspend fun getCommunityProfileDetails(villageId: Long): Resource<com.medtroniclabs.spice.db.entity.CommunityProfile> =
+        try {
             val response = roomHelper.getCommunityDetails(villageId)
             Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR, data = null)
         }
-    }
 
     suspend fun insertOrUpdateCommunityProfile(
         villageId: Long,
         description: String,
         regDate: String,
         payload: String,
-        communityProfileDetailLiveData: MutableLiveData<Resource<CommunityProfile>>
-    ) : Resource<Long> {
-        return try {
+        communityProfileDetailLiveData: MutableLiveData<Resource<CommunityProfile>>,
+    ): Resource<Long> =
+        try {
             val communityProfile = roomHelper.getCommunityDetails(villageId)
             val communityProfileId = communityProfile?.id ?: 0
             val communityFhirId = communityProfile?.fhirId
 
             val latitude = SecuredPreference.getDouble(
                 SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name,
-                0.0
+                0.0,
             )
             val longitude = SecuredPreference.getDouble(
                 SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name,
@@ -150,7 +140,7 @@ class CommunityProfileRepository @Inject constructor(
                 registeredDate = regDate,
                 payload = payload,
                 latitude = latitude,
-                longitude = longitude
+                longitude = longitude,
             )
             updateCommunityProfile.fhirId = communityFhirId
             communityProfileDetailLiveData.postValue(Resource(state = ResourceState.SUCCESS, data = updateCommunityProfile))
@@ -159,13 +149,11 @@ class CommunityProfileRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR, data = null)
         }
-    }
 
-    suspend fun updateUnSynStatus(villageId: Long,unSynStatus:String){
-        return roomHelper.updateUnSynStatus(villageId,unSynStatus)
-    }
+    suspend fun updateUnSynStatus(
+        villageId: Long,
+        unSynStatus: String,
+    ) = roomHelper.updateUnSynStatus(villageId, unSynStatus)
 
-    suspend fun getUnSyncedCommunityProfileCount(): Int {
-        return roomHelper.getUnSyncedCommunityProfileCount()
-    }
+    suspend fun getUnSyncedCommunityProfileCount(): Int = roomHelper.getUnSyncedCommunityProfileCount()
 }

@@ -12,7 +12,6 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setDialogPercent
-import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SpiceLocationManager
@@ -35,7 +34,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PatientTypeFragment : DialogFragment(), View.OnClickListener {
-
     var listener: DialogDismissListenerForTb? = null
     private lateinit var binding: FragmentPatientStatusDialogBinding
     private val viewModel: PatientTypeViewModel by viewModels()
@@ -44,12 +42,14 @@ class PatientTypeFragment : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "PatientTypeFragment"
+
         fun newInstance() = PatientTypeFragment()
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPatientStatusDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -57,7 +57,10 @@ class PatientTypeFragment : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
         attachObservers()
@@ -81,7 +84,7 @@ class PatientTypeFragment : DialogFragment(), View.OnClickListener {
                     id = item.id,
                     name = item.name,
                     type = item.type,
-                    value = item.value
+                    value = item.value,
                 )
             }
             initChipView(ArrayList(chipList))
@@ -113,8 +116,9 @@ class PatientTypeFragment : DialogFragment(), View.OnClickListener {
             }
         }
         chipTag = TagListCustomView(
-            binding.root.context, binding.diagnosisChip,
-            otherSingleSelect = true
+            binding.root.context,
+            binding.diagnosisChip,
+            otherSingleSelect = true,
         ) { _, _, _ ->
             viewModel.patientTypeChip = ArrayList(chipTag.getSelectedTags())
             validateInput()
@@ -135,7 +139,7 @@ class PatientTypeFragment : DialogFragment(), View.OnClickListener {
             listOf(
                 btnCancel,
                 btnOkay,
-                ivClose
+                ivClose,
             ).forEach { it.safeClickListener(this@PatientTypeFragment) }
             binding.btnOkay.isEnabled = false
         }
@@ -145,9 +149,10 @@ class PatientTypeFragment : DialogFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnOkay.id -> submitPatientType()
-            else ->  {
+            else -> {
                 patientViewModel.setUserJourney(AnalyticsDefinedParams.CANCELBUTTONTRIGGERED)
-                dismiss() }
+                dismiss()
+            }
         }
     }
 
@@ -157,13 +162,13 @@ class PatientTypeFragment : DialogFragment(), View.OnClickListener {
             PatientTypeCreateRequest(
                 encounter = createEncounter(),
                 patientReference = patientViewModel.getPatientFHIRId(),
-                stringValue = chipTag.getSelectedTags().first().value
-            )
+                stringValue = chipTag.getSelectedTags().first().value,
+            ),
         )
     }
 
-    private fun createEncounter(): MedicalReviewEncounter {
-        return MedicalReviewEncounter(
+    private fun createEncounter(): MedicalReviewEncounter =
+        MedicalReviewEncounter(
             provenance = ProvanceDto(),
             latitude = viewModel.lastLocation?.latitude,
             longitude = viewModel.lastLocation?.longitude,
@@ -172,13 +177,12 @@ class PatientTypeFragment : DialogFragment(), View.OnClickListener {
             startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
             endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
             villageId = patientViewModel.getVillageId(),
-            householdId = patientViewModel.getPatientHouseholdId()
+            householdId = patientViewModel.getPatientHouseholdId(),
         )
-    }
 
     private fun handleDialogSize() {
         val width = if (CommonUtils.checkIsTablet(requireContext())) 90 else 90
-        setDialogPercent(if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 65 else width,50)
+        setDialogPercent(if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 65 else width, 50)
     }
 
     override fun onStart() {

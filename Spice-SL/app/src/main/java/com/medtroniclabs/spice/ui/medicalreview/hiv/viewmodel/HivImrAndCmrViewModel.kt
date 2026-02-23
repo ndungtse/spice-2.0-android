@@ -21,20 +21,17 @@ import javax.inject.Inject
 class HivImrAndCmrViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
     private var repository: HivMedicalReviewRepo,
-    private val summaryRepository: MedicalReviewSummaryRepository
+    private val summaryRepository: MedicalReviewSummaryRepository,
 ) : ViewModel() {
     var patientId: String? = null
     var memberId: String? = null
     var lastLocation: Location? = null
     val hivCreateResponse = MutableLiveData<Resource<PatientEncounterResponse>>()
-    val summaryCreateResponse = MutableLiveData<Resource<HashMap<String,Any>>>()
-    fun getSubmitCreateId(): String? {
-        return hivCreateResponse.value?.data?.encounterId
-    }
+    val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
 
-    fun getPatientReference(): String? {
-        return hivCreateResponse.value?.data?.patientReference
-    }
+    fun getSubmitCreateId(): String? = hivCreateResponse.value?.data?.encounterId
+
+    fun getPatientReference(): String? = hivCreateResponse.value?.data?.patientReference
 
     fun hivCreate(request: HivRequestData) {
         viewModelScope.launch(dispatcherIO) {
@@ -59,11 +56,11 @@ class HivImrAndCmrViewModel @Inject constructor(
         patientId: String?,
         assessmentName: String,
         eMTCTStatus: String?,
-        maternalOutcome: String?
+        maternalOutcome: String?,
     ) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
-            if (patientId != null && memberId != null && patientStatus != null  && villageId != null && patientReference != null && submitCreateId != null) {
+            if (patientId != null && memberId != null && patientStatus != null && villageId != null && patientReference != null && submitCreateId != null) {
                 val response = summaryRepository.createSummarySubmit(
                     patientId = patientId,
                     patientReference = patientReference,
@@ -76,7 +73,7 @@ class HivImrAndCmrViewModel @Inject constructor(
                     householdId = householdId,
                     villageId = villageId,
                     eMTCTStatus = eMTCTStatus,
-                    maternalOutcome = maternalOutcome
+                    maternalOutcome = maternalOutcome,
                 )
                 summaryCreateResponse.postValue(response)
             }
@@ -84,13 +81,17 @@ class HivImrAndCmrViewModel @Inject constructor(
     }
 
     val checkRecommendationRInvestigations = MutableLiveData<Resource<HashMap<String, Boolean?>?>>()
-    fun checkRecommendationRInvestigations(patientReference: String?, memberId: String?) {
+
+    fun checkRecommendationRInvestigations(
+        patientReference: String?,
+        memberId: String?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             checkRecommendationRInvestigations.postLoading()
             checkRecommendationRInvestigations.postValue(
                 repository.checkRecommendationRInvestigations(
-                    MotherNeonateAncRequest(patientReference = patientReference, memberId = memberId)
-                )
+                    MotherNeonateAncRequest(patientReference = patientReference, memberId = memberId),
+                ),
             )
         }
     }

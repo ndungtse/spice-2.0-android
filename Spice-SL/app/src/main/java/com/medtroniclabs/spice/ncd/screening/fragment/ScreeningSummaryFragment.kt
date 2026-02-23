@@ -48,16 +48,17 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentScreeningSummaryBinding
     private lateinit var formSummaryReporter: FormSummaryReporter
     private val viewModel: ScreeningFormBuilderViewModel by activityViewModels()
     private val ncdFormViewModel: NCDFormViewModel by activityViewModels()
     private val generalDetailsViewModel: GeneralDetailsViewModel by activityViewModels()
     private val adapter by lazy { CustomSpinnerAdapter(requireContext()) }
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentScreeningSummaryBinding.inflate(inflater, container, false)
@@ -65,15 +66,15 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     companion object {
-
         const val TAG = "ScreeningSummaryFragment"
 
-        fun newInstance(): ScreeningSummaryFragment {
-            return ScreeningSummaryFragment()
-        }
+        fun newInstance(): ScreeningSummaryFragment = ScreeningSummaryFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
@@ -88,7 +89,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                     formSummaryReporter.populateSummary(
                         form,
                         map,
-                        SecuredPreference.getIsTranslationEnabled()
+                        SecuredPreference.getIsTranslationEnabled(),
                     )
                     calculateOtherMetrics(form, map)
                 }
@@ -111,7 +112,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                     replaceFragmentIfExists<StatsFragment>(
                         R.id.screeningParentLayout,
                         bundle = null,
-                        tag = StatsFragment.TAG
+                        tag = StatsFragment.TAG,
                     )
                     viewModel.screeningUpdateResponse.postError()
                 }
@@ -126,7 +127,10 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun setListeners() {
         binding.etSiteChange.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
-                adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
+                adapterView: AdapterView<*>?,
+                view: View?,
+                pos: Int,
+                itemId: Long,
             ) {
                 adapter.getData(pos)?.let {
                     processSiteSelection(it)
@@ -147,22 +151,23 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
         val list = arrayListOf<Map<String, Any>>(
             hashMapOf(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.ID to DefinedParams.DefaultSelectID
-            )
+                DefinedParams.ID to DefinedParams.DefaultSelectID,
+            ),
         )
         var defaultPosition = 0
-        data?.mapIndexed { index, site ->
-            hashMapOf(
-                DefinedParams.ID to site.id,
-                DefinedParams.NAME to site.name,
-                DefinedParams.TenantId to site.tenantId,
-                DefinedParams.FhirId to (site.fhirId ?: 0)
-            ).also {
-                if (generalDetailsViewModel.siteDetail.siteId == site.fhirId?.toLongOrNull()) {
-                    defaultPosition = index + 1
+        data
+            ?.mapIndexed { index, site ->
+                hashMapOf(
+                    DefinedParams.ID to site.id,
+                    DefinedParams.NAME to site.name,
+                    DefinedParams.TenantId to site.tenantId,
+                    DefinedParams.FhirId to (site.fhirId ?: 0),
+                ).also {
+                    if (generalDetailsViewModel.siteDetail.siteId == site.fhirId?.toLongOrNull()) {
+                        defaultPosition = index + 1
+                    }
                 }
-            }
-        }?.let { list.addAll(it) }
+            }?.let { list.addAll(it) }
         adapter.setData(list)
         binding.etSiteChange.post {
             binding.etSiteChange.setSelection(defaultPosition, false)
@@ -172,7 +177,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun calculateOtherMetrics(
         serverData: List<FormLayout>,
-        map: Map<String, Any>
+        map: Map<String, Any>,
     ) {
         showBloodGlucoseValue(serverData, map)
         showBMIValue(serverData, map)
@@ -186,12 +191,21 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
         showHIVRelatedMetrics(map, serverData)
     }
 
-    private fun showHIVRelatedMetrics(resultMap: Map<String, Any>, serverData: List<FormLayout>) {
-        val hivParams = serverData.filter { data ->
-            (data.ageCondition?.isNotEmpty() == true && data.workflowType?.contains(
-                ReferredReason.HIV
-            ) == true) && (data.viewType == ViewType.VIEW_TYPE_FORM_CARD_FAMILY)
-        }.sortedBy { it.familyOrder }.map { it.id }
+    private fun showHIVRelatedMetrics(
+        resultMap: Map<String, Any>,
+        serverData: List<FormLayout>,
+    ) {
+        val hivParams = serverData
+            .filter { data ->
+                (
+                    data.ageCondition?.isNotEmpty() == true &&
+                        data.workflowType?.contains(
+                            ReferredReason.HIV,
+                        ) == true
+                ) &&
+                    (data.viewType == ViewType.VIEW_TYPE_FORM_CARD_FAMILY)
+            }.sortedBy { it.familyOrder }
+            .map { it.id }
         hivParams.forEach { item ->
             if (resultMap.containsKey(item) && resultMap[item] is LinkedTreeMap<*, *>) {
                 (resultMap[item] as? LinkedTreeMap<*, *>)?.let { map ->
@@ -206,8 +220,8 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                                             summaryValue.add(
                                                 HivSummaryModel(
                                                     orderId = orderIndex,
-                                                    summaryValue = listForm.titleSummary ?: "-"
-                                                )
+                                                    summaryValue = listForm.titleSummary ?: "-",
+                                                ),
                                             )
                                         }
                                     }
@@ -216,13 +230,19 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                         }
                         showBindingValue(
                             keyLabel,
-                            if (summaryValue.size > 0) CommonUtils.convertListToString(
-                                ArrayList(summaryValue
-                                    .sortedBy { it.orderId }
-                                    .map { it.summaryValue })
-                            ) else getString(
-                                R.string.none
-                            )
+                            if (summaryValue.size > 0) {
+                                CommonUtils.convertListToString(
+                                    ArrayList(
+                                        summaryValue
+                                            .sortedBy { it.orderId }
+                                            .map { it.summaryValue },
+                                    ),
+                                )
+                            } else {
+                                getString(
+                                    R.string.none,
+                                )
+                            },
                         )
                     }
                 }
@@ -230,7 +250,10 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun showDiabetesSymptoms(serverData: List<FormLayout>, map: Map<String, Any>) {
+    private fun showDiabetesSymptoms(
+        serverData: List<FormLayout>,
+        map: Map<String, Any>,
+    ) {
         val groupId = FormResultComposer.findGroupIdForNCD(serverData, Screening.diabetes) ?: return
         val subMap = map[groupId] as? Map<*, *> ?: return
 
@@ -242,18 +265,19 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
             translateTitle(formLayout.titleCulture, formLayout.title),
             getDialogValue(
                 subMap[Screening.diabetes],
-                subMap[Screening.diabetesOtherSymptoms] as? String?
-            )
+                subMap[Screening.diabetesOtherSymptoms] as? String?,
+            ),
         )
     }
 
-    private fun translateTitle(titleCulture: String?, title: String): String {
-        return if (SecuredPreference.getIsTranslationEnabled()) titleCulture ?: title else title
-    }
+    private fun translateTitle(
+        titleCulture: String?,
+        title: String,
+    ): String = if (SecuredPreference.getIsTranslationEnabled()) titleCulture ?: title else title
 
     private fun showPregnancySymptomsSignsChanges(
         serverData: List<FormLayout>,
-        map: Map<String, Any>
+        map: Map<String, Any>,
     ) {
         FormResultComposer.findGroupIdForNCD(serverData, Screening.PregnancySymptoms)?.let {
             if (map[it] is Map<*, *>) {
@@ -264,8 +288,8 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                             getString(R.string.pregnancy_signs),
                             getDialogValue(
                                 subMap[Screening.PregnancySymptoms],
-                                subMap[Screening.PregnancyOtherSymptoms] as? String?
-                            )
+                                subMap[Screening.PregnancyOtherSymptoms] as? String?,
+                            ),
                         )
                     }
                 }
@@ -273,7 +297,10 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun showPregnancyOrNot(serverData: List<FormLayout>, map: Map<String, Any>) {
+    private fun showPregnancyOrNot(
+        serverData: List<FormLayout>,
+        map: Map<String, Any>,
+    ) {
         FormResultComposer.findGroupIdForNCD(serverData, Screening.isPregnant)?.let {
             if (map[it] is Map<*, *>) {
                 val subMap = map[it] as? Map<*, *>
@@ -282,7 +309,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                         val isPregnant = subMap[Screening.isPregnant] as Boolean
                         showBindingValue(
                             getString(R.string.pregnancy_status),
-                            getValueOfType(isPregnant)
+                            getValueOfType(isPregnant),
                         )
                         if (isPregnant) {
                             showLastMensturalDate(map)
@@ -301,7 +328,9 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                     ?.takeIf { it.isNotBlank() }
                     ?.let { date ->
                         DateUtils.convertDateFormat(
-                            date, DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DateUtils.DATE_ddMMyyyy
+                            date,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            DateUtils.DATE_ddMMyyyy,
                         )
                     } ?: getString(R.string.hyphen_symbol)
                 showBindingValue(getString(R.string.last_menstrual_period), lmb)
@@ -321,17 +350,14 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun getValueOfType(pregnant: Boolean): String {
-        return if (pregnant) {
+    private fun getValueOfType(pregnant: Boolean): String =
+        if (pregnant) {
             getString(R.string.positive)
         } else {
             getString(R.string.negative)
         }
-    }
-    private fun showMentalHealthRelatedMetrics(
-        map: Map<String, Any>
-    ) {
 
+    private fun showMentalHealthRelatedMetrics(map: Map<String, Any>) {
         if (map.containsKey(Screening.CAGEAID)) {
             val cageAid = map[Screening.CAGEAID]
             var cageAidColor: Int? = null
@@ -341,7 +367,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
             showBindingValue(
                 getString(R.string.cage_aid),
                 CommonUtils.getDecimalFormatted(cageAid),
-                cageAidColor
+                cageAidColor,
             )
         }
 
@@ -349,7 +375,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
             showBindingValue(
                 getString(R.string.suicidal_ideation),
                 map[SuicidalIdeation].toString(),
-                getColor(requireContext(), R.color.medium_high_risk_color)
+                getColor(requireContext(), R.color.medium_high_risk_color),
             )
         }
     }
@@ -379,7 +405,10 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
         return visibility
     }
 
-    private fun showPHQ4Score(serverData: List<FormLayout>, map: Map<String, Any>) {
+    private fun showPHQ4Score(
+        serverData: List<FormLayout>,
+        map: Map<String, Any>,
+    ) {
         FormResultComposer.findGroupIdForNCD(serverData, Screening.MentalHealthDetails)?.let {
             val subMap = map[it] as Map<String, Any>
             if (subMap.containsKey(Screening.PHQ4_Score)) {
@@ -387,15 +416,17 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                 if (phq4Score is Long) {
                     showBindingValue(
                         getString(R.string.phq4_score),
-                        getPHQ4ReadableName(score = phq4Score.toInt(), requireContext())
+                        getPHQ4ReadableName(score = phq4Score.toInt(), requireContext()),
                     )
                 }
             }
         }
     }
 
-    private fun showBloodGlucoseValue(serverData: List<FormLayout>, map: Map<String, Any>) {
-
+    private fun showBloodGlucoseValue(
+        serverData: List<FormLayout>,
+        map: Map<String, Any>,
+    ) {
         FormResultComposer.findGroupIdForNCD(serverData, Screening.Glucose_Type)?.let {
             val subMap = map[it] as Map<String, Any>
             if (subMap.containsKey(Screening.Glucose_Type)) {
@@ -415,9 +446,9 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                         "${CommonUtils.getDecimalFormatted(glucoseValue)} ${
                             getGlucoseUnit(
                                 unitType,
-                                true
+                                true,
                             )
-                        }"
+                        }",
                     )
                 } else if (type.lowercase() == Screening.fbs) {
                     showBindingValue(
@@ -425,16 +456,19 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                         "${CommonUtils.getDecimalFormatted(glucoseValue)} ${
                             getGlucoseUnit(
                                 unitType,
-                                true
+                                true,
                             )
-                        }"
+                        }",
                     )
                 }
             }
         }
     }
 
-    private fun showBMIValue(serverData: List<FormLayout>, map: Map<String, Any>) {
+    private fun showBMIValue(
+        serverData: List<FormLayout>,
+        map: Map<String, Any>,
+    ) {
         FormResultComposer.findGroupIdForNCD(serverData, Screening.BMI)?.let {
             val subMap = map[it] as Map<String, Any>
             if (subMap.containsKey(Screening.BMI)) {
@@ -446,17 +480,18 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                     if (bmiInfo == null) {
                         showBindingValue(
                             getString(R.string.bmi),
-                            bmiFormattedValue
+                            bmiFormattedValue,
                         )
                     } else {
                         val spannableStringBuilder =
-                            SpannableStringBuilder().append(bmiFormattedValue)
+                            SpannableStringBuilder()
+                                .append(bmiFormattedValue)
                                 .color(getColor(requireContext(), bmiInfo.second)) {
                                     append(" (${bmiInfo.first})")
                                 }
                         showBindingValue(
                             getString(R.string.bmi),
-                            spannableStringBuilder
+                            spannableStringBuilder,
                         )
                     }
                 }
@@ -467,7 +502,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun showBindingValue(
         title: String,
         value: SpannableStringBuilder,
-        valueTextColor: Int? = null
+        valueTextColor: Int? = null,
     ) {
         val summaryBinding = SummaryLayoutBinding.inflate(layoutInflater)
         summaryBinding.tvKey.text = title
@@ -475,18 +510,24 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
         valueTextColor?.let {
             summaryBinding.tvValue.setTextColor(it)
         }
-        binding.root.findViewWithTag<LinearLayout>(formSummaryReporter.getFormResultView())
+        binding.root
+            .findViewWithTag<LinearLayout>(formSummaryReporter.getFormResultView())
             ?.addView(summaryBinding.root)
     }
 
-    private fun showBindingValue(title: String, value: String, valueTextColor: Int? = null) {
+    private fun showBindingValue(
+        title: String,
+        value: String,
+        valueTextColor: Int? = null,
+    ) {
         val summaryBinding = SummaryLayoutBinding.inflate(layoutInflater)
         summaryBinding.tvKey.text = title
         summaryBinding.tvValue.text = value
         valueTextColor?.let {
             summaryBinding.tvValue.setTextColor(it)
         }
-        binding.root.findViewWithTag<LinearLayout>(formSummaryReporter.getFormResultView())
+        binding.root
+            .findViewWithTag<LinearLayout>(formSummaryReporter.getFormResultView())
             ?.addView(summaryBinding.root)
     }
 
@@ -528,8 +569,8 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                         "$cvdRiskScoreDisplay",
                         CommonUtils.cvdRiskColorCode(
                             cvdRiskScore,
-                            context = requireContext()
-                        )
+                            context = requireContext(),
+                        ),
                     )
                 }
             }

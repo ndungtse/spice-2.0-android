@@ -5,6 +5,6 @@ data class MotherNeonateAncMetaResponse(
     val obstetricExaminations: List<MedicalReviewMetaItems>,
     val pregnancyHistories: List<MedicalReviewMetaItems>,
     val bloodGroup: List<MedicalReviewMetaItems>,
-    val patientStatus : List<MedicalReviewMetaItems>,
-    val diseaseCategories : ArrayList<DiseaseCategoryItems>,
+    val patientStatus: List<MedicalReviewMetaItems>,
+    val diseaseCategories: ArrayList<DiseaseCategoryItems>,
 )

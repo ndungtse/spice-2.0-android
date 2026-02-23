@@ -22,9 +22,9 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDFollowUpMRFragment : BaseFragment(), PatientSelectionListenerForFollowUp {
-
     companion object {
         const val TAG = "NCDFollowUpMRFragment"
+
         fun newInstance(type: String) =
             NCDFollowUpMRFragment().apply {
                 arguments = Bundle().apply {
@@ -36,7 +36,7 @@ class NCDFollowUpMRFragment : BaseFragment(), PatientSelectionListenerForFollowU
     private lateinit var binding: FragmentFollowUpSearchBinding
     private val followUpAdapter: NCDPatientFollowUPListAdapter by lazy {
         NCDPatientFollowUPListAdapter(
-            this
+            this,
         )
     }
 
@@ -44,15 +44,19 @@ class NCDFollowUpMRFragment : BaseFragment(), PatientSelectionListenerForFollowU
     private val followUpViewModel: NCDFollowUpMRViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentFollowUpSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -75,7 +79,7 @@ class NCDFollowUpMRFragment : BaseFragment(), PatientSelectionListenerForFollowU
             viewModel,
             binding = binding,
             context = requireContext(),
-            followUpAdapter = followUpAdapter
+            followUpAdapter = followUpAdapter,
         )
     }
 
@@ -90,7 +94,7 @@ class NCDFollowUpMRFragment : BaseFragment(), PatientSelectionListenerForFollowU
             showError = { title, message ->
                 showErrorDialog(title = title, message = message)
             },
-            postError = { viewModel.totalPatientCount.postValue(null) }
+            postError = { viewModel.totalPatientCount.postValue(null) },
         )
     }
 
@@ -107,7 +111,7 @@ class NCDFollowUpMRFragment : BaseFragment(), PatientSelectionListenerForFollowU
                     memberId = item.memberId,
                     isInitiated = true,
                     phoneNumber = item.phoneNumber,
-                    provenance = ProvanceDto()
+                    provenance = ProvanceDto(),
                 )
                 withNetworkAvailability(online = {
                     viewModel.updatePatientCallRegister(request)
@@ -134,7 +138,7 @@ class NCDFollowUpMRFragment : BaseFragment(), PatientSelectionListenerForFollowU
         NCDFollowUpUtils.collectPagedData(
             lifecycleOwner = viewLifecycleOwner,
             pagingDataFlow = viewModel.patientsDataSource,
-            adapter = followUpAdapter
+            adapter = followUpAdapter,
         )
     }
 }

@@ -53,8 +53,9 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
     private val viewModel: NCDMentalHealthViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNCDMentalHealthQuestionDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -62,7 +63,10 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeFormGenerator()
         attachObserver()
@@ -103,7 +107,7 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
             binding.llForm,
             listener = this,
             scrollView = binding.mentalHealthScrollView,
-            translate = SecuredPreference.getIsTranslationEnabled()
+            translate = SecuredPreference.getIsTranslationEnabled(),
         )
 
         fetchForms()
@@ -112,33 +116,29 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
     }
 
     private fun fetchForms() {
-        if (screeningCards().contains(myFormType()))
+        if (screeningCards().contains(myFormType())) {
             ncdFormViewModel.getNCDForm(DefinedParams.Screening)
-        else
+        } else {
             ncdFormViewModel.getNCDForm(
                 DefinedParams.Assessment,
-                workFlow = NCDMRUtil.mentalHealth
+                workFlow = NCDMRUtil.mentalHealth,
             )
+        }
     }
 
-    private fun myFormType(): String? {
-        return requireArguments().getString(Screening.type)
-    }
+    private fun myFormType(): String? = requireArguments().getString(Screening.type)
 
-    private fun assessmentCards(): List<String> {
-        return listOf(
+    private fun assessmentCards(): List<String> =
+        listOf(
             AssessmentDefinedParams.phq4,
             AssessmentDefinedParams.phq9,
-            AssessmentDefinedParams.gad7
+            AssessmentDefinedParams.gad7,
         )
-    }
 
-    private fun screeningCards(): List<String> {
-        return listOf(AssessmentDefinedParams.suicidalIdeation, AssessmentDefinedParams.cageAid)
-    }
+    private fun screeningCards(): List<String> = listOf(AssessmentDefinedParams.suicidalIdeation, AssessmentDefinedParams.cageAid)
 
-    private fun getTitle(type: String?): String {
-        return when (type) {
+    private fun getTitle(type: String?): String =
+        when (type) {
             AssessmentDefinedParams.phq4 -> getString(R.string.phq4_assessment)
             AssessmentDefinedParams.phq9 -> getString(R.string.phq9_assessment)
             AssessmentDefinedParams.gad7 -> getString(R.string.gad7_assessment)
@@ -146,7 +146,6 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
             AssessmentDefinedParams.cageAid -> getString(R.string.cage_aid)
             else -> getString(R.string.assessment)
         }
-    }
 
     private fun attachObserver() {
         ncdFormViewModel.ncdFormResponse.observe(viewLifecycleOwner) { resources ->
@@ -158,12 +157,14 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resources.data?.let { it ->
-                        it.filter {
-                            myFormType()?.let { type -> it.family?.contains(type) } == true
-                        }.let { json ->
-                            if (json.isNotEmpty())
-                                formGenerator.populateViews(json)
-                        }
+                        it
+                            .filter {
+                                myFormType()?.let { type -> it.family?.contains(type) } == true
+                            }.let { json ->
+                                if (json.isNotEmpty()) {
+                                    formGenerator.populateViews(json)
+                                }
+                            }
                     }
                 }
 
@@ -224,19 +225,20 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
 
                             (data[Screening.suicideScreener] as? Map<String, Any>)?.let {
                                 prefill.putAll(
-                                    modifiedPrefills(it)
+                                    modifiedPrefills(it),
                                 )
                             }
 
                             (data[Screening.substanceAbuse] as? Map<String, Any>)?.let {
                                 prefill.putAll(
-                                    modifiedPrefills(it)
+                                    modifiedPrefills(it),
                                 )
                             }
                         }
 
-                        if (prefill.isNotEmpty())
+                        if (prefill.isNotEmpty()) {
                             FormAutofill.start(requireContext(), formGenerator, prefill)
+                        }
                     }
                 }
             }
@@ -259,8 +261,9 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
                     callback.invoke(
                         Pair(
                             getString(R.string.tab_medical_review),
-                            resource.data ?: getString(R.string.mental_health_success)
-                        ), null
+                            resource.data ?: getString(R.string.mental_health_success),
+                        ),
+                        null,
                     )
                 }
             }
@@ -275,33 +278,34 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
         return returnMap
     }
 
-    private fun getFormattedKey(): String {
-        return when (myFormType()) {
+    private fun getFormattedKey(): String =
+        when (myFormType()) {
             AssessmentDefinedParams.phq9 -> AssessmentDefinedParams.PHQ9_Mental_Health
             AssessmentDefinedParams.gad7 -> AssessmentDefinedParams.GAD7_Mental_Health
             else -> Screening.MentalHealthDetails
         }
-    }
 
     private fun callDetailsAPI() {
         val isAssessment = isAssessment()
         val request = NCDMentalHealthMedicalReviewDetails(
             memberReference = requireArguments().getString(NCDMRUtil.MEMBER_REFERENCE) as String,
-            type = if (isAssessment) myFormType()?.uppercase() else myFormType()
+            type = if (isAssessment) myFormType()?.uppercase() else myFormType(),
         )
-        if (requireArguments().getBoolean(EditAssessment))
+        if (requireArguments().getBoolean(EditAssessment)) {
             viewModel.ncdMentalHealthMedicalReviewDetails(request, isAssessment)
+        }
     }
 
     companion object {
         const val TAG = "NCDMentalHealthQuestionDialog"
         const val EditAssessment = "EditAssessment"
+
         fun newInstance(
             type: String,
             patientId: String?,
             patientFHIRId: String?,
             isEditAssessment: Boolean,
-            callback: ((successDialog: Pair<String, String>?, errorResponse: String?) -> Unit)
+            callback: ((successDialog: Pair<String, String>?, errorResponse: String?) -> Unit),
         ): NCDMentalHealthQuestionDialog {
             val fragment = NCDMentalHealthQuestionDialog(callback)
             val args = Bundle()
@@ -314,7 +318,11 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
         }
     }
 
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
         if (localDataCache is String) {
             when (localDataCache) {
                 Screening.PHQ4, AssessmentDefinedParams.PHQ9, AssessmentDefinedParams.GAD7 -> {
@@ -324,7 +332,9 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
                 AssessmentDefinedParams.Fetch_MH_Questions -> {
                     formGenerator.fetchMHQuestions(
                         id,
-                        assessmentViewModel.mentalHealthQuestions.value?.data?.get(id)
+                        assessmentViewModel.mentalHealthQuestions.value
+                            ?.data
+                            ?.get(id),
                     )
                 }
             }
@@ -332,15 +342,13 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
     }
 
     override fun onPopulate(targetId: String) {
-
     }
 
     override fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     ) {
-
     }
 
     override fun onInstructionClicked(
@@ -348,46 +356,45 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {
-
     }
 
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
-
+    override fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
     }
 
     override fun onRenderingComplete() {
         callDetailsAPI()
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {
-
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
     }
 
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,
         enteredDays: Int?,
-        resultMap: HashMap<String, Any>?
+        resultMap: HashMap<String, Any>?,
     ) {
-
     }
 
     override fun onAgeCheckForPregnancy() {
-
     }
 
     override fun handleMandatoryCondition(formLayout: FormLayout?) {
-
     }
 
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
-
     }
 
     fun showLoading() {
@@ -414,22 +421,22 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
 
     private fun processValuesAndProceed(
         resultHashMap: HashMap<String, Any>,
-        serverData: List<FormLayout?>?
+        serverData: List<FormLayout?>?,
     ) {
         val map = HashMap<String, Any>()
         map.putAll(resultHashMap)
 
-        //Patient ID
+        // Patient ID
         getPatientReference()?.let { patientId ->
             map[Screening.Patient_Id] = patientId
         }
 
-        //Member or FHIR ID
+        // Member or FHIR ID
         getMemberReference()?.let { memberId ->
             map[AssessmentDefinedParams.memberReference] = memberId
         }
 
-        //Encounter object [Encounter ID and Provance]
+        // Encounter object [Encounter ID and Provance]
         val provenance = HashMap<String, Any>()
         provenance[DefinedParams.Provenance] = ProvanceDto()
         map[AssessmentDefinedParams.encounter] = provenance
@@ -438,12 +445,12 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
             AssessmentDefinedParams.phq4 -> CommonUtils.calculatePHQScore(map)
             AssessmentDefinedParams.phq9 -> CommonUtils.calculatePHQScore(
                 map,
-                type = AssessmentDefinedParams.PHQ9
+                type = AssessmentDefinedParams.PHQ9,
             )
 
             AssessmentDefinedParams.gad7 -> CommonUtils.calculatePHQScore(
                 map,
-                type = AssessmentDefinedParams.GAD7
+                type = AssessmentDefinedParams.GAD7,
             )
 
             AssessmentDefinedParams.cageAid -> calculateCAGEAIDSCore(map, serverData)
@@ -454,7 +461,7 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
             var result = serverData?.let {
                 FormResultComposer().groupValues(
                     serverData = it,
-                    map
+                    map,
                 )
             }
             if (result != null) {
@@ -463,32 +470,26 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
                 result.first?.let {
                     val reqMap = StringConverter.convertStringToMap(it)
                     val request = StringConverter.getJsonObject(
-                        Gson().toJson(reqMap)
+                        Gson().toJson(reqMap),
                     )
                     viewModel.setAnalyticsData(
                         UserDetail.startDateTime,
                         eventName = AnalyticsDefinedParams.NCDMentalHealthCreation + " " + myFormType().takeIf { data -> !data.isNullOrBlank() },
-                        isCompleted = true
+                        isCompleted = true,
                     )
                     viewModel.ncdMentalHealthMedicalReviewCreate(request, isAssessment())
                 }
             }
         } catch (_: Exception) {
-            //Exception - Catch block
+            // Exception - Catch block
         }
     }
 
-    private fun getPatientReference(): String? {
-        return requireArguments().getString(NCDMRUtil.PATIENT_REFERENCE)
-    }
+    private fun getPatientReference(): String? = requireArguments().getString(NCDMRUtil.PATIENT_REFERENCE)
 
-    private fun getMemberReference(): String? {
-        return requireArguments().getString(NCDMRUtil.MEMBER_REFERENCE)
-    }
+    private fun getMemberReference(): String? = requireArguments().getString(NCDMRUtil.MEMBER_REFERENCE)
 
-    private fun isAssessment(): Boolean {
-        return assessmentCards().contains(myFormType())
-    }
+    private fun isAssessment(): Boolean = assessmentCards().contains(myFormType())
 
     override fun onClick(v: View?) {
         when (v?.id) {
@@ -499,7 +500,7 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
                     formGenerator.let {
                         processValuesAndProceed(
                             it.getResultMap(),
-                            it.getServerData()
+                            it.getServerData(),
                         )
                     }
                 }

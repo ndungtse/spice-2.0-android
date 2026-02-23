@@ -15,7 +15,6 @@ data class VaccinationDetail(
     val displayOrder: Int,
     val category: String,
     val vaccineOrder: Int,
-    var updatedScheduleDate: LocalDate ? = null,
+    var updatedScheduleDate: LocalDate? = null,
     var isEdited: Boolean? = false,
 )
-

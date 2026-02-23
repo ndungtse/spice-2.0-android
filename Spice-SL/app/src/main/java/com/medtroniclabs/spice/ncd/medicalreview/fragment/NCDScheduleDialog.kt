@@ -33,9 +33,11 @@ class NCDScheduleDialog : DialogFragment(), View.OnClickListener {
 
     private val viewModel: HrioViewModel by activityViewModels()
     private lateinit var binding: FragmentNcdScheduleDialogBinding
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentNcdScheduleDialogBinding.inflate(inflater, container, false)
@@ -46,26 +48,33 @@ class NCDScheduleDialog : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "NCDScheduleDialog"
-        fun newInstance(patientReference: String? = null, memberReference: String? = null, villageId: String? = null) =
-            NCDScheduleDialog().apply {
-                arguments = Bundle().apply {
-                    putString(NCDMRUtil.MEMBER_REFERENCE, memberReference)
-                    putString(NCDMRUtil.PATIENT_REFERENCE, patientReference)
-                    putString(NCDMRUtil.VillageID, villageId)
-                }
+
+        fun newInstance(
+            patientReference: String? = null,
+            memberReference: String? = null,
+            villageId: String? = null,
+        ) = NCDScheduleDialog().apply {
+            arguments = Bundle().apply {
+                putString(NCDMRUtil.MEMBER_REFERENCE, memberReference)
+                putString(NCDMRUtil.PATIENT_REFERENCE, patientReference)
+                putString(NCDMRUtil.VillageID, villageId)
             }
+        }
     }
 
     override fun onStart() {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
         dialog?.window?.attributes?.windowAnimations = R.style.dialogEnterExitAnimation
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         initView()
@@ -113,7 +122,7 @@ class NCDScheduleDialog : DialogFragment(), View.OnClickListener {
             binding.btnDone.id -> {
                 val input = binding.tvNextMedicalReviewDate.text
                 if (!input.isNullOrBlank()) {
-                    //proceed to save
+                    // proceed to save
                     binding.tvErrorMessage.gone()
                     arguments?.getString(NCDMRUtil.MEMBER_REFERENCE)?.let {
                         if (it.isNotBlank()) {
@@ -125,9 +134,9 @@ class NCDScheduleDialog : DialogFragment(), View.OnClickListener {
                                     input.toString(),
                                     DateUtils.DATE_FORMAT_ddMMMyyyy,
                                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                    inUTC = true
+                                    inUTC = true,
                                 ),
-                                provenance = ProvanceDto()
+                                provenance = ProvanceDto(),
                             )
                             if (connectivityManager.isNetworkAvailable()) {
                                 viewModel.ncdUpdateNextVisitDate(request)
@@ -152,25 +161,25 @@ class NCDScheduleDialog : DialogFragment(), View.OnClickListener {
     private fun showDatePickerDialog() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         val dateInput = binding.tvNextMedicalReviewDate.text
-        if (!dateInput.isNullOrBlank())
+        if (!dateInput.isNullOrBlank()) {
             yearMonthDate =
                 DateUtils.convertddMMMToddMM(dateInput.toString())
+        }
 
         ViewUtils.showDatePicker(
             context = requireContext(),
             minDate = DateUtils.getTomorrowDate(),
             date = yearMonthDate,
-            cancelCallBack = { }
+            cancelCallBack = { },
         ) { _, year, month, dayOfMonth ->
             val stringDate = "$dayOfMonth-$month-$year"
             binding.tvNextMedicalReviewDate.text =
                 DateUtils.convertDateTimeToDate(
                     stringDate,
                     DateUtils.DATE_FORMAT_ddMMyyyy,
-                    DateUtils.DATE_FORMAT_ddMMMyyyy
+                    DateUtils.DATE_FORMAT_ddMMMyyyy,
                 )
             binding.tvErrorMessage.gone()
         }
     }
-
 }

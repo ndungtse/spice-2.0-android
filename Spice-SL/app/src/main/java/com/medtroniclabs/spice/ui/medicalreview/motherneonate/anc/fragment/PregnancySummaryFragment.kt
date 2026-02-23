@@ -29,7 +29,6 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateU
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class PregnancySummaryFragment() : BaseFragment() {
-
     private lateinit var binding: FragmentPregnancySummaryBinding
     private var pregnancyDetailsModel: PregnancyDetailsModel? = null
     private var pregnancyHistoryChip: ArrayList<ChipViewItemModel>? = null
@@ -37,11 +36,10 @@ class PregnancySummaryFragment() : BaseFragment() {
     private val patientDetailsViewModel: PatientDetailViewModel by activityViewModels()
     private val hivViewModel: HivViewModel by viewModels()
 
-
     fun setData(
         pregnancyHistoryChip: ArrayList<ChipViewItemModel>,
         pregnancyHistoryNotes: String?,
-        pregnancyDetailsModel: PregnancyDetailsModel
+        pregnancyDetailsModel: PregnancyDetailsModel,
     ) {
         this.pregnancyHistoryChip = pregnancyHistoryChip
         this.pregnancyHistoryNotes = pregnancyHistoryNotes
@@ -49,14 +47,18 @@ class PregnancySummaryFragment() : BaseFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPregnancySummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initializeView()
         if (hivViewModel.isEMTCTMR) {
@@ -69,7 +71,7 @@ class PregnancySummaryFragment() : BaseFragment() {
         attachObserver()
     }
 
-    private fun attachObserver(){
+    private fun attachObserver() {
         hivViewModel.getPatientSummaryDetails.observe(viewLifecycleOwner) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
@@ -90,7 +92,7 @@ class PregnancySummaryFragment() : BaseFragment() {
 
     private fun initializeView() {
         binding.titlePregnancySummaryFragment.text = getString(R.string.title_pregnancy_summary)
-        hivViewModel.isEMTCTMR = arguments?.getBoolean(DefinedParams.EMTCTMR,false) == true
+        hivViewModel.isEMTCTMR = arguments?.getBoolean(DefinedParams.EMTCTMR, false) == true
         hivViewModel.patientReference = arguments?.getString(DefinedParams.PatientReference)
     }
 
@@ -115,7 +117,7 @@ class PregnancySummaryFragment() : BaseFragment() {
                     } else {
                         convertNullableStringToString(
                             null,
-                            requireContext()
+                            requireContext(),
                         )
                     }
                 tvParityValue.text =
@@ -123,49 +125,50 @@ class PregnancySummaryFragment() : BaseFragment() {
                 val estimatedDate = pregnancyDetailsModel.estimatedDeliveryDate
                     ?: patientDetailsViewModel.getEstimatedDeliveryDate()
                 tvEstimatedDeliveryDateValue.text =
-                    estimatedDate?.let {
-                        DateUtils.convertDateFormat(
-                            it,
-                            DateUtils.DATE_FORMAT_yyyyMMdd,
-                            DateUtils.DATE_ddMMyyyy,
-                        )
-                    }.let {
-                        convertNullableStringToString(
-                            it,
-                            requireContext()
-                        )
-                    }
+                    estimatedDate
+                        ?.let {
+                            DateUtils.convertDateFormat(
+                                it,
+                                DateUtils.DATE_FORMAT_yyyyMMdd,
+                                DateUtils.DATE_ddMMyyyy,
+                            )
+                        }.let {
+                            convertNullableStringToString(
+                                it,
+                                requireContext(),
+                            )
+                        }
                 val gestationalAge = pregnancyDetailsModel.gestationalAge
                     ?: patientDetailsViewModel.getGestationalAge()
                 tvGestationalAgeValue.text =
                     gestationalAge?.let {
                         DateUtils.formatGestationalAge(
                             it,
-                            requireContext()
+                            requireContext(),
                         )
                     } ?: getString(R.string.hyphen_symbol)
                 tvPregnancyHistoryValue.setExpandableText(
-                    if (hivViewModel.isEMTCTMR){
+                    if (hivViewModel.isEMTCTMR) {
                         combineText(
                             pregnancyDetailsModel.pregnancyHistory?.map { it.toString() },
-                        pregnancyHistoryNotes,
-                        getString(R.string.hyphen_symbol)
-                    )
-                    }else{
+                            pregnancyHistoryNotes,
+                            getString(R.string.hyphen_symbol),
+                        )
+                    } else {
                         combineText(
                             pregnancyHistoryChip?.map { it.name },
                             pregnancyHistoryNotes,
-                            getString(R.string.hyphen_symbol)
+                            getString(R.string.hyphen_symbol),
                         )
                     },
                     title = tvPregnancyHistoryLabel.text.toString(),
                     maxLength = 20,
-                    activity = (requireActivity() as BaseActivity)
+                    activity = (requireActivity() as BaseActivity),
                 )
                 tvBloodGroupValue.text =
                     convertNullableStringToString(
                         pregnancyDetailsModel.patientBloodGroup,
-                        requireContext()
+                        requireContext(),
                     )
                 tvNoofFetusValue.text =
                     convertNullableIntToString(pregnancyDetailsModel.noOfFetus, requireContext())
@@ -173,28 +176,29 @@ class PregnancySummaryFragment() : BaseFragment() {
                 tvAncVisitCountValue.apply {
                     text = patientDetailsViewModel.getANCVisitCount().takeIf { it != 0 }?.toString() ?: getString(R.string.hyphen_symbol)
                 }
-
             }
         }
     }
-    private  fun getPatientDetails(){
-       hivViewModel.getPatientSummaryDetails(hivViewModel.patientReference)
+
+    private fun getPatientDetails() {
+        hivViewModel.getPatientSummaryDetails(hivViewModel.patientReference)
     }
 
     companion object {
         const val TAG = "PregnancySummaryFragment"
 
-        fun newInstance(): PregnancySummaryFragment {
-            return PregnancySummaryFragment()
-        }
-        fun newInstanceEmtct(isEmtct: Boolean, patientReference: String?): PregnancySummaryFragment {
+        fun newInstance(): PregnancySummaryFragment = PregnancySummaryFragment()
+
+        fun newInstanceEmtct(
+            isEmtct: Boolean,
+            patientReference: String?,
+        ): PregnancySummaryFragment {
             val fragment = PregnancySummaryFragment()
             fragment.arguments = Bundle().apply {
                 putBoolean(DefinedParams.EMTCTMR, isEmtct)
-                putString(DefinedParams.PatientReference , patientReference)
+                putString(DefinedParams.PatientReference, patientReference)
             }
             return fragment
         }
     }
-
 }

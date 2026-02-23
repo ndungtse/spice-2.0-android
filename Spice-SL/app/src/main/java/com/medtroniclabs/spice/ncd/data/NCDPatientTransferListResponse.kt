@@ -2,7 +2,7 @@ package com.medtroniclabs.spice.ncd.data
 
 data class PatientTransferListResponse(
     val incomingPatientList: ArrayList<PatientTransfer>,
-    val outgoingPatientList: ArrayList<PatientTransfer>
+    val outgoingPatientList: ArrayList<PatientTransfer>,
 )
 
 data class PatientTransfer(
@@ -34,12 +34,12 @@ data class PatientObject(
     val isRedRiskPatient: Boolean,
     val enrollmentAt: String,
     val bmi: Double,
-    val pregnancyDetails: Preganancy? = null
+    val pregnancyDetails: Preganancy? = null,
 )
 
 data class Preganancy(
     val lastMenstrualPeriodDate: String? = null,
-    val estimatedDeliveryDate: String? = null
+    val estimatedDeliveryDate: String? = null,
 )
 
 data class SiteDetail(val name: String? = null)

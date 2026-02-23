@@ -1,0 +1,24 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length = 160
+
+[*.{kt,kts}]
+ktlint_code_style = ktlint_official
+# Prevents forcing the constructor/interfaces to new lines
+ktlint_standard_class-signature = disabled
+# Prevents forcing the 'constructor' keyword to a new line
+ktlint_standard_parameter-list-wrapping = disabled
+# 3. Disable the specific rule for annotation wrapping
+ktlint_standard_annotation = disabled
+# Prevents forcing the 'if' to the next line after '='
+ktlint_standard_multiline-expression-wrapping = disabled
+
+[app/src/main/java/com/medtroniclabs/spice/db/dao/**.kt]
+# Disable max-line-length for dao files
+ktlint_standard_max-line-length = disabled

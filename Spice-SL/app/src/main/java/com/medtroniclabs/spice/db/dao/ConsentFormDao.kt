@@ -8,7 +8,6 @@ import com.medtroniclabs.spice.db.entity.ConsentForm
 
 @Dao
 interface ConsentFormDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(consentForm: ConsentForm): Long
 
@@ -17,5 +16,4 @@ interface ConsentFormDao {
 
     @Query("SELECT * FROM ConsentForm WHERE type = :type")
     suspend fun getConsentFormByType(type: String): ConsentForm?
-
 }

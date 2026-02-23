@@ -49,19 +49,22 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
-
     lateinit var binding: FragmentPatientMenuBinding
     private val viewModel: ToolsViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPatientMenuBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getMyPatientsMenuItemsList()
         attachObservers()
@@ -119,31 +122,36 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                             (ageYears !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) || (ageYears == PREGNANCY_MAX_AGE && (ageMonths + ageWeeks + ageDays) != 0)
                         }
 
-                        (gender.equals(female, true) || gender.equals(
-                            male,
-                            true
-                        )) && dob.isNullOrBlank() -> true
+                        (
+                            gender.equals(female, true) ||
+                                gender.equals(
+                                    male,
+                                    true,
+                                )
+                        ) &&
+                            dob.isNullOrBlank() -> true
 
                         else -> false
                     }
                 }
 
                 MenuConstants.GENERAL_ID -> menuItem.isDisabled = isGeneralDisabled(dob)
-                MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID -> menuItem.isDisabled =
-                    isUnderFiveToTwoMonthsDisabled(dob)
+                MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID ->
+                    menuItem.isDisabled =
+                        isUnderFiveToTwoMonthsDisabled(dob)
 
-                MenuConstants.UNDER_AGE_ABOVE_FIVE_YEAR_ID -> menuItem.isDisabled =
-                    isUnderAgeAboveFiveYearsDisabled(dob)
+                MenuConstants.UNDER_AGE_ABOVE_FIVE_YEAR_ID ->
+                    menuItem.isDisabled =
+                        isUnderAgeAboveFiveYearsDisabled(dob)
 
                 MenuConstants.EPI_ID -> menuItem.isDisabled = !isUnderSixtyMonths(dob)
                 MenuConstants.TB_MENU_ID -> menuItem.isDisabled = false
-                MenuConstants.FP_MENU_MR -> menuItem.isDisabled =
-                    isUnderAgeFamilyPlanningDisabled(dob)
+                MenuConstants.FP_MENU_MR ->
+                    menuItem.isDisabled =
+                        isUnderAgeFamilyPlanningDisabled(dob)
 
                 else -> {}
-
             }
-
         }
         binding.rvActivitiesList.adapter =
             DashboardMenuItemsAdapter(menuItemsList.filter { !it.isDisabled }, this)
@@ -151,8 +159,8 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
 
     companion object {
         const val TAG = "PatientMenuFragment"
-        fun newInstance() =
-            PatientMenuFragment()
+
+        fun newInstance() = PatientMenuFragment()
 
         fun newInstance(
             patientId: String?,
@@ -167,7 +175,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             villageId: String?,
             isPregnant: Boolean,
             isEMTCTFlow: Boolean,
-            hivTestedPositive: Boolean
+            hivTestedPositive: Boolean,
         ): PatientMenuFragment {
             val fragment = PatientMenuFragment()
             val bundle = Bundle()
@@ -189,7 +197,10 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
         }
     }
 
-    override fun onMenuSelected(menuId: String, subModule: String?) {
+    override fun onMenuSelected(
+        menuId: String,
+        subModule: String?,
+    ) {
         startAssessmentToolsActivity(menuId)
     }
 
@@ -220,18 +231,18 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                     val hivTestedPositive =
                         arguments?.getBoolean(DefinedParams.hivTestedPositive, false)
                     if (patientId?.isNotBlank() == true) {
-                        SelectFlowDialog.newInstance(
-                            patientId,
-                            id,
-                            childPatientId,
-                            dateOfDelivery,
-                            neonateOutcome,
-                            arguments?.getString(MemberID),
-                            isEmtctFlow,
-                            hivTestedPositive,
-                            viewModel.isMenutypeHiv
-                        )
-                            .show(childFragmentManager, SelectFlowDialog.TAG)
+                        SelectFlowDialog
+                            .newInstance(
+                                patientId,
+                                id,
+                                childPatientId,
+                                dateOfDelivery,
+                                neonateOutcome,
+                                arguments?.getString(MemberID),
+                                isEmtctFlow,
+                                hivTestedPositive,
+                                viewModel.isMenutypeHiv,
+                            ).show(childFragmentManager, SelectFlowDialog.TAG)
                     }
                 })
             }
@@ -258,11 +269,11 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                 intent.putExtra(MemberID, arguments?.getString(MemberID))
                 intent.putExtra(
                     DefinedParams.householdId,
-                    arguments?.getString(DefinedParams.householdId)
+                    arguments?.getString(DefinedParams.householdId),
                 )
                 intent.putExtra(
                     DefinedParams.villageId,
-                    arguments?.getString(DefinedParams.villageId)
+                    arguments?.getString(DefinedParams.villageId),
                 )
                 startActivity(intent)
             }
@@ -290,11 +301,15 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                 } else {
                     val isPregnant = arguments?.getBoolean(DefinedParams.isPregnant, false)
                     arguments?.getString(villageId)?.let { villageId ->
-                        SelectFlowDialog.newInstanceHiv(
-                            arguments?.getString(PatientId), arguments?.getString(ID), true,
-                            isPregnant == true, arguments?.getString(MemberID), villageId,
-                        )
-                            .show(childFragmentManager, SelectFlowDialog.TAG)
+                        SelectFlowDialog
+                            .newInstanceHiv(
+                                arguments?.getString(PatientId),
+                                arguments?.getString(ID),
+                                true,
+                                isPregnant == true,
+                                arguments?.getString(MemberID),
+                                villageId,
+                            ).show(childFragmentManager, SelectFlowDialog.TAG)
                     }
                 }
             }
@@ -304,7 +319,6 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             }
         }
     }
-
 
     private fun startAssessmentActivity() {
         if (connectivityManager.isNetworkAvailable()) {
@@ -333,7 +347,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
         if (dob.isNullOrBlank()) return false
         val age = DateUtils.getV2YearMonthAndWeek(dob)
         return when {
-            age.years >= 5 -> false  // Allow exactly 5 and more
+            age.years >= 5 -> false // Allow exactly 5 and more
             else -> true
         }
     }

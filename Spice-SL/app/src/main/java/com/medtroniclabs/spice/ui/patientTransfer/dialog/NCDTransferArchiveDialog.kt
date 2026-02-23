@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.ui.patientTransfer.dialog
 
-
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -43,7 +42,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: DialogTransferArchiveBinding
     private val patientTransferViewModel: NCDPatientTransferViewModel by activityViewModels()
     private val detailsViewModel: PatientDetailViewModel by activityViewModels()
@@ -61,15 +59,14 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "NCDTransferArchiveDialog"
-        fun newInstance(): NCDTransferArchiveDialog {
-            return NCDTransferArchiveDialog()
-        }
+
+        fun newInstance(): NCDTransferArchiveDialog = NCDTransferArchiveDialog()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogTransferArchiveBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -93,7 +90,10 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         initializeView()
@@ -106,7 +106,7 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
             binding.labelHeader.titleView.text =
                 CommonUtils.capitalize("${getString(R.string.transfer)} ${details.firstName} ${details.lastName}${"?"}")
             binding.tvReasonHeader.text = CommonUtils.capitalize(
-                "${getString(R.string.reason_to_transfer)} ${details.firstName} ${details.lastName}"
+                "${getString(R.string.reason_to_transfer)} ${details.firstName} ${details.lastName}",
             )
         }
         binding.tvFacility.markMandatory()
@@ -190,7 +190,7 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
                         (activity as BaseActivity).showErrorDialogue(
                             getString(R.string.error),
                             it,
-                            isNegativeButtonNeed = false
+                            isNegativeButtonNeed = false,
                         ) {}
                     }
                 }
@@ -216,10 +216,9 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
                         (activity as BaseActivity).showErrorDialogue(
                             getString(R.string.error),
                             it,
-                            isNegativeButtonNeed = false
+                            isNegativeButtonNeed = false,
                         ) {}
                     }
-
                 }
             }
         }
@@ -237,14 +236,15 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
                     resourceState.data?.let {
                         val fragment = childFragmentManager.findFragmentByTag(GeneralSuccessDialog.TAG)
                         if (fragment == null) {
-                            GeneralSuccessDialog.newInstance(
-                                title = getString(R.string.transfer),
-                                message = it,
-                                okayButton = getString(R.string.done)
-                            ) {
-                                patientTransferViewModel.patientTransferResponse.setError()
-                                dismiss()
-                            }.show(childFragmentManager, GeneralSuccessDialog.TAG)
+                            GeneralSuccessDialog
+                                .newInstance(
+                                    title = getString(R.string.transfer),
+                                    message = it,
+                                    okayButton = getString(R.string.done),
+                                ) {
+                                    patientTransferViewModel.patientTransferResponse.setError()
+                                    dismiss()
+                                }.show(childFragmentManager, GeneralSuccessDialog.TAG)
                         }
                     }
                 }
@@ -260,8 +260,9 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun loadSearchDropDown(data: ArrayList<RegionSiteResponse>) {
-        if (data.isEmpty())
+        if (data.isEmpty()) {
             binding.etFacility.dismissDropDown()
+        }
         myAdapter.setData(data)
         binding.etFacility.setAdapter(myAdapter)
         if (data.size > 0 && canSearch) {
@@ -282,7 +283,6 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
             binding.etPhysician.dismissDropDown()
         }
     }
-
 
     override fun onClick(view: View) {
         when (view.id) {
@@ -310,10 +310,9 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
                 oldSite = SecuredPreference.getOrganizationId(),
                 transferReason = transferReason,
                 patientReference = it.patientId,
-                memberReference = it.id
+                memberReference = it.id,
             )
             patientTransferViewModel.createPatientTransfer(transferRequest)
-
         }
     }
 
@@ -347,25 +346,36 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
 
     private val textWatcher = object : TextWatcher {
         private var lastLength = 0
-        override fun beforeTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+        override fun beforeTextChanged(
+            s: CharSequence?,
+            p1: Int,
+            p2: Int,
+            p3: Int,
+        ) {
             s?.let { lastLength = it.length }
         }
 
-        override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        override fun onTextChanged(
+            text: CharSequence?,
+            p1: Int,
+            p2: Int,
+            p3: Int,
+        ) {
             if (canSearch) {
                 text?.toString()?.let {
                     if (it.isNotBlank() && it.length > 1) {
                         val request = NCDRegionSiteModel(
                             searchTerm = it,
                             countryId = SecuredPreference.getCountryId(),
-                            tenantId = SecuredPreference.getTenantId()
+                            tenantId = SecuredPreference.getTenantId(),
                         )
                         patientTransferViewModel.searchSite(request)
-
                     }
                 }
-            } else
+            } else {
                 canSearch = true
+            }
             clearSelectedSite()
         }
 
@@ -383,17 +393,29 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun clearSelectedSite() {
-        if (selectedSite != null)
+        if (selectedSite != null) {
             selectedSite = null
+        }
     }
 
     private val roleTextWatcher = object : TextWatcher {
         private var lastLength = 0
-        override fun beforeTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+        override fun beforeTextChanged(
+            s: CharSequence?,
+            p1: Int,
+            p2: Int,
+            p3: Int,
+        ) {
             s?.let { lastLength = it.length }
         }
 
-        override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        override fun onTextChanged(
+            text: CharSequence?,
+            p1: Int,
+            p2: Int,
+            p3: Int,
+        ) {
             if (userSearch) {
                 text?.toString()?.let {
                     if (it.isNotBlank() && it.length > 1) {
@@ -403,8 +425,9 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
                         }
                     }
                 }
-            } else
+            } else {
                 userSearch = true
+            }
             clearSelectedProvider()
         }
 
@@ -419,7 +442,8 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun clearSelectedProvider() {
-        if (selectedUser != null)
+        if (selectedUser != null) {
             selectedUser = null
+        }
     }
 }

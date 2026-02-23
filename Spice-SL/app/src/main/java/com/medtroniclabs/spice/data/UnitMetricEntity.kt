@@ -17,5 +17,5 @@ data class UnitMetricEntity(
     val displayValue: String,
     val isDefault: Boolean,
     val answerDependent: Boolean,
-    val childExists: Boolean
+    val childExists: Boolean,
 )

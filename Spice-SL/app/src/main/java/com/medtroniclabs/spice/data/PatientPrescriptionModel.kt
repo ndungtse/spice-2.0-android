@@ -10,13 +10,11 @@ data class PatientPrescriptionModel(
     var items: ArrayList<MedicationResponse>? = null,
     var discontinuedReason: String? = null,
     var lastRefillVisitId: String? = null,
-    val patientReference : String? = null,
+    val patientReference: String? = null,
     val enrollmentType: String? = null,
     val identityValue: String? = null,
-    val encounterId : String? = null
-
+    val encounterId: String? = null,
 )
-
 
 data class UpdateMedicationModel(
     var id: Long? = null,
@@ -39,6 +37,7 @@ data class UpdateMedicationModel(
     var dosageFrequencyName: String? = null,
     var instructionNote: String? = null,
     var discontinuedOn: String? = null,
-    var dosageFormName: String? = null
+    var dosageFormName: String? = null,
 )
+
 data class ResponseDataModel(var message: String?)

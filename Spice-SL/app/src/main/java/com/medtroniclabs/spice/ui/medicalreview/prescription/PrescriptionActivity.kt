@@ -3,8 +3,6 @@ package com.medtroniclabs.spice.ui.medicalreview.prescription
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
@@ -45,9 +43,11 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, View.OnClickListener,
+class PrescriptionActivity :
+    BaseActivity(),
+    AdapterView.OnItemClickListener,
+    View.OnClickListener,
     SignatureListener {
-
     lateinit var binding: ActivityPrescriptionBinding
     private val prescriptionViewModel: PrescriptionViewModel by viewModels()
     private val patientViewModel: PatientDetailViewModel by viewModels()
@@ -56,7 +56,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
         super.onCreate(savedInstanceState)
         binding = ActivityPrescriptionBinding.inflate(layoutInflater)
         setMainContentView(binding.root, true, title = getString(R.string.prescription))
-        withNetworkCheck(connectivityManager,::initView,::finish)
+        withNetworkCheck(connectivityManager, ::initView, ::finish)
         attachObserver()
         initListener()
         patientViewModel.setUserJourney(AnalyticsDefinedParams.PERSCRIPTIONSCREEN)
@@ -69,10 +69,8 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
     }
 
     private fun attachObserver() {
-
         prescriptionViewModel.prescriptionListLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
-
                 ResourceState.LOADING -> {}
 
                 ResourceState.SUCCESS -> {
@@ -84,12 +82,21 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             binding.btnRenewAll.gone()
                         }
                         prescriptionViewModel.updateMedicationList(
-                            prescriptionViewModel.constructMedicationRequestObjectList(ArrayList(data.filter { it.groupName.isNullOrEmpty() || it.groupUniqueId == null })),
-                            true
+                            prescriptionViewModel.constructMedicationRequestObjectList(
+                                ArrayList(
+                                    data.filter {
+                                        it.groupName.isNullOrEmpty() ||
+                                            it.groupUniqueId == null
+                                    },
+                                ),
+                            ),
+                            true,
                         )
                         prescriptionViewModel.updateMedicationGroupList(
-                            prescriptionViewModel.constructMedicationRequestObjectList(ArrayList(data.filter { it.groupName!=null && it.groupUniqueId != null })),
-                            true
+                            prescriptionViewModel.constructMedicationRequestObjectList(
+                                ArrayList(data.filter { it.groupName != null && it.groupUniqueId != null }),
+                            ),
+                            true,
                         )
                         patientViewModel.patientDetailsLiveData.value?.data?.let {
                             prescriptionViewModel.getPrescriptionList(it, false)
@@ -97,7 +104,9 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                     }
                 }
 
-                ResourceState.ERROR -> { hideLoading() }
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
             }
         }
 
@@ -132,11 +141,11 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                         }
                         prescriptionViewModel.updateMedicationGroupList(
                             medicationResponse = list,
-                            false
+                            false,
                         )
                         prescriptionViewModel.selectedMedicationGroupLiveData.value?.let {
                             showMedicationGroupList(
-                                it
+                                it,
                             )
                         }
                     }
@@ -197,7 +206,6 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
         prescriptionViewModel.createPrescriptionLiveData.observe(this) { resource ->
             when (resource.state) {
-
                 ResourceState.LOADING -> {
                     showLoading()
                 }
@@ -214,15 +222,16 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             val value = map[DefinedParams.EncounterId]
                             if (value is String) {
                                 intent.putExtra(DefinedParams.EncounterId, value)
-                                intent.putExtra(DefinedParams.PRESCRIPTION,true)
-
+                                intent.putExtra(DefinedParams.PRESCRIPTION, true)
                             }
                         }
                         setResult(RESULT_OK, intent)
                         finish()
                         supportFragmentManager.setFragmentResult(
-                            MedicalReviewDefinedParams.PRESCRIPTION, bundleOf(
-                                MedicalReviewDefinedParams.Notes to true)
+                            MedicalReviewDefinedParams.PRESCRIPTION,
+                            bundleOf(
+                                MedicalReviewDefinedParams.Notes to true,
+                            ),
                         )
                     }
                 }
@@ -264,13 +273,13 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             prescriptionViewModel.isDiscontinuedMedicationView = false
                         } else {
                             prescriptionViewModel.discontinuedMedicationRegimen =
-                                it.filter { item ->
-                                    item.categoryName?.equals(
-                                        HIV,
-                                        true
-                                    ) == true
-                                }
-                                    .mapNotNull { list -> list.regimenLine }
+                                it
+                                    .filter { item ->
+                                        item.categoryName?.equals(
+                                            HIV,
+                                            true,
+                                        ) == true
+                                    }.mapNotNull { list -> list.regimenLine }
                                     .maxOrNull()
                         }
                     }
@@ -298,37 +307,44 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             val removeMedicationsList =
                 ArrayList<RemovePrescriptionRequest>()
             params?.let {
-                ReasonForChangeDialogFragment.newInstance(
-                    name = params.medicationNames,
-                    regimen = params.regimenLine ?: 0,
-                    prescribedMedicine = true,
-                    callback = object :
-                        ReasonForChangeDialogFragment.ReasonChangeCallback {
-                        override fun onReasonProvided(
-                            changeReason: String
-                        ) {
-                            params.medicationList?.forEach {
-                                removeMedicationsList.add(
-                                    RemovePrescriptionRequest(
-                                        prescriptionId = it,
-                                        provenance = ProvanceDto(),
-                                        discontinuedReason = params.discontinuedReason,
-                                        regimenLine = params.regimenLine?.plus(1),
-                                        reasonsForChange = changeReason,
-                                        encounter =  EncounterDetails(
-                                            id = patientViewModel.encounterId,
-                                            patientReference = patientViewModel.patientDetailsLiveData.value?.data?.id,
-                                            patientId = patientViewModel.patientDetailsLiveData.value?.data?.patientId ?: "",
-                                            memberId = patientViewModel.patientDetailsLiveData.value?.data?.memberId ?: "", provenance = ProvanceDto()
+                ReasonForChangeDialogFragment
+                    .newInstance(
+                        name = params.medicationNames,
+                        regimen = params.regimenLine ?: 0,
+                        prescribedMedicine = true,
+                        callback = object :
+                            ReasonForChangeDialogFragment.ReasonChangeCallback {
+                            override fun onReasonProvided(changeReason: String) {
+                                params.medicationList?.forEach {
+                                    removeMedicationsList.add(
+                                        RemovePrescriptionRequest(
+                                            prescriptionId = it,
+                                            provenance = ProvanceDto(),
+                                            discontinuedReason = params.discontinuedReason,
+                                            regimenLine = params.regimenLine?.plus(1),
+                                            reasonsForChange = changeReason,
+                                            encounter = EncounterDetails(
+                                                id = patientViewModel.encounterId,
+                                                patientReference = patientViewModel.patientDetailsLiveData.value
+                                                    ?.data
+                                                    ?.id,
+                                                patientId = patientViewModel.patientDetailsLiveData.value
+                                                    ?.data
+                                                    ?.patientId ?: "",
+                                                memberId = patientViewModel.patientDetailsLiveData.value
+                                                    ?.data
+                                                    ?.memberId ?: "",
+                                                provenance = ProvanceDto(),
+                                            ),
                                         ),
                                     )
+                                }
+                                prescriptionViewModel.removeCommunityPrescription(
+                                    removeMedicationsList,
                                 )
                             }
-                            prescriptionViewModel.removeCommunityPrescription(
-                                removeMedicationsList
-                            )
-                        }
-                    }).show(supportFragmentManager, ReasonForChangeDialogFragment.TAG)
+                        },
+                    ).show(supportFragmentManager, ReasonForChangeDialogFragment.TAG)
             }
         }
     }
@@ -353,9 +369,10 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                 RowDiscontinedMedicationBinding.inflate(LayoutInflater.from(this))
             discontinuedMedicationBinding.tvMedicationName.text = data.medicationName
             discontinuedMedicationBinding.tvFrequency.text = getFrequencyName(
-                data.frequency, getString(
-                    R.string.hyphen_symbol
-                )
+                data.frequency,
+                getString(
+                    R.string.hyphen_symbol,
+                ),
             )
             discontinuedMedicationBinding.tvInstructions.text = data.instruction ?: getString(R.string.hyphen_symbol)
             discontinuedMedicationBinding.tvQuantity.text =
@@ -365,7 +382,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                 discontinuedMedicationBinding.tvDiscontinuedOn.text = DateUtils.convertDateFormat(
                     endDate,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    DateUtils.DATE_ddMMyyyy
+                    DateUtils.DATE_ddMMyyyy,
                 )
             }
             if (index == prescriptions.size - 1) {
@@ -385,7 +402,8 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             val medicationGroupBinding =
                 PrescriptionGroupingLayoutBinding.inflate(LayoutInflater.from(this))
             medicationGroupBinding.prescriptionGroupName.text = groupName
-            list.filter { it.medicationResponse.groupName == groupName }
+            list
+                .filter { it.medicationResponse.groupName == groupName }
                 .forEachIndexed { index, data ->
                     val prescriptionBinding =
                         RowPrescriptionBinding.inflate(LayoutInflater.from(this))
@@ -410,8 +428,8 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             prescribedDays.toString().toLongOrNull()
                         prescriptionBinding.etQuantity.setText(
                             calculateQuantity(
-                                data
-                            )
+                                data,
+                            ),
                         )
                     }
                     if (data.medicationResponse.prescribedDays != null) {
@@ -421,7 +439,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                         prescriptionBinding.tvPrescribedSince.text = DateUtils.convertDateFormat(
                             data.medicationResponse.prescribedSince!!,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DateUtils.DATE_ddMMyyyy
+                            DateUtils.DATE_ddMMyyyy,
                         )
                     } else {
                         prescriptionBinding.tvPrescribedSince.text =
@@ -433,7 +451,6 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                         prescriptionBinding.tvMedicineErrorMessage.gone()
                     }
 
-
                     val adapter = CustomSpinnerAdapter(prescriptionBinding.root.context, false)
                     adapter.setData(prescriptionViewModel.getFrequencyMap())
                     prescriptionBinding.frequency.adapter = adapter
@@ -442,8 +459,8 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             prescriptionBinding.frequency.setSelection(
                                 getFrequencyPosition(
                                     prescriptionViewModel.getFrequencyMap(),
-                                    selectedMap
-                                )
+                                    selectedMap,
+                                ),
                             )
                         }
                     }
@@ -453,7 +470,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                 parent: AdapterView<*>?,
                                 view: View?,
                                 position: Int,
-                                id: Long
+                                id: Long,
                             ) {
                                 val selectedItem = adapter.getData(position = position)
                                 selectedItem?.let { map ->
@@ -464,8 +481,8 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                 }
                                 prescriptionBinding.etQuantity.setText(
                                     calculateQuantity(
-                                        data
-                                    )
+                                        data,
+                                    ),
                                 )
                             }
 
@@ -481,8 +498,8 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             prescriptionBinding.instruction.setSelection(
                                 getInstructionPosition(
                                     prescriptionViewModel.getInstructionMap(),
-                                    selectedMap
-                                )
+                                    selectedMap,
+                                ),
                             )
                         }
                     }
@@ -493,7 +510,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                 parent: AdapterView<*>?,
                                 view: View?,
                                 position: Int,
-                                id: Long
+                                id: Long,
                             ) {
                                 val selectedItem = instructionAdapter.getData(position = position)
                                 selectedItem?.let { map ->
@@ -534,38 +551,51 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                         if (isPositiveResult) {
                                             if (CommonUtils.isCommunity()) {
                                                 val medicationList =
-                                                    data.medicationResponse.groupName?.let { groupName ->
-                                                        prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter { it.medicationResponse.groupName == groupName }
-                                                    }
-                                                        ?.mapNotNull { it.medicationResponse.prescriptionId }
-                                                val categoryList = data.medicationResponse.groupName?.let { groupName ->
-                                                    prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter { it.medicationResponse.groupName == groupName }
-                                                }
-                                                    ?.mapNotNull { it.medicationResponse.category?.name }
+                                                    data.medicationResponse.groupName
+                                                        ?.let { groupName ->
+                                                            prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter {
+                                                                it.medicationResponse.groupName ==
+                                                                    groupName
+                                                            }
+                                                        }?.mapNotNull { it.medicationResponse.prescriptionId }
+                                                val categoryList = data.medicationResponse.groupName
+                                                    ?.let { groupName ->
+                                                        prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter {
+                                                            it.medicationResponse.groupName ==
+                                                                groupName
+                                                        }
+                                                    }?.mapNotNull { it.medicationResponse.category?.name }
                                                 val removeMedicationsList =
                                                     ArrayList<RemovePrescriptionRequest>()
                                                 if (categoryList?.any { it.equals(HIV, true) } == true) {
                                                     val medicationsNameList = buildList {
-                                                        addAll(data.medicationResponse.groupName?.let { groupName ->
-                                                            prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter { it.medicationResponse.groupName == groupName }
-                                                        }?.mapNotNull { it.medicationResponse.name }
-                                                            ?: emptyList())
+                                                        addAll(
+                                                            data.medicationResponse.groupName
+                                                                ?.let { groupName ->
+                                                                    prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter {
+                                                                        it.medicationResponse.groupName ==
+                                                                            groupName
+                                                                    }
+                                                                }?.mapNotNull { it.medicationResponse.name }
+                                                                ?: emptyList(),
+                                                        )
                                                     }
                                                     val medicationsRegimen =
-                                                        prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
-                                                            it.categoryName?.equals(
-                                                                HIV,
-                                                                true
-                                                            ) == true
-                                                        }
-                                                            ?.mapNotNull { it.regimenLine }
+                                                        prescriptionViewModel.prescriptionListLiveData.value
+                                                            ?.data
+                                                            ?.filter {
+                                                                it.categoryName?.equals(
+                                                                    HIV,
+                                                                    true,
+                                                                ) == true
+                                                            }?.mapNotNull { it.regimenLine }
                                                             ?.maxOrNull()
 
                                                     reasonForChangeParams = ReasonForChangeParams(
                                                         medicationNames = convertListToIndexedString(ArrayList(medicationsNameList)),
                                                         regimenLine = medicationsRegimen,
                                                         discontinuedReason = reason ?: "",
-                                                        medicationList = medicationList ?: emptyList()
+                                                        medicationList = medicationList ?: emptyList(),
                                                     )
                                                 } else {
                                                     medicationList?.forEach {
@@ -574,30 +604,37 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                                                 prescriptionId = it,
                                                                 provenance = ProvanceDto(),
                                                                 discontinuedReason = reason,
-                                                                encounter =  EncounterDetails(
+                                                                encounter = EncounterDetails(
                                                                     id = patientViewModel.encounterId,
-                                                                    patientReference = patientViewModel.patientDetailsLiveData.value?.data?.id,
-                                                                    patientId = patientViewModel.patientDetailsLiveData.value?.data?.patientId ?: "",
-                                                                    memberId = patientViewModel.patientDetailsLiveData.value?.data?.memberId ?: "", provenance = ProvanceDto()
-                                                                )
-                                                            )
+                                                                    patientReference = patientViewModel.patientDetailsLiveData.value
+                                                                        ?.data
+                                                                        ?.id,
+                                                                    patientId = patientViewModel.patientDetailsLiveData.value
+                                                                        ?.data
+                                                                        ?.patientId ?: "",
+                                                                    memberId = patientViewModel.patientDetailsLiveData.value
+                                                                        ?.data
+                                                                        ?.memberId ?: "",
+                                                                    provenance = ProvanceDto(),
+                                                                ),
+                                                            ),
                                                         )
                                                     }
                                                 }
                                                 if (medicationList?.isNotEmpty() == true) {
                                                     prescriptionViewModel.removeCommunityPrescription(
-                                                        removeMedicationsList
+                                                        removeMedicationsList,
                                                     )
                                                 }
                                             } else {
                                                 prescriptionViewModel.removePrescription(
                                                     prescriptionId,
-                                                    reason
+                                                    reason,
                                                 )
                                             }
                                         }
                                     },
-                                    message = Pair(getString(R.string.delete_confirmation), null)
+                                    message = Pair(getString(R.string.delete_confirmation), null),
                                 )
                                 dialog.postDismissAction = {
                                     reasonForChangeParams?.let {
@@ -642,7 +679,6 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
         }
     }
 
-
     private fun showMedicationList(list: ArrayList<MedicationRequestObject>) {
         binding.llPrescriptionHolder.removeAllViews()
         list.forEachIndexed { index, data ->
@@ -660,7 +696,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                 prescriptionBinding.tvPrescribedSince.text = DateUtils.convertDateFormat(
                     data.medicationResponse.prescribedSince!!,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    DateUtils.DATE_ddMMyyyy
+                    DateUtils.DATE_ddMMyyyy,
                 )
             } else {
                 prescriptionBinding.tvPrescribedSince.text = getString(R.string.hyphen_symbol)
@@ -679,8 +715,8 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                     prescriptionBinding.frequency.setSelection(
                         getFrequencyPosition(
                             prescriptionViewModel.getFrequencyMap(),
-                            selectedMap
-                        )
+                            selectedMap,
+                        ),
                     )
                 }
             }
@@ -690,7 +726,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                         parent: AdapterView<*>?,
                         view: View?,
                         position: Int,
-                        id: Long
+                        id: Long,
                     ) {
                         val selectedItem = adapter.getData(position = position)
                         selectedItem?.let { map ->
@@ -714,8 +750,8 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                     prescriptionBinding.instruction.setSelection(
                         getInstructionPosition(
                             prescriptionViewModel.getInstructionMap(),
-                            selectedMap
-                        )
+                            selectedMap,
+                        ),
                     )
                 }
             }
@@ -726,7 +762,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                         parent: AdapterView<*>?,
                         view: View?,
                         position: Int,
-                        id: Long
+                        id: Long,
                     ) {
                         val selectedItem = instructionAdapter.getData(position = position)
                         selectedItem?.let { map ->
@@ -774,24 +810,28 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                     if (CommonUtils.isCommunity()) {
                                         val removeMedicationsList = ArrayList<RemovePrescriptionRequest>()
 
-                                        if (data.medicationResponse.category?.name.equals(HIV, true)) {
+                                        if (data.medicationResponse.category
+                                                ?.name
+                                                .equals(HIV, true)
+                                        ) {
                                             val medicationsNameList = buildList {
                                                 addAll(data.medicationResponse.name?.let { listOf(it) } ?: emptyList())
                                             }
 
                                             val medicationsRegimen =
-                                                prescriptionViewModel.prescriptionListLiveData.value?.data
+                                                prescriptionViewModel.prescriptionListLiveData.value
+                                                    ?.data
                                                     ?.filter { it.categoryName?.equals(HIV, true) == true }
                                                     ?.mapNotNull { it.regimenLine }
                                                     ?.maxOrNull()
-                                            val medicationList = buildList{
+                                            val medicationList = buildList {
                                                 add(prescriptionId)
                                             }
                                             reasonForChangeParams = ReasonForChangeParams(
                                                 medicationNames = convertListToIndexedString(ArrayList(medicationsNameList)),
                                                 regimenLine = medicationsRegimen,
                                                 discontinuedReason = reason ?: "",
-                                                medicationList = medicationList
+                                                medicationList = medicationList,
                                             )
                                         } else {
                                             removeMedicationsList.add(
@@ -801,23 +841,29 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                                     discontinuedReason = reason,
                                                     encounter = EncounterDetails(
                                                         id = patientViewModel.encounterId,
-                                                        patientReference = patientViewModel.patientDetailsLiveData.value?.data?.id,
-                                                        patientId = patientViewModel.patientDetailsLiveData.value?.data?.patientId
+                                                        patientReference = patientViewModel.patientDetailsLiveData.value
+                                                            ?.data
+                                                            ?.id,
+                                                        patientId = patientViewModel.patientDetailsLiveData.value
+                                                            ?.data
+                                                            ?.patientId
                                                             ?: "",
-                                                        memberId = patientViewModel.patientDetailsLiveData.value?.data?.memberId
-                                                            ?: "", provenance = ProvanceDto()
-                                                    )
-                                                )
+                                                        memberId = patientViewModel.patientDetailsLiveData.value
+                                                            ?.data
+                                                            ?.memberId
+                                                            ?: "",
+                                                        provenance = ProvanceDto(),
+                                                    ),
+                                                ),
                                             )
                                             prescriptionViewModel.removeCommunityPrescription(removeMedicationsList)
                                         }
-
                                     } else {
                                         prescriptionViewModel.removePrescription(prescriptionId, reason)
                                     }
                                 }
                             },
-                            message = Pair(getString(R.string.delete_confirmation), null)
+                            message = Pair(getString(R.string.delete_confirmation), null),
                         )
                         dialog.postDismissAction = {
                             reasonForChangeParams?.let {
@@ -852,7 +898,9 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
     private fun resetDataInitialData(data: MedicationRequestObject) {
         val actualPrescription =
-            prescriptionViewModel.prescriptionListLiveData.value?.data?.filter { it.prescriptionId == data.medicationResponse.prescriptionId }
+            prescriptionViewModel.prescriptionListLiveData.value
+                ?.data
+                ?.filter { it.prescriptionId == data.medicationResponse.prescriptionId }
         if (!actualPrescription.isNullOrEmpty()) {
             data.medicationResponse =
                 prescriptionViewModel.constructMedicationRequestObject(actualPrescription[0])
@@ -868,7 +916,8 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
         val prescriptionIdsInGroups = groups?.mapNotNull { it.medicationResponse.prescriptionId }?.toSet() ?: emptySet()
 
-        val prescriptionList = prescriptionViewModel.prescriptionListLiveData.value?.data
+        val prescriptionList = prescriptionViewModel.prescriptionListLiveData.value
+            ?.data
             ?.filter { it.groupName == data.medicationResponse.groupName && it.prescriptionId in prescriptionIdsInGroups }
             ?: emptyList()
 
@@ -885,11 +934,9 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             prescriptionViewModel.selectedMedicationGroupLiveData.value ?: ArrayList()
     }
 
-
-
     private fun getFrequencyPosition(
         frequencyMap: ArrayList<Map<String, Any>>,
-        selectedMap: Map<String, Any>
+        selectedMap: Map<String, Any>,
     ): Int {
         frequencyMap.forEachIndexed { index, map ->
             if (map[DefinedParams.ID] == selectedMap[DefinedParams.ID]) {
@@ -901,7 +948,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
     private fun getInstructionPosition(
         frequencyMap: ArrayList<Map<String, Any>>,
-        selectedValue: String
+        selectedValue: String,
     ): Int {
         frequencyMap.forEachIndexed { index, map ->
             if (map[DefinedParams.Value] == selectedValue) {
@@ -911,9 +958,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
         return 0
     }
 
-    private fun calculateQuantity(
-        data: MedicationRequestObject
-    ): String {
+    private fun calculateQuantity(data: MedicationRequestObject): String {
         val frequency = data.medicationResponse.selectedMap?.get(DefinedParams.Frequency) as? Int?
         if (data.medicationResponse.prescribedDays != null && frequency != null) {
             data.medicationResponse.quantity = data.medicationResponse.prescribedDays!! * frequency
@@ -947,13 +992,18 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
         binding.searchView.onItemClickListener = this
     }
 
-    override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+    override fun onItemClick(
+        parent: AdapterView<*>?,
+        view: View?,
+        position: Int,
+        id: Long,
+    ) {
         prescriptionViewModel.medicationListLiveData.value?.data?.let { medicationList ->
             val medicationResponse = medicationList[position]
             if (CommonUtils.isCommunity() && medicationResponse.isGroup) {
                 medicationResponse.groupName?.let { name ->
                     prescriptionViewModel.getMedicationGroupByName(
-                        name
+                        name,
                     )
                 }
             } else {
@@ -961,7 +1011,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                 list.add(MedicationRequestObject(medicationResponse))
                 prescriptionViewModel.updateMedicationList(
                     medicationResponse = list,
-                    false
+                    false,
                 )
             }
             binding.searchView.setText("")
@@ -975,18 +1025,46 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                 val status = checkValidation()
                 if (status) {
                     val list =
-                        prescriptionViewModel.selectedMedicationLiveData.value?.filter { ((it.medicationResponse.prescriptionId != null && it.medicationResponse.isEditable && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L) || (it.medicationResponse.prescriptionId == null && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L)) }
+                        prescriptionViewModel.selectedMedicationLiveData.value?.filter {
+                            (
+                                (
+                                    it.medicationResponse.prescriptionId != null &&
+                                        it.medicationResponse.isEditable &&
+                                        it.medicationResponse.prescribedDays != null &&
+                                        it.medicationResponse.prescribedDays != 0L
+                                ) ||
+                                    (
+                                        it.medicationResponse.prescriptionId == null &&
+                                            it.medicationResponse.prescribedDays != null &&
+                                            it.medicationResponse.prescribedDays != 0L
+                                    )
+                            )
+                        }
                     val groupList =
-                        prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter { ((it.medicationResponse.prescriptionId != null && it.medicationResponse.isEditable && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L) || (it.medicationResponse.prescriptionId == null && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L)) }
-                    if ((list != null && list.isEmpty()) && ( groupList != null && groupList.isEmpty())) {
+                        prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter {
+                            (
+                                (
+                                    it.medicationResponse.prescriptionId != null &&
+                                        it.medicationResponse.isEditable &&
+                                        it.medicationResponse.prescribedDays != null &&
+                                        it.medicationResponse.prescribedDays != 0L
+                                ) ||
+                                    (
+                                        it.medicationResponse.prescriptionId == null &&
+                                            it.medicationResponse.prescribedDays != null &&
+                                            it.medicationResponse.prescribedDays != 0L
+                                    )
+                            )
+                        }
+                    if ((list != null && list.isEmpty()) && (groupList != null && groupList.isEmpty())) {
                         showErrorDialogue(
                             getString(R.string.alert),
-                            getString(R.string.no_new_medicines_prescribed)
+                            getString(R.string.no_new_medicines_prescribed),
                         ) {
-
                         }
                     } else {
-                        SignatureDialogFragment.newInstance(this)
+                        SignatureDialogFragment
+                            .newInstance(this)
                             .show(supportFragmentManager, SignatureDialogFragment.TAG)
                     }
                 }
@@ -1008,46 +1086,55 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             }
 
             binding.btnRenewAll.id -> {
-                prescriptionViewModel.selectedMedicationLiveData.value?.filter { it.medicationResponse.prescriptionId != null }
+                prescriptionViewModel.selectedMedicationLiveData.value
+                    ?.filter { it.medicationResponse.prescriptionId != null }
                     ?.map { it.medicationResponse.isEditable = true }
                 prescriptionViewModel.selectedMedicationLiveData.value =
                     prescriptionViewModel.selectedMedicationLiveData.value
 
-                prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter { it.medicationResponse.prescriptionId != null }
+                prescriptionViewModel.selectedMedicationGroupLiveData.value
+                    ?.filter { it.medicationResponse.prescriptionId != null }
                     ?.map { it.medicationResponse.isEditable = true }
                 prescriptionViewModel.selectedMedicationGroupLiveData.value =
                     prescriptionViewModel.selectedMedicationGroupLiveData.value
             }
         }
-
     }
 
-
     private fun checkValidation(): Boolean {
-
         val invalidList = ArrayList<MedicationRequestObject>()
 
         prescriptionViewModel.selectedMedicationLiveData.value?.forEach { data ->
-            if (data.medicationResponse.prescribedDays == null || data.medicationResponse.prescribedDays == 0L || (data.medicationResponse.instruction == DefinedParams.DefaultIDLabel && !(data.medicationResponse.prescriptionId != null && !data.medicationResponse.isEditable))) {
+            if (data.medicationResponse.prescribedDays == null ||
+                data.medicationResponse.prescribedDays == 0L ||
+                (
+                    data.medicationResponse.instruction == DefinedParams.DefaultIDLabel &&
+                        !(data.medicationResponse.prescriptionId != null && !data.medicationResponse.isEditable)
+                )
+            ) {
                 data.medicationResponse.showErrorMessage = true
                 invalidList.add(data)
             } else {
                 data.medicationResponse.showErrorMessage = false
             }
-
         }
 
         prescriptionViewModel.selectedMedicationLiveData.value =
             prescriptionViewModel.selectedMedicationLiveData.value
 
         prescriptionViewModel.selectedMedicationGroupLiveData.value?.forEach { data ->
-            if (data.medicationResponse.prescribedDays == null || data.medicationResponse.prescribedDays == 0L || (data.medicationResponse.instruction == DefinedParams.DefaultIDLabel && !(data.medicationResponse.prescriptionId != null && !data.medicationResponse.isEditable))) {
+            if (data.medicationResponse.prescribedDays == null ||
+                data.medicationResponse.prescribedDays == 0L ||
+                (
+                    data.medicationResponse.instruction == DefinedParams.DefaultIDLabel &&
+                        !(data.medicationResponse.prescriptionId != null && !data.medicationResponse.isEditable)
+                )
+            ) {
                 data.medicationResponse.showErrorMessage = true
                 invalidList.add(data)
             } else {
                 data.medicationResponse.showErrorMessage = false
             }
-
         }
 
         prescriptionViewModel.selectedMedicationGroupLiveData.value =
@@ -1064,87 +1151,129 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
         patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
             prescriptionViewModel.patientId?.let { patientId ->
                 val prescriptionCreateList = ArrayList<MedicationRequestObject>()
-                prescriptionViewModel.selectedMedicationLiveData.value?.filter { ((it.medicationResponse.prescriptionId != null && it.medicationResponse.isEditable && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L) || (it.medicationResponse.prescriptionId == null && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L)) }
-                    .let {list->
+                prescriptionViewModel.selectedMedicationLiveData.value
+                    ?.filter {
+                        (
+                            (
+                                it.medicationResponse.prescriptionId != null &&
+                                    it.medicationResponse.isEditable &&
+                                    it.medicationResponse.prescribedDays != null &&
+                                    it.medicationResponse.prescribedDays != 0L
+                            ) ||
+                                (
+                                    it.medicationResponse.prescriptionId == null &&
+                                        it.medicationResponse.prescribedDays != null &&
+                                        it.medicationResponse.prescribedDays != 0L
+                                )
+                        )
+                    }.let { list ->
                         list?.forEach {
                             prescriptionCreateList.add(it)
                         }
                     }
-                prescriptionViewModel.selectedMedicationGroupLiveData.value?.filter { ((it.medicationResponse.prescriptionId != null && it.medicationResponse.isEditable && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L) || (it.medicationResponse.prescriptionId == null && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L)) }
-                    .let {list ->
+                prescriptionViewModel.selectedMedicationGroupLiveData.value
+                    ?.filter {
+                        (
+                            (
+                                it.medicationResponse.prescriptionId != null &&
+                                    it.medicationResponse.isEditable &&
+                                    it.medicationResponse.prescribedDays != null &&
+                                    it.medicationResponse.prescribedDays != 0L
+                            ) ||
+                                (
+                                    it.medicationResponse.prescriptionId == null &&
+                                        it.medicationResponse.prescribedDays != null &&
+                                        it.medicationResponse.prescribedDays != 0L
+                                )
+                        )
+                    }.let { list ->
                         list?.forEach {
                             prescriptionCreateList.add(it)
                         }
                     }
 
-                if ((prescriptionViewModel.prescriptionListLiveData.value?.data?.any {
-                        it.categoryName?.equals(
-                            HIV, true
-                        ) == true
-                    } == true || prescriptionViewModel.discontinuedPrescriptionListLiveData.value?.data?.any {
-                        it.categoryName?.equals(
-                            HIV, true
-                        ) == true
-                    } == true ) && prescriptionCreateList.any { it.medicationResponse.prescriptionId == null } && prescriptionCreateList.any {
-                        it.medicationResponse.category?.name?.equals(
-                            HIV, true
-                        ) == true
-                    }) {
-
-                    val medications = buildList {
-                        addAll(prescriptionCreateList.filter {
-                            it.medicationResponse.category?.name?.equals(
-                                HIV, true
+                if ((
+                        prescriptionViewModel.prescriptionListLiveData.value?.data?.any {
+                            it.categoryName?.equals(
+                                HIV,
+                                true,
                             ) == true
-                        }.map { it.medicationResponse.name })
+                        } == true ||
+                            prescriptionViewModel.discontinuedPrescriptionListLiveData.value?.data?.any {
+                                it.categoryName?.equals(
+                                    HIV,
+                                    true,
+                                ) == true
+                            } == true
+                    ) &&
+                    prescriptionCreateList.any { it.medicationResponse.prescriptionId == null } &&
+                    prescriptionCreateList.any {
+                        it.medicationResponse.category?.name?.equals(
+                            HIV,
+                            true,
+                        ) == true
                     }
-
+                ) {
+                    val medications = buildList {
+                        addAll(
+                            prescriptionCreateList
+                                .filter {
+                                    it.medicationResponse.category?.name?.equals(
+                                        HIV,
+                                        true,
+                                    ) == true
+                                }.map { it.medicationResponse.name },
+                        )
+                    }
 
                     val medicationsRegimen =
-                        prescriptionViewModel.prescriptionListLiveData.value?.data?.filter {
-                            it.categoryName?.equals(HIV, true) == true
-                        }?.mapNotNull { it.regimenLine }?.maxOrNull() ?: kotlin.run {
+                        prescriptionViewModel.prescriptionListLiveData.value
+                            ?.data
+                            ?.filter {
+                                it.categoryName?.equals(HIV, true) == true
+                            }?.mapNotNull { it.regimenLine }
+                            ?.maxOrNull() ?: kotlin.run {
                             prescriptionViewModel.discontinuedMedicationRegimen ?: 0
                         }
 
                     val prescriptionId =
                         prescriptionCreateList.any { it.medicationResponse.prescriptionId == null }
-                    ReasonForChangeDialogFragment.newInstance(
-                        name = convertListToIndexedString(ArrayList(medications.filterNotNull())),
-                        regimen = medicationsRegimen,
-                        prescribedMedicine = prescriptionId,
-                        callback = object : ReasonForChangeDialogFragment.ReasonChangeCallback {
-                            override fun onReasonProvided(changeReason: String) {
-                                prescriptionCreateList.let { list ->
-                                    prescriptionViewModel.createPrescription(
-                                        signatureBitmap,
-                                        CommonUtils.getFilePath(
-                                            patientId,
-                                            context = this@PrescriptionActivity
-                                        ),
-                                        ArrayList(list),
-                                        data,
-                                        patientViewModel.encounterId,
-                                        changeReason,
-                                        medicationsRegimen.apply { this+1 }
-                                    )
+                    ReasonForChangeDialogFragment
+                        .newInstance(
+                            name = convertListToIndexedString(ArrayList(medications.filterNotNull())),
+                            regimen = medicationsRegimen,
+                            prescribedMedicine = prescriptionId,
+                            callback = object : ReasonForChangeDialogFragment.ReasonChangeCallback {
+                                override fun onReasonProvided(changeReason: String) {
+                                    prescriptionCreateList.let { list ->
+                                        prescriptionViewModel.createPrescription(
+                                            signatureBitmap,
+                                            CommonUtils.getFilePath(
+                                                patientId,
+                                                context = this@PrescriptionActivity,
+                                            ),
+                                            ArrayList(list),
+                                            data,
+                                            patientViewModel.encounterId,
+                                            changeReason,
+                                            medicationsRegimen.apply { this + 1 },
+                                        )
+                                    }
                                 }
-                            }
-                        }
-                    ).show(supportFragmentManager, ReasonForChangeDialogFragment.TAG)
-
+                            },
+                        ).show(supportFragmentManager, ReasonForChangeDialogFragment.TAG)
                 } else {
                     prescriptionCreateList.let { list ->
                         prescriptionViewModel.createPrescription(
                             signatureBitmap,
                             CommonUtils.getFilePath(
                                 patientId,
-                                context = this
+                                context = this,
                             ),
                             ArrayList(list),
                             data,
                             patientViewModel.encounterId,
-                            null
+                            null,
                         )
                     }
                 }
@@ -1152,7 +1281,10 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
         }
     }
 
-    private fun getFrequencyName(frequency: Int, hypen: String): String {
+    private fun getFrequencyName(
+        frequency: Int,
+        hypen: String,
+    ): String {
         prescriptionViewModel.frequencyListLiveDate.value?.data?.let { list ->
             val selectedFrequency = list.filter { it.frequency == frequency }
             return if (selectedFrequency.isNotEmpty()) {

@@ -17,16 +17,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PatientStatusViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO : CoroutineDispatcher,
-    private val patientStatusRepository: PatientStatusRepository
-): ViewModel(){
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    private val patientStatusRepository: PatientStatusRepository,
+) : ViewModel() {
     @Inject
     lateinit var connectivityManager: ConnectivityManager
     val patientStatusLiveData = MutableLiveData<Resource<PatientStatusResponse>>()
-    //The below id represent backend generated ID from patient details response, its not a member generated ID
-    var patientId:String? = null
 
-    fun getPatientStatusDetails(patientDetails: PatientListRespModel, diagnosisType: String) {
+    // The below id represent backend generated ID from patient details response, its not a member generated ID
+    var patientId: String? = null
+
+    fun getPatientStatusDetails(
+        patientDetails: PatientListRespModel,
+        diagnosisType: String,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             patientStatusLiveData.postLoading()
             patientStatusLiveData.postValue(patientStatusRepository.getPatientStatusDetails(patientDetails, diagnosisType))

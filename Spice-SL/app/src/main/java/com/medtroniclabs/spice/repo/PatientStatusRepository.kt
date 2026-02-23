@@ -12,9 +12,12 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import javax.inject.Inject
 
 class PatientStatusRepository @Inject constructor(
-    private var apiHelper: ApiHelper
+    private var apiHelper: ApiHelper,
 ) {
-    suspend fun getPatientStatusDetails(patientDetails: PatientListRespModel, menuType: String): Resource<PatientStatusResponse> {
+    suspend fun getPatientStatusDetails(
+        patientDetails: PatientListRespModel,
+        menuType: String,
+    ): Resource<PatientStatusResponse> {
         try {
             val request = createPatientStatusRequest(patientDetails, menuType)
             val response = request?.let { apiHelper.getPatientStatus(it) }
@@ -31,20 +34,22 @@ class PatientStatusRepository @Inject constructor(
         return Resource(state = ResourceState.ERROR)
     }
 
-    private fun createPatientStatusRequest(patientDetails: PatientListRespModel, menuType: String): PatientStatusRequest? {
-        return patientDetails.memberId?.let { patientMemberId ->
-            getTicketType(menuType)?.let {workflowType ->
+    private fun createPatientStatusRequest(
+        patientDetails: PatientListRespModel,
+        menuType: String,
+    ): PatientStatusRequest? =
+        patientDetails.memberId?.let { patientMemberId ->
+            getTicketType(menuType)?.let { workflowType ->
                 PatientStatusRequest(
-                    patientId=patientDetails.patientId,
+                    patientId = patientDetails.patientId,
                     memberId = patientMemberId,
                     type = MedicalReviewTypeEnums.medicalReview.name,
                     gender = patientDetails.gender,
                     ticketType = workflowType,
                     isPregnant = patientDetails.isPregnant ?: false,
                     encounterType = menuType,
-                    provenance = ProvanceDto()
+                    provenance = ProvanceDto(),
                 )
             }
         }
-    }
 }

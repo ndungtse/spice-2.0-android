@@ -57,9 +57,9 @@ object AssessmentDefinedParams {
     const val SunkenEyes = "Sunken eyes"
     const val NoTearsWhenCrying = "No tears when crying"
     const val LittleOrNoUrine = "Little or no urine"
-    const val SkinPinch= "Skin pinch going back very slowly"
-    const val SunkenFontanella= "Sunken fontanelle"
-    const val DryMouthOrTongue= "Dry mouth / tongue"
+    const val SkinPinch = "Skin pinch going back very slowly"
+    const val SunkenFontanella = "Sunken fontanelle"
+    const val DryMouthOrTongue = "Dry mouth / tongue"
     const val VeryThirsty = "Very thirsty"
     const val otherSymptoms = "otherSymptoms"
     const val symptoms = "symptoms"
@@ -70,7 +70,7 @@ object AssessmentDefinedParams {
     const val Fever = "fever"
     const val Signs = "Signs"
     const val Cough = "Cough"
-    const val InformationLayoutFragment="InformationLayoutFragment"
+    const val InformationLayoutFragment = "InformationLayoutFragment"
     const val MalnutritionCondition = "malnutritionCondition"
     const val CoughCondition = "coughCondition"
     const val FeverCondition = "feverCondition"
@@ -126,7 +126,7 @@ object AssessmentDefinedParams {
     const val pregnancyOtherSymptoms = "pregnancyOtherSymptoms"
     const val africa_uppercase = "AFRICA"
     const val modifiedDate = "modifiedDate"
-    const val spiceUserId= "spiceUserId"
+    const val spiceUserId = "spiceUserId"
     const val memberReference = "memberReference"
     const val patientReference = "patientReference"
     const val HBA1CUnit = "hba1cUnit"
@@ -139,22 +139,22 @@ object AssessmentDefinedParams {
     const val cageAid = "substanceAbuse"
     const val ObservationID = "ObservationId"
 
-    const val TakingMinimumMealsPerDay="takingMinimumMealsPerDay"
-    const val ExclusivelyBreastfeeding="exclusivelyBreastfeeding"
-    const val FedFrom4FoodGroups="fedFrom4FoodGroups"
-    const val Measles1Given="measles1Given"
-    const val YellowFeverVacineGiven="yellowFeverVacineGiven"
-    const val Measles2Given="measles2Given"
+    const val TakingMinimumMealsPerDay = "takingMinimumMealsPerDay"
+    const val ExclusivelyBreastfeeding = "exclusivelyBreastfeeding"
+    const val FedFrom4FoodGroups = "fedFrom4FoodGroups"
+    const val Measles1Given = "measles1Given"
+    const val YellowFeverVacineGiven = "yellowFeverVacineGiven"
+    const val Measles2Given = "measles2Given"
 
     const val errorSuffix = "errorMessageView"
-    const val DateOfBirth="date_of_birth"
+    const val DateOfBirth = "date_of_birth"
 
     const val DEATH_OF_MOTHER_KEY = "deathOfMother"
     const val NA = "NA"
     const val NotApplicable = "Not Applicable"
     const val IsBloodyDiarrhoea = "isBloodyDiarrhoea"
 
-    /*TB Items*/
+    // TB Items
     const val HasCoughLastedLonger = "hasCoughLastedLonger"
     const val HasWeightLoss = "hasWeightLoss"
     const val HasNightSweatsTB = "hasNightSweats"
@@ -179,7 +179,7 @@ object AssessmentDefinedParams {
     const val NCDDetails = "ncdDetails"
     const val FamilyPlanningMethods = "familyPlanningMethods"
     const val FamilyPlanningDetails = "clientProfileAssessment"
-    const val OtherFamilyPlanningMethod= "otherFamilyPlanningMethod"
+    const val OtherFamilyPlanningMethod = "otherFamilyPlanningMethod"
     const val CondomsStatus = "condomsStatus"
     const val Not_Available = "Not Available"
 
@@ -188,23 +188,23 @@ object AssessmentDefinedParams {
     const val TBRxBuddyRegister = "rxBuddy"
     const val TBRxBuddyFollowUp = "rxBuddyFollowUp"
 
-    //Medical Review
+    // Medical Review
     const val PreTestCounselling = "preTestCounselling"
     const val PostTestCounselling = "postTestCounselling"
     const val TestForHiv = "testForHiv"
     const val otherRelationshipIC = "otherRelationshipIC"
 
-    //Family Planning Field IDs
+    // Family Planning Field IDs
     const val NumberOfLivingChildren = "numberOfLivingChildren"
     const val DesireForChildrenInFuture = "desireForChildrenInFuture"
     const val ReferralFacilityType = "referralFacilityType"
-    
-    //Family Planning Counselling Message IDs
+
+    // Family Planning Counselling Message IDs
     const val CounsellingMessageSarcs = "counsellingMessageSarcs"
     const val CounsellingMessageLarcs = "counsellingMessageLarcs"
     const val CounsellingMessagePermanent = "counsellingMessagePermanent"
-    
-    //Family Planning Desire Values
+
+    // Family Planning Desire Values
     const val DesireYesWithin2Yrs = "yesWithin2Yrs"
     const val DesireYesAfter2Yrs = "yesAfter2Yrs"
     const val DesireNoMore = "noMoreChildren"

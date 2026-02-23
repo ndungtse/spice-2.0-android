@@ -6,5 +6,5 @@ data class APIResponse<out T> constructor(
     val entityList: T? = null,
     val message: String? = null,
     val responseCode: Int,
-    val totalCount: Int? = null
+    val totalCount: Int? = null,
 )

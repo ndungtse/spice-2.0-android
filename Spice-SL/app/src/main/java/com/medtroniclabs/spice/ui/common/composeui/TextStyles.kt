@@ -9,8 +9,7 @@ import androidx.compose.ui.unit.sp
 import com.medtroniclabs.spice.R
 
 object TextStyles {
-
-    val FontSize_14 = 14.sp//-6 from usual
+    val FontSize_14 = 14.sp // -6 from usual
     val FontSize_15 = 15.sp
     val FontSize_16 = 16.sp
     val TableHeader = FontSize_14
@@ -28,27 +27,27 @@ object TextStyles {
         fontFamily = interFamily,
         fontWeight = FontWeight.Normal,
         color = Color(0xFF001E46),
-        fontSize = FontSize_14
+        fontSize = FontSize_14,
     )
 
     val cellsTextStyle = TextStyle(
         fontFamily = interFamily,
         fontWeight = FontWeight.Normal,
         color = Color(0xFF001E46),
-        fontSize = TableHeader
+        fontSize = TableHeader,
     )
 
     val labelTextStyle = TextStyle(
         fontFamily = interFamily,
         fontWeight = FontWeight.Medium,
         color = Color(0xFF000000),
-        fontSize = TableHeader
+        fontSize = TableHeader,
     )
 
     val buttonTextStyle = TextStyle(
-        fontFamily =  interFamily,
+        fontFamily = interFamily,
         fontWeight = FontWeight.Normal,
         color = Color(0xFFFFFFFF),
-        fontSize = FontSize_16
+        fontSize = FontSize_16,
     )
 }

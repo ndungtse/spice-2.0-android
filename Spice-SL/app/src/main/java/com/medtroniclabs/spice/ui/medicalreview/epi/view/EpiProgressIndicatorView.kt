@@ -25,9 +25,8 @@ import java.util.Locale
 class EpiProgressIndicatorView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : View(context, attrs, defStyleAttr) {
-
     private var viewWidth: Float = 0f
     private var viewHeight: Float = 0f
     private var margin: Int = dpToPx(24)
@@ -36,12 +35,14 @@ class EpiProgressIndicatorView @JvmOverloads constructor(
     private val vaccinationList = mutableListOf<Pair<Int, String>>()
     private val formatter = DateTimeFormatter.ofPattern("d MMM", Locale.ENGLISH)
 
+    private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
 
-    private fun dpToPx(dp: Int): Int {
-        return (dp * resources.displayMetrics.density).toInt()
-    }
-
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+    override fun onSizeChanged(
+        w: Int,
+        h: Int,
+        oldw: Int,
+        oldh: Int,
+    ) {
         super.onSizeChanged(w, h, oldw, oldh)
         viewWidth = w.toFloat()
         viewHeight = h.toFloat()
@@ -52,7 +53,7 @@ class EpiProgressIndicatorView @JvmOverloads constructor(
         vaccinationList.clear()
         val ldToday = LocalDate.now()
 
-        /*#####################*/
+        // #####################
         for (item in list) {
             val scheduleDate = item.scheduleDate.getLocalDate()
             val anyUpdatedScheduleDate =
@@ -75,13 +76,12 @@ class EpiProgressIndicatorView @JvmOverloads constructor(
                         vaccinationList.add(Pair(Vaccinated, formatter.format(scheduleDate)))
                     }
                 }
-
             } else { // No pending vaccination
                 break
             }
         }
 
-        /*#####################*/
+        // #####################
 
         /*for (item in list) {
             val scheduleDate = item.scheduleDate.getLocalDate()
@@ -112,7 +112,7 @@ class EpiProgressIndicatorView @JvmOverloads constructor(
         super.onDraw(canvas)
 
         val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color =  Color.LTGRAY
+            color = Color.LTGRAY
             style = Paint.Style.FILL
         }
 
@@ -123,25 +123,22 @@ class EpiProgressIndicatorView @JvmOverloads constructor(
 
         val endX = viewWidth - margin
         val endY = (viewHeight * 58) / 100
-        val rectF = RectF(startX,startY, endX, endY)
+        val rectF = RectF(startX, startY, endX, endY)
         canvas.drawRoundRect(rectF, 30f, 30f, paint)
 
-        val progressBarWidth = viewWidth - (2*margin)
+        val progressBarWidth = viewWidth - (2 * margin)
 
         val oneDayDisplacement = progressBarWidth / totalEpiPeriod
         val centerY = viewHeight / 2
         var centerX = 0f
 
-
-        val txtSize = (progressBarWidth * 1)/100
+        val txtSize = (progressBarWidth * 1) / 100
         val txtPointY = (viewHeight * 80) / 100
         val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.BLACK
             textSize = txtSize
             textAlign = Paint.Align.CENTER
         }
-
-
 
         val statusBarPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             style = Paint.Style.FILL
@@ -153,7 +150,7 @@ class EpiProgressIndicatorView @JvmOverloads constructor(
 
             statusBarPaint.color = getStatusColor(item.first)
             barStartX = margin + (index * oneDayDisplacement)
-            barEndX = margin + ((index+1) * oneDayDisplacement)
+            barEndX = margin + ((index + 1) * oneDayDisplacement)
 
             val statusBarRectF = RectF(barStartX, startY, barEndX, endY)
             canvas.drawRoundRect(statusBarRectF, 30f, 30f, statusBarPaint)
@@ -179,7 +176,7 @@ class EpiProgressIndicatorView @JvmOverloads constructor(
 
         vaccinationList.forEachIndexed { index, item ->
             statusBarPaint.color = getStatusColor(item.first)
-            centerX = margin + ((index+1) * oneDayDisplacement)
+            centerX = margin + ((index + 1) * oneDayDisplacement)
 
             canvas.drawCircle(centerX, centerY, borderColorRadius, periodPaint)
             canvas.drawCircle(centerX, centerY, borderColorRadius, borderPaint)
@@ -194,29 +191,27 @@ class EpiProgressIndicatorView @JvmOverloads constructor(
         }
     }
 
-    private fun getStatusColor(status: Int): Int {
-        return when(status) {
+    private fun getStatusColor(status: Int): Int =
+        when (status) {
             Upcoming -> ContextCompat.getColor(context, R.color.epi_upcoming_primary)
             Vaccinated -> ContextCompat.getColor(context, R.color.epi_vaccinated_primary)
             else -> ContextCompat.getColor(context, R.color.epi_missed_primary)
         }
-    }
 
-    private fun getBitmap(status: Int): Bitmap? {
-        return when(status) {
+    private fun getBitmap(status: Int): Bitmap? =
+        when (status) {
             Upcoming -> getBitmapFromVectorDrawable(R.drawable.ic_epi_upcoming)
             Vaccinated -> getBitmapFromVectorDrawable(R.drawable.ic_epi_vaccinated)
             else -> getBitmapFromVectorDrawable(R.drawable.ic_epi_missed)
         }
-    }
 
-    private fun getBitmapFromVectorDrawable( drawableId: Int): Bitmap? {
+    private fun getBitmapFromVectorDrawable(drawableId: Int): Bitmap? {
         val drawable: Drawable = context.getDrawable(drawableId)!!
         if (drawable is VectorDrawable) {
             val bitmap = Bitmap.createBitmap(
                 drawable.intrinsicWidth,
                 drawable.intrinsicHeight,
-                Bitmap.Config.ARGB_8888
+                Bitmap.Config.ARGB_8888,
             )
             val canvas = Canvas(bitmap)
             drawable.setBounds(0, 0, canvas.width, canvas.height)

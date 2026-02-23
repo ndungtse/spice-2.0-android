@@ -14,8 +14,8 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.AboveFiveYearsRepository
-import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.repo.MedicalReviewSummaryRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -26,9 +26,8 @@ import javax.inject.Inject
 class AboveFiveYearsViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private var repository: AboveFiveYearsRepository,
-    private var summaryRepository: MedicalReviewSummaryRepository
+    private var summaryRepository: MedicalReviewSummaryRepository,
 ) : BaseViewModel(dispatcherIO) {
-
     @Inject
     lateinit var connectivityManager: ConnectivityManager
     val aboveFiveYearsMetaLiveData = MutableLiveData<Resource<Boolean>>()
@@ -37,7 +36,7 @@ class AboveFiveYearsViewModel @Inject constructor(
     val aboveFiveYearsCreateResponse = MutableLiveData<Resource<AboveFiveYearsSummaryDetails>>()
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
     var selectedPatientStatus: String? = null
-    var selectedMedicalSupplyListItem= ArrayList<MultiSelectDropDownModel>()
+    var selectedMedicalSupplyListItem = ArrayList<MultiSelectDropDownModel>()
     var selectedCostItem: String? = null
     var nextFollowupDate: String? = null
     var lastLocation: Location? = null
@@ -53,7 +52,7 @@ class AboveFiveYearsViewModel @Inject constructor(
         details: PatientListRespModel,
         selectedComplaintsExaminationsPair: Pair<List<String?>, List<String?>>,
         enteredComplaintsExaminationsClinicalNotes: Triple<String, String, String>,
-        prescriptionEncounterId: String?
+        prescriptionEncounterId: String?,
     ) {
         viewModelScope.launch(dispatcherIO) {
             aboveFiveYearsCreateResponse.postLoading()
@@ -63,8 +62,8 @@ class AboveFiveYearsViewModel @Inject constructor(
                     selectedComplaintsExaminationsPair,
                     enteredComplaintsExaminationsClinicalNotes,
                     lastLocation,
-                    prescriptionEncounterId
-                )
+                    prescriptionEncounterId,
+                ),
             )
         }
     }
@@ -86,7 +85,7 @@ class AboveFiveYearsViewModel @Inject constructor(
     fun aboveFiveYearsSummaryCreate(
         details: PatientListRespModel,
         submitEncounterId: String,
-        submitPatientReferenceId: String
+        submitPatientReferenceId: String,
     ) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
@@ -102,7 +101,7 @@ class AboveFiveYearsViewModel @Inject constructor(
                     nextFollowupDate,
                     DateUtils.DATE_ddMMyyyy,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    inUTC = true
+                    inUTC = true,
                 )
 
                 val response = summaryRepository.createSummarySubmit(
@@ -117,7 +116,7 @@ class AboveFiveYearsViewModel @Inject constructor(
                     referralTicketType = MedicalReviewTypeEnums.ICCM.name,
                     assessmentName = MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name,
                     householdId = houseHoldId,
-                    villageId = villageId
+                    villageId = villageId,
                 )
                 summaryCreateResponse.postValue(response)
             }

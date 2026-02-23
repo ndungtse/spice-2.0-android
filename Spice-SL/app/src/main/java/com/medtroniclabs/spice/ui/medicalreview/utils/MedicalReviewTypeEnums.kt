@@ -1,6 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.utils
 
-enum class MedicalReviewTypeEnums{
+enum class MedicalReviewTypeEnums {
     PresentingComplaints,
     SystemicExaminations,
     medical_supplies,
@@ -80,5 +80,5 @@ enum class MedicalReviewTypeEnums{
     maternal_outcome,
     HIV_SYSTEMIC,
     obstetricExaminations,
-    CD4
+    CD4,
 }

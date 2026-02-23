@@ -5,12 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.FragmentPhuWalkInsListBinding
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -22,13 +20,15 @@ class PhuWalkInsListFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentPhuWalkInsListBinding
     private var dataCallback: PhuLinkCallback? = null
     private val viewModel: PhuWalkInsViewModel by viewModels()
+
     fun setDataCallback(callback: PhuLinkCallback) {
         dataCallback = callback
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPhuWalkInsListBinding.inflate(inflater, container, false)
         return binding.root
@@ -36,12 +36,14 @@ class PhuWalkInsListFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "PhuWalkInsListFragment"
-        fun newInstance(): PhuWalkInsListFragment {
-            return PhuWalkInsListFragment()
-        }
+
+        fun newInstance(): PhuWalkInsListFragment = PhuWalkInsListFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         // Set layout manager and adapter
         initObserver()
@@ -68,5 +70,4 @@ class PhuWalkInsListFragment : BaseFragment(), View.OnClickListener {
             binding.rcLinkPatientList.adapter = PhuLinkListAdapter(phoneNumberCode, it, activity as PhuLinkCallback)
         }
     }
-
 }

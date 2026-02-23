@@ -18,15 +18,15 @@ import com.medtroniclabs.spice.ui.boarding.ForgetPasswordActivity
 import com.medtroniclabs.spice.ui.boarding.viewmodel.ForgotPasswordViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class ConfirmPasswordFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentConfirmPasswordBinding
     private val viewModel: ForgotPasswordViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentConfirmPasswordBinding.inflate(inflater, container, false)
         return binding.root
@@ -34,10 +34,14 @@ class ConfirmPasswordFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "ConfirmPasswordFragment"
+
         fun newInstance() = ConfirmPasswordFragment()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
     }
@@ -48,20 +52,24 @@ class ConfirmPasswordFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun validateLoginInputs() {
-        val password = binding.etPassword.text.toString().trim()
-        val confirmPassword = binding.etConfirmPassword.text.toString().trim()
+        val password = binding.etPassword.text
+            .toString()
+            .trim()
+        val confirmPassword = binding.etConfirmPassword.text
+            .toString()
+            .trim()
 
         binding.tvPasswordError.gone()
         binding.tvConfirmPasswordError.gone()
 
-        //password blank check
+        // password blank check
         if (password.isBlank()) {
             binding.tvPasswordError.visible()
             binding.tvPasswordError.text = getString(R.string.password_cannot_be_empty)
             return
         }
 
-        //confirmPassword blank check
+        // confirmPassword blank check
         if (confirmPassword.isBlank()) {
             binding.tvConfirmPasswordError.visible()
             binding.tvConfirmPasswordError.text =
@@ -69,18 +77,18 @@ class ConfirmPasswordFragment : BaseFragment(), View.OnClickListener {
             return
         }
 
-        //Both password equal check
+        // Both password equal check
         if (!password.equals(confirmPassword, false)) {
             binding.tvConfirmPasswordError.visibility = View.VISIBLE
             binding.tvConfirmPasswordError.text = getString(R.string.password_does_not_match)
             return
         }
 
-        //Regex check
+        // Regex check
         if (!isPasswordValid(password)) {
             showErrorDialog(
                 title = getString(R.string.alert),
-                message = getString(R.string.password_error_message)
+                message = getString(R.string.password_error_message),
             )
             return
         }
@@ -102,9 +110,9 @@ class ConfirmPasswordFragment : BaseFragment(), View.OnClickListener {
             }
 
             R.id.tvGoBack -> {
-              if(activity!= null && activity is ForgetPasswordActivity) {
-                  (activity as ForgetPasswordActivity?)?.redirectToLogin()
-              }
+                if (activity != null && activity is ForgetPasswordActivity) {
+                    (activity as ForgetPasswordActivity?)?.redirectToLogin()
+                }
             }
         }
     }
@@ -116,5 +124,4 @@ class ConfirmPasswordFragment : BaseFragment(), View.OnClickListener {
             hide.hideSoftInputFromWindow(v.windowToken, 0)
         }
     }
-
 }

@@ -10,9 +10,7 @@ data class RxBuddyDetails(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
     var rxBuddyId: Long? = null,
-
     var patientMemberId: String,
-
     var householdMemberId: Long? = null,
     var name: String? = null,
     var phoneNumber: String? = null,
@@ -26,5 +24,5 @@ data class RxBuddyDetails(
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
     val createdBy: Long = SecuredPreference.getUserId(),
-    var updatedAt: Long = System.currentTimeMillis()
+    var updatedAt: Long = System.currentTimeMillis(),
 )

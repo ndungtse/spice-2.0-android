@@ -14,81 +14,84 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class RxBuddyRepository @Inject constructor(
-    private var roomHelper: RoomHelper
-){
+    private var roomHelper: RoomHelper,
+) {
     suspend fun insertRxBuddyDetails(
-        rxBuddyId:Long?,
-        patientMemberId:String,
-        memberId:Long?,
-        name:String?,
-        phoneNumber:String?,
-        relationship:String,
+        rxBuddyId: Long?,
+        patientMemberId: String,
+        memberId: Long?,
+        name: String?,
+        phoneNumber: String?,
+        relationship: String,
         otherRelationship: String?,
-        isMonitorSheetProvider:Boolean,
+        isMonitorSheetProvider: Boolean,
         nextVisitDate: LocalDate,
-        followUpId: Long? = null
-    ):Resource<Long>{
+        followUpId: Long? = null,
+    ): Resource<Long> {
         val latLng = getLatLng()
-      return try {
-          val rxBuddy = RxBuddyDetails(
-              rxBuddyId = rxBuddyId,
-              patientMemberId = patientMemberId,
-              householdMemberId = memberId,
-              name = name,
-              phoneNumber = phoneNumber,
-              relationship = relationship,
-              isMonitorSheetProvider = isMonitorSheetProvider,
-              otherRelationship = otherRelationship,
-              followUpId = followUpId,
-              nextVisitDate = getNextVisitDate(nextVisitDate),
-              latitude = latLng.first,
-              longitude = latLng.second
-          )
-          val response = roomHelper.insertRxBuddyDetails(rxBuddy)
-          Resource(state = ResourceState.SUCCESS, data = response)
-      }catch (e:Exception){
-          Resource(state = ResourceState.ERROR, data = null)
-      }
+        return try {
+            val rxBuddy = RxBuddyDetails(
+                rxBuddyId = rxBuddyId,
+                patientMemberId = patientMemberId,
+                householdMemberId = memberId,
+                name = name,
+                phoneNumber = phoneNumber,
+                relationship = relationship,
+                isMonitorSheetProvider = isMonitorSheetProvider,
+                otherRelationship = otherRelationship,
+                followUpId = followUpId,
+                nextVisitDate = getNextVisitDate(nextVisitDate),
+                latitude = latLng.first,
+                longitude = latLng.second,
+            )
+            val response = roomHelper.insertRxBuddyDetails(rxBuddy)
+            Resource(state = ResourceState.SUCCESS, data = response)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR, data = null)
+        }
     }
 
-    suspend fun getOtherHouseholdMembersExcludeTBPatient(householdId:Long, patientId:Long):Resource<ArrayList<Map<String,Any>>>{
-       val otherHouseholdMembers = roomHelper.getOtherHouseholdExcludeTBPatient(
+    suspend fun getOtherHouseholdMembersExcludeTBPatient(
+        householdId: Long,
+        patientId: Long,
+    ): Resource<ArrayList<Map<String, Any>>> {
+        val otherHouseholdMembers = roomHelper.getOtherHouseholdExcludeTBPatient(
             householdId,
-            patientId
+            patientId,
         )
 
-        val dropDownList = ArrayList<Map<String,Any>>()
-        for((_,householdMemberEntity) in otherHouseholdMembers.withIndex()){
+        val dropDownList = ArrayList<Map<String, Any>>()
+        for ((_, householdMemberEntity) in otherHouseholdMembers.withIndex()) {
             dropDownList.add(
-                hashMapOf<String,Any>(
+                hashMapOf<String, Any>(
                     DefinedParams.NAME to householdMemberEntity.name,
-                    DefinedParams.id to householdMemberEntity.id
-                )
+                    DefinedParams.id to householdMemberEntity.id,
+                ),
             )
         }
 
-        dropDownList.add(hashMapOf<String,Any>(
-            DefinedParams.NAME to DefinedParams.Other,
-            DefinedParams.id to 0L
-        ))
+        dropDownList.add(
+            hashMapOf<String, Any>(
+                DefinedParams.NAME to DefinedParams.Other,
+                DefinedParams.id to 0L,
+            ),
+        )
         return Resource(
             state = ResourceState.SUCCESS,
-            data = dropDownList
+            data = dropDownList,
         )
     }
 
-    suspend fun getRxBuddyDetails(patientMemberId:String):RxBuddyDetails?{
-        return roomHelper.getRxBuddyDetails(patientMemberId)
-    }
+    suspend fun getRxBuddyDetails(patientMemberId: String): RxBuddyDetails? = roomHelper.getRxBuddyDetails(patientMemberId)
 
     suspend fun insertRxBuddyFollowUp(
         rxBuddyLocalId: Long,
         rxBuddyId: Long? = null,
-        patientMemberId:String,
+        patientMemberId: String,
         map: HashMap<String, Any>,
         nextVisitDate: LocalDate,
-        followUpId: Long? = null
-    ):Resource<Long>{
+        followUpId: Long? = null,
+    ): Resource<Long> {
         val latLng = getLatLng()
         return try {
             val rxBuddyFollowUp = RxBuddyFollowUpEntity(
@@ -99,22 +102,27 @@ class RxBuddyRepository @Inject constructor(
                 nextVisitDate = getNextVisitDate(nextVisitDate),
                 followUpId = followUpId,
                 latitude = latLng.first,
-                longitude = latLng.second
+                longitude = latLng.second,
             )
             val response = roomHelper.insertRxBuddyFollowUp(rxBuddyFollowUp)
             Resource(state = ResourceState.SUCCESS, data = response)
-        }catch (e:Exception){
+        } catch (e: Exception) {
             Resource(state = ResourceState.ERROR, data = null)
         }
     }
 
-
-    suspend fun updateNextVisitDateRxBuddyRegister(nextVisitDate: String, id: Long): Resource<String> {
+    suspend fun updateNextVisitDateRxBuddyRegister(
+        nextVisitDate: String,
+        id: Long,
+    ): Resource<String> {
         roomHelper.updateNextVisitDateRxBuddyRegister(nextVisitDate, id)
         return Resource(state = ResourceState.SUCCESS)
     }
 
-    suspend fun updateNextVisitDateRxBuddyFollowUp(nextVisitDate: String, id: Long): Resource<String> {
+    suspend fun updateNextVisitDateRxBuddyFollowUp(
+        nextVisitDate: String,
+        id: Long,
+    ): Resource<String> {
         roomHelper.updateNextVisitDateRxBuddyFollowUp(nextVisitDate, id)
         return Resource(state = ResourceState.SUCCESS)
     }
@@ -125,23 +133,17 @@ class RxBuddyRepository @Inject constructor(
             tomorrowDate,
             DateUtils.DATE_ddMMyyyy,
             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            inUTC = true
+            inUTC = true,
         )
     }
 
-    private fun getLatLng(): Pair<Double, Double> {
-        return Pair(
+    private fun getLatLng(): Pair<Double, Double> =
+        Pair(
             SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name),
-            SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name)
+            SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name),
         )
-    }
 
-    suspend fun getUnSyncedRxBuddyRegisterCount(): Int {
-        return roomHelper.getUnSyncedRxBuddyRegisterCount()
-    }
+    suspend fun getUnSyncedRxBuddyRegisterCount(): Int = roomHelper.getUnSyncedRxBuddyRegisterCount()
 
-    suspend fun getUnSyncedRxBuddyFollowUpCount(): Int {
-        return roomHelper.getUnSyncedRxBuddyFollowUpCount()
-    }
-
+    suspend fun getUnSyncedRxBuddyFollowUpCount(): Int = roomHelper.getUnSyncedRxBuddyFollowUpCount()
 }

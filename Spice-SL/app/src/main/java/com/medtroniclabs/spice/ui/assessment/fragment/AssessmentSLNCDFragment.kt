@@ -27,9 +27,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ncd
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
-
 class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickListener {
-
     private lateinit var binding: FragmentAssessmentBinding
     private lateinit var formGenerator: FormGenerator
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -37,13 +35,16 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentAssessmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         getFormDataForWorkflow()
@@ -55,12 +56,15 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
         viewModel.setUserJourney(AnalyticsDefinedParams.NCDASSESSMENT)
         replaceFragmentInId<BioDataFragment>(
             binding.bioDataFragmentContainer.id,
-            tag = BioDataFragment.TAG
+            tag = BioDataFragment.TAG,
         )
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, this, binding.scrollView,
-            translate = SecuredPreference.getIsTranslationEnabled()
-        ){ map, id ->
+            requireContext(),
+            binding.llForm,
+            this,
+            binding.scrollView,
+            translate = SecuredPreference.getIsTranslationEnabled(),
+        ) { map, id ->
             when (id) {
                 Screening.Weight, Screening.Height -> {
                     viewModel.renderBMIValue(requireContext(), formGenerator, map)
@@ -92,7 +96,11 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
         }
     }
 
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
     }
 
     override fun onPopulate(targetId: String) {
@@ -101,11 +109,12 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
     override fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     ) {
-        CheckBoxDialog.newInstance(id, resultMap) { resultMap ->
-            formGenerator.validateCheckboxDialogue(id, formLayout, resultMap)
-        }.show(childFragmentManager, CheckBoxDialog.TAG)
+        CheckBoxDialog
+            .newInstance(id, resultMap) { resultMap ->
+                formGenerator.validateCheckboxDialogue(id, formLayout, resultMap)
+            }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
     override fun onInstructionClicked(
@@ -113,24 +122,27 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {
     }
 
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+    override fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
         resultMap?.let { details ->
             val referralResult = ReferralResultGenerator().calculateNCDStatus(requireContext(), details)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
                     serverData = it,
                     details,
-                    AssessmentDefinedParams.ncd
+                    AssessmentDefinedParams.ncd,
                 )
             }
-            result?.second?.let {map ->
+            result?.second?.let { map ->
                 val ncdResultMap = map[ncd] as HashMap<String, Any>
-                if(ncdResultMap.containsKey(BMI_CATEGORY) && ncdResultMap[BMI_CATEGORY] is String) {
-                   val bmiCategory = ncdResultMap[BMI_CATEGORY]
+                if (ncdResultMap.containsKey(BMI_CATEGORY) && ncdResultMap[BMI_CATEGORY] is String) {
+                    val bmiCategory = ncdResultMap[BMI_CATEGORY]
                     ncdResultMap.remove(BMI_CATEGORY)
                     if (ncdResultMap.containsKey(NCDDetails) && ncdResultMap[NCDDetails] is HashMap<*, *>) {
                         (ncdResultMap[NCDDetails] as HashMap<String, Any>)[BMI_CATEGORY] = bmiCategory as String
@@ -147,14 +159,17 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
     override fun onRenderingComplete() {
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
     }
 
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,
         enteredDays: Int?,
-        resultMap: HashMap<String, Any>?
+        resultMap: HashMap<String, Any>?,
     ) {
     }
 
@@ -167,7 +182,7 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
     }
 
@@ -186,11 +201,10 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
         viewModel.getFormData(MenuConstants.NCD_MENU_ID)
         viewModel.getNearestHealthFacility()
     }
+
     companion object {
         const val TAG = "AssessmentSLNCDFragment"
     }
 
-    fun getCurrentAnsweredStatus(): Boolean {
-        return formGenerator.getResultMap().isNotEmpty()
-    }
+    fun getCurrentAnsweredStatus(): Boolean = formGenerator.getResultMap().isNotEmpty()
 }

@@ -8,19 +8,17 @@ import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentTermsAndConditionsBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.mappingkey.Screening
-import com.medtroniclabs.spice.ncd.screening.fragment.ScreeningFormBuilderFragment
-import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
 import com.medtroniclabs.spice.ncd.registration.viewmodel.TermsAndConditionsViewModel
+import com.medtroniclabs.spice.ncd.screening.fragment.ScreeningFormBuilderFragment
 import com.medtroniclabs.spice.ncd.screening.ui.ESignatureDialog
 import com.medtroniclabs.spice.ncd.screening.utils.SignatureInterface
+import com.medtroniclabs.spice.ui.BaseFragment
 
 class TermsAndConditionsFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentTermsAndConditionsBinding
@@ -29,13 +27,16 @@ class TermsAndConditionsFragment : BaseFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentTermsAndConditionsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         attachObservers()
@@ -82,13 +83,16 @@ class TermsAndConditionsFragment : BaseFragment(), View.OnClickListener {
     }
 
     private val signatureInterface = object : SignatureInterface {
-        override fun applySignature(signature: Bitmap?, initial: String?) {
+        override fun applySignature(
+            signature: Bitmap?,
+            initial: String?,
+        ) {
             showProgress()
             val bundle = Bundle().apply {
                 signature?.let { sign ->
                     putByteArray(
                         Screening.Signature,
-                        CommonUtils.convertBitmapToByteArray(bitmap = sign)
+                        CommonUtils.convertBitmapToByteArray(bitmap = sign),
                     )
                 }
                 putString(Screening.Initial, initial)
@@ -99,14 +103,13 @@ class TermsAndConditionsFragment : BaseFragment(), View.OnClickListener {
                 replaceFragmentIfExists<ScreeningFormBuilderFragment>(
                     R.id.screeningParentLayout,
                     bundle = bundle,
-                    tag = ScreeningFormBuilderFragment.TAG
+                    tag = ScreeningFormBuilderFragment.TAG,
                 )
             }
         }
     }
 
-    private fun isRegistration(): Boolean =
-        arguments?.let { it.getString(FORM_TYPE)?.equals(DefinedParams.Registration) } == true
+    private fun isRegistration(): Boolean = arguments?.let { it.getString(FORM_TYPE)?.equals(DefinedParams.Registration) } == true
 
     companion object {
         const val FORM_TYPE = "FormType"

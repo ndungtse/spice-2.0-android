@@ -8,9 +8,8 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import javax.inject.Inject
 
 class MedicalReviewSummaryRepository @Inject constructor(
-    private var apiHelper: ApiHelper
+    private var apiHelper: ApiHelper,
 ) {
-
     suspend fun createSummarySubmit(
         patientId: String,
         patientReference: String,
@@ -25,11 +24,11 @@ class MedicalReviewSummaryRepository @Inject constructor(
         householdId: String?,
         villageId: String,
         treatmentOutComes: String? = null,
-        tbIMRCompleted:Boolean? = null,
+        tbIMRCompleted: Boolean? = null,
         eMTCTStatus: String? = null,
-        maternalOutcome: String? = null
-    ): Resource<HashMap<String, Any>> {
-        return try {
+        maternalOutcome: String? = null,
+    ): Resource<HashMap<String, Any>> =
+        try {
             val request = MedicalReviewSummarySubmitRequest(
                 patientId = patientId,
                 memberId = memberId,
@@ -47,7 +46,7 @@ class MedicalReviewSummaryRepository @Inject constructor(
                 treatmentOutcome = treatmentOutComes,
                 tbIMRCompleted = tbIMRCompleted,
                 emtctVisitStatus = eMTCTStatus,
-                maternalOutcome = maternalOutcome
+                maternalOutcome = maternalOutcome,
             )
             val response = request.let { apiHelper.createSummarySubmit(it) }
             if (response.isSuccessful) {
@@ -60,9 +59,7 @@ class MedicalReviewSummaryRepository @Inject constructor(
             } else {
                 Resource(state = ResourceState.ERROR)
             }
-
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 }

@@ -23,7 +23,6 @@ import java.time.LocalDate
 import java.time.ZoneOffset
 
 class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FollowupFilterBottomSheetDialogBinding
     private lateinit var villageListTagView: TagListCustomView
     private lateinit var dataRangesListTagView: TagListCustomView
@@ -33,14 +32,11 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
 
     companion object {
         const val TAG = "FollowUpFilterBottomSheetDialogFragment"
-        fun newInstance(): FollowUpFilterBottomSheetDialogFragment {
-            return FollowUpFilterBottomSheetDialogFragment()
-        }
+
+        fun newInstance(): FollowUpFilterBottomSheetDialogFragment = FollowUpFilterBottomSheetDialogFragment()
     }
 
-    override fun getTheme(): Int {
-        return R.style.DialogStyle
-    }
+    override fun getTheme(): Int = R.style.DialogStyle
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         BottomSheetDialog(requireContext(), theme).apply {
@@ -48,14 +44,18 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
         }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FollowupFilterBottomSheetDialogBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initializeListeners()
@@ -63,9 +63,9 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
     }
 
     private fun enableConfirm() {
-
         val isCustomizedOptionSelected =
-            dataRangesListTagView.getSelectedTags()
+            dataRangesListTagView
+                .getSelectedTags()
                 .any { it.name == FollowUpDefinedParams.FilterCustomize }
 
         val isDateRangeValid = if (dataRangesListTagView.getSelectedTags().isNotEmpty()) {
@@ -105,18 +105,17 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
             chipItemList.add(
                 ChipViewItemModel(
                     id = it.id,
-                    name = it.name
-                )
+                    name = it.name,
+                ),
             )
         }
         villageListTagView.addChipItemList(
             chipItemList,
-            viewModel.getFilterData()?.selectedVillages
+            viewModel.getFilterData()?.selectedVillages,
         )
     }
 
     private fun initView() {
-
         viewModel.setUserJourney(AnalyticsDefinedParams.FollowUPFilter)
 
         villageListTagView =
@@ -132,13 +131,14 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
         dataRangesListTagView =
             TagListCustomView(
                 binding.root.context,
-                binding.registrationStatusChipGroup
+                binding.registrationStatusChipGroup,
             ) { _, _, _ ->
                 if (dataRangesListTagView.getSelectedTags().isEmpty()) {
                     goneDatePicker()
                 } else {
                     val isCustomized =
-                        dataRangesListTagView.getSelectedTags()
+                        dataRangesListTagView
+                            .getSelectedTags()
                             .any { it.name == FollowUpDefinedParams.FilterCustomize }
                     if (isCustomized) {
                         binding.clDateRange.visibility = View.VISIBLE
@@ -164,7 +164,6 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
         binding.clDateRange.visibility = View.GONE
     }
 
-
     private fun composeStatusListChipView() {
         binding.etFromDate.text = viewModel.getFilterData()?.fromDate ?: ""
         binding.etToDate.text = viewModel.getFilterData()?.toDate ?: ""
@@ -173,26 +172,26 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
         val statusList = ArrayList<ChipViewItemModel>()
         itemList.forEach {
             statusList.add(
-                ChipViewItemModel(name = it)
+                ChipViewItemModel(name = it),
             )
         }
 
         dataRangesListTagView.addChipItemList(
             statusList,
-            viewModel.getFilterData()?.selectedDateRange
+            viewModel.getFilterData()?.selectedDateRange,
         )
 
         val reasons = viewModel.getReferralReasons()
         val reasonList = ArrayList<ChipViewItemModel>()
         reasons.forEach {
             reasonList.add(
-                ChipViewItemModel(name = it)
+                ChipViewItemModel(name = it),
             )
         }
 
         referralReasonTagView.addChipItemList(
             reasonList,
-            viewModel.getFilterData()?.selectedReasons
+            viewModel.getFilterData()?.selectedReasons,
         )
     }
 
@@ -209,7 +208,10 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
             }
 
             binding.etToDate.id -> {
-                if (binding.etFromDate.text.toString().isNotEmpty()) {
+                if (binding.etFromDate.text
+                        .toString()
+                        .isNotEmpty()
+                ) {
                     showDatePickerDialog(false, binding.etToDate.text.toString())
                 } else {
                     binding.etFromDateError.visibility = View.VISIBLE
@@ -225,7 +227,7 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
                     selectedDateRange = listOf(),
                     selectedReasons = listOf(),
                     fromDate = "",
-                    toDate = ""
+                    toDate = "",
                 )
                 villageListTagView.clearSelection()
                 dataRangesListTagView.clearSelection()
@@ -241,16 +243,20 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
             selectedDateRange = dataRangesListTagView.getSelectedTags(),
             selectedReasons = referralReasonTagView.getSelectedTags(),
             fromDate = binding.etFromDate.text.toString(),
-            toDate = binding.etToDate.text.toString()
+            toDate = binding.etToDate.text.toString(),
         )
         viewModel.setUserJourney(AnalyticsDefinedParams.APPLYBUTTONTRIGGERED)
         dismiss()
     }
 
-    private fun showDatePickerDialog(isFromDate: Boolean, text: String?) {
+    private fun showDatePickerDialog(
+        isFromDate: Boolean,
+        text: String?,
+    ) {
         var date: Triple<Int?, Int?, Int?>? = null
-        if (!text.isNullOrBlank())
+        if (!text.isNullOrBlank()) {
             date = DateUtils.convertedMMMToddMM(text)
+        }
         val minMaxDate = getMinDate(isFromDate)
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
@@ -259,19 +265,21 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
                 date = date,
                 minDate = minMaxDate.first,
                 maxDate = getMaxDate(),
-                cancelCallBack = { datePickerDialog = null }) { _, year, month, dayOfMonth ->
-                DateUtils.convertDateTimeToDate(
-                    "$dayOfMonth-$month-$year",
-                    DateUtils.DATE_FORMAT_ddMMyyyy,
-                    DateUtils.DATE_ddMMyyyy
-                ).let { stringDate ->
-                    if (isFromDate) {
-                        binding.etFromDate.text = stringDate
-                        binding.etToDate.text = ""
-                    } else {
-                        binding.etToDate.text = stringDate
+                cancelCallBack = { datePickerDialog = null },
+            ) { _, year, month, dayOfMonth ->
+                DateUtils
+                    .convertDateTimeToDate(
+                        "$dayOfMonth-$month-$year",
+                        DateUtils.DATE_FORMAT_ddMMyyyy,
+                        DateUtils.DATE_ddMMyyyy,
+                    ).let { stringDate ->
+                        if (isFromDate) {
+                            binding.etFromDate.text = stringDate
+                            binding.etToDate.text = ""
+                        } else {
+                            binding.etToDate.text = stringDate
+                        }
                     }
-                }
                 enableConfirm()
                 datePickerDialog = null
             }
@@ -282,16 +290,20 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
         val fromDate = binding.etFromDate.text?.toString()
         val toDate = binding.etToDate.text?.toString()
         return if (isFromDate) {
-            if (!toDate.isNullOrBlank())
+            if (!toDate.isNullOrBlank()) {
                 Pair(null, DateUtils.convertDateToLong(toDate, DateUtils.DATE_ddMMyyyy))
-            else Pair(null, System.currentTimeMillis())
+            } else {
+                Pair(null, System.currentTimeMillis())
+            }
         } else {
-            if (!fromDate.isNullOrBlank())
+            if (!fromDate.isNullOrBlank()) {
                 Pair(
                     DateUtils.convertDateToLong(fromDate, DateUtils.DATE_ddMMyyyy),
-                    System.currentTimeMillis()
+                    System.currentTimeMillis(),
                 )
-            else Pair(null, System.currentTimeMillis())
+            } else {
+                Pair(null, System.currentTimeMillis())
+            }
         }
     }
 
@@ -299,5 +311,4 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
         val localDate = LocalDate.now().atStartOfDay()
         return localDate.plusDays(6).toInstant(ZoneOffset.UTC).toEpochMilli()
     }
-
 }

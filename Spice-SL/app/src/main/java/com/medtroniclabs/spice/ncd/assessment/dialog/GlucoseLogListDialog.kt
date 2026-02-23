@@ -14,26 +14,30 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.assessment.adapter.GlucoseLogListAdapter
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.GlucoseViewModel
 
-class GlucoseLogListDialog(private val addNewReading: () -> Unit) : DialogFragment(),
+class GlucoseLogListDialog(private val addNewReading: () -> Unit) :
+    DialogFragment(),
     View.OnClickListener {
     private lateinit var binding: DialogGlucoseLogListBinding
     private val viewModel: GlucoseViewModel by activityViewModels()
 
     companion object {
         const val TAG = "GlucoseLogListDialog"
-        fun newInstance(addNewReading: () -> Unit): GlucoseLogListDialog {
-            return GlucoseLogListDialog(addNewReading)
-        }
+
+        fun newInstance(addNewReading: () -> Unit): GlucoseLogListDialog = GlucoseLogListDialog(addNewReading)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogGlucoseLogListBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -66,6 +70,6 @@ class GlucoseLogListDialog(private val addNewReading: () -> Unit) : DialogFragme
 
     override fun onStart() {
         super.onStart()
-        setDialogPercent(55,65)
+        setDialogPercent(55, 65)
     }
 }

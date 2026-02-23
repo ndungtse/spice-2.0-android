@@ -7,7 +7,6 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.location.LocationManagerCompat.getCurrentLocation
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.takeIfNotNull
@@ -32,7 +31,13 @@ import com.medtroniclabs.spice.ui.medicalreview.SystemicExaminationsFragment
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.SystemicExaminationViewModel
-import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.*
+import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.ARTRegimenFragment
+import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HIVStatusFragment
+import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivGeneralAndSystemicExaminationFragment
+import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivImrCmrSummaryFragment
+import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.HivMedicalReviewDiagnosesFragment
+import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.RecommendedInvestigationsDialog
+import com.medtroniclabs.spice.ui.medicalreview.hiv.fragment.ViralLoadFragment
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivGeneralAndSystemicExaminationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivImrAndCmrViewModel
 import com.medtroniclabs.spice.ui.medicalreview.hiv.viewmodel.HivImrCmrSummaryViewModel
@@ -55,9 +60,11 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClickListener,
+class MotherNeonateEMTCTActivity :
+    BaseActivity(),
+    AncVisitCallBack,
+    View.OnClickListener,
     OnDialogDismissListener {
-
     companion object {
         private const val TAG = "MotherNeonateEMTCTActivity"
     }
@@ -81,7 +88,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
     private val pregnancyDetailsViewModel: PregnancyDetailsViewModel by viewModels()
 
     private val getResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             handleActivityResult(result.data)
@@ -116,7 +123,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
         (supportFragmentManager.findFragmentById(R.id.viralLoadResultContainer) as? ViralLoadFragment)?.apply {
             refreshFragment(
                 intent.getStringExtra(DefinedParams.ID),
-                intent.getStringExtra(DefinedParams.MemberID)
+                intent.getStringExtra(DefinedParams.MemberID),
             )
         }
     }
@@ -125,7 +132,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
         (supportFragmentManager.findFragmentById(R.id.aRTRegimenResultContainer) as? ARTRegimenFragment)?.apply {
             refreshFragment(
                 intent.getStringExtra(DefinedParams.PatientId),
-                intent.getStringExtra(DefinedParams.ID)
+                intent.getStringExtra(DefinedParams.ID),
             )
         }
     }
@@ -137,14 +144,17 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
             getString(R.string.patient_medical_review),
             homeAndBackVisibility = Pair(true, true),
             callback = { backNavigation() },
-            callbackHome = { backNavigationToHome() }
+            callbackHome = { backNavigationToHome() },
         )
 
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                backNavigation()
-            }
-        })
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    backNavigation()
+                }
+            },
+        )
 
         whoViewModel.setWhoStage(MedicalReviewTypeEnums.whoClinicalStage.name)
         hivViewModel.getHivEmtctVistStatusByCategory(MedicalReviewTypeEnums.emtct_visit_status.name)
@@ -154,7 +164,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (isPositive) {
                 hivViewModel.isHivSummary = false
@@ -167,7 +177,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (isPositive) {
                 hivViewModel.isHivSummary = false
@@ -187,7 +197,8 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                 hivViewModel.getHivMetaData()
             } else {
                 showErrorDialogue(
-                    getString(R.string.error), getString(R.string.no_internet_error),
+                    getString(R.string.error),
+                    getString(R.string.no_internet_error),
                     isNegativeButtonNeed = false,
                 ) {}
             }
@@ -195,26 +206,24 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
             initializePatientDetailFragment()
         }
         hivViewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
-
     }
 
     private fun initializePatientDetailFragment() {
         replaceFragment(
             R.id.patientDetailFragment,
             PatientInfoFragment.TAG,
-            PatientInfoFragment.newInstanceForEMTCT(
-                intent.getStringExtra(DefinedParams.PatientId),
-                isEMTCTMR = true,
-                isEMTCTSummary = hivViewModel.isHivSummary
-            ).apply {
-                setDataCallback(this@MotherNeonateEMTCTActivity)
-            }
+            PatientInfoFragment
+                .newInstanceForEMTCT(
+                    intent.getStringExtra(DefinedParams.PatientId),
+                    isEMTCTMR = true,
+                    isEMTCTSummary = hivViewModel.isHivSummary,
+                ).apply {
+                    setDataCallback(this@MotherNeonateEMTCTActivity)
+                },
         )
-
     }
 
     private fun attachObserver() {
-
         viewModel.checkRecommendationRInvestigations.observe(this) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
@@ -226,7 +235,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                     resource.data?.let {
                         if (it[isViralLoadTestRecommended] == true) {
                             showDialogIfNotPresent(
-                                RecommendedInvestigationsDialog.TAG
+                                RecommendedInvestigationsDialog.TAG,
                             ) {
                                 RecommendedInvestigationsDialog.newInstance().apply {
                                     onOkayClickListener = {
@@ -237,7 +246,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                                     }
                                 }
                             }
-                        }else{
+                        } else {
                             submitWithPregnancyDetails()
                         }
                     }
@@ -250,7 +259,6 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                         message = getString(R.string.something_went_wrong_try_later),
                         positiveButtonName = getString(R.string.ok),
                     ) {
-
                     }
                 }
             }
@@ -269,14 +277,13 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                         message = getString(R.string.something_went_wrong_try_later),
                         positiveButtonName = getString(R.string.ok),
                     ) {
-
                     }
                 }
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     showDialogIfNotPresent(
-                        MedicalReviewSuccessDialogFragment.TAG
+                        MedicalReviewSuccessDialogFragment.TAG,
                     ) {
                         MedicalReviewSuccessDialogFragment.newInstance()
                     }
@@ -297,7 +304,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                         positiveButtonName = getString(R.string.ok),
                     ) {
                         if (it) {
-                            //onBackPressPopStack()
+                            // onBackPressPopStack()
                         }
                     }
                 }
@@ -339,7 +346,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                         supportFragmentManager.findFragmentByTag(ReferPatientFragment.TAG) as? ReferPatientFragment
                     fragment?.dismiss()
                     showDialogIfNotPresent(
-                        MedicalReviewSuccessDialogFragment.TAG
+                        MedicalReviewSuccessDialogFragment.TAG,
                     ) {
                         MedicalReviewSuccessDialogFragment.newInstance()
                     }
@@ -377,18 +384,18 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                 }
             }
         }
-
-
     }
 
     override fun onDataLoaded(details: PatientListRespModel) {
         hivViewModel.memberId = details.memberId
 
-        if(hivViewModel.isHivSummary){
-
-        }else {
+        if (hivViewModel.isHivSummary) {
+        } else {
             hivViewModel.ancVisit =
-                details.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }?.plus(1) ?: 1
+                details.pregnancyDetails
+                    ?.ancVisitMedicalReview
+                    ?.takeIf { true }
+                    ?.plus(1) ?: 1
             initializeReviewFragments()
         }
     }
@@ -401,7 +408,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
         replaceFragment(
             R.id.patientBMIContainer,
             HivMedicalReviewDiagnosesFragment.TAG,
-            HivMedicalReviewDiagnosesFragment.newInstance(true,true)
+            HivMedicalReviewDiagnosesFragment.newInstance(true, true),
         )
 
         initEmtctFragments()
@@ -409,13 +416,14 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
 
     private fun setupSwipeRefresh() {
         binding.refreshLayout.setOnRefreshListener {
-           getPatientDetails()
+            getPatientDetails()
         }
     }
 
     private fun getPatientDetails() {
         withNetworkAvailability(online = {
-            supportFragmentManager.findFragmentById(R.id.patientDetailFragment)
+            supportFragmentManager
+                .findFragmentById(R.id.patientDetailFragment)
                 .let {
                     patientViewModel.getPatientId()?.let { id ->
                         patientViewModel.getPatients(id)
@@ -432,15 +440,14 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
         val clinicalNotesFragment =
             supportFragmentManager.findFragmentById(R.id.clinicalNotesContainer) as? ClinicalNotesFragment
         val isClinicalNotesValid = clinicalNotesFragment?.validateInput()
-        val  pregnancyDetailsFragment =
+        val pregnancyDetailsFragment =
             supportFragmentManager.findFragmentById(R.id.pregnancySummaryContainer) as? Any
 
         if (pregnancyDetailsFragment is PregnancyDetailsFragment) {
             binding.btnSubmit.isEnabled = isClinicalNotesValid == true
-        }else{
+        } else {
             binding.btnSubmit.isEnabled = isClinicalNotesValid == true
         }
-
     }
 
     private fun setupResultListeners() {
@@ -449,48 +456,47 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
     }
 
     private fun initEmtctFragments() {
-        if (patientViewModel.getPatientLmb() != null){
+        if (patientViewModel.getPatientLmb() != null) {
             addOrReuseFragment(
                 R.id.pregnancySummaryContainer,
                 PregnancySummaryFragment.TAG,
-                PregnancySummaryFragment.newInstanceEmtct(isEmtct =  true,patientReference = intent.getStringExtra(DefinedParams.ID))
+                PregnancySummaryFragment.newInstanceEmtct(isEmtct = true, patientReference = intent.getStringExtra(DefinedParams.ID)),
             )
-        }else{
+        } else {
             addOrReuseFragment(
                 R.id.pregnancySummaryContainer,
                 PregnancyDetailsFragment.TAG,
-                PregnancyDetailsFragment.newInstance(patientViewModel.getPatientLmb())
+                PregnancyDetailsFragment.newInstance(patientViewModel.getPatientLmb()),
             )
         }
-
 
         val hivBundle = Bundle().apply {
             putString(
                 MedicalReviewTypeEnums.PresentingComplaints.name,
-                MedicalReviewTypeEnums.HIV.name
+                MedicalReviewTypeEnums.HIV.name,
             )
             putString(
                 MedicalReviewTypeEnums.SystemicExaminations.name,
-                MedicalReviewTypeEnums.HIV.name
+                MedicalReviewTypeEnums.HIV.name,
             )
         }
 
         replaceFragmentOrCreateNewFragment<PresentingComplaintsFragment>(
             R.id.presentingComplaintsContainer,
             bundle = hivBundle,
-            tag = PresentingComplaintsFragment.TAG
+            tag = PresentingComplaintsFragment.TAG,
         )
 
         replaceFragmentOrCreateNewFragment<SystemicExaminationsFragment>(
             R.id.obstetricExaminationContainer,
             bundle = hivBundle,
-            tag = SystemicExaminationsFragment.TAG
+            tag = SystemicExaminationsFragment.TAG,
         )
 
         replaceFragmentOrCreateNewFragment<HivGeneralAndSystemicExaminationFragment>(
             R.id.systemicExaminationsContainer,
             bundle = hivBundle,
-            tag = HivGeneralAndSystemicExaminationFragment.TAG
+            tag = HivGeneralAndSystemicExaminationFragment.TAG,
         )
 
         var bundle = Bundle().apply {
@@ -500,9 +506,8 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
             R.id.emtctStatusContainer,
             HIVStatusFragment.TAG,
             HIVStatusFragment.newInstance(),
-            bundle
+            bundle,
         )
-
 
         createNewFragmentOnly<ARTRegimenFragment>(
             R.id.aRTRegimenResultContainer,
@@ -511,7 +516,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                 putString(DefinedParams.ID, intent.getStringExtra(DefinedParams.ID))
                 putString(DefinedParams.MemberID, patientViewModel.getPatientMemberId())
             },
-            tag = ARTRegimenFragment.TAG
+            tag = ARTRegimenFragment.TAG,
         )
         replaceFragmentOrCreateNewFragment<ViralLoadFragment>(
             R.id.viralLoadResultContainer,
@@ -520,17 +525,18 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                 putString(DefinedParams.PatientReference, intent.getStringExtra(DefinedParams.ID))
                 putString(
                     DefinedParams.MemberReference,
-                    intent.getStringExtra(DefinedParams.MemberID)
+                    intent.getStringExtra(DefinedParams.MemberID),
                 )
             },
-            tag = ViralLoadFragment.TAG
+            tag = ViralLoadFragment.TAG,
         )
         replaceFragmentOrCreateNewFragment<ClinicalNotesFragment>(
             binding.clinicalNotesContainer.id,
             bundle = null,
-            tag = ClinicalNotesFragment.TAG
+            tag = ClinicalNotesFragment.TAG,
         )
     }
+
     private fun setButtonClickListener() {
         binding.btnSubmit.safeClickListener(this)
         binding.btnDone.safeClickListener(this)
@@ -555,21 +561,23 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
             binding.btnRefer.id -> showReferPatientDialog()
         }
     }
+
     private fun showReferPatientDialog() {
         withNetworkAvailability(online = {
             viewModel.hivCreateResponse.value?.data?.let {
                 showDialogIfNotPresent(
-                    ReferPatientFragment.TAG
+                    ReferPatientFragment.TAG,
                 ) {
                     ReferPatientFragment.newInstance(
                         MedicalReviewTypeEnums.HIV.name,
                         it.patientReference,
-                        it.encounterId
+                        it.encounterId,
                     )
                 }
             }
         })
     }
+
     private fun createSummary() {
         val fragment = supportFragmentManager.findFragmentById(R.id.hivSummary)
         if (fragment is HivImrCmrSummaryFragment) {
@@ -580,7 +588,7 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                     summaryViewModel.nextFollowupDate,
                     DateUtils.DATE_ddMMyyyy,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    inUTC = true
+                    inUTC = true,
                 )
                 if (connectivityManager.isNetworkAvailable()) {
                     viewModel.createHivSummary(
@@ -595,11 +603,12 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                         patientViewModel.getPatientId(),
                         DefinedParams.EMTCT_HIV_MEDICAL_REVIEW,
                         summaryViewModel.eMTCTStatus,
-                        summaryViewModel.maternalOutcome
+                        summaryViewModel.maternalOutcome,
                     )
                 } else {
                     showErrorDialogue(
-                        getString(R.string.error), getString(R.string.no_internet_error),
+                        getString(R.string.error),
+                        getString(R.string.no_internet_error),
                         isNegativeButtonNeed = false,
                     ) {}
                 }
@@ -614,9 +623,9 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
         val systemicExaminationFragment =
             supportFragmentManager.findFragmentById(R.id.obstetricExaminationContainer) as? SystemicExaminationsFragment
 
-        if (!patientViewModel.getPatientLmb().isNullOrEmpty() &&   systemicExaminationFragment?.validateInput() == true) {
+        if (!patientViewModel.getPatientLmb().isNullOrEmpty() && systemicExaminationFragment?.validateInput() == true) {
             callViralLoadTestRecommendation()
-        } else  if (pregnancyDetailsFragment?.validateInput() == true && systemicExaminationFragment?.validateInput() == true) {
+        } else if (pregnancyDetailsFragment?.validateInput() == true && systemicExaminationFragment?.validateInput() == true) {
             callViralLoadTestRecommendation()
         }
     }
@@ -627,15 +636,15 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
         val systemicExaminationFragment =
             supportFragmentManager.findFragmentById(R.id.obstetricExaminationContainer) as? SystemicExaminationsFragment
 
-        if (!patientViewModel.getPatientLmb().isNullOrEmpty() &&   systemicExaminationFragment?.validateInput() == true) {
+        if (!patientViewModel.getPatientLmb().isNullOrEmpty() && systemicExaminationFragment?.validateInput() == true) {
             submitEmtctRequest()
-        } else  if (pregnancyDetailsFragment?.validateInput() == true &&   systemicExaminationFragment?.validateInput() == true) {
+        } else if (pregnancyDetailsFragment?.validateInput() == true && systemicExaminationFragment?.validateInput() == true) {
             submitEmtctRequest()
         }
     }
 
     private fun callViralLoadTestRecommendation() {
-        viewModel.checkRecommendationRInvestigations(patientReference = patientViewModel.getPatientFHIRId(),memberId = patientViewModel.getPatientMemberId())
+        viewModel.checkRecommendationRInvestigations(patientReference = patientViewModel.getPatientFHIRId(), memberId = patientViewModel.getPatientMemberId())
     }
 
     private fun submitEmtctRequest() {
@@ -646,16 +655,16 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
     }
 
     private fun createMedicalReviewRequest(): HivRequestData {
-        val  pregnancyDetailsFragment =
+        val pregnancyDetailsFragment =
             supportFragmentManager.findFragmentById(R.id.pregnancySummaryContainer) as? Any
         var height: Double? = null
         var weight: Double? = null
         if (pregnancyDetailsFragment is PregnancyDetailsFragment) {
-            height =  pregnancyDetailsViewModel.pregnancyDetailsModel.height
-            weight =  pregnancyDetailsViewModel.pregnancyDetailsModel.weight
-        }else{
-            height =  weightViewModel.getHeights()
-            weight =  weightViewModel.getWeight()
+            height = pregnancyDetailsViewModel.pregnancyDetailsModel.height
+            weight = pregnancyDetailsViewModel.pregnancyDetailsModel.weight
+        } else {
+            height = weightViewModel.getHeights()
+            weight = weightViewModel.getWeight()
         }
         return HivRequestData(
             clinicalStage = hivViewModel.whovalue,
@@ -670,37 +679,38 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
             encounter = createMedicalReviewEncounter(
                 encounterId = patientViewModel.encounterId,
                 patientHouseholdId = patientViewModel.getPatientHouseholdId(),
-                memberId = patientViewModel.getPatientMemberId()
+                memberId = patientViewModel.getPatientMemberId(),
             ),
             medicalReviewType = DefinedParams.EMTCT_HIV_MEDICAL_REVIEW,
             clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
             id = patientViewModel.encounterId,
             emtctVisitStatus = hivViewModel.emtctVisitStatus,
-            obstetricExaminations = systemicExaminationViewModel.selectedSystemicExaminations.map { it.value } ,
+            obstetricExaminations = systemicExaminationViewModel.selectedSystemicExaminations.map { it.value },
             obstetricExaminationNotes = systemicExaminationViewModel.enteredExaminationNotes,
             fundalHeight = systemicExaminationViewModel.fundalHeight.takeIfNotNull(),
             fetalHeartRate = systemicExaminationViewModel.fetalHeartRate.takeIfNotNull(),
-            pregnancyDetails = if (pregnancyDetailsFragment is PregnancyDetailsFragment) pregnancyDetailsViewModel.pregnancyDetailsModel else null
+            pregnancyDetails = if (pregnancyDetailsFragment is PregnancyDetailsFragment) pregnancyDetailsViewModel.pregnancyDetailsModel else null,
         )
     }
 
     private fun createMedicalReviewEncounter(
         encounterId: String?,
         patientHouseholdId: String?,
-        memberId: String?
-    ): MedicalReviewEncounter = MedicalReviewEncounter(
-        id = encounterId,
-        patientId = hivViewModel.patientId,
-        provenance = ProvanceDto(),
-        memberId = memberId,
-        latitude = hivViewModel.lastLocation?.latitude ?: 0.0,
-        longitude = hivViewModel.lastLocation?.longitude ?: 0.0,
-        startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
-        endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
-        householdId = patientHouseholdId,
-        visitNumber = hivViewModel.ancVisit,
-        referred = true
-    )
+        memberId: String?,
+    ): MedicalReviewEncounter =
+        MedicalReviewEncounter(
+            id = encounterId,
+            patientId = hivViewModel.patientId,
+            provenance = ProvanceDto(),
+            memberId = memberId,
+            latitude = hivViewModel.lastLocation?.latitude ?: 0.0,
+            longitude = hivViewModel.lastLocation?.longitude ?: 0.0,
+            startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
+            endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
+            householdId = patientHouseholdId,
+            visitNumber = hivViewModel.ancVisit,
+            referred = true,
+        )
 
     private fun openPrescriptionActivity() {
         patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
@@ -733,7 +743,6 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
         }
     }
 
-
     private fun showSummary(callBack: () -> Unit) {
         scrollUp()
         with(binding) {
@@ -758,41 +767,47 @@ class MotherNeonateEMTCTActivity : BaseActivity(), AncVisitCallBack, View.OnClic
                 R.id.hivSummary,
                 HivImrCmrSummaryFragment.TAG,
                 HivImrCmrSummaryFragment.newInstance(
-                    encounterId = viewModel.hivCreateResponse.value?.data?.encounterId,
+                    encounterId = viewModel.hivCreateResponse.value
+                        ?.data
+                        ?.encounterId,
                     fhirId = patientViewModel.getPatientFHIRId(),
-                    isEMTCTMR = true
-
-                )
+                    isEMTCTMR = true,
+                ),
             )
         }
         callBack.invoke()
     }
+
     fun enableRefer(isEnable: Boolean) {
 //        binding.btnRefer.isEnabled = isEnable
     }
+
     override fun onDialogDismissListener(isFinish: Boolean) {
         startActivityWithoutSplashScreen()
     }
+
     private fun onBackPressPopStack() {
         this.finish()
     }
+
     private fun scrollUp() {
         binding.nestedScrollViewID.post {
             binding.nestedScrollViewID.fullScroll(View.FOCUS_UP)
         }
     }
+
     private fun isPregnancyDetailsAndHistoryValidation(): Boolean {
         val model = pregnancyDetailsViewModel.pregnancyDetailsModel
-        return  model.height != null ||
-                model.weight != null ||
-                model.pulse != null ||
-                model.lastMenstrualPeriod != null ||
-                model.estimatedDeliveryDate != null ||
-                model.noOfFetus != null ||
-                model.gravida != null ||
-                model.parity != null ||
-                model.patientBloodGroup != null ||
-                model.systolic != null ||
-                model.diastolic != null
+        return model.height != null ||
+            model.weight != null ||
+            model.pulse != null ||
+            model.lastMenstrualPeriod != null ||
+            model.estimatedDeliveryDate != null ||
+            model.noOfFetus != null ||
+            model.gravida != null ||
+            model.parity != null ||
+            model.patientBloodGroup != null ||
+            model.systolic != null ||
+            model.diastolic != null
     }
 }

@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ExaminationsComplaintsDAO {
@@ -25,12 +24,15 @@ interface ExaminationsComplaintsDAO {
     @Query("SELECT * FROM MetaItemByTypeAndCategoryEntity WHERE LOWER(category) = LOWER(:category) AND LOWER(type) = LOWER(:type) ORDER BY displayOrder ASC")
     fun getExaminationsComplaintsForAnc(
         category: String,
-        type: String
+        type: String,
     ): LiveData<List<MedicalReviewMetaItems>>
 
     @Query("SELECT * FROM MetaItemByTypeAndCategoryEntity WHERE type = :workflow ORDER BY displayOrder ASC")
     fun getExaminationsComplaintByTypeLiveData(workflow: String): LiveData<List<MedicalReviewMetaItems>>
-    @Query("SELECT * FROM MetaItemByTypeAndCategoryEntity WHERE LOWER(category) = LOWER(:category) AND LOWER(type) =  LOWER(:types) ORDER BY displayOrder ASC")
-    fun getExaminationsComplaintsForPnc(category: String, types: String): LiveData<List<MedicalReviewMetaItems>>
 
+    @Query("SELECT * FROM MetaItemByTypeAndCategoryEntity WHERE LOWER(category) = LOWER(:category) AND LOWER(type) =  LOWER(:types) ORDER BY displayOrder ASC")
+    fun getExaminationsComplaintsForPnc(
+        category: String,
+        types: String,
+    ): LiveData<List<MedicalReviewMetaItems>>
 }

@@ -1,17 +1,20 @@
 package com.medtroniclabs.spice.model
 
-data class ViralLoadRecord( val label: String?,
-                            val collectionDate: String?,
-                            val gestationAtDate: String?,
-                            val result: String?
+data class ViralLoadRecord(
+    val label: String?,
+    val collectionDate: String?,
+    val gestationAtDate: String?,
+    val result: String?,
 )
+
 data class ArtRequest(
     val limit: Int,
     val category: String,
     val isActive: Boolean,
     val patientReference: String?,
-    val memberReference: String?
+    val memberReference: String?,
 )
+
 data class ARTResponse(
     val prescribedDays: Int,
     val medicationName: String,
@@ -43,12 +46,14 @@ data class ARTResponse(
     val dispenseRemainingDays: Int,
     val lastReFillDate: String?,
     val reason: String?,
-    val regimenLine:String?,
-    val reasonsForChange:String?
+    val regimenLine: String?,
+    val reasonsForChange: String?,
 )
-data class ARTLoadRecord( val startDate: String?,
-                            val endDate: String?,
-                            val regimen: String?,
-                            val regimenLine: String?,
-                            val reasonForChange: String?
+
+data class ARTLoadRecord(
+    val startDate: String?,
+    val endDate: String?,
+    val regimen: String?,
+    val regimenLine: String?,
+    val reasonForChange: String?,
 )

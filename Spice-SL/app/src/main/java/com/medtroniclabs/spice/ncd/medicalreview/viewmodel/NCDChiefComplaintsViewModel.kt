@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NCDChiefComplaintsViewModel @Inject constructor(
-    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
+    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
 ) : ViewModel() {
     var comments: String = ""
     var chips: ArrayList<ChipViewItemModel> = ArrayList()
@@ -25,5 +25,4 @@ class NCDChiefComplaintsViewModel @Inject constructor(
     fun getChips(type: String?) {
         getChip.value = type
     }
-
 }

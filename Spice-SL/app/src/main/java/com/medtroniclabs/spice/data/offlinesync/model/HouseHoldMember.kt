@@ -3,85 +3,56 @@ package com.medtroniclabs.spice.data.offlinesync.model
 import androidx.room.ColumnInfo
 import androidx.room.Ignore
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
-import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
-import java.util.Locale
+import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 
 data class HouseHoldMember(
-
     @ColumnInfo("id")
     val referenceId: String?,
-
     @ColumnInfo(name = "fhir_id")
     var id: String? = null,
-
     @ColumnInfo("name")
     val name: String,
-
     @ColumnInfo("household_id")
     var householdReferenceId: String? = null,
-
     @ColumnInfo("household_fhir_id")
     var householdId: String? = null,
-
     @ColumnInfo("date_of_birth")
     val dateOfBirth: String,
-
     @ColumnInfo("phone_number")
     val phoneNumber: String,
-
     @ColumnInfo("patient_id")
     val patientId: String? = null,
-
     @ColumnInfo("gender")
     val gender: String,
-
     @ColumnInfo("created_at")
     val createdAt: Long,
-
     @ColumnInfo("updated_at")
     val updatedAt: Long,
-
-    @ColumnInfo(name= "village_name")
+    @ColumnInfo(name = "village_name")
     val village: String,
-
     @ColumnInfo(name = "village_id")
     val villageId: Long,
-
     @ColumnInfo(name = "sub_village_name")
     val subVillage: String? = null,
-
     @ColumnInfo(name = "sub_village_id")
     val subVillageId: Long? = null,
-
     val motherReferenceId: String? = null,
-
     val isActive: Boolean = true,
-
     val version: String? = null,
-
     val lastUpdated: String? = null,
-
     var deceasedReason: String? = null,
-
     var latitude: Double = 0.0,
-
     var longitude: Double = 0.0,
-
     @ColumnInfo("id_type")
     val idType: String = "",
-
     @ColumnInfo("national_id")
     val nationalId: String? = null,
-
     @ColumnInfo("is_house_hold_head")
     val isHouseholdHead: Boolean = false,
-
     @ColumnInfo("assignHousehold")
-    val assignHousehold: Int? = null
-
+    val assignHousehold: Int? = null,
 ) {
-
     @Ignore
     var isChild: Boolean? = false
 
@@ -97,8 +68,12 @@ data class HouseHoldMember(
     @Ignore
     var children: List<HouseHoldMember>? = null
 
-    fun toHouseholdMemberEntity(hhId: Long?, status: OfflineSyncStatus, id: Long = 0): HouseholdMemberEntity {
-        return HouseholdMemberEntity(
+    fun toHouseholdMemberEntity(
+        hhId: Long?,
+        status: OfflineSyncStatus,
+        id: Long = 0,
+    ): HouseholdMemberEntity =
+        HouseholdMemberEntity(
             id = id,
             name = this.name,
             phoneNumber = this.phoneNumber,
@@ -117,10 +92,9 @@ data class HouseHoldMember(
             idType = this.idType,
             nationalId = this.nationalId,
             isHouseholdHead = this.isHouseholdHead,
-            householdFhirId = this.householdId
+            householdFhirId = this.householdId,
         ).apply {
             fhirId = this@HouseHoldMember.id.toString()
             sync_status = status
         }
-    }
 }

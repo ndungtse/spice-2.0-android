@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.databinding.FragmentToolsMenuBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -25,37 +26,37 @@ import com.medtroniclabs.spice.ui.MenuConstants.DialogResult
 import com.medtroniclabs.spice.ui.MenuConstants.WorkFlowName
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
 import com.medtroniclabs.spice.ui.dialog.RMNCHFlowSelectionDialog
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
-import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
-import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
 
 class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
-
     private lateinit var binding: FragmentToolsMenuBinding
     private val viewModel: ToolsViewModel by activityViewModels()
 
     companion object {
         const val TAG = "ToolsMenuFragment"
-        fun newInstance(): ToolsMenuFragment {
-            return ToolsMenuFragment()
-        }
+
+        fun newInstance(): ToolsMenuFragment = ToolsMenuFragment()
     }
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentToolsMenuBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         childFragmentManager.setFragmentResultListener(
             DialogResult,
-            viewLifecycleOwner
+            viewLifecycleOwner,
         ) { _, bundle ->
             val result = bundle.getString(WorkFlowName)
             startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, result)
@@ -67,21 +68,21 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         }
 
         // Deeplink directly goes to Medical review
-       if (requireArguments().getBoolean(DefinedParams.IsDeepLink)){
-           if (getOrigin().equals(MenuConstants.MY_PATIENTS_MENU_ID, true)) {
-               val intent =
-                   Intent(requireContext(), NCDMedicalReviewActivity::class.java).apply {
-                       putExtra(EncounterReference, getEncounterReference())
-                       putExtra(MENU_ID, "ncd")
-                       putExtra(DefinedParams.FhirId, getMemberReference())
-                       putExtra(DefinedParams.PatientId, getPatientReference())
-                       putExtra(DefinedParams.ORIGIN, getOrigin())
-                   }
-               startActivity(intent)
-           } else {
-               startAssessmentActivity("ncd", null)
-           }
-       }
+        if (requireArguments().getBoolean(DefinedParams.IsDeepLink)) {
+            if (getOrigin().equals(MenuConstants.MY_PATIENTS_MENU_ID, true)) {
+                val intent =
+                    Intent(requireContext(), NCDMedicalReviewActivity::class.java).apply {
+                        putExtra(EncounterReference, getEncounterReference())
+                        putExtra(MENU_ID, "ncd")
+                        putExtra(DefinedParams.FhirId, getMemberReference())
+                        putExtra(DefinedParams.PatientId, getPatientReference())
+                        putExtra(DefinedParams.ORIGIN, getOrigin())
+                    }
+                startActivity(intent)
+            } else {
+                startAssessmentActivity("ncd", null)
+            }
+        }
     }
 
     private fun attachObservers() {
@@ -118,15 +119,22 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(menus, this)
     }
 
-    override fun onMenuSelected(menuId: String, subModule: String?) {
+    override fun onMenuSelected(
+        menuId: String,
+        subModule: String?,
+    ) {
         startAssessmentToolsActivity(menuId, subModule)
     }
 
-    private fun startAssessmentToolsActivity(menuId: String, subModule: String? = null) {
+    private fun startAssessmentToolsActivity(
+        menuId: String,
+        subModule: String? = null,
+    ) {
         when (menuId) {
             MenuConstants.RMNCH_MENU_ID -> {
                 if (subModule == null) {
-                    RMNCHFlowSelectionDialog.newInstance()
+                    RMNCHFlowSelectionDialog
+                        .newInstance()
                         .show(childFragmentManager, RMNCHFlowSelectionDialog.TAG)
                 } else {
                     startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, RMNCH.ChildHoodVisit)
@@ -169,9 +177,12 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         startActivity(intent)
     }
 
-    private fun startAssessmentActivity(menuId: String, workFlowName: String?) {
+    private fun startAssessmentActivity(
+        menuId: String,
+        workFlowName: String?,
+    ) {
         val intent = Intent(requireContext(), AssessmentActivity::class.java)
-        intent.putExtra(DefinedParams.HouseholdId,viewModel.selectedHouseholdId)
+        intent.putExtra(DefinedParams.HouseholdId, viewModel.selectedHouseholdId)
         intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberID)
         intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
         intent.putExtra(MenuConstants.FOLLOW_UP, isFollowUp())
@@ -185,22 +196,13 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         startActivity(intent)
     }
 
-    private fun getPatientReference(): String? {
-        return requireArguments().getString(DefinedParams.PatientId)
-    }
+    private fun getPatientReference(): String? = requireArguments().getString(DefinedParams.PatientId)
 
-    private fun getMemberReference(): String? {
-        return requireArguments().getString(DefinedParams.FhirId)
-    }
-    private fun isFollowUp(): Boolean {
-        return requireArguments().getBoolean(MenuConstants.FOLLOW_UP)
-    }
+    private fun getMemberReference(): String? = requireArguments().getString(DefinedParams.FhirId)
 
-    private fun getOrigin(): String {
-        return requireArguments().getString(DefinedParams.ORIGIN) ?: ""
-    }
+    private fun isFollowUp(): Boolean = requireArguments().getBoolean(MenuConstants.FOLLOW_UP)
 
-    private fun getEncounterReference(): String {
-        return requireArguments().getString(EncounterReference) ?: ""
-    }
+    private fun getOrigin(): String = requireArguments().getString(DefinedParams.ORIGIN) ?: ""
+
+    private fun getEncounterReference(): String = requireArguments().getString(EncounterReference) ?: ""
 }

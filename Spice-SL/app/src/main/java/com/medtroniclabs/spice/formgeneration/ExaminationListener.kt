@@ -7,7 +7,7 @@ interface ExaminationListener {
         id: String,
         formLayout: FormLayout,
         resultMap: Any?,
-        diseaseName: String
+        diseaseName: String,
     )
 
     fun setResultHashMap(resultMap: HashMap<String, Any>)

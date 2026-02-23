@@ -11,17 +11,16 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.ActivityNcdCounselingBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.counseling.adapter.NCDCounselingAdapter
-import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.utils.CounselingInterface
 import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
 import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 
 class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingInterface {
-
     private lateinit var binding: ActivityNcdCounselingBinding
 
     private val viewModel: CounselingViewModel by viewModels()
@@ -37,7 +36,7 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
             title = getString(R.string.psychological_assessment),
             callback = {
                 backHandelFlow()
-            }
+            },
         )
         saveIntentValues()
         initializeView()
@@ -146,8 +145,8 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
         mrViewModel.updateBadgeNotifications(
             BadgeNotificationModel(
                 patientReference = viewModel.patientReference,
-                menuName = NCDMRUtil.PsychologicalResults
-            )
+                menuName = NCDMRUtil.PsychologicalResults,
+            ),
         )
     }
 
@@ -159,10 +158,13 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
     }
 
     private fun loadCounselingList() {
-        val counselingList = viewModel.assessmentListLiveData.value?.data?.entityList
+        val counselingList = viewModel.assessmentListLiveData.value
+            ?.data
+            ?.entityList
 
-        if (counselingList.isNullOrEmpty()) hideRecyclerView()
-        else {
+        if (counselingList.isNullOrEmpty()) {
+            hideRecyclerView()
+        } else {
             val adapter = NCDCounselingAdapter(this)
             binding.rvList.layoutManager = LinearLayoutManager(binding.rvList.context ?: this)
             binding.rvList.adapter = adapter
@@ -172,15 +174,17 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
     }
 
     private fun backHandelFlow() {
-        if (viewModel.clinicianNotes.isNullOrEmpty()) closePage()
-        else
+        if (viewModel.clinicianNotes.isNullOrEmpty()) {
+            closePage()
+        } else {
             showErrorDialogue(
                 getString(R.string.alert),
                 getString(R.string.exit_reason_message),
-                isNegativeButtonNeed = true
+                isNegativeButtonNeed = true,
             ) {
                 if (it) closePage()
             }
+        }
     }
 
     private fun closePage() {
@@ -203,13 +207,18 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
             binding.btnAdd.id -> addClinicianNotes()
 
             binding.bottomSheet.btnNext.id -> {
-                if (connectivityManager.isNetworkAvailable()) viewModel.createAssessment(
-                    getCreateRequest(),
-                    false
-                )
-                else showErrorDialogue(
-                    getString(R.string.error), getString(R.string.no_internet_error), false
-                ) {}
+                if (connectivityManager.isNetworkAvailable()) {
+                    viewModel.createAssessment(
+                        getCreateRequest(),
+                        false,
+                    )
+                } else {
+                    showErrorDialogue(
+                        getString(R.string.error),
+                        getString(R.string.no_internet_error),
+                        false,
+                    ) {}
+                }
             }
 
             binding.bottomSheet.btnBack.id -> backHandelFlow()
@@ -217,12 +226,14 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
     }
 
     private fun addClinicianNotes() {
-        if (viewModel.clinicianNotes.isNullOrEmpty())
+        if (viewModel.clinicianNotes.isNullOrEmpty()) {
             viewModel.clinicianNotes = arrayListOf()
+        }
 
         binding.etClinicalNotes.text?.let {
-            if (it.isNotEmpty())
+            if (it.isNotEmpty()) {
                 viewModel.clinicianNotes?.add(it.toString())
+            }
         }
 
         binding.etClinicalNotes.text?.clear()
@@ -242,12 +253,13 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
 
             viewModel.clinicianNotes?.forEach {
                 add(
-                    0, NCDCounselingModel(
+                    0,
+                    NCDCounselingModel(
                         clinicianNotes = arrayListOf(it),
                         referredBy = NCDMRUtil.currentUserId(),
                         referredByDisplay = NCDMRUtil.getUserName(),
                         referredDate = DateUtils.getTodayDateDDMMYYYY(),
-                    )
+                    ),
                 )
             }
         }
@@ -263,8 +275,8 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
         }
     }
 
-    private fun getCreateRequest(): NCDCounselingModel {
-        return with(viewModel) {
+    private fun getCreateRequest(): NCDCounselingModel =
+        with(viewModel) {
             NCDCounselingModel(
                 patientReference = patientReference,
                 memberReference = memberReference,
@@ -274,17 +286,16 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
                 referredBy = NCDMRUtil.currentUserId(),
                 referredByDisplay = NCDMRUtil.getUserName(),
                 referredDate = DateUtils.getTodayDateDDMMYYYY(),
-                isCounselor = counselor
+                isCounselor = counselor,
             )
         }
-    }
 
     private fun getCounselingList() {
         val request = NCDCounselingModel(
             patientReference = viewModel.patientReference,
             memberReference = viewModel.memberReference,
             visitId = viewModel.encounterReference,
-            patientVisitId = viewModel.encounterReference
+            patientVisitId = viewModel.encounterReference,
         )
         viewModel.getAssessmentList(request, false)
     }

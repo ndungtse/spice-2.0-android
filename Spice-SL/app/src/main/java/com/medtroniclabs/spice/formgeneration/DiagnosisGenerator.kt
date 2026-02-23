@@ -24,7 +24,7 @@ class DiagnosisGenerator(
     private val parentLayout: LinearLayout,
     val listener: DiagnosisListener,
     var scrollView: NestedScrollView? = null,
-    val translate: Boolean = false
+    val translate: Boolean = false,
 ) {
     private val countSuffix = "countSuffix"
     private val tagViews = mutableListOf<TagListCustomView>()
@@ -33,7 +33,7 @@ class DiagnosisGenerator(
 
     fun populateDiagnosisView(
         diagnosis: List<DiseaseCategoryItems>,
-        selectedItemList: List<ChipViewItemModel>?
+        selectedItemList: List<ChipViewItemModel>?,
     ) {
         diagnosis.forEach {
             val binding = DiagnosisAccordionLayoutBinding.inflate(LayoutInflater.from(context))
@@ -47,29 +47,31 @@ class DiagnosisGenerator(
                     binding.ivDropDown.setImageDrawable(
                         getDrawable(
                             context,
-                            R.drawable.ic_arrow_purple
-                        )
+                            R.drawable.ic_arrow_purple,
+                        ),
                     )
                 } else {
                     binding.llFamilyRoot.visibility = View.GONE
                     binding.ivDropDown.setImageDrawable(
                         getDrawable(
                             context,
-                            R.drawable.ic_arrow_forward
-                        )
+                            R.drawable.ic_arrow_forward,
+                        ),
                     )
                 }
             }
             val layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
             )
-            //layoutParams.setMargins(10, 10, 10, 10)
+            // layoutParams.setMargins(10, 10, 10, 10)
             binding.root.layoutParams = layoutParams
             val tagView =
                 TagListCustomView(
-                    context, binding.diagnosisHolder
+                    context,
+                    binding.diagnosisHolder,
                 ) { _, _, _ ->
-                    //updateSelectedCount()
+                    // updateSelectedCount()
                     diagnosisCallback?.onDiagnosisSelection(isAccordionNotEmpty())
                 }
             renderDiagnosisAccordionView(
@@ -77,7 +79,7 @@ class DiagnosisGenerator(
                 it.name,
                 it.diseaseCondition,
                 selectedItemList,
-                binding.tvCount
+                binding.tvCount,
             )
             tagViews.add(tagView)
             parentLayout.addView(binding.root)
@@ -106,16 +108,14 @@ class DiagnosisGenerator(
         }
     }
 
-    fun getViewByTag(tag: Any): View? {
-        return parentLayout.findViewWithTag(tag)
-    }
+    fun getViewByTag(tag: Any): View? = parentLayout.findViewWithTag(tag)
 
     private fun renderDiagnosisAccordionView(
         tagView: TagListCustomView,
         name: String,
         diseaseCondition: ArrayList<DiseaseConditionItems>,
         selectedItemList: List<ChipViewItemModel>?,
-        tvCount: AppCompatTextView
+        tvCount: AppCompatTextView,
     ) {
         diseaseCondition.let {
             val chipItemList = ArrayList<ChipViewItemModel>()
@@ -124,26 +124,22 @@ class DiagnosisGenerator(
                     ChipViewItemModel(
                         id = it.id,
                         name = it.name,
-                        value = it.value
-                    )
+                        value = it.value,
+                    ),
                 )
             }
             tagView.addChipItemList(
                 chipItemList,
-                selectedItemList
+                selectedItemList,
             )
         }
         val count = tagView.getSelectedTags().size
         tvCount.text = count.toString()
     }
 
-    fun isAccordionNotEmpty(): Boolean {
-        return getSelectedTagsForAccordions().values.any { it.isNotEmpty() }
-    }
+    fun isAccordionNotEmpty(): Boolean = getSelectedTagsForAccordions().values.any { it.isNotEmpty() }
 
-    fun isEmptyAccordion(): Boolean {
-        return getSelectedTagsForAccordions().values.all { it.isEmpty() }
-    }
+    fun isEmptyAccordion(): Boolean = getSelectedTagsForAccordions().values.all { it.isEmpty() }
 
     fun getSelectedTagsForAccordions(): HashMap<String, List<ChipViewItemModel>> {
         selectedTagsMap.clear()

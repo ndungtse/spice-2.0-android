@@ -10,7 +10,6 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.model.MentalHealthOption
 import com.medtroniclabs.spice.mappingkey.Screening
 
-
 class MentalHealthAdapter(
     val context: Context,
     val list: ArrayList<MentalHealthOption>,
@@ -19,33 +18,40 @@ class MentalHealthAdapter(
     val isViewOnly: Boolean = false,
     val translate: Boolean = false,
     val resultMap: HashMap<String, Any>,
-    private val callback: ((id: String, question: String, result: HashMap<String, Any>, isUnselect: Boolean, isClicked: Boolean) -> Unit?)? = null
+    private val callback: ((id: String, question: String, result: HashMap<String, Any>, isUnselect: Boolean, isClicked: Boolean) -> Unit?)? = null,
 ) :
     RecyclerView.Adapter<MentalHealthAdapter.MentalHealthViewHolder>() {
     class MentalHealthViewHolder(val binding: RowMentalHealthBinding) :
         RecyclerView.ViewHolder(binding.root)
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MentalHealthViewHolder {
-        return MentalHealthViewHolder(
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): MentalHealthViewHolder =
+        MentalHealthViewHolder(
             RowMentalHealthBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
-    override fun onBindViewHolder(holder: MentalHealthViewHolder, position: Int) {
+
+    override fun onBindViewHolder(
+        holder: MentalHealthViewHolder,
+        position: Int,
+    ) {
         val model = list[position]
         inflateAnswerViews(model, holder)
         val question = (model.map[Screening.Questions] as String?) ?: ""
         val questionCulture = (model.map[DefinedParams.cultureValue] as String?)
             ?: (model.map[DefinedParams.displayValue] as String?) ?: ""
-        if (translate){
-            if (questionCulture.isNotBlank()){
+        if (translate) {
+            if (questionCulture.isNotBlank()) {
                 holder.binding.tvQuestion.text = questionCulture
-            } else{
+            } else {
                 holder.binding.tvQuestion.text = question
             }
-        }else {
+        } else {
             holder.binding.tvQuestion.text = question
         }
         holder.binding.tvQuestion.tag = question
@@ -54,7 +60,11 @@ class MentalHealthAdapter(
             holder.binding.tvQuestion.markMandatory()
         }
     }
-    private fun inflateAnswerViews(model: MentalHealthOption, holder: MentalHealthViewHolder) {
+
+    private fun inflateAnswerViews(
+        model: MentalHealthOption,
+        holder: MentalHealthViewHolder,
+    ) {
         val question = (model.map[Screening.Questions] as String?) ?: ""
         val displayOrder = (model.map[Screening.Display_Order] as? Number)?.toLong() ?: -1
         val isUnselect = (model.map[Screening.select] as? Boolean) ?: false
@@ -72,7 +82,7 @@ class MentalHealthAdapter(
                         Pair(model.selectedOption?.toLong() ?: -1L, mapType),
                         editList,
                         resultMap,
-                        Triple(isViewOnly,isUnselect, question)
+                        Triple(isViewOnly, isUnselect, question),
                     ) { questionId, answerId, score, answerName, isClicked ->
                         val result = HashMap<String, Any>()
                         result[Screening.Question_Id] = questionId
@@ -85,14 +95,13 @@ class MentalHealthAdapter(
                             question,
                             result,
                             isUnselect,
-                            isClicked
+                            isClicked,
                         )
                     }
                 holder.binding.llAnswerRoot.addView(view)
             }
         }
     }
-    override fun getItemCount(): Int {
-        return list.size
-    }
+
+    override fun getItemCount(): Int = list.size
 }

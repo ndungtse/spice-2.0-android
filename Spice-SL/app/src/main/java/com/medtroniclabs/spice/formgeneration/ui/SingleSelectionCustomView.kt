@@ -13,11 +13,9 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 
 class SingleSelectionCustomView : LinearLayout {
-
     private lateinit var viewContext: Context
 
     private var optionList: ArrayList<Map<String, Any>>? = null
-
 
     constructor(context: Context) : super(context) {
         init(context)
@@ -30,7 +28,7 @@ class SingleSelectionCustomView : LinearLayout {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
-        defStyleAttr
+        defStyleAttr,
     ) {
         init(context)
     }
@@ -39,7 +37,7 @@ class SingleSelectionCustomView : LinearLayout {
         context: Context,
         attrs: AttributeSet?,
         defStyleAttr: Int,
-        defStyleRes: Int
+        defStyleRes: Int,
     ) : super(context, attrs, defStyleAttr, defStyleRes) {
         init(context)
     }
@@ -56,7 +54,7 @@ class SingleSelectionCustomView : LinearLayout {
         resultMap: HashMap<String, Any>?,
         elementID: Pair<String, String?>,
         formLayout: FormLayout,
-        callback: ((selectedID: Any?, elementID: Pair<String,String?>, formLayout: FormLayout, name:String?) -> Unit?)?
+        callback: ((selectedID: Any?, elementID: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit?)?,
     ) {
         removeAllViews()
         this.optionList = optionList
@@ -68,9 +66,9 @@ class SingleSelectionCustomView : LinearLayout {
             val param = LayoutParams(
                 0,
                 LayoutParams.MATCH_PARENT,
-                1.0f
+                1.0f,
             )
-            val selectedValue = if (resultMap!= null)  resultMap[elementID.first] else null
+            val selectedValue = if (resultMap != null) resultMap[elementID.first] else null
             textView.tag = "${idValue}_${elementID.first}"
             textView.isSelected = selectedValue != null && selectedValue == idValue
             textView.layoutParams = param
@@ -89,14 +87,14 @@ class SingleSelectionCustomView : LinearLayout {
             }
 
             textView.safeClickListener {
-                callback?.invoke(optionValue[DefinedParams.ID], elementID,formLayout,(name as String?))
+                callback?.invoke(optionValue[DefinedParams.ID], elementID, formLayout, (name as String?))
                 addViewElements(
                     optionList,
                     translate,
                     resultMap,
                     elementID,
                     formLayout,
-                    callback
+                    callback,
                 )
             }
             addView(textView)
@@ -105,13 +103,13 @@ class SingleSelectionCustomView : LinearLayout {
 
     private fun getBackgroundDrawable(
         index: Int,
-        list: ArrayList<Map<String, Any>>
+        list: ArrayList<Map<String, Any>>,
     ): Drawable? {
         when (index) {
             0 -> return ContextCompat.getDrawable(viewContext, R.drawable.left_mh_view_selector)
             list.size - 1 -> return ContextCompat.getDrawable(
                 viewContext,
-                R.drawable.right_mh_view_selector
+                R.drawable.right_mh_view_selector,
             )
         }
         return null

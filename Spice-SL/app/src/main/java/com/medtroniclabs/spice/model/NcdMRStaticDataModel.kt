@@ -15,5 +15,5 @@ data class NcdMRStaticDataModel(
     val frequencies: List<TreatmentPlanEntity>,
     val frequencyTypes: List<NCDMedicalReviewMetaEntity>,
     val nutritionLifestyles: List<NCDMedicalReviewMetaEntity>,
-    val dosageDuration: List<DosageDurationEntity>? = null
+    val dosageDuration: List<DosageDurationEntity>? = null,
 )

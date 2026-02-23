@@ -14,6 +14,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("kotlin-parcelize")
+    id("org.jlleitschuh.gradle.ktlint")
 }
 
 android {
@@ -94,7 +95,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             applicationVariants.all {
                 if (buildType.name == "release") {
@@ -165,7 +166,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             applicationVariants.all {
                 if (buildType.name == "staging") {
@@ -194,7 +195,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             applicationVariants.all {
                 if (buildType.name == "training") {
@@ -250,6 +251,14 @@ android {
             useLegacyPackaging = false
         }
     }
+
+    bundle {
+        // Disabling splitting the APK based on language
+        // as we have dynamic switching of language on runtime
+        language {
+            enableSplit = false
+        }
+    }
 }
 
 /** Export Room schemas via KAPT (no Room plugin needed) */
@@ -267,7 +276,7 @@ dependencies {
     implementation(project(":analytics"))
 
     // Provide Lifecycle lint to avoid detector crashes
-    //lintChecks("androidx.lifecycle:lifecycle-runtime-lint:2.8.6")
+    // lintChecks("androidx.lifecycle:lifecycle-runtime-lint:2.8.6")
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")

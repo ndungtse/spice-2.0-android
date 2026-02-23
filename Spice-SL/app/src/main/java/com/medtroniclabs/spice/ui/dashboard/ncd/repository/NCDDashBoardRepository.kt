@@ -11,9 +11,8 @@ import javax.inject.Inject
 class NCDDashBoardRepository @Inject constructor(
     private var apiHelper: ApiHelper,
 ) {
-
-    suspend fun getUserDashboardDetails(request: NCDUserDashboardRequest): Resource<NCDUserDashboardResponse> {
-        return try {
+    suspend fun getUserDashboardDetails(request: NCDUserDashboardRequest): Resource<NCDUserDashboardResponse> =
+        try {
             val response = apiHelper.getUserDashboardDetails(request)
             if (response.isSuccessful) {
                 response.body()?.entity?.let {
@@ -26,6 +25,4 @@ class NCDDashBoardRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
-
-    }
 }

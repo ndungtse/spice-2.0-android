@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.activity.viewModels
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
@@ -21,7 +20,6 @@ import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.phuwalkins.listener.LinkSuccessListener
 
 class LinkPatientDialogFragment : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentLinkpatientDialogBinding
     private var onDismissListener: OnDialogDismissListener? = null
     private var onLinkSuccessListener: LinkSuccessListener? = null
@@ -33,10 +31,10 @@ class LinkPatientDialogFragment : DialogFragment(), View.OnClickListener {
         onDismissListener = context as OnDialogDismissListener
     }
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentLinkpatientDialogBinding.inflate(layoutInflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -47,7 +45,11 @@ class LinkPatientDialogFragment : DialogFragment(), View.OnClickListener {
     companion object {
         const val TAG = "LinkPatientDialogFragment"
 
-        fun newInstance(houseHoldID: Long, memberID: Long, fhirMemberId: Long): LinkPatientDialogFragment {
+        fun newInstance(
+            houseHoldID: Long,
+            memberID: Long,
+            fhirMemberId: Long,
+        ): LinkPatientDialogFragment {
             val bundle = Bundle().apply {
                 putLong(HouseholdDefinedParams.ID, houseHoldID)
                 putLong(DefinedParams.MemberID, memberID)
@@ -63,11 +65,14 @@ class LinkPatientDialogFragment : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.PHUWALKINSCREENLINKCONFIRMATION)
         setListener()
@@ -78,7 +83,6 @@ class LinkPatientDialogFragment : DialogFragment(), View.OnClickListener {
         binding.btnCancel.safeClickListener(this)
     }
 
-
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnLink.id -> {
@@ -86,13 +90,13 @@ class LinkPatientDialogFragment : DialogFragment(), View.OnClickListener {
                 val intent = Intent(requireActivity(), HouseholdActivity::class.java)
                 intent.putExtra(
                     HouseholdDefinedParams.isPhuWalkInsFlow,
-                    true
+                    true,
                 )
-                intent.putExtra(DefinedParams.MemberID,  arguments?.getLong(DefinedParams.MemberID, -1L))
-                intent.putExtra(DefinedParams.FhirMemberID,  arguments?.getLong(DefinedParams.FhirMemberID, -1L))
+                intent.putExtra(DefinedParams.MemberID, arguments?.getLong(DefinedParams.MemberID, -1L))
+                intent.putExtra(DefinedParams.FhirMemberID, arguments?.getLong(DefinedParams.FhirMemberID, -1L))
                 intent.putExtra(
                     HouseholdDefinedParams.ID,
-                    arguments?.getLong(HouseholdDefinedParams.ID, -1L)
+                    arguments?.getLong(HouseholdDefinedParams.ID, -1L),
                 )
                 startActivity(intent)
                 dismiss()

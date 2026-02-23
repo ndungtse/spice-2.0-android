@@ -15,7 +15,6 @@ import com.medtroniclabs.spice.databinding.ItemCommunityProfileOthersTxtBinding
 import com.medtroniclabs.spice.mappingkey.CommunityDetails
 
 class CommunitySummaryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
     companion object {
         const val TYPE_PROFILE = 0
         const val TYPE_OTHER = 1
@@ -34,15 +33,14 @@ class CommunitySummaryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() 
         notifyItemRangeChanged(0, list.size)
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return when (communitySummaryList[position]) {
+    override fun getItemViewType(position: Int): Int =
+        when (communitySummaryList[position]) {
             is CommunitySummaryListItem.ProfileItem -> TYPE_PROFILE
             is CommunitySummaryListItem.OtherItem -> TYPE_OTHER
             is CommunitySummaryListItem.TitleItem -> TYPE_TITLE
             is CommunitySummaryListItem.EmergencyItem -> TYPE_EMERGENCY
             is CommunitySummaryListItem.OtherItemText -> TYPE_OTHER_TXT
         }
-    }
 
     class ProfileViewHolder(val binding: ItemCommunityProfileDetailsBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -51,7 +49,7 @@ class CommunitySummaryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() 
             binding.tvProfileDescription.text = item.desc
             binding.tvRegisteredDate.text = binding.root.context.getString(
                 R.string.registered_completed_on,
-                item.registeredDate
+                item.registeredDate,
             )
         }
     }
@@ -91,8 +89,10 @@ class CommunitySummaryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() 
             item.valuesMap?.iterator()?.forEach {
                 val subView = ItemCommunityProfileEmergencyChildBinding.inflate(
                     LayoutInflater.from(
-                        binding.root.context
-                    ), binding.emergencyParent, false
+                        binding.root.context,
+                    ),
+                    binding.emergencyParent,
+                    false,
                 )
                 subView.tvEmergencyLabel.text = it.key
                 subView.tvEmergencyValue.text = it.value
@@ -109,57 +109,61 @@ class CommunitySummaryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() 
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_PROFILE -> ProfileViewHolder(
                 ItemCommunityProfileDetailsBinding.inflate(
                     inflater,
                     parent,
-                    false
-                )
+                    false,
+                ),
             )
 
             TYPE_OTHER -> OtherViewHolder(
                 ItemCommunityProfileOthersBinding.inflate(
                     inflater,
                     parent,
-                    false
-                )
+                    false,
+                ),
             )
 
             TYPE_TITLE -> TitleViewHolder(
                 ItemCommunityProfileHeaderBinding.inflate(
                     inflater,
                     parent,
-                    false
-                )
+                    false,
+                ),
             )
 
             TYPE_EMERGENCY -> EmergencyViewHolder(
                 ItemCommunityProfileEmergencyBinding.inflate(
                     inflater,
                     parent,
-                    false
-                )
+                    false,
+                ),
             )
 
             TYPE_OTHER_TXT -> OtherTextViewHolder(
                 ItemCommunityProfileOthersTxtBinding.inflate(
                     inflater,
                     parent,
-                    false
-                )
+                    false,
+                ),
             )
             else -> throw IllegalArgumentException("Invalid view type")
         }
     }
 
-    override fun getItemCount(): Int {
-        return communitySummaryList.size
-    }
+    override fun getItemCount(): Int = communitySummaryList.size
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+    ) {
         val item = communitySummaryList[position]
         when (item) {
             is CommunitySummaryListItem.ProfileItem -> (holder as ProfileViewHolder).bind(item)

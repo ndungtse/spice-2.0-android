@@ -58,7 +58,7 @@ class NCDFollowUpActivity : BaseActivity() {
             binding.root,
             title = getString(R.string.search_patient),
             isToolbarVisible = true,
-            homeAndBackVisibility = Pair(true, true)
+            homeAndBackVisibility = Pair(true, true),
         )
         initView()
         setTabLayout()
@@ -74,7 +74,8 @@ class NCDFollowUpActivity : BaseActivity() {
             llFilter.btnFilter.safeClickListener {
                 val fragment = supportFragmentManager.findFragmentByTag(NCDFollowUpFilterDialog.TAG)
                 if (fragment == null) {
-                    NCDFollowUpFilterDialog.newInstance()
+                    NCDFollowUpFilterDialog
+                        .newInstance()
                         .show(supportFragmentManager, NCDFollowUpFilterDialog.TAG)
                 }
             }
@@ -107,7 +108,7 @@ class NCDFollowUpActivity : BaseActivity() {
                                 }
                             }
                         },
-                        isErrorShow = false
+                        isErrorShow = false,
                     )
                 }
                 isInitial = false
@@ -115,7 +116,9 @@ class NCDFollowUpActivity : BaseActivity() {
             llExactSearch.btnSearch.safeClickListener {
                 withNetworkAvailability(online = {
                     viewModel.searchText =
-                        llExactSearch.etSearchTerm.text?.trim().toString()
+                        llExactSearch.etSearchTerm.text
+                            ?.trim()
+                            .toString()
                     when (viewModel.type) {
                         SCREENED -> {
                             ncdFollowUpSearchViewModel.searchLiveData()
@@ -153,7 +156,8 @@ class NCDFollowUpActivity : BaseActivity() {
                         val fragment =
                             supportFragmentManager.findFragmentByTag(NCDCallResultBottomDialog.TAG)
                         if (fragment == null) {
-                            NCDCallResultBottomDialog.newInstance()
+                            NCDCallResultBottomDialog
+                                .newInstance()
                                 .show(supportFragmentManager, NCDCallResultBottomDialog.TAG)
                         }
                     } else {
@@ -211,7 +215,7 @@ class NCDFollowUpActivity : BaseActivity() {
                         showErrorDialogue(
                             getString(R.string.error),
                             message,
-                            isNegativeButtonNeed = false
+                            isNegativeButtonNeed = false,
                         ) {}
                     }
                 }
@@ -222,10 +226,14 @@ class NCDFollowUpActivity : BaseActivity() {
             it?.let { count ->
                 if (count > 0) {
                     binding.tvHPatientCount.apply {
-                        text = if (count == 1) getString(R.string.patient_found) else getString(
-                            R.string.patients_found,
-                            count
-                        )
+                        text = if (count == 1) {
+                            getString(R.string.patient_found)
+                        } else {
+                            getString(
+                                R.string.patients_found,
+                                count,
+                            )
+                        }
                         visibility = View.VISIBLE
                     }
                     binding.tvPatientNoFound.gone()
@@ -266,6 +274,7 @@ class NCDFollowUpActivity : BaseActivity() {
     }
 
     var isInitial = false
+
     private fun setTabLayout() {
         binding.llExactSearch.etSearchTerm.hint = getString(R.string.search_by_national_id)
         binding.viewPager.adapter = NCDFollowUpAdapter(supportFragmentManager, lifecycle)
@@ -274,14 +283,26 @@ class NCDFollowUpActivity : BaseActivity() {
                 getString(R.string.referred),
                 getString(R.string.assessment),
                 getString(R.string.defaulters),
-                getString(R.string.LTFU)
+                getString(R.string.LTFU),
             )
             tab.text = tabTitles.getOrNull(position) ?: ""
         }.attach()
-        binding.llExactSearch.tabLayout.getTabAt(0)?.view?.setBackgroundResource(R.drawable.left_mh_view_selector)
-        binding.llExactSearch.tabLayout.getTabAt(1)?.view?.setBackgroundResource(R.drawable.mental_health_button_bg)
-        binding.llExactSearch.tabLayout.getTabAt(2)?.view?.setBackgroundResource(R.drawable.mental_health_button_bg)
-        binding.llExactSearch.tabLayout.getTabAt(3)?.view?.setBackgroundResource(R.drawable.right_mh_view_selector)
+        binding.llExactSearch.tabLayout
+            .getTabAt(0)
+            ?.view
+            ?.setBackgroundResource(R.drawable.left_mh_view_selector)
+        binding.llExactSearch.tabLayout
+            .getTabAt(1)
+            ?.view
+            ?.setBackgroundResource(R.drawable.mental_health_button_bg)
+        binding.llExactSearch.tabLayout
+            .getTabAt(2)
+            ?.view
+            ?.setBackgroundResource(R.drawable.mental_health_button_bg)
+        binding.llExactSearch.tabLayout
+            .getTabAt(3)
+            ?.view
+            ?.setBackgroundResource(R.drawable.right_mh_view_selector)
         val tabView1 = (binding.llExactSearch.tabLayout.getChildAt(0) as? ViewGroup)?.getChildAt(0)
         tabView1?.setPadding(0, 0, 0, 0)
         val tabView2 = (binding.llExactSearch.tabLayout.getChildAt(0) as? ViewGroup)?.getChildAt(1)
@@ -321,7 +342,7 @@ class NCDFollowUpActivity : BaseActivity() {
 
                     setTabTypeface(
                         it,
-                        ResourcesCompat.getFont(applicationContext, R.font.inter_bold)
+                        ResourcesCompat.getFont(applicationContext, R.font.inter_bold),
                     )
                 }
             }
@@ -329,7 +350,7 @@ class NCDFollowUpActivity : BaseActivity() {
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 setTabTypeface(
                     tab,
-                    ResourcesCompat.getFont(applicationContext, R.font.inter_regular)
+                    ResourcesCompat.getFont(applicationContext, R.font.inter_regular),
                 )
             }
 
@@ -343,8 +364,10 @@ class NCDFollowUpActivity : BaseActivity() {
         }
     }
 
-
-    private fun setTabTypeface(tab: TabLayout.Tab?, typeface: Typeface?) {
+    private fun setTabTypeface(
+        tab: TabLayout.Tab?,
+        typeface: Typeface?,
+    ) {
         val count = tab?.view?.childCount ?: 0
         for (i in 0 until count) {
             val tabViewChild = tab?.view?.getChildAt(i)

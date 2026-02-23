@@ -31,30 +31,31 @@ import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 import com.medtroniclabs.spice.ui.peersupervisor.PerformanceMonitoringActivity
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
-
     private lateinit var binding: FragmentHomeScreenBinding
 
     private val viewModel: LandingViewModel by activityViewModels()
 
     companion object {
         const val TAG = "HomeScreenFragment"
-        fun newInstance(): HomeScreenFragment {
-            return HomeScreenFragment()
-        }
+
+        fun newInstance(): HomeScreenFragment = HomeScreenFragment()
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentHomeScreenBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         attachObservers()
         viewModel.getMenus()
@@ -63,9 +64,8 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
     override fun onResume() {
         super.onResume()
         viewModel.setUserJourney(getString(R.string.home))
-        isDeeplink(arguments?.getBoolean(DefinedParams.IsDeepLink,false))
+        isDeeplink(arguments?.getBoolean(DefinedParams.IsDeepLink, false))
     }
-
 
     private fun attachObservers() {
         viewModel.menuListLiveData.observe(viewLifecycleOwner) { resourceState ->
@@ -99,10 +99,12 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
             binding.rvActivitiesList.layoutManager = layoutManager
         }
         binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(menuEntity, this)
-
     }
 
-    override fun onMenuSelected(menuId: String, subModule: String?) {
+    override fun onMenuSelected(
+        menuId: String,
+        subModule: String?,
+    ) {
         when (menuId) {
             MenuConstants.HOUSEHOLD_MENU_ID -> {
                 startActivity(Intent(requireContext(), HouseholdSearchActivity::class.java))
@@ -112,10 +114,14 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
                 val bundle = Bundle().apply {
                     putString(DefinedParams.ORIGIN, MenuConstants.MY_PATIENTS_MENU_ID)
                 }
-                val intent = if (CommonUtils.isCommunity()) Intent(
-                    requireContext(),
-                    FollowUpMyPatientActivity::class.java
-                ) else Intent(requireContext(), PatientSearchActivity ::class.java)
+                val intent = if (CommonUtils.isCommunity()) {
+                    Intent(
+                        requireContext(),
+                        FollowUpMyPatientActivity::class.java,
+                    )
+                } else {
+                    Intent(requireContext(), PatientSearchActivity::class.java)
+                }
 
                 intent.putExtras(bundle)
                 if (CommonUtils.isCommunity()) {
@@ -133,20 +139,19 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
 
             MenuConstants.PerformanceMonitoring_ID -> {
                 if (connectivityManager.isNetworkAvailable()) {
-                    val intent = Intent(requireContext(),PerformanceMonitoringActivity::class.java)
+                    val intent = Intent(requireContext(), PerformanceMonitoringActivity::class.java)
                     startActivity(intent)
                 } else {
                     (activity as BaseActivity?)?.showErrorDialogue(
                         getString(R.string.title_no_network),
                         getString(R.string.message_no_network),
-                        isNegativeButtonNeed = false
+                        isNegativeButtonNeed = false,
                     ) { _ -> }
                 }
-
             }
 
-            /*  NCD WorkFlow                           */
-            MenuConstants.SCREENING ->{
+            // NCD WorkFlow
+            MenuConstants.SCREENING -> {
                 startActivity(Intent(requireContext(), ScreeningActivity::class.java))
             }
 
@@ -230,16 +235,20 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
             val bundle = Bundle().apply {
                 putString(DefinedParams.ORIGIN, MenuConstants.MY_PATIENTS_MENU_ID)
             }
-            val intent = if (CommonUtils.isCommunity()) Intent(
-                requireContext(),
-                FollowUpMyPatientActivity::class.java
-            ) else Intent(requireContext(), PatientSearchActivity::class.java)
+            val intent = if (CommonUtils.isCommunity()) {
+                Intent(
+                    requireContext(),
+                    FollowUpMyPatientActivity::class.java,
+                )
+            } else {
+                Intent(requireContext(), PatientSearchActivity::class.java)
+            }
 
             intent.putExtras(bundle)
             if (CommonUtils.isCommunity()) {
                 startActivity(intent)
             } else {
-                    startActivity(intent)
+                startActivity(intent)
             }
         }
     }

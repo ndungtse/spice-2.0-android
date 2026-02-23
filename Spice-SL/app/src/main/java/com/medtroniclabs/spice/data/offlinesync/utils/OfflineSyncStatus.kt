@@ -5,5 +5,5 @@ enum class OfflineSyncStatus() {
     InProgress,
     NetworkError,
     Success,
-    Failed
+    Failed,
 }

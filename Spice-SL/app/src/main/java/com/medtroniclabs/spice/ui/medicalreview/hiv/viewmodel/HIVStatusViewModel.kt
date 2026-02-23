@@ -19,15 +19,14 @@ class HIVStatusViewModel @Inject constructor(
     private val hivMedicalReviewRepo: HivMedicalReviewRepo,
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
-
     val resultPregnantStatus = HashMap<String, Any>()
     val resultAHD = HashMap<String, Any>()
     val resultDSD = HashMap<String, Any>()
     val getHivStatusMetaList = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
     var selectModel: String? = null
     val request: HivStatus? = null
-    var tbStatus :String? = null
-    var isEMTCT :Boolean = false
+    var tbStatus: String? = null
+    var isEMTCT: Boolean = false
 
     fun getHivStatusMeta(type: String) {
         viewModelScope.launch(dispatcherIO) {

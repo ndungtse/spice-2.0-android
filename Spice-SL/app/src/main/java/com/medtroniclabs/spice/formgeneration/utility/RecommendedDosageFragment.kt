@@ -20,13 +20,16 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ACT
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class RecommendedDosageFragment : DialogFragment(), View.OnClickListener {
-
     lateinit var binding: FragmentRecommendedDosageBinding
     private val viewModel: AssessmentViewModel by activityViewModels()
 
     companion object {
         const val TAG = "RecommendedDosageFragment"
-        fun newInstance(id: String, title: String): RecommendedDosageFragment {
+
+        fun newInstance(
+            id: String,
+            title: String,
+        ): RecommendedDosageFragment {
             val fragment = RecommendedDosageFragment()
             fragment.arguments = Bundle().apply {
                 putString(DefinedParams.ID, id)
@@ -39,7 +42,7 @@ class RecommendedDosageFragment : DialogFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentRecommendedDosageBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -47,7 +50,10 @@ class RecommendedDosageFragment : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         initializeViews()
@@ -58,7 +64,9 @@ class RecommendedDosageFragment : DialogFragment(), View.OnClickListener {
         binding.tvHeaderMessage.gone()
         binding.tvHeader2Message?.gone()
         val ageInMonths =
-            viewModel.memberDetailsLiveData.value?.data?.let { convertStringDobToMonths(it.dateOfBirth) }
+            viewModel.memberDetailsLiveData.value
+                ?.data
+                ?.let { convertStringDobToMonths(it.dateOfBirth) }
 
         val mainTable = viewModel.dosageListModel?.filter { it.tableId == 1 }
         val secondaryTable = viewModel.dosageListModel?.filter { it.tableId == 2 }
@@ -70,7 +78,8 @@ class RecommendedDosageFragment : DialogFragment(), View.OnClickListener {
                         val dosageTableList =
                             dosageItem.dosageFrequency?.filter { (age >= it.minMonth) && (age <= it.maxMonth) }
                         binding.tvTitle.text = dosageItem.title ?: requireContext().getString(
-                            R.string.instructions)
+                            R.string.instructions,
+                        )
                         dosageTableList?.let { dosageTableItem ->
                             if (dosageTableItem.isNotEmpty()) {
                                 binding.tableRecyclerView.apply {
@@ -85,7 +94,7 @@ class RecommendedDosageFragment : DialogFragment(), View.OnClickListener {
                                         }
                                         adapter = TableRowAdapter(
                                             requireContext(),
-                                            it
+                                            it,
                                         )
                                     } ?: kotlin.run {
                                         binding.tableRecyclerView.gone()
@@ -148,9 +157,9 @@ class RecommendedDosageFragment : DialogFragment(), View.OnClickListener {
                                         }
                                         adapter = TableRowAdapter(
                                             requireContext(),
-                                            it
+                                            it,
                                         )
-                                    }?: kotlin.run {
+                                    } ?: kotlin.run {
                                         binding.tableRecyclerView2.gone()
                                         binding.table2Col1.gone()
                                         binding.table2Col2.gone()
@@ -187,8 +196,7 @@ class RecommendedDosageFragment : DialogFragment(), View.OnClickListener {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
-
 }

@@ -20,15 +20,15 @@ import com.medtroniclabs.spice.formgeneration.extension.customGetParcelable
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.viewmodel.NCDPrescriptionViewModel
 
-
 class NCDInstructionExpansionDialog : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentNcdInstructionExpansionDialogBinding
     private var model: MedicationResponse? = null
     private val prescriptionViewModel: NCDPrescriptionViewModel by activityViewModels()
+
     companion object {
         const val TAG = "NCDInstructionExpansionDialog"
         const val KEY_MODEL = "KEY_MODEL"
+
         fun newInstance(model: MedicationResponse): NCDInstructionExpansionDialog {
             val fragment = NCDInstructionExpansionDialog()
             fragment.arguments = Bundle().apply {
@@ -41,7 +41,7 @@ class NCDInstructionExpansionDialog : DialogFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentNcdInstructionExpansionDialogBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -65,7 +65,10 @@ class NCDInstructionExpansionDialog : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         readArguments()
@@ -74,8 +77,9 @@ class NCDInstructionExpansionDialog : DialogFragment(), View.OnClickListener {
 
     private fun readArguments() {
         arguments?.let { args ->
-            if(args.containsKey(KEY_MODEL))
+            if (args.containsKey(KEY_MODEL)) {
                 model = args.customGetParcelable(KEY_MODEL)
+            }
         }
     }
 
@@ -113,6 +117,4 @@ class NCDInstructionExpansionDialog : DialogFragment(), View.OnClickListener {
         }
         setWidth(width)
     }
-
-
 }

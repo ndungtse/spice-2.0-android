@@ -1,16 +1,13 @@
 package com.medtroniclabs.spice.di
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
 import com.medtroniclabs.spice.common.AppConstants
-import com.medtroniclabs.spice.common.BaseUrlProvider
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ACTION_SESSION_EXPIRED
 import com.medtroniclabs.spice.common.DefinedParams.SL_SESSION
@@ -36,7 +33,6 @@ import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.NCDFollowUpDao
 import com.medtroniclabs.spice.db.dao.NcdMedicalReviewDao
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
-import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.dao.RiskFactorDAO
 import com.medtroniclabs.spice.db.dao.RxBuddyDetailsDAO
 import com.medtroniclabs.spice.db.dao.RxBuddyFollowUpDAO
@@ -48,7 +44,6 @@ import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.ApiHelperImpl
 import com.medtroniclabs.spice.network.ApiService
 import com.medtroniclabs.spice.network.NetworkConstants
-import com.medtroniclabs.spice.network.NetworkConstants.BASE_URL
 import com.medtroniclabs.spice.network.interceptors.GZipRequestInterceptor
 import dagger.Module
 import dagger.Provides
@@ -65,7 +60,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
-import java.lang.Exception
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
@@ -73,15 +67,17 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
     private const val TIMEOUT_SECONDS = 60L // 3 Minutes to 1 Minutes
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(@ApplicationContext context: Context) = if (BuildConfig.DEBUG) {
+    fun provideOkHttpClient(
+        @ApplicationContext context: Context,
+    ) = if (BuildConfig.DEBUG) {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-        OkHttpClient.Builder()
+        OkHttpClient
+            .Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(AppInterceptor(context))
             .addInterceptor(GZipRequestInterceptor())
@@ -90,7 +86,8 @@ object AppModule {
             .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .build()
     } else {
-        OkHttpClient.Builder()
+        OkHttpClient
+            .Builder()
             .addInterceptor(AppInterceptor(context))
             .addInterceptor(GZipRequestInterceptor())
             .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -99,27 +96,27 @@ object AppModule {
             .build()
     }
 
-
     class AppInterceptor(val context: Context) : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
-
-            val token  = if (SecuredPreference.getString(SecuredPreference.EnvironmentKey.TOKEN.toString())?.isNotEmpty() == true) {
+            val token = if (SecuredPreference.getString(SecuredPreference.EnvironmentKey.TOKEN.toString())?.isNotEmpty() == true) {
                 SecuredPreference.getString(SecuredPreference.EnvironmentKey.TOKEN.toString())
-            } else
+            } else {
                 SecuredPreference.getString(SecuredPreference.EnvironmentKey.PEER_SUPERVISOR_NOTIFICATION_TOKEN.toString())
+            }
             var request: Request = chain.request()
-            val requestBuilder = request.newBuilder()
+            val requestBuilder = request
+                .newBuilder()
                 .header(
                     "Authorization",
                     token
-                        ?: ""
-                )
-                .header("client", AppConstants.CLIENT_CONSTANT)
+                        ?: "",
+                ).header("client", AppConstants.CLIENT_CONSTANT)
                 .header("organizationId", SecuredPreference.getOrganizationFhirId())
                 .header("tenantId", SecuredPreference.getTenantId().toString())
                 .header("App-Version", getAppPackageInfo())
 
-            SecuredPreference.getString(SecuredPreference.EnvironmentKey.TENANT_ID.toString())
+            SecuredPreference
+                .getString(SecuredPreference.EnvironmentKey.TENANT_ID.toString())
                 ?.let { tenantId ->
                     requestBuilder.header(DefinedParams.TenantId, tenantId)
                 }
@@ -127,13 +124,15 @@ object AppModule {
             request = requestBuilder.build()
             val response = chain.proceed(request)
             Timber.i("HEADERS ->\n${request.headers}")
-            if (!request.url.toString().contains(NetworkConstants.AUTH_SESSION)
-                && !response.isSuccessful && response.code == 401
+            if (!request.url.toString().contains(NetworkConstants.AUTH_SESSION) &&
+                !response.isSuccessful &&
+                response.code == 401
             ) {
                 redirectLogin(context)
             }
             return response
         }
+
         private fun isNetworkAvailable(): Boolean {
             val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
@@ -158,14 +157,18 @@ object AppModule {
 
     @Provides
     fun provideBaseUrl(): String {
-       //return BaseUrlProvider.dynamicURL()
-       return BuildConfig.API_BASE_URL
+        // return BaseUrlProvider.dynamicURL()
+        return BuildConfig.API_BASE_URL
     }
 
     @Singleton
     @Provides
-    fun providesRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit =
-        Retrofit.Builder()
+    fun providesRetrofit(
+        okHttpClient: OkHttpClient,
+        baseUrl: String,
+    ): Retrofit =
+        Retrofit
+            .Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(baseUrl)
             .client(okHttpClient)
@@ -173,100 +176,71 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun providesUserApiService(retrofit: Retrofit): ApiService {
-        return retrofit.create(ApiService::class.java)
-    }
+    fun providesUserApiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
 
     @Singleton
     @Provides
-    fun provideApiHelper(apiHelper: ApiHelperImpl): ApiHelper {
-        return apiHelper
-    }
-
+    fun provideApiHelper(apiHelper: ApiHelperImpl): ApiHelper = apiHelper
 
     @Singleton
     @Provides
-    fun provideRoomHelper(roomHelper: RoomHelperImpl): RoomHelper {
-        return roomHelper
-    }
+    fun provideRoomHelper(roomHelper: RoomHelperImpl): RoomHelper = roomHelper
 
     @Singleton
     @Provides
-    fun provideDatabase(@ApplicationContext context: Context): SpiceDataBase {
-        return SpiceDataBase.getInstance(context)
-    }
+    fun provideDatabase(
+        @ApplicationContext context: Context,
+    ): SpiceDataBase = SpiceDataBase.getInstance(context)
 
     @Singleton
     @Provides
-    fun provideAnalyticsRepo(@ApplicationContext context: Context): AnalyticsRepository {
-        return AnalyticsRepository(context)
-    }
+    fun provideAnalyticsRepo(
+        @ApplicationContext context: Context,
+    ): AnalyticsRepository = AnalyticsRepository(context)
 
     @Singleton
     @Provides
-    fun provideHouseholdDAO(db: SpiceDataBase): HouseholdDAO {
-        return db.householdDAO()
-    }
+    fun provideHouseholdDAO(db: SpiceDataBase): HouseholdDAO = db.householdDAO()
 
     @Singleton
     @Provides
-    fun provideMemberDAO(db: SpiceDataBase): MemberDAO {
-        return db.memberDAO()
-    }
+    fun provideMemberDAO(db: SpiceDataBase): MemberDAO = db.memberDAO()
 
     @Singleton
     @Provides
-    fun followUpCallDao(db: SpiceDataBase): FollowUpCallsDao {
-        return db.followUpCallsDao()
-    }
+    fun followUpCallDao(db: SpiceDataBase): FollowUpCallsDao = db.followUpCallsDao()
 
     @Singleton
     @Provides
-    fun provideAssessmentDAO(db: SpiceDataBase): AssessmentDAO {
-        return db.assessmentDAO()
-    }
+    fun provideAssessmentDAO(db: SpiceDataBase): AssessmentDAO = db.assessmentDAO()
 
     @Singleton
     @Provides
-    fun provideFollowUpDAO(db: SpiceDataBase): FollowUpDao {
-        return db.followUpDao()
-    }
+    fun provideFollowUpDAO(db: SpiceDataBase): FollowUpDao = db.followUpDao()
 
     @Singleton
     @Provides
-    fun provideMetaDataDAO(db: SpiceDataBase): MetaDataDAO {
-        return db.metaDataDAO()
-    }
+    fun provideMetaDataDAO(db: SpiceDataBase): MetaDataDAO = db.metaDataDAO()
 
     @Singleton
     @Provides
-    fun provideExaminationComplaintsDAO(db: SpiceDataBase): ExaminationsComplaintsDAO {
-        return db.examinationsComplaintsDAO()
-    }
+    fun provideExaminationComplaintsDAO(db: SpiceDataBase): ExaminationsComplaintsDAO = db.examinationsComplaintsDAO()
 
     @Singleton
     @Provides
-    fun provideDiagnosisDAO(db: SpiceDataBase): DiagnosisDAO {
-        return db.diagnosisDAO()
-    }
+    fun provideDiagnosisDAO(db: SpiceDataBase): DiagnosisDAO = db.diagnosisDAO()
 
     @Singleton
     @Provides
-    fun provideConsentFormDAO(db: SpiceDataBase): ConsentFormDao {
-        return db.consentFormDao()
-    }
+    fun provideConsentFormDAO(db: SpiceDataBase): ConsentFormDao = db.consentFormDao()
 
     @Singleton
     @Provides
-    fun provideExaminationsDAO(db: SpiceDataBase): ExaminationsDAO {
-        return db.examinationsDAO()
-    }
+    fun provideExaminationsDAO(db: SpiceDataBase): ExaminationsDAO = db.examinationsDAO()
 
     @Singleton
     @Provides
-    fun provideAboveFiveYearsDAO(db: SpiceDataBase): AboveFiveYearsDAO {
-        return db.aboveFiveYearsDAO()
-    }
+    fun provideAboveFiveYearsDAO(db: SpiceDataBase): AboveFiveYearsDAO = db.aboveFiveYearsDAO()
 
     @DefaultDispatcher
     @Provides
@@ -280,95 +254,64 @@ object AppModule {
     @Provides
     fun providesMainDispatcher(): CoroutineDispatcher = Dispatchers.Main
 
+    @Singleton
+    @Provides
+    fun provideLabourDeliveryDAO(db: SpiceDataBase): LabourDeliveryDAO = db.labourDeliveryDAO()
 
     @Singleton
     @Provides
-    fun provideLabourDeliveryDAO(db: SpiceDataBase): LabourDeliveryDAO {
-        return db.labourDeliveryDAO()
-    }
+    fun providePregnancyDetailDAO(db: SpiceDataBase): PregnancyDetailDao = db.pregnancyDetailDao()
 
     @Singleton
     @Provides
-    fun providePregnancyDetailDAO(db: SpiceDataBase): PregnancyDetailDao {
-        return db.pregnancyDetailDao()
-    }
+    fun provideLinkHouseholdMemberDao(db: SpiceDataBase): LinkHouseholdMemberDao = db.linkHouseholdMemberDao()
 
     @Singleton
     @Provides
-    fun provideLinkHouseholdMemberDao(db: SpiceDataBase): LinkHouseholdMemberDao {
-        return db.linkHouseholdMemberDao()
-    }
+    fun provideCallHistoryDao(db: SpiceDataBase): CallHistoryDao = db.callHistoryDao()
 
     @Singleton
     @Provides
-    fun provideCallHistoryDao(db: SpiceDataBase): CallHistoryDao {
-        return db.callHistoryDao()
-    }
+    fun provideFrequencyDAO(db: SpiceDataBase): FrequencyDAO = db.frequencyDao()
+
+    private fun getAppPackageInfo(): String = BuildConfig.VERSION_NAME
+
+    // NCD WorkFlow
+    @Singleton
+    @Provides
+    fun provideScreeningDAO(db: SpiceDataBase): ScreeningDAO = db.screeningDAO()
 
     @Singleton
     @Provides
-    fun provideFrequencyDAO(db: SpiceDataBase): FrequencyDAO {
-        return db.frequencyDao()
-    }
-
-    private fun getAppPackageInfo(): String {
-        return BuildConfig.VERSION_NAME
-    }
-
-    /* NCD WorkFlow */
-    @Singleton
-    @Provides
-    fun provideScreeningDAO(db: SpiceDataBase): ScreeningDAO {
-        return db.screeningDAO()
-    }
+    fun provideRiskFactorDao(db: SpiceDataBase): RiskFactorDAO = db.riskFactorDao()
 
     @Singleton
     @Provides
-    fun provideRiskFactorDao(db: SpiceDataBase): RiskFactorDAO {
-        return db.riskFactorDao()
-    }
+    fun provideNcdMedicalReviewDao(db: SpiceDataBase): NcdMedicalReviewDao = db.ncdMedicalReviewDao()
 
     @Singleton
     @Provides
-    fun provideNcdMedicalReviewDao(db: SpiceDataBase): NcdMedicalReviewDao {
-        return db.ncdMedicalReviewDao()
-    }
+    fun provideNcdFollowUpDAO(db: SpiceDataBase): NCDFollowUpDao = db.ncdFollowUpDao()
 
     @Singleton
     @Provides
-    fun provideNcdFollowUpDAO(db: SpiceDataBase): NCDFollowUpDao {
-        return db.ncdFollowUpDao()
-    }
+    fun provideConsentForm(db: SpiceDataBase): CommunityDetailsDAO = db.communityDetailsDao()
 
     @Singleton
     @Provides
-    fun provideConsentForm(db: SpiceDataBase): CommunityDetailsDAO {
-        return db.communityDetailsDao()
-    }
+    fun providesRxBuddyDAO(db: SpiceDataBase): RxBuddyDetailsDAO = db.rxBuddyDao()
 
     @Singleton
     @Provides
-    fun providesRxBuddyDAO(db: SpiceDataBase):RxBuddyDetailsDAO{
-        return db.rxBuddyDao()
-    }
+    fun provideTreatmentDetailsDAO(db: SpiceDataBase): TreatmentDetailsDAO = db.treatmentDetailsDao()
 
     @Singleton
     @Provides
-    fun provideTreatmentDetailsDAO(db: SpiceDataBase):TreatmentDetailsDAO{
-        return db.treatmentDetailsDao()
-    }
+    fun provideRxBuddyFollowUpDAO(db: SpiceDataBase): RxBuddyFollowUpDAO = db.rxBuddyFollowUpDao()
 
     @Singleton
     @Provides
-    fun provideRxBuddyFollowUpDAO(db: SpiceDataBase): RxBuddyFollowUpDAO {
-        return db.rxBuddyFollowUpDao()
-    }
-
-    @Singleton
-    @Provides
-    fun provideHivMetaDataDAO(db: SpiceDataBase): HivMetaDataDAO {
-        return db.hivMetaDataDAO()
-    }
+    fun provideHivMetaDataDAO(db: SpiceDataBase): HivMetaDataDAO = db.hivMetaDataDAO()
 }
 
 @Retention(AnnotationRetention.BINARY)

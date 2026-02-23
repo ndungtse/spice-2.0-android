@@ -13,5 +13,5 @@ data class NCDMedicalReviewMetaEntity(
     val displayOrder: Int,
     val type: String? = null,
     var category: String? = null,
-    val value: String? = null
+    val value: String? = null,
 )

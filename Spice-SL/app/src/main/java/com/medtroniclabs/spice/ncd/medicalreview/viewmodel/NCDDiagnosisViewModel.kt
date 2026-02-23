@@ -26,29 +26,35 @@ class NCDDiagnosisViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
 ) : BaseViewModel(dispatcherIO) {
-
     var comments: String = ""
-    private val getChips = MutableLiveData<Triple<List<String>,String,Boolean>>()
+    private val getChips = MutableLiveData<Triple<List<String>, String, Boolean>>()
     var selectedChips: ArrayList<ChipViewItemModel> = ArrayList()
     val getChipLiveData: LiveData<List<NCDDiagnosisEntity>> =
         getChips.switchMap {
             ncdMedicalReviewRepository.getNCDDiagnosisList(it.first, it.second, it.third)
         }
 
-    fun getChip(types: List<String>, gender: String, isPregnant: Boolean) {
+    fun getChip(
+        types: List<String>,
+        gender: String,
+        isPregnant: Boolean,
+    ) {
         getChips.value = Triple(types, gender, isPregnant)
     }
 
     val createConfirmDiagonsis = MutableLiveData<Resource<HashMap<String, Any>>>()
     val getConfirmDiagonsis = MutableLiveData<Resource<NCDDiagnosisGetResponse>>()
 
-    fun createConfirmDiagonsis(request: NCDDiagnosisRequestResponse, menuId: String? = null) {
+    fun createConfirmDiagonsis(
+        request: NCDDiagnosisRequestResponse,
+        menuId: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             createConfirmDiagonsis.postLoading()
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDConfirmDiagnosisCreation + " " + menuId,
-                isCompleted = true
+                isCompleted = true,
             )
             createConfirmDiagonsis.postValue(ncdMedicalReviewRepository.createConfirmDiagonsis(request))
         }
@@ -60,5 +66,4 @@ class NCDDiagnosisViewModel @Inject constructor(
             getConfirmDiagonsis.postValue(ncdMedicalReviewRepository.getConfirmDiagonsis(request))
         }
     }
-
 }

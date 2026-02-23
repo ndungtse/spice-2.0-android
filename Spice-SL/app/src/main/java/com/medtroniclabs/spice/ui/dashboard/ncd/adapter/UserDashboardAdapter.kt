@@ -7,13 +7,11 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isTablet
-import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.databinding.ListItemUserDashboardBinding
 
-class UserDashboardAdapter(private val  customize: Boolean, private val userDashboardLists: ArrayList<Triple<String, Int, Int>>) :
+class UserDashboardAdapter(private val customize: Boolean, private val userDashboardLists: ArrayList<Triple<String, Int, Int>>) :
     RecyclerView.Adapter<UserDashboardAdapter.UserDashboardViewHolder>() {
-
     inner class UserDashboardViewHolder(val binding: ListItemUserDashboardBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
@@ -21,16 +19,15 @@ class UserDashboardAdapter(private val  customize: Boolean, private val userDash
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
-    ): UserDashboardViewHolder {
-        return UserDashboardViewHolder(
-            ListItemUserDashboardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        viewType: Int,
+    ): UserDashboardViewHolder =
+        UserDashboardViewHolder(
+            ListItemUserDashboardBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         )
-    }
 
     override fun onBindViewHolder(
         holder: UserDashboardViewHolder,
-        position: Int
+        position: Int,
     ) {
         userDashboardLists[position].let { dashboard ->
             val context = holder.binding.root.context
@@ -44,18 +41,16 @@ class UserDashboardAdapter(private val  customize: Boolean, private val userDash
                         setImageDrawable(
                             ContextCompat.getDrawable(
                                 root.context,
-                                dashboard.third
-                            )
+                                dashboard.third,
+                            ),
                         )
                     }
-                } else
+                } else {
                     ivActivity.gone()
+                }
             }
         }
     }
 
-    override fun getItemCount(): Int {
-        return userDashboardLists.size
-    }
+    override fun getItemCount(): Int = userDashboardLists.size
 }
-

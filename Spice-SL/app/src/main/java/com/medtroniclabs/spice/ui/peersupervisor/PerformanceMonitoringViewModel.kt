@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.peersupervisor
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
@@ -12,9 +11,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.toString
-import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMdd
-import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.LIST_LIMIT
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -47,9 +44,8 @@ private const val STRING_SENTINEL: String = "STRING_SENTINEL"
 class PerformanceMonitoringViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val performanceMonitoringRepo: PerformanceMonitoringRepository,
-    private val apiHelper: ApiHelper
+    private val apiHelper: ApiHelper,
 ) : BaseViewModel(dispatcherIO) {
-
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 
@@ -70,9 +66,9 @@ class PerformanceMonitoringViewModel @Inject constructor(
         Pager(
             config = PagingConfig(
                 pageSize = LIST_LIMIT,
-                enablePlaceholders = false
+                enablePlaceholders = false,
             ),
-            pagingSourceFactory = { PerformanceReportDataSource(apiHelper, request) }
+            pagingSourceFactory = { PerformanceReportDataSource(apiHelper, request) },
         ).flow.cachedIn(viewModelScope).asLiveData()
     }
 
@@ -91,7 +87,12 @@ class PerformanceMonitoringViewModel @Inject constructor(
         }
     }
 
-    fun saveFilterPreference(fromDate: String, toDate: String, userIds : List<Long>, villageIds: List<Long>) {
+    fun saveFilterPreference(
+        fromDate: String,
+        toDate: String,
+        userIds: List<Long>,
+        villageIds: List<Long>,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             saveUserFilterPreferenceLiveData.postLoading()
             val request = FilterPreference(
@@ -100,15 +101,14 @@ class PerformanceMonitoringViewModel @Inject constructor(
                     fromDate = fromDate,
                     toDate = toDate,
                     userIds = userIds,
-                    villageIds = villageIds
-                )
+                    villageIds = villageIds,
+                ),
             )
             saveUserFilterPreferenceLiveData.postValue(performanceMonitoringRepo.saveUserFilterPreference(request))
         }
     }
 
     fun refreshData() {
-
     }
 
     fun getLinkedChwDetails() {
@@ -136,10 +136,9 @@ class PerformanceMonitoringViewModel @Inject constructor(
                 userIds = userIds,
                 villageIds = villageIds,
                 fromDate = fromDate,
-                toDate = toDate
-            )
+                toDate = toDate,
+            ),
         )
-
     }
 
     fun updatePaginationWithNewFilter(
@@ -147,18 +146,19 @@ class PerformanceMonitoringViewModel @Inject constructor(
         toDate: String,
         userIds: List<Long>,
         villageIds: List<Long>,
-        shouldSave: Boolean
+        shouldSave: Boolean,
     ) {
-        if (shouldSave)
+        if (shouldSave) {
             saveFilterPreference(fromDate, toDate, userIds, villageIds)
+        }
 
         _refreshTrigger.postValue(
             PerformanceReportRequest(
                 userIds = userIds,
                 villageIds = villageIds,
                 fromDate = fromDate,
-                toDate = toDate
-            )
+                toDate = toDate,
+            ),
         )
     }
 
@@ -177,13 +177,16 @@ class PerformanceMonitoringViewModel @Inject constructor(
             chwList.add(CheckBoxSpinnerData(item.id, "${item.firstName} ${item.lastName}", isSelected))
         }
 
-        chwFilterListLiveData.postValue(chwList);
+        chwFilterListLiveData.postValue(chwList)
     }
 
-    fun updateVillageListLiveData(selectedCHWs: List<CheckBoxSpinnerData>, shouldSelectAll: Boolean = false) {
+    fun updateVillageListLiveData(
+        selectedCHWs: List<CheckBoxSpinnerData>,
+        shouldSelectAll: Boolean = false,
+    ) {
         val selectedIds = hashSetOf<Long>()
         val isUnlocked = (userPreference?.fromDate.isNullOrEmpty() && userPreference?.toDate.isNullOrEmpty())
-        if (!shouldSelectAll){
+        if (!shouldSelectAll) {
             userPreference?.villageIds?.forEach {
                 selectedIds.add(it.toLong())
             }
@@ -209,8 +212,8 @@ class PerformanceMonitoringViewModel @Inject constructor(
                         village.id,
                         village.name,
                         isSelected,
-                        village.userId
-                    )
+                        village.userId,
+                    ),
                 )
             }
         }
@@ -218,7 +221,7 @@ class PerformanceMonitoringViewModel @Inject constructor(
         villageFilterListLiveData.postValue(villageList)
     }
 
-    fun getAllCHWAsSelected() : List<CheckBoxSpinnerData> {
+    fun getAllCHWAsSelected(): List<CheckBoxSpinnerData> {
         val allCHWs = filterChwListLiveData.value?.data
 
         val chwList = mutableListOf<CheckBoxSpinnerData>()
@@ -248,25 +251,31 @@ class PerformanceMonitoringViewModel @Inject constructor(
         startDate: Long? = LONG_SENTINEL,
         endDate: Long? = LONG_SENTINEL,
         fromDate: String? = STRING_SENTINEL,
-        toDate: String? = STRING_SENTINEL
+        toDate: String? = STRING_SENTINEL,
     ) {
-        if (year != INT_SENTINEL)
+        if (year != INT_SENTINEL) {
             filterModel.year = year
+        }
 
-        if (month != INT_SENTINEL)
+        if (month != INT_SENTINEL) {
             filterModel.month = month
+        }
 
-        if (startDate != LONG_SENTINEL)
+        if (startDate != LONG_SENTINEL) {
             filterModel.startDate = startDate
+        }
 
-        if (endDate != LONG_SENTINEL)
+        if (endDate != LONG_SENTINEL) {
             filterModel.endDate = endDate
+        }
 
-        if (fromDate != STRING_SENTINEL)
+        if (fromDate != STRING_SENTINEL) {
             filterModel.fromDate = fromDate
+        }
 
-        if (toDate != STRING_SENTINEL)
+        if (toDate != STRING_SENTINEL) {
             filterModel.toDate = toDate
+        }
     }
 
     fun getYearList(): ArrayList<Map<String, Any>> {
@@ -284,7 +293,6 @@ class PerformanceMonitoringViewModel @Inject constructor(
     }
 
     fun getMonthList(): ArrayList<Map<String, Any>> {
-
         val list = ArrayList<Map<String, Any>>()
         val monthNames: Array<String> = DateFormatSymbols().months
         val monthList = monthNames.take(12)

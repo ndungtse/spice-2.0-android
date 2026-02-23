@@ -1,0 +1,21 @@
+#!/bin/sh
+echo "*********************************************************"
+echo "Running git pre-commit hook. Running Gradle checks..."
+echo "*********************************************************"
+# 1. Goto application directory
+cd "Spice-SL"
+# 2. Run the ktlintcheck
+./gradlew ktlintCheck
+
+# 3. Capture the exit status (MUST be on a new line)
+status=$?
+
+if [ "$status" = 0 ] ; then
+  echo "Gradle checks passed. Committing..."
+  exit 0
+else
+  echo "*********************************************************"
+  echo "Gradle checks failed. Fix the issues before committing."
+  echo "*********************************************************"
+  exit 1
+fi

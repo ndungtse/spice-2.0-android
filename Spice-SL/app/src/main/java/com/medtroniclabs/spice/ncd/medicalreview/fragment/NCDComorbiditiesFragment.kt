@@ -23,14 +23,14 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDComorbiditiesFragment : BaseFragment() {
-
     private val viewModel: NCDComorbiditiesViewModel by activityViewModels()
     private lateinit var binding: FragmentSystemicExaminationsBinding
     private lateinit var tagView: TagListCustomView
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSystemicExaminationsBinding.inflate(inflater, container, false)
         return binding.root
@@ -39,7 +39,11 @@ class NCDComorbiditiesFragment : BaseFragment() {
     companion object {
         const val TAG = "NCDComorbiditiesFragment"
         const val IS_FEMALE_PREGNANT = "isFemalePregnant"
-        fun newInstance(menuId: String?, isFemalePregnant: Boolean) = NCDComorbiditiesFragment().apply {
+
+        fun newInstance(
+            menuId: String?,
+            isFemalePregnant: Boolean,
+        ) = NCDComorbiditiesFragment().apply {
             arguments = Bundle().apply {
                 putString(MENU_ID, menuId)
                 putBoolean(IS_FEMALE_PREGNANT, isFemalePregnant)
@@ -47,15 +51,14 @@ class NCDComorbiditiesFragment : BaseFragment() {
         }
     }
 
-    fun getType(): String? {
-        return arguments?.getString(MENU_ID)
-    }
+    fun getType(): String? = arguments?.getString(MENU_ID)
 
-    private fun isFemalePregnant(): Boolean {
-        return arguments?.getBoolean(NCDObstetricExaminationFragment.IS_FEMALE_PREGNANT) == true
-    }
+    private fun isFemalePregnant(): Boolean = arguments?.getBoolean(NCDObstetricExaminationFragment.IS_FEMALE_PREGNANT) == true
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getChips(handleChipType(getType(), isFemalePregnant()))
         setObserver()
@@ -70,7 +73,7 @@ class NCDComorbiditiesFragment : BaseFragment() {
                     name = item.name,
                     cultureValue = item.displayValue,
                     type = item.type,
-                    value = item.value
+                    value = item.value,
                 )
             } as ArrayList<ChipViewItemModel>
             initView(complaintList)
@@ -83,10 +86,7 @@ class NCDComorbiditiesFragment : BaseFragment() {
         }
     }
 
-
-    private fun initView(
-        complaintList: ArrayList<ChipViewItemModel>
-    ) {
+    private fun initView(complaintList: ArrayList<ChipViewItemModel>) {
         with(binding) {
             binding.tvCommentsTitle.text = getString(R.string.please_specify_the_comorbidity)
             binding.tvCommentsTitle.markMandatory()
@@ -102,7 +102,7 @@ class NCDComorbiditiesFragment : BaseFragment() {
                         viewModel.chips =
                             ArrayList(tagView.getSelectedTags())
                         showNotes()
-                    }
+                    },
                 )
             tagView.addChipItemList(complaintList, viewModel.chips)
         }
@@ -112,9 +112,10 @@ class NCDComorbiditiesFragment : BaseFragment() {
         if (viewModel.chips.firstOrNull {
                 it.name.equals(
                     DefinedParams.Other,
-                    ignoreCase = true
+                    ignoreCase = true,
                 )
-            } != null) {
+            } != null
+        ) {
             binding.etPhysicalExaminationComments.visible()
             binding.tvCommentsTitle.visible()
         } else {
@@ -131,7 +132,7 @@ class NCDComorbiditiesFragment : BaseFragment() {
             isMandatory,
             viewModel.chips,
             binding.etPhysicalExaminationComments,
-            binding.tvErrorMessage
+            binding.tvErrorMessage,
         )
         return Pair(isValid, binding.etPhysicalExaminationComments)
     }

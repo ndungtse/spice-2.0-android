@@ -16,20 +16,20 @@ import com.medtroniclabs.spice.appextensions.isGpsEnabled
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityScreeningBinding
+import com.medtroniclabs.spice.ncd.registration.fragment.TermsAndConditionsFragment
 import com.medtroniclabs.spice.ncd.screening.fragment.GeneralDetailsFragment
 import com.medtroniclabs.spice.ncd.screening.fragment.ScreeningFormBuilderFragment
 import com.medtroniclabs.spice.ncd.screening.fragment.ScreeningSummaryFragment
 import com.medtroniclabs.spice.ncd.screening.fragment.StatsFragment
 import com.medtroniclabs.spice.ncd.screening.viewmodel.ScreeningFormBuilderViewModel
 import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ncd.registration.fragment.TermsAndConditionsFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ScreeningActivity : BaseActivity() {
-
     private lateinit var binding: ActivityScreeningBinding
     private val viewModel: ScreeningFormBuilderViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fixOrientation()
@@ -42,7 +42,7 @@ class ScreeningActivity : BaseActivity() {
             homeAndBackVisibility = Pair(true, true),
             callback = {
                 backNavigation()
-            }
+            },
         )
         initView()
         setAnalytics()
@@ -62,7 +62,7 @@ class ScreeningActivity : BaseActivity() {
         replaceFragmentIfExists<GeneralDetailsFragment>(
             R.id.screeningParentLayout,
             bundle = null,
-            tag = GeneralDetailsFragment.TAG
+            tag = GeneralDetailsFragment.TAG,
         )
     }
 
@@ -87,11 +87,10 @@ class ScreeningActivity : BaseActivity() {
 
             is TermsAndConditionsFragment -> replaceFragment<StatsFragment>(StatsFragment.TAG)
             is ScreeningFormBuilderFragment -> replaceFragment<TermsAndConditionsFragment>(
-                TermsAndConditionsFragment.TAG
+                TermsAndConditionsFragment.TAG,
             )
 
             else -> {
-
             }
         }
     }
@@ -100,34 +99,34 @@ class ScreeningActivity : BaseActivity() {
         replaceFragmentIfExists<T>(
             R.id.screeningParentLayout,
             bundle = null,
-            tag = tag
+            tag = tag,
         )
     }
 
     fun ableToGetLocation(): Boolean {
-        //Check Location service is enabled
+        // Check Location service is enabled
         if (!isGpsEnabled()) {
             showTurnOnGPSDialog(isNegativeButtonNeed = true)
             return false
         }
 
-        //Check Location permission for limit exceed
+        // Check Location permission for limit exceed
         if (ActivityCompat.shouldShowRequestPermissionRationale(
                 this,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION,
             )
         ) {
             showAllowLocationServiceDialog(isNegativeButtonNeed = true)
             return false
         }
 
-        //Check Location permission
+        // Check Location permission
         if (!isFineAndCoarseLocationPermissionGranted()) {
             requestPermissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                ),
             )
             return false
         }
@@ -137,7 +136,7 @@ class ScreeningActivity : BaseActivity() {
 
     private val requestPermissionLauncher =
         registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
+            ActivityResultContracts.RequestMultiplePermissions(),
         ) { permissions ->
             val finePermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION]
             val coarsePermission = permissions[Manifest.permission.ACCESS_COARSE_LOCATION]

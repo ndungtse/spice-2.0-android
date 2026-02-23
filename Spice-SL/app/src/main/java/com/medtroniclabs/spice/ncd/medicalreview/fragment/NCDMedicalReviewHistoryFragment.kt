@@ -40,8 +40,9 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
     val viewModel: NCDMedicalReviewCMRViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentReferralTicketBinding.inflate(inflater, container, false)
         return binding.root
@@ -49,9 +50,8 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "NCDMedicalReviewHistoryFragment"
-        fun newInstance(): NCDMedicalReviewHistoryFragment {
-            return NCDMedicalReviewHistoryFragment()
-        }
+
+        fun newInstance(): NCDMedicalReviewHistoryFragment = NCDMedicalReviewHistoryFragment()
 
         fun newInstance(patientId: String?): NCDMedicalReviewHistoryFragment {
             val fragment = NCDMedicalReviewHistoryFragment()
@@ -62,16 +62,18 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun getPatientId(): String? {
-        return arguments?.getString(DefinedParams.FhirId, "")
-    }
+    private fun getPatientId(): String? = arguments?.getString(DefinedParams.FhirId, "")
 
     private fun getInitialReferralTickets() {
-        getPatientId()?.takeIf { it.isNotBlank() }
+        getPatientId()
+            ?.takeIf { it.isNotBlank() }
             ?.let { viewModel.getMedicalReviewHistory(patientId = it) }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
@@ -106,21 +108,21 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
         recyclerView.addItemDecoration(
             DividerItemDecoration(
                 recyclerView.context,
-                DividerItemDecoration.VERTICAL
-            )
+                DividerItemDecoration.VERTICAL,
+            ),
         )
         dateListAdapter =
             DateListAdapter { referred ->
                 if (connectivityManager.isNetworkAvailable()) {
                     viewModel.getMedicalReviewHistory(
                         patientId = getPatientId(),
-                        medicalVisitId = referred.id
+                        medicalVisitId = referred.id,
                     )
                     viewModel.medicalVisitId = referred.id
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
                 listPopupWindow?.dismiss()
@@ -129,7 +131,7 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
         listPopupWindow = PopupWindow(
             view,
             LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
+            LinearLayout.LayoutParams.WRAP_CONTENT,
         )
     }
 
@@ -217,7 +219,10 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
         binding.llHistoryAction.ivNext.isEnabled = checkNextItem() != -1
     }
 
-    private fun setReferralDates(referredDates: List<ReferredDate>?, id: String?) {
+    private fun setReferralDates(
+        referredDates: List<ReferredDate>?,
+        id: String?,
+    ) {
         if (referredDates != null) {
             if (viewModel.medicalVisitId == null) {
                 viewModel.medicalVisitId = id
@@ -251,7 +256,7 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
             }
@@ -262,7 +267,7 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
             }
@@ -276,11 +281,12 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
     private fun handleRetry() {
         if (connectivityManager.isNetworkAvailable()) {
             if (!viewModel.medicalVisitId.isNullOrBlank()) {
-                getPatientId()?.takeIf { it.isNotBlank() }
+                getPatientId()
+                    ?.takeIf { it.isNotBlank() }
                     ?.let {
                         viewModel.getMedicalReviewHistory(
                             patientId = it,
-                            medicalVisitId = viewModel.medicalVisitId
+                            medicalVisitId = viewModel.medicalVisitId,
                         )
                     }
             } else {
@@ -321,7 +327,7 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             viewModel.medicalReferralDates.value?.get(selectedIndex)?.id?.let {
                 viewModel.getMedicalReviewHistory(
                     patientId = getPatientId(),
-                    medicalVisitId = it
+                    medicalVisitId = it,
                 )
                 viewModel.medicalVisitId = it
             }
@@ -334,14 +340,17 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             viewModel.medicalReferralDates.value?.get(selectedIndex)?.id?.let {
                 viewModel.getMedicalReviewHistory(
                     patientId = getPatientId(),
-                    medicalVisitId = it
+                    medicalVisitId = it,
                 )
                 viewModel.medicalVisitId = it
             }
         }
     }
 
-    private fun calculateDateTime(dateTime: String, isDate: Boolean): String? {
+    private fun calculateDateTime(
+        dateTime: String,
+        isDate: Boolean,
+    ): String? {
         val inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
         val dateTime1 = ZonedDateTime.parse(dateTime, inputFormatter)
         val timeFormatter: DateTimeFormatter = if (isDate) {
@@ -352,39 +361,40 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
         return dateTime1.format(timeFormatter)
     }
 
-
     private fun createMedicalReview(medicalReviewHistory: NCDMedicalReviewHistory): List<Map<String, String?>> {
         val commonFields = listOf(
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.date_of_review),
-                DefinedParams.Value to (viewModel.medicalReferralDates.value?.firstOrNull { it.id == viewModel.medicalVisitId }?.date?.let {
-                    DateUtils.convertDateFormat(
-                        it,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        DateUtils.DATE_ddMMyyyy
-                    )
-                } ?: getString(R.string.separator_double_hyphen))
+                DefinedParams.Value to (
+                    viewModel.medicalReferralDates.value?.firstOrNull { it.id == viewModel.medicalVisitId }?.date?.let {
+                        DateUtils.convertDateFormat(
+                            it,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            DateUtils.DATE_ddMMyyyy,
+                        )
+                    } ?: getString(R.string.separator_double_hyphen)
+                ),
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.chief_complaints),
                 DefinedParams.Value to CommonUtils.combineText(
                     CommonUtils.convertAnyToListOfString(medicalReviewHistory.medicalReview?.complaints),
                     "",
-                    getString(R.string.separator_double_hyphen)
-                )
+                    getString(R.string.separator_double_hyphen),
+                ),
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.clinical_notes),
                 DefinedParams.Value to CommonUtils.combineText(
                     CommonUtils.convertAnyToListOfString(medicalReviewHistory.medicalReview?.notes),
                     "",
-                    getString(R.string.separator_double_hyphen)
-                )
+                    getString(R.string.separator_double_hyphen),
+                ),
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.examination),
-                DefinedParams.Value to getPhysicalExamination(medicalReviewHistory.medicalReview?.physicalExams)
-            )
+                DefinedParams.Value to getPhysicalExamination(medicalReviewHistory.medicalReview?.physicalExams),
+            ),
         )
         return commonFields
     }
@@ -396,10 +406,12 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             if (!items.isNullOrBlank()) {
                 returnStr.append(items)
             }
-            if (!element.physicalExaminationsNote.isNullOrBlank())
+            if (!element.physicalExaminationsNote.isNullOrBlank()) {
                 returnStr.append(" [${element.physicalExaminationsNote}]")
-            if (index < physicalExams.size - 1)
+            }
+            if (index < physicalExams.size - 1) {
                 returnStr.append(", ")
+            }
         }
 
         return returnStr.toString()

@@ -23,8 +23,7 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
-
+class ImmunizationActivity : BaseActivity(), OnDialogDismissListener {
     private lateinit var binding: ActivityImmunizationBinding
     private val viewModel: ImmunisationViewModel by viewModels()
     private val patientViewModel: PatientDetailViewModel by viewModels()
@@ -33,7 +32,8 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
         super.onCreate(savedInstanceState)
 
         binding = ActivityImmunizationBinding.inflate(layoutInflater)
-        setMainContentView(binding.root,
+        setMainContentView(
+            binding.root,
             true,
             getString(R.string.patient_medical_review),
             homeAndBackVisibility = Pair(true, true),
@@ -42,8 +42,8 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
             },
             callback = {
                 backNavigation()
-            })
-
+            },
+        )
 
         binding.refreshLayout.setOnRefreshListener {
             swipeRefresh()
@@ -57,7 +57,8 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
 
     private fun swipeRefresh() {
         if (connectivityManager.isNetworkAvailable()) {
-            supportFragmentManager.findFragmentById(R.id.patientDetailFragment)
+            supportFragmentManager
+                .findFragmentById(R.id.patientDetailFragment)
                 .let {
                     patientViewModel.getPatientId()?.let { id ->
                         patientViewModel.getPatients(id)
@@ -65,7 +66,8 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
                 }
         } else {
             showErrorDialogue(
-                getString(R.string.error), getString(R.string.no_internet_error),
+                getString(R.string.error),
+                getString(R.string.no_internet_error),
                 isNegativeButtonNeed = false,
             ) {
                 if (binding.refreshLayout.isRefreshing) {
@@ -95,9 +97,12 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
     private fun initializePatientDetailFragment() {
         val patientInfoFragment =
             PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
-        supportFragmentManager.beginTransaction().replace(
-            R.id.patientDetailFragment, patientInfoFragment
-        ).commit()
+        supportFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.patientDetailFragment,
+                patientInfoFragment,
+            ).commit()
     }
 
     private fun initImmunisationDetailFragment() {
@@ -108,10 +113,14 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
                 intent.getStringExtra(DefinedParams.ID),
                 intent.getStringExtra(DefinedParams.PatientId),
                 intent.getStringExtra(DefinedParams.MemberID),
-                intent.getStringExtra(DefinedParams.DOB))
-        supportFragmentManager.beginTransaction().replace(
-            R.id.immunisationDetailFragment, immunisationDetailFragment
-        ).commit()
+                intent.getStringExtra(DefinedParams.DOB),
+            )
+        supportFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.immunisationDetailFragment,
+                immunisationDetailFragment,
+            ).commit()
     }
 
     private fun showImmunisationSummaryFragment(encounterId: String) {
@@ -122,11 +131,14 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
                 intent.getStringExtra(DefinedParams.PatientId),
                 intent.getStringExtra(DefinedParams.DOB),
                 encounterId,
-                null
+                null,
             )
-        supportFragmentManager.beginTransaction().replace(
-            R.id.immunisationDetailFragment, immunisationSummaryFragment
-        ).commit()
+        supportFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.immunisationDetailFragment,
+                immunisationSummaryFragment,
+            ).commit()
     }
 
     private fun attachObserver() {
@@ -141,7 +153,7 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
                 val memberId = intent.getStringExtra(DefinedParams.MemberID)
                 val villageId = intent.getStringExtra(DefinedParams.villageId)
                 val householdId = intent.getStringExtra(DefinedParams.householdId)
-                viewModel.postVaccinationChanges(id, memberId, patientId, it.second,villageId = villageId, householdId = householdId)
+                viewModel.postVaccinationChanges(id, memberId, patientId, it.second, villageId = villageId, householdId = householdId)
             }
         }
 
@@ -151,7 +163,7 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
 
         // POST Immunisation Changes List
         viewModel.saveImmunisationListLiveData.observe(this) {
-            when(it.state) {
+            when (it.state) {
                 ResourceState.LOADING -> showLoading()
                 ResourceState.SUCCESS -> {
                     it.data?.let { data ->
@@ -168,13 +180,13 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
 
         // POST Summary Create
         viewModel.saveImmunisationSummaryLiveData.observe(this) {
-            when(it.state) {
+            when (it.state) {
                 ResourceState.LOADING -> showLoading()
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     MedicalReviewSuccessDialogFragment.newInstance().show(
                         supportFragmentManager,
-                        MedicalReviewSuccessDialogFragment.TAG
+                        MedicalReviewSuccessDialogFragment.TAG,
                     )
                 }
                 ResourceState.ERROR -> {
@@ -216,7 +228,7 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { flag ->
             if (flag) {
                 startActivityWithoutSplashScreen()
@@ -226,9 +238,11 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
 
     private fun backNavigation() {
         showErrorDialogue(
-            getString(R.string.alert), getString(R.string.exit_reason), isNegativeButtonNeed = true
+            getString(R.string.alert),
+            getString(R.string.exit_reason),
+            isNegativeButtonNeed = true,
         ) { _ ->
-           finish()
+            finish()
         }
     }
 
@@ -240,7 +254,7 @@ class ImmunizationActivity :  BaseActivity(), OnDialogDismissListener {
                 viewModel.patientReferenceId,
                 patientDetails.memberId,
                 patientDetails.patientId,
-                patientDetails.villageId
+                patientDetails.villageId,
             )
         }
     }

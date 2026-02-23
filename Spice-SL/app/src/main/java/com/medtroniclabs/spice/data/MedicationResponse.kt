@@ -5,10 +5,9 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 import java.util.Calendar
 
-
 @Parcelize
 data class MedicationResponse(
-    val id: Long? = null,     // prescription id
+    val id: Long? = null, // prescription id
     val name: String? = null,
     val classificationName: String? = null,
     val dosageDurationName: String? = null,
@@ -34,12 +33,14 @@ data class MedicationResponse(
     val groupUniqueId: String? = null,
     var instruction: String? = null,
     var category: @RawValue Category? = null,
-    var regimenLine: Int? = null
+    var regimenLine: Int? = null,
 ) : Parcelable {
-    var datetime :Long ?= null
+    var datetime: Long? = null
+
     init {
         datetime = Calendar.getInstance().timeInMillis
     }
+
     var filledPrescriptionDays: Long? = null
     var isEdit: Boolean = false
     var isEdited: Boolean = false
@@ -58,5 +59,5 @@ data class MedicationRequestObject(var medicationResponse: MedicationResponse)
 
 data class Category(
     val id: Long?,
-    val name: String
+    val name: String,
 )

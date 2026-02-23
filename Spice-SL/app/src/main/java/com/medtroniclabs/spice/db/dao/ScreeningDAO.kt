@@ -9,7 +9,6 @@ import com.medtroniclabs.spice.db.entity.ScreeningEntity
 
 @Dao
 interface ScreeningDAO {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertScreening(screeningEntity: ScreeningEntity): Long
 
@@ -20,7 +19,7 @@ interface ScreeningDAO {
     fun getScreenedPatientCount(
         startDate: Long,
         endDate: Long,
-        userId: String
+        userId: String,
     ): LiveData<Long>
 
     @Query("SELECT count(id) FROM ScreeningEntity WHERE userId=:userId AND isReferred = :isReferred AND createdAt BETWEEN :startDate AND :endDate")
@@ -28,7 +27,7 @@ interface ScreeningDAO {
         startDate: Long,
         endDate: Long,
         userId: String,
-        isReferred: Boolean
+        isReferred: Boolean,
     ): LiveData<Long>
 
     @Query("SELECT * FROM ScreeningEntity WHERE uploadStatus = :uploadStatus ORDER BY createdAt DESC")
@@ -38,7 +37,10 @@ interface ScreeningDAO {
     suspend fun deleteUploadedScreeningRecords(dateTime: Long)
 
     @Query("UPDATE ScreeningEntity SET uploadStatus = :uploadStatus WHERE id = :id")
-    suspend fun updateScreeningRecordById(id: Long, uploadStatus: Boolean)
+    suspend fun updateScreeningRecordById(
+        id: Long,
+        uploadStatus: Boolean,
+    )
 
     @Query("SELECT COUNT(screeningDetails) FROM screeningentity WHERE uploadStatus=0")
     fun getUnSyncedDataCountForNCDScreening(): LiveData<Long>

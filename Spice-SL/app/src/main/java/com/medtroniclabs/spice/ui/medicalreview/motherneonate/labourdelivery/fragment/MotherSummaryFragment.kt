@@ -17,9 +17,9 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.None
 import com.medtroniclabs.spice.common.DefinedParams.Tear
 import com.medtroniclabs.spice.common.ViewUtils
+import com.medtroniclabs.spice.data.model.MotherDTO
 import com.medtroniclabs.spice.databinding.FragmentMotherSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
-import com.medtroniclabs.spice.data.model.MotherDTO
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
@@ -31,20 +31,24 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 class MotherSummaryFragment : BaseFragment() {
-
-    private lateinit var binding : FragmentMotherSummaryBinding
-    private var datePickerDialog : DatePickerDialog? = null
+    private lateinit var binding: FragmentMotherSummaryBinding
+    private var datePickerDialog: DatePickerDialog? = null
     private val viewModel: LabourDeliverySummaryViewModel by activityViewModels()
     private val viewModelLabourDeliver: LabourDeliveryViewModel by activityViewModels()
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
-        binding = FragmentMotherSummaryBinding.inflate(inflater,container,false)
+        binding = FragmentMotherSummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initializeDatePicker()
@@ -53,7 +57,7 @@ class MotherSummaryFragment : BaseFragment() {
 
     private fun initView() {
         binding.tvNextVisitDateLabel.markMandatory()
-        viewModelLabourDeliver.motherPatientStatus=binding.tvPatientStatus.text.toString()
+        viewModelLabourDeliver.motherPatientStatus = binding.tvPatientStatus.text.toString()
     }
 
     private fun attachObserver() {
@@ -69,80 +73,86 @@ class MotherSummaryFragment : BaseFragment() {
                         setDetails(motherState.motherDTO)
                     }
                     resourceState.data.let {
-
                     }
                 }
 
                 ResourceState.ERROR -> {
                     hideProgress()
                 }
-
             }
         }
     }
 
     private fun setDetails(motherDTO: MotherDTO?) {
-        binding.tvDateOfDelivery.text =calculateDateTime(
+        binding.tvDateOfDelivery.text = calculateDateTime(
             motherDTO?.labourDTO?.dateAndTimeOfDelivery ?: getString(R.string.hyphen_symbol),
-            true
+            true,
         )
 //        binding.tvNextVisitDate.text=calculateLabourDeliveryNextVisitDate(
 //            motherDTO?.labourDTO?.dateAndTimeOfDelivery ?: getString(R.string.hyphen_symbol),
 //            true
 //        )
         motherDTO?.labourDTO?.dateAndTimeOfDelivery?.let {
-            DateUtils.convertStringToDate(
-                it,
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-            )?.let { deliveryDate ->
-                RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
-                    binding.tvNextVisitDate.text = DateUtils.getDateStringFromDate(
-                        visitDate, DateUtils.DATE_ddMMyyyy
-                    )
-                    viewModelLabourDeliver.nextFollowupDate=binding.tvNextVisitDate.text.toString()
-                    summaryListener()
+            DateUtils
+                .convertStringToDate(
+                    it,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                )?.let { deliveryDate ->
+                    RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
+                        binding.tvNextVisitDate.text = DateUtils.getDateStringFromDate(
+                            visitDate,
+                            DateUtils.DATE_ddMMyyyy,
+                        )
+                        viewModelLabourDeliver.nextFollowupDate = binding.tvNextVisitDate.text.toString()
+                        summaryListener()
+                    }
                 }
-            }
         }
-        
+
         binding.tvDateOfLabourOnset.text =
             calculateDateTime(
                 motherDTO?.labourDTO?.dateAndTimeOfLabourOnset ?: getString(R.string.hyphen_symbol),
-                true
+                true,
             )
         binding.tvDateType.text =
             motherDTO?.labourDTO?.deliveryType ?: getString(R.string.hyphen_symbol)
         binding.tvGeneralConditionOfMother.text =
             motherDTO?.generalConditions ?: getString(R.string.hyphen_symbol)
         binding.tvStateOfThePerineum.text = when (motherDTO?.stateOfPerineum) {
-           DefinedParams.Episiotomy -> getString(R.string.episotomy)
+            DefinedParams.Episiotomy -> getString(R.string.episotomy)
             Tear -> getString(R.string.hyphen_symbol)
             None -> getString(R.string.none)
             null -> getString(R.string.hyphen_symbol)
             else -> "${getString(R.string.tear_hypen)} ${motherDTO.stateOfPerineum}"
         }
         binding.tvPatientStatus.text = getString(R.string.post_natal)
-        binding.tvStatus.text = motherDTO?.status?.map { it }
-            ?.let { ArrayList(it) }?.let { convertListToString(it) }
+        binding.tvStatus.text = motherDTO
+            ?.status
+            ?.map { it }
+            ?.let { ArrayList(it) }
+            ?.let { convertListToString(it) }
             ?: getString(R.string.hyphen_symbol)
         binding.tvTimeOfDelivery.text =
             calculateDateTime(
                 motherDTO?.labourDTO?.dateAndTimeOfDelivery ?: getString(R.string.hyphen_symbol),
-                false
+                false,
             )
         binding.tvTimeOfLabourOnset.text =
             calculateDateTime(
                 motherDTO?.labourDTO?.dateAndTimeOfLabourOnset ?: getString(R.string.hyphen_symbol),
-                false
+                false,
             )
-        binding.tvPrescriptionText.text= motherDTO?.prescriptions.let { CommonUtils.createPrescription(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+        binding.tvPrescriptionText.text = motherDTO?.prescriptions.let { CommonUtils.createPrescription(it, requireContext()) }?.takeIf { it.isNotEmpty() }
             ?: requireContext().getString(R.string.hyphen_symbol)
 
-        binding.tvInvestigationText.text = motherDTO?.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+        binding.tvInvestigationText.text = motherDTO?.investigations?.let { createInvestigation(it, requireContext()) }?.takeIf { it.isNotEmpty() }
             ?: requireContext().getString(R.string.hyphen_symbol)
     }
 
-    private fun calculateDateTime(dateTime: String, isDate: Boolean): String? {
+    private fun calculateDateTime(
+        dateTime: String,
+        isDate: Boolean,
+    ): String? {
         val inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
         val dateTime1 = ZonedDateTime.parse(dateTime, inputFormatter)
         val timeFormatter: DateTimeFormatter = if (isDate) {
@@ -152,7 +162,11 @@ class MotherSummaryFragment : BaseFragment() {
         }
         return dateTime1.format(timeFormatter)
     }
-    private fun calculateLabourDeliveryNextVisitDate(dateTime: String, isDate: Boolean): String? {
+
+    private fun calculateLabourDeliveryNextVisitDate(
+        dateTime: String,
+        isDate: Boolean,
+    ): String? {
         val inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
         val dateTime1 = ZonedDateTime.parse(dateTime, inputFormatter)
         val adjustedDate = dateTime1.toLocalDate().plusDays(3)
@@ -175,24 +189,28 @@ class MotherSummaryFragment : BaseFragment() {
 
     private fun initializeNextVisitDate() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (binding.tvNextVisitDate.text.toString().isNotEmpty())
+        if (binding.tvNextVisitDate.text
+                .toString()
+                .isNotEmpty()
+        ) {
             yearMonthDate = DateUtils.convertedMMMToddMM(binding.tvNextVisitDate.text.toString())
+        }
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 requireContext(),
                 minDate = DateUtils.getTomorrowDate(),
                 date = yearMonthDate,
-                cancelCallBack = { datePickerDialog = null }
+                cancelCallBack = { datePickerDialog = null },
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 binding.tvNextVisitDate.text =
                     DateUtils.convertDateTimeToDate(
                         stringDate,
                         DateUtils.DATE_FORMAT_ddMMyyyy,
-                        DateUtils.DATE_ddMMyyyy
+                        DateUtils.DATE_ddMMyyyy,
                     )
-                viewModel.nextFollowupDate= binding.tvNextVisitDate.text.toString()
-                viewModelLabourDeliver.nextFollowupDate=binding.tvNextVisitDate.text.toString()
+                viewModel.nextFollowupDate = binding.tvNextVisitDate.text.toString()
+                viewModelLabourDeliver.nextFollowupDate = binding.tvNextVisitDate.text.toString()
                 datePickerDialog = null
                 summaryListener()
             }
@@ -202,15 +220,15 @@ class MotherSummaryFragment : BaseFragment() {
     companion object {
         const val TAG = "MotherSummaryFragment"
 
-        fun newInstance():MotherSummaryFragment {
-            return MotherSummaryFragment()
-        }
+        fun newInstance(): MotherSummaryFragment = MotherSummaryFragment()
     }
+
     private fun summaryListener() {
         setFragmentResult(
-            MedicalReviewDefinedParams.SUMMARY_ITEM, bundleOf(
-                MedicalReviewDefinedParams.SUMMARY_ITEM to true
-            )
+            MedicalReviewDefinedParams.SUMMARY_ITEM,
+            bundleOf(
+                MedicalReviewDefinedParams.SUMMARY_ITEM to true,
+            ),
         )
     }
 }

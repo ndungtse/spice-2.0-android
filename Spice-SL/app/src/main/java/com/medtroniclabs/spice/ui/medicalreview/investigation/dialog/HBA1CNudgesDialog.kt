@@ -49,12 +49,10 @@ import com.medtroniclabs.spice.ui.common.composeui.TextStyles.labelTextStyle
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationViewModel
 
 class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragment() {
-
     companion object {
         const val TAG = "HBA1CNudgesDialog"
-        fun newInstance(callback: (isClosed: Boolean) -> Unit): HBA1CNudgesDialog {
-            return HBA1CNudgesDialog(callback)
-        }
+
+        fun newInstance(callback: (isClosed: Boolean) -> Unit): HBA1CNudgesDialog = HBA1CNudgesDialog(callback)
     }
 
     private lateinit var binding: FragmentHba1cNudgesDialogBinding
@@ -63,13 +61,13 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentHba1cNudgesDialogBinding.inflate(inflater, container, false)
         binding.composeView.setContent {
             Surface(
                 shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp)),
-                color = colorResource(id = R.color.white)
+                color = colorResource(id = R.color.white),
             ) {
                 DisplayCardContent()
             }
@@ -83,14 +81,14 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
     private fun DisplayCardContent() {
         Column(Modifier.wrapContentHeight()) {
             DialogComposeUtils.TitleDialogueView(
-                title = stringResource(id = R.string.recommended_investigations)
+                title = stringResource(id = R.string.recommended_investigations),
             )
             Box {
                 Column(
                     Modifier
                         .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 80.dp)
                         .verticalScroll(rememberScrollState())
-                        .wrapContentHeight()
+                        .wrapContentHeight(),
                 ) {
                     val hba1cList by viewModel.labTestPredictionLiveData.observeAsState()
                     when (hba1cList?.state) {
@@ -99,7 +97,7 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
                         }
 
                         else -> {
-                            //else block
+                            // else block
                         }
                     }
                 }
@@ -107,7 +105,7 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
                     Modifier
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
-                        .background(colorResource(id = R.color.white))
+                        .background(colorResource(id = R.color.white)),
                 )
             }
         }
@@ -123,7 +121,7 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
         RowCell(
             stringResource(id = R.string.hba1c_recommended_question),
             textStyle = labelTextStyle,
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(10.dp),
         )
         val rawList = hba1cList?.get(NCDMRUtil.HbA1c) as? ArrayList<LinkedTreeMap<String, Any>>
         val dataList = rawList?.map {
@@ -135,13 +133,15 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
                 modifier = Modifier
                     .padding(15.dp)
                     .fillMaxWidth(1f),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
-        } else GenerateHbA1cTable(ArrayList(dataList))
+        } else {
+            GenerateHbA1cTable(ArrayList(dataList))
+        }
         GenerateDescription(
             Modifier
                 .fillMaxWidth()
-                .padding(start = 10.dp, end = 10.dp, top = 15.dp)
+                .padding(start = 10.dp, end = 10.dp, top = 15.dp),
         )
     }
 
@@ -156,11 +156,14 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         try {
             super.onViewCreated(view, savedInstanceState)
             isCancelable = false
@@ -173,29 +176,29 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
     private fun GenerateDescription(modifier: Modifier) {
         val txStyle = labelTextStyle.copy(
             color = colorResource(id = R.color.primary_medium_blue),
-            fontSize = TextStyles.FontSize_16
+            fontSize = TextStyles.FontSize_16,
         )
         Row(
             modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             RowCell(
                 stringResource(id = R.string.recommended_investigations),
                 textStyle = labelTextStyle,
                 modifier = Modifier
                     .weight(0.5f)
-                    .padding(end = 2.dp)
+                    .padding(end = 2.dp),
             )
             RowCell(
                 stringResource(id = R.string.separator_colon),
-                textStyle = labelTextStyle
+                textStyle = labelTextStyle,
             )
             RowCell(
                 stringResource(id = R.string.glucose_hba1c),
                 textStyle = txStyle,
                 modifier = Modifier
                     .weight(0.5f)
-                    .padding(start = 10.dp)
+                    .padding(start = 10.dp),
             )
         }
     }
@@ -208,12 +211,12 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .border(
-                    1.dp, colorResource(id = R.color.button_disabled),
+                    1.dp,
+                    colorResource(id = R.color.button_disabled),
                     shape = RoundedCornerShape(
-                        CornerSize(10.dp)
-                    )
-                )
-                .wrapContentHeight()
+                        CornerSize(10.dp),
+                    ),
+                ).wrapContentHeight(),
         ) {
             AddTableHeader(column1Weight, column2Weight)
             DialogComposeUtils.DividerWidget()
@@ -226,7 +229,7 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
                                 item,
                                 it,
                                 column1Weight,
-                                column2Weight
+                                column2Weight,
                             )
                             AddDivider(itemIndex, hba1cList.size)
                         }
@@ -236,7 +239,7 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
                         item,
                         null,
                         column1Weight,
-                        column2Weight
+                        column2Weight,
                     )
                     AddDivider(itemIndex, hba1cList.size)
                 }
@@ -249,73 +252,84 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
         item: HBA1CModel,
         result: LabTestResult?,
         column1Weight: Float,
-        column2Weight: Float
+        column2Weight: Float,
     ) {
         Row(
             modifier = Modifier
-                .padding(10.dp)
+                .padding(10.dp),
         ) {
             RowCell(
                 if (result != null) "${result.value} ${result.unit}" else getString(R.string.hyphen_symbol),
                 Modifier
                     .weight(column1Weight)
                     .padding(horizontal = 10.dp, vertical = 2.dp),
-                TextStyles.cellsTextStyle
+                TextStyles.cellsTextStyle,
             )
             RowCell(
                 item.recommendedOn?.let {
                     DateUtils.convertDateFormat(
                         it,
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        DateUtils.DATE_FORMAT_ddMMMyyyy
+                        DateUtils.DATE_FORMAT_ddMMMyyyy,
                     )
                 } ?: getString(R.string.hyphen_symbol),
                 Modifier
                     .weight(column2Weight)
                     .padding(horizontal = 10.dp, vertical = 2.dp),
-                TextStyles.cellsTextStyle
+                TextStyles.cellsTextStyle,
             )
         }
     }
 
     @Composable
-    private fun AddTableHeader(column1Weight: Float, column2Weight: Float) {
+    private fun AddTableHeader(
+        column1Weight: Float,
+        column2Weight: Float,
+    ) {
         Row(
             modifier = Modifier
-                .padding(10.dp)
+                .padding(10.dp),
         ) {
             RowCell(
                 getString(R.string.glucose_hba1c),
                 Modifier
                     .weight(column1Weight)
                     .padding(horizontal = 10.dp, vertical = 2.dp),
-                TextStyles.rowHeaderStyle
+                TextStyles.rowHeaderStyle,
             )
             RowCell(
                 getString(R.string.review_date),
                 Modifier
                     .weight(column2Weight)
                     .padding(horizontal = 10.dp, vertical = 2.dp),
-                TextStyles.rowHeaderStyle
+                TextStyles.rowHeaderStyle,
             )
         }
     }
 
     @Composable
-    fun AddDivider(itemIndex: Int, size: Int) {
-        if (itemIndex < size - 1)
+    fun AddDivider(
+        itemIndex: Int,
+        size: Int,
+    ) {
+        if (itemIndex < size - 1) {
             DialogComposeUtils.DividerWidget()
+        }
     }
 
     @Composable
-    fun RowCell(text: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null) {
+    fun RowCell(
+        text: String,
+        modifier: Modifier = Modifier,
+        textStyle: TextStyle? = null,
+    ) {
         Text(
             text,
             modifier,
             style = textStyle ?: TextStyle(),
             fontFamily = textStyle?.fontFamily,
             fontWeight = textStyle?.fontWeight,
-            fontSize = textStyle?.fontSize ?: TextUnit.Unspecified
+            fontSize = textStyle?.fontSize ?: TextUnit.Unspecified,
         )
     }
 }

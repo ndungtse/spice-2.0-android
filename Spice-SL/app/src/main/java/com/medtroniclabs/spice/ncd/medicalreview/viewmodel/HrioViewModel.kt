@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ncd.medicalreview.viewmodel
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
@@ -20,16 +19,17 @@ import javax.inject.Inject
 @HiltViewModel
 class HrioViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
+    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
 ) : BaseViewModel(dispatcherIO) {
     val nextVisitResponse = SingleLiveEvent<Resource<HashMap<String, Any>>>()
+
     fun ncdUpdateNextVisitDate(request: NCDMedicalReviewUpdateModel) {
         viewModelScope.launch(dispatcherIO) {
             nextVisitResponse.postLoading()
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDScheduleCreation,
-                isCompleted = true
+                isCompleted = true,
             )
             val response = ncdMedicalReviewRepository.ncdUpdateNextVisitDate(request)
             nextVisitResponse.postValue(response)
@@ -37,6 +37,7 @@ class HrioViewModel @Inject constructor(
     }
 
     var toTriggerPatientDetails = MutableLiveData<Boolean>()
+
     fun toTriggerPatientDetails() {
         toTriggerPatientDetails.value = true
     }

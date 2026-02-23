@@ -14,7 +14,6 @@ import com.medtroniclabs.spice.ncd.data.PeerSupervisorNotificationResponse
 
 class PeerSupervisorNotificationAdapter() :
     RecyclerView.Adapter<PeerSupervisorNotificationAdapter.NotificationViewHolder>() {
-
     private var notificationList: List<PeerSupervisorNotificationResponse>? = null
 
     inner class NotificationViewHolder(val binding: ItemCbsNotificationBinding) :
@@ -22,17 +21,22 @@ class PeerSupervisorNotificationAdapter() :
         val context: Context = binding.root.context
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder {
-        return NotificationViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): NotificationViewHolder =
+        NotificationViewHolder(
             ItemCbsNotificationBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: NotificationViewHolder,
+        position: Int,
+    ) {
         val context = holder.binding.root.context
         val notification = notificationList?.getOrNull(position) ?: return
 
@@ -84,7 +88,9 @@ class PeerSupervisorNotificationAdapter() :
 
             // Notifiable Conditions + Other Condition
             val conditionList = formData?.notifiableConditions?.filter { it.isNotBlank() }.orEmpty()
-            val otherCondition = formData?.otherNotifiableConditions?.trim()
+            val otherCondition = formData
+                ?.otherNotifiableConditions
+                ?.trim()
                 ?.takeIf { it.isNotBlank() }
 
             val conditionText = buildString {

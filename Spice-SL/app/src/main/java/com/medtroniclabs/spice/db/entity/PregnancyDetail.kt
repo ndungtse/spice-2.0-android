@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.db.entity
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -8,7 +7,6 @@ import androidx.room.PrimaryKey
 data class PregnancyDetail(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-
     var householdMemberLocalId: Long,
     var patientId: String? = null,
     var householdMemberId: String? = null,
@@ -24,7 +22,7 @@ data class PregnancyDetail(
     var isDeliveryAtHome: Boolean? = null,
     var neonateHouseholdMemberLocalId: Long? = null,
     var isNeonateDeathRecordedByPHU: Boolean? = null,
-    //Childhood Visit Detail
+    // Childhood Visit Detail
     var childVisitNo: Long? = null,
-    var tbContactTraceStatus: Int? = null
+    var tbContactTraceStatus: Int? = null,
 )

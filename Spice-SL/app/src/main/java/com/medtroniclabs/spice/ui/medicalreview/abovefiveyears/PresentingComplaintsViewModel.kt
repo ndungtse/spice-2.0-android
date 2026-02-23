@@ -16,11 +16,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PresentingComplaintsViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO : CoroutineDispatcher,
-    private var repository: ExaminationComplaintsRepository
-): ViewModel() {
-
-    var presentingComplaintsType : String = ""
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    private var repository: ExaminationComplaintsRepository,
+) : ViewModel() {
+    var presentingComplaintsType: String = ""
     var selectedPresentingComplaints = ArrayList<ChipViewItemModel>()
     var enteredComplaintNotes = ""
     val presentingComplaintsList = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()

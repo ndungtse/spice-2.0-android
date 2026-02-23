@@ -19,9 +19,8 @@ import javax.inject.Inject
 class ComorbiditiesViewModel @Inject constructor(
     @IoDispatcher val dispatcherIO: CoroutineDispatcher,
     private var repository: ExaminationComplaintsRepository,
-    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
+    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
 ) : ViewModel() {
-
     var chips: ArrayList<ChipViewItemModel> = ArrayList()
     val getChipItems = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
     var comments: String = ""
@@ -32,5 +31,4 @@ class ComorbiditiesViewModel @Inject constructor(
             getChipItems.postValue(repository.getComplaintsListByType(type))
         }
     }
-
 }

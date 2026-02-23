@@ -37,7 +37,6 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
     private var householdMemberRepository: HouseholdMemberRepository,
     private var assessmentRepository: AssessmentRepository,
 ) : ViewModel() {
-
     var memberMap: HashMap<String, Any>? = null
 
     val formLayoutsLiveData = MutableLiveData<Resource<FormResponse>>()
@@ -69,7 +68,6 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
 
     private var lastLocation: Location? = null
 
-
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
             memberFormLayoutsLiveData.postLoading()
@@ -91,7 +89,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         memberDetail: AssessmentMemberDetails,
         childBioDataDetail: HouseholdMemberEntity?,
         followUpId: Long? = null,
-        location: Location?
+        location: Location?,
     ) {
         viewModelScope.launch(dispatcherIO) {
             var deathOfNewBorn = false
@@ -110,7 +108,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                     householdId,
                     null,
                     memberDetail.id,
-                    location = location
+                    location = location,
                 )
                 if (childMemberId != null) {
                     childId = childMemberId
@@ -121,7 +119,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                         childMemberId,
                         childFhirId = null,
                         followUpId = followUpId,
-                        null
+                        null,
                     )
                 }
             } else {
@@ -134,7 +132,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                         childDetail.id,
                         childDetail.fhirId,
                         followUpId = followUpId,
-                        deathOfNewBorn
+                        deathOfNewBorn,
                     )
                 }
             }
@@ -148,11 +146,10 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         childMemberId: Long,
         childFhirId: String? = null,
         followUpId: Long? = null,
-        deathOfNewborn: Boolean?
+        deathOfNewborn: Boolean?,
     ) {
-
-        //Update Mother member details to NotSynced for PNC Flow
-        if(childFhirId == null) {
+        // Update Mother member details to NotSynced for PNC Flow
+        if (childFhirId == null) {
             householdMemberRepository.changeMemberDetailsToNotSynced(memberDetail.id)
         }
 
@@ -179,15 +176,15 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                 motherReferralResult,
                 getCurrentLocation(),
                 otherDetails,
-                Triple(childMemberId, followUpId,deathOfNewborn),
-                childReferralResult
-            )
+                Triple(childMemberId, followUpId, deathOfNewborn),
+                childReferralResult,
+            ),
         )
     }
 
     private fun calculateOtherDetails(
         assessmentMap: HashMap<Any, Any>,
-        referralStatus: String?
+        referralStatus: String?,
     ): HashMap<String, Any>? {
         val otherDetails = HashMap<String, Any>()
         if (referralStatus != null && referralStatus == ReferralStatus.Referred.name) {
@@ -199,21 +196,23 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
             val map = assessmentMap[RMNCH.PNC] as Map<*, *>
             if (map.containsKey(RMNCH.DateOfDelivery)) {
                 val dateOfDelivery = map[RMNCH.DateOfDelivery] as String
-                DateUtils.convertStringToDate(
-                    dateOfDelivery,
-                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                )?.let { deliveryDate ->
-                    RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
-                        otherDetails[AssessmentDefinedParams.NextFollowupDate] =
-                            DateUtils.convertDateTimeToDate(
-                                DateUtils.getDateStringFromDate(
-                                    visitDate, DateUtils.DATE_ddMMyyyy
-                                ),
-                                DateUtils.DATE_ddMMyyyy,
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                            )
+                DateUtils
+                    .convertStringToDate(
+                        dateOfDelivery,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    )?.let { deliveryDate ->
+                        RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
+                            otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                                DateUtils.convertDateTimeToDate(
+                                    DateUtils.getDateStringFromDate(
+                                        visitDate,
+                                        DateUtils.DATE_ddMMyyyy,
+                                    ),
+                                    DateUtils.DATE_ddMMyyyy,
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                )
+                        }
                     }
-                }
             }
         }
 
@@ -284,7 +283,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
             childMemberDetailsLiveData.postLoading()
             assessmentRepository.getChildPatientId(parentId)?.let { childLocalId ->
                 childMemberDetailsLiveData.postValue(
-                    householdMemberRepository.getMemberDetailsByID(childLocalId)
+                    householdMemberRepository.getMemberDetailsByID(childLocalId),
                 )
             }
         }
@@ -294,7 +293,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         pncAssessmentDetails: Pair<AssessmentEntity, AssessmentEntity?>?,
         otherAssessmentDetails: HashMap<String, Any>,
         lastLocation: Location?,
-        assessmentUpdateLiveData: MutableLiveData<Resource<String>>
+        assessmentUpdateLiveData: MutableLiveData<Resource<String>>,
     ) {
         viewModelScope.launch(dispatcherIO) {
             if (otherAssessmentDetails.containsKey(AssessmentDefinedParams.IsClinicTaken)) {
@@ -308,18 +307,18 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                 assessmentRepository.updateOtherAssessmentDetails(
                     pncAssessmentDetails,
                     otherAssessmentDetails,
-                    lastLocation
-                )
+                    lastLocation,
+                ),
             )
         }
     }
+
     fun setCurrentLocation(location: Location) {
         this.lastLocation = location
     }
 
-    fun getCurrentLocation(): Location? {
-        return this.lastLocation
-    }
+    fun getCurrentLocation(): Location? = this.lastLocation
+
     fun fetchCurrentLocation(context: Context) {
         val locationManager = SpiceLocationManager(context)
         locationManager.getCurrentLocation {
@@ -330,7 +329,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
     fun updateOtherAssessmentDetailsForPNCNeonateDeathCase(
         pncAssessmentDetails: Pair<AssessmentEntity, AssessmentEntity?>?,
         otherAssessmentDetails: HashMap<String, Any>,
-        lastLocation: Location?
+        lastLocation: Location?,
     ) {
         viewModelScope.launch(dispatcherIO) {
             if (otherAssessmentDetails.containsKey(AssessmentDefinedParams.IsClinicTaken)) {
@@ -342,7 +341,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
             assessmentRepository.updateOtherAssessmentDetails(
                 pncAssessmentDetails,
                 otherAssessmentDetails,
-                lastLocation
+                lastLocation,
             )
         }
     }

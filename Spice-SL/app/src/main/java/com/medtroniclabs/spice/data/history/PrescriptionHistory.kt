@@ -8,7 +8,7 @@ data class HistoryEntity(
     val patientReference: String? = null,
     val history: List<ReferredDate>? = null,
     val prescriptions: List<Prescription>? = null,
-    val investigations: List<Investigation>? = null
+    val investigations: List<Investigation>? = null,
 )
 
 data class Prescription(
@@ -37,15 +37,16 @@ data class Prescription(
     val prescriptionFilledDays: Int? = null,
     val dispenseRemainingDays: Int? = null,
     val lastReFillDate: String? = null,
-    val reason: String? = null
+    val reason: String? = null,
 )
 
 data class Investigation(
     val id: String,
     val testName: String,
-    val patientId: String
+    val patientId: String,
 )
+
 data class PatientStatus(
-    val name:String,
-    val value:String
+    val name: String,
+    val value: String,
 )

@@ -16,8 +16,8 @@ import com.medtroniclabs.spice.databinding.DialogNcdCounselingBinding
 import com.medtroniclabs.spice.formgeneration.extension.hideKeyboard
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
@@ -27,7 +27,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class NCDCounselingDialog(private val callback: (isPositiveResult: Pair<String, String>?) -> Unit) :
     DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: DialogNcdCounselingBinding
 
     private val viewModel: CounselingViewModel by activityViewModels()
@@ -46,7 +45,7 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Pair<String, 
             patientReference: String?,
             memberReference: String?,
             encounterReference: String?,
-            callback: (isPositiveResult: Pair<String, String>?) -> Unit
+            callback: (isPositiveResult: Pair<String, String>?) -> Unit,
         ): NCDCounselingDialog {
             val dialog = NCDCounselingDialog(callback)
             val bundle = Bundle()
@@ -58,14 +57,19 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Pair<String, 
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogNcdCounselingBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -112,13 +116,14 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Pair<String, 
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resourceState.data?.message?.let { message ->
-                        if (message.isNotEmpty())
+                        if (message.isNotEmpty()) {
                             callback.invoke(
                                 Pair(
                                     getString(R.string.psychological_assessment),
-                                    message
-                                )
+                                    message,
+                                ),
                             )
+                        }
                     }
                     dismiss()
                 }
@@ -138,14 +143,15 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Pair<String, 
 
             binding.btnSave.id -> {
                 requireContext().hideKeyboard(v)
-                if (connectivityManager.isNetworkAvailable())
+                if (connectivityManager.isNetworkAvailable()) {
                     viewModel.createAssessment(getCreateRequest(), false)
+                }
             }
         }
     }
 
-    private fun getCreateRequest(): NCDCounselingModel {
-        return with(viewModel) {
+    private fun getCreateRequest(): NCDCounselingModel =
+        with(viewModel) {
             NCDCounselingModel(
                 patientReference = patientReference,
                 memberReference = memberReference,
@@ -158,10 +164,9 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Pair<String, 
                 assessedBy = NCDMRUtil.currentUserId(),
                 assessedByDisplay = NCDMRUtil.getUserName(),
                 assessedDate = DateUtils.getTodayDateDDMMYYYY(),
-                isCounselor = counselor
+                isCounselor = counselor,
             )
         }
-    }
 
     override fun onStart() {
         super.onStart()

@@ -25,7 +25,6 @@ import com.medtroniclabs.spice.mappingkey.Screening
 
 class DuplicationNudgeDialog(private val callback: (doAssessment: Boolean) -> Unit) :
     DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: DialogDuplicationNudgeBinding
 
     companion object {
@@ -36,7 +35,7 @@ class DuplicationNudgeDialog(private val callback: (doAssessment: Boolean) -> Un
         fun newInstance(
             patientInfo: String?,
             isFromEnrollment: Boolean,
-            callback: (doAssessment: Boolean) -> Unit
+            callback: (doAssessment: Boolean) -> Unit,
         ): DuplicationNudgeDialog {
             val args = Bundle()
             args.putString(PATIENT_INFO, patientInfo)
@@ -48,7 +47,9 @@ class DuplicationNudgeDialog(private val callback: (doAssessment: Boolean) -> Un
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogDuplicationNudgeBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -56,7 +57,10 @@ class DuplicationNudgeDialog(private val callback: (doAssessment: Boolean) -> Un
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         setViews()
@@ -71,44 +75,57 @@ class DuplicationNudgeDialog(private val callback: (doAssessment: Boolean) -> Un
                     addView(
                         Pair(
                             getString(R.string.first_name),
-                            map[Screening.firstName]?.toString().textOrHyphen()
-                        ), Pair(
+                            map[Screening.firstName]?.toString().textOrHyphen(),
+                        ),
+                        Pair(
                             getString(R.string.last_name),
-                            map[Screening.lastName]?.toString().textOrHyphen()
-                        )
+                            map[Screening.lastName]?.toString().textOrHyphen(),
+                        ),
                     )
                     addView(
                         Pair(
                             getString(R.string.mobile_number),
-                            map[Screening.phoneNumber]?.toString().textOrHyphen()
-                        ), Pair(
+                            map[Screening.phoneNumber]?.toString().textOrHyphen(),
+                        ),
+                        Pair(
                             getString(R.string.national_id),
-                            map[Screening.identityValue]?.toString().textOrHyphen()
-                        )
+                            map[Screening.identityValue]?.toString().textOrHyphen(),
+                        ),
                     )
                     val patientId = map[DefinedParams.ProgramId]?.toString()
                     addView(
                         Pair(
                             getString(R.string.facility_name),
-                            map[Screening.healthFacilityName]?.toString().textOrHyphen()
-                        ), if (patientId.isNullOrBlank()) Pair(
-                            getString(R.string.empty), getString(R.string.empty)
-                        )
-                        else Pair(
-                            getString(R.string.patient_id),
-                            patientId
-                        )
+                            map[Screening.healthFacilityName]?.toString().textOrHyphen(),
+                        ),
+                        if (patientId.isNullOrBlank()) {
+                            Pair(
+                                getString(R.string.empty),
+                                getString(R.string.empty),
+                            )
+                        } else {
+                            Pair(
+                                getString(R.string.patient_id),
+                                patientId,
+                            )
+                        },
                     )
 
-                    val isPatientEnrolled = map[AnalyticsDefinedParams.PatientStatus]?.toString()
+                    val isPatientEnrolled = map[AnalyticsDefinedParams.PatientStatus]
+                        ?.toString()
                         .equals(DefinedParams.ENROLLED, true)
-                    val sameOperatingUnit = map[Screening.CHIEFDOM_ID]?.toString()
+                    val sameOperatingUnit = map[Screening.CHIEFDOM_ID]
+                        ?.toString()
                         .equals(SecuredPreference.getChiefdomId().toString())
-                    val sameAccount = map[Screening.DISTRICT_ID]?.toString()
+                    val sameAccount = map[Screening.DISTRICT_ID]
+                        ?.toString()
                         .equals(SecuredPreference.getDistrictId().toString())
                     if (isFromEnrollment) {
-                        if (isPatientEnrolled) doAssessment(sameAccount)
-                        else doEnrollment()
+                        if (isPatientEnrolled) {
+                            doAssessment(sameAccount)
+                        } else {
+                            doEnrollment()
+                        }
                     } else {
                         doAssessment(sameAccount)
                     }
@@ -121,7 +138,10 @@ class DuplicationNudgeDialog(private val callback: (doAssessment: Boolean) -> Un
         }
     }
 
-    private fun addView(left: Pair<String, String>, right: Pair<String, String>) {
+    private fun addView(
+        left: Pair<String, String>,
+        right: Pair<String, String>,
+    ) {
         val view = LayoutDuplicatePatientBinding.inflate(layoutInflater)
         view.tvKeyLeft.text = left.first
         view.tvValueLeft.text = left.second
@@ -136,7 +156,7 @@ class DuplicationNudgeDialog(private val callback: (doAssessment: Boolean) -> Un
             applyMessageStyle(
                 R.drawable.bg_warning_lite,
                 R.drawable.ic_warning,
-                R.string.duplicate_patient_not_registered
+                R.string.duplicate_patient_not_registered,
             )
             primaryGroup.visible()
             btnPrimary.text = getString(R.string.proceed)
@@ -148,14 +168,18 @@ class DuplicationNudgeDialog(private val callback: (doAssessment: Boolean) -> Un
             applyMessageStyle(
                 R.drawable.bg_error_lite,
                 R.drawable.ic_error,
-                if (sameAccount) R.string.duplicate_patient_same_acct else R.string.duplicate_patient_different_acct
+                if (sameAccount) R.string.duplicate_patient_same_acct else R.string.duplicate_patient_different_acct,
             )
             primaryGroup.setVisible(sameAccount)
             btnPrimary.text = getString(R.string.start_assessment)
         }
     }
 
-    private fun applyMessageStyle(bg: Int, img: Int, message: Int) {
+    private fun applyMessageStyle(
+        bg: Int,
+        img: Int,
+        message: Int,
+    ) {
         binding.apply {
             val context = requireContext()
             llMessage.background = ContextCompat.getDrawable(context, bg)
@@ -167,7 +191,6 @@ class DuplicationNudgeDialog(private val callback: (doAssessment: Boolean) -> Un
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         handleConfiguration()
-
     }
 
     override fun onStart() {

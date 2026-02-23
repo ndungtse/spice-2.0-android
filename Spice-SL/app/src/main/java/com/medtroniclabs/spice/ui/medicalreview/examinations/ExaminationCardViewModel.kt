@@ -16,31 +16,30 @@ import javax.inject.Inject
 @HiltViewModel
 class ExaminationCardViewModel @Inject constructor(
     @IoDispatcher val dispatcherIO: CoroutineDispatcher,
-    private val examinationsRepository: ExaminationsRepository
+    private val examinationsRepository: ExaminationsRepository,
 ) : ViewModel() {
-
     private val examinationQuestionsMutableLiveData = MutableLiveData<ArrayList<ExaminationModel>>()
     val examinationQuestionsLiveData: LiveData<ArrayList<ExaminationModel>>
         get() = examinationQuestionsMutableLiveData
 
     var examinationResultHashMap = HashMap<String, Any>()
-    var workFlowType: String =""
+    var workFlowType: String = ""
 
     fun getExaminationQuestionsByWorkFlow(workFlowType: String) {
         viewModelScope.launch(dispatcherIO) {
             val examinationListItem =
                 examinationsRepository.getExaminationQuestionsByWorkFlow(workFlowType)
             examinationListItem?.formInput?.let {
-                val examinationModelList = Gson().fromJson(
-                    it,
-                    Array<ExaminationModel>::class.java
-                ).asList()
+                val examinationModelList = Gson()
+                    .fromJson(
+                        it,
+                        Array<ExaminationModel>::class.java,
+                    ).asList()
                 examinationQuestionsMutableLiveData.postValue(ArrayList(examinationModelList))
             }
         }
     }
 
     fun mapResultMapToExaminationModel() {
-
     }
 }

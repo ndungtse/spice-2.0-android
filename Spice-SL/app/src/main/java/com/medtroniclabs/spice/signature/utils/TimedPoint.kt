@@ -4,15 +4,17 @@ class TimedPoint {
     var x = 0f
     var y = 0f
     var timestamp: Long = 0
+
     operator fun set(
         x: Float,
-        y: Float
+        y: Float,
     ): TimedPoint {
         this.x = x
         this.y = y
         timestamp = System.currentTimeMillis()
         return this
     }
+
     fun velocityFrom(start: TimedPoint): Float {
         var diff = timestamp - start.timestamp
         if (diff <= 0) {
@@ -24,13 +26,13 @@ class TimedPoint {
         }
         return velocity
     }
-    private fun distanceTo(point: TimedPoint): Float {
-        return Math.sqrt(
-            Math.pow(
-                point.x - x.toDouble(),
-                2.0
-            ) + Math.pow(point.y - y.toDouble(), 2.0)
-        )
-            .toFloat()
-    }
+
+    private fun distanceTo(point: TimedPoint): Float =
+        Math
+            .sqrt(
+                Math.pow(
+                    point.x - x.toDouble(),
+                    2.0,
+                ) + Math.pow(point.y - y.toDouble(), 2.0),
+            ).toFloat()
 }

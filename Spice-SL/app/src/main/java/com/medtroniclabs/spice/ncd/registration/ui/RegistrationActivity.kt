@@ -8,14 +8,13 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityRegistrationBinding
-import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ncd.registration.fragment.RegistrationFormFragment
 import com.medtroniclabs.spice.ncd.registration.fragment.RegistrationSummaryFragment
 import com.medtroniclabs.spice.ncd.registration.fragment.TermsAndConditionsFragment
+import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class RegistrationActivity : BaseActivity() {
-
     private lateinit var binding: ActivityRegistrationBinding
     private val patientDetailViewModel: PatientDetailViewModel by viewModels()
 
@@ -34,7 +33,7 @@ class RegistrationActivity : BaseActivity() {
             },
             callbackHome = {
                 backNavigation()
-            }
+            },
         )
         attachObserver()
         getPatientDetails()
@@ -47,8 +46,9 @@ class RegistrationActivity : BaseActivity() {
     private fun attachObserver() {
         patientDetailViewModel.patientDetailsLiveData.observe(this) { resource ->
             handleResourceState(
-                resource, onSuccess = { loadTermsAndConditionsFragment() },
-                onBackPressPopStack = ::onBackPressPopStack
+                resource,
+                onSuccess = { loadTermsAndConditionsFragment() },
+                onBackPressPopStack = ::onBackPressPopStack,
             )
         }
     }
@@ -63,7 +63,7 @@ class RegistrationActivity : BaseActivity() {
         intent.getStringExtra(DefinedParams.FhirId)?.let { id ->
             patientDetailViewModel.getPatients(
                 id,
-                origin = patientDetailViewModel.origin?.lowercase()
+                origin = patientDetailViewModel.origin?.lowercase(),
             )
         } ?: run {
             loadTermsAndConditionsFragment()
@@ -78,7 +78,7 @@ class RegistrationActivity : BaseActivity() {
         replaceFragmentInId<TermsAndConditionsFragment>(
             binding.formsFragmentContainer.id,
             bundle = bundle,
-            tag = TermsAndConditionsFragment.TAG
+            tag = TermsAndConditionsFragment.TAG,
         )
     }
 
@@ -87,7 +87,7 @@ class RegistrationActivity : BaseActivity() {
         replaceFragmentInId<RegistrationFormFragment>(
             binding.formsFragmentContainer.id,
             bundle = bundle,
-            tag = RegistrationFormFragment.TAG
+            tag = RegistrationFormFragment.TAG,
         )
     }
 
@@ -95,7 +95,7 @@ class RegistrationActivity : BaseActivity() {
         setTitle(getString(R.string.registration))
         replaceFragmentInId<RegistrationSummaryFragment>(
             binding.formsFragmentContainer.id,
-            tag = RegistrationSummaryFragment.TAG
+            tag = RegistrationSummaryFragment.TAG,
         )
     }
 
@@ -110,7 +110,7 @@ class RegistrationActivity : BaseActivity() {
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            isNegativeButtonNeed = true,
         ) { isPositive ->
             if (isPositive) {
                 startActivityWithoutSplashScreen()

@@ -13,5 +13,5 @@ data class FollowUpCriteria(
     val successfulAttempts: Int,
     val unsuccessfulAttempts: Int,
     val informedCallAttempts: Int,
-    val notInformedCallAttempts: Int
+    val notInformedCallAttempts: Int,
 )

@@ -27,10 +27,9 @@ import javax.inject.Inject
 class PatientDetailViewModel @Inject constructor(
     private val patientRepository: PatientRepository,
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
-): BaseViewModel(dispatcherIO) {
-
-    var dateOfDelivery: String? =null
+    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
+) : BaseViewModel(dispatcherIO) {
+    var dateOfDelivery: String? = null
     var childPatientDetails: String? = null
     val updatePregnancyRisk = MutableLiveData<Resource<Boolean>>()
     val ncdInstructionModelResponse = MutableLiveData<Resource<NCDInstructionModel>>()
@@ -38,24 +37,24 @@ class PatientDetailViewModel @Inject constructor(
     val patientDetailsNeonateLiveData = MutableLiveData<Resource<PatientListRespModel>>()
     var isFamilyPlanning: Boolean = false
 
-    //the below id is one which get from patient details response
-    var patientDetailsId : String? = null
-    var isSummary : Boolean = false
+    // the below id is one which get from patient details response
+    var patientDetailsId: String? = null
+    var isSummary: Boolean = false
 
-    var encounterId: String ?= null
-    var childEncounterId: String ?= null
+    var encounterId: String? = null
+    var childEncounterId: String? = null
 
     var origin: String? = null
     var mrMenuId: String? = null
     var isCmr: Boolean = false
     var forceRefresh: Boolean = false
 
-    var neonateOutCome: String?=null
+    var neonateOutCome: String? = null
 
-    var chwName:String?=null
-    var occupation:String?=null
+    var chwName: String? = null
+    var occupation: String? = null
     var presumptiveTbNo: String? = null
-    var maritalStatus:String?=null
+    var maritalStatus: String? = null
     val clinicalWorkflowsMenusLiveData = MutableLiveData<List<ClinicalWorkflowEntity>>()
     var artCode: String? = null
     var patientCurrentStatus = MutableLiveData<String>()
@@ -63,12 +62,19 @@ class PatientDetailViewModel @Inject constructor(
     var isEmtctFlow: Boolean = false
     var hivTestedPositive: Boolean = false
 
-    fun getPatients(id: String, assessmentType: String? = null, origin: String? = null) {
+    fun getPatients(
+        id: String,
+        assessmentType: String? = null,
+        origin: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             patientDetailsLiveData.postLoading()
-            patientDetailsLiveData.postValue(patientRepository.getPatients(PatientDetailRequest(patientId = id, assessmentType = assessmentType, id = id, type = origin)))
+            patientDetailsLiveData.postValue(
+                patientRepository.getPatients(PatientDetailRequest(patientId = id, assessmentType = assessmentType, id = id, type = origin)),
+            )
         }
     }
+
     fun getPatientsForNCD(id: String) {
         viewModelScope.launch(dispatcherIO) {
             patientDetailsLiveData.postLoading()
@@ -76,75 +82,73 @@ class PatientDetailViewModel @Inject constructor(
         }
     }
 
+    fun getLastRefillVisitId(): String? =
+        patientDetailsLiveData.value
+            ?.data
+            ?.prescribedDetails
+            ?.lastRefillVisitId
 
-    fun getLastRefillVisitId() : String? {
-        return patientDetailsLiveData.value?.data?.prescribedDetails?.lastRefillVisitId
-    }
+    fun getPatientFHIRId(): String? = patientDetailsLiveData.value?.data?.id
 
-    fun getPatientFHIRId(): String? {
-        return patientDetailsLiveData.value?.data?.id
-    }
+    fun getPatientVillageId(): String? = patientDetailsLiveData.value?.data?.villageId
 
-    fun getPatientVillageId(): String? {
-        return patientDetailsLiveData.value?.data?.villageId
-    }
-    fun getPatientMemberId(): String? {
-        return patientDetailsLiveData.value?.data?.memberId
-    }
+    fun getPatientMemberId(): String? = patientDetailsLiveData.value?.data?.memberId
 
-    fun getPatientId(): String? {
-        return patientDetailsLiveData.value?.data?.patientId
-    }
+    fun getPatientId(): String? = patientDetailsLiveData.value?.data?.patientId
 
-    fun getEnrollmentType(): String? {
-        return patientDetailsLiveData.value?.data?.enrollmentType
-    }
+    fun getEnrollmentType(): String? = patientDetailsLiveData.value?.data?.enrollmentType
 
-    fun getIdentityValue(): String? {
-        return patientDetailsLiveData.value?.data?.identityValue
-    }
+    fun getIdentityValue(): String? = patientDetailsLiveData.value?.data?.identityValue
 
-    fun getChildPatientName(): String? {
-        return patientDetailsLiveData.value?.data?.pregnancyDetails?.neonatePatientId
-    }
-    fun getPatientHouseholdId(): String? {
-        return patientDetailsLiveData.value?.data?.houseHoldId
-    }
+    fun getChildPatientName(): String? =
+        patientDetailsLiveData.value
+            ?.data
+            ?.pregnancyDetails
+            ?.neonatePatientId
 
-    fun getAncVisit(): Int {
-        return patientDetailsLiveData.value?.data?.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }
+    fun getPatientHouseholdId(): String? = patientDetailsLiveData.value?.data?.houseHoldId
+
+    fun getAncVisit(): Int =
+        patientDetailsLiveData.value
+            ?.data
+            ?.pregnancyDetails
+            ?.ancVisitMedicalReview
+            ?.takeIf { true }
             ?.plus(1)
             ?: 1
-    }
-    fun getPncVisit(): Int {
-        return patientDetailsLiveData.value?.data?.pregnancyDetails?.pncVisitMedicalReview?.takeIf { true }
+
+    fun getPncVisit(): Int =
+        patientDetailsLiveData.value
+            ?.data
+            ?.pregnancyDetails
+            ?.pncVisitMedicalReview
+            ?.takeIf { true }
             ?.plus(1)
             ?: 1
-    }
 
-    fun getPatientLmb():String? {
-        return patientDetailsLiveData.value?.data?.pregnancyDetails?.lastMenstrualPeriod
-    }
+    fun getPatientLmb(): String? =
+        patientDetailsLiveData.value
+            ?.data
+            ?.pregnancyDetails
+            ?.lastMenstrualPeriod
 
-    fun getVillageId(): String? {
-        return patientDetailsLiveData.value?.data?.villageId
-    }
+    fun getVillageId(): String? = patientDetailsLiveData.value?.data?.villageId
 
-    fun getNCDInitialMedicalReview():Boolean {
-        return patientDetailsLiveData.value?.data?.initialReviewed ?: false
-    }
+    fun getNCDInitialMedicalReview(): Boolean = patientDetailsLiveData.value?.data?.initialReviewed ?: false
 
-    fun getGenderIsFemale():Boolean {
-        return patientDetailsLiveData.value?.data?.gender?.equals(DefinedParams.female, ignoreCase = true) == true
-    }
+    fun getGenderIsFemale(): Boolean =
+        patientDetailsLiveData.value
+            ?.data
+            ?.gender
+            ?.equals(DefinedParams.female, ignoreCase = true) == true
 
-    fun getGender(): String? {
-        return patientDetailsLiveData.value?.data?.gender
-    }
+    fun getGender(): String? = patientDetailsLiveData.value?.data?.gender
 
-    fun isPatientEnrolled(): Boolean {
-        return !patientDetailsLiveData.value?.data?.programId.isNullOrBlank()
-    }
+    fun isPatientEnrolled(): Boolean =
+        !patientDetailsLiveData.value
+            ?.data
+            ?.programId
+            .isNullOrBlank()
 
     fun recentBP(): String {
         val avgBP = patientDetailsLiveData.value?.data?.avgBloodPressure
@@ -165,17 +169,11 @@ class PatientDetailViewModel @Inject constructor(
         }
     }
 
-    fun getWeightInKG(): Double? {
-        return patientDetailsLiveData.value?.data?.weight
-    }
+    fun getWeightInKG(): Double? = patientDetailsLiveData.value?.data?.weight
 
-    fun getPregnantDetails(): PregnancyDetails? {
-        return patientDetailsLiveData.value?.data?.pregnancyDetails
-    }
+    fun getPregnantDetails(): PregnancyDetails? = patientDetailsLiveData.value?.data?.pregnancyDetails
 
-    fun isPregnant(): Boolean {
-        return getGenderIsFemale() && patientDetailsLiveData.value?.data?.isPregnant == true
-    }
+    fun isPregnant(): Boolean = getGenderIsFemale() && patientDetailsLiveData.value?.data?.isPregnant == true
 
     fun ncdGetInstructions() {
         viewModelScope.launch(dispatcherIO) {
@@ -183,7 +181,7 @@ class PatientDetailViewModel @Inject constructor(
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDInstructionPregnancyRisk,
-                isCompleted = true
+                isCompleted = true,
             )
             ncdInstructionModelResponse.postValue(ncdMedicalReviewRepository.ncdGetInstructions())
         }
@@ -195,7 +193,7 @@ class PatientDetailViewModel @Inject constructor(
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = AnalyticsDefinedParams.NCDUpdatePregnancyRisk,
-                isCompleted = true
+                isCompleted = true,
             )
             updatePregnancyRisk.postValue(ncdMedicalReviewRepository.ncdUpdatePregnancyRisk(request))
         }
@@ -207,35 +205,44 @@ class PatientDetailViewModel @Inject constructor(
         }
     }
 
-    fun getNeonatePatients(id: String, assessmentType: String? = null, origin: String? = null) {
+    fun getNeonatePatients(
+        id: String,
+        assessmentType: String? = null,
+        origin: String? = null,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             patientDetailsNeonateLiveData.postLoading()
-            patientDetailsNeonateLiveData.postValue(patientRepository.getPatients(PatientDetailRequest(patientId = id, assessmentType = assessmentType, id = id, type = origin)))
+            patientDetailsNeonateLiveData.postValue(
+                patientRepository.getPatients(PatientDetailRequest(patientId = id, assessmentType = assessmentType, id = id, type = origin)),
+            )
         }
     }
 
-    fun getTbMedicalReviewStatus(): Boolean {
-        return patientDetailsLiveData.value?.data?.tbIMRCompleted ?: false
-    }
+    fun getTbMedicalReviewStatus(): Boolean = patientDetailsLiveData.value?.data?.tbIMRCompleted ?: false
 
-    fun getHivMedicalReviewStatus(): Boolean {
-        return patientDetailsLiveData.value?.data?.hivIMRCompleted ?: false
-    }
-    fun getDob(): String? {
-        return patientDetailsLiveData.value?.data?.birthDate
-    }
+    fun getHivMedicalReviewStatus(): Boolean = patientDetailsLiveData.value?.data?.hivIMRCompleted ?: false
 
-    fun getPregnancyBreastFeedStatus(): String? {
-        return patientDetailsLiveData.value?.data?.pregnancyBreastFeedStatus
-    }
+    fun getDob(): String? = patientDetailsLiveData.value?.data?.birthDate
 
-    fun getANCVisitCount(): Int? {
-        return patientDetailsLiveData.value?.data?.pregnancyDetails?.ancVisitMedicalReview
-    }
-    fun getEstimatedDeliveryDate():String? {
-        return patientDetailsLiveData.value?.data?.pregnancyDetails?.estimatedDeliveryDate
-    }
-    fun getGestationalAge():Long? {
-        return patientDetailsLiveData.value?.data?.pregnancyDetails?.gestationalAge.toString().toLongOrNull()
-    }
+    fun getPregnancyBreastFeedStatus(): String? = patientDetailsLiveData.value?.data?.pregnancyBreastFeedStatus
+
+    fun getANCVisitCount(): Int? =
+        patientDetailsLiveData.value
+            ?.data
+            ?.pregnancyDetails
+            ?.ancVisitMedicalReview
+
+    fun getEstimatedDeliveryDate(): String? =
+        patientDetailsLiveData.value
+            ?.data
+            ?.pregnancyDetails
+            ?.estimatedDeliveryDate
+
+    fun getGestationalAge(): Long? =
+        patientDetailsLiveData.value
+            ?.data
+            ?.pregnancyDetails
+            ?.gestationalAge
+            .toString()
+            .toLongOrNull()
 }

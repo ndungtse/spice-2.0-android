@@ -18,11 +18,10 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class HivImrCmrSummaryViewModel @Inject constructor(
     private val hivMedicalReviewRepo: HivMedicalReviewRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
     var nextFollowupDate: String? = null
     val hivSummary = MutableLiveData<Resource<HivSummaryResponse>>()
@@ -33,18 +32,18 @@ class HivImrCmrSummaryViewModel @Inject constructor(
     val getMaternalOutcomeMeta = MutableLiveData<String>()
     var statusSpinner = ArrayList<Map<String, Any>>()
     var maternalOutcomeMap = ArrayList<Map<String, Any>>()
-    var emtctStatusDefault:String? =null
+    var emtctStatusDefault: String? = null
 
-
-
-
-    fun fetchHivSummaryDetails(encounterId: String?, fhirId: String?) {
+    fun fetchHivSummaryDetails(
+        encounterId: String?,
+        fhirId: String?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             hivSummary.postLoading()
             hivSummary.postValue(
                 hivMedicalReviewRepo.fetchHivSummaryDetails(
-                    MotherNeonateAncRequest(id = encounterId, patientReference = fhirId)
-                )
+                    MotherNeonateAncRequest(id = encounterId, patientReference = fhirId),
+                ),
             )
         }
     }

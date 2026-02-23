@@ -2,16 +2,16 @@ package com.medtroniclabs.spice.data
 
 import androidx.room.ColumnInfo
 import com.google.gson.annotations.SerializedName
-import com.medtroniclabs.spice.db.entity.ChiefDomEntity
-import com.medtroniclabs.spice.db.entity.FrequencyEntity
-import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
-import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
-import com.medtroniclabs.spice.db.entity.DistrictEntity
-import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
-import com.medtroniclabs.spice.db.entity.RiskClassificationModel
-import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.data.model.ShasthyaShebika
 import com.medtroniclabs.spice.data.model.SubVillage
+import com.medtroniclabs.spice.db.entity.ChiefDomEntity
+import com.medtroniclabs.spice.db.entity.DistrictEntity
+import com.medtroniclabs.spice.db.entity.FrequencyEntity
+import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
+import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
+import com.medtroniclabs.spice.db.entity.RiskClassificationModel
+import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.VillageEntity
 
 data class MetaDataResponse(
     val nearestHealthFacilities: List<HealthFacility>,
@@ -20,7 +20,7 @@ data class MetaDataResponse(
     val menu: Menu,
     val userProfile: UserProfile,
     val workflowIds: ArrayList<Long>,
-    val frequency: List<FrequencyEntity> ? = null,
+    val frequency: List<FrequencyEntity>? = null,
     val userHealthFacilities: List<HealthFacility>? = null,
     val identityTypes: ArrayList<IdentityType>? = null,
     val districts: ArrayList<DistrictEntity>? = null,
@@ -29,10 +29,10 @@ data class MetaDataResponse(
     val cultures: ArrayList<CulturesEntity>? = null,
     val appTypes: ArrayList<String>? = null,
     val remainingAttemptsCount: Int? = null,
-    val consentForm: ConsentFormResponse ? = null,
+    val consentForm: ConsentFormResponse? = null,
     val medicationInstructions: List<String>? = null,
     val subVillages: List<SubVillage>? = null,
-    val shasthyaShebikas: List<ShasthyaShebika>? = null
+    val shasthyaShebikas: List<ShasthyaShebika>? = null,
 )
 
 data class Designation(
@@ -54,19 +54,19 @@ data class HealthFacility(
     val fhirId: String?,
     val clinicalWorkflows: ArrayList<ClinicalWorkflow>,
     val linkedVillages: ArrayList<Village>,
-    val phuFocalPersonNumber: Long? = null
+    val phuFocalPersonNumber: Long? = null,
 )
 
 data class District(
     val id: Long,
     val name: String?,
-    val code: String?
+    val code: String?,
 )
 
 data class ChiefDom(
     val id: Long,
     val name: String?,
-    val code: String?
+    val code: String?,
 )
 
 data class ClinicalWorkflow(
@@ -78,7 +78,7 @@ data class ClinicalWorkflow(
     val active: Boolean? = false,
     val deleted: Boolean? = false,
     val displayOrder: Int,
-    val conditions: ArrayList<ClinicalWorkflowCondition>? = null
+    val conditions: ArrayList<ClinicalWorkflowCondition>? = null,
 )
 
 data class ClinicalWorkflowCondition(
@@ -89,7 +89,7 @@ data class ClinicalWorkflowCondition(
     val groupName: String? = null,
     val displayGroupName: String? = null,
     val moduleType: String,
-    val category: String
+    val category: String,
 )
 
 data class Village(
@@ -100,7 +100,7 @@ data class Village(
     val countryId: Long,
     val districtId: Long,
     val chiefdomCode: String? = null,
-    val districtCode: String? = null
+    val districtCode: String? = null,
 )
 
 data class Menu(
@@ -109,14 +109,14 @@ data class Menu(
     val menus: ArrayList<MenuDetail>?,
     val active: Boolean? = false,
     val deleted: Boolean? = false,
-    val meta: List<String>? = null
+    val meta: List<String>? = null,
 )
 
 data class MenuDetail(
     val name: String,
     val order: Int,
     val displayValue: String? = null,
-    val workflowName: String? = null
+    val workflowName: String? = null,
 )
 
 data class UserProfile(
@@ -136,7 +136,7 @@ data class UserProfile(
     val villages: List<VillageEntity>? = null,
     val tenantId: Long,
     val suiteAccess: List<String>? = null,
-    val supervisor: Supervisor? = null
+    val supervisor: Supervisor? = null,
 )
 
 data class Supervisor(
@@ -154,7 +154,7 @@ data class Supervisor(
     val fhirId: String? = null,
     val suiteAccess: List<String>? = null,
     val villages: List<Village>? = null,
-    val defaultRoleName: String? = null
+    val defaultRoleName: String? = null,
 )
 
 data class Role(
@@ -162,7 +162,7 @@ data class Role(
     val name: String,
     val displayName: String?,
     val level: Int,
-    val authority: String
+    val authority: String,
 )
 
 data class Country(
@@ -171,7 +171,7 @@ data class Country(
     val phoneNumberCode: String,
     val unitMeasurement: String?,
     val regionCode: String,
-    val tenantId: Long
+    val tenantId: Long,
 )
 
 data class Organization(
@@ -179,12 +179,12 @@ data class Organization(
     val formDataId: Long,
     val name: String,
     val sequence: String?,
-    val parentOrganizationId: Long?
+    val parentOrganizationId: Long?,
 )
 
 data class FormRequest(
     val nonNcdWorkflowEnabled: Boolean? = null,
-    val workflowIds: List<Long>
+    val workflowIds: List<Long>,
 )
 
 data class FormResponse(
@@ -195,24 +195,24 @@ data class FormResponse(
     val screening: NcdFormData? = null,
     val assessment: NcdFormData? = null,
     val customizedWorkflow: List<NcdCustomizedWorkflow>? = null,
-    val modelQuestions: List<ModelQuestion>? = null
+    val modelQuestions: List<ModelQuestion>? = null,
 )
 
 data class NcdFormData(
     val id: Long,
     val inputForm: String,
-    val consentForm: String
+    val consentForm: String,
 )
 
 data class NcdCustomizedWorkflow(
     val viewScreens: List<String>,
     val formInput: String,
-    val id: Long
+    val id: Long,
 )
 
 data class ModelQuestion(
     val type: String,
-    val questions: String?
+    val questions: String?,
 )
 
 data class FormData(
@@ -220,38 +220,38 @@ data class FormData(
     val formInput: String,
     val formType: String,
     val workflowName: String? = null,
-    val clinicalWorkflowId: Long? = null
+    val clinicalWorkflowId: Long? = null,
 )
 
 data class FormMetaRequest(
-    val metaNames: List<String>
+    val metaNames: List<String>,
 )
 
 data class UserSymptomsEntity(
     val symptoms: ArrayList<SignsAndSymptomsEntity>,
     var medicalCompliances: ArrayList<MedicalComplianceEntity>? = null,
     val cvdRiskAlgorithms: RiskFactorResponse? = null,
-    val diagnosis : ArrayList<NCDDiagnosisEntity>? = null,
-    val units:  ArrayList<UnitMetricEntity>? = null,
-    val dosageFrequencies:  ArrayList<DosageFrequency>? = null,
-    val reasons: ArrayList<ShortageReasonEntity>? = null
+    val diagnosis: ArrayList<NCDDiagnosisEntity>? = null,
+    val units: ArrayList<UnitMetricEntity>? = null,
+    val dosageFrequencies: ArrayList<DosageFrequency>? = null,
+    val reasons: ArrayList<ShortageReasonEntity>? = null,
 )
 
 data class VillageInfo(
     val chiefdomId: Long,
-    val code: String
+    val code: String,
 )
 
 data class LastCreatedAtAndPatientId(
     @ColumnInfo(name = "lastCreatedAt")
     val lastCreatedAt: Long,
     @ColumnInfo(name = "lastPatientId")
-    val lastPatientId: String?
+    val lastPatientId: String?,
 )
 
 data class ConsentFormResponse(val household: String?, val EPI: String?, val HIV: String?)
 
 data class RiskFactorResponse(
     @SerializedName("non_lab")
-    var nonLab: ArrayList<RiskClassificationModel>?
+    var nonLab: ArrayList<RiskClassificationModel>?,
 )

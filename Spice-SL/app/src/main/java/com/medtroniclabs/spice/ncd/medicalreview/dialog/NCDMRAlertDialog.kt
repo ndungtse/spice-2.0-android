@@ -11,12 +11,12 @@ import com.medtroniclabs.spice.databinding.NcdMrAlertDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class NCDMRAlertDialog : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: NcdMrAlertDialogBinding
     private var callback: DialogCallback? = null
 
     interface DialogCallback {
         fun onYesClicked()
+
         fun onConfirmDiagnosisClicked(isBp: Boolean)
     }
 
@@ -25,8 +25,9 @@ class NCDMRAlertDialog : DialogFragment(), View.OnClickListener {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = NcdMrAlertDialogBinding.inflate(inflater, container, false)
@@ -50,18 +51,18 @@ class NCDMRAlertDialog : DialogFragment(), View.OnClickListener {
         private const val KEY_SHOW_CLOSE = "KEY_SHOW_CLOSE"
 
         fun newInstance(
-            title: String = "Alert",          // Default title
+            title: String = "Alert", // Default title
             message: String? = "", // Default message
             showYesNoClose: Triple<Boolean, Boolean, Boolean> = Triple(
                 true,
                 true,
-                true
+                true,
             ), // Show all by default
-            yesText: String = "Yes",          // Default Yes button text
-            noText: String = "No",            // Default No button text
+            yesText: String = "Yes", // Default Yes button text
+            noText: String = "No", // Default No button text
             showConfirm: Boolean = false, // Default: don't show confirm button
             cfTest: String = "",
-            callback: DialogCallback? = null  // Default callback is null
+            callback: DialogCallback? = null, // Default callback is null
         ) = NCDMRAlertDialog().apply {
             arguments = Bundle().apply {
                 putString(KEY_MESSAGE, message)
@@ -97,19 +98,26 @@ class NCDMRAlertDialog : DialogFragment(), View.OnClickListener {
 
             binding.btnConfirmDiagnosis.id -> {
                 callback?.onConfirmDiagnosisClicked(
-                    binding.btnConfirmDiagnosis.text.isNotBlank() && binding.btnConfirmDiagnosis.text.trim()
-                        .toString().equals(
-                        getString(
-                            R.string.add_new_reading
-                        ), true
-                    )
+                    binding.btnConfirmDiagnosis.text.isNotBlank() &&
+                        binding.btnConfirmDiagnosis.text
+                            .trim()
+                            .toString()
+                            .equals(
+                                getString(
+                                    R.string.add_new_reading,
+                                ),
+                                true,
+                            ),
                 )
                 dismiss()
             }
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
     }

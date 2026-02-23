@@ -10,7 +10,7 @@ data class NCDMentalHealthStatusRequest(
     val ncdPatientStatus: NcdPatientStatus? = null,
     val patientReference: String? = null,
     val memberReference: String? = null,
-    val patientVisitId: String? = null
+    val patientVisitId: String? = null,
 )
 
 data class MentalHealthStatus(

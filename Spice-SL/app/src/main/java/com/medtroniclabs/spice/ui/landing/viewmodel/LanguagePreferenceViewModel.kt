@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LanguagePreferenceViewModel @Inject constructor(
     private val metaRepository: MetaRepository,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
     var selectedCultureId: Long? = null
 

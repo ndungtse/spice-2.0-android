@@ -2,12 +2,12 @@ package com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.re
 
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
-import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
-import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
 import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
+import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -16,11 +16,10 @@ import javax.inject.Inject
 
 class LabourDeliveryRepository @Inject constructor(
     private var roomHelper: RoomHelper,
-    private var apiHelper: ApiHelper
+    private var apiHelper: ApiHelper,
 ) {
-
-    suspend fun getStaticMetaData(): Resource<Boolean> {
-        return try {
+    suspend fun getStaticMetaData(): Resource<Boolean> =
+        try {
             val response = apiHelper.getLabourDeliveryMetaData()
             if (response.isSuccessful) {
                 response.body()?.entity?.apply {
@@ -35,13 +34,13 @@ class LabourDeliveryRepository @Inject constructor(
                             riskFactors,
                             conditionOfMother,
                             motherDeliveryStatus,
-                            stateOfPerineum
-                        )
+                            stateOfPerineum,
+                        ),
                     )
                 }
                 SecuredPreference.putBoolean(
                     SecuredPreference.EnvironmentKey.IS_LABOUR_DELIVERY_LOADED.name,
-                    true
+                    true,
                 )
                 Resource(ResourceState.SUCCESS, true)
             } else {
@@ -51,11 +50,10 @@ class LabourDeliveryRepository @Inject constructor(
             e.printStackTrace()
             SecuredPreference.putBoolean(
                 SecuredPreference.EnvironmentKey.IS_LABOUR_DELIVERY_LOADED.name,
-                false
+                false,
             )
             Resource(ResourceState.ERROR)
         }
-    }
 
     private fun generateChipItemByType(
         symptoms: List<LabourDeliveryMetaEntity>,
@@ -66,7 +64,7 @@ class LabourDeliveryRepository @Inject constructor(
         riskFactors: List<LabourDeliveryMetaEntity>,
         conditionOfMother: List<LabourDeliveryMetaEntity>,
         motherDeliveryStatus: List<LabourDeliveryMetaEntity>,
-        stateOfPerineum:List<LabourDeliveryMetaEntity>
+        stateOfPerineum: List<LabourDeliveryMetaEntity>,
     ): List<LabourDeliveryMetaEntity> {
         val chipItemList = ArrayList<LabourDeliveryMetaEntity>()
         symptoms.forEach { it.category = MedicalReviewTypeEnums.MOTHER_DELIVERY_REVIEW.name }
@@ -104,17 +102,16 @@ class LabourDeliveryRepository @Inject constructor(
         return chipItemList
     }
 
-    suspend fun getLabourDeliveryList(): Resource<List<LabourDeliveryMetaEntity>> {
-        return try {
+    suspend fun getLabourDeliveryList(): Resource<List<LabourDeliveryMetaEntity>> =
+        try {
             val response = roomHelper.getLabourDelivery()
             Resource(ResourceState.SUCCESS, response)
         } catch (e: Exception) {
             Resource(ResourceState.ERROR)
         }
-    }
 
-    suspend fun createLabourDeliveryMedicalReview(request: CreateLabourDeliveryRequest): Resource<CreateLabourDeliveryResponse> {
-        return try {
+    suspend fun createLabourDeliveryMedicalReview(request: CreateLabourDeliveryRequest): Resource<CreateLabourDeliveryResponse> =
+        try {
             val response = apiHelper.createMedicalReviewLabourDelivery(request)
             if (response.isSuccessful) {
                 Resource(ResourceState.SUCCESS, response.body()?.entity)
@@ -125,10 +122,9 @@ class LabourDeliveryRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(ResourceState.ERROR, message = e.localizedMessage)
         }
-    }
 
-    suspend fun getLabourDeliverySummaryDetails(request: LabourDeliverySummaryDetails): Resource<CreateLabourDeliveryRequest> {
-        return try {
+    suspend fun getLabourDeliverySummaryDetails(request: LabourDeliverySummaryDetails): Resource<CreateLabourDeliveryRequest> =
+        try {
             val response = apiHelper.getLabourDeliverySummaryDetails(request)
             if (response.isSuccessful) {
                 Resource(ResourceState.SUCCESS, response.body()?.entity)
@@ -139,10 +135,9 @@ class LabourDeliveryRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(ResourceState.ERROR, message = e.localizedMessage)
         }
-    }
 
-    suspend fun labourDeliverySummaryCreate(request: MedicalReviewSummarySubmitRequest): Resource<HashMap<String, Any>> {
-        return try{
+    suspend fun labourDeliverySummaryCreate(request: MedicalReviewSummarySubmitRequest): Resource<HashMap<String, Any>> =
+        try {
             val response = apiHelper.createSummarySubmit(request)
             if (response.isSuccessful) {
                 Resource(ResourceState.SUCCESS, response.body()?.entity)
@@ -153,5 +148,4 @@ class LabourDeliveryRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(ResourceState.ERROR, message = e.localizedMessage)
         }
-    }
 }

@@ -10,5 +10,5 @@ data class DosageDurationEntity(
     val name: String,
     val displayOrder: Int,
     val displayValue: String? = null,
-    val quantity: Long
+    val quantity: Long,
 )

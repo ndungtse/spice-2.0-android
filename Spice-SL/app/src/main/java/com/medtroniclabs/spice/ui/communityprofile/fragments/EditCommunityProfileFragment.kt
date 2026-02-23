@@ -21,8 +21,8 @@ import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_ID
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_NAME
-import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.DefinedParams.COMMUNITY_REGISTERED
+import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.DefinedParams.Value
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
@@ -70,26 +70,30 @@ import com.medtroniclabs.spice.ui.communityprofile.adapter.CommunityPopulationAd
 import com.medtroniclabs.spice.ui.communityprofile.viewmodel.CommunityProfileViewModel
 
 class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnClickListener {
-
     private lateinit var binding: FragmentEditCommunityBinding
     private lateinit var formGenerator: FormGenerator
     private val communityProfileViewModel: CommunityProfileViewModel by activityViewModels()
     private lateinit var communityPopulationAdapter: CommunityPopulationAdapter
     private var datePickerDialog: DatePickerDialog? = null
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentEditCommunityBinding.inflate(
             layoutInflater,
             container,
-            false
+            false,
         )
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         setListener()
@@ -117,7 +121,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                             putString(COMMUNITY_NAME, it)
                         }
                     }
-                    communityProfileViewModel.updateCurrentFragment(3,bundle)
+                    communityProfileViewModel.updateCurrentFragment(3, bundle)
                     requireActivity().startBackgroundOfflineSync()
                 }
 
@@ -136,8 +140,9 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resourceState.data?.let {
-                        if(it.villageId == arguments?.getLong(COMMUNITY_ID))
+                        if (it.villageId == arguments?.getLong(COMMUNITY_ID)) {
                             autoPopulateFormField(it)
+                        }
                     }
                 }
 
@@ -145,7 +150,6 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                     hideProgress()
                 }
             }
-
         }
 
         communityProfileViewModel.nearestHealthFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
@@ -170,7 +174,6 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                     hideProgress()
                 }
             }
-
         }
 
         communityProfileViewModel.communityStatistics.observe(viewLifecycleOwner) { resourceState ->
@@ -186,38 +189,38 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                         list.add(
                             CommunityPopulation(
                                 getString(R.string.total_population),
-                                it.populationCount
-                            )
+                                it.populationCount,
+                            ),
                         )
                         list.add(
                             CommunityPopulation(
                                 getString(R.string.no_of_household_families),
-                                it.householdCount
-                            )
+                                it.householdCount,
+                            ),
                         )
                         list.add(
                             CommunityPopulation(
                                 getString(R.string.no_of_women_of_child_bearing_age),
-                                it.childBearingAgeOfWomen
-                            )
+                                it.childBearingAgeOfWomen,
+                            ),
                         )
                         list.add(
                             CommunityPopulation(
                                 getString(R.string.no_of_pregnant_women),
-                                it.pregnantCount
-                            )
+                                it.pregnantCount,
+                            ),
                         )
                         list.add(
                             CommunityPopulation(
                                 getString(R.string.no_of_child_under_one_year),
-                                it.belowOneYearCount
-                            )
+                                it.belowOneYearCount,
+                            ),
                         )
                         list.add(
                             CommunityPopulation(
                                 getString(R.string.no_of_children_under_five_years),
-                                it.belowFiveYearCount
-                            )
+                                it.belowFiveYearCount,
+                            ),
                         )
                         communityPopulationAdapter.updateList(list)
                     }
@@ -246,14 +249,14 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                     hideProgress()
                 }
             }
-
         }
     }
 
     private fun prepopulateNearestPhu() {
         formGenerator.getViewByTag(NearestPhu)?.let { view ->
             val nearestPhuName = communityProfileViewModel.nearestPhu.takeIf { it.isNotBlank() }
-                ?: communityProfileViewModel.nearestHealthFacilityLiveData.value?.data
+                ?: communityProfileViewModel.nearestHealthFacilityLiveData.value
+                    ?.data
                     ?.firstOrNull { (it[DefinedParams.isDefault] as? Boolean) == true }
                     ?.get(DefinedParams.NAME) ?: ""
 
@@ -281,24 +284,27 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         communityPopulationAdapter = CommunityPopulationAdapter()
         binding.rvCommunitiesStatistics.adapter = communityPopulationAdapter
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm,
-            this, binding.nestedScrollView, translate = false,callback = {
-                map,id ->
-                when(id){
+            requireContext(),
+            binding.llForm,
+            this,
+            binding.nestedScrollView,
+            translate = false,
+            callback = { map, id ->
+                when (id) {
                     Market -> {
                         val isMarket = (map[Market] as? Boolean) ?: false
-                        if(!isMarket){
+                        if (!isMarket) {
                             communityProfileViewModel.marketDays.clear()
                         }
                     }
                     MobileNetworkCoverage -> {
                         val isMobileNetwork = (map[MobileNetworkCoverage] as? Boolean) ?: false
-                        if(!isMobileNetwork){
+                        if (!isMobileNetwork) {
                             communityProfileViewModel.selectedNetworks.clear()
                         }
                     }
                 }
-            }
+            },
         )
         binding.etRegisteredDate.safeClickListener(this)
     }
@@ -309,9 +315,9 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
 
     override fun onResume() {
         super.onResume()
-        if (arguments?.getBoolean(COMMUNITY_REGISTERED,false) == true) {
+        if (arguments?.getBoolean(COMMUNITY_REGISTERED, false) == true) {
             communityProfileViewModel.setUserJourney(AnalyticsDefinedParams.COMMUNITYPROFILEEDITSCREEN)
-        }else{
+        } else {
             communityProfileViewModel.setUserJourney(AnalyticsDefinedParams.COMMUNITYPROFILEREGISTERSCREEN)
         }
     }
@@ -330,64 +336,69 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         }
     }
 
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
-
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
     }
 
     override fun onPopulate(targetId: String) {
-
     }
 
     override fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     ) {
-        CheckBoxDialog.newInstance(
-            id,
-            resultMap,
-            title = getDialogTitle(id),
-            autoPopulate = getData(id)
-        ) { resultMap ->
-            when (id) {
-                MarketDays -> {
-                    communityProfileViewModel.marketDays.apply {
-                        clear()
-                        (resultMap as? List<Map<String, String>>)
-                            ?.mapNotNull { it[Value]?.let { value -> value to true } }
-                            ?.takeIf { it.isNotEmpty() }
-                            ?.let { addAll(it) }
+        CheckBoxDialog
+            .newInstance(
+                id,
+                resultMap,
+                title = getDialogTitle(id),
+                autoPopulate = getData(id),
+            ) { resultMap ->
+                when (id) {
+                    MarketDays -> {
+                        communityProfileViewModel.marketDays.apply {
+                            clear()
+                            (resultMap as? List<Map<String, String>>)
+                                ?.mapNotNull { it[Value]?.let { value -> value to true } }
+                                ?.takeIf { it.isNotEmpty() }
+                                ?.let { addAll(it) }
+                        }
+                    }
+
+                    SelectedNetwork -> {
+                        communityProfileViewModel.selectedNetworks.apply {
+                            clear()
+                            (resultMap as? List<Map<String, String>>)
+                                ?.mapNotNull { it[Value]?.let { value -> value to true } }
+                                ?.takeIf { it.isNotEmpty() }
+                                ?.let { addAll(it) }
+                        }
                     }
                 }
 
-                SelectedNetwork -> {
-                    communityProfileViewModel.selectedNetworks.apply {
-                        clear()
-                        (resultMap as? List<Map<String, String>>)
-                            ?.mapNotNull { it[Value]?.let { value -> value to true } }
-                            ?.takeIf { it.isNotEmpty() }
-                            ?.let { addAll(it) }
-                    }
-                }
-            }
-
-            formGenerator.validateCheckboxDialogue(id, formLayout, resultMap)
-            updateValue(id, resultMap)
-        }.show(childFragmentManager, CheckBoxDialog.TAG)
+                formGenerator.validateCheckboxDialogue(id, formLayout, resultMap)
+                updateValue(id, resultMap)
+            }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
-    private fun getDialogTitle(id: String): String? {
-        return when (id) {
+    private fun getDialogTitle(id: String): String? =
+        when (id) {
             MarketDays -> getString(R.string.market_days)
             SelectedNetwork -> getString(R.string.networks)
             else -> null
         }
-    }
 
-    private fun updateValue(id: String, resultMap: ArrayList<HashMap<String, Any>>) {
-        when(id){
+    private fun updateValue(
+        id: String,
+        resultMap: ArrayList<HashMap<String, Any>>,
+    ) {
+        when (id) {
             MarketDays -> {
-                val marketDaysList = mutableListOf<Pair<String,Boolean>>()
+                val marketDaysList = mutableListOf<Pair<String, Boolean>>()
                 val list = resultMap as List<*>
                 list.forEach { it ->
                     if (it is HashMap<*, *>) {
@@ -397,7 +408,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                 communityProfileViewModel.marketDays = marketDaysList
             }
             SelectedNetwork -> {
-                val networkList = mutableListOf<Pair<String,Boolean>>()
+                val networkList = mutableListOf<Pair<String, Boolean>>()
                 val list = resultMap as List<*>
                 list.forEach { it ->
                     if (it is HashMap<*, *>) {
@@ -409,33 +420,34 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         }
     }
 
-    private fun getData(id: String): List<Pair<String, Boolean>> {
-        return when(id) {
-            MarketDays ->  communityProfileViewModel.marketDays
-            SelectedNetwork ->  communityProfileViewModel.selectedNetworks
+    private fun getData(id: String): List<Pair<String, Boolean>> =
+        when (id) {
+            MarketDays -> communityProfileViewModel.marketDays
+            SelectedNetwork -> communityProfileViewModel.selectedNetworks
             else -> emptyList()
         }
-    }
 
     override fun onInstructionClicked(
         id: String,
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {
-
     }
 
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
-
-        //Calling Local DB
-        val regDateUtc = DateUtils.convertStringToDate(
-            binding.etRegisteredDate.text.toString(),
-            DateUtils.DATE_ddMMyyyy
-        )?.let { regDate ->
-            convertDateToStringWithUTC(regDate, DateUtils.DATE_ddMMyyyy)
-        }
+    override fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
+        // Calling Local DB
+        val regDateUtc = DateUtils
+            .convertStringToDate(
+                binding.etRegisteredDate.text.toString(),
+                DateUtils.DATE_ddMMyyyy,
+            )?.let { regDate ->
+                convertDateToStringWithUTC(regDate, DateUtils.DATE_ddMMyyyy)
+            }
 
         val payload = StringConverter.convertGivenMapToString(getCommunityProfilePayload(resultMap, serverData))
         val villageId = arguments?.getLong(COMMUNITY_ID)
@@ -445,87 +457,97 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                 villageId = villageId,
                 description = binding.etCommunityBoundaryDesc.text.toString(),
                 regDate = regDateUtc,
-                payload = payload
+                payload = payload,
             )
         }
     }
 
-    private fun getCommunityProfilePayload(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?): HashMap<String, Any>? {
+    private fun getCommunityProfilePayload(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ): HashMap<String, Any>? {
         resultMap?.let { details ->
             serverData?.let { form ->
                 val result = FormResultComposer().groupValues(
                     serverData = form,
-                    resultMap = details
+                    resultMap = details,
                 )
 
                 val requestMap = result.second
-                if(requestMap.containsKey(WaterAndSanitationFacilities)){
+                if (requestMap.containsKey(WaterAndSanitationFacilities)) {
                     val waterAndSanitation = requestMap[WaterAndSanitationFacilities] as HashMap<Any, Any>
-                    if(waterAndSanitation.containsKey(NumberOfImprovedWaterSources)){
+                    if (waterAndSanitation.containsKey(NumberOfImprovedWaterSources)) {
                         val numberOfImprovedWaterSources = waterAndSanitation[NumberOfImprovedWaterSources] as String
-                        if(numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) || numberOfImprovedWaterSources.equals(getString(R.string.three_zero))){
+                        if (numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) ||
+                            numberOfImprovedWaterSources.equals(getString(R.string.three_zero))
+                        ) {
                             waterAndSanitation[NumberOfImprovedWaterSources] = "0"
                         }
                     }
 
-                    if(waterAndSanitation.containsKey(NumberOfNonImprovedWaterSources)){
+                    if (waterAndSanitation.containsKey(NumberOfNonImprovedWaterSources)) {
                         val numberOfImprovedWaterSources = waterAndSanitation[NumberOfNonImprovedWaterSources] as String
-                        if(numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) || numberOfImprovedWaterSources.equals(getString(R.string.three_zero))){
+                        if (numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) ||
+                            numberOfImprovedWaterSources.equals(getString(R.string.three_zero))
+                        ) {
                             waterAndSanitation[NumberOfNonImprovedWaterSources] = "0"
                         }
                     }
 
-                    if(waterAndSanitation.containsKey(NumberOfImprovedToilets)){
+                    if (waterAndSanitation.containsKey(NumberOfImprovedToilets)) {
                         val numberOfImprovedWaterSources = waterAndSanitation[NumberOfImprovedToilets] as String
-                        if(numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) || numberOfImprovedWaterSources.equals(getString(R.string.three_zero))){
+                        if (numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) ||
+                            numberOfImprovedWaterSources.equals(getString(R.string.three_zero))
+                        ) {
                             waterAndSanitation[NumberOfImprovedToilets] = "0"
                         }
                     }
 
-                    if(waterAndSanitation.containsKey(NumberOfNonImprovedToilets)){
+                    if (waterAndSanitation.containsKey(NumberOfNonImprovedToilets)) {
                         val numberOfImprovedWaterSources = waterAndSanitation[NumberOfNonImprovedToilets] as String
-                        if(numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) || numberOfImprovedWaterSources.equals(getString(R.string.three_zero))){
+                        if (numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) ||
+                            numberOfImprovedWaterSources.equals(getString(R.string.three_zero))
+                        ) {
                             waterAndSanitation[NumberOfNonImprovedToilets] = "0"
                         }
                     }
 
-                    if(waterAndSanitation.containsKey(NumberOfHandPumpsNotFunctional)){
+                    if (waterAndSanitation.containsKey(NumberOfHandPumpsNotFunctional)) {
                         val numberOfImprovedWaterSources = waterAndSanitation[NumberOfHandPumpsNotFunctional] as String
-                        if(numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) || numberOfImprovedWaterSources.equals("000")){
+                        if (numberOfImprovedWaterSources.equals(getString(R.string.two_zero)) || numberOfImprovedWaterSources.equals("000")) {
                             waterAndSanitation[NumberOfHandPumpsNotFunctional] = "0"
                         }
                     }
-
                 }
                 if (requestMap.containsKey(Infrastructure)) {
                     val infrastructure = requestMap[Infrastructure] as HashMap<Any, Any>
                     if (infrastructure.containsKey(market)) {
                         val isMarket = infrastructure[market] as Boolean
                         val signsList = mutableListOf<String>()
-                        if(isMarket  && infrastructure.containsKey(MarketDays)){
-                            val list = infrastructure[MarketDays] as List<HashMap<*,*>>
+                        if (isMarket && infrastructure.containsKey(MarketDays)) {
+                            val list = infrastructure[MarketDays] as List<HashMap<*, *>>
                             list.forEach {
                                 (it[DefinedParams.name] as? String)?.let { day ->
                                     signsList.add(
-                                        day
+                                        day,
                                     )
                                 }
                             }
-                        }else{
+                        } else {
                             communityProfileViewModel.marketDays.clear()
                         }
                         infrastructure[MarketDays] = signsList
                     }
 
-                    if (infrastructure.containsKey(MobileNetworkCoverage)){
+                    if (infrastructure.containsKey(MobileNetworkCoverage)) {
                         val isMobileNetwork = infrastructure[MobileNetworkCoverage] as Boolean
                         val networkList = mutableListOf<String>()
-                        if(isMobileNetwork && infrastructure.containsKey(SelectedNetwork)) {
+                        if (isMobileNetwork && infrastructure.containsKey(SelectedNetwork)) {
                             val list = infrastructure[SelectedNetwork] as List<HashMap<*, *>>
                             list.forEach {
                                 (it[DefinedParams.name] as? String)?.let { day ->
                                     networkList.add(
-                                        day
+                                        day,
                                     )
                                 }
                             }
@@ -536,17 +558,17 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                     }
                 }
 
-                if(requestMap.containsKey(EmergencyManagementPlan)) {
+                if (requestMap.containsKey(EmergencyManagementPlan)) {
                     val emergency = requestMap[EmergencyManagementPlan] as HashMap<Any, Any>
-                    if(emergency.containsKey(NearestPhu)) {
-                        serverData.forEach{ serverData ->
-                            when(serverData?.viewType){
+                    if (emergency.containsKey(NearestPhu)) {
+                        serverData.forEach { serverData ->
+                            when (serverData?.viewType) {
                                 VIEW_TYPE_FORM_SPINNER -> {
                                     val nearestPhu = emergency[NearestPhu].toString()
                                     val view = formGenerator.getViewByTag(NearestPhu) as? Spinner
                                     val adapter = view?.adapter as? CustomSpinnerAdapter
                                     val index = adapter?.getIndexOfItemById(nearestPhu)
-                                    if(index != -1) {
+                                    if (index != -1) {
                                         val name = adapter?.getItem(index ?: 0) as String
                                         emergency[NearestPhu] = name
                                     }
@@ -556,23 +578,23 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                     }
 
                     val countryCode = SecuredPreference.getPhoneNumberCode()
-                    if(emergency.containsKey(EmergencyContactPhu)){
+                    if (emergency.containsKey(EmergencyContactPhu)) {
                         emergency[EmergencyContactPhu] = "+$countryCode " + emergency[EmergencyContactPhu]
                     }
-                    if(emergency.containsKey(EmergencyTransportContactNo)){
+                    if (emergency.containsKey(EmergencyTransportContactNo)) {
                         emergency[EmergencyTransportContactNo] = "+$countryCode " + emergency[EmergencyTransportContactNo]
                     }
-                    if(emergency.containsKey(AmbulanceDriverContactNo)){
+                    if (emergency.containsKey(AmbulanceDriverContactNo)) {
                         emergency[AmbulanceDriverContactNo] = "+$countryCode " + emergency[AmbulanceDriverContactNo]
                     }
                 }
 
                 return requestMap
-                //return Gson().toJsonTree(requestMap)
+                // return Gson().toJsonTree(requestMap)
             }
         }
 
-        return null;
+        return null
     }
 
     override fun onRenderingComplete() {
@@ -586,38 +608,34 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         }
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {
-
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
     }
 
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,
         enteredDays: Int?,
-        resultMap: HashMap<String, Any>?
+        resultMap: HashMap<String, Any>?,
     ) {
-
     }
 
     override fun onAgeCheckForPregnancy() {
-
     }
 
     override fun handleMandatoryCondition(formLayout: FormLayout?) {
-
     }
 
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
-
     }
 
-    fun getCurrentAnswerStatus(): Boolean {
-        return formGenerator.getResultMap().isNotEmpty()
-    }
+    fun getCurrentAnswerStatus(): Boolean = formGenerator.getResultMap().isNotEmpty()
 
     private fun validateCommunityDetails(): Boolean {
         var isValid = true
@@ -627,7 +645,10 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
             isValid = checkField(etCommunityBoundaryDesc, tvErrorMessageForCommunityDesc) && isValid
         }
 
-        if (binding.etRegisteredDate.text.toString().isEmpty()) {
+        if (binding.etRegisteredDate.text
+                .toString()
+                .isEmpty()
+        ) {
             binding.tvErrorRegisteredDate.visibility = View.VISIBLE
             formGenerator.validateInputs()
             isValid = false
@@ -640,9 +661,9 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
 
     private fun checkField(
         editText: AppCompatEditText,
-        errorView: AppCompatTextView
-    ): Boolean {
-        return if (editText.text.isNullOrEmpty()) {
+        errorView: AppCompatTextView,
+    ): Boolean =
+        if (editText.text.isNullOrEmpty()) {
             errorView.visibility = View.VISIBLE
             formGenerator.validateInputs()
             false
@@ -650,27 +671,27 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
             errorView.visibility = View.GONE
             true
         }
-    }
 
     private fun showDatePickerDialog() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (!binding.etRegisteredDate.text.isNullOrBlank())
+        if (!binding.etRegisteredDate.text.isNullOrBlank()) {
             yearMonthDate =
                 DateUtils.convertedMMMToddMM(binding.etRegisteredDate.text.toString())
+        }
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
                 date = yearMonthDate,
                 disableFutureDate = true,
-                cancelCallBack = { datePickerDialog = null }
+                cancelCallBack = { datePickerDialog = null },
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 binding.etRegisteredDate.setText(
                     DateUtils.convertDateTimeToDate(
                         stringDate,
                         DateUtils.DATE_FORMAT_ddMMyyyy,
-                        DateUtils.DATE_ddMMyyyy
-                    )
+                        DateUtils.DATE_ddMMyyyy,
+                    ),
                 )
 
                 datePickerDialog = null
@@ -682,11 +703,11 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         binding.etCommunityBoundaryDesc.setText(details.communityDescription)
         binding.etRegisteredDate.text = DateUtils.convertUTCString(
             details.registeredDate,
-            DateUtils.DATE_ddMMyyyy
+            DateUtils.DATE_ddMMyyyy,
         )
         details.payload?.let {
             val dataMap = StringConverter.stringToMap(it)
-            //Water and sanitation
+            // Water and sanitation
             val waterAndSanitation = dataMap[WaterAndSanitationFacilities] as LinkedTreeMap<*, *>
             waterAndSanitation.forEach { (key, value) ->
                 formGenerator.getViewByTag(key)?.let { view ->
@@ -694,11 +715,11 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                 }
             }
 
-            //Infrastructure
+            // Infrastructure
             val infrastructure = dataMap[Infrastructure] as LinkedTreeMap<*, *>
             infrastructure.forEach { (key, value) ->
                 if (key.toString() == DescribeLocation || key.toString() == OtherNetwork) {
-                    if (key.toString() == OtherNetwork){
+                    if (key.toString() == OtherNetwork) {
                         communityProfileViewModel.otherNetwork = value.toString()
                     }
                     formGenerator.getViewByTag(key)?.let { view ->
@@ -715,13 +736,16 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                                 when (serverData.viewType) {
                                     VIEW_TYPE_DIALOG_CHECKBOX -> {
                                         val list = infrastructure[MarketDays] as List<String>
-                                        communityProfileViewModel.marketDays = list.map { data -> Pair(data,true) }.toMutableList()
-                                        val daysMap = ArrayList<HashMap<String,Any>>()
+                                        communityProfileViewModel.marketDays = list.map { data -> Pair(data, true) }.toMutableList()
+                                        val daysMap = ArrayList<HashMap<String, Any>>()
                                         list.forEach {
                                             daysMap.add(hashMapOf(DefinedParams.name to it))
                                         }
-                                        formGenerator.validateCheckboxDialogue(MarketDays,
-                                            serverData, daysMap)
+                                        formGenerator.validateCheckboxDialogue(
+                                            MarketDays,
+                                            serverData,
+                                            daysMap,
+                                        )
                                     }
                                 }
                             }
@@ -729,21 +753,23 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                     }
                 }
 
-                if( key.toString() == SelectedNetwork){
+                if (key.toString() == SelectedNetwork) {
                     formGenerator.getViewByTag(key)?.let { view ->
                         if (view is TextView) {
                             formGenerator.getServerData()?.forEach { serverData ->
                                 when (serverData.viewType) {
                                     VIEW_TYPE_DIALOG_CHECKBOX -> {
                                         val list = infrastructure[SelectedNetwork] as List<String>
-                                        communityProfileViewModel.selectedNetworks = list.map { data -> Pair(data,true) }.toMutableList()
-                                        val daysMap = ArrayList<HashMap<String,Any>>()
+                                        communityProfileViewModel.selectedNetworks = list.map { data -> Pair(data, true) }.toMutableList()
+                                        val daysMap = ArrayList<HashMap<String, Any>>()
                                         list.forEach {
                                             daysMap.add(hashMapOf(DefinedParams.name to it))
                                         }
                                         formGenerator.validateCheckboxDialogue(
                                             SelectedNetwork,
-                                            serverData, daysMap)
+                                            serverData,
+                                            daysMap,
+                                        )
                                     }
                                 }
                             }
@@ -752,18 +778,19 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                 }
             }
 
-            //EmergencyManagementPlan
+            // EmergencyManagementPlan
             val emergency = dataMap[EmergencyManagementPlan] as LinkedTreeMap<*, *>
             emergency.forEach { (key, value) ->
-                when(key.toString()){
+                when (key.toString()) {
                     AccessRoadToPhu -> {
                         setSingleSelection(value, key.toString())
                     }
                     NearestPhu -> {
                         communityProfileViewModel.nearestPhu = value.toString()
                     }
-                    EmergencyContactPhu, EmergencyTransportContactNo ,
-                    AmbulanceDriverContactNo -> {
+                    EmergencyContactPhu, EmergencyTransportContactNo,
+                    AmbulanceDriverContactNo,
+                    -> {
                         val phoneNumber = value.toString().substringAfter(" ")
                         formGenerator.getViewByTag(key)?.let { view ->
                             formGenerator.setValueForView(phoneNumber, view)
@@ -778,8 +805,13 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
             }
         }
 
-        if (communityProfileViewModel.selectedNetworks.any { it.first.equals(
-                Other, true) }){
+        if (communityProfileViewModel.selectedNetworks.any {
+                it.first.equals(
+                    Other,
+                    true,
+                )
+            }
+        ) {
             formGenerator.getViewByTag(OtherNetwork + rootSuffix)?.visible()
             formGenerator.getViewByTag(OtherNetwork)?.let { view ->
                 formGenerator.setValueForView(communityProfileViewModel.otherNetwork, view)
@@ -787,20 +819,23 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         }
     }
 
-    private fun setSingleSelection(value: Any?, key: String) {
+    private fun setSingleSelection(
+        value: Any?,
+        key: String,
+    ) {
         value.let {
             when (value.toString()) {
                 True -> {
                     singleSelectValueOption(
                         True,
-                        key
+                        key,
                     )
                 }
 
                 False -> {
                     singleSelectValueOption(
                         False,
-                        key
+                        key,
                     )
                 }
 
@@ -809,8 +844,12 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
         }
     }
 
-    private fun singleSelectValueOption(value: String, key: String) {
-        formGenerator.getViewByTag("${value}_${key}")
+    private fun singleSelectValueOption(
+        value: String,
+        key: String,
+    ) {
+        formGenerator
+            .getViewByTag("${value}_$key")
             ?.let { view ->
                 if (view is TextView) {
                     view.performClick()

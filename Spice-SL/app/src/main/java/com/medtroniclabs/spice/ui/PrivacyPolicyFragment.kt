@@ -23,7 +23,6 @@ import timber.log.Timber
 
 @AndroidEntryPoint
 class PrivacyPolicyFragment : BaseFragment() {
-
     private val viewModel: LandingViewModel by activityViewModels()
 
     lateinit var binding: FragmentPrivacyPolicyBinding
@@ -31,13 +30,16 @@ class PrivacyPolicyFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPrivacyPolicyBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         viewModel.setUserJourney(getString(R.string.privacy_policy))
@@ -55,7 +57,7 @@ class PrivacyPolicyFragment : BaseFragment() {
         binding.webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(
                 view: WebView?,
-                request: WebResourceRequest?
+                request: WebResourceRequest?,
             ): Boolean {
                 request?.url?.let { emailUri ->
                     if (emailUri.toString().startsWith("mailto")) {
@@ -73,11 +75,18 @@ class PrivacyPolicyFragment : BaseFragment() {
                 return false
             }
 
-            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+            override fun onPageStarted(
+                view: WebView?,
+                url: String?,
+                favicon: Bitmap?,
+            ) {
                 super.onPageStarted(view, url, favicon)
             }
 
-            override fun onPageFinished(view: WebView, url: String) {
+            override fun onPageFinished(
+                view: WebView,
+                url: String,
+            ) {
                 super.onPageFinished(view, url)
                 hideLoading()
             }
@@ -86,7 +95,7 @@ class PrivacyPolicyFragment : BaseFragment() {
                 view: WebView?,
                 errorCode: Int,
                 description: String?,
-                failingUrl: String?
+                failingUrl: String?,
             ) {
                 Timber.e("Error code: $errorCode Description: $description")
             }
@@ -97,22 +106,16 @@ class PrivacyPolicyFragment : BaseFragment() {
         binding.webView.settings.domStorageEnabled = true
     }
 
-    private fun getBaseURL(): String {
-        return BuildConfig.ADMIN_BASE_URL
-    }
+    private fun getBaseURL(): String = BuildConfig.ADMIN_BASE_URL
 
     private fun loadURL(url: String) {
         binding.webView.loadUrl(url)
         showLoading()
     }
 
-    fun canGoBack(): Boolean {
-        return binding.webView.canGoBack()
-    }
+    fun canGoBack(): Boolean = binding.webView.canGoBack()
 
-    fun goBack() {
-        return binding.webView.goBack()
-    }
+    fun goBack() = binding.webView.goBack()
 
     private fun showLoading() {
         binding.loadingProgress.visibility = View.VISIBLE
@@ -127,5 +130,4 @@ class PrivacyPolicyFragment : BaseFragment() {
             resetImageView()
         }
     }
-
 }

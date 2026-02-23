@@ -13,33 +13,34 @@ import com.medtroniclabs.spice.ncd.data.GlucoseLogList
 
 class GlucoseLogListAdapter(private val glucoseLogs: ArrayList<GlucoseLogList>) :
     RecyclerView.Adapter<GlucoseLogListAdapter.GlucoseLogListViewHolder>() {
-
     inner class GlucoseLogListViewHolder(val binding: ListItemGlucoseLogBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
     }
 
     override fun onCreateViewHolder(
-        parent: ViewGroup, viewType: Int
-    ): GlucoseLogListViewHolder {
-        return GlucoseLogListViewHolder(
-            ListItemGlucoseLogBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        parent: ViewGroup,
+        viewType: Int,
+    ): GlucoseLogListViewHolder =
+        GlucoseLogListViewHolder(
+            ListItemGlucoseLogBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         )
-    }
 
     override fun onBindViewHolder(
-        holder: GlucoseLogListViewHolder, position: Int
+        holder: GlucoseLogListViewHolder,
+        position: Int,
     ) {
         val context = holder.context
         val glucoseLog = glucoseLogs[position]
 
         glucoseLog.glucoseDateTime?.let {
             val date = DateUtils.convertDateFormat(
-                it, DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_FORMAT_ddMMMyyyy
+                it,
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                DATE_FORMAT_ddMMMyyyy,
             )
             holder.binding.tvAssessmentDate.text = date
         }
-
 
         val glucoseValue =
             if ((glucoseLog.glucoseValue ?: 0.0f) > 0f) glucoseLog.glucoseValue.toString() else ""
@@ -68,7 +69,5 @@ class GlucoseLogListAdapter(private val glucoseLogs: ArrayList<GlucoseLogList>) 
         holder.binding.tvHbA1c.text = hbA1c.ifEmpty { context.getString(R.string.hyphen_symbol) }
     }
 
-    override fun getItemCount(): Int {
-        return glucoseLogs.size
-    }
+    override fun getItemCount(): Int = glucoseLogs.size
 }

@@ -15,11 +15,9 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.common.AppConstants.isDifferentLogin
 import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EncryptionUtil
 import com.medtroniclabs.spice.common.RegexConstants.Contains_Number
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.common.Validator
 import com.medtroniclabs.spice.databinding.ActivityLoginBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -48,7 +46,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         createAndSaveDeviceId()
         checkNotificationPermission()
 
-        //3. Set app version name
+        // 3. Set app version name
         val packageInfo = applicationContext.packageManager.getPackageInfo(packageName, 0)
         UserDetail.appVersion = packageInfo.versionName ?: ""
     }
@@ -56,7 +54,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     private fun createAndSaveDeviceId() {
         val deviceId = SecuredPreference.getDeviceId()
         if (deviceId == null) {
-            val createdId =  UUID.randomUUID().toString()
+            val createdId = UUID.randomUUID().toString()
             SecuredPreference.putString(SecuredPreference.EnvironmentKey.DEVICE_ID.name, createdId)
         }
     }
@@ -75,10 +73,12 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                     hideLoading()
                     resourceState?.data?.let {
                         SecuredPreference.putString(
-                            SecuredPreference.EnvironmentKey.USERNAME.name, it.username
+                            SecuredPreference.EnvironmentKey.USERNAME.name,
+                            it.username,
                         )
                         SecuredPreference.putString(
-                            SecuredPreference.EnvironmentKey.PHONE_NUMBER.name, it.phoneNumber
+                            SecuredPreference.EnvironmentKey.PHONE_NUMBER.name,
+                            it.phoneNumber,
                         )
                         triggerResourceLoading()
                     }
@@ -95,12 +95,14 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                             ) { status ->
                                 if (status) {
                                     try {
-                                        startActivity(Intent(Intent.ACTION_VIEW).apply {
-                                            data = Uri.parse(
-                                                "https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID
-                                            )
-                                            setPackage("com.android.vending")
-                                        })
+                                        startActivity(
+                                            Intent(Intent.ACTION_VIEW).apply {
+                                                data = Uri.parse(
+                                                    "https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID,
+                                                )
+                                                setPackage("com.android.vending")
+                                            },
+                                        )
                                     } catch (e: Exception) {
                                         showErrorDialogue(message = getString(R.string.please_check_if_play_store_available)) {}
                                     }
@@ -108,9 +110,12 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                             }
                         }
                     } ?: resourceState.message?.let {
-                        if (it.equals(getString(R.string.invalid_credentials),true)) {
-                            showErrorSnackBar(getString(R.string.invalid_credentials_custom),
-                                Snackbar.LENGTH_INDEFINITE, snackBarDuration)
+                        if (it.equals(getString(R.string.invalid_credentials), true)) {
+                            showErrorSnackBar(
+                                getString(R.string.invalid_credentials_custom),
+                                Snackbar.LENGTH_INDEFINITE,
+                                snackBarDuration,
+                            )
                         } else {
                             showErrorSnackBar(it)
                         }
@@ -118,30 +123,30 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                 }
             }
         }
-
     }
 
     private fun triggerResourceLoading() {
-        val intent =  Intent(this@LoginActivity, ResourceLoadingScreen::class.java)
+        val intent = Intent(this@LoginActivity, ResourceLoadingScreen::class.java)
         intent.putExtra(isDifferentLogin, isDifferentUseLogin)
         startAsNewActivity(intent)
     }
 
     private fun handleOfflineLoginSuccess() {
         SecuredPreference.putBoolean(
-            SecuredPreference.EnvironmentKey.ISOFFLINELOGIN.name, true
+            SecuredPreference.EnvironmentKey.ISOFFLINELOGIN.name,
+            true,
         )
         startAsNewActivity(
             Intent(
-                this@LoginActivity, LandingActivity::class.java
-            )
+                this@LoginActivity,
+                LandingActivity::class.java,
+            ),
         )
     }
 
     private fun setListeners() {
         binding.btnLogin.safeClickListener(this)
         binding.tvForgotPassword.safeClickListener(this)
-
     }
 
     private fun initView() {
@@ -164,17 +169,21 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun validateLoginInputs() {
-        val userName = binding.userName.text.toString().trim()
-        val password = binding.password.text.toString().trim()
+        val userName = binding.userName.text
+            .toString()
+            .trim()
+        val password = binding.password.text
+            .toString()
+            .trim()
 
-        //Username blank check
+        // Username blank check
         if (userName.isBlank()) {
             binding.tvUserEmailError.visibility = View.VISIBLE
             binding.tvUserEmailError.text = getString(R.string.email_cannot_be_empty)
             return
         }
 
-        //Password blank check
+        // Password blank check
         if (password.isBlank()) {
             binding.tvUserEmailError.visibility = View.GONE
             binding.tvUserPasswordError.visibility = View.VISIBLE
@@ -182,7 +191,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             return
         }
 
-        //Validate the username is phone number or email
+        // Validate the username is phone number or email
 //        if (userName.contains(DefinedParams.AT_CHAR)) {
 //            if (!Validator.isEmailValid(userName)) {
 //                binding.tvUserEmailError.visibility = View.VISIBLE
@@ -201,27 +210,42 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         binding.tvUserEmailError.visibility = View.GONE
         binding.tvUserPasswordError.visibility = View.GONE
         if (!connectivityManager.isNetworkAvailable()) {
-            val isToShowAlert = ((((userName == SecuredPreference.getString(
-                SecuredPreference.EnvironmentKey.USERNAME.name
-            )) || (userName == SecuredPreference.getString(
-                SecuredPreference.EnvironmentKey.PHONE_NUMBER.name
-            ))) && (EncryptionUtil.getSecurePassword(
-                password
-            ) == SecuredPreference.getString(
-                SecuredPreference.EnvironmentKey.PASSWORD.name
-            ))))
+            val isToShowAlert = (
+                (
+                    (
+                        (
+                            userName == SecuredPreference.getString(
+                                SecuredPreference.EnvironmentKey.USERNAME.name,
+                            )
+                        ) ||
+                            (
+                                userName == SecuredPreference.getString(
+                                    SecuredPreference.EnvironmentKey.PHONE_NUMBER.name,
+                                )
+                            )
+                    ) &&
+                        (
+                            EncryptionUtil.getSecurePassword(
+                                password,
+                            ) == SecuredPreference.getString(
+                                SecuredPreference.EnvironmentKey.PASSWORD.name,
+                            )
+                        )
+                )
+            )
             if (isToShowAlert && CommonUtils.offlineUsers()) {
                 showErrorDialogue(
                     getString(R.string.alert),
                     message = getString(R.string.offline_login_message),
-                    isNegativeButtonNeed = true
+                    isNegativeButtonNeed = true,
                 ) { buttonState ->
                     if (buttonState) {
                         handleOfflineLoginSuccess()
                     }
                 }
-            } else
+            } else {
                 showErrorSnackBar(getString(R.string.no_internet_error))
+            }
 
             return
         }
@@ -233,8 +257,12 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         val oldPhoneNumber =
             SecuredPreference.getString(SecuredPreference.EnvironmentKey.PHONE_NUMBER.name)
         val isNumber = userName.matches(Regex(Contains_Number))
-        if (oldUserName != null && validateNameOrNumber(
-                isNumber, oldPhoneNumber, oldUserName, userName
+        if (oldUserName != null &&
+            validateNameOrNumber(
+                isNumber,
+                oldPhoneNumber,
+                oldUserName,
+                userName,
             )
         ) {
             if (unSyncedDataCount > 0) {
@@ -261,22 +289,24 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun validateNameOrNumber(
-        isNumber: Boolean, oldPhoneNumber: String?, oldUserName: String, userName: String
-    ): Boolean {
-        return if (isNumber) {
+        isNumber: Boolean,
+        oldPhoneNumber: String?,
+        oldUserName: String,
+        userName: String,
+    ): Boolean =
+        if (isNumber) {
             oldPhoneNumber != userName
         } else {
             oldUserName != userName
         }
-    }
 
     private fun checkNotificationPermission() {
         if (Build.VERSION.SDK_INT > 32) {
-            if (!shouldShowRequestPermissionRationale("")){
+            if (!shouldShowRequestPermissionRationale("")) {
                 requestPermissionLauncher.launch(
                     arrayOf(
-                        Manifest.permission.POST_NOTIFICATIONS
-                    )
+                        Manifest.permission.POST_NOTIFICATIONS,
+                    ),
                 )
             }
         }
@@ -284,8 +314,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
     private val requestPermissionLauncher =
         registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
+            ActivityResultContracts.RequestMultiplePermissions(),
         ) { _ ->
-
         }
 }

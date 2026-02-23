@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.registration.repo.RegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TermsAndConditionsViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private val registrationRepository: RegistrationRepository
+    private val registrationRepository: RegistrationRepository,
 ) : ViewModel() {
     var patientInitial = MutableLiveData<String?>()
 

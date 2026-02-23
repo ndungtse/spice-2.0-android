@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -30,9 +29,7 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.adapter.DateListAdapter
 import com.medtroniclabs.spice.ui.referralhistory.adapter.ReferralHistoryAdapter
 
-
 class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
-
     lateinit var binding: FragmentReferralTicketBinding
     private var listPopupWindow: PopupWindow? = null
     private lateinit var dateListAdapter: DateListAdapter
@@ -40,8 +37,9 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
     val viewModel: NCDMedicalReviewCMRViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentReferralTicketBinding.inflate(inflater, container, false)
         return binding.root
@@ -49,9 +47,8 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "NCDPrescriptionHistoryFragment"
-        fun newInstance(): NCDPrescriptionHistoryFragment {
-            return NCDPrescriptionHistoryFragment()
-        }
+
+        fun newInstance(): NCDPrescriptionHistoryFragment = NCDPrescriptionHistoryFragment()
 
         fun newInstance(patientId: String?): NCDPrescriptionHistoryFragment {
             val fragment = NCDPrescriptionHistoryFragment()
@@ -62,18 +59,20 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
     }
 
-    private fun getPatientId(): String? {
-        return arguments?.getString(DefinedParams.FhirId, "")
-    }
+    private fun getPatientId(): String? = arguments?.getString(DefinedParams.FhirId, "")
 
     private fun getInitialReferralTickets() {
-        getPatientId()?.takeIf { it.isNotBlank() }
+        getPatientId()
+            ?.takeIf { it.isNotBlank() }
             ?.let { viewModel.getPrescriptionHistory(patientId = it) }
     }
 
@@ -105,21 +104,21 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
         recyclerView.addItemDecoration(
             DividerItemDecoration(
                 recyclerView.context,
-                DividerItemDecoration.VERTICAL
-            )
+                DividerItemDecoration.VERTICAL,
+            ),
         )
         dateListAdapter =
             DateListAdapter { referred ->
                 if (connectivityManager.isNetworkAvailable()) {
                     viewModel.getPrescriptionHistory(
                         patientId = getPatientId(),
-                        patientVisitId = referred.id
+                        patientVisitId = referred.id,
                     )
                     viewModel.patientVisitId = referred.id
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
                 listPopupWindow?.dismiss()
@@ -128,7 +127,7 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
         listPopupWindow = PopupWindow(
             view,
             LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
+            LinearLayout.LayoutParams.WRAP_CONTENT,
         )
     }
 
@@ -206,22 +205,24 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
                 listOf(
                     mapOf(
                         label to requireContext().getString(R.string.date_of_prescription),
-                        this.Value to (viewModel.prescriptionReferralDates.value?.firstOrNull { it.id == viewModel.patientVisitId }?.date?.let {
-                            DateUtils.convertDateFormat(
-                                it,
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                DateUtils.DATE_ddMMyyyy
-                            )
-                        } ?: getString(R.string.separator_double_hyphen))
+                        this.Value to (
+                            viewModel.prescriptionReferralDates.value?.firstOrNull { it.id == viewModel.patientVisitId }?.date?.let {
+                                DateUtils.convertDateFormat(
+                                    it,
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                    DateUtils.DATE_ddMMyyyy,
+                                )
+                            } ?: getString(R.string.separator_double_hyphen)
+                        ),
                     ),
                     mapOf(
                         label to requireContext().getString(R.string.medication_prescribed),
                         this.Value to createPrescription(
                             prescriptionData.prescriptions,
-                            requireContext()
-                        )
-                    )
-                )
+                            requireContext(),
+                        ),
+                    ),
+                ),
             )
         }
     }
@@ -238,7 +239,10 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
         binding.llHistoryAction.ivNext.isEnabled = checkNextItem() != -1
     }
 
-    private fun setReferralDates(referredDates: List<ReferredDate>?, id: String?) {
+    private fun setReferralDates(
+        referredDates: List<ReferredDate>?,
+        id: String?,
+    ) {
         if (referredDates != null) {
             if (viewModel.patientVisitId == null) {
                 viewModel.patientVisitId = id
@@ -271,7 +275,7 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
             }
@@ -282,7 +286,7 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
                 } else {
                     showErrorDialog(
                         getString(R.string.error),
-                        getString(R.string.no_internet_error)
+                        getString(R.string.no_internet_error),
                     )
                 }
             }
@@ -296,11 +300,12 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
     private fun handleRetry() {
         if (connectivityManager.isNetworkAvailable()) {
             if (!viewModel.patientVisitId.isNullOrBlank()) {
-                getPatientId()?.takeIf { it.isNotBlank() }
+                getPatientId()
+                    ?.takeIf { it.isNotBlank() }
                     ?.let {
                         viewModel.getPrescriptionHistory(
                             patientId = it,
-                            patientVisitId = viewModel.patientVisitId
+                            patientVisitId = viewModel.patientVisitId,
                         )
                     }
             } else {
@@ -341,7 +346,7 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
             viewModel.prescriptionReferralDates.value?.get(selectedIndex)?.id?.let {
                 viewModel.getPrescriptionHistory(
                     patientId = getPatientId(),
-                    patientVisitId = it
+                    patientVisitId = it,
                 )
                 viewModel.patientVisitId = it
             }
@@ -354,7 +359,7 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
             viewModel.prescriptionReferralDates.value?.get(selectedIndex)?.id?.let {
                 viewModel.getPrescriptionHistory(
                     patientId = getPatientId(),
-                    patientVisitId = it
+                    patientVisitId = it,
                 )
                 viewModel.patientVisitId = it
             }

@@ -10,12 +10,11 @@ import com.medtroniclabs.spice.databinding.SpinnerDropDownBinding
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.cultureValue
 
-
-class CustomSpinnerAdapter(context: Context,val translate:Boolean =false) :
+class CustomSpinnerAdapter(context: Context, val translate: Boolean = false) :
     ArrayAdapter<String>(context, R.layout.spinner_drop_down_item) {
-
     private var itemList = ArrayList<Map<String, Any>>()
     private var emptyLayoutResourceId: Int = R.layout.spinner_drop_down_item
+
     override fun getCount(): Int = itemList.size
 
     fun setData(listItems: ArrayList<Map<String, Any>>) {
@@ -23,38 +22,39 @@ class CustomSpinnerAdapter(context: Context,val translate:Boolean =false) :
         notifyDataSetChanged()
     }
 
-    fun getData(position: Int) : Map<String, Any>? {
-        return if(position<itemList.size) itemList[position] else null
-    }
+    fun getData(position: Int): Map<String, Any>? = if (position < itemList.size) itemList[position] else null
 
-    override fun getItem(position: Int): String {
-        return if (translate) {
-            (itemList[position][cultureValue] as String?)?:(itemList[position]["name"] as String)
-        }else {
+    override fun getItem(position: Int): String =
+        if (translate) {
+            (itemList[position][cultureValue] as String?) ?: (itemList[position]["name"] as String)
+        } else {
             itemList[position]["name"] as String
         }
-    }
 
     override fun getItemId(position: Int): Long = position.toLong()
 
-    private fun createView(position: Int, viewGroup: ViewGroup?): View {
-
+    private fun createView(
+        position: Int,
+        viewGroup: ViewGroup?,
+    ): View {
         val binding = SpinnerDropDownBinding.inflate(
-            LayoutInflater.from(viewGroup?.context)
+            LayoutInflater.from(viewGroup?.context),
         )
         binding.tvTitle.text = getItem(position)
 
         return binding.root
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
+    override fun getItemViewType(position: Int): Int = position
 
-    override fun getDropDownView(position: Int, mView: View?, parentGroup: ViewGroup): View {
+    override fun getDropDownView(
+        position: Int,
+        mView: View?,
+        parentGroup: ViewGroup,
+    ): View {
         if (itemList.isEmpty()) {
             // If itemList is empty, inflate the empty state layout
-            val emptyView=  LayoutInflater.from(parentGroup.context).inflate(emptyLayoutResourceId, parentGroup, false)
+            val emptyView = LayoutInflater.from(parentGroup.context).inflate(emptyLayoutResourceId, parentGroup, false)
             emptyView.setBackgroundResource(R.drawable.edittext_background)
             return emptyView
         } else {
@@ -79,7 +79,10 @@ class CustomSpinnerAdapter(context: Context,val translate:Boolean =false) :
         itemList.forEachIndexed { index, map ->
             if (map[DefinedParams.NAME] == name || map[DefinedParams.ID] == name || map[DefinedParams.Value] == name) {
                 return index
-            } else if((map[DefinedParams.NAME] as? String?)?.equals(name, true) == true || (map[DefinedParams.ID] as? String?)?.equals(name, true) == true || (map[DefinedParams.Value] as? String?)?.equals(name, true) == true) {
+            } else if ((map[DefinedParams.NAME] as? String?)?.equals(name, true) == true ||
+                (map[DefinedParams.ID] as? String?)?.equals(name, true) == true ||
+                (map[DefinedParams.Value] as? String?)?.equals(name, true) == true
+            ) {
                 return index
             }
         }
@@ -90,7 +93,7 @@ class CustomSpinnerAdapter(context: Context,val translate:Boolean =false) :
         itemList.forEachIndexed { index, map ->
             if (map[DefinedParams.ID] == id) {
                 return index
-            } else if((map[DefinedParams.ID] as? String?)?.equals(id, true) == true) {
+            } else if ((map[DefinedParams.ID] as? String?)?.equals(id, true) == true) {
                 return index
             }
         }
@@ -98,7 +101,7 @@ class CustomSpinnerAdapter(context: Context,val translate:Boolean =false) :
     }
 
     fun removeItemById(id: String) {
-        val removeIndex  = itemList.indexOfFirst { it[DefinedParams.ID] == id }
+        val removeIndex = itemList.indexOfFirst { it[DefinedParams.ID] == id }
         if (removeIndex != -1) {
             itemList.removeAt(removeIndex)
         }

@@ -6,5 +6,5 @@ data class ResponseImmunisationSummaryDetails(
     val missedReason: String?,
     val lastScheduledDate: String,
     val lastType: String,
-    val lastValue: String
+    val lastValue: String,
 )

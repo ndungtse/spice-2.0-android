@@ -13,7 +13,6 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
@@ -35,9 +34,8 @@ class GetSyncStatusWorker @AssistedInject constructor(
     val offlineSyncRepository: OfflineSyncRepository,
     val rxBuddyRepository: RxBuddyRepository,
     private val screeningRepository: ScreeningRepository,
-    private val assessmentRepository: AssessmentRepository
+    private val assessmentRepository: AssessmentRepository,
 ) : CoroutineWorker(context, userParameter) {
-
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 
@@ -65,8 +63,8 @@ class GetSyncStatusWorker @AssistedInject constructor(
                 if (isAllEntitiesSynced) {
                     SecuredPreference.remove(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
                     /*
-                    * Rx Buddy Sync for new household
-                    * */
+                     * Rx Buddy Sync for new household
+                     * */
                     /*val unSyncedRxBuddyRegister = rxBuddyRepository.getUnSyncedRxBuddyRegisterCount()
                     if (unSyncedRxBuddyRegister > 0) {
                         val rxBuddyRequestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex(OfflineConstant.SYNC_MODE_AUTOMATIC)
@@ -77,18 +75,20 @@ class GetSyncStatusWorker @AssistedInject constructor(
                         }
                     }*/
 
-                    /*Upload images here*/
+                    // Upload images here
                     offlineSyncRepository.uploadAllSignatures()
 
                     val villageIds = roomHelper.getAllVillageIds()
                     val lastSyncedAt =
                         SecuredPreference.getString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
-                    return if (offlineSyncRepository.fetchSyncedData(villageIds, lastSyncedAt))
+                    return if (offlineSyncRepository.fetchSyncedData(villageIds, lastSyncedAt)) {
                         Result.success()
-                    else
+                    } else {
                         Result.failure()
-                } else
+                    }
+                } else {
                     delay(timeDelayForPolling)
+                }
             }
         } else {
             repeat(ncdRetry) {
@@ -110,7 +110,7 @@ class GetSyncStatusWorker @AssistedInject constructor(
                                 applicationContext,
                                 Triple(data.generalDetails, data.screeningDetails, data.userId),
                                 data.signature,
-                                true
+                                true,
                             )
                             val response = screeningRepository.createScreeningLog(requestBody)
                             if (response.isSuccessful) {
@@ -135,7 +135,7 @@ class GetSyncStatusWorker @AssistedInject constructor(
                             val dataId = it.id
                             val reqMap = StringConverter.convertStringToMap(it.assessmentDetails)
                             val response = assessmentRepository.createAssessmentNCD(
-                                StringConverter.getJsonObject(Gson().toJson(reqMap))
+                                StringConverter.getJsonObject(Gson().toJson(reqMap)),
                             )
 
                             if (response.isSuccessful) {
@@ -172,10 +172,9 @@ class GetSyncStatusWorker @AssistedInject constructor(
         return Result.failure()
     }
 
-
-    private fun getFailure(): Data {
-        return Data.Builder()
+    private fun getFailure(): Data =
+        Data
+            .Builder()
             .putString("failureReason", "Network Not available")
             .build()
-    }
 }

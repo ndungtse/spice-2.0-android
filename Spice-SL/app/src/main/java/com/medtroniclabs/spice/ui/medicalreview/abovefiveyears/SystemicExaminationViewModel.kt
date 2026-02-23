@@ -16,17 +16,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SystemicExaminationViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO : CoroutineDispatcher,
-    private var repository: ExaminationComplaintsRepository
-): ViewModel() {
-
-    var systemicExaminationsType : String = ""
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    private var repository: ExaminationComplaintsRepository,
+) : ViewModel() {
+    var systemicExaminationsType: String = ""
     var selectedSystemicExaminations = ArrayList<ChipViewItemModel>()
     var enteredExaminationNotes = ""
     val systemicExaminationList = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
-    var fundalHeight:Double? = null
-    var fetalHeartRate:Double? = null
-    var respiratoryNotes :String? = null
+    var fundalHeight: Double? = null
+    var fetalHeartRate: Double? = null
+    var respiratoryNotes: String? = null
+
     fun getSystemicExaminationList(type: String) {
         viewModelScope.launch(dispatcherIO) {
             systemicExaminationList.postLoading()

@@ -30,16 +30,15 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-
-class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
+class AssessmentRMNCHNeonateFragment :
+    BaseFragment(),
+    View.OnClickListener,
     FormEventListener {
-
     private lateinit var binding: FragmentChildRegistrationBinding
     private lateinit var formGenerator: FormGenerator
     private lateinit var childFormGenerator: FormGenerator
     private val viewModel: AssessmentViewModel by activityViewModels()
     private val assessmentRMNCHNeonateViewModel: AssessmentRMNCHNeonateViewModel by activityViewModels()
-
 
     companion object {
         const val TAG = "AssessmentRMNCHNeonateFragment"
@@ -48,13 +47,16 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentChildRegistrationBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         viewModel.getNearestHealthFacility()
@@ -69,11 +71,18 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
 
     private fun initView() {
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, this, binding.scrollView,
-            translate = SecuredPreference.getIsTranslationEnabled()
+            requireContext(),
+            binding.llForm,
+            this,
+            binding.scrollView,
+            translate = SecuredPreference.getIsTranslationEnabled(),
         )
         childFormGenerator = FormGenerator(
-            requireContext(), binding.llChildForm, this, binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
+            requireContext(),
+            binding.llChildForm,
+            this,
+            binding.scrollView,
+            translate = SecuredPreference.getIsTranslationEnabled(),
         )
 
         viewModel.setUserJourney(AnalyticsDefinedParams.RMNCHNeonateAssessment)
@@ -85,26 +94,25 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
             binding.bioDataFragmentContainer.visible()
             replaceFragmentInId<BioDataChildFragment>(
                 binding.bioDataFragmentContainer.id,
-                tag = BioDataChildFragment.TAG
+                tag = BioDataChildFragment.TAG,
             )
-
         } ?: kotlin.run {
             binding.llChildForm.visible()
             binding.bioDataFragmentContainer.gone()
-            val householdId = viewModel.memberDetailsLiveData.value?.data?.householdLocalId
+            val householdId = viewModel.memberDetailsLiveData.value
+                ?.data
+                ?.householdLocalId
             assessmentRMNCHNeonateViewModel.getHouseholdHeadDob(householdId)
             assessmentRMNCHNeonateViewModel.getFormData(
-                DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION
+                DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION,
             )
         }
 
         assessmentRMNCHNeonateViewModel.getFormChildData(RMNCH.PNCNeonatal)
     }
 
-
     private fun attachObservers() {
         assessmentRMNCHNeonateViewModel.householdHeadDobLiveData.observe(viewLifecycleOwner) {
-
         }
 
         assessmentRMNCHNeonateViewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resourceState ->
@@ -113,7 +121,6 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                     hideProgress()
                     resourceState.data?.let { data ->
                         formGenerator.populateViews(data.formLayout)
-
                     }
                 }
 
@@ -167,7 +174,6 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                 }
             }
         }
-
     }
 
 //    private fun removeHouseHoldHeadMemberRelationShip() {
@@ -197,7 +203,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                     val dateOfBirth = DateUtils.convertDateFormat(
                         dateOfDelivery,
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        DateUtils.DATE_ddMMyyyy
+                        DateUtils.DATE_ddMMyyyy,
                     )
                     childFormGenerator.getViewByTag(MemberRegistration.dateOfBirth)?.let { view ->
                         if (dateOfBirth.isNotBlank()) {
@@ -208,7 +214,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
 
                     val dateDob = DateUtils.convertStringToDate(
                         dateOfDelivery,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                     )
                     dateDob?.let { dob ->
                         childFormGenerator.fillDetailsOnDatePickerSet(dob, false)
@@ -217,7 +223,6 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
             }
         }
     }
-
 
     override fun onClick(v: View) {
         when (v.id) {
@@ -259,8 +264,11 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
 //        }
 //    }
 
-
-    override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+    override fun loadLocalCache(
+        id: String,
+        localDataCache: Any,
+        selectedParent: Long?,
+    ) {
     }
 
     override fun onPopulate(targetId: String) {
@@ -269,11 +277,12 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
     override fun onCheckBoxDialogueClicked(
         id: String,
         formLayout: FormLayout,
-        resultMap: Any?
+        resultMap: Any?,
     ) {
-        CheckBoxDialog.newInstance(id, resultMap) { map ->
-            formGenerator.validateCheckboxDialogue(id, formLayout, map)
-        }.show(childFragmentManager, CheckBoxDialog.TAG)
+        CheckBoxDialog
+            .newInstance(id, resultMap) { map ->
+                formGenerator.validateCheckboxDialogue(id, formLayout, map)
+            }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
     override fun onInstructionClicked(
@@ -281,27 +290,29 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<RecommendedDosageListModel>?
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {
     }
 
-
     private fun showInValidDob(message: String) {
-        childFormGenerator.getViewByTag(AssessmentDefinedParams.DateOfBirth + AssessmentDefinedParams.errorSuffix)
+        childFormGenerator
+            .getViewByTag(AssessmentDefinedParams.DateOfBirth + AssessmentDefinedParams.errorSuffix)
             ?.apply {
                 visibility = View.VISIBLE
                 childFormGenerator.scrollView?.let { scrollView ->
                     childFormGenerator.scrollToView(scrollView, this)
                 }
-            }.takeIf { it is TextView }?.let { textView ->
-            (textView as TextView).text =
-                message
-        }
-
-
+            }.takeIf { it is TextView }
+            ?.let { textView ->
+                (textView as TextView).text =
+                    message
+            }
     }
 
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+    override fun onFormSubmit(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?,
+    ) {
         resultMap?.let { map ->
             viewModel.pncMotherDetailMap?.let { motherDetailMap ->
                 viewModel.memberDetailsLiveData.value?.data?.apply {
@@ -314,7 +325,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                                 workflowName = RMNCH.PNC,
                                 memberDetail,
                                 viewModel.memberClinicalLiveData.value,
-                                map
+                                map,
                             )
                             assessmentRMNCHNeonateViewModel.savePNCDetail(
                                 map,
@@ -323,32 +334,34 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                                 memberDetail,
                                 assessmentRMNCHNeonateViewModel.childMemberDetailsLiveData.value?.data,
                                 viewModel.followUpId,
-                                location = viewModel.getCurrentLocation()
+                                location = viewModel.getCurrentLocation(),
                             )
                         }
                     }
                 }
             }
-
         }
         viewModel.setAnalyticsData(
             UserDetail.startDateTime,
             AnalyticsDefinedParams.RMNCHNeonateAssessment,
-            AnalyticsDefinedParams.AssessmentCreation
+            AnalyticsDefinedParams.AssessmentCreation,
         )
     }
 
     override fun onRenderingComplete() {
     }
 
-    override fun onUpdateInstruction(id: String, selectedId: Any?) {
+    override fun onUpdateInstruction(
+        id: String,
+        selectedId: Any?,
+    ) {
     }
 
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,
         enteredDays: Int?,
-        resultMap: HashMap<String, Any>?
+        resultMap: HashMap<String, Any>?,
     ) {
     }
 
@@ -357,23 +370,21 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
     }
 
     override fun handleMandatoryCondition(formLayout: FormLayout?) {
-
     }
 
     override fun onAgeUpdateListener(
         age: Int,
         serverData: List<FormLayout?>?,
-        resultHashMap: HashMap<String, Any>
+        resultHashMap: HashMap<String, Any>,
     ) {
         /*
        Never used
-        */
+         */
     }
 
-    fun getCurrentAnsweredStatus(): Boolean {
-        return formGenerator.getResultMap().isNotEmpty() || childFormGenerator.getResultMap()
-            .isNotEmpty()
-    }
-
-
+    fun getCurrentAnsweredStatus(): Boolean =
+        formGenerator.getResultMap().isNotEmpty() ||
+            childFormGenerator
+                .getResultMap()
+                .isNotEmpty()
 }

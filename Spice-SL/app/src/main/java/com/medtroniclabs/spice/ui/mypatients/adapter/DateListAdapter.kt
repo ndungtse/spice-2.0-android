@@ -13,8 +13,8 @@ import com.medtroniclabs.spice.model.ReferredDate
 
 class DateListAdapter(
     val list: ArrayList<ReferredDate> = arrayListOf(),
-    var id : String? = null,
-    val onClick :(ReferredDate) -> Unit
+    var id: String? = null,
+    val onClick: (ReferredDate) -> Unit,
 ) :
     RecyclerView.Adapter<DateListAdapter.DateViewHolder>() {
     inner class DateViewHolder(val binding: LayoutDateListAdapterBinding) :
@@ -25,7 +25,7 @@ class DateListAdapter(
                     DateUtils.convertDateFormat(
                         it,
                         DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        DATE_ddMMyyyy
+                        DATE_ddMMyyyy,
                     )
                 }
                 ivSelected.visibility = if (id == item.id) View.VISIBLE else View.INVISIBLE
@@ -36,28 +36,34 @@ class DateListAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DateViewHolder {
-        return DateViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): DateViewHolder =
+        DateViewHolder(
             LayoutDateListAdapterBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: DateViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: DateViewHolder,
+        position: Int,
+    ) {
         holder.bind(list[position])
     }
 
-    fun submitData(referredDates: List<ReferredDate>, id: String?) {
+    fun submitData(
+        referredDates: List<ReferredDate>,
+        id: String?,
+    ) {
         this.list.clear()
         this.list.addAll(referredDates)
         this.id = id
         notifyDataSetChanged()
     }
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
+    override fun getItemCount(): Int = list.size
 }

@@ -10,9 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.setDialogPercent
-import com.medtroniclabs.spice.appextensions.toCleanString
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
@@ -33,7 +31,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {
-
     var listener: DialogDismissListenerForTb? = null
     private lateinit var binding: FragmentPatientStatusDialogBinding
     private val viewModel: WhoClinicalStageViewModel by viewModels()
@@ -43,12 +40,14 @@ class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "WhoClinicalStageFragment"
+
         fun newInstance() = WhoClinicalStageFragment()
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPatientStatusDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -56,7 +55,10 @@ class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
         attachObservers()
@@ -76,7 +78,7 @@ class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {
                     id = item.id,
                     name = item.name,
                     type = item.type,
-                    value = item.value
+                    value = item.value,
                 )
             }
             viewModel.whoStageCreateLiveData.value?.data?.let { response ->
@@ -84,12 +86,14 @@ class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {
                     ArrayList(chipList.filter { it.value.equals(response.stringValue, true) })
             } ?: kotlin.run {
                 diagnosisViewModel.hivVitalsDetailLiveData.value?.data?.let { response ->
-                    viewModel.whoStageChip = ArrayList(chipList.filter {
-                        it.name.equals(
-                            response.whoClinicalStage,
-                            true
-                        )
-                    })
+                    viewModel.whoStageChip = ArrayList(
+                        chipList.filter {
+                            it.name.equals(
+                                response.whoClinicalStage,
+                                true,
+                            )
+                        },
+                    )
                 }
             }
 
@@ -104,10 +108,10 @@ class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     binding.loader.gone()
-                    patientViewModel.patientDetailsLiveData.value?.data?.let {details ->
+                    patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
                         diagnosisViewModel.getHivVitalsDetails(
                             patientReference = details.id,
-                            memberId = details.memberId
+                            memberId = details.memberId,
                         )
                     }
                     dismiss()
@@ -137,8 +141,9 @@ class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {
     private fun initChipView(chipList: ArrayList<ChipViewItemModel>) {
         binding.diagnosisChip.isSingleSelection = true
         chipTag = TagListCustomView(
-            binding.root.context, binding.diagnosisChip,
-            otherSingleSelect = true
+            binding.root.context,
+            binding.diagnosisChip,
+            otherSingleSelect = true,
         ) { _, _, _ ->
             viewModel.whoStageChip = ArrayList(chipTag.getSelectedTags())
             validateInput()
@@ -159,7 +164,7 @@ class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {
             listOf(
                 btnCancel,
                 btnOkay,
-                ivClose
+                ivClose,
             ).forEach { it.safeClickListener(this@WhoClinicalStageFragment) }
             binding.btnOkay.isEnabled = false
         }
@@ -176,17 +181,17 @@ class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun submitPatientType() {
-        patientViewModel.patientDetailsLiveData.value?.data?.let {details->
-            if(chipTag.getSelectedTags().isNotEmpty()){
+        patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+            if (chipTag.getSelectedTags().isNotEmpty()) {
                 viewModel.createWhoClinicalStage(
-                    createEncounter()
+                    createEncounter(),
                 )
             }
         }
     }
 
-    private fun createEncounter(): MedicalReviewEncounter {
-        return MedicalReviewEncounter(
+    private fun createEncounter(): MedicalReviewEncounter =
+        MedicalReviewEncounter(
             provenance = ProvanceDto(),
             latitude = viewModel.lastLocation?.latitude,
             longitude = viewModel.lastLocation?.longitude,
@@ -195,15 +200,14 @@ class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {
             startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
             endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
             villageId = patientViewModel.getVillageId(),
-            householdId = patientViewModel.getPatientHouseholdId()
+            householdId = patientViewModel.getPatientHouseholdId(),
         )
-    }
 
     private fun handleDialogSize() {
         val width = if (CommonUtils.checkIsTablet(requireContext())) 90 else 90
         setDialogPercent(
             if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 65 else width,
-            50
+            50,
         )
     }
 

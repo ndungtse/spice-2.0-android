@@ -46,30 +46,31 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ViralLoadFragment : BaseFragment() {
-
     private val viewModel: HivViewModel by viewModels()
     private var viralLoadRecordsState = mutableStateOf<List<ViralLoadRecord>>(emptyList())
 
     // viewModel.isViralLoad true means Viral Load fragment false means ART regimen fragment
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return ComposeView(requireContext()).apply {
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View =
+        ComposeView(requireContext()).apply {
             setContent {
                 MaterialTheme {
                     ViralLoadTable(records = viralLoadRecordsState.value)
                 }
             }
         }
-    }
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getViralLoadData(
             arguments?.getString(DefinedParams.PatientReference),
-            arguments?.getString(DefinedParams.MemberReference)
+            arguments?.getString(DefinedParams.MemberReference),
         )
         setupObserver()
     }
@@ -92,14 +93,14 @@ class ViralLoadFragment : BaseFragment() {
                                 getString(R.string._1st),
                                 getString(R.string.empty__),
                                 getString(R.string.empty__),
-                                getString(R.string.empty__)
-                            )
+                                getString(R.string.empty__),
+                            ),
                         )
                     } else {
                         records.mapIndexed { index, record ->
-                            if (record.collectionDate.isNullOrBlank()
-                                || record.gestationAtCollection.isNullOrBlank()
-                                || record.result.isNullOrBlank()
+                            if (record.collectionDate.isNullOrBlank() ||
+                                record.gestationAtCollection.isNullOrBlank() ||
+                                record.result.isNullOrBlank()
                             ) {
                                 createPlaceholderRecord(getString(R.string._1st))
                             } else {
@@ -116,9 +117,9 @@ class ViralLoadFragment : BaseFragment() {
 
                     if (!recordList.isNullOrEmpty()) {
                         viralLoadRecordsState.value = recordList.mapIndexed { index, record ->
-                            if (record.collectionDate.isNullOrBlank()
-                                || record.gestationAtCollection.isNullOrBlank()
-                                || record.result.isNullOrBlank()
+                            if (record.collectionDate.isNullOrBlank() ||
+                                record.gestationAtCollection.isNullOrBlank() ||
+                                record.result.isNullOrBlank()
                             ) {
                                 createPlaceholderRecord(getString(R.string._1st))
                             } else {
@@ -131,16 +132,13 @@ class ViralLoadFragment : BaseFragment() {
                                 getString(R.string._1st),
                                 getString(R.string.empty__),
                                 getString(R.string.empty__),
-                                getString(R.string.empty__)
-                            )
+                                getString(R.string.empty__),
+                            ),
                         )
                     }
                 }
-
-
             }
         }
-
     }
 
     @Composable
@@ -150,11 +148,11 @@ class ViralLoadFragment : BaseFragment() {
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             modifier = Modifier
                 .padding(16.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {
             Column(
                 modifier = Modifier
-                    .background(Color.White)
+                    .background(Color.White),
             ) {
                 // Card Heading
                 Box(
@@ -162,14 +160,13 @@ class ViralLoadFragment : BaseFragment() {
                         .fillMaxWidth()
                         .background(colorResource(id = R.color.card_background))
                         .padding(vertical = 12.dp, horizontal = 16.dp),
-                    contentAlignment = Alignment.Center
-
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         text = stringResource(R.string.viral_load),
                         fontSize = 16.sp,
                         color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.inter_bold))
+                        fontFamily = FontFamily(Font(R.font.inter_bold)),
                     )
                 }
 
@@ -181,23 +178,22 @@ class ViralLoadFragment : BaseFragment() {
                         .clip(
                             RoundedCornerShape(
                                 topStart = 4.dp,
-                                topEnd = 4.dp
-                            )
+                                topEnd = 4.dp,
+                            ),
                         ) // Only top corners curved
                         .background(Color(0xFFE6DDF3))
                         .border(
                             1.dp,
                             colorResource(id = R.color.edittext_stroke),
-                            RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)
-                        )
+                            RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp),
+                        ),
                 ) {
-
                     val headers =
                         listOf(
                             stringResource(R.string.viral_load),
                             stringResource(R.string.collection_date),
                             stringResource(R.string.gestation_at_collection_date),
-                            stringResource(R.string.results)
+                            stringResource(R.string.results),
                         )
                     headers.forEach { label ->
                         Box(
@@ -207,15 +203,13 @@ class ViralLoadFragment : BaseFragment() {
                                 .border(.2.dp, colorResource(id = R.color.edittext_stroke))
                                 .padding(6.dp)
                                 .fillMaxHeight(),
-                            contentAlignment = Alignment.Center
-
+                            contentAlignment = Alignment.Center,
                         ) {
                             Text(
                                 text = label,
                                 fontSize = 14.sp,
                                 fontFamily = FontFamily(Font(R.font.inter_medium)),
-
-                                )
+                            )
                         }
                     }
                 }
@@ -229,20 +223,19 @@ class ViralLoadFragment : BaseFragment() {
                             record.label,
                             DateUtils.formatDateToDDMMYYYY(record.collectionDate.toString()),
                             record.gestationAtDate.toString(),
-                            record.result ?: requireContext().getString(R.string.empty__))
+                            record.result ?: requireContext().getString(R.string.empty__),
+                        )
 
                     Row(
                         modifier = Modifier
                             .absolutePadding(
                                 left = 16.dp,
                                 bottom = if (isLastRow) 12.dp else 0.dp,
-                                right = 16.dp
-                            )
-                            .fillMaxWidth()
+                                right = 16.dp,
+                            ).fillMaxWidth()
                             .height(IntrinsicSize.Min) // ensure full height row
-                            .background(colorResource(id = R.color.table_row_color))
+                            .background(colorResource(id = R.color.table_row_color)),
                     ) {
-
                         data.forEachIndexed { cellIndex, cell ->
 
                             val isLastCell = cellIndex == 3
@@ -262,41 +255,38 @@ class ViralLoadFragment : BaseFragment() {
                                     .border(
                                         0.2.dp,
                                         colorResource(id = R.color.edittext_stroke),
-                                        shape = cellShape
-                                    )
-                                    .background(colorResource(id = R.color.table_row_color))
+                                        shape = cellShape,
+                                    ).background(colorResource(id = R.color.table_row_color))
                                     .padding(6.dp),
-                                contentAlignment = Alignment.Center
-
+                                contentAlignment = Alignment.Center,
                             ) {
                                 if (cell != null) {
                                     Text(
                                         text = cell,
                                         fontSize = 16.sp,
-                                        fontFamily = FontFamily(Font(R.font.inter_regular))
+                                        fontFamily = FontFamily(Font(R.font.inter_regular)),
                                     )
                                 }
                             }
                         }
                     }
                 }
-
             }
         }
     }
+
     companion object {
         const val TAG = "ViralLoadFragment"
     }
 
-    private fun getOrdinal(number: Int): String {
-        return when {
+    private fun getOrdinal(number: Int): String =
+        when {
             number % 100 in 11..13 -> "${number}th"
             number % 10 == 1 -> "${number}st"
             number % 10 == 2 -> "${number}nd"
             number % 10 == 3 -> "${number}rd"
             else -> "${number}th"
         }
-    }
 
     // Extension function to map ViralLoadResponse to ViralLoadRecord with label ordinal
     private fun ViralLoadResponse.toViralLoadRecord(position: Int): ViralLoadRecord =
@@ -304,18 +294,22 @@ class ViralLoadFragment : BaseFragment() {
             label = getOrdinal(position),
             collectionDate = collectionDate!!,
             gestationAtDate = gestationAtCollection!!,
-            result = result!!
+            result = result!!,
         )
 
     // Helper to create placeholder record with hyphens and given label
-    private fun createPlaceholderRecord(label: String) = ViralLoadRecord(
-        label = label,
-        collectionDate = getString(R.string.empty__),
-        gestationAtDate = getString(R.string.empty__),
-        result = getString(R.string.empty__)
-    )
-    fun refreshFragment(patientReference: String?, memberReference: String?)
-    {
-        viewModel.getViralLoadData(patientReference,memberReference)
+    private fun createPlaceholderRecord(label: String) =
+        ViralLoadRecord(
+            label = label,
+            collectionDate = getString(R.string.empty__),
+            gestationAtDate = getString(R.string.empty__),
+            result = getString(R.string.empty__),
+        )
+
+    fun refreshFragment(
+        patientReference: String?,
+        memberReference: String?,
+    ) {
+        viewModel.getViralLoadData(patientReference, memberReference)
     }
 }

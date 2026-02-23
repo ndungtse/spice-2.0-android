@@ -16,13 +16,12 @@ import javax.inject.Inject
 
 class DiagnosisRepository @Inject constructor(
     private var roomHelper: RoomHelper,
-    private var apiHelper: ApiHelper
+    private var apiHelper: ApiHelper,
 ) {
-
     suspend fun getDiagnosisList(
         diagnosisList: MutableLiveData<Resource<List<DiseaseCategoryItems>>>,
-        diagnosisType: String
-    ){
+        diagnosisType: String,
+    ) {
         try {
             diagnosisList.postLoading()
             val response = roomHelper.getDiagnosisList(diagnosisType)
@@ -32,10 +31,8 @@ class DiagnosisRepository @Inject constructor(
         }
     }
 
-    suspend fun saveUpdateDiagnosis(
-        request: DiagnosisSaveUpdateRequest
-    ): Resource<ArrayList<DiagnosisDiseaseModel>> {
-        return try {
+    suspend fun saveUpdateDiagnosis(request: DiagnosisSaveUpdateRequest): Resource<ArrayList<DiagnosisDiseaseModel>> =
+        try {
             val response = apiHelper.saveUpdateDiagnosis(request)
             if (response.isSuccessful) {
                 val res = response.body()
@@ -44,18 +41,15 @@ class DiagnosisRepository @Inject constructor(
                 } else {
                     Resource(state = ResourceState.ERROR)
                 }
-            } else{
+            } else {
                 Resource(state = ResourceState.ERROR)
             }
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
 
-    suspend fun getDiagnosisDetails(
-        request: CreateUnderTwoMonthsResponse
-    ): Resource<ArrayList<DiagnosisDiseaseModel>> {
-        return try {
+    suspend fun getDiagnosisDetails(request: CreateUnderTwoMonthsResponse): Resource<ArrayList<DiagnosisDiseaseModel>> =
+        try {
             val response = apiHelper.getDiagnosisDetails(request)
             if (response.isSuccessful) {
                 val res = response.body()
@@ -64,12 +58,10 @@ class DiagnosisRepository @Inject constructor(
                 } else {
                     Resource(state = ResourceState.ERROR)
                 }
-            } else{
+            } else {
                 Resource(state = ResourceState.ERROR)
             }
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-    }
-
 }

@@ -39,7 +39,6 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
     private lateinit var binding: ActivityPhuWalkInsBinding
     private val viewModel: PhuWalkInsViewModel by viewModels()
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupBinding()
@@ -54,7 +53,7 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
             replaceFragmentInId<MemberRegistrationFragment>(
                 binding.phuListFragment.id,
                 bundle = args,
-                tag = MemberRegistrationFragment::class.simpleName
+                tag = MemberRegistrationFragment::class.simpleName,
             )
         } else {
             setTitle(getString(R.string.phu_walk_ins_title))
@@ -78,11 +77,11 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
             homeAndBackVisibility = Pair(true, true),
             callback = {
                 backNavigation()
-            }, callbackHome = {
+            },
+            callbackHome = {
                 viewModel.setUserJourney(AnalyticsDefinedParams.HomeButtonClicked)
                 backNavigationToHome()
-            }
-
+            },
         )
     }
 
@@ -95,7 +94,7 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
             showErrorDialogue(
                 getString(R.string.alert),
                 getString(R.string.exit_reason),
-                isNegativeButtonNeed = true
+                isNegativeButtonNeed = true,
             ) { isPositive ->
                 if (isPositive) {
                     homeScreenClick()
@@ -111,10 +110,12 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
     }
 
     override fun onClick(v: View?) {
-
     }
 
-    private fun addReplaceFragment(containerId: Int, fragment: Fragment) {
+    private fun addReplaceFragment(
+        containerId: Int,
+        fragment: Fragment,
+    ) {
         val existingFragment = getFragmentById(supportFragmentManager, containerId)
         supportFragmentManager.commit {
             if (existingFragment == null) {
@@ -139,15 +140,15 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
             val intent = Intent(this, HouseholdSummaryActivity::class.java)
             intent.putExtra(
                 HouseholdDefinedParams.ID,
-                patientLinkedDetails.id
+                patientLinkedDetails.id,
             )
             intent.putExtra(
                 DefinedParams.MemberID,
-                viewModel.memberID
+                viewModel.memberID,
             )
             intent.putExtra(
                 DefinedParams.FhirMemberID,
-                viewModel.fhirMemberID
+                viewModel.fhirMemberID,
             )
             intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, false)
             intent.putExtra(HouseholdDefinedParams.isPhuWalkInsFlow, true)
@@ -167,13 +168,12 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
         viewModel.memberID = patientLinkedDetails.lMemberId.toLong()
         SecuredPreference.putLong(
             DefinedParams.houseHoldLinkStartTiming,
-            System.currentTimeMillis()
+            System.currentTimeMillis(),
         )
         val dialIntent = Intent(Intent.ACTION_DIAL)
         dialIntent.data = Uri.parse("tel:${patientLinkedDetails.phoneNumber}")
         dialerLauncher.launch(dialIntent)
         viewModel.setUserJourney(PHUWALKINSCREENCALLBUTTON)
-
     }
 
     fun backNavigation() {
@@ -204,7 +204,8 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
             addReplaceFragment(R.id.phuListFragment, phuWalkInsListFragment)
         }
     }
-    private  fun homeScreenClick(){
+
+    private fun homeScreenClick() {
         val intent = Intent(this, LandingActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)

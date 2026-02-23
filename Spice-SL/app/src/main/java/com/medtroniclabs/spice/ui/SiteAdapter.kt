@@ -4,9 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.RowSiteListBinding
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -14,25 +12,29 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 class SiteAdapter(
     private val healthFacilityList: List<HealthFacilityEntity>,
     private var healthFacilitySelectedID: Long? = null,
-    private val healthFacilitySelectionCallback: ((siteEntity: HealthFacilityEntity) -> Unit)
+    private val healthFacilitySelectionCallback: ((siteEntity: HealthFacilityEntity) -> Unit),
 ) :
     RecyclerView.Adapter<SiteAdapter.SiteViewHolder>() {
-
     class SiteViewHolder(val binding: RowSiteListBinding) : RecyclerView.ViewHolder(binding.root) {
         val viewContext: Context = binding.root.context
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SiteViewHolder {
-        return SiteViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): SiteViewHolder =
+        SiteViewHolder(
             RowSiteListBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
         )
-    }
 
-    override fun onBindViewHolder(holder: SiteViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: SiteViewHolder,
+        position: Int,
+    ) {
         val siteModel = healthFacilityList[position]
         holder.binding.tvSiteName.text = siteModel.name
 
@@ -59,7 +61,5 @@ class SiteAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return healthFacilityList.size
-    }
+    override fun getItemCount(): Int = healthFacilityList.size
 }

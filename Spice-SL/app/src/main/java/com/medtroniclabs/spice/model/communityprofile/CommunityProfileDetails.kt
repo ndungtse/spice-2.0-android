@@ -29,5 +29,5 @@ data class CommunityProfileDetails(
     val registerCompleted: String?,
     val selectedNetworks: List<String>?,
     val seniorSecondarySchool: Boolean?,
-    val villageId: String?
+    val villageId: String?,
 )

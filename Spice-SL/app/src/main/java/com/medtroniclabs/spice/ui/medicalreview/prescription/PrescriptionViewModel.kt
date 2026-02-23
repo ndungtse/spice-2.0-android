@@ -10,7 +10,6 @@ import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.appextensions.takeIfNotNull
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.HIV
@@ -45,9 +44,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PrescriptionViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private val medicationRepository: MedicationRepository
+    private val medicationRepository: MedicationRepository,
 ) : ViewModel() {
-
     val medicationListLiveData = MutableLiveData<Resource<java.util.ArrayList<MedicationResponse>>>()
 
     val selectedMedicationLiveData = MutableLiveData<ArrayList<MedicationRequestObject>>()
@@ -77,7 +75,6 @@ class PrescriptionViewModel @Inject constructor(
     fun triggerReasonForChangeDialog(params: ReasonForChangeParams) {
         _showReasonForChangeDialog.value = params
     }
-
 
     fun searchMedicationByName(name: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -120,7 +117,7 @@ class PrescriptionViewModel @Inject constructor(
             selectedMedicationGroupLiveData.value ?: ArrayList()
         val existingGroupNames = selectedMedicationGroupLiveData.value?.mapNotNull { it.medicationResponse.groupName }?.toHashSet()
 
-        val filteredListItems = existingGroupNames?.let {existingGroups ->
+        val filteredListItems = existingGroupNames?.let { existingGroups ->
             medicationResponse.filter { it.medicationResponse.groupName !in existingGroups }
         } ?: medicationResponse
 
@@ -161,7 +158,7 @@ class PrescriptionViewModel @Inject constructor(
             DefinedParams.ID to DefinedParams.DefaultSelectID,
             DefinedParams.NAME to DefinedParams.DefaultIDLabel,
             DefinedParams.Value to DefinedParams.DefaultIDLabel,
-            DefinedParams.DisplayOrder to 0
+            DefinedParams.DisplayOrder to 0,
         )
         mapList.add(defaultMap)
         instructionListLiveDate.value?.data?.forEach { data ->
@@ -184,7 +181,7 @@ class PrescriptionViewModel @Inject constructor(
         data: PatientListRespModel,
         encounterId: String?,
         reason: String?,
-        regimenNumber: Int? = null
+        regimenNumber: Int? = null,
     ) {
         viewModelScope.launch(dispatcherIO) {
             try {
@@ -201,47 +198,53 @@ class PrescriptionViewModel @Inject constructor(
                 builder.addFormDataPart(
                     "signature",
                     file.name,
-                    file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+                    file.asRequestBody("multipart/form-data".toMediaTypeOrNull()),
                 )
                 val prescriptionList = ArrayList<Prescription>()
                 list.forEach {
                     if (it.medicationResponse.prescribedDays != null) {
-                        it.medicationResponse.name?.let { it1 ->
-                            Prescription(
-                                prescribedDays = it.medicationResponse.prescribedDays,
-                                dosageDurationName = it.medicationResponse.dosageDurationName,
-                                medicationName = it1,
-                                medicationId = it.medicationResponse.id.toString(),
-                                frequency = getMedicationFrequency(it),
-                                prescribedSince = System.currentTimeMillis().convertToUtcDateTime(),
-                                prescriptionId = it.medicationResponse.prescriptionId,
-                                codeDetails = it.medicationResponse.codeDetails,
-                                frequencyName = getMedicationFrequencyName(it),
-                                groupName = it.medicationResponse.groupName,
-                                categoryName = it.medicationResponse.category?.name,
-                                groupUniqueId = it.medicationResponse.groupUniqueId,
-                                instruction = it.medicationResponse.instruction ?: ""
-                            )
-                        }?.let { it2 ->
-                            prescriptionList.add(
-                                it2
-                            )
-                        }
+                        it.medicationResponse.name
+                            ?.let { it1 ->
+                                Prescription(
+                                    prescribedDays = it.medicationResponse.prescribedDays,
+                                    dosageDurationName = it.medicationResponse.dosageDurationName,
+                                    medicationName = it1,
+                                    medicationId = it.medicationResponse.id.toString(),
+                                    frequency = getMedicationFrequency(it),
+                                    prescribedSince = System.currentTimeMillis().convertToUtcDateTime(),
+                                    prescriptionId = it.medicationResponse.prescriptionId,
+                                    codeDetails = it.medicationResponse.codeDetails,
+                                    frequencyName = getMedicationFrequencyName(it),
+                                    groupName = it.medicationResponse.groupName,
+                                    categoryName = it.medicationResponse.category?.name,
+                                    groupUniqueId = it.medicationResponse.groupUniqueId,
+                                    instruction = it.medicationResponse.instruction ?: "",
+                                )
+                            }?.let { it2 ->
+                                prescriptionList.add(
+                                    it2,
+                                )
+                            }
                     }
                 }
 
                 val isHiv =
-                    list.any { it.medicationResponse.category?.name?.equals(HIV, true) == true }
+                    list.any {
+                        it.medicationResponse.category
+                            ?.name
+                            ?.equals(HIV, true) == true
+                    }
                 val prescriptionRequest = PrescriptionRequest(
                     encounter = EncounterDetails(
                         id = encounterId,
                         patientReference = data.id,
                         patientId = data.patientId ?: "",
-                        memberId = data.memberId ?: "", provenance = ProvanceDto()
+                        memberId = data.memberId ?: "",
+                        provenance = ProvanceDto(),
                     ),
                     prescriptions = prescriptionList,
                     reasonsForChange = if (isHiv) reason else null,
-                    regimenLine = if (isHiv) regimenNumber?.plus(1) else null
+                    regimenLine = if (isHiv) regimenNumber?.plus(1) else null,
                 )
                 val dataRequest = Gson().toJson(prescriptionRequest)
                 builder.addFormDataPart("prescriptionRequest", dataRequest)
@@ -258,9 +261,7 @@ class PrescriptionViewModel @Inject constructor(
         }
     }
 
-    fun constructMedicationRequestObjectList(
-        list: java.util.ArrayList<Prescription>
-    ): ArrayList<MedicationRequestObject> {
+    fun constructMedicationRequestObjectList(list: java.util.ArrayList<Prescription>): ArrayList<MedicationRequestObject> {
         val medicationRequestObjectList = ArrayList<MedicationRequestObject>()
         list.forEach { prescription ->
             val medicationRequestObject =
@@ -290,19 +291,17 @@ class PrescriptionViewModel @Inject constructor(
 
     private fun getSelectedFrequencyMap(frequency: String): HashMap<String, Any>? {
         val list = getFrequencyMap().filter { it[DefinedParams.NAME] == frequency }
-        return if (list.isNotEmpty())
+        return if (list.isNotEmpty()) {
             HashMap(list[0])
-        else
+        } else {
             null
+        }
     }
 
-    private fun getMedicationFrequency(data: MedicationRequestObject): Int {
-        return data.medicationResponse.selectedMap?.get(DefinedParams.Frequency) as? Int? ?: 0
-    }
+    private fun getMedicationFrequency(data: MedicationRequestObject): Int = data.medicationResponse.selectedMap?.get(DefinedParams.Frequency) as? Int? ?: 0
 
-    private fun getMedicationFrequencyName(data: MedicationRequestObject): String {
-        return data.medicationResponse.selectedMap?.get(DefinedParams.NAME) as? String? ?: ""
-    }
+    private fun getMedicationFrequencyName(data: MedicationRequestObject): String =
+        data.medicationResponse.selectedMap?.get(DefinedParams.NAME) as? String? ?: ""
 
     private fun getPrescriptionList(request: PrescriptionListRequest) {
         viewModelScope.launch(dispatcherIO) {
@@ -328,14 +327,18 @@ class PrescriptionViewModel @Inject constructor(
         }
     }
 
-    fun removePrescription(prescriptionId: String, reason: String?) {
+    fun removePrescription(
+        prescriptionId: String,
+        reason: String?,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             removePrescriptionLiveData.postLoading()
             val response = medicationRepository.removePrescription(
                 RemovePrescriptionRequest(
-                    prescriptionId, ProvanceDto(),
-                    reason
-                )
+                    prescriptionId,
+                    ProvanceDto(),
+                    reason,
+                ),
             )
             removePrescriptionLiveData.postSuccess(response.data)
         }
@@ -349,20 +352,23 @@ class PrescriptionViewModel @Inject constructor(
         }
     }
 
-    fun getPrescriptionList(data: PatientListRespModel, isDeleted: Boolean = true) {
+    fun getPrescriptionList(
+        data: PatientListRespModel,
+        isDeleted: Boolean = true,
+    ) {
         getPrescriptionList(
             if (CommonUtils.isNonCommunity()) {
                 PrescriptionListRequest(
                     patientReference = data.patientReference,
                     memberReference = data.id,
-                    isDeleted
+                    isDeleted,
                 )
             } else {
                 PrescriptionListRequest(
                     data.id,
-                    isActive = isDeleted
+                    isActive = isDeleted,
                 )
-            }
+            },
         )
     }
 
@@ -371,7 +377,7 @@ class PrescriptionViewModel @Inject constructor(
             try {
                 medicationGroupListLiveData.postLoading()
                 val response = medicationRepository.searchMedicationGroupByName(
-                    MedicationGroupSearchRequest(name)
+                    MedicationGroupSearchRequest(name),
                 )
                 response.data?.let {
                     medicationGroupListLiveData.postSuccess(it)
@@ -383,5 +389,4 @@ class PrescriptionViewModel @Inject constructor(
             }
         }
     }
-
 }

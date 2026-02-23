@@ -54,7 +54,6 @@ interface MetaDataDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMenus(menuEntity: MenuEntity)
 
-
     @Query("SELECT * FROM MenuEntity  ORDER BY displayOrder ASC")
     suspend fun getMenus(): List<MenuEntity>
 
@@ -70,13 +69,11 @@ interface MetaDataDAO {
     @Query("SELECT * FROM UserProfileEntity")
     suspend fun getUserProfile(): UserProfileEntity
 
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveClinicalWorkflows(clinicalWorkflows: List<ClinicalWorkflowEntity>)
 
     @Query("DELETE FROM ClinicalWorkflowEntity")
     suspend fun deleteAllClinicalWorkflow()
-
 
     @Query("SELECT id FROM ClinicalWorkflowEntity")
     suspend fun getAllClinicalWorkflowIds(): List<Int>
@@ -89,7 +86,7 @@ interface MetaDataDAO {
 
     @Query("SELECT formInput FROM FormEntity where formType =:formType")
     suspend fun getFormData(
-        formType: String
+        formType: String,
     ): String
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -117,7 +114,7 @@ interface MetaDataDAO {
     suspend fun getClinicalWorkflowId(
         gender: String,
         age: Int,
-        moduleType: String
+        moduleType: String,
     ): List<NCDAssessmentClinicalWorkflow>
 
     @Query("SELECT * FROM HealthFacilityEntity Order by isDefault DESC")
@@ -128,7 +125,6 @@ interface MetaDataDAO {
 
     @Query("SELECT * FROM HealthFacilityEntity Where isUserSite =:isUserSite")
     suspend fun getUserHealthFacility(isUserSite: Boolean): List<HealthFacilityEntity>
-
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPrograms(programEntity: List<ProgramEntity>)
@@ -208,25 +204,25 @@ interface MetaDataDAO {
     @Query("SELECT formInput FROM FormEntity where formType =:formType OR formType =:customizedFormType")
     suspend fun getNCDForm(
         formType: String,
-        customizedFormType: String
+        customizedFormType: String,
     ): List<String>
 
     @Query("SELECT formInput FROM FormEntity where formType IN (:formTypes) AND workflowName =:workFlow")
     fun getAssessmentFormData(
         formTypes: List<String>,
-        workFlow: String
+        workFlow: String,
     ): List<String>
 
     @Query("SELECT formInput FROM FormEntity where formType =:formType AND workflowName =:workFlow")
     fun getAssessmentFormData(
         formType: String,
-        workFlow: String
+        workFlow: String,
     ): LiveData<String>
 
     @Query("SELECT cwe.id, cwe.name, cwe.workflowName, cwce.category, cwce.groupName, cwce.cultureGroupName, cwce.subModule, cwe.displayOrder FROM ClinicalWorkflowEntity AS cwe JOIN ClinicalWorkflowConditionEntity AS cwce ON cwe.id = cwce.clinicalWorkflowId WHERE cwce.gender = :gender AND cwce.moduleType = :moduleType ORDER BY cwe.displayOrder")
     suspend fun getAssessmentClinicalWorkflow(
         gender: String,
-        moduleType: String
+        moduleType: String,
     ): List<NCDAssessmentClinicalWorkflow>
 
     @Query("SELECT * FROM unit_metric_entity where type=:type")
@@ -259,7 +255,6 @@ interface MetaDataDAO {
     @Query("SELECT * FROM DosageDurationEntity")
     suspend fun getDosageDurationsList(): List<DosageDurationEntity>
 
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLinkedVillages(linkedVillages: List<LinkedVillageEntity>)
 
@@ -270,9 +265,10 @@ interface MetaDataDAO {
     suspend fun getLinkedVillages(tenantId: Long): List<VillageEntity>
 
     @Query("SELECT v.id as villageId, v.name as villageName, COUNT(h.id) as houseHoldCount, COUNT(cd.villageId) as isCommunityProfileDetailAvailable FROM VillageEntity v LEFT JOIN Household h ON v.id = h.village_id LEFT JOIN CommunityProfile cd ON cd.villageId = v.id WHERE (:searchText = '' OR v.name LIKE '%' || :searchText || '%') GROUP BY v.id")
-    fun filterCommunityProfile(searchText:String):LiveData<List<CommunityProfileDetail>>
+    fun filterCommunityProfile(searchText: String): LiveData<List<CommunityProfileDetail>>
 
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(DISTINCT household_id) as householdCount,
         COUNT(CASE WHEN isActive = 1 THEN 1 END) as populationCount,
         0 as pregnantCount,
@@ -283,15 +279,18 @@ interface MetaDataDAO {
                AND substr(date_of_birth, 1, 10) <= date('now','-10 years') 
                AND substr(date_of_birth, 1, 10) > date('now','-49 years') AND isActive = 1 THEN 1 END) AS childBearingAgeOfWomen
         FROM HOUSEHOLDMEMBER 
-        WHERE villageId = :villageId""")
-    suspend fun getCommunityPopulationStatistics(villageId:Long):CommunityPopulationStatistics
+        WHERE villageId = :villageId""",
+    )
+    suspend fun getCommunityPopulationStatistics(villageId: Long): CommunityPopulationStatistics
 
-    @Query("""
+    @Query(
+        """
     SELECT h.*
     FROM HealthFacilityEntity h
     INNER JOIN VillageEntity v ON v.healthFacilityId = h.id
     WHERE v.id = :villageId
-    """)
+    """,
+    )
     suspend fun getHealthFacilityBasedOnVillageId(villageId: Long): List<HealthFacilityEntity>
 
     // SubVillage methods
@@ -318,8 +317,10 @@ interface MetaDataDAO {
     @Query("DELETE FROM ShasthyaShebikaLinkedVillageEntity")
     suspend fun deleteAllShasthyaShebikaLinkedVillages()
 
-    @Query("SELECT sv.* FROM SubVillageEntity sv " +
-           "INNER JOIN ShasthyaShebikaLinkedVillageEntity sslv ON sv.id = sslv.subVillageId " +
-           "WHERE sslv.shasthyaShebikaId = :shasthyaShebikaId")
+    @Query(
+        "SELECT sv.* FROM SubVillageEntity sv " +
+            "INNER JOIN ShasthyaShebikaLinkedVillageEntity sslv ON sv.id = sslv.subVillageId " +
+            "WHERE sslv.shasthyaShebikaId = :shasthyaShebikaId",
+    )
     suspend fun getSubVillagesByShasthyaShebikaId(shasthyaShebikaId: Long): List<SubVillageEntity>
 }

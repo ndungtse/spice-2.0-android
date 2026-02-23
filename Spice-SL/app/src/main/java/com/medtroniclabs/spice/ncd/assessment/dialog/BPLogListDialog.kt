@@ -13,26 +13,30 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.assessment.adapter.BPLogListAdapter
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
 
-class BPLogListDialog(private val addNewReading: () -> Unit) : DialogFragment(),
+class BPLogListDialog(private val addNewReading: () -> Unit) :
+    DialogFragment(),
     View.OnClickListener {
     private lateinit var binding: DialogBpLogListBinding
     private val viewModel: BloodPressureViewModel by activityViewModels()
 
     companion object {
         const val TAG = "BPListDialog"
-        fun newInstance(addNewReading: () -> Unit): BPLogListDialog {
-            return BPLogListDialog(addNewReading)
-        }
+
+        fun newInstance(addNewReading: () -> Unit): BPLogListDialog = BPLogListDialog(addNewReading)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = DialogBpLogListBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -66,6 +70,6 @@ class BPLogListDialog(private val addNewReading: () -> Unit) : DialogFragment(),
 
     override fun onStart() {
         super.onStart()
-        setDialogPercent(55,65)
+        setDialogPercent(55, 65)
     }
 }

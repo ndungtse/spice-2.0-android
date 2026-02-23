@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDMedicalReviewViewModel @Inject constructor(
     private var ncdMedicalReviewRepo: NCDMedicalReviewRepository,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
     val ncdPatientDiagnosisStatus = MutableLiveData<Resource<HashMap<String, Any>>>()
 
@@ -41,16 +41,20 @@ class NCDMedicalReviewViewModel @Inject constructor(
         }
     }
 
-    fun createNCDMedicalReview(request: MedicalReviewRequestResponse, menuId: String? = null,initialMr:String) {
+    fun createNCDMedicalReview(
+        request: MedicalReviewRequestResponse,
+        menuId: String? = null,
+        initialMr: String,
+    ) {
         viewModelScope.launch(dispatcherIO) {
             createMedicalReview.postLoading()
             setAnalyticsData(
                 UserDetail.startDateTime,
                 eventName = "$initialMr $menuId",
-                isCompleted = true
+                isCompleted = true,
             )
             createMedicalReview.postValue(
-                ncdMedicalReviewRepo.createNCDMedicalReview(request)
+                ncdMedicalReviewRepo.createNCDMedicalReview(request),
             )
         }
     }
@@ -59,7 +63,7 @@ class NCDMedicalReviewViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             getBadgeNotificationLiveData.postLoading()
             getBadgeNotificationLiveData.postValue(
-                ncdMedicalReviewRepo.getBadgeNotifications(request)
+                ncdMedicalReviewRepo.getBadgeNotifications(request),
             )
         }
     }
@@ -68,7 +72,7 @@ class NCDMedicalReviewViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             updateBadgeNotificationLiveData.postLoading()
             updateBadgeNotificationLiveData.postValue(
-                ncdMedicalReviewRepo.updateBadgeNotifications(request)
+                ncdMedicalReviewRepo.updateBadgeNotifications(request),
             )
         }
     }
@@ -78,8 +82,8 @@ class NCDMedicalReviewViewModel @Inject constructor(
             ncdPatientDiagnosisStatus.postLoading()
             ncdPatientDiagnosisStatus.postValue(
                 ncdMedicalReviewRepo.ncdPatientDiagnosisStatus(
-                    request
-                )
+                    request,
+                ),
             )
         }
     }

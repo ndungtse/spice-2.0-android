@@ -12,12 +12,12 @@ data class PncChildMedicalReview(
     val history: List<HistoryItem>? = null,
     val nextVisitDate: String? = null,
     val type: String? = null,
-    val visitNumber: Int? = null
+    val visitNumber: Int? = null,
 )
 
 data class ReviewDetails(
     val pncChild: PncChildDetails? = null,
-    val pncMother: PncMotherDetails? = null
+    val pncMother: PncMotherDetails? = null,
 )
 
 data class PncChildDetails(
@@ -36,7 +36,7 @@ data class PncChildDetails(
     val exclusiveBreastFeeding: Boolean? = null,
     val clinicalNotes: String? = null,
     val encounter: String? = null,
-    val prescriptions: String? = null
+    val prescriptions: String? = null,
 )
 
 data class PncMotherDetails(
@@ -56,15 +56,12 @@ data class PncMotherDetails(
     val systemicExaminationsNotes: String? = null,
     val clinicalNotes: String? = null,
     val encounter: String? = null,
-    val prescriptions:  List<Prescription>? = null,
-    val investigations: List<Investigation>? = null
+    val prescriptions: List<Prescription>? = null,
+    val investigations: List<Investigation>? = null,
 )
 
 data class HistoryItem(
     val date: String? = null,
     val id: String? = null,
-    val type: String? = null
+    val type: String? = null,
 )
-
-
-

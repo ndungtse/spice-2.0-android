@@ -37,13 +37,13 @@ data class NCDFollowUp(
     val createdBy: Long? = null,
     val updatedBy: Long? = null,
     val createdAt: Long? = null,
-    val updatedAt: Long? = null
+    val updatedAt: Long? = null,
 )
 
 @Entity(tableName = "NCDCallDetails")
 data class NCDCallDetails(
     @PrimaryKey(autoGenerate = true)
-    val localId:Long = 0,
+    val localId: Long = 0,
     val id: Long,
     val villageId: String? = null,
     val patientId: String? = null,
@@ -66,7 +66,7 @@ data class NCDCallDetails(
     val createdBy: Long? = null,
     val updatedBy: Long? = null,
     val createdAt: Long? = null,
-    val updatedAt: Long? = null
+    val updatedAt: Long? = null,
 )
 
 data class ResponseNCDFollowUp(
@@ -98,9 +98,8 @@ data class ResponseNCDFollowUp(
     val createdBy: Long? = null,
     val updatedBy: Long? = null,
     val createdAt: Long? = null,
-    val updatedAt: Long? = null
+    val updatedAt: Long? = null,
 )
-
 
 data class NCDFollowUpDownload(
     val followUps: List<ResponseNCDFollowUp>? = null,
@@ -109,13 +108,12 @@ data class NCDFollowUpDownload(
     val lastSyncTime: String,
 )
 
-
 data class NCDFollowUpCriteria(
     val followupAttempts: Int? = null,
     val screeningFollowupRemainingDays: Int? = null,
     val assessmentFollowupRemainingDays: Int? = null,
     val medicalReviewFollowupRemainingDays: Int? = null,
-    val lostToFollowupRemainingDays: Int? = null
+    val lostToFollowupRemainingDays: Int? = null,
 )
 
 data class NCDFollowUpRequestCreate(
@@ -130,12 +128,12 @@ data class NCDFollowUpRequestCreate(
     val updatedBy: Long? = null,
     val isInitiated: Boolean = false,
     val followUpDetails: List<NCDCallDetails>? = null,
-    val provenance: ProvanceDto = ProvanceDto()
+    val provenance: ProvanceDto = ProvanceDto(),
 )
 
 @Entity(tableName = "NCDPatientDetailsEntity")
 data class NCDPatientDetailsEntity(
     @PrimaryKey
     val id: String,
-    val patientDetails: String? = null
+    val patientDetails: String? = null,
 )

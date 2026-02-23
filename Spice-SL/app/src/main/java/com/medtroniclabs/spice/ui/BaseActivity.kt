@@ -33,13 +33,13 @@ import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils
 import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
 import com.medtroniclabs.spice.appextensions.isGpsEnabled
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.common.LocaleHelper
 import com.medtroniclabs.spice.databinding.ActivityBaseBinding
@@ -60,6 +60,7 @@ open class BaseActivity : SpiceRootActivity() {
     private val viewModel: BaseViewModel by viewModels()
 
     private var downX: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBaseBinding.inflate(layoutInflater)
@@ -69,7 +70,7 @@ open class BaseActivity : SpiceRootActivity() {
             binding.root,
             binding.fakeStatusBar,
             binding.fakeNavBar,
-            false
+            false,
         )
         UserDetail.startDateTime = AnalyticsUtils.getCurrentDateTimeInLocalTime()
         setListener()
@@ -79,7 +80,7 @@ open class BaseActivity : SpiceRootActivity() {
         view: View,
         isToolbarVisible: Boolean = false,
         title: String? = null,
-        //Pair(Home, Back)
+        // Pair(Home, Back)
         homeAndBackVisibility: Pair<Boolean?, Boolean?> = Pair(false, true),
         callback: (() -> Unit?)? = null,
         callbackHome: (() -> Unit?)? = null,
@@ -109,10 +110,11 @@ open class BaseActivity : SpiceRootActivity() {
         }
 
         binding.ivBack.safeClickListener {
-            if (callback != null)
+            if (callback != null) {
                 callback.invoke()
-            else
+            } else {
                 finish()
+            }
         }
         if (homeIcon != null) {
             binding.ivHome.setImageDrawable(homeIcon)
@@ -132,9 +134,7 @@ open class BaseActivity : SpiceRootActivity() {
         }
     }
 
-    private fun checkVisibility(isVisible: Boolean): Int {
-        return if (isVisible) View.VISIBLE else View.INVISIBLE
-    }
+    private fun checkVisibility(isVisible: Boolean): Int = if (isVisible) View.VISIBLE else View.INVISIBLE
 
     fun redirectToHome() {
         viewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
@@ -154,7 +154,10 @@ open class BaseActivity : SpiceRootActivity() {
         finish()
     }
 
-    fun showVerticalMoreIcon(canVisible: Boolean, callback: ((view: View) -> Unit?)? = null) {
+    fun showVerticalMoreIcon(
+        canVisible: Boolean,
+        callback: ((view: View) -> Unit?)? = null,
+    ) {
         binding.ivMore.setVisible(canVisible)
         binding.ivMore.safeClickListener {
             callback?.invoke(it)
@@ -165,9 +168,7 @@ open class BaseActivity : SpiceRootActivity() {
         binding.titleToolbar.text = title
     }
 
-    fun getString(): String {
-        return binding.titleToolbar.text.toString()
-    }
+    fun getString(): String = binding.titleToolbar.text.toString()
 
     fun hideHomeButton(status: Boolean) {
         if (status) {
@@ -190,7 +191,6 @@ open class BaseActivity : SpiceRootActivity() {
         binding.loaderImage.apply {
             loadAsGif(R.drawable.loader_spice)
         }
-
     }
 
     fun hideLoading() {
@@ -203,7 +203,7 @@ open class BaseActivity : SpiceRootActivity() {
     fun showErrorSnackBar(
         text: String,
         default: Int = Snackbar.LENGTH_LONG,
-        durationInMillis: Int? = null
+        durationInMillis: Int? = null,
     ) {
         val rootView = findViewById<View>(android.R.id.content) ?: return
         val snackBar = Snackbar.make(rootView, "", default)
@@ -223,18 +223,19 @@ open class BaseActivity : SpiceRootActivity() {
         id: Int,
         bundle: Bundle? = null,
         tag: String? = null,
-        isAdd: Boolean = false
+        isAdd: Boolean = false,
     ) {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
-            if (isAdd)
+            if (isAdd) {
                 add<fragment>(id, args = bundle, tag = tag)
-            else
+            } else {
                 replace<fragment>(
                     id,
                     args = bundle,
-                    tag = tag
+                    tag = tag,
                 )
+            }
         }
     }
 
@@ -247,14 +248,14 @@ open class BaseActivity : SpiceRootActivity() {
             if (v is EditText) {
                 val x = event.rawX.toInt()
                 val y = event.rawY.toInt()
-                //Was it a scroll - If skip all
+                // Was it a scroll - If skip all
                 if (abs(downX - x) > 5) {
                     return super.dispatchTouchEvent(event)
                 }
                 val reducePx = 2
                 val outRect = Rect()
                 v.getGlobalVisibleRect(outRect)
-                //Bounding box is too big, reduce it just a little bit
+                // Bounding box is too big, reduce it just a little bit
                 outRect.inset(reducePx, reducePx)
                 touchEvent(v, x, y, reducePx, outRect)
             }
@@ -262,17 +263,22 @@ open class BaseActivity : SpiceRootActivity() {
         return super.dispatchTouchEvent(event)
     }
 
-
-    private fun touchEvent(v: EditText, x: Int, y: Int, reducePx: Int, outRect: Rect) {
+    private fun touchEvent(
+        v: EditText,
+        x: Int,
+        y: Int,
+        reducePx: Int,
+        outRect: Rect,
+    ) {
         if (!outRect.contains(x, y)) {
             v.clearFocus()
             var touchTargetIsEditText = false
-            //Check if another editText has been touched
+            // Check if another editText has been touched
             for (vi in v.rootView.touchables) {
                 if (vi is EditText) {
                     val clickedViewRect = Rect()
                     vi.getGlobalVisibleRect(clickedViewRect)
-                    //Bounding box is too big, reduce it just a little bit
+                    // Bounding box is too big, reduce it just a little bit
                     clickedViewRect.inset(reducePx, reducePx)
                     if (clickedViewRect.contains(x, y)) {
                         touchTargetIsEditText = true
@@ -292,7 +298,7 @@ open class BaseActivity : SpiceRootActivity() {
             title = getString(R.string.gps_disabled_title),
             message = getString(R.string.gps_disabled_message),
             positiveButtonName = getString(R.string.ok),
-            isNegativeButtonNeed = isNegativeButtonNeed
+            isNegativeButtonNeed = isNegativeButtonNeed,
         ) {
             if (it) {
                 val settingsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
@@ -306,7 +312,7 @@ open class BaseActivity : SpiceRootActivity() {
             title = getString(R.string.gps_disabled_title),
             message = getString(R.string.gps_disabled_message),
             positiveButtonName = getString(R.string.ok),
-            isNegativeButtonNeed = isNegativeButtonNeed
+            isNegativeButtonNeed = isNegativeButtonNeed,
         ) {
             if (it) {
                 val intent = Intent()
@@ -314,7 +320,7 @@ open class BaseActivity : SpiceRootActivity() {
                 val uri = Uri.fromParts(
                     "package",
                     BuildConfig.APPLICATION_ID,
-                    null
+                    null,
                 )
                 intent.data = uri
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -333,17 +339,15 @@ open class BaseActivity : SpiceRootActivity() {
         connectivityManager.unregisterConnectionObserver(this)
     }
 
-
     private fun setListener() {
         binding.loadingProgress.safeClickListener {
-
         }
     }
 
     inline fun <reified F : Fragment> replaceFragmentIfExists(
         id: Int,
         bundle: Bundle? = null,
-        tag: String? = null
+        tag: String? = null,
     ) {
         val existingFragment = supportFragmentManager.findFragmentByTag(tag)
 
@@ -363,7 +367,7 @@ open class BaseActivity : SpiceRootActivity() {
         id: Int,
         bundle: Bundle? = null,
         tag: String? = null,
-        isAdd: Boolean = false
+        isAdd: Boolean = false,
     ) {
         val fragmentManager = supportFragmentManager
         val existingFragment = fragmentManager.findFragmentByTag(tag)
@@ -371,14 +375,15 @@ open class BaseActivity : SpiceRootActivity() {
         if (existingFragment == null) {
             supportFragmentManager.commit {
                 setReorderingAllowed(true)
-                if (isAdd)
+                if (isAdd) {
                     add<fragment>(id, args = bundle, tag = tag)
-                else
+                } else {
                     replace<fragment>(
                         id,
                         args = bundle,
-                        tag = tag
+                        tag = tag,
                     )
+                }
             }
         }
     }
@@ -387,7 +392,7 @@ open class BaseActivity : SpiceRootActivity() {
         containerId: Int,
         bundle: Bundle? = null,
         tag: String? = null,
-        isAdd: Boolean = false
+        isAdd: Boolean = false,
     ) {
         val fragmentManager = supportFragmentManager
 
@@ -402,22 +407,23 @@ open class BaseActivity : SpiceRootActivity() {
             }
 
             // Always create a new instance
-            if (isAdd)
+            if (isAdd) {
                 add<F>(containerId, args = bundle, tag = tag)
-            else
+            } else {
                 replace<F>(containerId, args = bundle, tag = tag)
+            }
         }
     }
 
-    fun getFragmentById(fragmentManager: FragmentManager, fragmentId: Int): Fragment? {
-        return fragmentManager.findFragmentById(fragmentId)
-    }
+    fun getFragmentById(
+        fragmentManager: FragmentManager,
+        fragmentId: Int,
+    ): Fragment? = fragmentManager.findFragmentById(fragmentId)
 
     fun withNetworkCheck(
         connectivityManager: ConnectivityManager,
         onNetworkAvailable: () -> Unit,
-        onNetworkNotAvailable: (() -> Unit?)? = null
-
+        onNetworkNotAvailable: (() -> Unit?)? = null,
     ) {
         if (connectivityManager.isNetworkAvailable()) {
             onNetworkAvailable()
@@ -425,7 +431,7 @@ open class BaseActivity : SpiceRootActivity() {
             showErrorDialogue(
                 getString(R.string.error),
                 getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
+                isNegativeButtonNeed = false,
             ) {
                 if (it && onNetworkNotAvailable != null) {
                     onNetworkNotAvailable()
@@ -438,7 +444,7 @@ open class BaseActivity : SpiceRootActivity() {
     fun withNetworkAvailability(
         online: () -> Unit,
         offline: () -> Unit = {},
-        isErrorShow: Boolean = true
+        isErrorShow: Boolean = true,
     ) {
         connectivityManager.isNullableNetworkAvailable()?.let { isNetworkAvailable ->
             if (isNetworkAvailable) {
@@ -448,7 +454,7 @@ open class BaseActivity : SpiceRootActivity() {
                     showErrorDialogue(
                         getString(R.string.error),
                         getString(R.string.no_internet_error),
-                        isNegativeButtonNeed = false
+                        isNegativeButtonNeed = false,
                     ) {}
                 }
                 offline()
@@ -471,7 +477,7 @@ open class BaseActivity : SpiceRootActivity() {
                     onBackPressPopStack()
                 }
             }
-        }
+        },
     ) {
         when (resourceState.state) {
             ResourceState.LOADING -> {
@@ -497,9 +503,7 @@ open class BaseActivity : SpiceRootActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return super.onOptionsItemSelected(item)
-    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = super.onOptionsItemSelected(item)
 
     fun onHomeClick(callbackHome: (() -> Unit?)? = null) {
         binding.ivHome.safeClickListener {
@@ -519,7 +523,7 @@ open class BaseActivity : SpiceRootActivity() {
         containerId: Int,
         fragmentTag: String,
         fragmentInstance: Fragment,
-        bundle: Bundle? = null
+        bundle: Bundle? = null,
     ) {
         val existingFragment = supportFragmentManager.findFragmentByTag(fragmentTag)
         val transaction = supportFragmentManager.beginTransaction()
@@ -537,7 +541,7 @@ open class BaseActivity : SpiceRootActivity() {
     fun replaceFragment(
         containerId: Int,
         fragmentTag: String,
-        fragment: Fragment
+        fragment: Fragment,
     ) {
         val fragmentManager = supportFragmentManager
         val transaction = fragmentManager.beginTransaction()
@@ -565,9 +569,9 @@ open class BaseActivity : SpiceRootActivity() {
         errorMessage: String = getString(R.string.default_user_input_error),
         buttonName: Pair<String, String> = Pair(
             getString(R.string.ok),
-            getString(R.string.cancel)
+            getString(R.string.cancel),
         ),
-        callback: ((isPositiveResult: Boolean, reason: String?) -> Unit)
+        callback: ((isPositiveResult: Boolean, reason: String?) -> Unit),
     ) {
         val dialog = CommentsAlertDialog.newInstance(
             this,
@@ -576,7 +580,7 @@ open class BaseActivity : SpiceRootActivity() {
             Pair(buttonName.first, buttonName.second),
             callback = callback,
             showComment = showComment,
-            message = Pair(message, errorMessage)
+            message = Pair(message, errorMessage),
         )
         dialog.show(supportFragmentManager, CommentsAlertDialog.TAG)
     }
@@ -588,12 +592,15 @@ open class BaseActivity : SpiceRootActivity() {
 
     override fun attachBaseContext(newBase: Context?) {
         try {
-            super.attachBaseContext(newBase?.let {
-                LocaleHelper.onAttach(
-                    it,
-                    com.medtroniclabs.spice.common.CommonUtils.parseUserLocale()
-                )
-            })
+            super.attachBaseContext(
+                newBase?.let {
+                    LocaleHelper.onAttach(
+                        it,
+                        com.medtroniclabs.spice.common.CommonUtils
+                            .parseUserLocale(),
+                    )
+                },
+            )
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -601,7 +608,7 @@ open class BaseActivity : SpiceRootActivity() {
 
     fun withLocationCheck(
         onLocationAvailable: () -> Unit,
-        onLocationNotAvailable: (() -> Unit)? = null
+        onLocationNotAvailable: (() -> Unit)? = null,
     ) {
         when {
             !isGpsEnabled() -> {
@@ -625,7 +632,7 @@ open class BaseActivity : SpiceRootActivity() {
                                 val uri = Uri.fromParts(
                                     "package",
                                     BuildConfig.APPLICATION_ID,
-                                    null
+                                    null,
                                 )
                                 intent.data = uri
                                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -648,8 +655,8 @@ open class BaseActivity : SpiceRootActivity() {
         requestPermissionLauncher.launch(
             arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            ),
         )
     }
 
@@ -664,12 +671,11 @@ open class BaseActivity : SpiceRootActivity() {
 
     inline fun <reified T : DialogFragment> FragmentActivity.showDialogIfNotPresent(
         tag: String,
-        dialogProvider: () -> T
+        dialogProvider: () -> T,
     ) {
         val existingFragment = supportFragmentManager.findFragmentByTag(tag)
         if (existingFragment == null) {
             dialogProvider().show(supportFragmentManager, tag)
         }
     }
-
 }

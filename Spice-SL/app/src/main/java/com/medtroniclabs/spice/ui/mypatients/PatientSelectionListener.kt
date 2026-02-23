@@ -10,12 +10,16 @@ interface PatientSelectionListener {
 
 interface PatientSelectionListenerForFollowUp {
     fun onSelectedPatientForCall(item: PatientFollowUpEntity)
+
     fun onSelectedPatientForAssessment(item: PatientFollowUpEntity)
+
     fun onSelectedPatientCard(item: PatientFollowUpEntity)
 }
 
 interface PatientSelectionListenerForFollowUpOffline {
     fun onSelectedPatientForCall(item: NCDFollowUp)
+
     fun onSelectedPatientForAssessment(item: NCDFollowUp)
+
     fun onSelectedPatientCard(item: NCDFollowUp)
 }

@@ -18,7 +18,8 @@ interface NCDFollowUpDao {
     @Query("DELETE FROM NCDFollowUp")
     suspend fun deleteAllNCDFollowUps()
 
-    @Query("""
+    @Query(
+        """
     SELECT * 
     FROM NCDFollowUp 
     WHERE
@@ -57,7 +58,8 @@ interface NCDFollowUpDao {
             ELSE dueDate 
         END,
         patientId DESC
-""")
+""",
+    )
     fun getFilteredNCDFollowUp(
         type: String,
         searchText: String?,
@@ -65,7 +67,7 @@ interface NCDFollowUpDao {
         dateSecond: Long?,
         isScreened: Boolean?,
         reason: String?,
-        todayDate: Long?
+        todayDate: Long?,
     ): LiveData<List<NCDFollowUp>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -82,6 +84,7 @@ interface NCDFollowUpDao {
 
     @Query("UPDATE NCDFollowUp SET isInitiated = 0 where id = :id")
     suspend fun updateNCDInitiatedCallFollowUp(id: Long)
+
     @Query("SELECT * FROM NCDCallDetails WHERE localId = :id")
     suspend fun getNCDCallDetails(id: Long): NCDCallDetails?
 
@@ -90,7 +93,10 @@ interface NCDFollowUpDao {
 
     // don't use this
     @Query("UPDATE NCDFollowUp SET retryAttempts = :retryAttempts,isCompleted = CASE WHEN :retryAttempts = 0 THEN 1 ELSE isCompleted END WHERE id = :id")
-    suspend fun updateRetryAttempts(id: Long, retryAttempts: Long)
+    suspend fun updateRetryAttempts(
+        id: Long,
+        retryAttempts: Long,
+    )
 
     @Query("SELECT attempts FROM NCDCallDetails WHERE id = :id ORDER BY localId DESC  LIMIT 1")
     suspend fun getAttemptsById(id: Long): Long?

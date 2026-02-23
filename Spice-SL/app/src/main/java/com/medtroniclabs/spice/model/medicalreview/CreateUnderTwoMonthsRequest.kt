@@ -8,9 +8,8 @@ data class CreateUnderTwoMonthsRequest(
     val clinicalSummaryAndSigns: ClinicalSummaryAndSigns?,
     val examination: Examination?,
     val presentingComplaints: String?,
-    val encounter: MedicalReviewEncounter? = null
+    val encounter: MedicalReviewEncounter? = null,
 )
-
 
 data class ClinicalSummaryAndSigns(
     val albendazole: Boolean? = null,
@@ -27,26 +26,25 @@ data class ClinicalSummaryAndSigns(
     val weight: Double? = null,
     val weightUnit: String? = null,
     val whz: Double? = null,
-    val muacStatus:String? = null,
-    val muacInCentimeter: Double? = null
+    val muacStatus: String? = null,
+    val muacInCentimeter: Double? = null,
 ) {
-    fun isNotEmpty(): Boolean {
-        return albendazole != null
-                || height != null
-                || heightUnit != null
-                || immunisationStatus != null
-                || respirationRate != null
-                || temperature != null
-                || temperatureUnit != null
-                || vitAForMother != null
-                || waz != null
-                || weight != null
-                || weightUnit != null
-                || whz != null
-                || breastFeeding != null
-                || exclusiveBreastFeeding != null
-                || muacInCentimeter != null
-    }
+    fun isNotEmpty(): Boolean =
+        albendazole != null ||
+            height != null ||
+            heightUnit != null ||
+            immunisationStatus != null ||
+            respirationRate != null ||
+            temperature != null ||
+            temperatureUnit != null ||
+            vitAForMother != null ||
+            waz != null ||
+            weight != null ||
+            weightUnit != null ||
+            whz != null ||
+            breastFeeding != null ||
+            exclusiveBreastFeeding != null ||
+            muacInCentimeter != null
 }
 
 data class Examination(
@@ -55,7 +53,7 @@ data class Examination(
     val hivInfection: Hiv? = null,
     val jaundice: Jaundice? = null,
     val nonBreastfeedingProblem: NonBreastfeedingProblem? = null,
-    val verySevereDisease: VerySevereDisease? = null
+    val verySevereDisease: VerySevereDisease? = null,
 )
 
 data class BreastfeedingProblem(
@@ -69,7 +67,7 @@ data class BreastfeedingProblem(
     val receivesOtherFoodsOrDrinks: Boolean? = null,
     val suckling: String? = null,
     val switchingBreastFrequently: Boolean? = null,
-    val underweight: Boolean? = null
+    val underweight: Boolean? = null,
 )
 
 data class Diarrhoea(
@@ -79,7 +77,7 @@ data class Diarrhoea(
     val restlessOrIrritable: Boolean? = null,
     val skinPinch: String? = null,
     val sunkenEyes: Boolean? = null,
-    val timePeriod: Int? = null
+    val timePeriod: Int? = null,
 )
 
 data class Jaundice(
@@ -87,7 +85,7 @@ data class Jaundice(
     val noJaundice: Boolean? = null,
     val solesNotYellow: Boolean? = null,
     val yellowPalmsAndSoles: Boolean? = null,
-    val yellowSkinLessThan24hrs: Boolean? = null
+    val yellowSkinLessThan24hrs: Boolean? = null,
 )
 
 data class NonBreastfeedingProblem(
@@ -98,7 +96,7 @@ data class NonBreastfeedingProblem(
     val insufficientReplacementFeeds: Boolean? = null,
     val lowWeightForAge: Boolean? = null,
     val thrush: String? = null,
-    val useOfFeedingBottle: Boolean? = null
+    val useOfFeedingBottle: Boolean? = null,
 )
 
 data class Hiv(
@@ -106,7 +104,7 @@ data class Hiv(
     val isMotherPostiveAndChildNegative: Boolean? = null,
     val hasPositiveAntibodyTestForInfant: Boolean? = null,
     val isMotherPostiveAndInfantNotTested: Boolean? = null,
-    val hasNegativeForMotherAndChild: Boolean? = null
+    val hasNegativeForMotherAndChild: Boolean? = null,
 )
 
 data class VerySevereDisease(
@@ -116,5 +114,5 @@ data class VerySevereDisease(
     val severeChestIndrawing: Boolean? = null,
     val skinPustules: Boolean? = null,
     val stoppedFeeding: Boolean? = null,
-    val umbilicusRedOrDrainingPus: Boolean? = null
+    val umbilicusRedOrDrainingPus: Boolean? = null,
 )

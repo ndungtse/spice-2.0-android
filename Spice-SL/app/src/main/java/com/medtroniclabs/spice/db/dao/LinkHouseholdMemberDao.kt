@@ -14,7 +14,6 @@ import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 
 @Dao
 interface LinkHouseholdMemberDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(linkHHM: LinkHouseholdMember): Long
 
@@ -31,18 +30,34 @@ interface LinkHouseholdMemberDao {
     fun getUnAssignedHouseholdMembersLiveData(status: String = DefinedParams.UnAssigned): LiveData<List<UnAssignedHouseholdMemberDetail>>
 
     @Query("UPDATE LinkHouseholdMember SET syncStatus =:syncStatus WHERE memberId IN (:ids)")
-    suspend fun updateInProgress(ids: List<String>, syncStatus: String)
+    suspend fun updateInProgress(
+        ids: List<String>,
+        syncStatus: String,
+    )
 
     @Query("UPDATE LinkHouseholdMember SET status = :status, syncStatus = :syncStatus WHERE memberId = :memberId")
-    suspend fun updateMemberAsAssigned(memberId: String, status: String = Assigned, syncStatus: OfflineSyncStatus = OfflineSyncStatus.NotSynced)
-
+    suspend fun updateMemberAsAssigned(
+        memberId: String,
+        status: String = Assigned,
+        syncStatus: OfflineSyncStatus = OfflineSyncStatus.NotSynced,
+    )
 
     @Query("SELECT hhm.id as hhmId, hhm.fhir_id as hhmFhirId FROM HouseholdMember AS hhm INNER JOIN LinkHouseholdMember AS lhhm ON hhm.fhir_id = lhhm.memberId WHERE hhm.patient_id = :patientId AND lhhm.status = :status")
-    suspend fun getUnAssignedParentFhirId(patientId: String, status: String = DefinedParams.UnAssigned): List<HouseholdMemberFhirId>
+    suspend fun getUnAssignedParentFhirId(
+        patientId: String,
+        status: String = DefinedParams.UnAssigned,
+    ): List<HouseholdMemberFhirId>
 
     @Query("SELECT hhm.id as hhmId, hhm.fhir_id as hhmFhirId FROM HouseholdMember AS hhm INNER JOIN LinkHouseholdMember AS lhhm ON hhm.fhir_id = lhhm.memberId INNER JOIN HouseholdMember AS parent ON hhm.motherReferenceId = parent.id WHERE parent.patient_id = :parentId AND lhhm.status = :status")
-    suspend fun getUnAssignedChildFhirIds(parentId: String, status: String = DefinedParams.UnAssigned): List<HouseholdMemberFhirId>
+    suspend fun getUnAssignedChildFhirIds(
+        parentId: String,
+        status: String = DefinedParams.UnAssigned,
+    ): List<HouseholdMemberFhirId>
 
     @Query("UPDATE LinkHouseholdMember SET status = :status, syncStatus = :syncStatus WHERE memberId in (:memberIds)")
-    suspend fun updateMembersAsAssigned(memberIds: List<String>, status: String = Assigned, syncStatus: OfflineSyncStatus = OfflineSyncStatus.NotSynced)
+    suspend fun updateMembersAsAssigned(
+        memberIds: List<String>,
+        status: String = Assigned,
+        syncStatus: OfflineSyncStatus = OfflineSyncStatus.NotSynced,
+    )
 }

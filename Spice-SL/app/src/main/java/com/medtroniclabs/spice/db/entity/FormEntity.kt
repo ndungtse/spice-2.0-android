@@ -10,5 +10,5 @@ data class FormEntity(
     val formInput: String,
     val formType: String,
     val workflowName: String? = null,
-    val clinicalWorkflowId: Long? = null
+    val clinicalWorkflowId: Long? = null,
 )

@@ -24,7 +24,7 @@ class NCDDashboardViewActivity : BaseActivity() {
             binding.root,
             isToolbarVisible = true,
             title = getString(R.string.dashboard),
-            homeAndBackVisibility = Pair(false, true)
+            homeAndBackVisibility = Pair(false, true),
         )
         loadSearchFragment()
     }
@@ -33,7 +33,7 @@ class NCDDashboardViewActivity : BaseActivity() {
         replaceFragmentInId<DashboardFragment>(
             R.id.fragmentContainerView,
             bundle = intent.extras,
-            tag = DashboardFragment.TAG
+            tag = DashboardFragment.TAG,
         )
     }
 }

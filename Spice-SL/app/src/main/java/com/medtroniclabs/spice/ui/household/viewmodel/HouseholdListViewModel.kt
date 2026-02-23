@@ -22,9 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HouseholdListViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private val houseHoldRepository: HouseHoldRepository
+    private val houseHoldRepository: HouseHoldRepository,
 ) : BaseViewModel(dispatcherIO) {
-
     var filterUiData = MutableLiveData<Resource<HouseHoldFilterUiData>>()
 
     private val filterLiveData = MutableLiveData<HouseHoldSearchFilter>()
@@ -37,7 +36,7 @@ class HouseholdListViewModel @Inject constructor(
                 filter.searchInput,
                 filter.filterByVillage.map { it.id!! },
                 filter.filterBySs.map { it.id!! },
-                status
+                status,
             )
         }
 
@@ -49,7 +48,7 @@ class HouseholdListViewModel @Inject constructor(
         search: String? = null,
         villageFilter: List<ChipViewItemModel>? = null,
         ssFilter: List<ChipViewItemModel>? = null,
-        statusFilter: List<ChipViewItemModel>? = null
+        statusFilter: List<ChipViewItemModel>? = null,
     ) {
         val filter = filterLiveData.value ?: HouseHoldSearchFilter()
         search?.let {
@@ -67,9 +66,7 @@ class HouseholdListViewModel @Inject constructor(
         filterLiveData.value = filter
     }
 
-    fun getFilterLiveData(): LiveData<HouseHoldSearchFilter> {
-        return filterLiveData
-    }
+    fun getFilterLiveData(): LiveData<HouseHoldSearchFilter> = filterLiveData
 
     fun getFilterUiData() {
         viewModelScope.launch(dispatcherIO) {
@@ -78,4 +75,3 @@ class HouseholdListViewModel @Inject constructor(
         }
     }
 }
-

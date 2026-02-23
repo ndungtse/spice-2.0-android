@@ -13,7 +13,7 @@ data class BpAndWeightResponse(
     val weight: Double? = null,
     val height: Double? = null,
     val bmi: Double? = null,
-    val dateValue: String? = null
+    val dateValue: String? = null,
 )
 
 data class TbHistory(
@@ -32,11 +32,11 @@ data class TbHistory(
     val prescriptions: List<Prescription>? = null,
     val investigations: List<Investigation>? = null,
     val tbInvestigationStatus: String? = null,
-    val summaryStatus:List<PatientStatus>?=null
+    val summaryStatus: List<PatientStatus>? = null,
 )
 
 data class TbSummary(
-    val tbScreening : TbScreening? = null
+    val tbScreening: TbScreening? = null,
 )
 
 data class TbScreening(
@@ -51,6 +51,5 @@ data class TbScreening(
     val hasFever: Boolean? = null,
     val hasWeightLoss: Boolean? = null,
     val houseHoldUUID: String? = null,
-    val dateOfOnset: String? = null
+    val dateOfOnset: String? = null,
 )
-

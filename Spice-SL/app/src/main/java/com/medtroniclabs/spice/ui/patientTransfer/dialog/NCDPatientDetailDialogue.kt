@@ -17,12 +17,12 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
 import com.medtroniclabs.spice.databinding.PatientDetailDialogueBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
+import com.medtroniclabs.spice.ncd.data.PatientTransfer
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
-import com.medtroniclabs.spice.ncd.data.PatientTransfer
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -30,13 +30,13 @@ import java.util.Locale
 
 @AndroidEntryPoint
 class NCDPatientDetailDialogue : DialogFragment() {
-
     private lateinit var binding: PatientDetailDialogueBinding
 
     private val viewModel: LandingViewModel by viewModels()
 
     companion object {
         val TAG = "NCDPatientDetailDialogue"
+
         fun newInstance(patientID: Long): NCDPatientDetailDialogue {
             val bundle = Bundle()
             bundle.putLong(DefinedParams.ID, patientID)
@@ -46,11 +46,10 @@ class NCDPatientDetailDialogue : DialogFragment() {
         }
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = PatientDetailDialogueBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -63,11 +62,14 @@ class NCDPatientDetailDialogue : DialogFragment() {
         super.onStart()
         dialog?.window?.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         viewModel.transferPatientViewId = arguments?.getLong(DefinedParams.ID, -1)
@@ -75,7 +77,6 @@ class NCDPatientDetailDialogue : DialogFragment() {
     }
 
     private fun initializeView() {
-
         binding.tvGenderAge.text =
             "${getString(R.string.gender)}/${
                 getString(R.string.age)
@@ -86,8 +87,8 @@ class NCDPatientDetailDialogue : DialogFragment() {
         }
         viewModel.getPatientListTransfer(
             NCDPatientTransferNotificationCountRequest(
-                SecuredPreference.getOrganizationId().toString()
-            )
+                SecuredPreference.getOrganizationId().toString(),
+            ),
         )
         viewModel.patientListResponse.observe(viewLifecycleOwner) { resourceState ->
 
@@ -120,14 +121,14 @@ class NCDPatientDetailDialogue : DialogFragment() {
             patientModel.patient.firstName.let { firstName ->
                 var patientName = "$firstName "
                 patientModel.patient.lastName?.let {
-                        patientName += it
+                    patientName += it
                 }
                 binding.tvDialogTitle.text = patientName
             }
 
             patientModel.patient.gender.let { gender ->
                 patientModel.patient.age.let { age ->
-                    binding.tvGenderAgeValue.text = "${gender}/${age.textOrHyphen()}"
+                    binding.tvGenderAgeValue.text = "$gender/${age.textOrHyphen()}"
                 }
             }
             patientModel.patient.phoneNumber.let {
@@ -144,7 +145,7 @@ class NCDPatientDetailDialogue : DialogFragment() {
                 binding.tvEnrollDateValue.text = DateUtils.convertDateTimeToDate(
                     it,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    DateUtils.DATE_ddMMyyyy
+                    DateUtils.DATE_ddMMyyyy,
                 )
             }
             patientModel.oldSite?.apply {
@@ -156,14 +157,14 @@ class NCDPatientDetailDialogue : DialogFragment() {
                 lastMenstrualPeriodDate?.let {
                     menstrualDate = SimpleDateFormat(
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        Locale.ENGLISH
+                        Locale.ENGLISH,
                     ).parse(it)
                 }
                 var deliveryDate: Date? = null
                 estimatedDeliveryDate?.let {
                     deliveryDate = SimpleDateFormat(
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        Locale.ENGLISH
+                        Locale.ENGLISH,
                     ).parse(it)
                 }
             }
@@ -177,11 +178,12 @@ class NCDPatientDetailDialogue : DialogFragment() {
                 binding.tvDiagnosisValue.text = getString(R.string.separator_hyphen)
             }
 
-            if (!patientModel.patient.cvdRiskScore.isNullOrEmpty() && !patientModel.patient.cvdRiskLevel.isNullOrEmpty())
+            if (!patientModel.patient.cvdRiskScore.isNullOrEmpty() && !patientModel.patient.cvdRiskLevel.isNullOrEmpty()) {
                 binding.tvCVDRiskValue.text =
                     "${CommonUtils.getDecimalFormatted(patientModel.patient.cvdRiskScore)}% - ${patientModel.patient.cvdRiskLevel}"
-            else
+            } else {
                 binding.tvCVDRiskValue.text = getString(R.string.separator_hyphen)
+            }
         }
     }
 
@@ -201,5 +203,4 @@ class NCDPatientDetailDialogue : DialogFragment() {
         }
         return resultStringBuilder.toString()
     }
-
 }

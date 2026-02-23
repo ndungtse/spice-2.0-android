@@ -32,20 +32,20 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 @AndroidEntryPoint
-class ImmunisationSummaryFragment :  BaseFragment() {
-
+class ImmunisationSummaryFragment : BaseFragment() {
     private lateinit var binding: ImmunisationSummaryFragmentBinding
     private val viewModel: ImmunisationViewModel by activityViewModels()
 
     companion object {
         const val TAG = "ImmunisationSummaryFragment"
+
         fun newInstance() = ImmunisationSummaryFragment()
 
         fun newInstance(
             patientId: String?,
             dateOfBirth: String?,
             encounterId: String?,
-            patientReference: String?
+            patientReference: String?,
         ): ImmunisationSummaryFragment {
             val fragment = ImmunisationSummaryFragment()
             val bundle = Bundle()
@@ -58,13 +58,18 @@ class ImmunisationSummaryFragment :  BaseFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = ImmunisationSummaryFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
@@ -82,7 +87,10 @@ class ImmunisationSummaryFragment :  BaseFragment() {
         }
 
         binding.lblCatchUpPolicy.safeClickListener {
-            val missedVaccineCount = viewModel.immunisationSummaryLiveData.value?.data?.missedVaccine?.size ?: 0
+            val missedVaccineCount = viewModel.immunisationSummaryLiveData.value
+                ?.data
+                ?.missedVaccine
+                ?.size ?: 0
             val dialog = EpiCatchUpPolicyDialogFragment(missedVaccineCount)
             dialog.show(childFragmentManager, "EpiCatchPolicy")
         }
@@ -90,42 +98,48 @@ class ImmunisationSummaryFragment :  BaseFragment() {
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
             SecuredPreference.getUserDetails()?.firstName,
-            SecuredPreference.getUserDetails()?.lastName
+            SecuredPreference.getUserDetails()?.lastName,
         )
         binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
             DateUtils.getTodayDateDDMMYYYY(),
             DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            DATE_ddMMyyyy
+            DATE_ddMMyyyy,
         )
     }
 
     private fun showDatePicker() {
         val selectedDate = DateUtils.convertedMMMToddMM(binding.tvNextVaccinationDate.text.toString())
-        val minDate = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val minDate = LocalDate
+            .now()
+            .atStartOfDay(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
         ViewUtils.showDatePicker(
             context = requireContext(),
             disableFutureDate = false,
             date = selectedDate,
-            minDate = minDate
+            minDate = minDate,
         ) { _, year, month, dayOfMonth ->
-            DateUtils.convertDateTimeToDate(
-                "$dayOfMonth-$month-$year",
-                DateUtils.DATE_FORMAT_ddMMyyyy, DATE_ddMMyyyy
-            ).let { stringDate ->
-                binding.tvNextVaccinationDate.text = stringDate
+            DateUtils
+                .convertDateTimeToDate(
+                    "$dayOfMonth-$month-$year",
+                    DateUtils.DATE_FORMAT_ddMMyyyy,
+                    DATE_ddMMyyyy,
+                ).let { stringDate ->
+                    binding.tvNextVaccinationDate.text = stringDate
 
-                val inputFormatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)
-                val outputFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
-                val localDate = LocalDate.parse(stringDate, inputFormatter)
-                val formattedDate = localDate.atStartOfDay(ZoneOffset.UTC).format(outputFormatter)
-                viewModel.nextVisitDate = formattedDate
-            }
+                    val inputFormatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)
+                    val outputFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+                    val localDate = LocalDate.parse(stringDate, inputFormatter)
+                    val formattedDate = localDate.atStartOfDay(ZoneOffset.UTC).format(outputFormatter)
+                    viewModel.nextVisitDate = formattedDate
+                }
         }
     }
 
     private fun attachObserver() {
         viewModel.immunisationSummaryLiveData.observe(viewLifecycleOwner) {
-            when(it.state) {
+            when (it.state) {
                 ResourceState.LOADING -> showProgress()
                 ResourceState.SUCCESS -> {
                     hideProgress()
@@ -160,7 +174,7 @@ class ImmunisationSummaryFragment :  BaseFragment() {
             binding.tvNextVaccinationDate.text = DateUtils.convertDateTimeToDate(
                 it,
                 DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                DATE_ddMMyyyy
+                DATE_ddMMyyyy,
             )
         } ?: kotlin.run {
             binding.lblNextVaccinationDate.gone()
@@ -190,7 +204,7 @@ class ImmunisationSummaryFragment :  BaseFragment() {
         }
     }
 
-    private  fun getColoredSpannableString(pair: Pair<LocalDate, LocalDate>): Spannable {
+    private fun getColoredSpannableString(pair: Pair<LocalDate, LocalDate>): Spannable {
         val dayDiff = ChronoUnit.DAYS.between(pair.first, pair.second)
         val date = pair.first.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
 
@@ -203,10 +217,11 @@ class ImmunisationSummaryFragment :  BaseFragment() {
         val fullText = "$date, ($status)"
         val spannable = SpannableString(fullText)
 
-        val color = if (dayDiff > 0)
+        val color = if (dayDiff > 0) {
             ContextCompat.getColor(requireContext(), R.color.epi_missed_primary)
-        else
+        } else {
             ContextCompat.getColor(requireContext(), R.color.green_attention_color)
+        }
 
         val startIndex = fullText.indexOf("($status)")
         val endIndex = startIndex + status.length + 2 // +2 for parentheses
