@@ -530,6 +530,14 @@ class MetaRepository @Inject constructor(
                     ),
                 )
             }
+            forms.householdCulture?.let {
+                roomHelper.insertConsentForm(
+                    ConsentForm(
+                        type = ConsentFormType.HouseHoldCulture,
+                        content = it,
+                    ),
+                )
+            }
 
             forms.EPI?.let {
                 roomHelper.insertConsentForm(

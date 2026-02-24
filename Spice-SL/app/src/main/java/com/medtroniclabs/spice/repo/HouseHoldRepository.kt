@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.repo
 import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.ConsentFormType
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
@@ -233,9 +234,12 @@ class HouseHoldRepository @Inject constructor(
             Resource(ResourceState.ERROR, message = e.localizedMessage)
         }
 
-    suspend fun getConsentForm(): ConsentForm? = roomHelper.getConsentFormByType(ConsentFormType.Household)
-
-    fun getAllHouseHoldMembersWithTbStatusLiveData(hhvId: Long): LiveData<List<HouseholdMemberEntity>> = roomHelper.householdMemberWithTbStatus(hhvId)
+    suspend fun getConsentForm(): ConsentForm? =
+        if (CommonUtils.parseUserLocale() == DefinedParams.EN) {
+            roomHelper.getConsentFormByType(ConsentFormType.Household)
+        } else {
+            roomHelper.getConsentFormByType(ConsentFormType.HouseHoldCulture)
+        }
 
     suspend fun updateHouseholdMemberTbContactTraceStatus(
         hhmId: Long,
