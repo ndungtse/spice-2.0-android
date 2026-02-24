@@ -27,6 +27,8 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentNCDFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentNCDSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomsFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentPregnantWomenRegistrationFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentPregnantWomenRegistrationSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHNeonateFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHNeonateSummaryFragment
@@ -110,41 +112,81 @@ class AssessmentActivity : BaseActivity() {
      * Second boolean - Summary page or not
      */
     private fun getBackButtonStatus(): Pair<Boolean, Boolean> {
-        val fragment = supportFragmentManager.findFragmentById(R.id.formsFragmentContainer)
-        if (fragment is AssessmentRMNCHFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), false)
-        } else if (fragment is AssessmentICCMFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), false)
-        } else if (fragment is AssessmentOtherSymptomsFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), false)
-        } else if (fragment is AssessmentRMNCHNeonateFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), false)
-        } else if (fragment is AssessmentICCMSummaryFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), true)
-        } else if (fragment is AssessmentOtherSymptomSummaryFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), true)
-        } else if (fragment is AssessmentRMNCHSummaryFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), true)
-        } else if (fragment is AssessmentRMNCHNeonateSummaryFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), true)
-        } else if (fragment is AssessmentNCDFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), true)
-        } else if (fragment is AssessmentTBFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), false)
-        } else if (fragment is AssessmentTBSummaryFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), true)
-        } else if (fragment is AssessmentNCDSummaryFragment) {
-            return Pair(false, false)
-        } else if (fragment is AssessmentSLNCDFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), false)
-        } else if (fragment is AssessmentSLNCDSummaryFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), true)
-        } else if (fragment is AssessmentFamilyPlanningFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), false)
-        } else if (fragment is AssessmentFamilyPlanningSummaryFragment) {
-            return Pair(fragment.getCurrentAnsweredStatus(), true)
+        when (val fragment = supportFragmentManager.findFragmentById(R.id.formsFragmentContainer)) {
+            is AssessmentRMNCHFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentICCMFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentOtherSymptomsFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentRMNCHNeonateFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentICCMSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentOtherSymptomSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentRMNCHSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentRMNCHNeonateSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentNCDFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentTBFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentTBSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentNCDSummaryFragment -> {
+                return Pair(false, false)
+            }
+
+            is AssessmentSLNCDFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentSLNCDSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentFamilyPlanningFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentFamilyPlanningSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentPregnantWomenRegistrationFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentPregnantWomenRegistrationSummaryFragment -> {
+                return Pair(false, true)
+            }
+
+            else -> return Pair(false, false)
         }
-        return Pair(false, false)
     }
 
     private fun navigationHandling(
@@ -185,7 +227,7 @@ class AssessmentActivity : BaseActivity() {
     }
 
     private fun setupAnalytic(btnClickType: String) {
-        var type = when (supportFragmentManager.findFragmentById(R.id.formsFragmentContainer)) {
+        val type = when (supportFragmentManager.findFragmentById(R.id.formsFragmentContainer)) {
             is AssessmentICCMFragment -> {
                 AnalyticsDefinedParams.ICCMAssessment
             }
@@ -197,6 +239,9 @@ class AssessmentActivity : BaseActivity() {
             }
             is AssessmentOtherSymptomsFragment -> {
                 AnalyticsDefinedParams.OtherSymptoms
+            }
+            is AssessmentPregnantWomenRegistrationFragment -> {
+                AnalyticsDefinedParams.PREGNANT_WOMEN_PROFILE
             }
             else -> {
                 ""
@@ -296,6 +341,14 @@ class AssessmentActivity : BaseActivity() {
                     tag = AssessmentFamilyPlanningSummaryFragment::class.simpleName,
                 )
             }
+            MenuConstants.PREGNANT_WOMEN_PROFILE -> {
+                setTitle(getString(R.string.assessment_summary))
+                hideBackButton()
+                replaceFragmentInId<AssessmentPregnantWomenRegistrationSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentPregnantWomenRegistrationSummaryFragment.TAG,
+                )
+            }
         }
     }
 
@@ -392,6 +445,14 @@ class AssessmentActivity : BaseActivity() {
                     tag = AssessmentFamilyPlanningFragment.TAG,
                 )
             }
+
+            MenuConstants.PREGNANT_WOMEN_PROFILE -> {
+                setTitle(getString(R.string.pregnant_women_profile))
+                replaceFragmentInId<AssessmentPregnantWomenRegistrationFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentPregnantWomenRegistrationFragment.TAG,
+                )
+            }
         }
     }
 
@@ -411,7 +472,6 @@ class AssessmentActivity : BaseActivity() {
 
                         val childHoodObject = detailsJson.optJSONObject(ChildHoodVisit)
                         val isDeathOfNeonate = childHoodObject?.optBoolean(deathOfBaby, false) == true
-                        // insertOtherAssessmentDetails()
                         if (CommonUtils.isCommunity() && (isDeathOfMother || isDeathOfNeonate)) {
                             viewModel.workflowName?.let {
                                 startCbsActivity(
@@ -442,9 +502,7 @@ class AssessmentActivity : BaseActivity() {
                     hideLoading()
                     if (!viewModel.isCbs) {
                         finishSuccessFlow()
-                        if (!com.medtroniclabs.spice.common.CommonUtils
-                                .isNonCommunity()
-                        ) {
+                        if (!CommonUtils.isNonCommunity()) {
                             startBackgroundOfflineSync()
                         }
                     } else {

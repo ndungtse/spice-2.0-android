@@ -35,6 +35,7 @@ object DefinedParams {
     const val DAY = "Day"
     const val DAYS = "Days"
     const val NoSymptoms = "No symptoms"
+    const val NONE = "None"
     const val Information = "information"
     const val HouseholdHeadRelationship = "household_head_relationship"
     const val Title = "Title"
@@ -44,4 +45,11 @@ object DefinedParams {
     const val OtherMethodSpecify = "Other Method (specify)"
     const val NCD = "NCD"
     const val IMMUNISATION = "IMMUNISATION"
+
+    /**
+     * Returns true if a given name starts with no symptoms or equals none
+     */
+    fun isNoSymptom(name: String) =
+        name.startsWith(NoSymptoms, true) ||
+            name.equals(NONE, true)
 }

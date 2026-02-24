@@ -57,6 +57,7 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.mappingkey.PregnantWomen
 import com.medtroniclabs.spice.mappingkey.RxBuddy.hasCough
 import com.medtroniclabs.spice.mappingkey.RxBuddy.hasProvidedMonitoringSheet
 import com.medtroniclabs.spice.mappingkey.RxBuddy.otherRelationShip
@@ -81,6 +82,7 @@ import com.medtroniclabs.spice.repo.TreatmentDetailsRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
+import com.medtroniclabs.spice.ui.MenuConstants.PREGNANT_WOMEN_PROFILE
 import com.medtroniclabs.spice.ui.MenuConstants.TB_MENU_ID
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanning
@@ -123,6 +125,7 @@ import com.medtroniclabs.spice.ui.boarding.repo.MetaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.time.LocalDate
 import java.util.Locale
 import javax.inject.Inject
@@ -198,7 +201,6 @@ class AssessmentViewModel @Inject constructor(
     val treatmentDetailsLiveData = MutableLiveData<TreatmentDetailsEntity>()
     val rxBuddyDetailsLiveData = MutableLiveData<RxBuddyDetails>()
     val saveRxBuddyFollowUpLiveData = MutableLiveData<Resource<Long>>()
-    val rxBuddyFollowUpResultHashMap = HashMap<String, Any>()
     val childhoodVisitConditionLiveData = MediatorLiveData<String>().apply {
         addSource(ageInMonth) { age ->
             if (formRenderedLiveData.value == true && age != null) {
@@ -347,6 +349,7 @@ class AssessmentViewModel @Inject constructor(
                 referralStatus = referralResult?.first
                 val assessmentDetail =
                     getAssessmentDetails(assessmentMap as HashMap<Any, Any>)
+                Timber.tag("bug_n_bug").d("$assessmentDetail")
                 assessmentStringLiveData.postValue(assessmentDetail.first)
                 referralReason = referralResult?.second
                 val otherDetails = calculateOtherDetails(assessmentMap, referralStatus, menuId)
@@ -823,6 +826,48 @@ class AssessmentViewModel @Inject constructor(
             }
         }
 
+        // Request modifications for Pregnant women profile
+        if (map.containsKey(PREGNANT_WOMEN_PROFILE)) {
+            val pregnantWomenProfile = map[PREGNANT_WOMEN_PROFILE] as? Map<String, Any>
+            if (pregnantWomenProfile != null && pregnantWomenProfile.containsKey(PregnantWomen.ID_HEALTH_RISK_SCREENING)) {
+                val healthRiskScreening =
+                    pregnantWomenProfile[PregnantWomen.ID_HEALTH_RISK_SCREENING] as? HashMap<String, Any>
+
+                val obstetricComplications =
+                    healthRiskScreening?.get(PregnantWomen.ID_OBSTETRIC_COMPLICATIONS) as? List<Map<String, Any>>
+                // Mutate obstetric complications
+                if (obstetricComplications != null) {
+                    val signsList = mutableListOf<String>()
+                    obstetricComplications.forEach {
+                        signsList.add(it[DefinedParams.Value] as String)
+                    }
+                    healthRiskScreening[PregnantWomen.ID_OBSTETRIC_COMPLICATIONS] = signsList
+                }
+
+                val medicalComplications =
+                    healthRiskScreening?.get(PregnantWomen.ID_MEDICAL_COMPLICATIONS) as? List<Map<String, Any>>
+                // Mutate medical complications
+                if (medicalComplications != null) {
+                    val signsList = mutableListOf<String>()
+                    medicalComplications.forEach {
+                        signsList.add(it[DefinedParams.Value] as String)
+                    }
+                    healthRiskScreening[PregnantWomen.ID_MEDICAL_COMPLICATIONS] = signsList
+                }
+
+                val currentMedicalConditions =
+                    healthRiskScreening?.get(PregnantWomen.ID_CURRENT_MEDICAL_CONDITIONS) as? List<Map<String, Any>>
+                // Mutate current medical conditions
+                if (currentMedicalConditions != null) {
+                    val signsList = mutableListOf<String>()
+                    currentMedicalConditions.forEach {
+                        signsList.add(it[DefinedParams.Value] as String)
+                    }
+                    healthRiskScreening[PregnantWomen.ID_CURRENT_MEDICAL_CONDITIONS] = signsList
+                }
+            }
+        }
+
         val assessmentDetailBE = StringConverter.convertGivenMapToString(map) ?: ""
         return Pair(assessmentDetail, assessmentDetailBE)
     }
@@ -857,9 +902,21 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun getSymptomListByType(type: String) {
+    fun updatePregnantWomanAssessmentDetails() {
+        // Nothing to update, just update the state to success
+        assessmentUpdateLiveData.value = Resource(state = ResourceState.SUCCESS)
+    }
+
+    fun getSymptomListByType(
+        type: String,
+        inputData: List<SignsAndSymptomsEntity> = emptyList(),
+    ) {
         viewModelScope.launch(dispatcherIO) {
-            symptomTypeListResponse.postValue(assessmentRepository.getSymptomListByType(type))
+            if (inputData.isNotEmpty()) {
+                symptomTypeListResponse.postValue(inputData)
+            } else {
+                symptomTypeListResponse.postValue(assessmentRepository.getSymptomListByType(type))
+            }
         }
     }
 
@@ -997,26 +1054,6 @@ class AssessmentViewModel @Inject constructor(
                     childDetailsMap,
                 )
                 savePatientClinicalInformation(pregnancyDetail)
-
-                /*memberClinicalEntity?.let { memberClinicalEntity ->
-                 */
-                /*map[RMNCH.visitNo] = memberClinicalEntity.visitCount + 1
-                    memberClinicalEntity.clinicalDate?.let { date ->
-                        getClinicalDateKey()?.let {
-                            map[it] = date
-                        }
-                    }
-                    map[RMNCH.NoOfNeonate] = memberClinicalEntity.numberOfNeonate ?: 0L*/
-                /*
-                    savePatientClinicalInformation(
-                        patientId,
-                        workflowName,
-                        map
-                    )
-                } ?: kotlin.run {
-                    map[RMNCH.visitNo] = 1L
-                    savePatientClinicalInformation(patientId, workflowName, map)
-                }*/
             }
         }
     }

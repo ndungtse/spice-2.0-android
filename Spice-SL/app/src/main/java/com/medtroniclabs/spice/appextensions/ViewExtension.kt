@@ -25,6 +25,9 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -76,11 +79,11 @@ fun View.invisible() {
     this.visibility = View.INVISIBLE
 }
 
-fun View.isVisible(): Boolean = this.visibility == View.VISIBLE
+fun View.isVisible(): Boolean = this.isVisible
 
-fun View.isGone(): Boolean = this.visibility == View.GONE
+fun View.isGone(): Boolean = this.isGone
 
-fun View.isInvisible(): Boolean = this.visibility == View.INVISIBLE
+fun View.isInvisible(): Boolean = this.isInvisible
 
 fun <T> ArrayList<T>.nullIfEmpty(): ArrayList<T>? =
     if (this.isEmpty()) {

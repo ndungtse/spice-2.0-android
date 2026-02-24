@@ -160,6 +160,9 @@
     <string name="symptoms">Symptoms</string>
     <string name="no_symptom_selected">No Symptoms Selected</string>
     <string name="symptoms_selected">Symptoms Selected</string>
+    <string name="complications_selected">Complications Selected</string>
+    <string name="conditions_selected">Conditions Selected</string>
+    <string name="no_s">No %s</string>
     <string name="select_symptoms">Select Symptoms</string>
     <string name="ok">OK</string>
     <string name="no_internet_error">Please check your internet connectivity.</string>
@@ -465,8 +468,8 @@
     <string name="message_no_network">Please check your internet connection and try again.</string>
     <string name="min_char_length_validation">Minimum %1$s characters required</string>
     <string name="general_min_max_validation">Entered value should be %1$s to %2$s</string>
-    <string name="general_min_validation">Entered value should be greater than %1$s</string>
-    <string name="general_max_validation">Entered value should be lesser than %1$s</string>
+    <string name="general_min_validation">Entered value should be greater than or equal to %1$s</string>
+    <string name="general_max_validation">Entered value should be less than or equal to %1$s</string>
     <string name="household">Household</string>
     <string name="please_select_a_site">Please select a valid site</string>
     <string name="nutrition_summary_without_signs" translatable="false">%1$s</string>
@@ -896,6 +899,7 @@
     <string name="please_specify_the_complication">Please specify the complication</string>
     <string name="please_specify_the_comorbidity"> Please specify the comorbidity</string>
     <string name="complications">Complications</string>
+    <string name="conditions">Conditions</string>
 
     // Side menu
     <string name="offline_data">OFFLINE DATA</string>
@@ -1387,6 +1391,7 @@
     <string name="day_delay" translatable="false">%d Day Delay</string>
     <string name="on_time" translatable="false">On Time</string>
     <string name="family_planning" translatable="false">Family Planning</string>
+    <string name="pregnant_women_profile" translatable="false">Pregnant women profile</string>
     <string name="epi_catch_up_policy" translatable="false">EPI Catch-Up Policy</string>
     <string name="vaccine" translatable="false">Vaccine</string>
     <string name="minimum_age" translatable="false">Minimum Age</string>
@@ -1599,4 +1604,12 @@
     <string name="regimen_line" translatable="false">Regimen Line</string>
     <string name="men_having_sex_with_men_msm">Men Having Sex with Men (MSM)</string>
     <string name="ss_name">SS Name</string>
+
+    <string name="lmp_last_menstrual_period">LMP (Last Menstrual Period)</string>
+    <string name="edd_estimated_delivery_date">👶 EDD (Expected Date of Delivery)</string>
+    <string name="gestational_week">📅 Gestational Week</string>
+    <string name="pregnancy_too_early_access_title">⚠️ Pregnancy Too Early to Assess</string>
+    <string name="pregnancy_too_early_access_desc_1">Pregnancy assessment can only be conducted after 6 weeks from LMP.</string>
+    <string name="pregnancy_too_early_access_desc_2">Please revisit after 6 weeks for complete pregnancy profile assessment.</string>
+    <string name="the_following_risk_factors_identified">⚠️ The following risk factors have been identified:</string>
 </resources>

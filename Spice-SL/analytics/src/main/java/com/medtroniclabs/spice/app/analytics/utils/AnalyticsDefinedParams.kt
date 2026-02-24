@@ -17,6 +17,7 @@ object AnalyticsDefinedParams {
     const val TBSummaryAssessement = "TB Summary Assessment"
     const val RXBUDDYSummaryAssessement = "RX Buddy Summary Assessment"
     const val AssessmentCreation = "assessmentCreation"
+    const val PREGNANT_WOMEN_PROFILE = "pwProfile"
     const val HouseholdCreation = "Household Registration"
     const val HouseholdEdit = "householdEdit"
     const val MedicalReviewCreation = "medicalReviewCreation"

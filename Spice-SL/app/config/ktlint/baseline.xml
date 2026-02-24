@@ -13,19 +13,17 @@
         <error line="15" column="23" source="standard:property-naming" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/common/DateUtils.kt">
+        <error line="31" column="15" source="standard:property-naming" />
         <error line="32" column="15" source="standard:property-naming" />
         <error line="33" column="15" source="standard:property-naming" />
         <error line="34" column="15" source="standard:property-naming" />
         <error line="35" column="15" source="standard:property-naming" />
         <error line="36" column="15" source="standard:property-naming" />
         <error line="37" column="15" source="standard:property-naming" />
-        <error line="38" column="15" source="standard:property-naming" />
-        <error line="41" column="15" source="standard:property-naming" />
-        <error line="42" column="15" source="standard:property-naming" />
+        <error line="40" column="15" source="standard:property-naming" />
+        <error line="43" column="15" source="standard:property-naming" />
+        <error line="44" column="15" source="standard:property-naming" />
         <error line="45" column="15" source="standard:property-naming" />
-        <error line="46" column="15" source="standard:property-naming" />
-        <error line="47" column="15" source="standard:property-naming" />
-        <error line="48" column="15" source="standard:property-naming" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/common/DefinedParams.kt">
         <error line="9" column="15" source="standard:property-naming" />
@@ -331,13 +329,13 @@
         <error line="31" column="15" source="standard:property-naming" />
         <error line="34" column="15" source="standard:property-naming" />
         <error line="37" column="15" source="standard:property-naming" />
-        <error line="38" column="15" source="standard:property-naming" />
         <error line="39" column="15" source="standard:property-naming" />
         <error line="40" column="15" source="standard:property-naming" />
         <error line="41" column="15" source="standard:property-naming" />
         <error line="42" column="15" source="standard:property-naming" />
         <error line="43" column="15" source="standard:property-naming" />
         <error line="44" column="15" source="standard:property-naming" />
+        <error line="45" column="15" source="standard:property-naming" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/formgeneration/extension/SafePopupMenuClickListener.kt">
         <error line="6" column="160" source="standard:max-line-length" />
@@ -347,7 +345,7 @@
         <error line="172" column="161" source="standard:max-line-length" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/formgeneration/utility/CheckboxDialogAdapter.kt">
-        <error line="36" column="13" source="standard:property-naming" />
+        <error line="35" column="13" source="standard:property-naming" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/mappingkey/CommunityDetails.kt">
         <error line="4" column="15" source="standard:property-naming" />
@@ -850,8 +848,8 @@
     <file name="src/main/java/com/medtroniclabs/spice/ui/MenuConstants.kt">
         <error line="12" column="15" source="standard:property-naming" />
         <error line="13" column="15" source="standard:property-naming" />
-        <error line="20" column="15" source="standard:property-naming" />
-        <error line="30" column="15" source="standard:property-naming" />
+        <error line="21" column="15" source="standard:property-naming" />
+        <error line="31" column="15" source="standard:property-naming" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/AssessmentDefinedParams.kt">
         <error line="4" column="15" source="standard:property-naming" />
@@ -1125,10 +1123,6 @@
         <error line="70" column="15" source="standard:property-naming" />
         <error line="72" column="15" source="standard:property-naming" />
         <error line="295" column="15" source="standard:property-naming" />
-    </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/viewmodel/AssessmentViewModel.kt">
-        <error line="1003" column="17" source="standard:no-consecutive-comments" />
-        <error line="1010" column="17" source="standard:no-consecutive-comments" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/boarding/MenuTypeEnums.kt">
         <error line="4" column="5" source="standard:enum-entry-name-case" />

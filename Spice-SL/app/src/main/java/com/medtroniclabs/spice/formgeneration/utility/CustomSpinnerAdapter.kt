@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.SpinnerDropDownBinding
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NAME
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.cultureValue
 
 class CustomSpinnerAdapter(context: Context, val translate: Boolean = false) :
@@ -26,9 +27,9 @@ class CustomSpinnerAdapter(context: Context, val translate: Boolean = false) :
 
     override fun getItem(position: Int): String =
         if (translate) {
-            (itemList[position][cultureValue] as String?) ?: (itemList[position]["name"] as String)
+            (itemList[position][cultureValue] as String?) ?: (itemList[position][NAME] as String)
         } else {
-            itemList[position]["name"] as String
+            itemList[position][NAME] as String
         }
 
     override fun getItemId(position: Int): Long = position.toLong()

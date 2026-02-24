@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.DialogInterface
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.Point
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -34,8 +33,10 @@ import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.toColorInt
 import androidx.core.view.children
 import androidx.core.view.forEach
+import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -105,7 +106,7 @@ import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_RAD
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_SPINNER
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_TEXTLABEL
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_INSTRUCTION
-import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_METAL_HEALTH
+import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_MENTAL_HEALTH
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_NO_OF_DAYS
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_SINGLE_SELECTION
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_TIME
@@ -131,9 +132,7 @@ import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.FormFieldValidator
 import com.medtroniclabs.spice.mappingkey.CommunityDetails
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.SelectedNetwork
-import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
-import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import com.medtroniclabs.spice.mappingkey.RxBuddy
 import com.medtroniclabs.spice.mappingkey.Screening
@@ -158,7 +157,7 @@ class FormGenerator(
     private val callback: ((HashMap<String, Any>, String) -> Unit)? = null,
 ) : ContextWrapper(context) {
     private var serverData: List<FormLayout>? = null
-    val rootSuffix = "rootView"
+    val rootSuffix = AssessmentDefinedParams.rootSuffix
     val titleSuffix = "titleTextView"
     private val errorSuffix = "errorMessageView"
     private val resultHashMap = HashMap<String, Any>()
@@ -193,7 +192,7 @@ class FormGenerator(
                 VIEW_INFORMATION_LABEL -> createInformationLabel(formLayout)
                 VIEW_TYPE_INSTRUCTION -> createInstructionView(formLayout)
                 VIEW_TYPE_FORM_TEXTLABEL -> createTextLabel(formLayout)
-                VIEW_TYPE_METAL_HEALTH -> createMentalHealthView(formLayout)
+                VIEW_TYPE_MENTAL_HEALTH -> createMentalHealthView(formLayout)
                 VIEW_TYPE_FORM_AGE -> createAgeView(formLayout)
                 VIEW_TYPE_NO_OF_DAYS -> createNoOfDaysView(formLayout)
                 VIEW_TYPE_FORM_DATEPICKER -> createDatePicker(formLayout)
@@ -440,6 +439,11 @@ class FormGenerator(
                 } catch (_: Exception) {
                     // Exception - Catch block
                 }
+            }
+
+            isInfo?.let {
+                binding.tvInfo.text = infoTitle
+                binding.tvInfo.visibility = getVisibility(it)
             }
 
             inputType?.let {
@@ -853,7 +857,7 @@ class FormGenerator(
             val systolicReadingOne = binding.etSystolicOne.text?.toString()
             val diastolicReadingOne = binding.etDiastolicOne.text?.toString()
             val pulseReadingOne = binding.etPulseOne.text?.toString()
-            if (list.size > 0) {
+            if (list.isNotEmpty()) {
                 val model = list[0]
                 model.systolic = systolicReadingOne?.toDoubleOrNull()
                 model.diastolic = diastolicReadingOne?.toDoubleOrNull()
@@ -968,9 +972,9 @@ class FormGenerator(
         if (resultHashMap.containsKey(id)) {
             if (resultHashMap[id] is Map<*, *>) {
                 if (!value.isNullOrBlank()) {
-                    (resultHashMap[id] as java.util.HashMap<String, String>)[key] = value
+                    (resultHashMap[id] as HashMap<String, String>)[key] = value
                 } else {
-                    (resultHashMap[id] as java.util.HashMap<String, String>).remove(key)
+                    (resultHashMap[id] as HashMap<String, String>).remove(key)
                 }
             } else if (resultHashMap[id] is String) {
                 resultHashMap.remove(id)
@@ -996,12 +1000,8 @@ class FormGenerator(
             binding.tvKey.tag = id + tvKey
             binding.tvValue.tag = id + tvValue
             binding.bgLastMeal.tag = id + rootSummary
-            // checkGenerateAction(this, binding)
             binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
 
-           /* maxLines?.let { binding.etUserInput.setLines(it) }
-                ?: binding.etUserInput.setSingleLine()
-*/
             if (isMandatory) {
                 binding.tvTitle.markMandatory()
             }
@@ -1053,20 +1053,6 @@ class FormGenerator(
                     // Exception - Catch block
                 }
             }
-
-           /* inputType?.let {
-                when (it) {
-                    InputType.TYPE_CLASS_PHONE, InputType.TYPE_CLASS_NUMBER -> binding.etUserInput.inputType =
-                        InputType.TYPE_CLASS_NUMBER
-
-                    InputType.TYPE_NUMBER_FLAG_DECIMAL -> binding.etUserInput.inputType =
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-
-                    else -> {
-                        binding.etUserInput.inputType = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-                    }
-                }
-            }*/
 
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
                 parentLayout.addView(binding.root)
@@ -1165,41 +1151,6 @@ class FormGenerator(
     private fun checkGenerateAction(
         formLayout: FormLayout,
         binding: EdittextLayoutBinding,
-    ) {
-        formLayout.apply {
-            if (isNeedAction) {
-                when (id) {
-                    Screening.identityValue -> {
-                        binding.tvNationalIdAction.visibility = View.VISIBLE
-                        val clickableSpan = object : ClickableSpan() {
-                            override fun onClick(mView: View) {
-                                // action click
-                                generateNationalId()
-                            }
-
-                            override fun updateDrawState(ds: TextPaint) {
-                                super.updateDrawState(ds)
-                                ds.isUnderlineText = false
-                            }
-                        }
-                        val text = context.getString(R.string.don_t_have_id_generate_id)
-                        var index = text.indexOf("?")
-                        index = if (index >= 0) index + 1 else 0
-                        binding.tvNationalIdAction.text = getSpannableString(
-                            clickableSpan,
-                            text,
-                            index,
-                        )
-                        binding.tvNationalIdAction.movementMethod = LinkMovementMethod.getInstance()
-                    }
-                }
-            }
-        }
-    }
-
-    private fun checkGenerateAction(
-        formLayout: FormLayout,
-        binding: EdittextAreaLayoutBinding,
     ) {
         formLayout.apply {
             if (isNeedAction) {
@@ -1409,11 +1360,6 @@ class FormGenerator(
             callback?.invoke(resultHashMap, elementID.first)
             listener.onUpdateInstruction(elementID.first, selectedId)
         }
-
-    private fun isResultAvailable(
-        key: String,
-        value: String,
-    ): Boolean = resultHashMap.contains(gender) && resultHashMap[gender] == female
 
     fun getResultMap(): HashMap<String, Any> = resultHashMap
 
@@ -1714,7 +1660,7 @@ class FormGenerator(
             backgroundColor?.let { color ->
                 if (color.startsWith(getString(R.string.hash_symbol))) {
                     binding.llBase.setBackgroundColor(
-                        Color.parseColor(color),
+                        color.toColorInt(),
                     )
                 }
             }
@@ -1777,7 +1723,7 @@ class FormGenerator(
                 binding.tvTitle.markNonMandatory()
             }
             textLabelColor?.let {
-                binding.tvTitle.setTextColor(Color.parseColor(it))
+                binding.tvTitle.setTextColor(it.toColorInt())
             }
             textLabelStyle?.let { style ->
                 binding.tvTitle.apply {
@@ -1896,9 +1842,7 @@ class FormGenerator(
             binding.etMonths.tag = id + Month
             binding.etWeeks.tag = id + Week
             binding.ageValue.tag = id + value
-            binding.tvKey.text = title?.let {
-                updateTitle(it, translate, titleCulture, unitMeasurement)
-            } ?: getString(R.string.age)
+            binding.tvKey.text = updateTitle(title, translate, titleCulture, unitMeasurement)
             binding.tvErrorMessage.tag = id + errorSuffix
             binding.tvDateOfBirth.tag = id + titleSuffix
             textWatcher = object : TextWatcher {
@@ -1999,7 +1943,7 @@ class FormGenerator(
 
         isDOBUpdated = true
 
-        val dobString = convertDateToStringWithUTC(date, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+        val dobString = convertDateToStringWithUTC(date)
 
         addOrUpdateDOB(dobString, id)
 
@@ -3094,7 +3038,7 @@ class FormGenerator(
                         }
                     } else {
                         when (data.viewType) {
-                            VIEW_TYPE_METAL_HEALTH -> {
+                            VIEW_TYPE_MENTAL_HEALTH -> {
                                 if (isViewVisible(id)) {
                                     if (checkValidMentalHealth(this, id)) {
                                         hideValidationField(data)
@@ -3110,70 +3054,6 @@ class FormGenerator(
                         }
                     }
                 }
-
-                /* if ((id == headPhoneNumber || id == phoneNumber) && isMandatory && resultHashMap.containsKey(
-                         id
-                     )
-                 ) {
-                     val actualValue = resultHashMap[id] as? String
-                     actualValue?.let {
-                         if (!startsWith.isNullOrEmpty() && !checkPhoneNumberValidOrNot(
-                                 it,
-                                 startsWith
-                             )
-                         ) {
-                             isValid = false
-                             requestFocusView(
-                                 data, getString(
-                                     R.string.start_with_validation,
-                                     startsWith?.joinToString(separator = " ${getString(R.string.or)} ")
-                                         ?: ""
-                                 )
-                             )
-                         } else if (!phoneNumberConatinMaxLength(
-                                 maxLength,
-                                 it
-                             )
-                         ) {
-                             isValid = false
-                             requestFocusView(data)
-                         } else if (!FormFieldValidator.isValidMobileNumber(it)) {
-                             isValid = false
-                             requestFocusView(
-                                 data, getString(
-                                     R.string.phone_number_invalid
-                                 )
-                             )
-                         } else {
-                             hideValidationField(data)
-                         }
-                     } ?: run {
-                         isValid = false
-                         requestFocusView(data)
-                     }
-                 } else if ((isMandatory && !resultHashMap.containsKey(id)
-                             && isViewVisible(id) && isViewEnabled(id))
-                     ||
-                     (isMandatory && resultHashMap.containsKey(id)
-                             && resultHashMap[id] is String && (resultHashMap[id] as String).isEmpty())) {
-                     isValid = false
-                     requestFocusView(data)
-                 } else if (viewType == VIEW_TYPE_FORM_EDITTEXT && isValid) {
-                     isValid = validateMinMaxLength(
-                         resultHashMap[id],
-                         isValid,
-                         data
-                     )
-                     if (isValid && data.onlyAlphabets == true) {
-                         isValid = checkOnlyAlphabets(
-                             resultHashMap[id],
-                             isValid,
-                             data
-                         )
-                     }
-                 } else {
-                     hideValidationField(data)
-                 }*/
             }
         }
         return isValid
@@ -3181,7 +3061,7 @@ class FormGenerator(
 
     fun isViewVisible(id: String): Boolean {
         val view = getViewByTag(id + rootSuffix)
-        return view != null && view.visibility == View.VISIBLE
+        return view != null && view.isVisible
     }
 
     private fun isViewEnabled(id: String): Boolean {
@@ -3325,7 +3205,7 @@ class FormGenerator(
                 } else if (maxValue != null) {
                     if (actualValue is String) {
                         actualValue.toDoubleOrNull()?.let { value ->
-                            if (value > maxValue!!.toDouble()) {
+                            if (value > maxValue!!) {
                                 isValid = false
                                 requestFocusView(
                                     formLayout,
@@ -3342,7 +3222,7 @@ class FormGenerator(
                         }
                     } else if (actualValue is Number) {
                         actualValue.toDouble().let { value ->
-                            if (value > maxValue!!.toDouble()) {
+                            if (value > maxValue!!) {
                                 isValid = false
                                 requestFocusView(
                                     formLayout,
@@ -3421,7 +3301,7 @@ class FormGenerator(
     private fun hideValidationField(formLayout: FormLayout) {
         formLayout.apply {
             val view = getViewByTag(formLayout.id + errorSuffix)
-            if (view != null && view is TextView && view.visibility == View.VISIBLE) {
+            if (view != null && view is TextView && view.isVisible) {
                 view.visibility = View.GONE
             }
         }
@@ -3444,7 +3324,15 @@ class FormGenerator(
             if (view is AppCompatTextView) {
                 val checkBoxText = when (id) {
                     FamilyPlanningMethods -> getString(R.string.methods_selected)
-                    else -> getString(R.string.symptoms_selected)
+                    else -> {
+                        if (id.contains("complication", true)) {
+                            getString(R.string.complications_selected)
+                        } else if (id.contains("conditions", true)) {
+                            getString(R.string.conditions_selected)
+                        } else {
+                            getString(R.string.symptoms_selected)
+                        }
+                    }
                 }
                 view.text = setCheckBoxDialogText(resultHashMap, id, checkBoxText)
             }
@@ -3454,7 +3342,7 @@ class FormGenerator(
         // Prioritize 'value' (JSON id) over 'ID' (database id) for condition matching
         val selectedValues = ArrayList<String>()
         resultMap.forEach { item ->
-            val selectedId = item[DefinedParams.value]?.toString()
+            val selectedId = item[value]?.toString()
                 ?: item[DefinedParams.ID]?.toString()
             selectedId?.let { selectedValues.add(it) }
         }
@@ -3507,16 +3395,16 @@ class FormGenerator(
             if (resultHashMap.containsKey(id)) {
                 val mapList = resultHashMap[id]
                 if (mapList is java.util.ArrayList<*>) {
-                    if (mapList.size == 1) {
-                        text = setDialogText(mapList, checkBoxText)
+                    text = if (mapList.size == 1) {
+                        getSingleSelectedDialogText(mapList, checkBoxText, id)
                     } else if (mapList.size > 1) {
-                        text = if (isContainsOther(mapList)) {
+                        if (isContainsOther(mapList)) {
                             "${mapList.size - 1} and ${getString(R.string.other)} $checkBoxText"
                         } else {
                             "${mapList.size} $checkBoxText"
                         }
                     } else {
-                        text = ""
+                        ""
                     }
                 }
             }
@@ -3524,14 +3412,24 @@ class FormGenerator(
         return text
     }
 
-    private fun setDialogText(
+    /**
+     * Returns dialog text when only single item has selected
+     */
+    private fun getSingleSelectedDialogText(
         mapList: java.util.ArrayList<*>,
         checkBoxText: String,
+        id: String,
     ): String =
         if (isContainsOther(mapList)) {
-            "${DefinedParams.Other} $checkBoxText"
+            "${getString(R.string.other)} $checkBoxText"
         } else if (isNoSymptomContain(mapList)) {
-            getString(R.string.no_symptom_selected)
+            if (id.contains("complication", true)) {
+                getString(R.string.no_s, getString(R.string.complications))
+            } else if (id.contains("conditions", true)) {
+                getString(R.string.no_s, getString(R.string.condition))
+            } else {
+                getString(R.string.no_symptom_selected)
+            }
         } else {
             "${mapList.size} $checkBoxText"
         }
@@ -3541,7 +3439,9 @@ class FormGenerator(
         mapList.forEach { map ->
             if (map is HashMap<*, *>) {
                 val name = map[DefinedParams.NAME]
-                if (name is String && name.startsWith(DefinedParams.NoSymptoms, true)) {
+                if (name is String &&
+                    (DefinedParams.isNoSymptom(name))
+                ) {
                     status = true
                     return@forEach
                 }
@@ -3673,7 +3573,7 @@ class FormGenerator(
 
     fun handlePregnancyCardBasedOnAgeAndWeeks() {
         val dateOfBirthView =
-            getViewByTag(MemberRegistration.dateOfBirth) as? AppCompatTextView ?: return
+            getViewByTag(dateOfBirth) as? AppCompatTextView ?: return
         val dateOfBirth = dateOfBirthView.text?.toString()?.trim()
         if (!dateOfBirth.isNullOrEmpty()) {
             val ageAndWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth, DATE_ddMMyyyy)
@@ -3820,11 +3720,11 @@ class FormGenerator(
         isViewOnly: Boolean = false,
     ) {
         val recyclerView = questions?.tag?.let { getViewByTag(it) } ?: return
-        if (recyclerView.visibility == View.VISIBLE) {
+        if (recyclerView.isVisible) {
             this.mentalHealthEditList = mentalHealthEditList?.let {
                 java.util.ArrayList(mentalHealthEditList)
             }
-            questions?.let { response ->
+            questions.let { response ->
                 questions.response as MentalHealthEntity
                 val map = questions.response.formInput?.let {
                     StringConverter.convertStringToListOfMap(it)
@@ -4016,7 +3916,7 @@ class FormGenerator(
                 VIEW_INFORMATION_LABEL -> createInformationLabel(formLayout)
                 VIEW_TYPE_INSTRUCTION -> createInstructionView(formLayout)
                 VIEW_TYPE_FORM_TEXTLABEL -> createTextLabel(formLayout)
-                VIEW_TYPE_METAL_HEALTH -> createMentalHealthView(formLayout)
+                VIEW_TYPE_MENTAL_HEALTH -> createMentalHealthView(formLayout)
                 VIEW_TYPE_FORM_AGE -> createAgeView(formLayout)
                 VIEW_TYPE_NO_OF_DAYS -> createNoOfDaysView(formLayout)
                 VIEW_TYPE_FORM_DATEPICKER -> createDatePicker(formLayout)
@@ -4038,4 +3938,14 @@ class FormGenerator(
     }
 
     fun isViewGone(tag: Any): Boolean = getViewByTag(tag)?.visibility == View.GONE
+
+    /**
+     * Returns for layout for a given id
+     */
+    fun getFormLayout(id: String): FormLayout? = getServerData()?.firstOrNull { it.id == id }
+
+    /**
+     * Returns result layout for a given id
+     */
+    fun getResult(id: String): Any? = resultHashMap[id]
 }

@@ -344,7 +344,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
 
     private fun launchSummaryOrAssessmentPage() {
         requireActivity().startBackgroundOfflineSync()
-        if (memberRegistrationViewModel.startAssessment != null && memberRegistrationViewModel.startAssessment!!) {
+        if (memberRegistrationViewModel.startAssessment == true) {
             val intent = Intent(requireActivity(), AssessmentToolsActivity::class.java)
             memberRegistrationViewModel.memberRegistrationLiveData.value?.data.let {
                 intent.putExtra(MemberID, it ?: -1)

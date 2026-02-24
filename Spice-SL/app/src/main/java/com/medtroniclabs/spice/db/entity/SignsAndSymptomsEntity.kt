@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 
 @Entity(tableName = "SymptomEntity")
 data class SignsAndSymptomsEntity(
@@ -27,4 +28,9 @@ data class SignsAndSymptomsEntity(
 
     @Ignore
     var isEnabled = true
+
+    /**
+     * Refer : [DefinedParams.isNoSymptom]
+     */
+    fun isNone(): Boolean = DefinedParams.isNoSymptom(symptom)
 }

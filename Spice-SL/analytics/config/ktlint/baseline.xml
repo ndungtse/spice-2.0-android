@@ -20,7 +20,6 @@
         <error line="17" column="15" source="standard:property-naming" />
         <error line="18" column="15" source="standard:property-naming" />
         <error line="19" column="15" source="standard:property-naming" />
-        <error line="20" column="15" source="standard:property-naming" />
         <error line="21" column="15" source="standard:property-naming" />
         <error line="22" column="15" source="standard:property-naming" />
         <error line="23" column="15" source="standard:property-naming" />
@@ -48,7 +47,7 @@
         <error line="45" column="15" source="standard:property-naming" />
         <error line="46" column="15" source="standard:property-naming" />
         <error line="47" column="15" source="standard:property-naming" />
-        <error line="49" column="15" source="standard:property-naming" />
+        <error line="48" column="15" source="standard:property-naming" />
         <error line="50" column="15" source="standard:property-naming" />
         <error line="51" column="15" source="standard:property-naming" />
         <error line="52" column="15" source="standard:property-naming" />
@@ -62,14 +61,14 @@
         <error line="60" column="15" source="standard:property-naming" />
         <error line="61" column="15" source="standard:property-naming" />
         <error line="62" column="15" source="standard:property-naming" />
-        <error line="69" column="15" source="standard:property-naming" />
-        <error line="71" column="15" source="standard:property-naming" />
-        <error line="75" column="15" source="standard:property-naming" />
+        <error line="63" column="15" source="standard:property-naming" />
+        <error line="70" column="15" source="standard:property-naming" />
+        <error line="72" column="15" source="standard:property-naming" />
         <error line="76" column="15" source="standard:property-naming" />
         <error line="77" column="15" source="standard:property-naming" />
         <error line="78" column="15" source="standard:property-naming" />
-        <error line="103" column="15" source="standard:property-naming" />
-        <error line="135" column="15" source="standard:property-naming" />
+        <error line="79" column="15" source="standard:property-naming" />
+        <error line="104" column="15" source="standard:property-naming" />
         <error line="136" column="15" source="standard:property-naming" />
         <error line="137" column="15" source="standard:property-naming" />
         <error line="138" column="15" source="standard:property-naming" />
@@ -116,15 +115,16 @@
         <error line="179" column="15" source="standard:property-naming" />
         <error line="180" column="15" source="standard:property-naming" />
         <error line="181" column="15" source="standard:property-naming" />
-        <error line="210" column="15" source="standard:property-naming" />
+        <error line="182" column="15" source="standard:property-naming" />
         <error line="211" column="15" source="standard:property-naming" />
-        <error line="213" column="15" source="standard:property-naming" />
+        <error line="212" column="15" source="standard:property-naming" />
         <error line="214" column="15" source="standard:property-naming" />
-        <error line="216" column="15" source="standard:property-naming" />
-        <error line="220" column="15" source="standard:property-naming" />
-        <error line="222" column="15" source="standard:property-naming" />
-        <error line="224" column="15" source="standard:property-naming" />
-        <error line="226" column="15" source="standard:property-naming" />
-        <error line="228" column="15" source="standard:property-naming" />
+        <error line="215" column="15" source="standard:property-naming" />
+        <error line="217" column="15" source="standard:property-naming" />
+        <error line="221" column="15" source="standard:property-naming" />
+        <error line="223" column="15" source="standard:property-naming" />
+        <error line="225" column="15" source="standard:property-naming" />
+        <error line="227" column="15" source="standard:property-naming" />
+        <error line="229" column="15" source="standard:property-naming" />
     </file>
 </baseline>

@@ -147,6 +147,9 @@
     <string name="symptoms">Dalili</string>
     <string name="no_symptom_selected">Hakuna Dalili iliyochaguliwa</string>
     <string name="symptoms_selected">Dalili iliyochaguliuwa</string>
+    <string name="complications_selected">Matatizo yaliyochaguliwa</string>
+    <string name="conditions_selected">Hali zilizochaguliwa</string>
+    <string name="no_s">Hakuna %s</string>
     <string name="select_symptoms">Chagua Dalili</string>
     <string name="ok">Sawa</string>
     <string name="no_internet_error">Tafadhali angalia muunganisho wako wa mtandao.</string>

@@ -19,19 +19,31 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
     private var callback: ((result: ArrayList<HashMap<String, Any>>) -> Unit)? = null
+
+    // Previous selected result
     var resultMap: Any? = null
+
+    // Title of the dialog
     var title: String? = null
+
+    // Pre selected data
     var autoPopulate: List<Pair<String, Boolean>> = emptyList()
+
+    // Prepopulated input data
+    var inputData: List<SignsAndSymptomsEntity> = emptyList()
+
     constructor(
         callback: (result: ArrayList<HashMap<String, Any>>) -> Unit,
         resultMap: Any?,
         title: String?,
         autoPopulate: List<Pair<String, Boolean>> = emptyList(),
+        inputData: List<SignsAndSymptomsEntity> = emptyList(),
     ) : this() {
         this.callback = callback
         this.resultMap = resultMap
         this.title = title
         this.autoPopulate = autoPopulate
+        this.inputData = inputData
     }
 
     lateinit var binding: CheckboxDialogLayoutBinding
@@ -46,11 +58,12 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
             resultMap: Any?,
             title: String? = null,
             autoPopulate: List<Pair<String, Boolean>> = emptyList(),
+            inputData: List<SignsAndSymptomsEntity> = emptyList(),
             callback: (result: ArrayList<HashMap<String, Any>>) -> Unit,
         ): CheckBoxDialog {
             val args = Bundle()
             args.putString(KEY_TYPE, key)
-            val fragment = CheckBoxDialog(callback, resultMap, title, autoPopulate)
+            val fragment = CheckBoxDialog(callback, resultMap, title, autoPopulate, inputData)
             fragment.arguments = args
             return fragment
         }
@@ -78,22 +91,21 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
     ) {
         super.onViewCreated(view, savedInstanceState)
         initializeView()
-        getRespectiveList(requireArguments().getString(KEY_TYPE))
+        getRespectiveList(requireArguments().getString(KEY_TYPE), inputData)
         attachObserver()
     }
 
     private fun attachObserver() {
         viewModel.symptomTypeListResponse.observe(viewLifecycleOwner) { list ->
-            binding.labelHeader.text = title.takeIf { !it.isNullOrEmpty() } ?: getString(R.string.symptoms)
+            binding.labelHeader.text =
+                title.takeIf { !it.isNullOrEmpty() } ?: getString(R.string.symptoms)
 
             if (list.isEmpty()) {
                 binding.rvItems.adapter = null
                 return@observe
             }
 
-            val shouldAutoPopulate = autoPopulate.isNotEmpty()
-
-            if (shouldAutoPopulate) {
+            if (autoPopulate.isNotEmpty()) {
                 val autoPopulateMap = autoPopulate.toMap()
                 list.forEach { symptom ->
                     autoPopulateMap[symptom.value]?.let { isEnabled ->
@@ -120,7 +132,7 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
         list: List<SignsAndSymptomsEntity>,
         resultMap: ArrayList<*>,
     ): List<SignsAndSymptomsEntity> {
-        var value = emptyList<SignsAndSymptomsEntity>()
+        var value: List<SignsAndSymptomsEntity>
         if (resultMap.isNotEmpty()) {
             resultMap.forEach { resultSymptom ->
                 if (resultSymptom is Map<*, *>) {
@@ -144,8 +156,11 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
         return value
     }
 
-    private fun getRespectiveList(key: String?) {
-        key?.let { viewModel.getSymptomListByType(it) }
+    private fun getRespectiveList(
+        key: String?,
+        inputData: List<SignsAndSymptomsEntity>,
+    ) {
+        key?.let { viewModel.getSymptomListByType(it, inputData) }
     }
 
     private fun initializeView() {

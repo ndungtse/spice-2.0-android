@@ -159,6 +159,9 @@
     <string name="symptoms">লক্ষণ</string>
     <string name="no_symptom_selected">কোন লক্ষণ নির্বাচন করা হয়নি</string>
     <string name="symptoms_selected">লক্ষণ নির্বাচিত</string>
+    <string name="complications_selected">জটিলতা নির্বাচিত</string>
+    <string name="conditions_selected">অবস্থা নির্বাচিত</string>
+    <string name="no_s">কোন %s করা হয়নি</string>
     <string name="select_symptoms">লক্ষণ নির্বাচন করুন</string>
     <string name="ok">ঠিক আছে</string>
     <string name="no_internet_error">আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন।</string>
@@ -466,8 +469,8 @@
     <string name="message_no_network">দয়া করে আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন।</string>
     <string name="min_char_length_validation">কমপক্ষে %1$s অক্ষর প্রয়োজন</string>
     <string name="general_min_max_validation">মান %1$s থেকে %2$s এর মধ্যে হতে হবে</string>
-    <string name="general_min_validation">মান %1$s এর চেয়ে বড় হতে হবে</string>
-    <string name="general_max_validation">মান %1$s এর চেয়ে ছোট হতে হবে</string>
+    <string name="general_min_validation">মান %1$s এর সমান বা তার চেয়ে বড় হতে হবে</string>
+    <string name="general_max_validation">মান %1$s এর সমান বা তার চেয়ে ছোট হতে হবে</string>
     <string name="household">পরিবার</string>
     <string name="please_select_a_site">দয়া করে একটি বৈধ সাইট নির্বাচন করুন</string>
     <string name="nutrition_summary_without_signs" translatable="false">%1$s</string>
@@ -874,6 +877,7 @@
     <string name="please_specify_the_complication">দয়া করে জটিলতা নির্দিষ্ট করুন</string>
     <string name="please_specify_the_comorbidity">দয়া করে সহ-রোগ নির্দিষ্ট করুন</string>
     <string name="complications">জটিলতা</string>
+    <string name="conditions">অবস্থা</string>
     <string name="offline_data">অফলাইন ডেটা</string>
     <string name="language_preference">ভাষা পছন্দ</string>
     <string name="assessment_label">মূল্যায়ন</string>
@@ -1529,4 +1533,12 @@
     <string name="regimen_line" translatable="false">Regimen Line</string>
     <string name="men_having_sex_with_men_msm">পুরুষ যারা পুরুষদের সাথে যৌন সম্পর্ক করে (MSM)</string>
     <string name="ss_name">SS নাম</string>
+
+    <string name="lmp_last_menstrual_period">এলএমপি (শেষ মাসিকের তারিখ)</string>
+    <string name="edd_estimated_delivery_date">👶 ইডিডি (প্রসবের সম্ভাব্য তারিখ)</string>
+    <string name="gestational_week">📅 গর্ভকালীন সপ্তাহ</string>
+    <string name="pregnancy_too_early_access_title">⚠️ গর্ভাবস্থা মূল্যায়নের জন্য খুব প্রাথমিক পর্যায়</string>
+    <string name="pregnancy_too_early_access_desc_1">এলএমপি থেকে ৬ সপ্তাহ পরেই কেবল গর্ভাবস্থা মূল্যায়ন করা সম্ভব।</string>
+    <string name="pregnancy_too_early_access_desc_2">সম্পূর্ণ গর্ভাবস্থা প্রোফাইল মূল্যায়নের জন্য দয়া করে ৬ সপ্তাহ পরে আবার আসুন।</string>
+    <string name="the_following_risk_factors_identified">⚠️ নিম্নলিখিত ঝুঁকির কারণগুলি শনাক্ত করা হয়েছে:</string>
 </resources>

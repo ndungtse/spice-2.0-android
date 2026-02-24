@@ -18,8 +18,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 class CheckboxDialogAdapter(
     private val dialogList: List<SignsAndSymptomsEntity>,
     val translate: Boolean = false,
-) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
         private const val VIEW_TYPE_HEADER = 0
         private const val VIEW_TYPE_ITEM = 1
@@ -94,14 +93,17 @@ class CheckboxDialogAdapter(
         item: SignsAndSymptomsEntity,
         dialogList: List<SignsAndSymptomsEntity>,
     ) {
-        if (item.symptom.startsWith(DefinedParams.NoSymptoms, true)) {
+        if (item.isNone()
+        ) {
             updateNoSymptomSelection(item, dialogList)
         } else {
-            val model = dialogList.find { it.symptom.startsWith(DefinedParams.NoSymptoms, true) }
+            val model = dialogList.find {
+                it.isNone()
+            }
             model?.isSelected = false
             item.isSelected = !item.isSelected
         }
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, dialogList.size)
     }
 
     private fun updateNoSymptomSelection(

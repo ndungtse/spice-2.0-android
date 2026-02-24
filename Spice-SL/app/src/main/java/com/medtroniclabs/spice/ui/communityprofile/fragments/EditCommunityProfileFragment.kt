@@ -446,7 +446,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                 binding.etRegisteredDate.text.toString(),
                 DateUtils.DATE_ddMMyyyy,
             )?.let { regDate ->
-                convertDateToStringWithUTC(regDate, DateUtils.DATE_ddMMyyyy)
+                convertDateToStringWithUTC(regDate)
             }
 
         val payload = StringConverter.convertGivenMapToString(getCommunityProfilePayload(resultMap, serverData))

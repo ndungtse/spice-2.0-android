@@ -9,7 +9,6 @@ import com.medtroniclabs.spice.mappingkey.Screening.YESTERDAY
 import org.joda.time.PeriodType
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -38,12 +37,10 @@ object DateUtils {
     const val DATE_FORMAT_ddMMMyyyy = "dd MMM, yyyy"
     const val DATE_TIME_DISPLAY_FORMAT = "dd MMM, yyyy - hh:mm a"
     const val DATE_TIME_CALL_DISPLAY_FORMAT = "dd MMM, hh:mm a"
-    const val TIME_FORMAT_hhmm = "hh:mm"
     const val TIME_FORMAT_hhmma = "hh:mm a"
     const val CALENDAR_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX"
     const val GESTATIONALAGE_CALENDAR = "yyyy-MM-dd"
     const val DATE_FORMAT_ddMMyy_GRAPH = "dd-MM-yyyy"
-    const val DATE_TIME_yyyyMMddTHHmmssSSSXXX = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
     const val DATE_TIME_EEEMMMddHHmmsszyyyy = "EEE MMM dd HH:mm:ss z yyyy"
     const val DATE_TIME_YYYYMMDDTHHmmssSSSZ = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
@@ -68,7 +65,7 @@ object DateUtils {
             val days = age.get(Calendar.DAY_OF_MONTH)
 
             return Pair(days, Triple(years, months, weeks))
-        } catch (exception: Exception) {
+        } catch (_: Exception) {
             return Pair(null, Triple(null, null, null))
         }
     }
@@ -111,7 +108,7 @@ object DateUtils {
                     cal.get(Calendar.DATE),
                 )
             }
-        } catch (exception: Exception) {
+        } catch (_: Exception) {
             return Triple(null, null, null)
         }
         return Triple(null, null, null)
@@ -128,7 +125,7 @@ object DateUtils {
                 cal.time = date
                 return cal.timeInMillis
             }
-        } catch (exception: Exception) {
+        } catch (_: Exception) {
             return null
         }
         return null
@@ -140,8 +137,6 @@ object DateUtils {
     ): Date? = format.parse(dateString)
 
     fun getDatePatternDDMMYYYY() = SimpleDateFormat(DATE_FORMAT_ddMMyyyy, Locale.ENGLISH)
-
-    fun getDatePatternddMMyyyy() = SimpleDateFormat(DATE_ddMMyyyy, Locale.ENGLISH)
 
     fun getDateDDMMYYYY(): SimpleDateFormat = SimpleDateFormat(DATE_ddMMyyyy, Locale.ENGLISH)
 
@@ -217,15 +212,6 @@ object DateUtils {
         return chosenDate.timeInMillis
     }
 
-    fun getMinDateBasedOnDeliveryDate(currentDateTimeInMillis: Triple<Int, Int, Int>?): Long {
-        if (currentDateTimeInMillis == null) return 0L
-        val (year, month, day) = currentDateTimeInMillis
-        val calendar = Calendar.getInstance()
-        calendar.set(year, month - 1, day)
-        calendar.add(Calendar.MONTH, 0)
-        return calendar.timeInMillis
-    }
-
     fun convertDateToLong(
         date: String?,
         format: String? = DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -238,7 +224,7 @@ object DateUtils {
                 ).parse(dateStr)?.time
             }
             return testedDate ?: 0L
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return null
         }
     }
@@ -276,7 +262,7 @@ object DateUtils {
                     }
                 }
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return ""
         }
         return ""
@@ -295,7 +281,7 @@ object DateUtils {
                     inputText.substring(inputText.indexOf("-"))
                 }
             }"
-        } else if (!timeZoneInput.isNullOrBlank()) {
+        } else if (timeZoneInput.isNotBlank()) {
             timeZoneInput = "GMT$timeZoneInput"
         }
         return TimeZone.getTimeZone(timeZoneInput)
@@ -309,7 +295,7 @@ object DateUtils {
             val outputFormat = SimpleDateFormat(DATE_ddMMyyyy, Locale.ENGLISH)
             val date = inputFormat.parse(inputDate)
             getYearMonthAndDate(outputFormat.format(date))
-        } catch (exception: Exception) {
+        } catch (_: Exception) {
             Triple(null, null, null)
         }
 
@@ -324,7 +310,7 @@ object DateUtils {
             val date = inputFormat.parse(inputDateString)
             val outputFormat = SimpleDateFormat(outputDateFormat, Locale.ENGLISH)
             date?.let { outputFormat.format(it) } ?: " "
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             " "
         }
     }
@@ -340,27 +326,8 @@ object DateUtils {
             val months =
                 givenDateTime.toLocalDate().until(currentDateTime.toLocalDate()).toTotalMonths()
             months.toInt()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
-        }
-
-    fun dateToMonthsAndWeeks(
-        dateString: String,
-        givenFormat: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-    ): Pair<Int, Int>? =
-        try {
-            val formatter = DateTimeFormatter.ofPattern(givenFormat)
-            val givenDateTime = LocalDateTime.parse(dateString, formatter)
-            val currentDateTime = LocalDateTime.now()
-
-            val totalMonths = ChronoUnit.MONTHS.between(givenDateTime, currentDateTime).toInt()
-
-            val adjustedGivenDate = givenDateTime.plusMonths(totalMonths.toLong())
-            val weeks = ChronoUnit.WEEKS.between(adjustedGivenDate, currentDateTime).toInt()
-
-            Pair(totalMonths, weeks)
-        } catch (e: Exception) {
-            Pair(0, 0)
         }
 
     fun calculateAge(
@@ -375,30 +342,28 @@ object DateUtils {
             val diff = today.time - birthDate.time
             val age = diff / yearConvert
             age.toInt()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             0
         }
 
-    fun calculateAgeAndWeek(
+    /**
+     * Calculate age from given to date instead of today date
+     */
+    fun calculateAgeToDate(
         birthDateString: String,
+        toDate: String,
         givenFormat: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-    ): Pair<Int, Int> =
+    ): Int =
         try {
-            val yearInMillis = 1000L * 60 * 60 * 24 * 365.25
-            val weekInMillis = 1000L * 60 * 60 * 24 * 7
-
+            val yearConvert = 1000L * 60 * 60 * 24 * 365.25
             val dateFormat = SimpleDateFormat(givenFormat, Locale.getDefault())
             val birthDate = dateFormat.parse(birthDateString)
-            val today = Calendar.getInstance().time
-
-            val diff = today.time - (birthDate?.time ?: 0)
-
-            val ageYears = (diff / yearInMillis).toInt()
-            val remainingMillisAfterYears = diff % yearInMillis
-            val ageWeeks = (remainingMillisAfterYears / weekInMillis).toInt()
-            Pair(ageYears, ageWeeks)
-        } catch (e: Exception) {
-            Pair(0, 0)
+            val toDate = dateFormat.parse(toDate)
+            val diff = toDate.time - birthDate.time
+            val age = diff / yearConvert
+            age.toInt()
+        } catch (_: Exception) {
+            0
         }
 
     fun getDateAfterDays(days: Int): String {
@@ -489,10 +454,7 @@ object DateUtils {
         return dateFormat.format(date)
     }
 
-    fun convertDateToStringWithUTC(
-        date: Date,
-        format: String,
-    ): String {
+    fun convertDateToStringWithUTC(date: Date): String {
         val instant = date.toInstant()
         var offsetDateTime = OffsetDateTime.ofInstant(instant, ZoneOffset.systemDefault())
 
@@ -518,8 +480,6 @@ object DateUtils {
         val calendar = Calendar.getInstance()
         return getDateString(calendar.time.time, format)
     }
-
-    fun getCurrentDateTimeInMillis(): Long = Instant.now().toEpochMilli()
 
     fun calculateGestationalAge(lmpDate: LocalDate): Long {
         val currentDate = LocalDate.now()
@@ -548,6 +508,20 @@ object DateUtils {
             else -> "$gestationalAgeInWeeks ${context.getString(R.string.weeks).lowercase()}"
         }
 
+    /**
+     * Returns age in 2 weeks 2 days when time is 2,2
+     *
+     * @param time : Combination of number of weeks and number of days
+     * @param context : Android context
+     */
+    fun formatGestationalAge(
+        time: Pair<Long, Long>,
+        context: Context,
+    ): String =
+        "${time.first} ${context.getString(R.string.weeks).lowercase()}" +
+            " " +
+            "${time.second} ${context.getString(R.string.days).lowercase()} "
+
     fun parseDate(
         dateStr: String?,
         givenFormat: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -556,7 +530,7 @@ object DateUtils {
             dateStr?.let {
                 LocalDate.parse(it, DateTimeFormatter.ofPattern(givenFormat))
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
 
@@ -727,7 +701,7 @@ object DateUtils {
 
             // Format the ZonedDateTime to the desired string format
             return zonedDateTime.format(formatter)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return null
         }
     }
@@ -824,10 +798,7 @@ object DateUtils {
         chosenDate.set(Calendar.YEAR, year)
         chosenDate.set(Calendar.MONTH, month - 1)
         chosenDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-        if (!chosenDate.before(today) && !chosenDate.after(today)) {
-            return true
-        }
-        return false
+        return !chosenDate.before(today) && !chosenDate.after(today)
     }
 
     private fun getTodayDate(): Calendar {
@@ -863,7 +834,7 @@ object DateUtils {
                     }
                 }
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return ""
         }
         return ""
@@ -875,7 +846,7 @@ object DateUtils {
             val outputFormat = SimpleDateFormat(DATE_ddMMyyyy, Locale.ENGLISH)
             val date = inputFormat.parse(inputDate)
             getYearMonthAndDate(outputFormat.format(date))
-        } catch (exception: Exception) {
+        } catch (_: Exception) {
             Triple(null, null, null)
         }
 
@@ -922,7 +893,7 @@ object DateUtils {
         try {
             val diffInMillis = abs(System.currentTimeMillis() - due)
             TimeUnit.MILLISECONDS.toDays(diffInMillis).toInt()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
 
@@ -947,7 +918,7 @@ object DateUtils {
             val diffInWeeks = diffInMillis / (1000 * 60 * 60 * 24 * 7)
 
             return abs(diffInWeeks.toInt())
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return null
         }
     }
@@ -987,7 +958,7 @@ object DateUtils {
             }
             val dateFormat = SimpleDateFormat(DATE_ddMMyyyy, Locale.getDefault())
             dateFormat.format(calendar.time)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null // Return null in case of an error
         }
 
@@ -1010,23 +981,9 @@ object DateUtils {
         return try {
             dateFormat.parse(value)
             true
-        } catch (e: ParseException) {
+        } catch (_: ParseException) {
             false
         }
-    }
-
-    fun calculateEddFromLmpAndGestationalAge(
-        lmp: String,
-        gestationalWeeks: Int,
-    ): Pair<String, String> {
-        val formatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)
-        val lmpDate = LocalDate.parse(lmp, formatter)
-        val remainingWeeks = 40 - gestationalWeeks
-        val eddDate = lmpDate.plusWeeks(remainingWeeks.toLong())
-        val formattedDate1 = eddDate.format(formatter)
-        val outputFormatter = DateTimeFormatter.ofPattern(DATE_TIME_YYYYMMDDTHHmmssSSSZ)
-        val formattedDate2 = eddDate.atStartOfDay().format(outputFormatter) // Assuming 00:00:00.000Z for time
-        return Pair(formattedDate1, formattedDate2)
     }
 
     fun convertToRequiredFormat(dateStr: String): String {
@@ -1060,7 +1017,7 @@ object DateUtils {
             val parsedDate = OffsetDateTime.parse(dateString)
             val formatter = DateTimeFormatter.ofPattern(DATE_ddMMyyyy, Locale.getDefault())
             parsedDate.format(formatter)
-        } catch (e: DateTimeParseException) {
+        } catch (_: DateTimeParseException) {
             "--"
         }
     }

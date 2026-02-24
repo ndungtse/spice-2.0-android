@@ -12,6 +12,7 @@ object MenuConstants {
     const val WorkFlowName = "workflowName"
     const val DialogResult = "DialogResult"
     const val OTHER_SYMPTOMS = "other_symptoms"
+    const val PREGNANT_WOMEN_PROFILE = "pwProfile"
     const val GENERAL_ID = "ABOVE 5Y(GENERAL)"
     const val MOTHER_AND_NEONATE_ID = "MOTHER & NEONATE"
     const val UNDER_AGE_FIVE_TO_TWO_MONTHS_ID = "UNDER 5Y AGE < 2M"
