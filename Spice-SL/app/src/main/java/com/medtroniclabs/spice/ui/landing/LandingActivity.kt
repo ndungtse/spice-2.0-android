@@ -52,7 +52,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.common.GeneralErrorDialog
-import com.medtroniclabs.spice.common.RoleConstant
+import com.medtroniclabs.spice.common.RoleConstant.CHWs
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.TransferStatusEnum
 import com.medtroniclabs.spice.databinding.ActivityLandingBinding
@@ -602,8 +602,9 @@ class LandingActivity :
     private fun startSyncWorker() {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
         if (userRole != null) {
-            // add chp
-            if (userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER) || (CommonUtils.isNonCommunity() && CommonUtils.isChp())) {
+            // add
+
+            if (CHWs.contains(userRole) || (CommonUtils.isNonCommunity() && CommonUtils.isChp())) {
                 startBackgroundOfflineSync()
                 checkBGSyncStatus()
             }

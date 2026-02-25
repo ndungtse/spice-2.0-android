@@ -17,12 +17,17 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
+import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
+import com.medtroniclabs.spice.common.DateUtils.calculateAge
+import com.medtroniclabs.spice.common.DefinedParams.BUILD_FLAVOR_AFRICA
+import com.medtroniclabs.spice.common.DefinedParams.BUILD_FLAVOR_SL
 import com.medtroniclabs.spice.common.RoleConstant.CHA
+import com.medtroniclabs.spice.common.RoleConstant.CHWs
 import com.medtroniclabs.spice.common.RoleConstant.COMMUNITY_HEALTH_ASSISTANT
 import com.medtroniclabs.spice.common.RoleConstant.COMMUNITY_HEALTH_PROMOTER
-import com.medtroniclabs.spice.common.RoleConstant.COMMUNITY_HEALTH_WORKER
+import com.medtroniclabs.spice.common.RoleConstant.HEALTH_SCREENER
 import com.medtroniclabs.spice.common.RoleConstant.LAB_ASSISTANT
 import com.medtroniclabs.spice.common.RoleConstant.MCHA
 import com.medtroniclabs.spice.common.RoleConstant.MID_WIFE
@@ -97,20 +102,29 @@ object CommonUtils {
     ): String = assets.open(fileName).bufferedReader().use { it.readText() }
 
     fun getIntegerOrNull(answer: Any?): Int? =
-        answer as? Int
-            ?: if (answer is String) {
-                val answerNumber = answer.toIntOrNull()
+        if (answer is Int) {
+            answer
+        } else if (answer is String) {
+            val answerNumber = answer.toIntOrNull()
+            if (answerNumber is Int) {
                 answerNumber
             } else {
                 null
             }
+        } else {
+            null
+        }
 
     fun getLongOrNull(answer: Any?): Long? {
         when (answer) {
             is Long -> return answer
             is String -> {
                 val answerNumber = answer.toLongOrNull()
-                return answerNumber
+                return if (answerNumber is Long) {
+                    answerNumber
+                } else {
+                    null
+                }
             }
 
             is Double -> {
@@ -123,12 +137,18 @@ object CommonUtils {
         }
     }
 
+    fun getBooleanFromString(answer: Any): Boolean? = (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
+
     fun getDoubleOrNull(answer: Any?): Double? {
         when (answer) {
             is Double -> return answer
             is String -> {
                 val answerNumber = answer.toDoubleOrNull()
-                return answerNumber
+                return if (answerNumber is Double) {
+                    answerNumber
+                } else {
+                    null
+                }
             }
 
             is Int -> {
@@ -145,7 +165,12 @@ object CommonUtils {
         }
     }
 
-    fun getStringOrEmptyString(answer: Any?): String = answer as? String ?: ""
+    fun getStringOrEmptyString(answer: Any?): String =
+        if (answer is String) {
+            answer
+        } else {
+            ""
+        }
 
     fun getIsBooleanFromString(answer: Any?): Boolean = (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
 
@@ -207,10 +232,32 @@ object CommonUtils {
             .nullIfEmpty()
             ?.joinToString(separator = ", ") { it.capitalizeFirstChar() } ?: "-"
 
+    fun getYearMonthAndWeeks(dateString: String): Triple<String, String, String> {
+        val parts = dateString.split("/")
+        return Triple(parts[0], parts[1], parts[2])
+    }
+
+    fun getDurationInYMD(
+        input: String,
+        context: Context,
+    ): String {
+        val parts = input.split('/')
+
+        return when {
+            parts[0] == DefinedParams.ZERO && parts[1] == DefinedParams.ZERO -> context.getString(
+                R.string.weeks_w,
+                parts[2],
+            )
+
+            parts[0] == DefinedParams.ZERO -> context.getString(R.string.months_m, parts[1])
+            else -> context.getString(R.string.years_y, parts[0])
+        }
+    }
+
     fun isChw(): Boolean {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
         if (userRole != null) {
-            return userRole.contains(COMMUNITY_HEALTH_WORKER)
+            return CHWs.contains(userRole)
         }
         return false
     }
@@ -219,7 +266,7 @@ object CommonUtils {
 
     fun isChwChp(): Boolean {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
-        return userRole?.contains(COMMUNITY_HEALTH_WORKER) == true ||
+        return CHWs.contains(userRole ?: "") ||
             userRole?.contains(
                 RoleConstant.COMMUNITY_HEALTH_PROVIDER,
             ) == true
@@ -236,7 +283,7 @@ object CommonUtils {
     fun isRolePresent(): Boolean {
         val roleList =
             listOf(SECHN, MCHA, PROVIDER, CHA, MID_WIFE, LAB_ASSISTANT, SRN).map { it.lowercase() }
-        val currentRole = SecuredPreference.getRole().lowercase()
+        val currentRole = SecuredPreference.getRole()?.lowercase()
         return roleList.contains(currentRole)
     }
 
@@ -249,6 +296,16 @@ object CommonUtils {
         map[DefinedParams.ID] = value
         map[DefinedParams.NAME] = name
         culture?.let { map[DefinedParams.CULTURE_VALUE] = it }
+        return map
+    }
+
+    fun getOptions(
+        value: String,
+        name: String,
+    ): Map<String, Any> {
+        val map = HashMap<String, Any>()
+        map[DefinedParams.Value] = value
+        map[DefinedParams.NAME] = name
         return map
     }
 
@@ -301,6 +358,45 @@ object CommonUtils {
             }
         }
         return ""
+    }
+
+    fun getAgeFromDob(
+        dateOfBirth: String?,
+        month: String,
+    ): String {
+        if (dateOfBirth != null) {
+            val age = calculateAge(dateOfBirth)
+            return if (age != null && age > 5) {
+                "$age"
+            } else {
+                val startDate = DateUtils.formatStringToDate(
+                    dateOfBirth,
+                    SimpleDateFormat(
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        Locale.ENGLISH,
+                    ),
+                )
+                startDate?.let { date ->
+                    "${DateUtils.calculateAgeInMonths(date)} $month"
+                } ?: kotlin.run {
+                    return ""
+                }
+            }
+        } else {
+            return ""
+        }
+    }
+
+    private fun calculateAge(dateOfBirth: String): Int? {
+        val ageTriplet = DateUtils.getYearMonthAndDate(
+            dateOfBirth,
+            SimpleDateFormat(
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                Locale.ENGLISH,
+            ),
+        )
+        val year = ageTriplet.first
+        return year?.let { calculateAge(it) }
     }
 
     fun getGenderText(
@@ -365,14 +461,14 @@ object CommonUtils {
             } else {
                 days.toString()
             }
-        } catch (_: NumberFormatException) {
+        } catch (e: NumberFormatException) {
             enteredDays
         }
 
     fun convertStringToIntString(value: String): String {
         return try {
             return value.toDouble().toInt().toString()
-        } catch (_: NumberFormatException) {
+        } catch (e: NumberFormatException) {
             value
         }
     }
@@ -479,7 +575,7 @@ object CommonUtils {
         type: Boolean,
     ): String? {
         val maxKeyLength = prescriptions.flatMap { it.keys }.maxOfOrNull { it.length } ?: 0
-        var formattedFirst: String
+        var formattedFirst = ""
         return prescriptions
             .takeIf { it.isNotEmpty() }
             ?.mapIndexed { index, prescription ->
@@ -489,7 +585,7 @@ object CommonUtils {
                     } else if (!type) {
                         key.plus(": ").padEnd(maxKeyLength)
                     } else {
-                        key.plus(":").padEnd((maxKeyLength + 6))
+                        key.plus(":").padEnd((maxKeyLength + 6).toInt())
                     }
                     val formattedPair = if (pair.second == null) {
                         "${index + 1}. $formattedFirst ${pair.first}"
@@ -520,22 +616,23 @@ object CommonUtils {
     fun getMaxDateLimit(
         menstrualPeriod: Boolean,
         minDays: Int?,
-    ): Long? =
-        if (menstrualPeriod) {
+    ): Long? {
+        return if (menstrualPeriod) {
             DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 287)
         } else {
             if (minDays != null) {
                 if (minDays > 0) {
                     val calendar = Calendar.getInstance()
                     calendar.add(Calendar.DAY_OF_MONTH, -minDays)
-                    calendar.timeInMillis
+                    return calendar.timeInMillis
                 } else {
-                    null
+                    return null
                 }
             } else {
-                minDays
+                return minDays
             }
         }
+    }
 
     fun getMaxDateLimit(maxDays: Int?): Long? {
         if (maxDays != null) {
@@ -554,16 +651,17 @@ object CommonUtils {
     fun getMaxDateLimit(
         menstrualPeriod: Boolean,
         minDays: Long?,
-    ): Long? =
-        if (menstrualPeriod) {
+    ): Long? {
+        return if (menstrualPeriod) {
             DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 287)
         } else {
             if (minDays != null && minDays > 0) {
-                minDays
+                return minDays
             } else {
-                null
+                return null
             }
         }
+    }
 
     fun convertAnyToString(
         value: Any?,
@@ -614,6 +712,17 @@ object CommonUtils {
         return if (combinedText.isNotEmpty()) combinedText.toString() else nullHandleString
     }
 
+    fun composeLabelName(
+        name: String,
+        status: String?,
+        context: Context,
+    ): String =
+        if (!(status.isNullOrEmpty())) {
+            context.getString(R.string.patient_status_append, name, status.trim())
+        } else {
+            name
+        }
+
     fun extractNumber(input: String): Int = input.split(" ").getOrNull(0)?.toIntOrNull() ?: 0
 
     fun birthWeight(
@@ -635,10 +744,10 @@ object CommonUtils {
         val yearMonthWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth)
         val months = (yearMonthWeek.years * 12) + yearMonthWeek.months
 
-        return if (months >= 6) {
-            VISIBLE
+        if (months >= 6) {
+            return VISIBLE
         } else {
-            GONE
+            return GONE
         }
     }
 
@@ -767,7 +876,7 @@ object CommonUtils {
     }
 
     fun mentalHealthKey(type: String): String {
-        var key = MentalHealthDetails
+        var key = Screening.MentalHealthDetails
         if (type.equals(AssessmentDefinedParams.PHQ9, true)) {
             key = AssessmentDefinedParams.PHQ9_Mental_Health
         } else if (type.equals(AssessmentDefinedParams.GAD7, true)) {
@@ -822,16 +931,16 @@ object CommonUtils {
         when (type) {
             PHQ4 -> {
                 map[Screening.PHQ4_Score] = phqScore
-                map[RiskLevel] = getPhQ4RiskLevel(phqScore)
-                map[MentalHealthDetails] = phqMap
+                map[Screening.RiskLevel] = getPhQ4RiskLevel(phqScore)
+                map[Screening.MentalHealthDetails] = phqMap
             }
 
             AssessmentDefinedParams.PHQ9 -> {
                 map[AssessmentDefinedParams.PHQ9_Score] = phqScore
                 map[AssessmentDefinedParams.PHQ9_Risk_Level] = getPhQ4RiskLevel(phqScore)
                 map[AssessmentDefinedParams.PHQ9_Mental_Health] = phqMap
-                if (map.containsKey(MentalHealthDetails)) {
-                    map.remove(MentalHealthDetails)
+                if (map.containsKey(Screening.MentalHealthDetails)) {
+                    map.remove(Screening.MentalHealthDetails)
                 }
             }
 
@@ -839,8 +948,8 @@ object CommonUtils {
                 map[AssessmentDefinedParams.GAD7_Score] = phqScore
                 map[AssessmentDefinedParams.GAD7_Risk_Level] = getPhQ4RiskLevel(phqScore)
                 map[AssessmentDefinedParams.GAD7_Mental_Health] = phqMap
-                if (map.containsKey(MentalHealthDetails)) {
-                    map.remove(MentalHealthDetails)
+                if (map.containsKey(Screening.MentalHealthDetails)) {
+                    map.remove(Screening.MentalHealthDetails)
                 }
             }
         }
@@ -871,7 +980,7 @@ object CommonUtils {
         if (serverData?.any { it?.id == substanceAbuse || it?.family == substanceAbuse } != true) {
             return
         }
-        serverData.let { dataList ->
+        serverData?.let { dataList ->
             val substanceAbuseList = dataList.filter { it != null && it.family == substanceAbuse }
             substanceAbuseList.forEach { formData ->
                 formData?.let { data ->
@@ -1083,11 +1192,12 @@ object CommonUtils {
             val lastMealTimeInMillis =
                 DateUtils.convertDateTimeToMillisUsingLocal(map[lastMealTime] as String)
             val calendar = Calendar.getInstance()
-            val different: Long = calendar.timeInMillis - lastMealTimeInMillis
+            var different: Long = calendar.timeInMillis - lastMealTimeInMillis
             val secondsInMilli: Long = 1000
             val minutesInMilli = secondsInMilli * 60
             val hoursInMilli = minutesInMilli * 60
             val elapsedHours: Long = different / hoursInMilli
+            different %= hoursInMilli
             if (elapsedHours >= 8) {
                 return true
             }
@@ -1167,7 +1277,7 @@ object CommonUtils {
         if (glucoseUnit.isNullOrBlank()) {
             ""
         } else if (withoutBracket) {
-            glucoseUnit
+            "$glucoseUnit"
         } else {
             "($glucoseUnit)"
         }
@@ -1233,13 +1343,13 @@ object CommonUtils {
                     (any as? Map<*, *>?)?.let { record ->
                         val data = HashMap<String, String>()
                         (record[Screening.Systolic] as? Double?)?.let { sys ->
-                            data[Screening.Systolic] = parseDouble(sys)
+                            data[Screening.Systolic] = CommonUtils.parseDouble(sys)
                         }
                         (record[Screening.Diastolic] as? Double?)?.let { dia ->
-                            data[Screening.Diastolic] = parseDouble(dia)
+                            data[Screening.Diastolic] = CommonUtils.parseDouble(dia)
                         }
                         (record[Screening.Pulse] as? Double?)?.let { pul ->
-                            data[Screening.Pulse] = parseDouble(pul)
+                            data[Screening.Pulse] = CommonUtils.parseDouble(pul)
                         }
                         if (data.isNotEmpty()) {
                             newList.add(data)
@@ -1357,7 +1467,7 @@ object CommonUtils {
 
         val gender: String? = if (map.containsKey(DefinedParams.Gender)) {
             val value = map[DefinedParams.Gender] as String
-            if (value.equals(Female, ignoreCase = true)) {
+            if (value.equals(Screening.Female, ignoreCase = true)) {
                 value
             } else {
                 Screening.Male
@@ -1590,7 +1700,7 @@ object CommonUtils {
                     }
                 }
             }
-            if (diagnosisMap.isNotEmpty()) {
+            if (diagnosisMap.size > 0) {
                 map[AssessmentDefinedParams.Provisional_Diagnosis] = diagnosisMap
             }
         }
@@ -1755,7 +1865,7 @@ object CommonUtils {
         return try {
             val errorResponse = Gson().fromJson(errorBody.string(), ErrorResponse::class.java)
             return errorResponse.message
-        } catch (_: Exception) {
+        } catch (e: Exception) {
             null
         }
     }
@@ -1812,7 +1922,7 @@ object CommonUtils {
         if (userRole != null) {
             return isFromMyPatients &&
                 (
-                    userRole.contains(COMMUNITY_HEALTH_WORKER) ||
+                    CHWs.contains(userRole) ||
                         userRole.contains(PROVIDER) ||
                         userRole.contains(
                             PHYSICIAN_PRESCRIBER,
@@ -1984,6 +2094,14 @@ object CommonUtils {
         }
     }
 
+    fun isHealthScreener(): Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            return userRole.contains(HEALTH_SCREENER)
+        }
+        return false
+    }
+
     fun isChp(): Boolean {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
         if (userRole != null) {
@@ -2083,6 +2201,10 @@ object CommonUtils {
         return daysDifference >= noOfDayFever
     }
 
+    fun isAfrica(): Boolean = BuildConfig.FLAVOR == BUILD_FLAVOR_AFRICA
+
+    fun isSL(): Boolean = BuildConfig.FLAVOR == BUILD_FLAVOR_SL
+
     fun formatDecimalValue(value: String?): String? {
         if (value.isNullOrEmpty()) return null
 
@@ -2093,7 +2215,7 @@ object CommonUtils {
             } else {
                 number.toString()
             }
-        } catch (_: NumberFormatException) {
+        } catch (e: NumberFormatException) {
             null
         }
     }
@@ -2110,6 +2232,8 @@ object CommonUtils {
         this.map { (key, value) ->
             if (value.isNullOrBlank()) key else "$key : $value"
         }
+
+    fun Map<String, String>.toFormattedListWithHyphen(): List<String> = this.map { (key, value) -> "$key - $value" }
 
     fun convertListToIndexedString(dispensedList: ArrayList<String>): String =
         dispensedList
@@ -2167,9 +2291,12 @@ object CommonUtils {
                 height = systemBars.top
             }
 
-            // 2. Nav bar always stays the same height
+            // 2. Nav Bar logic:
+            // If keyboard is visible, hide fake nav bar (height = 0)
+            // because the keyboard handles its own padding.
             fakeNavBar?.updateLayoutParams {
-                height = systemBars.bottom
+                // Setting height as 0 to view takes full height for some reason, hence keeping 1
+                height = if (isImeVisible) 0 else systemBars.bottom
             }
 
             // 3. Landscape Safety: Apply horizontal padding to the root container

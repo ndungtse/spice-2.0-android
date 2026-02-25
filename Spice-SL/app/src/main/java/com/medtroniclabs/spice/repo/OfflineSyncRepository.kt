@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.repo
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -1002,6 +1003,9 @@ class OfflineSyncRepository @Inject constructor(
         request[OfflineConstant.HOUSEHOLD_MEMBER_LINK] = householdMemberLink
         request[OfflineConstant.COMMUNITY_PROFILES] = communityProfilesRequests
         request[OfflineConstant.RX_BUDDIES] = rxBuddies
+
+        var data = Gson().toJson(request)
+        Log.d(" post data here", data)
 
         try {
             val apiResponse = apiHelper.postOfflineSync(request)

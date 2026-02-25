@@ -9,7 +9,7 @@ import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.common.AppConstants
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.RoleConstant
+import com.medtroniclabs.spice.common.RoleConstant.CHWs
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityResourceLoadingScreenBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -88,7 +88,7 @@ class ResourceLoadingScreen : BaseActivity() {
                 ResourceState.SUCCESS -> {
                     val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
                     if (userRole != null) {
-                        if (userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER) && CommonUtils.isCommunity()) {
+                        if (CHWs.contains(userRole) && CommonUtils.isCommunity()) {
                             viewModel.downloadInitialDetails()
                         } else if (CommonUtils.isNonCommunity() && CommonUtils.isChp()) {
                             viewModel.downloadTheFollowUpData()

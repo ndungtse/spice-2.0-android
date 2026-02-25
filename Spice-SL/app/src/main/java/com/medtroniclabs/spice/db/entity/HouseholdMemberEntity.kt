@@ -12,7 +12,7 @@ data class HouseholdMemberEntity(
     @ColumnInfo("name")
     var name: String = "",
     @ColumnInfo("phone_number")
-    var phoneNumber: String = "",
+    var phoneNumber: String? = "",
     @ColumnInfo("date_of_birth")
     var dateOfBirth: String = "",
     @ColumnInfo("gender")

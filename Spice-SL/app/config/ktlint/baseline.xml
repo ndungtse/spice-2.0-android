@@ -287,6 +287,9 @@
         <error line="6" column="15" source="standard:property-naming" />
         <error line="7" column="15" source="standard:property-naming" />
     </file>
+    <file name="src/main/java/com/medtroniclabs/spice/common/RoleConstant.kt">
+        <error line="6" column="9" source="standard:property-naming" />
+    </file>
     <file name="src/main/java/com/medtroniclabs/spice/data/DispenseUpdateRequest.kt">
         <error line="3" column="160" source="standard:max-line-length" />
     </file>
@@ -834,9 +837,9 @@
         <error line="155" column="13" source="standard:no-consecutive-comments" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/repo/OfflineSyncRepository.kt">
-        <error line="258" column="13" source="standard:no-consecutive-comments" />
-        <error line="408" column="161" source="standard:max-line-length" />
-        <error line="843" column="9" source="standard:no-consecutive-comments" />
+        <error line="259" column="13" source="standard:no-consecutive-comments" />
+        <error line="409" column="161" source="standard:max-line-length" />
+        <error line="844" column="9" source="standard:no-consecutive-comments" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/signature/view/SignatureView.kt">
         <error line="58" column="17" source="standard:property-naming" />

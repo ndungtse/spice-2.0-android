@@ -120,7 +120,7 @@ interface MetaDataDAO {
     @Query("SELECT * FROM HealthFacilityEntity Order by isDefault DESC")
     suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>
 
-    @Query("SELECT id FROM VillageEntity")
+    @Query("SELECT id FROM SubVillageEntity")
     suspend fun getVillageIds(): List<Long>
 
     @Query("SELECT * FROM HealthFacilityEntity Where isUserSite =:isUserSite")
@@ -276,9 +276,9 @@ interface MetaDataDAO {
         COUNT(CASE WHEN substr(date_of_birth, 1, 10) > date('now', '-5 years')
                AND substr(date_of_birth, 1, 10) <= date('now', '-1 year') AND isActive = 1 THEN 1 END) AS belowFiveYearCount,
         COUNT(CASE WHEN gender = 'female'
-               AND substr(date_of_birth, 1, 10) <= date('now','-10 years') 
+               AND substr(date_of_birth, 1, 10) <= date('now','-10 years')
                AND substr(date_of_birth, 1, 10) > date('now','-49 years') AND isActive = 1 THEN 1 END) AS childBearingAgeOfWomen
-        FROM HOUSEHOLDMEMBER 
+        FROM HOUSEHOLDMEMBER
         WHERE villageId = :villageId""",
     )
     suspend fun getCommunityPopulationStatistics(villageId: Long): CommunityPopulationStatistics

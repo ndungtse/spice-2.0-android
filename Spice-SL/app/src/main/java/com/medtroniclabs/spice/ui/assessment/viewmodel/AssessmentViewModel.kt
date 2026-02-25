@@ -310,7 +310,7 @@ class AssessmentViewModel @Inject constructor(
                 if (memberId != 0L) {
                     val hhm = memberRegistrationRepository.getMemberDetails(memberId)
                     rxBuddy[rxBuddyName] = hhm.name
-                    rxBuddy[rxBuddyPhoneNumber] = hhm.phoneNumber
+                    rxBuddy[rxBuddyPhoneNumber] = hhm.phoneNumber ?: ""
                 } else {
                     name =
                         if (rxBuddy.containsKey(rxBuddyName)) rxBuddy[rxBuddyName] as String else null
