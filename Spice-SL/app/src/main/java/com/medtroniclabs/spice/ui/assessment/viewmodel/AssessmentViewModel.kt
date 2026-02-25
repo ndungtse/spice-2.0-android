@@ -125,7 +125,6 @@ import com.medtroniclabs.spice.ui.boarding.repo.MetaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.time.LocalDate
 import java.util.Locale
 import javax.inject.Inject
@@ -239,6 +238,12 @@ class AssessmentViewModel @Inject constructor(
     var isDeathOfNewborn = false
     var nameOfDangerSignClicked: String? = null
 
+    /**
+     * Flag related to whether given lmp date
+     * during pregnancy registration is too early to access
+     */
+    var isPregnancyTooEarlyToAccess: Boolean = true
+
     fun getPNCChildInfoByParentId(parentId: Long) {
         viewModelScope.launch(dispatcherIO) {
             assessmentRepository.getChildPatientId(parentId)?.let { childLocalId ->
@@ -349,7 +354,6 @@ class AssessmentViewModel @Inject constructor(
                 referralStatus = referralResult?.first
                 val assessmentDetail =
                     getAssessmentDetails(assessmentMap as HashMap<Any, Any>)
-                Timber.tag("bug_n_bug").d("$assessmentDetail")
                 assessmentStringLiveData.postValue(assessmentDetail.first)
                 referralReason = referralResult?.second
                 val otherDetails = calculateOtherDetails(assessmentMap, referralStatus, menuId)
@@ -357,18 +361,57 @@ class AssessmentViewModel @Inject constructor(
                     memberRegistrationRepository.updateContactTracingStatus(details.id, OfflineConstant.CONTACT_TRACING_DONE)
                 }
 
+                val assessmentResult = assessmentRepository.saveAssessment(
+                    assessmentDetail.second,
+                    details,
+                    menuId,
+                    referralResult,
+                    otherDetails,
+                    followUpId = followUpId,
+                )
+
+                if (
+                    menuId == PREGNANT_WOMEN_PROFILE &&
+                    !isPregnancyTooEarlyToAccess &&
+                    assessmentResult.isSuccess()
+                ) {
+                    savePregnancyDetails(details, assessmentMap)
+                }
+
                 assessmentSaveLiveData.postValue(
-                    assessmentRepository.saveAssessment(
-                        assessmentDetail.second,
-                        details,
-                        menuId,
-                        referralResult,
-                        otherDetails,
-                        followUpId = followUpId,
-                    ),
+                    assessmentResult,
                 )
             }
         }
+    }
+
+    /**
+     * Inserts pregnancy details from pregnant women registration
+     */
+    suspend fun savePregnancyDetails(
+        details: AssessmentMemberDetails,
+        assessmentMap: HashMap<String, Any>,
+    ) {
+        val pregnancyProfile = assessmentMap[PREGNANT_WOMEN_PROFILE] as? Map<String, Any?>
+        val pregnancy = pregnancyProfile?.get(PregnantWomen.ID_PREGNANCY_DETAILS_AND_HISTORY) as? Map<String, Any?>
+        val lmp = pregnancy?.get(PregnantWomen.ID_LMP) as? String
+        var edd = ""
+        if (!lmp.isNullOrBlank()) {
+            edd = DateUtils.getEstDeliveryDateFromLmp(lmp)
+        }
+        val pregnancyDetail = PregnancyDetail(
+            householdMemberLocalId = details.id,
+            patientId = details.patientId,
+            householdMemberId = details.memberId,
+            lastMenstrualPeriod = lmp,
+            estimatedDeliveryDate = edd,
+            pregnancyTest = pregnancy?.get(PregnantWomen.ID_PREGNANCY_TEST) as? String,
+            gravida = (pregnancy?.get(PregnantWomen.ID_GRAVIDA) as? Double ?: 0).toInt(),
+            parity = (pregnancy?.get(PregnantWomen.ID_PARITY) as? Double ?: 0).toInt(),
+            numberOfLivingChildren = (pregnancy?.get(PregnantWomen.ID_LIVING_CHILDREN) as? Double ?: 0).toInt(),
+            ageOfLastChild = pregnancy?.get(PregnantWomen.ID_AGE_OF_LAST_CHILD) as? String,
+        )
+        memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
     }
 
     fun saveCallResult(

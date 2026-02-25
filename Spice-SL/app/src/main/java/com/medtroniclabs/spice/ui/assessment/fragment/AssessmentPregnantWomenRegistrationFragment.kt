@@ -32,7 +32,6 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
-import timber.log.Timber
 import java.util.Calendar
 import java.util.Locale
 
@@ -120,6 +119,7 @@ class AssessmentPregnantWomenRegistrationFragment :
                         val daysDifference =
                             DateUtils.getDaysDifference(lastMenstrualDate.timeInMillis) ?: 0
                         if (daysDifference < PregnantWomen.LMP_THRESHOLD_DAYS) {
+                            viewModel.isPregnancyTooEarlyToAccess = true
                             // Hide health risk & reset
                             formGenerator
                                 .getViewByTag(
@@ -173,6 +173,7 @@ class AssessmentPregnantWomenRegistrationFragment :
                                     PregnantWomen.ID_TOO_EARLY_DESC2 + AssessmentDefinedParams.rootSuffix,
                                 )?.visible()
                         } else {
+                            viewModel.isPregnancyTooEarlyToAccess = false
                             // Hide too early messages
                             listOf(
                                 PregnantWomen.ID_TOO_EARLY_TITLE + formGenerator.rootSuffix,
@@ -218,15 +219,15 @@ class AssessmentPregnantWomenRegistrationFragment :
                         fixObstetricComplications()
                         val gravida = resultHashMap[PregnantWomen.ID_GRAVIDA] as? Double
                             ?: return@FormGenerator
-                        // Parity can be less than or equal to gravida
-                        formGenerator.getFormLayout(PregnantWomen.ID_PARITY)?.maxValue = gravida
+                        // Parity should be less than gravida (as gravida includes parity + current birth)
+                        formGenerator.getFormLayout(PregnantWomen.ID_PARITY)?.maxValue = gravida - 1
                     }
 
                     PregnantWomen.ID_PARITY -> {
                         fixObstetricComplications()
                         val parity = resultHashMap[PregnantWomen.ID_PARITY] as? Double
                             ?: return@FormGenerator
-                        // Living children should be less than or equal to parity
+                        // Living children can be less than or equal to parity
                         formGenerator
                             .getFormLayout(PregnantWomen.ID_LIVING_CHILDREN)
                             ?.maxValue = parity
@@ -377,7 +378,6 @@ class AssessmentPregnantWomenRegistrationFragment :
         serverData: List<FormLayout?>?,
     ) {
         resultMap?.let {
-            Timber.tag("bug_n_bug").d("Result Map : $resultMap")
             val result = serverData?.let {
                 FormResultComposer().groupValues(
                     serverData = it,
@@ -385,7 +385,6 @@ class AssessmentPregnantWomenRegistrationFragment :
                     MenuConstants.PREGNANT_WOMEN_PROFILE,
                 )
             }
-            Timber.tag("bug_n_bug").d("Composed Result : ${result?.second}")
             result?.second?.let {
                 viewModel.saveAssessment(it, null, viewModel.menuId)
             }
