@@ -152,6 +152,12 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     private fun initView() {
         binding.tvUserNameLabel.markMandatory()
         binding.tvPasswordLabel.markMandatory()
+        val oldUserName =
+            SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
+        if (!oldUserName.isNullOrEmpty() && CommonUtils.isCommunity()) {
+            binding.userName.setText(oldUserName)
+            binding.userName.isEnabled = false
+        }
     }
 
     override fun onClick(view: View) {

@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.extractNumber
 import com.medtroniclabs.spice.common.CommonUtils.isMandateOrNot
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.calculateAgeInMonths
 import com.medtroniclabs.spice.common.DateUtils.formatGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EntityMapper
@@ -225,6 +226,11 @@ class AssessmentRMNCHFragment :
             binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled(),
             callback = { map, id ->
+                viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let {
+                    calculateAgeInMonths(it)?.let { pair ->
+                        // TODO: @Venkat Calculate Age of Child Here & Hide/Show Fields Based On That
+                    }
+                }
                 when (id) {
                     deathOfBaby -> {
                         val isDeathOfBaby = (map[deathOfBaby] as? Boolean) ?: false
