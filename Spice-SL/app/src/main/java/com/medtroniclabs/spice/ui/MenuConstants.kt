@@ -9,8 +9,14 @@ object MenuConstants {
     const val CBS_MENU_ID = "cbs"
     const val TB_MENU_ID = "TB"
     const val NCD_MENU_ID = "ncd"
-    const val WorkFlowName = "workflowName"
-    const val DialogResult = "DialogResult"
+
+    const val EYE_CARE_MENU_ID = "eye_care"
+
+    const val CATARACT_MENU_ID = "cataract"
+
+    const val BD_NCD_MENU_ID = "BD_NCD"
+    const val WORKFLOW_NAME = "workflowName"
+    const val DIALOG_RESULT = "DialogResult"
     const val OTHER_SYMPTOMS = "other_symptoms"
     const val PREGNANT_WOMEN_PROFILE = "pwProfile"
     const val GENERAL_ID = "ABOVE 5Y(GENERAL)"
@@ -18,7 +24,7 @@ object MenuConstants {
     const val UNDER_AGE_FIVE_TO_TWO_MONTHS_ID = "UNDER 5Y AGE < 2M"
     const val UNDER_AGE_ABOVE_FIVE_YEAR_ID = "UNDER 5Y (2M TO 5Y)"
     const val EPI_ID = "EPI"
-    const val PerformanceMonitoring_ID = "PERFORMANCE MONITORING"
+    const val PERFORMANCE_MONITORING_ID = "PERFORMANCE MONITORING"
 
     const val SCREENING = "SCREENING"
     const val REGISTRATION = "REGISTRATION"
@@ -28,7 +34,7 @@ object MenuConstants {
     const val MENTAL_HEALTH = "mentalHealth"
     const val DISPENSE = "DISPENSE"
     const val FOLLOW_UP = "FOLLOW UP"
-    const val Other_Reason = "Other Reason"
+    const val OTHER_REASON = "Other Reason"
     const val LIFESTYLE = "LIFESTYLE"
     const val PSYCHOLOGICAL = "PSYCHOLOGICAL"
 

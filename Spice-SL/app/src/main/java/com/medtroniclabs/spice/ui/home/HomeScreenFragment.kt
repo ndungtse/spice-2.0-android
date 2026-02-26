@@ -137,7 +137,7 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
                 startActivity(Intent(requireContext(), CommunityProfileActivity::class.java))
             }
 
-            MenuConstants.PerformanceMonitoring_ID -> {
+            MenuConstants.PERFORMANCE_MONITORING_ID -> {
                 if (connectivityManager.isNetworkAvailable()) {
                     val intent = Intent(requireContext(), PerformanceMonitoringActivity::class.java)
                     startActivity(intent)

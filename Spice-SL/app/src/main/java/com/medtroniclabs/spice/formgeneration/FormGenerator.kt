@@ -103,6 +103,7 @@ import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_DAT
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_EDITTEXT
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_EDITTEXT_AREA
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_MULTISELECT_DATEPICKER
+import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_MULTI_SELECT_SPINNER
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_RADIOGROUP
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_SPINNER
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_TEXTLABEL
@@ -125,6 +126,7 @@ import com.medtroniclabs.spice.formgeneration.model.ConditionalModel
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.MentalHealthOption
 import com.medtroniclabs.spice.formgeneration.ui.MultiSelectDatePickerDialog
+import com.medtroniclabs.spice.formgeneration.ui.MultiSelectSpinnerAdapter
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustomLayout
@@ -190,6 +192,7 @@ class FormGenerator(
                 VIEW_TYPE_FORM_RADIOGROUP -> createRadioGroup(formLayout)
                 VIEW_TYPE_SINGLE_SELECTION -> createSingleSelectionView(formLayout)
                 VIEW_TYPE_FORM_SPINNER -> createCustomSpinner(formLayout)
+                VIEW_TYPE_FORM_MULTI_SELECT_SPINNER -> createMultiSelectSpinner(formLayout)
                 VIEW_TYPE_DIALOG_CHECKBOX -> createCheckboxDialogView(formLayout)
                 VIEW_INFORMATION_LABEL -> createInformationLabel(formLayout)
                 VIEW_TYPE_INSTRUCTION -> createInstructionView(formLayout)
@@ -780,13 +783,24 @@ class FormGenerator(
             val list = Screening.getEmptyBPReading(totalCount ?: 2)
             resultHashMap[id] = list
             binding.instructionsLayout.safeClickListener {
-                instructions?.let {
-                    listener.onInstructionClicked(
-                        id = id,
-                        title = titleCulture ?: title,
-                        informationList = it,
-                        description = getString(R.string.bp_measure),
-                    )
+                if (translate) {
+                    instructionsCulture?.let {
+                        listener.onInstructionClicked(
+                            id = id,
+                            title = titleCulture ?: title,
+                            informationList = it,
+                            description = getString(R.string.bp_measure),
+                        )
+                    }
+                } else {
+                    instructions?.let {
+                        listener.onInstructionClicked(
+                            id = id,
+                            title = title,
+                            informationList = it,
+                            description = getString(R.string.bp_measure),
+                        )
+                    }
                 }
             }
             if (list.size > 2) {
@@ -3937,6 +3951,7 @@ class FormGenerator(
                 VIEW_TYPE_FORM_RADIOGROUP -> createRadioGroup(formLayout)
                 VIEW_TYPE_SINGLE_SELECTION -> createSingleSelectionView(formLayout)
                 VIEW_TYPE_FORM_SPINNER -> createCustomSpinner(formLayout)
+                VIEW_TYPE_FORM_MULTI_SELECT_SPINNER -> createMultiSelectSpinner(formLayout)
                 VIEW_TYPE_DIALOG_CHECKBOX -> createCheckboxDialogView(formLayout)
                 VIEW_INFORMATION_LABEL -> createInformationLabel(formLayout)
                 VIEW_TYPE_INSTRUCTION -> createInstructionView(formLayout)
@@ -3951,6 +3966,166 @@ class FormGenerator(
         }
     }
 
+    private fun createMultiSelectSpinner(serverViewModel: FormLayout) {
+        val binding = CustomSpinnerBinding.inflate(LayoutInflater.from(context))
+        serverViewModel.apply {
+            binding.root.tag = id + rootSuffix
+            binding.etUserInput.tag = id
+            binding.tvTitle.tag = id + titleSuffix
+            binding.tvErrorMessage.tag = id + errorSuffix
+            binding.tvTitle.text = CommonUtils.getTitle(serverViewModel, translate)
+            val dropDownList = ArrayList<Map<String, Any>>()
+            if (isMandatory) {
+                binding.tvTitle.markMandatory()
+            }
+            optionsList?.let { list ->
+                addDropDownList(list, dropDownList)
+            }
+            val adapter = MultiSelectSpinnerAdapter(
+                context,
+                dropDownList,
+                resultHashMap[id] as? ArrayList<Map<String, Any>> ?: ArrayList(),
+            )
+            binding.etUserInput.adapter = adapter
+            adapter.setOnItemSelectedListener(object :
+                MultiSelectSpinnerAdapter.OnItemSelectedListener {
+                override fun onItemSelected(
+                    selectedItems: List<Map<String, Any>>,
+                    actionItem: Map<String, Any>?,
+                    isDeselect: Boolean,
+                ) {
+                    if (selectedItems.isNotEmpty() && actionItem != null) {
+                        resultHashMap[id] = selectedItems.map { it[DefinedParams.ID] }
+                        resultHashMap[id + DefinedParams.SPINNER_VALUE] = getSpinners(selectedItems)
+
+                        val exceptActionItem: ArrayList<*>? =
+                            (resultHashMap[id] as? ArrayList<*>)?.filter { it != actionItem[DefinedParams.ID] } as? ArrayList<*>
+
+                        val actualValue =
+                            actionItem[DefinedParams.ID] ?: DefinedParams.DEFAULT_ID
+
+                        val matchingCondition = serverViewModel.condition?.find {
+                            it.eqList?.contains(actualValue) == true || it.eq == actualValue
+                        }
+
+                        matchingCondition?.let { matchingCond ->
+                            val hasMatch: Boolean =
+                                matchingCond.eqList?.any {
+                                    it in (exceptActionItem ?: emptyList<Any>())
+                                } == true
+
+                            if (!hasMatch) {
+                                if (isDeselect) matchingCond.visibility = GONE
+
+                                handleSelectedItem(
+                                    actionItem,
+                                    id,
+                                    dependentID,
+                                    serverViewModel,
+                                    dependentIDList,
+                                )
+
+                                if (isDeselect) matchingCond.visibility = VISIBLE
+                            }
+                        }
+                    } else {
+                        handleSelectedItem(
+                            hashMapOf<String, Any>().apply {
+                                put(DefinedParams.ID, DefinedParams.DEFAULT_ID)
+                                put(DefinedParams.NAME, DefinedParams.DefaultIDLabel)
+                            },
+                            id,
+                            dependentID,
+                            serverViewModel,
+                            dependentIDList,
+                        )
+
+                        resultHashMap.remove(id)
+                        resultHashMap.remove(id + DefinedParams.SPINNER_VALUE)
+                    }
+                }
+            })
+
+            getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
+                parentLayout.addView(binding.root)
+            }
+            setViewVisibility(visibility, binding.root)
+            setViewEnableDisable(isEnabled, binding.root)
+        }
+    }
+
+    private fun handleSelectedItem(
+        selectedItem: Map<String, Any>?,
+        id: String,
+        dependentID: String?,
+        serverViewModel: FormLayout,
+        dependentIDList: ArrayList<String>?,
+        restrictDefaultsFor: ArrayList<String>? = null,
+    ) {
+        selectedItem?.let {
+            val selectedId = it[DefinedParams.ID]
+            val selectedName = it[DefinedParams.NAME]
+            val optionalData = it[DefinedParams.OPTIONAL_DATA]
+            if ((selectedId is String && selectedId == "-1")) {
+                if (resultHashMap.containsKey(id)) {
+                    handleId(id)
+                    dependentID?.let { deptId ->
+                        resetDependantSpinnerView(deptId)
+                    } ?: kotlin.run {
+                        dependentIDList?.forEach { deptId ->
+                            resetDependantSpinnerView(deptId)
+                        }
+                    }
+                } else {
+                    if (editScreen == true) {
+                        resultHashMap[id] = ""
+                    }
+                }
+            } else {
+                if (serverViewModel.viewType != VIEW_TYPE_FORM_MULTI_SELECT_SPINNER) {
+                    resultHashMap[id] = it[DefinedParams.ID] as Any
+                    resultHashMap[id + DefinedParams.SPINNER_VALUE] = it[DefinedParams.NAME] as Any
+                }
+                // API Spinner Value
+                val oplData = it[DefinedParams.OPTIONAL_DATA]
+                if (oplData is Pair<*, *>) {
+                    val key = oplData.first
+                    val value = oplData.second
+                    if (key is String && value is String) {
+                        resultHashMap[key] = value
+                    }
+                }
+                dependentID?.let { deptId ->
+                    resetDependantSpinnerView(deptId)
+                    listener.loadLocalCache(
+                        deptId,
+                        deptId,
+                        it[DefinedParams.OPTIONAL_DATA]?.toString()?.toLongOrNull()
+                            ?: it[DefinedParams.ID] as Long,
+                    )
+                } ?: kotlin.run {
+                    dependentIDList?.forEach { deptId ->
+                        resetDependantSpinnerView(deptId)
+                        listener.loadLocalCache(
+                            deptId,
+                            deptId,
+                            it[DefinedParams.OPTIONAL_DATA]?.toString()?.toLongOrNull()
+                                ?: it[DefinedParams.ID] as Long,
+                        )
+                    }
+                }
+            }
+            selectedIdVisibility(selectedId, serverViewModel, selectedName)
+        }
+    }
+
+    private fun getSpinners(selectedItems: List<Map<String, Any>>): Any =
+        if (SecuredPreference.getIsTranslationEnabled()) {
+            selectedItems.map { it[DefinedParams.cultureValue] ?: it[DefinedParams.NAME] }
+        } else {
+            selectedItems.map { it[DefinedParams.NAME] }
+        }
+    
     private fun addEditableCards(serverData: List<FormLayout>) {
         serverData.forEach { data ->
             if (data.isEditable) {
