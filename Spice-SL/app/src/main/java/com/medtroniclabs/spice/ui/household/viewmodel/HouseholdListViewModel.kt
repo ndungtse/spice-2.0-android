@@ -7,7 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
-import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.db.dao.HouseholdSortOrder
+import com.medtroniclabs.spice.db.response.HouseHoldEntityWithLastActivity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.household.HouseHoldFilterUiData
 import com.medtroniclabs.spice.model.household.HouseHoldSearchFilter
@@ -27,16 +28,13 @@ class HouseholdListViewModel @Inject constructor(
     var filterUiData = MutableLiveData<Resource<HouseHoldFilterUiData>>()
 
     private val filterLiveData = MutableLiveData<HouseHoldSearchFilter>()
-    val filteredHouseholdsLiveData: LiveData<List<HouseHoldEntityWithMemberCount>> =
+    val filteredHouseholdsLiveData: LiveData<List<HouseHoldEntityWithLastActivity>> =
         filterLiveData.switchMap { filter ->
-            val status =
-                if (filter.filterByStatus.isEmpty()) "" else filter.filterByStatus.first().name
-
             houseHoldRepository.getFilteredHouseholdsLiveData(
                 filter.searchInput,
-                filter.filterByVillage.map { it.id!! },
                 filter.filterBySs.map { it.id!! },
-                status,
+                filter.filterBySubVillages.map { it.id!! },
+                filter.sortOrder,
             )
         }
 
@@ -46,22 +44,22 @@ class HouseholdListViewModel @Inject constructor(
 
     fun setFilterLiveData(
         search: String? = null,
-        villageFilter: List<ChipViewItemModel>? = null,
         ssFilter: List<ChipViewItemModel>? = null,
-        statusFilter: List<ChipViewItemModel>? = null,
+        subVillagesFilter: List<ChipViewItemModel>? = null,
+        sortOrder: HouseholdSortOrder? = null,
     ) {
         val filter = filterLiveData.value ?: HouseHoldSearchFilter()
         search?.let {
             filter.searchInput = it
         }
-        villageFilter?.let {
-            filter.filterByVillage = it
-        }
         ssFilter?.let {
             filter.filterBySs = it
         }
-        statusFilter?.let {
-            filter.filterByStatus = it
+        subVillagesFilter?.let {
+            filter.filterBySubVillages = it
+        }
+        sortOrder?.let {
+            filter.sortOrder = it
         }
         filterLiveData.value = filter
     }

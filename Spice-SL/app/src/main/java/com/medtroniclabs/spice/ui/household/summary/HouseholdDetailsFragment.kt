@@ -7,9 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.data.model.HouseholdCardDetail
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.FragmentHouseholdDetailsBinding
 import com.medtroniclabs.spice.databinding.SummaryListItemBinding
+import com.medtroniclabs.spice.db.response.HouseHoldEntityWithLastActivity
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
 
 class HouseholdDetailsFragment : Fragment() {
@@ -38,16 +39,19 @@ class HouseholdDetailsFragment : Fragment() {
     }
 
     private fun attachObserver() {
-        householdSummaryViewModel.householdCardDetailLiveData.observe(viewLifecycleOwner) { houseHoldDetail ->
-            renderHouseholdDetailsSummary(houseHoldDetail)
+        householdSummaryViewModel.householdCardDetailLiveData.observe(viewLifecycleOwner) { houseHoldDetailList ->
+            val householdDetail = houseHoldDetailList.firstOrNull() ?: return@observe
+            renderHouseholdDetailsSummary(householdDetail)
         }
     }
 
-    private fun renderHouseholdDetailsSummary(houseHoldDetail: HouseholdCardDetail) {
+    private fun renderHouseholdDetailsSummary(houseHoldDetail: HouseHoldEntityWithLastActivity) {
         binding.llDetails.removeAllViews()
 
-        addHouseholdNoView(houseHoldDetail.householdNo?.toString() ?: getString(R.string.separator_double_hyphen))
-        addVillageNameView(houseHoldDetail.villageName)
+        addHouseholdNoView(houseHoldDetail.householdNo ?: getString(R.string.separator_double_hyphen))
+        addVillageNameView(houseHoldDetail.subVillageName)
+        addSummaryView(getString(R.string.ss_name), houseHoldDetail.shasthyaShebikaName)
+        addSummaryView(getString(R.string.last_visit_date), DateUtils.formatDateToDisplayFormat(houseHoldDetail.lastActivityAt) ?: "")
     }
 
     private fun addHouseholdNoView(householdNo: String) {
@@ -59,8 +63,18 @@ class HouseholdDetailsFragment : Fragment() {
 
     private fun addVillageNameView(villageName: String) {
         val view = SummaryListItemBinding.inflate(LayoutInflater.from(context))
-        view.tvLabel.text = getString(R.string.household_location)
+        view.tvLabel.text = getString(R.string.village)
         view.tvValue.text = villageName
+        binding.llDetails.addView(view.root)
+    }
+
+    private fun addSummaryView(
+        name: String,
+        value: String,
+    ) {
+        val view = SummaryListItemBinding.inflate(LayoutInflater.from(context))
+        view.tvLabel.text = name
+        view.tvValue.text = value
         binding.llDetails.addView(view.root)
     }
 }

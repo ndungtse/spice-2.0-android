@@ -40,6 +40,94 @@
             app:layout_constraintBottom_toBottomOf="@id/tvMemberName"/>
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRecentService"
+            style="@style/TextStyle_Regular_16"
+            android:layout_width="@dimen/_0dp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="@string/recent_service"
+            android:textColor="@color/table_title"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/tvPatientIDSeparator"
+            app:layout_constraintHorizontal_weight="0.3"
+            app:layout_constraintStart_toStartOf="@id/tvMemberName"
+            app:layout_constraintTop_toBottomOf="@id/tvMemberName"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRecentServiceSeparator"
+            style="@style/TextStyle_Regular_16"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/separator_colon"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/tvRecentServiceValue"
+            app:layout_constraintHorizontal_weight="0.05"
+            app:layout_constraintStart_toEndOf="@id/tvRecentService"
+            app:layout_constraintTop_toTopOf="@id/tvRecentService"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRecentServiceValue"
+            style="@style/TextStyle_Medium"
+            android:layout_width="@dimen/_0dp"
+            android:gravity="start"
+            android:textColor="@color/grey_black"
+            android:textSize="@dimen/_16ssp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/tvRecentServiceSeparator"
+            app:layout_constraintEnd_toEndOf="@id/tvMemberName"
+            app:layout_constraintHorizontal_weight="0.6"
+            app:layout_constraintStart_toEndOf="@id/tvRecentServiceSeparator"
+            app:layout_constraintTop_toTopOf="@id/tvRecentServiceSeparator"
+            tools:text="PW Profile"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRecentServiceDate"
+            style="@style/TextStyle_Regular_16"
+            android:layout_width="@dimen/_0dp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="@string/recent_service_date"
+            android:textColor="@color/table_title"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/tvPatientIDSeparator"
+            app:layout_constraintHorizontal_weight="0.3"
+            app:layout_constraintStart_toStartOf="@id/tvMemberName"
+            app:layout_constraintTop_toBottomOf="@id/tvRecentService"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRecentServiceDateSeparator"
+            style="@style/TextStyle_Regular_16"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/separator_colon"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/tvRecentServiceDateValue"
+            app:layout_constraintHorizontal_weight="0.05"
+            app:layout_constraintStart_toEndOf="@id/tvRecentServiceDate"
+            app:layout_constraintTop_toTopOf="@id/tvRecentServiceDate"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRecentServiceDateValue"
+            style="@style/TextStyle_Medium"
+            android:layout_width="@dimen/_0dp"
+            android:gravity="start"
+            android:textColor="@color/grey_black"
+            android:textSize="@dimen/_16ssp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/tvRecentServiceDateSeparator"
+            app:layout_constraintEnd_toEndOf="@id/tvMemberName"
+            app:layout_constraintHorizontal_weight="0.6"
+            app:layout_constraintStart_toEndOf="@id/tvRecentServiceDateSeparator"
+            app:layout_constraintTop_toTopOf="@id/tvRecentServiceDateSeparator"
+            tools:text="25/09/2025"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvDiagnosis"
             style="@style/TextStyle_Regular_16"
             android:layout_width="@dimen/_0dp"
@@ -49,7 +137,7 @@
             app:layout_constraintEnd_toStartOf="@id/tvPatientIDSeparator"
             app:layout_constraintHorizontal_weight="0.3"
             app:layout_constraintStart_toStartOf="@id/tvMemberName"
-            app:layout_constraintTop_toBottomOf="@id/tvMemberName" />
+            app:layout_constraintTop_toBottomOf="@id/tvRecentServiceDate" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvDiagnosisSeparator"
@@ -107,6 +195,7 @@
             android:textSize="@dimen/_16ssp"
             android:textColor="@color/grey_black"
             android:gravity="start"
+            tools:text="--"
             android:layout_width="@dimen/_0dp"
             app:layout_constraintEnd_toEndOf="@id/tvMemberName"
             app:layout_constraintHorizontal_weight="0.6"

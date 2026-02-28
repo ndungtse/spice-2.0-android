@@ -2,6 +2,86 @@ package com.medtroniclabs.spice.formgeneration.model
 
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 
+/**
+ * Data class containing form rendering details for individual fields
+ *
+ * @param viewType Decides which type of view to be drawn like, CardView, EditText etc.
+ * Refer [com.medtroniclabs.spice.formgeneration.config.ViewType] for more info.
+ * @param id Unique id for the field, which is getting mapped to store data
+ * and also other conditional handling
+ * @param title Title for the particular field
+ * @param family On which card family the field to be rendered
+ * @param visibility Default visibility of the field
+ * @param prefixText *Unused right now*
+ * @param isMandatory Whether adding some input is mandatory for the field or not
+ * @param displayAsterisk Used in view type **TextLabel** to display * at the end of the title
+ * @param minLength Validation for minimum length input for view type **EditText**
+ * @param maxLength Max length for input field for view types **NoOfDaysView**, **EditText**, **BP**, **EditTextArea**
+ * @param blockedCharacterSet *Unused right now*
+ * @param inputType Input type for view type **EditText**. Refer [android.text.InputType] for more info.
+ * If nothing is passed, it takes the default whatever is there for [android.widget.EditText]
+ * @param orientation Orientation for view type **RadioGroup**. For horizontal 0, for vertical 1. If nothing provided default orientation is horizontal.
+ * @param errorMessage Error message for a particular field if validation failed except **CardView**, **Instruction**, **InformationLabel**, **TextLabel**.
+ * @param cultureErrorMessage Error message for a particular field if validation failed with second language.
+ * @param disableFutureDate Flag whether to allow future dates or not for view type **DatePicker**, **Age**.
+ * @param minDate Min date for view type **Age**.
+ * @param maxDate Max date for view type **DatePicker**, **Age**. If disableFutureDate is provided, then this field is of no use.
+ * @param optionsList Options for view types **SingleSelectionView**, **RadioGroup**, **Spinner**, **DialogCheckbox**.
+ * @param dayOptionsList Day options for view type **TimeView**.
+ * @param timeOptionsList Time options for view type **TimeView**.
+ * @param isEnabled Flag whether the field is enabled or not
+ * @param defaultValue Default value for a field for view types **EditText**, **EditTextArea**, **Spinner**, **InformationLabel**, **RadioGroup**.
+ * @param condition Based on current field value, it will enable or disable other fields which are passed in the conditions
+ * @param action *Unused right now*
+ * @param hint Hint for the particular field
+ * @param isNeedAction Used for view type **EditText** & id **identityValue** to generate national id
+ * @param actionTitle *Unused right now*
+ * @param instructions Used to display instructions for view type **Instruction**
+ * @param instructionsCulture Used to display instructions for view type **Instruction** in second language
+ * @param isSummary Flag to decide whether a particular field needs to be displayed in summary screens
+ * @param maxLines Maximum number of lines for **EditText** view type.
+ * @param minValue Minimum value validation for **EditText** view type, systolic and diastolic validation for **BP** view type.
+ * @param minValueForHour Minimum hour validation for **TimeView** view type.
+ * @param minValueForMinute Minimum minute validation for **TimeView** view type.
+ * @param maxValue Maximum value validation for **EditText** view type, systolic and diastolic validation for **BP** view type.
+ * @param maxValueForHour Maximum hour validation for **TimeView** view type.
+ * @param maxValueForMinute Maximum minute validation for **TimeView** view type.
+ * @param pulseMinValue Minimum value validation for pulse validation for **BP** view type.
+ * @param pulseMaxValue Maximum value validation for pulse validation for **BP** view type.
+ * @param totalCount Total number of BP readings to take view type **BP**.
+ * @param contentLength Max length for input fields for **EditText** view type. If contentLength is given it precedes maxLength.
+ * @param localDataCache Key for fetching options from local DB for view types **Spinner**, **MentalHealthView**, **RadioGroup**.
+ * @param dependentID ID of field which is dependent on current field in case of view type is **Spinner**. E.g, Sub Villages is dependent on Swasthya Sebika.
+ * @param unitMeasurement Used to display title with unit measurement like gm, cm etc. for  view types **EditText**, **Age**, **EditTextArea**, **InformationLabel**.
+ * For view type **InformationLabel**, it is used to display the unit measurement in the key with title. If view type is **EditText**, it is getting stored in resultmap with key **id+Unit**
+ * @param isEditable Used in case of NCD flows mostly. If the field is editable, then the field gets rendered in NCD edit flow.
+ * @param isCustomWorkflow TODO
+ * @param customWorkflowId *Unused right now*
+ * @param startValue *Unused right now*
+ * @param endValue *Unused right now*
+ * @param interval *Unused right now*
+ * @param isAboveUpperLimit *Unused right now*
+ * @param optionType Used to decide option type for view type **EditText**. Options can be from [com.medtroniclabs.spice.formgeneration.config.EditTextOptionType]
+ * @param mandatoryCount Mandatory number of BP readings to take for view type **BP**.
+ * @param titleCulture Title for the particular field in second language
+ * @param hintCulture Hint for the particular field in second language
+ * @param disableSpinner Whether to disable spinner for view type **Spinner**.
+ * @param startsWith Ideally used for phone number fields to check, whether the given phone number starting with the given list or not.
+ * @param isEnrollment *Unused right now*
+ * @param isReferred *Unused right now*
+ * @param onlyAlphabets Used for validating the field whether the value is only alphabet or not for view type **EditText**.
+ * @param applyDecimalFilter Used for applying decimal filter for view type **EditText**, **EditTextArea**.
+ * @param applyTwoDigitPrecision Used for applying decimal filter max up-to 2 digits for view type **EditText**, **EditTextArea**.
+ * @param backgroundColor Background color for view type **InformationLabel**
+ * @param information TODO
+ * @param titleSummary Used for showing title in summary screen
+ * @param noOfDays TODO
+ * @param informationVisibility TODO
+ * @param isBooleanAnswer TODO
+ * @param isInfo Can be visible, invisible, gone to display info [infoTitle] / [infoTitle] for view types **EditText**, **NoOfDaysView**, **SingleSelectionView**, **Spinner**. If nothing provided default is gone.
+ * @param dosageListItems TODO
+ * @param maxDecimalPlaces Maximum number of decimal filter for view type **EditText**, **EditTextArea**. If [applyDecimalFilter] or [applyTwoDigitPrecision] are given then that takes precedes.
+ */
 data class FormLayout(
     override val viewType: String,
     override val id: String,
@@ -95,7 +175,28 @@ data class FormLayout(
     var orderId: Int? = null,
     var customizedWorkflowId: Double? = null,
     var infoTitle: String? = null,
-) : BaseViewParams
+    var infoTitleCulture: String? = null,
+) : BaseViewParams {
+    /**
+     * Returns info title
+     *
+     * - If translate is enabled && [infoTitleCulture] is not null then returns [infoTitleCulture]
+     * - If translate is enabled && [infoTitleCulture] is null and [infoTitle] is not null then returns [infoTitle]
+     * - If translate is not enabled and [infoTitle] is not null then returns [infoTitle]
+     * - Otherwise [defaultValue]
+     */
+    fun getInfoTitle(
+        translate: Boolean,
+        defaultValue: String?,
+    ): String? {
+        val title = if (translate) {
+            infoTitleCulture ?: infoTitle
+        } else {
+            infoTitle
+        }
+        return title ?: defaultValue
+    }
+}
 
 data class RangeModel(
     val unitType: String,

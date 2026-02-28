@@ -120,21 +120,102 @@
     },
     {
       "family": "bioData",
+      "id": "guardian",
+      "isEnabled": true,
+      "isMandatory": true,
+      "orderId": 6,
+      "title": "Guardian Name",
+      "titleCulture": "অভিভাবকের নাম",
+      "viewType": "Spinner",
+      "visibility": "gone",
+      "localDataCache": "guardian"
+    },
+    {
+      "errorMessage": "Please select a valid option",
+      "cultureErrorMessage": "অনুগ্রহ করে একটি সঠিক অপশন নির্বাচন করুন",
+      "family": "bioData",
+      "fieldName": "Marital Status",
+      "id": "maritalStatus",
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "isSummary": true,
+      "orderId": 7,
+      "optionsList": [
+          {
+              "name": "Married",
+              "cultureValue": "বিবাহিত",
+              "id": "married"
+          },
+          {
+              "name": "Single",
+              "cultureValue": "একক",
+              "id": "single"
+          },
+          {
+              "id": "unmarried",
+              "name": "Unmarried",
+              "cultureValue": "অবিবাহিত"
+          }
+      ],
+      "title": "Marital Status",
+      "titleCulture": "বৈবাহিক অবস্থা",
+      "viewType": "SingleSelectionView",
+      "visibility": "visible",
+      "isInfo": "visible",
+      "infoTitle": "Select single if (Separated/Divorced/Partner deceased)",
+      "infoTitleCulture": "একক (বিচ্ছিন্ন/বিবাহবিচ্ছেদ/সঙ্গী মৃত) হলে 'একক' নির্বাচন করুন"
+    },
+    {
+      "errorMessage": "Please select a valid option",
+      "cultureErrorMessage": "অনুগ্রহ করে একটি সঠিক অপশন নির্বাচন করুন",
+      "family": "bioData",
+      "fieldName": "Disability",
+      "id": "disability",
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "isSummary": true,
+      "orderId": 8,
+      "optionsList": [
+          {
+              "name": "Present",
+              "cultureValue": "হ্যাঁ",
+              "id": "present"
+          },
+          {
+              "name": "Absent",
+              "cultureValue": "না",
+              "id": "absent"
+          }
+      ],
+      "title": "Disability",
+      "titleCulture": "বিকলাঙ্গতা",
+      "viewType": "SingleSelectionView",
+      "visibility": "visible",
+      "isInfo": "visible",
+      "infoTitle": "Who has great difficulty or cannot see, hear, walk, climb, do things independently",
+      "infoTitleCulture": "যার খুব অসুবিধা হয় অথবা সে স্বাধীনভাবে দেখতে, শুনতে, হাঁটতে, আরোহণ করতে, কিছু করতে পারে না"
+    },
+    {
+      "family": "bioData",
       "fieldName": "Mobile Number",
       "hint": "Enter Mobile Number",
       "hintCulture": "মোবাইল নম্বর লিখুন",
       "id": "phone_number",
-      "inputType": 96,
+      "inputType": 3,
       "isEnabled": true,
       "maxLength": 11,
       "minLength": 1,
       "isMandatory": false,
       "isNeededDefault": true,
-      "orderId": 6,
+      "orderId": 9,
       "title": "Mobile Number",
       "titleCulture": "মোবাইল নম্বর",
       "viewType": "EditText",
-      "visibility": "visible"
+      "visibility": "visible",
+      "optionType": "phoneNumberWithoutCountryCode",
+      "startsWith": ["01"]
     },
     {
       "family": "bioData",
@@ -143,7 +224,7 @@
       "isEnabled": true,
       "isMandatory": false,
       "isNeededDefault": true,
-      "orderId": 7,
+      "orderId": 10,
       "title": "Is Household Head",
       "titleCulture": "পরিবারের প্রধান কি না",
       "viewType": "CheckBox",

@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
-import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
+import com.medtroniclabs.spice.db.response.HouseHoldEntityWithLastActivity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
@@ -31,7 +31,7 @@ class HouseHoldSummaryViewModel @Inject constructor(
     var hasDeceasedReason: Boolean = false
 
     private val houseHoldNoLiveData = MutableLiveData<Long>()
-    val householdCardDetailLiveData: LiveData<HouseholdCardDetail> =
+    val householdCardDetailLiveData: LiveData<List<HouseHoldEntityWithLastActivity>> =
         houseHoldNoLiveData.switchMap { id ->
             houseHoldRepository.getHouseholdCardDetailLiveData(id)
         }
@@ -39,7 +39,6 @@ class HouseHoldSummaryViewModel @Inject constructor(
     val householdMembersLiveData: LiveData<List<HouseholdMemberWithTb>> =
         houseHoldNoLiveData.switchMap { id ->
             houseHoldRepository.getAllHouseHoldMembersLiveData(id)
-            // houseHoldRepository.getAllHouseHoldMembersWithTbStatusLiveData(id)
         }
 
     fun setHouseholdId(hhId: Long) {

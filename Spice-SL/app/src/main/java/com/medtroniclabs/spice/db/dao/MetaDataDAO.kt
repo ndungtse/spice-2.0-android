@@ -323,4 +323,15 @@ interface MetaDataDAO {
             "WHERE sslv.shasthyaShebikaId = :shasthyaShebikaId",
     )
     suspend fun getSubVillagesByShasthyaShebikaId(shasthyaShebikaId: Long): List<SubVillageEntity>
+
+    @Query(
+        """
+    SELECT DISTINCT sv.*
+    FROM SubVillageEntity sv
+    INNER JOIN ShasthyaShebikaLinkedVillageEntity sslv
+        ON sv.id = sslv.subVillageId
+    WHERE sslv.shasthyaShebikaId IN (:shasthyaShebikaIds)
+    """,
+    )
+    suspend fun getSubVillagesByShasthyaShebikaIds(shasthyaShebikaIds: List<Long>): List<SubVillageEntity>
 }

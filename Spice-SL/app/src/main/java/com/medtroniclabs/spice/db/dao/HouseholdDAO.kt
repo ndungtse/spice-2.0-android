@@ -12,8 +12,10 @@ import androidx.sqlite.db.SimpleSQLiteQuery
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
-import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.response.HouseHoldEntityWithLastActivity
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 
 @Dao
@@ -45,46 +47,6 @@ interface HouseholdDAO {
 
     @Query("SELECT COUNT(*) FROM household WHERE household_no = :householdNo")
     suspend fun checkHouseholdNumberExists(householdNo: Long): Int
-
-    @Query(
-        "SELECT * FROM (SELECT hh.*, ve.name as village_name, COUNT(hhm.household_id) AS member_count, case when :status == '' then '' when COUNT(hhm.household_id) == hh.no_of_people then 'Finished' " +
-            " when COUNT(hhm.household_id) != hh.no_of_people then 'Pending' else '' end as status FROM Household AS hh LEFT JOIN HouseholdMember AS hhm ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE (hh.name LIKE '%' || :searchTerm || '%' OR hh.household_no LIKE :searchTerm) GROUP BY hh.id) as subTable Where status=:status",
-    )
-    fun getHouseholdsWithFilterLiveData(
-        searchTerm: String,
-        status: String,
-    ): LiveData<List<HouseHoldEntityWithMemberCount>>
-
-    @Query(
-        "SELECT * FROM (SELECT hh.*, ve.name as village_name, COUNT(hhm.household_id) AS member_count, case when :status == '' then '' when COUNT(hhm.household_id) == hh.no_of_people then 'Finished' " +
-            " when COUNT(hhm.household_id) != hh.no_of_people then 'Pending' else '' end as status FROM Household AS hh LEFT JOIN HouseholdMember AS hhm ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE hh.village_id IN (:ids) AND (hh.name LIKE '%' || :searchTerm || '%' OR hh.household_no LIKE :searchTerm) GROUP BY hh.id) as subTable Where status=:status",
-    )
-    fun getHouseholdsWithFilterLiveData(
-        searchTerm: String,
-        status: String,
-        ids: List<Long>,
-    ): LiveData<List<HouseHoldEntityWithMemberCount>>
-
-    @Query(
-        "SELECT * FROM (SELECT hh.*, ve.name as village_name, COUNT(hhm.household_id) AS member_count, case when :status == '' then '' when COUNT(hhm.household_id) == hh.no_of_people then 'Finished' " +
-            " when COUNT(hhm.household_id) != hh.no_of_people then 'Pending' else '' end as status FROM Household AS hh LEFT JOIN HouseholdMember AS hhm ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE hh.village_id IN (:ids)  AND (hh.name LIKE '%' || :searchTerm || '%' OR hh.household_no LIKE :searchTerm) AND hh.shasthya_shebika_id IN (:ssIds) GROUP BY hh.id) as subTable Where status=:status",
-    )
-    fun getHouseholdsWithFilterLiveData(
-        searchTerm: String,
-        status: String,
-        ids: List<Long>,
-        ssIds: List<Long>,
-    ): LiveData<List<HouseHoldEntityWithMemberCount>>
-
-    @Query(
-        "SELECT * FROM (SELECT hh.*, ve.name as village_name, COUNT(hhm.household_id) AS member_count, case when :status == '' then '' when COUNT(hhm.household_id) == hh.no_of_people then 'Finished' " +
-            " when COUNT(hhm.household_id) != hh.no_of_people then 'Pending' else '' end as status FROM Household AS hh LEFT JOIN HouseholdMember AS hhm ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id AND (hh.name LIKE '%' || :searchTerm || '%' OR hh.household_no LIKE :searchTerm) AND hh.shasthya_shebika_id IN (:ssIds) GROUP BY hh.id) as subTable Where status=:status",
-    )
-    fun getHouseHoldsWithStatusAndSsFilterLiveData(
-        searchTerm: String,
-        status: String,
-        ssIds: List<Long>,
-    ): LiveData<List<HouseHoldEntityWithMemberCount>>
 
     @Query("SELECT * FROM HouseHold WHERE id= :houseHoldId")
     suspend fun getHouseHoldDetailsById(houseHoldId: Long): HouseholdEntity
@@ -136,4 +98,143 @@ interface HouseholdDAO {
         hhmId: Long,
         status: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name),
     ): HouseHold?
+
+    /**
+     * Returns number of households registered in particular sub village
+     */
+    @Query("SELECT COUNT(id) FROM household WHERE sub_village_id = :subVillageId")
+    suspend fun getHouseholdsCountBasedSubVillage(
+        subVillageId: Long,
+    ): Int
+
+    /**
+     * Internal raw-query entry point. Use [getHouseholdsWithLastActivity] instead.
+     *
+     * [observedEntities] ensures Room re-delivers LiveData whenever any of the
+     * three underlying tables change.
+     */
+    @RawQuery(observedEntities = [HouseholdEntity::class, HouseholdMemberEntity::class, AssessmentEntity::class])
+    fun getHouseholdsRaw(query: SimpleSQLiteQuery): LiveData<List<HouseHoldEntityWithLastActivity>>
+
+    /**
+     * Returns a live list of households with last-activity info.
+     *
+     * **Filters** (all optional):
+     * @param searchTerm           match against household name or number; blank = no filter
+     * @param shasthyaShebikaIds   whitelist of Shasthya Shebika IDs; null/empty = no filter
+     * @param subVillageIds        whitelist of sub-village IDs; null/empty = no filter
+     *
+     * **Sorting** (pick one, all DESC):
+     * @param sortOrder  [HouseholdSortOrder.HOUSEHOLD_NO]           → household_no DESC
+     *                   [HouseholdSortOrder.LAST_VISIT_DATE]        → last_activity_at DESC
+     *                   [HouseholdSortOrder.LAST_MEMBER_REGISTRATION] → last_member_registered_at DESC
+     *                   [HouseholdSortOrder.DEFAULT]                → household.id DESC
+     */
+    fun getHouseholdsWithLastActivity(
+        searchTerm: String = "",
+        villageIds: List<Long> = emptyList(),
+        shasthyaShebikaIds: List<Long> = emptyList(),
+        subVillageIds: List<Long> = emptyList(),
+        hhIds: List<Long> = emptyList(),
+        sortOrder: HouseholdSortOrder = HouseholdSortOrder.DEFAULT,
+    ): LiveData<List<HouseHoldEntityWithLastActivity>> {
+        val args = mutableListOf<Any>()
+        val conditions = mutableListOf<String>()
+
+        if (searchTerm.isNotBlank()) {
+            conditions += "(hh.name LIKE ? OR hh.household_no LIKE ?)"
+            val pattern = "%${searchTerm.trim()}%"
+            args += pattern
+            args += pattern
+        }
+        if (villageIds.isNotEmpty()) {
+            val placeholders = villageIds.joinToString(",") { "?" }
+            conditions += "hh.village_id IN ($placeholders)"
+            args.addAll(villageIds)
+        }
+        if (shasthyaShebikaIds.isNotEmpty()) {
+            val placeholders = shasthyaShebikaIds.joinToString(",") { "?" }
+            conditions += "hh.shasthya_shebika_id IN ($placeholders)"
+            args.addAll(shasthyaShebikaIds)
+        }
+        if (subVillageIds.isNotEmpty()) {
+            val placeholders = subVillageIds.joinToString(",") { "?" }
+            conditions += "hh.sub_village_id IN ($placeholders)"
+            args.addAll(subVillageIds)
+        }
+        if (hhIds.isNotEmpty()) {
+            val placeholders = hhIds.joinToString(",") { "?" }
+            conditions += "hh.id IN ($placeholders)"
+            args.addAll(hhIds)
+        }
+
+        val whereClause = if (conditions.isEmpty()) {
+            ""
+        } else {
+            "WHERE ${conditions.joinToString(" AND ")}"
+        }
+
+        val orderByClause = when (sortOrder) {
+            HouseholdSortOrder.HOUSEHOLD_NO -> "hh.household_no DESC"
+            HouseholdSortOrder.LAST_VISIT_DATE -> "last_activity_at DESC"
+            HouseholdSortOrder.LAST_MEMBER_REGISTRATION -> "last_member_registered_at DESC"
+            HouseholdSortOrder.DEFAULT -> "hh.id DESC"
+        }
+
+        val sql =
+            """
+            SELECT
+                hh.id,
+                hh.name,
+                hh.household_no,
+                ve.name                  AS village_name,
+                ss.name                  AS shasthya_shebika_name,
+                sv.name                  AS sub_village_name,
+                memberAgg.last_member_registered_at,
+                MAX(
+                    COALESCE(hh.updated_at, 0),
+                    COALESCE(memberAgg.last_member_registered_at, 0),
+                    COALESCE(assessmentAgg.last_assessment_at, 0)
+                ) AS last_activity_at
+
+            FROM Household AS hh
+
+            INNER JOIN VillageEntity AS ve
+                ON ve.id = hh.village_id
+
+            INNER JOIN ShasthyaShebikaEntity AS ss
+                ON ss.id = hh.shasthya_shebika_id
+
+            INNER JOIN SubVillageEntity AS sv
+                ON sv.id = hh.sub_village_id
+
+            LEFT JOIN (
+                SELECT
+                    household_id,
+                    MAX(updated_at) AS last_member_registered_at
+                FROM HouseholdMember
+                GROUP BY household_id
+            ) AS memberAgg
+                ON memberAgg.household_id = hh.id
+
+            LEFT JOIN (
+                SELECT
+                    hm.household_id,
+                    MAX(a.updated_at) AS last_assessment_at
+                FROM Assessment a
+                INNER JOIN HouseholdMember hm
+                    ON hm.id = a.householdMemberLocalId
+                GROUP BY hm.household_id
+            ) AS assessmentAgg
+                ON assessmentAgg.household_id = hh.id
+
+            $whereClause
+            ORDER BY $orderByClause
+            """.trimIndent()
+
+        return getHouseholdsRaw(SimpleSQLiteQuery(sql, args.toTypedArray()))
+    }
+
+    @Query("SELECT disability_persons_count FROM household WHERE id =:houseHoldId")
+    fun getDisabilityMembersCount(houseHoldId: Long): Int
 }

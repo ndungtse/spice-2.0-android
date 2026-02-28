@@ -21,7 +21,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
 import com.medtroniclabs.spice.databinding.ActivityPhuWalkInsBinding
-import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.db.response.HouseHoldEntityWithLastActivity
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
@@ -136,7 +136,7 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
             val phuLinkedHouseHoldListFragment =
                 PhuLinkedHouseHoldListFragment.newInstance(patientLinkedDetails)
             addReplaceFragment(R.id.phuListFragment, phuLinkedHouseHoldListFragment)
-        } else if (patientLinkedDetails is HouseHoldEntityWithMemberCount) {
+        } else if (patientLinkedDetails is HouseHoldEntityWithLastActivity) {
             val intent = Intent(this, HouseholdSummaryActivity::class.java)
             intent.putExtra(
                 HouseholdDefinedParams.ID,

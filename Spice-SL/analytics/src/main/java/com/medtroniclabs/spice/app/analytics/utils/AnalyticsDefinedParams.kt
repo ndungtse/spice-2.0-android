@@ -98,6 +98,10 @@ object AnalyticsDefinedParams {
     const val MOTHERNEONATEPNCSUMMARY = "MotherNeonate PNC Summary"
     const val HOUSEHOLDFILTERCANCELTRIGGERED = "Household Filter Cancel Triggered"
     const val HOUSEHOLDFILTERAPPLYTRIGGERED = "Household Filter Apply Triggered"
+
+    const val HOUSE_HOLD_SORT_RESET_TRIGGERED = "Household Sort Reset Triggered"
+    const val HOUSE_HOLD_SORT_APPLY_TRIGGERED = "Household Sort Apply Triggered"
+
     const val HOUSEHOLDS = "Household List Screen"
     const val HOUSEHOLDLISTSEARCHTRIGGERED = "Household List Screen Search Triggered"
     const val ONHOMEBUTTONTRIGGERED = "Home Button Triggered"

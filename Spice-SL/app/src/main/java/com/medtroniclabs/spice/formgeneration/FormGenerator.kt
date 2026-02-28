@@ -93,6 +93,7 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.VISIBLE
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.value
+import com.medtroniclabs.spice.formgeneration.config.EditTextOptionType
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_INFORMATION_LABEL
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_DIALOG_CHECKBOX
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_AGE
@@ -132,6 +133,7 @@ import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.FormFieldValidator
 import com.medtroniclabs.spice.mappingkey.CommunityDetails
 import com.medtroniclabs.spice.mappingkey.CommunityDetails.SelectedNetwork
+import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import com.medtroniclabs.spice.mappingkey.RxBuddy
@@ -287,7 +289,7 @@ class FormGenerator(
                 binding.etUserInput.isEnabled = it
             }
             isInfo?.let {
-                binding.ivInfo.text = infoTitle ?: getString(R.string.job_aid)
+                binding.ivInfo.text = getInfoTitle(translate, getString(R.string.job_aid))
                 binding.ivInfo.visibility = getVisibility(it)
             }
 
@@ -366,19 +368,17 @@ class FormGenerator(
             }
             binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
 
-            if (formLayout.id.contains(Screening.phoneNumber) ||
-                formLayout.id.contains(phoneNumber) ||
-                formLayout.id.contains(CommunityDetails.EmergencyContactPhu) ||
-                formLayout.id.contains(CommunityDetails.EmergencyTransportContactNo) ||
-                formLayout.id.contains(CommunityDetails.AmbulanceDriverContactNo) ||
-                formLayout.id.contains(RxBuddy.rxBuddyPhoneNumber)
-            ) {
-                SecuredPreference.getPhoneNumberCode()?.let { phoneNumberCode ->
-                    binding.llCountryCode.visibility = View.VISIBLE
-                    binding.tvCountryCode.text = if (phoneNumberCode.startsWith("+")) {
-                        phoneNumberCode
-                    } else {
-                        "+$phoneNumberCode"
+            if (isPhoneNumberField(formLayout.id)) {
+                if (optionType == EditTextOptionType.PHONE_NUMBER_WITHOUT_COUNTRY_CODE) {
+                    binding.llCountryCode.gone()
+                } else {
+                    SecuredPreference.getPhoneNumberCode()?.let { phoneNumberCode ->
+                        binding.llCountryCode.visibility = View.VISIBLE
+                        binding.tvCountryCode.text = if (phoneNumberCode.startsWith("+")) {
+                            phoneNumberCode
+                        } else {
+                            "+$phoneNumberCode"
+                        }
                     }
                 }
             }
@@ -442,7 +442,7 @@ class FormGenerator(
             }
 
             isInfo?.let {
-                binding.tvInfo.text = infoTitle
+                binding.tvInfo.text = getInfoTitle(translate, null)
                 binding.tvInfo.visibility = getVisibility(it)
             }
 
@@ -626,7 +626,7 @@ class FormGenerator(
             getViewByTag(Screening.phoneNumber)?.let { editText ->
                 if (editText is AppCompatEditText &&
                     (!editText.text.isNullOrBlank()) &&
-                    Validator.isValidMobileNumber(
+                    FormFieldValidator.isValidMobileNumber(
                         editText.text.toString(),
                     )
                 ) {
@@ -1331,7 +1331,7 @@ class FormGenerator(
             }
 
             isInfo?.let {
-                binding.ivInfo.text = infoTitle ?: getString(R.string.job_aid)
+                binding.ivInfo.text = getInfoTitle(translate, getString(R.string.job_aid))
                 binding.ivInfo.visibility = getVisibility(it)
             }
 
@@ -1412,7 +1412,7 @@ class FormGenerator(
                 binding.tvTitle.markMandatory()
             }
             isInfo?.let {
-                binding.ivInfo.text = infoTitle ?: getString(R.string.job_aid)
+                binding.ivInfo.text = getInfoTitle(translate, getString(R.string.job_aid))
                 binding.ivInfo.visibility = getVisibility(it)
             }
 
@@ -1472,13 +1472,13 @@ class FormGenerator(
                             pos: Int,
                             itemId: Long,
                         ) {
-                            callback?.invoke(resultHashMap, id)
                             handleSelectedItem(
                                 adapter.getData(position = pos),
                                 id,
                                 dependentID,
                                 formLayout,
                             )
+                            callback?.invoke(resultHashMap, id)
                             onPopulateCondition(condition)
                         }
 
@@ -1626,7 +1626,11 @@ class FormGenerator(
             binding.tvTitle.text = translateTitle(titleCulture, title, translate)
 
             hint?.let {
-                binding.etUserInput.hint = it
+                if (translate) {
+                    binding.etUserInput.hint = hintCulture ?: it
+                } else {
+                    binding.etUserInput.hint = it
+                }
             }
 
             if (isMandatory) {
@@ -2853,57 +2857,51 @@ class FormGenerator(
                 ) {
                     isValid = false
                     requestFocusView(data)
-                } else if ((
-                        id == Screening.phoneNumber ||
-                            id == phoneNumber ||
-                            id == CommunityDetails.EmergencyContactPhu ||
-                            id == CommunityDetails.EmergencyTransportContactNo ||
-                            id == CommunityDetails.AmbulanceDriverContactNo ||
-                            id == RxBuddy.rxBuddyPhoneNumber
-                    ) &&
-                    isMandatory &&
-                    resultHashMap.containsKey(
-                        id,
-                    )
-                ) {
-                    val actualValue = resultHashMap[id] as? String
-                    actualValue?.let {
-                        if (!startsWith.isNullOrEmpty() &&
-                            !checkPhoneNumberValidOrNot(
-                                it,
-                                startsWith,
-                            )
-                        ) {
-                            isValid = false
-                            requestFocusView(
-                                data,
-                                getString(
-                                    R.string.start_with_validation,
-                                    startsWith?.joinToString(separator = " ${getString(R.string.or)} ")
-                                        ?: "",
-                                ),
-                            )
-                        } else if (!phoneNumberConatinMaxLength(
-                                contentLength ?: maxLength,
-                                it,
-                            )
-                        ) {
-                            isValid = false
-                            requestFocusView(data)
-                        } else if (!FormFieldValidator.isValidMobileNumber(it)) {
-                            isValid = false
-                            requestFocusView(
-                                data,
-                                getString(
-                                    R.string.phone_number_invalid,
-                                ),
-                            )
-                        } else {
-                            hideValidationField(data)
-                        }
-                    } ?: run {
+                } else if (isPhoneNumberField(id)) {
+                    val actualValue = if (resultHashMap.containsKey(id)) {
+                        resultHashMap[id] as? String
+                    } else {
+                        null
+                    }
+                    if (isMandatory && actualValue == null) {
                         isValid = false
                         requestFocusView(data)
+                    } else {
+                        actualValue?.let {
+                            if (!startsWith.isNullOrEmpty() &&
+                                !checkPhoneNumberValidOrNot(
+                                    it,
+                                    startsWith,
+                                )
+                            ) {
+                                isValid = false
+                                requestFocusView(
+                                    data,
+                                    getString(
+                                        R.string.start_with_validation,
+                                        startsWith?.joinToString(separator = " ${getString(R.string.or)} ")
+                                            ?: "",
+                                    ),
+                                )
+                            } else if (!phoneNumberConatinMaxLength(
+                                    contentLength ?: maxLength,
+                                    it,
+                                )
+                            ) {
+                                isValid = false
+                                requestFocusView(data)
+                            } else if (!FormFieldValidator.isValidMobileNumber(it)) {
+                                isValid = false
+                                requestFocusView(
+                                    data,
+                                    getString(
+                                        R.string.phone_number_invalid,
+                                    ),
+                                )
+                            } else {
+                                hideValidationField(data)
+                            }
+                        }
                     }
                 } else if ((id == dateOfBirth || id == DateOfBirth) && isMandatory && resultHashMap.containsKey(id)) {
                     val actualValue = resultHashMap[id] as? String
@@ -3008,6 +3006,14 @@ class FormGenerator(
                             isValid = false
                             requestFocusView(data)
                         }
+                    }
+                } else if (id == MemberRegistration.ID_GUARDIAN && resultHashMap.containsKey(id)) {
+                    val id = CommonUtils.getLongOrNull(resultHashMap[id]) ?: 0
+                    // For guardian if the selected id is less than 0,
+                    // that means either the user selected --Select-- or + Add guardian
+                    if (id < 0) {
+                        isValid = false
+                        requestFocusView(data)
                     }
                 } else {
                     if (resultHashMap.containsKey(id) &&
@@ -3948,4 +3954,15 @@ class FormGenerator(
      * Returns result layout for a given id
      */
     fun getResult(id: String): Any? = resultHashMap[id]
+
+    /**
+     * Returns if the given form layout id is for phone number
+     */
+    fun isPhoneNumberField(id: String): Boolean =
+        id.contains(Screening.phoneNumber) ||
+            id.contains(phoneNumber) ||
+            id.contains(CommunityDetails.EmergencyContactPhu) ||
+            id.contains(CommunityDetails.EmergencyTransportContactNo) ||
+            id.contains(CommunityDetails.AmbulanceDriverContactNo) ||
+            id.contains(RxBuddy.rxBuddyPhoneNumber)
 }

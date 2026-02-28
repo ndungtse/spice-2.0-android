@@ -23,7 +23,7 @@
       "title": "Union",
       "orderId": 1,
       "viewType": "Spinner",
-      "visibility": "visible"
+      "visibility": "gone"
     },
     {
       "condition": [],
@@ -144,6 +144,28 @@
       "titleCulture": "মাসিক আয়",
       "viewType": "EditText",
       "visibility": "visible"
+    },
+    {
+      "family": "householdInformation",
+      "fieldName": "Persons with disability in the HH",
+      "hint": "Add Number",
+      "hintCulture": "মাসিক আয় লিখুন",
+      "id": "disability_persons_count",
+      "inputType": 3,
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "isNotDefault": false,
+      "isSummary": true,
+      "orderId": 8,
+      "minValue": 0,
+      "title": "Persons with disability in the HH",
+      "titleCulture": "এইচএইচ-তে প্রতিবন্ধী ব্যক্তিরা",
+      "viewType": "EditText",
+      "visibility": "visible",
+      "isInfo": "visible",
+      "infoTitle": "Who has great difficulty or cannot see, hear, walk, climb, do things independently",
+      "infoTitleCulture": "যার খুব অসুবিধা হয় অথবা সে স্বাধীনভাবে দেখতে, শুনতে, হাঁটতে, আরোহণ করতে, কিছু করতে পারে না"
     }
   ]
 }

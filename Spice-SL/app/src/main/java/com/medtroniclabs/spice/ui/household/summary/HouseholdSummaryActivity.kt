@@ -67,7 +67,8 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
 
     private fun attachObserver() {
         householdSummaryViewModel.householdCardDetailLiveData.observe(this) {
-            setTitle(getString(R.string.household_family, it.name.capitalizeFirstChar()))
+            val householdName = it.firstOrNull()?.name?.capitalizeFirstChar() ?: ""
+            setTitle(getString(R.string.household_family, householdName))
             initializePhuLinkFlow()
         }
 
@@ -238,6 +239,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             if (isEdit) {
                 val intent = Intent(this, HouseholdActivity::class.java)
                 intent.putExtra(DefinedParams.MemberID, item)
+                intent.putExtra(ID, householdSummaryViewModel.houseHoldId)
                 startActivity(intent)
             } else {
                 val intent = Intent(this, AssessmentToolsActivity::class.java)

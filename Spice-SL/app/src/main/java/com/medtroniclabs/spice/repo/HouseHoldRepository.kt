@@ -6,16 +6,17 @@ import com.medtroniclabs.spice.common.ConsentFormType
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
-import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.db.dao.HouseholdSortOrder
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.SubVillageEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
-import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.db.response.HouseHoldEntityWithLastActivity
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.model.household.HouseHoldFilterUiData
@@ -63,10 +64,16 @@ class HouseHoldRepository @Inject constructor(
 
     fun getFilteredHouseholdsLiveData(
         searchTerm: String,
-        villageIds: List<Long>,
         ssIds: List<Long>,
-        status: String,
-    ): LiveData<List<HouseHoldEntityWithMemberCount>> = roomHelper.getFilteredHouseholdsLiveData(searchTerm, villageIds, ssIds, status)
+        subVillageIds: List<Long> = emptyList(),
+        sortOrder: HouseholdSortOrder = HouseholdSortOrder.DEFAULT,
+    ): LiveData<List<HouseHoldEntityWithLastActivity>> =
+        roomHelper.getFilteredHouseholdsLiveData(
+            searchInput = searchTerm,
+            filterBySs = ssIds,
+            filterBySubVillages = subVillageIds,
+            sortOrder = sortOrder,
+        )
 
     suspend fun getFormData(formType: String): Resource<String> =
         try {
@@ -78,9 +85,12 @@ class HouseHoldRepository @Inject constructor(
 
     suspend fun getHouseHoldFilterUiData(userId: Long): Resource<HouseHoldFilterUiData> =
         try {
-            val villages = roomHelper.getAllVillageEntity()
             val swasthyaSevikas = roomHelper.getShasthyaShebikaByShasthyaKormiId(userId)
-            Resource(state = ResourceState.SUCCESS, HouseHoldFilterUiData(villages, swasthyaSevikas))
+            val subVillages = mutableListOf<SubVillageEntity>()
+            if (swasthyaSevikas.isNotEmpty()) {
+                subVillages.addAll(roomHelper.getSubVillagesByShasthyaShebikaIds(swasthyaSevikas.map { it.id }))
+            }
+            Resource(state = ResourceState.SUCCESS, HouseHoldFilterUiData(swasthyaSevikas, subVillages))
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
@@ -119,6 +129,9 @@ class HouseHoldRepository @Inject constructor(
         val monthlyIncome = map[HouseHoldRegistration.monthlyIncome]
         householdEntity.monthlyIncome = CommonUtils.getDoubleOrNull(monthlyIncome)
 
+        val disabilityPersonsCount = map[HouseHoldRegistration.ID_DISABILITY_PERSONS_COUNT]
+        householdEntity.disabilityPersonsCount = CommonUtils.getIntegerOrNull(disabilityPersonsCount) ?: 0
+
         if (entity != null) {
             householdEntity.updatedAt = System.currentTimeMillis()
             householdEntity.sync_status = OfflineSyncStatus.NotSynced
@@ -128,12 +141,9 @@ class HouseHoldRepository @Inject constructor(
         } else {
             // Use household number from form if provided, otherwise generate new one
             val householdNumberFromForm = map[HouseHoldRegistration.householdNumber]
-            householdEntity.householdNo = if (householdNumberFromForm != null) {
-                CommonUtils.getLongOrNull(householdNumberFromForm)
-            } else {
-                // Fallback: generate if not provided (shouldn't happen if form is populated correctly)
-                generateUniqueHouseholdNumber()
-            }
+            householdEntity.householdNo = householdNumberFromForm as? String
+                ?: // Fallback: generate if not provided (shouldn't happen if form is populated correctly)
+                "HH${System.currentTimeMillis()}"
             val noOfPeople = map[HouseHoldRegistration.noOfPeople] ?: map[HouseHoldRegistration.totalMembers]
             householdEntity.noOfPeople = CommonUtils.getIntegerOrNull(noOfPeople) ?: 0
         }
@@ -188,6 +198,18 @@ class HouseHoldRepository @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
 
+    suspend fun getGuardianMembers(
+        tag: String,
+        hhId: Long,
+        hhmId: Long,
+    ): Resource<LocalSpinnerResponse> =
+        try {
+            val response = roomHelper.getOtherHouseholdExcludeTBPatient(hhId, hhmId)
+            Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
+        } catch (_: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+
     suspend fun getVillageByID(villageId: Long): Resource<VillageEntity> {
         val response = roomHelper.getVillageByID(villageId)
         return Resource(state = ResourceState.SUCCESS, data = response)
@@ -215,7 +237,11 @@ class HouseHoldRepository @Inject constructor(
 
     suspend fun getUnSyncedHouseholdMemberCount(): Int = roomHelper.getUnSyncedHouseholdMemberCount()
 
-    fun getHouseholdCardDetailLiveData(id: Long): LiveData<HouseholdCardDetail> = roomHelper.getHouseholdCardDetailLiveData(id)
+    fun getHouseholdCardDetailLiveData(id: Long): LiveData<List<HouseHoldEntityWithLastActivity>> =
+        roomHelper.getFilteredHouseholdsLiveData(
+            searchInput = "",
+            filterByHhIds = listOf(id),
+        )
 
     fun getAllHouseHoldMembersLiveData(hhId: Long): LiveData<List<HouseholdMemberWithTb>> = roomHelper.getAllHouseHoldMembersLiveData(hhId)
 
@@ -245,4 +271,6 @@ class HouseHoldRepository @Inject constructor(
         hhmId: Long,
         tbContactTracingStatus: Int,
     ) = roomHelper.updateTBContactTraceStatus(hhmId, tbContactTracingStatus)
+
+    suspend fun getHouseholdsCountBasedSubVillage(subVillageId: Long) = roomHelper.getHouseholdsCountBasedSubVillage(subVillageId)
 }

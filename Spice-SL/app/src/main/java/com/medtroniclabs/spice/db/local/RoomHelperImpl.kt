@@ -43,6 +43,7 @@ import com.medtroniclabs.spice.db.dao.FollowUpDao
 import com.medtroniclabs.spice.db.dao.FrequencyDAO
 import com.medtroniclabs.spice.db.dao.HivMetaDataDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
+import com.medtroniclabs.spice.db.dao.HouseholdSortOrder
 import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
 import com.medtroniclabs.spice.db.dao.LinkHouseholdMemberDao
 import com.medtroniclabs.spice.db.dao.MemberDAO
@@ -99,7 +100,7 @@ import com.medtroniclabs.spice.db.entity.TreatmentDetailsEntity
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
-import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.db.response.HouseHoldEntityWithLastActivity
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
@@ -238,6 +239,9 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun getSubVillagesByShasthyaShebikaId(shasthyaShebikaId: Long): List<SubVillageEntity> =
         metaDataDAO.getSubVillagesByShasthyaShebikaId(shasthyaShebikaId)
 
+    override suspend fun getSubVillagesByShasthyaShebikaIds(shasthyaShebikaIds: List<Long>): List<SubVillageEntity> =
+        metaDataDAO.getSubVillagesByShasthyaShebikaIds(shasthyaShebikaIds)
+
     override suspend fun getDefaultHealthFacility(): HealthFacilityEntity? = metaDataDAO.getDefaultHealthFacility()
 
     override suspend fun getClinicalWorkflowId(
@@ -343,30 +347,18 @@ class RoomHelperImpl @Inject constructor(
         searchInput: String,
         filterByVillage: List<Long>,
         filterBySs: List<Long>,
-        filterByStatus: String,
-    ): LiveData<List<HouseHoldEntityWithMemberCount>> =
-        if (filterByVillage.isEmpty() && filterBySs.isEmpty()) {
-            householdDAO.getHouseholdsWithFilterLiveData(searchInput, filterByStatus)
-        } else if (filterBySs.isEmpty()) {
-            householdDAO.getHouseholdsWithFilterLiveData(
-                searchInput,
-                filterByStatus,
-                filterByVillage,
-            )
-        } else if (filterByVillage.isEmpty()) {
-            householdDAO.getHouseHoldsWithStatusAndSsFilterLiveData(
-                searchInput,
-                filterByStatus,
-                filterBySs,
-            )
-        } else {
-            householdDAO.getHouseholdsWithFilterLiveData(
-                searchInput,
-                filterByStatus,
-                filterByVillage,
-                filterBySs,
-            )
-        }
+        filterBySubVillages: List<Long>,
+        filterByHhIds: List<Long>,
+        sortOrder: HouseholdSortOrder,
+    ): LiveData<List<HouseHoldEntityWithLastActivity>> =
+        householdDAO.getHouseholdsWithLastActivity(
+            searchTerm = searchInput,
+            villageIds = filterByVillage,
+            shasthyaShebikaIds = filterBySs,
+            subVillageIds = filterBySubVillages,
+            hhIds = filterByHhIds,
+            sortOrder = sortOrder,
+        )
 
     override suspend fun getUnSyncedHouseholdCount(): Int = householdDAO.getUnSyncedCount()
 
@@ -1216,4 +1208,6 @@ class RoomHelperImpl @Inject constructor(
     ) {
         memberDAO.updateContactTracingForLinkTbPatient(tbHHMId, householdId)
     }
+
+    override suspend fun getHouseholdsCountBasedSubVillage(subVillageId: Long): Int = householdDAO.getHouseholdsCountBasedSubVillage(subVillageId)
 }

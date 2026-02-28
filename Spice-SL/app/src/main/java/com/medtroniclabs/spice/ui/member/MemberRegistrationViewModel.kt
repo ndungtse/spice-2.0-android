@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams.HouseholdHead
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
@@ -47,6 +48,8 @@ class MemberRegistrationViewModel @Inject constructor(
     var memberDob: String? = null
     var isPhuWalkInsFlow: Boolean? = null
     val householdHeadDobLiveData = MutableLiveData<String?>()
+
+    val householdMembersLiveData = MutableLiveData<List<HouseholdMemberWithTb>>()
 
     fun getHouseholdHeadDob(householdId: Long?) {
         if (householdId != null && householdId != -1L) {
@@ -193,4 +196,9 @@ class MemberRegistrationViewModel @Inject constructor(
             addnewMemberReq.postValue(houseHoldRepository.addNewMember(addMemberRegRequest))
         }
     }
+
+    fun getHouseholdMembers(householdId: Long) =
+        viewModelScope.launch(dispatcherIO) {
+            householdMembersLiveData.postValue(houseHoldRepository.getAllHouseHoldMembersLiveData(householdId).value)
+        }
 }

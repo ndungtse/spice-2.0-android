@@ -10,12 +10,14 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HOUSEHOLDLISTSEARCHTRIGGERED
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HOUSEHOLDS
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.setTextChangeListener
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.isHouseHold
 import com.medtroniclabs.spice.databinding.ActivityHouseholdSearchBinding
-import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.db.dao.HouseholdSortOrder
+import com.medtroniclabs.spice.db.response.HouseHoldEntityWithLastActivity
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.ID
@@ -52,6 +54,8 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
 
     private fun initViews() {
         binding.llFilter.btnFilter.text = getString(R.string.filter)
+        binding.llFilter.btnSort.visible()
+        binding.llFilter.btnSort.setText(R.string.sort)
         binding.llExactSearch.etSearchTerm.hint = getString(R.string.household_name_or_no)
         val tabletSize =
             resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)
@@ -84,6 +88,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
         binding.llExactSearch.btnSearch.safeClickListener(this)
         binding.btnAddHousehold.safeClickListener(this)
         binding.llFilter.btnFilter.safeClickListener(this)
+        binding.llFilter.btnSort.safeClickListener(this)
         binding.llExactSearch.etSearchTerm.setTextChangeListener {
             val input = it?.trim().toString()
             binding.llExactSearch.btnSearch.isEnabled =
@@ -99,13 +104,10 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
     private fun attachObserver() {
         householdListViewModel.getFilterLiveData().observe(this) {
             var count = 0
-            if (it.filterByVillage.isNotEmpty()) {
-                count++
-            }
             if (it.filterBySs.isNotEmpty()) {
                 count++
             }
-            if (it.filterByStatus.isNotEmpty()) {
+            if (it.filterBySubVillages.isNotEmpty()) {
                 count++
             }
 
@@ -113,6 +115,12 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
                 binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)
             } else {
                 binding.llFilter.btnFilter.text = getString(R.string.filter)
+            }
+            val sortCount = if (it.sortOrder == HouseholdSortOrder.DEFAULT) 0 else 1
+            binding.llFilter.btnSort.text = if (sortCount > 0) {
+                getString(R.string.sort_count, sortCount)
+            } else {
+                getString(R.string.sort)
             }
         }
 
@@ -126,7 +134,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
-    private fun setHouseholdListAdapter(householdList: List<HouseHoldEntityWithMemberCount>) {
+    private fun setHouseholdListAdapter(householdList: List<HouseHoldEntityWithLastActivity>) {
         binding.tvHouseHoldCount.text = setLabelValue(householdList.size)
         if (householdList.isNotEmpty()) {
             binding.llFilter.btnFilter.visible()
@@ -168,12 +176,29 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
             }
 
             R.id.btnFilter -> {
+                hideKeyboard(view)
                 withLocationCheck({
                     FilterBottomSheetDialogFragment
                         .newInstance()
                         .show(supportFragmentManager, FilterBottomSheetDialogFragment.TAG)
                 })
             }
+            R.id.btnSort -> {
+                hideKeyboard(view)
+                handleSortClick()
+            }
+        }
+    }
+
+    private fun handleSortClick() {
+        val existingFragment =
+            supportFragmentManager.findFragmentByTag(SortDialogFragment.TAG) as? SortDialogFragment
+        if (existingFragment == null) {
+            SortDialogFragment
+                .newInstance()
+                .show(supportFragmentManager, SortDialogFragment.TAG)
+        } else {
+            existingFragment.show(supportFragmentManager, SortDialogFragment.TAG)
         }
     }
 

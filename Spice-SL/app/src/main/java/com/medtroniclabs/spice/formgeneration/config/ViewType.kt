@@ -1,5 +1,8 @@
 package com.medtroniclabs.spice.formgeneration.config
 
+/**
+ * Type of field
+ */
 object ViewType {
     const val VIEW_TYPE_FORM_CARD_FAMILY = "CardView"
     const val VIEW_TYPE_FORM_EDITTEXT = "EditText"

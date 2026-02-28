@@ -25,14 +25,17 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DOB
 import com.medtroniclabs.spice.common.DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.DefinedParams.female
+import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.common.DefinedParams.male
 import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -65,6 +68,7 @@ import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
 import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.ID
 import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
@@ -78,6 +82,8 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
     private lateinit var formGenerator: FormGenerator
     private val memberRegistrationViewModel: MemberRegistrationViewModel by activityViewModels()
     private val householdRegistrationViewModel: HouseRegistrationViewModel by activityViewModels()
+
+    private var pendingGuardianId: Long? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -340,6 +346,41 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                 }
             }
         }
+
+        householdRegistrationViewModel.guardianMembers.observe(viewLifecycleOwner) { resource ->
+            when (resource.state) {
+                ResourceState.SUCCESS -> {
+                    resource.data?.let { data ->
+                        val resultMap = getResultSpinnerMapList(data)
+                        resultMap.add(
+                            mapOf(
+                                DefinedParams.ID to MemberRegistration.ADD_GUARDIAN_ID,
+                                DefinedParams.NAME to getString(R.string.add_guardian),
+                            ),
+                        )
+                        formGenerator.spinnerDataInjection(data, resultMap)
+
+                        // Set guardian ID if available (for edit mode)
+                        pendingGuardianId?.let { guardianId ->
+                            if (guardianId != 0L) {
+                                formGenerator.getViewByTag(MemberRegistration.ID_GUARDIAN)?.let { view ->
+                                    formGenerator.setValueForView(guardianId, view)
+                                }
+                            }
+                            pendingGuardianId = null // Clear after setting
+                        }
+                    }
+                }
+
+                ResourceState.LOADING -> {
+                    (activity as BaseActivity?)?.showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as BaseActivity?)?.hideLoading()
+                }
+            }
+        }
     }
 
     private fun launchSummaryOrAssessmentPage() {
@@ -421,12 +462,14 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                         gender,
                     )
                 }
+
                 Other -> {
                     singleSelectValueOption(
                         Other,
                         gender,
                     )
                 }
+
                 else -> {}
             }
             if (details.gender.isNotBlank()) {
@@ -452,6 +495,27 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             }
             formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
                 visibility = View.GONE
+            }
+            handleDob(details.dateOfBirth, formGenerator.getResultMap())
+        }
+        details.maritalStatus?.let {
+            singleSelectValueOption(
+                it,
+                MemberRegistration.ID_MARITAL_STATUS,
+            )
+        }
+        details.disability?.let {
+            singleSelectValueOption(
+                it,
+                MemberRegistration.ID_DISABILITY,
+            )
+        }
+        formGenerator.getViewByTag(MemberRegistration.ID_GUARDIAN)?.let {
+            val guardianId = details.guardianId
+            if (guardianId != null && guardianId != 0L) {
+                // Store guardian ID to set after list is loaded
+                pendingGuardianId = guardianId
+                formGenerator.setValueForView(guardianId, it)
             }
         }
     }
@@ -501,6 +565,56 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                             (textView as TextView).text =
                                 getString(R.string.please_select_a_valid_value_month)
                         }
+                }
+                // Flow is for member create or edit
+                if (!householdRegistrationViewModel.isCreateHouseholdForPhu &&
+                    (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L)
+                ) {
+                    val dateOfBirth = map[id] as? String
+                    handleDob(dateOfBirth, map)
+                }
+            } else if (id == MemberRegistration.ID_GUARDIAN) {
+                val selectedId = CommonUtils.getLongOrNull(map[id]) ?: 0
+                if (selectedId == MemberRegistration.ADD_GUARDIAN_ID) {
+                    handleAddGuardian()
+                }
+            }
+        }
+    }
+
+    private fun handleDob(
+        dateOfBirth: String?,
+        map: HashMap<String, Any>,
+    ) {
+        val age = DateUtils.calculateAge(dateOfBirth)
+        val guardianView = formGenerator.getViewByTag(MemberRegistration.ID_GUARDIAN + formGenerator.rootSuffix) ?: return
+        // Add guardian If age is < =2 years of age
+        if (age <= 2) {
+            guardianView.visible()
+        } else {
+            formGenerator.resetChildViews(guardianView)
+            // Remove guardian entry if household is
+            map.remove(MemberRegistration.ID_GUARDIAN)
+        }
+    }
+
+    /**
+     * Navigates to add guardian/member with an alert popup
+     */
+    private fun handleAddGuardian() {
+        showErrorDialogue(
+            getString(R.string.alert),
+            getString(R.string.exit_reason),
+            isNegativeButtonNeed = true,
+        ) { isPositive ->
+            if (isPositive) {
+                if (householdRegistrationViewModel.householdId != -1L) {
+                    val intent =
+                        Intent(requireActivity(), HouseholdActivity::class.java)
+                    intent.putExtra(isMemberRegistration, true)
+                    intent.putExtra(ID, householdRegistrationViewModel.householdId)
+                    startActivity(intent)
+                    requireActivity().finish()
                 }
             }
         }

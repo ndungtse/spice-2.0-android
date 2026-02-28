@@ -13,6 +13,8 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HouseholdCreation
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HouseholdEdit
+import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.VillageId
 import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
@@ -67,10 +69,6 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
         initializeFormGenerator()
         setListeners()
         attachObservers()
-        // Generate random 10-digit household number when page loads (only for new household registration)
-        if (householdRegistrationViewModel.householdId == -1L) {
-            householdRegistrationViewModel.generateHouseholdNumber()
-        }
     }
 
     private fun attachObservers() {
@@ -131,6 +129,11 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                                 }
                             }
                         }
+
+                        // Show village/union field if we have more than 1
+                        if (data.response is List<*> && data.response.size > 1) {
+                            formGenerator.getViewByTag(HouseHoldRegistration.villageId)?.visible()
+                        }
                     }
                 }
                 else -> {
@@ -154,7 +157,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                                 formGenerator.getViewByTag(HouseHoldRegistration.shasthyaShebikaId)?.let { view ->
                                     formGenerator.setValueForView(id, view)
                                     // Trigger sub-village loading
-                                    val shasthyaShebikaIdLong = com.medtroniclabs.spice.common.CommonUtils
+                                    val shasthyaShebikaIdLong = CommonUtils
                                         .getLongOrNull(id) ?: 0L
                                     if (shasthyaShebikaIdLong != 0L) {
                                         householdRegistrationViewModel.loadSubVillageDataCacheByType(
@@ -262,7 +265,12 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
         }
         formGenerator.getViewByTag(HouseHoldRegistration.householdNumber)?.let { view ->
             details.householdNo?.let { householdNo ->
-                formGenerator.setValueForView(householdNo.toString(), view)
+                formGenerator.setValueForView(householdNo, view)
+            }
+        }
+        formGenerator.getViewByTag(HouseHoldRegistration.ID_DISABILITY_PERSONS_COUNT)?.let { view ->
+            details.disabilityPersonsCount?.let { disabilityPersonsCount ->
+                formGenerator.setValueForView(disabilityPersonsCount, view)
             }
         }
     }
@@ -282,6 +290,19 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
             this,
             binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled(),
+            callback = { resultMap, id ->
+                when (id) {
+                    HouseHoldRegistration.subVillageId -> {
+                        val selectedId = CommonUtils.getLongOrNull(resultMap[id]) ?: return@FormGenerator
+                        householdRegistrationViewModel.selectedSubVillageId = selectedId
+                        if (householdRegistrationViewModel.householdId == -1L &&
+                            selectedId != -1L
+                        ) {
+                            householdRegistrationViewModel.generateHouseholdNumber()
+                        }
+                    }
+                }
+            },
         )
     }
 

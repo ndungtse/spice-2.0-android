@@ -1541,4 +1541,10 @@
     <string name="pregnancy_too_early_access_desc_1">এলএমপি থেকে ৬ সপ্তাহ পরেই কেবল গর্ভাবস্থা মূল্যায়ন করা সম্ভব।</string>
     <string name="pregnancy_too_early_access_desc_2">সম্পূর্ণ গর্ভাবস্থা প্রোফাইল মূল্যায়নের জন্য দয়া করে ৬ সপ্তাহ পরে আবার আসুন।</string>
     <string name="the_following_risk_factors_identified">⚠️ নিম্নলিখিত ঝুঁকির কারণগুলি শনাক্ত করা হয়েছে:</string>
+
+    <string name="last_visit_date">সর্বশেষ পরিদর্শনের তারিখ</string>
+    <string name="recent_service">সাম্প্রতিক সেবা</string>
+    <string name="recent_service_date">সাম্প্রতিক সেবার তারিখ</string>
+    <string name="last_member_registration_date">সর্বশেষ সদস্য নিবন্ধনের তারিখ</string>
+    <string name="add_guardian">+ অভিভাবক যোগ করুন</string>
 </resources>

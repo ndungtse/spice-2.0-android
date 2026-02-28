@@ -24,7 +24,26 @@ interface MemberDAO {
     @Query("SELECT * FROM HouseHoldMember WHERE household_id = :houseHoldId")
     suspend fun getAllHouseHoldMemberList(houseHoldId: Long): List<HouseholdMemberEntity>
 
-    @Query("SELECT hhm.*, td.diagnoses FROM householdmember AS hhm LEFT JOIN TreatmentDetailsEntity AS td ON hhm.fhir_id = td.memberId WHERE hhm.household_id = :houseHoldId")
+    @Query(
+        """
+                    SELECT
+                        hhm.*, td.diagnoses,
+                        a.assessmentType AS recent_service,
+                        a.updated_at AS recent_service_date
+                    FROM householdmember AS hhm
+                    LEFT JOIN TreatmentDetailsEntity AS td ON hhm.fhir_id = td.memberId
+
+                    LEFT JOIN Assessment AS a
+                        ON a.householdMemberLocalId = hhm.id
+                        AND a.updated_at = (
+                            SELECT MAX(a2.updated_at)
+                            FROM Assessment AS a2
+                            WHERE a2.householdMemberLocalId = hhm.id
+                        )
+
+                    WHERE hhm.household_id = :houseHoldId
+    """,
+    )
     fun getAllHouseHoldMembersLiveData(houseHoldId: Long): LiveData<List<HouseholdMemberWithTb>>
 
     @Query("SELECT * FROM HouseHoldMember WHERE household_id = :houseHoldId AND isActive =:aliveStatus")

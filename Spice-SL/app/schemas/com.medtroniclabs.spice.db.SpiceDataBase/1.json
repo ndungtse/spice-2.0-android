@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "417f0bf5c47d9b0bf8732c73d0276dfd",
+    "identityHash": "140e3291d4fea689387f09695ed4d9f8",
     "entities": [
       {
         "tableName": "Household",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `household_no` INTEGER, `name` TEXT NOT NULL, `village_id` INTEGER NOT NULL, `no_of_people` INTEGER NOT NULL, `shasthya_shebika_id` INTEGER, `sub_village_id` INTEGER, `household_type` TEXT, `monthly_income` REAL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `version` TEXT, `lastUpdated` TEXT, `fhir_id` TEXT, `sync_status` TEXT NOT NULL, `created_by` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `created_at` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `household_no` TEXT, `name` TEXT NOT NULL, `village_id` INTEGER NOT NULL, `no_of_people` INTEGER NOT NULL, `shasthya_shebika_id` INTEGER, `sub_village_id` INTEGER, `household_type` TEXT, `monthly_income` REAL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `version` TEXT, `lastUpdated` TEXT, `disability_persons_count` INTEGER, `fhir_id` TEXT, `sync_status` TEXT NOT NULL, `created_by` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `created_at` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -17,7 +17,7 @@
           {
             "fieldPath": "householdNo",
             "columnName": "household_no",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": false
           },
           {
@@ -87,6 +87,12 @@
             "notNull": false
           },
           {
+            "fieldPath": "disabilityPersonsCount",
+            "columnName": "disability_persons_count",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
             "fieldPath": "fhirId",
             "columnName": "fhir_id",
             "affinity": "TEXT",
@@ -123,12 +129,58 @@
             "id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "idx_sub_village_id",
+            "unique": false,
+            "columnNames": [
+              "sub_village_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_sub_village_id` ON `${TABLE_NAME}` (`sub_village_id`)"
+          },
+          {
+            "name": "idx_village_id",
+            "unique": false,
+            "columnNames": [
+              "village_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_village_id` ON `${TABLE_NAME}` (`village_id`)"
+          },
+          {
+            "name": "id_shasthya_shebika_id",
+            "unique": false,
+            "columnNames": [
+              "shasthya_shebika_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `id_shasthya_shebika_id` ON `${TABLE_NAME}` (`shasthya_shebika_id`)"
+          },
+          {
+            "name": "idx_household_no",
+            "unique": false,
+            "columnNames": [
+              "household_no"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_household_no` ON `${TABLE_NAME}` (`household_no`)"
+          },
+          {
+            "name": "idx_household_updated_at",
+            "unique": false,
+            "columnNames": [
+              "updated_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_household_updated_at` ON `${TABLE_NAME}` (`updated_at`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
         "tableName": "HouseholdMember",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `phone_number` TEXT, `date_of_birth` TEXT NOT NULL, `gender` TEXT NOT NULL, `household_id` INTEGER, `villageId` INTEGER, `patient_id` TEXT, `isActive` INTEGER NOT NULL, `version` TEXT, `lastUpdated` TEXT, `motherReferenceId` INTEGER, `deceasedReason` TEXT, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `id_type` TEXT NOT NULL, `national_id` TEXT, `is_house_hold_head` INTEGER NOT NULL, `household_fhir_id` TEXT, `fhir_id` TEXT, `sync_status` TEXT NOT NULL, `created_by` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `created_at` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `phone_number` TEXT, `date_of_birth` TEXT NOT NULL, `gender` TEXT NOT NULL, `household_id` INTEGER, `villageId` INTEGER, `patient_id` TEXT, `isActive` INTEGER NOT NULL, `version` TEXT, `lastUpdated` TEXT, `motherReferenceId` INTEGER, `deceasedReason` TEXT, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `id_type` TEXT NOT NULL, `national_id` TEXT, `is_house_hold_head` INTEGER NOT NULL, `household_fhir_id` TEXT, `guardian_hh_member_id` INTEGER, `guardian_hh_member_fhir_id` TEXT, `marital_status` TEXT, `disability` TEXT, `fhir_id` TEXT, `sync_status` TEXT NOT NULL, `created_by` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `created_at` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -245,6 +297,30 @@
             "notNull": false
           },
           {
+            "fieldPath": "guardianId",
+            "columnName": "guardian_hh_member_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "guardianFhirId",
+            "columnName": "guardian_hh_member_fhir_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "maritalStatus",
+            "columnName": "marital_status",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "disability",
+            "columnName": "disability",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
             "fieldPath": "fhirId",
             "columnName": "fhir_id",
             "affinity": "TEXT",
@@ -281,7 +357,26 @@
             "id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "idx_household_id",
+            "unique": false,
+            "columnNames": [
+              "household_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_household_id` ON `${TABLE_NAME}` (`household_id`)"
+          },
+          {
+            "name": "idx_HouseholdMember_updated_at",
+            "unique": false,
+            "columnNames": [
+              "updated_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_HouseholdMember_updated_at` ON `${TABLE_NAME}` (`updated_at`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
@@ -483,7 +578,26 @@
             "id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "idx_householdMemberLocalId",
+            "unique": false,
+            "columnNames": [
+              "householdMemberLocalId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_householdMemberLocalId` ON `${TABLE_NAME}` (`householdMemberLocalId`)"
+          },
+          {
+            "name": "idx_Assessment_updated_at",
+            "unique": false,
+            "columnNames": [
+              "updated_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_Assessment_updated_at` ON `${TABLE_NAME}` (`updated_at`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
@@ -3480,7 +3594,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '417f0bf5c47d9b0bf8732c73d0276dfd')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '140e3291d4fea689387f09695ed4d9f8')"
     ]
   }
 }

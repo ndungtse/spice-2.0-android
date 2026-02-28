@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
+import com.medtroniclabs.spice.mappingkey.MemberRegistration.ID_GUARDIAN
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
@@ -40,17 +41,27 @@ class HouseRegistrationViewModel @Inject constructor(
     var memberVillageListResponse = MutableLiveData<Resource<LocalSpinnerResponse>>()
     var shasthyaShebikaListResponse = MutableLiveData<Resource<LocalSpinnerResponse>>()
     var subVillageListResponse = MutableLiveData<Resource<LocalSpinnerResponse>>()
+    var guardianMembers = MutableLiveData<Resource<LocalSpinnerResponse>>()
     var memberID: Long = -1L
     private var lastLocation: Location? = null
     var eventName: String = ""
 
+    /**
+     * Selected sub village
+     */
+    var selectedSubVillageId: Long = -1
+
     var signatureFilename: String? = null
     var initialValue: String? = null
-    val generatedHouseholdNumberLiveData = MutableLiveData<Long>()
+    val generatedHouseholdNumberLiveData = MutableLiveData<String>()
 
+    /**
+     * Generates household number in the format HH<current count of households based on subvillage + 1>
+     */
     fun generateHouseholdNumber() {
         viewModelScope.launch(dispatcherIO) {
-            val householdNumber = houseHoldRepository.generateUniqueHouseholdNumber()
+            val currentHouseholdsCount = houseHoldRepository.getHouseholdsCountBasedSubVillage(selectedSubVillageId)
+            val householdNumber = "HH${currentHouseholdsCount + 1}"
             generatedHouseholdNumberLiveData.postValue(householdNumber)
         }
     }
@@ -85,6 +96,11 @@ class HouseRegistrationViewModel @Inject constructor(
                 villageId -> {
                     memberVillageListResponse.postLoading()
                     memberVillageListResponse.postValue(houseHoldRepository.getUserLinkedVillages(tag))
+                }
+
+                ID_GUARDIAN -> {
+                    guardianMembers.postLoading()
+                    guardianMembers.postValue(houseHoldRepository.getGuardianMembers(tag, householdId, memberID))
                 }
             }
         }
@@ -174,10 +190,12 @@ class HouseRegistrationViewModel @Inject constructor(
                             OfflineConstant.CONTACT_TRACING_YET_TO_TAKE,
                         )
                     }
+
                     tbPatientIds.isEmpty() && isTbPatient -> {
                         // No TB patients in household but this member is one — update all household contact tracing statuses
                         houseHoldRepositoryMember.updateContactTracingForLinkTbPatient(hhmId, hhId)
                     }
+
                     else -> {
                         houseHoldRepositoryMember.updateContactTracingStatus(hhmId, null)
                     }

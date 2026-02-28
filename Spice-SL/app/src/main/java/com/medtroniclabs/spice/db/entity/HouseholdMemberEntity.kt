@@ -2,10 +2,17 @@ package com.medtroniclabs.spice.db.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.medtroniclabs.spice.db.entity.EntitiesName.HOUSEHOLD_MEMBER
 
-@Entity(tableName = HOUSEHOLD_MEMBER)
+@Entity(
+    tableName = HOUSEHOLD_MEMBER,
+    indices = [
+        Index(value = ["household_id"], name = "idx_household_id"),
+        Index(value = ["updated_at"], name = "idx_HouseholdMember_updated_at"),
+    ],
+)
 data class HouseholdMemberEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
@@ -38,4 +45,12 @@ data class HouseholdMemberEntity(
     var isHouseholdHead: Boolean = false,
     @ColumnInfo("household_fhir_id")
     var householdFhirId: String? = null,
+    @ColumnInfo("guardian_hh_member_id")
+    var guardianId: Long? = null,
+    @ColumnInfo("guardian_hh_member_fhir_id")
+    var guardianFhirId: String? = null,
+    @ColumnInfo("marital_status")
+    var maritalStatus: String? = null,
+    @ColumnInfo("disability")
+    var disability: String? = null,
 ) : BaseEntity()

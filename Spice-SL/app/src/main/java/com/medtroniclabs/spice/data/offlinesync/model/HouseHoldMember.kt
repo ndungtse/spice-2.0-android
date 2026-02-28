@@ -52,6 +52,14 @@ data class HouseHoldMember(
     val isHouseholdHead: Boolean = false,
     @ColumnInfo("assignHousehold")
     val assignHousehold: Int? = null,
+    @ColumnInfo("guardian_hh_member_id")
+    val guardianId: Long? = null,
+    @ColumnInfo("guardian_hh_member_fhir_id")
+    val guardianFhirId: String? = null,
+    @ColumnInfo("marital_status")
+    val maritalStatus: String? = null,
+    @ColumnInfo("disability")
+    val disability: String? = null,
 ) {
     @Ignore
     var isChild: Boolean? = false
@@ -93,6 +101,10 @@ data class HouseHoldMember(
             nationalId = this.nationalId,
             isHouseholdHead = this.isHouseholdHead,
             householdFhirId = this.householdId,
+            guardianId = this.guardianId,
+            guardianFhirId = this.guardianFhirId,
+            maritalStatus = this.maritalStatus,
+            disability = this.disability,
         ).apply {
             fhirId = this@HouseHoldMember.id.toString()
             sync_status = status

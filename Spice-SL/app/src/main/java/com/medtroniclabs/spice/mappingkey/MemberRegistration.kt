@@ -27,6 +27,26 @@ object MemberRegistration {
     const val Grandparent = "Grandparent"
     const val OtherRelation = "Other Family Member (specify)"
 
+    /**
+     * SingleSelectionView : Marital Status
+     */
+    const val ID_MARITAL_STATUS = "maritalStatus"
+
+    /**
+     * SingleSelectionView : Disability
+     */
+    const val ID_DISABILITY = "disability"
+
+    /**
+     * Spinner : Guardian Name
+     */
+    const val ID_GUARDIAN = "guardian"
+
+    /**
+     * Spinner option id for add guardian field
+     */
+    const val ADD_GUARDIAN_ID = -2L
+
     fun isValidRelationAge(
         ctx: Context,
         dob: String,

@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getAgeFromDOB
 import com.medtroniclabs.spice.common.CommonUtils.getGenderText
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
 import com.medtroniclabs.spice.databinding.MembersSummaryListItemBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -40,60 +41,35 @@ class HouseholdMemberListAdapter(
         holder.binding.clReasonOfDeath.gone()
         holder.binding.forwardIcon.visible()
 
-        if (item.diagnoses != null && item.diagnoses.trim().isNotEmpty()) {
-            holder.binding.tvDiagnosisStatus.text = item.diagnoses
-            holder.binding.tvDiagnosisStatus.setTextColor(
-                ColorStateList.valueOf(context.getColor(R.color.a_red_error)),
-            )
+        if (phuWalkInsFlow) {
+            if (item.diagnoses != null && item.diagnoses.trim().isNotEmpty()) {
+                holder.binding.tvDiagnosisStatus.text = item.diagnoses
+                holder.binding.tvDiagnosisStatus.setTextColor(
+                    ColorStateList.valueOf(context.getColor(R.color.a_red_error)),
+                )
+            } else {
+                holder.binding.tvDiagnosisStatus.text =
+                    context.resources.getString(R.string.separator_double_hyphen)
+                holder.binding.tvDiagnosisStatus.setTextColor(
+                    ColorStateList.valueOf(context.getColor(R.color.grey_black)),
+                )
+            }
         } else {
-            holder.binding.tvDiagnosisStatus.text =
-                context.resources.getString(R.string.separator_double_hyphen)
-            holder.binding.tvDiagnosisStatus.setTextColor(
-                ColorStateList.valueOf(context.getColor(R.color.grey_black)),
-            )
-        }
+            holder.binding.tvDiagnosis.gone()
+            holder.binding.tvDiagnosisSeparator.gone()
+            holder.binding.tvDiagnosisSeparator.gone()
+            holder.binding.tvRecentService.visible()
+            holder.binding.tvRecentServiceSeparator.visible()
+            holder.binding.tvRecentServiceValue.visible()
+            holder.binding.tvRecentServiceDate.visible()
+            holder.binding.tvRecentServiceDateSeparator.visible()
+            holder.binding.tvRecentServiceDateValue.visible()
 
-        /*
-         * Null -> Contact Tracing Not Required
-         * 0 -> contactTrace need to do
-         * 1 -> ContactTracing done
-         * */
-//        item.tBContactTraceStatus?.let {
-//            when(it) {
-//                0 -> {
-//                    holder.binding.tvContactTracingStatus.text =
-//                        context.resources.getString(R.string.update_contact_tracing)
-//                    holder.binding.tvContactTracingStatus.setTextColor(
-//                        ColorStateList.valueOf(context.getColor(R.color.card_color))
-//                    )
-//                    holder.binding.tvContactTracingStatus.setCompoundDrawablesWithIntrinsicBounds(
-//                        ContextCompat.getDrawable(context, R.drawable.ic_alert_red),
-//                        null,
-//                        null,
-//                        null
-//                    )
-//                    holder.binding.tvContactTracingStatus.visible()
-//
-//                    holder.binding.tvContactTracingStatus.safeClickListener(this)
-//                    holder.binding.tvContactTracingStatus.tag = position
-//                }
-//
-//                1 -> {
-//                    holder.binding.tvContactTracingStatus.text =
-//                        context.resources.getString(R.string.contact_tracing_updated)
-//                    holder.binding.tvContactTracingStatus.setTextColor(
-//                        ColorStateList.valueOf(context.getColor(R.color.secondary_green_color))
-//                    )
-//                    holder.binding.tvContactTracingStatus.setCompoundDrawablesWithIntrinsicBounds(
-//                        ContextCompat.getDrawable(context, R.drawable.ic_circle_tick_green),
-//                        null,
-//                        null,
-//                        null
-//                    )
-//                    holder.binding.tvContactTracingStatus.visible()
-//                }
-//            }
-//        }
+            holder.binding.tvRecentServiceValue.text = item.recentService ?: context.resources.getString(R.string.separator_double_hyphen)
+            holder.binding.tvRecentServiceDateValue.text = item.recentServiceDate?.let {
+                DateUtils.formatDateToDisplayFormat(it)
+            } ?: context.resources.getString(R.string.separator_double_hyphen)
+        }
 
         if (item.isActive) {
             holder.binding.tvMemberName.text = getMemberInfoText(context, item)

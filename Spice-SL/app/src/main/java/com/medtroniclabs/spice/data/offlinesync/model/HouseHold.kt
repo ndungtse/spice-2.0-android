@@ -21,7 +21,7 @@ data class HouseHold(
     @ColumnInfo(name = "no_of_people")
     val noOfPeople: Int,
     @ColumnInfo(name = "household_no")
-    val householdNo: Long? = null,
+    val householdNo: String? = null,
     @ColumnInfo(name = "shasthya_shebika_id")
     val shasthyaShebikaId: Long? = null,
     @ColumnInfo(name = "sub_village_id")
@@ -40,6 +40,8 @@ data class HouseHold(
     val updatedAt: Long,
     val version: String? = null,
     val lastUpdated: String? = null,
+    @ColumnInfo("disability_persons_count")
+    var disabilityPersonsCount: Int? = null,
 ) {
     @Ignore
     var provenance: ProvanceDto = ProvanceDto(modifiedDate = updatedAt.convertToUtcDateTime())
@@ -65,6 +67,7 @@ data class HouseHold(
             longitude = this.longitude,
             version = this.version,
             lastUpdated = this.lastUpdated,
+            disabilityPersonsCount = this.disabilityPersonsCount,
         ).apply {
             fhirId = this@HouseHold.id.toString()
             sync_status = status

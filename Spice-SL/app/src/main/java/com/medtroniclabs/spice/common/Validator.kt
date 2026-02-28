@@ -6,23 +6,9 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.formgeneration.model.BPModel
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.mappingkey.Screening
-import java.util.regex.Pattern
 
 object Validator {
-    private const val PHONE_NUMBER_REGEX = "([0-9])\\1{4}"
-
     fun isEmailValid(email: String): Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
-
-    fun isValidMobileNumber(mobileNumber: String): Boolean = Patterns.PHONE.matcher(mobileNumber).matches() && validatePhoneNumber(mobileNumber)
-
-    private fun validatePhoneNumber(phoneNumber: String): Boolean {
-        val pattern = Pattern.compile(PHONE_NUMBER_REGEX)
-        val matcher = pattern.matcher(phoneNumber)
-        if (matcher.find()) {
-            return false
-        }
-        return true
-    }
 
     data class ValidationUIModel(val status: Boolean, val message: String? = null)
 

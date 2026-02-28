@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
+import com.medtroniclabs.spice.mappingkey.MemberRegistration.ID_MARITAL_STATUS
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -154,6 +155,23 @@ class HouseholdMemberRepository @Inject constructor(
         }
 
         householdMemberEntity.householdId = householdId
+
+        val maritalStatus = map[ID_MARITAL_STATUS]
+        if (maritalStatus != null && maritalStatus is String) {
+            householdMemberEntity.maritalStatus = maritalStatus
+        }
+
+        val disability = map[MemberRegistration.ID_DISABILITY]
+        if (disability != null && disability is String) {
+            householdMemberEntity.disability = disability
+        }
+
+        val guardianId = CommonUtils.getLongOrNull(map[MemberRegistration.ID_GUARDIAN])
+        if (guardianId != null) {
+            householdMemberEntity.guardianId = guardianId
+            // Fetch member details for the guardian to store FhirId
+            householdMemberEntity.guardianFhirId = getMemberDetailsByID(guardianId).data?.fhirId
+        }
 
         if (entity == null) {
             val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)

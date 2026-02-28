@@ -1612,4 +1612,10 @@
     <string name="pregnancy_too_early_access_desc_1">Pregnancy assessment can only be conducted after 6 weeks from LMP.</string>
     <string name="pregnancy_too_early_access_desc_2">Please revisit after 6 weeks for complete pregnancy profile assessment.</string>
     <string name="the_following_risk_factors_identified">⚠️ The following risk factors have been identified:</string>
+
+    <string name="last_visit_date">Last Visit Date</string>
+    <string name="recent_service">Recent service</string>
+    <string name="recent_service_date">Recent service date</string>
+    <string name="last_member_registration_date">Last member registration date</string>
+    <string name="add_guardian">+ Add Guardian</string>
 </resources>

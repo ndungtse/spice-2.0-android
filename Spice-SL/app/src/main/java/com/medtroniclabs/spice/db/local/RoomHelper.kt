@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.HouseholdWithMemberCount
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyFollowUpDetails
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyRegisterDetail
 import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
+import com.medtroniclabs.spice.db.dao.HouseholdSortOrder
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
@@ -68,7 +69,7 @@ import com.medtroniclabs.spice.db.entity.TreatmentDetailsEntity
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
-import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.db.response.HouseHoldEntityWithLastActivity
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
@@ -146,6 +147,8 @@ interface RoomHelper {
 
     suspend fun getSubVillagesByShasthyaShebikaId(shasthyaShebikaId: Long): List<SubVillageEntity>
 
+    suspend fun getSubVillagesByShasthyaShebikaIds(shasthyaShebikaIds: List<Long>): List<SubVillageEntity>
+
     suspend fun deleteAllVillages()
 
     suspend fun deleteAllHouseholds()
@@ -219,10 +222,12 @@ interface RoomHelper {
 
     fun getFilteredHouseholdsLiveData(
         searchInput: String,
-        filterByVillage: List<Long>,
-        filterBySs: List<Long>,
-        filterByStatus: String,
-    ): LiveData<List<HouseHoldEntityWithMemberCount>>
+        filterByVillage: List<Long> = emptyList(),
+        filterBySs: List<Long> = emptyList(),
+        filterBySubVillages: List<Long> = emptyList(),
+        filterByHhIds: List<Long> = emptyList(),
+        sortOrder: HouseholdSortOrder = HouseholdSortOrder.DEFAULT,
+    ): LiveData<List<HouseHoldEntityWithLastActivity>>
 
     suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>
 
@@ -829,4 +834,6 @@ interface RoomHelper {
         tbHHMId: Long,
         householdId: Long,
     )
+
+    suspend fun getHouseholdsCountBasedSubVillage(subVillageId: Long): Int
 }

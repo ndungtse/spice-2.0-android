@@ -1,11 +1,18 @@
 package com.medtroniclabs.spice.db.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.medtroniclabs.spice.db.entity.EntitiesName.ASSESSMENT
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 
-@Entity(tableName = ASSESSMENT)
+@Entity(
+    tableName = ASSESSMENT,
+    indices = [
+        Index(value = ["householdMemberLocalId"], name = "idx_householdMemberLocalId"),
+        Index(value = ["updated_at"], name = "idx_Assessment_updated_at"),
+    ],
+)
 data class AssessmentEntity(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,

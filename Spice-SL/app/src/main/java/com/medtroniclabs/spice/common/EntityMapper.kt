@@ -6,6 +6,7 @@ import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
+import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.ShasthyaShebikaEntity
 import com.medtroniclabs.spice.db.entity.SubVillageEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -59,6 +60,9 @@ object EntityMapper {
                 updateMapsIdName(map, properties.id, displayName)
             }
             is SubVillageEntity -> {
+                updateMapsIdName(map, properties.id, properties.name)
+            }
+            is HouseholdMemberEntity -> {
                 updateMapsIdName(map, properties.id, properties.name)
             }
         }

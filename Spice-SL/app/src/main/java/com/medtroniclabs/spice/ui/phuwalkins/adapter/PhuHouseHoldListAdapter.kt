@@ -5,19 +5,30 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.databinding.ListItemHouseholdBinding
-import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.db.response.HouseHoldEntityWithLastActivity
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.phuwalkins.listener.PhuLinkCallback
 
 class PhuHouseHoldListAdapter(
-    private val households: List<HouseHoldEntityWithMemberCount>,
+    private val households: List<HouseHoldEntityWithLastActivity>,
     private val listener: PhuLinkCallback,
 ) :
     RecyclerView.Adapter<PhuHouseHoldListAdapter.HouseholdViewHolder>() {
     class HouseholdViewHolder(val binding: ListItemHouseholdBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
+
+        init {
+            // Hide fields which are not needed
+            binding.tvLabelSSName.gone()
+            binding.tvLabelSSNameSeperator.gone()
+            binding.tvSSName.gone()
+            binding.tvLabelLastVisitDate.gone()
+            binding.tvLabelLastVisitDateSeperator.gone()
+            binding.tvLastVisitDate.gone()
+        }
     }
 
     override fun onCreateViewHolder(

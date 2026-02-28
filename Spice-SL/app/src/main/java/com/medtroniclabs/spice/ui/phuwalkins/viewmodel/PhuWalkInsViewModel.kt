@@ -8,7 +8,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
-import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.db.response.HouseHoldEntityWithLastActivity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
@@ -47,25 +47,21 @@ class PhuWalkInsViewModel @Inject constructor(
             CommonUtils.getGenderText(gender, context),
         )
 
-    fun getFilteredHouseholdsLiveData(villageIds: Long): LiveData<List<HouseHoldEntityWithMemberCount>> =
+    fun getFilteredHouseholdsLiveData(villageIds: Long): LiveData<List<HouseHoldEntityWithLastActivity>> =
         houseHoldRepository.getFilteredHouseholdsLiveData(
             "",
-            villageIds = listOf(villageIds),
             ssIds = emptyList(),
-            "",
         )
 
     fun getSearchHouseholdsLiveData(
         search: String,
         villageId: Long,
-    ): LiveData<List<HouseHoldEntityWithMemberCount>> {
+    ): LiveData<List<HouseHoldEntityWithLastActivity>> {
         val listVillage = ArrayList<Long>()
         listVillage.add(villageId)
         return houseHoldRepository.getFilteredHouseholdsLiveData(
             search,
-            villageIds = listVillage,
             ssIds = emptyList(),
-            "",
         )
     }
 

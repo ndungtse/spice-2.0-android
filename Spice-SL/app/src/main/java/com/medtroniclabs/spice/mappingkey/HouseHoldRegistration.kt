@@ -15,4 +15,9 @@ object HouseHoldRegistration {
     const val isPregnant = "isPregnant"
     const val yes = "yes"
     const val no = "no"
+
+    /**
+     * EditText : Disability persons count
+     */
+    const val ID_DISABILITY_PERSONS_COUNT = "disability_persons_count"
 }

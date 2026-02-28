@@ -12,6 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HOUSEHOLDFILTER
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentFilterBottomSheetDialogBinding
@@ -22,9 +23,8 @@ import com.medtroniclabs.spice.ui.household.viewmodel.HouseholdListViewModel
 
 class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClickListener {
     private lateinit var binding: FragmentFilterBottomSheetDialogBinding
-    private lateinit var villageListTagView: TagListCustomView
     private lateinit var ssListTagView: TagListCustomView
-    private lateinit var statusListTagView: TagListCustomView
+    private lateinit var subVillageListTagView: TagListCustomView
     private val householdListViewModel: HouseholdListViewModel by activityViewModels()
 
     companion object {
@@ -60,11 +60,10 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
     }
 
     private fun enableConfirm() {
-        val isVillageValid = villageListTagView.getSelectedTags().isNotEmpty()
         val isSsValid = ssListTagView.getSelectedTags().isNotEmpty()
-        val isStatusListValid = statusListTagView.getSelectedTags().isNotEmpty()
+        val isSubVillageValid = subVillageListTagView.getSelectedTags().isNotEmpty()
 
-        binding.btnApply.isEnabled = isVillageValid || isStatusListValid || isSsValid
+        binding.btnApply.isEnabled = isSsValid || isSubVillageValid
     }
 
     private fun initializeListeners() {
@@ -82,25 +81,25 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resource.data?.let { data ->
-                        val villageList = data.villageList.map {
-                            ChipViewItemModel(
-                                id = it.id,
-                                name = it.name,
-                            )
-                        }
                         val ssList = data.ssList.map {
                             ChipViewItemModel(
                                 id = it.id,
                                 name = it.name,
                             )
                         }
-                        villageListTagView.addChipItemList(
-                            villageList,
-                            householdListViewModel.getFilterLiveData().value?.filterByVillage,
-                        )
                         ssListTagView.addChipItemList(
                             ssList,
                             householdListViewModel.getFilterLiveData().value?.filterBySs,
+                        )
+                        val subVillageList = data.subVillages.map {
+                            ChipViewItemModel(
+                                id = it.id,
+                                name = it.name,
+                            )
+                        }
+                        subVillageListTagView.addChipItemList(
+                            subVillageList,
+                            householdListViewModel.getFilterLiveData().value?.filterBySubVillages,
                         )
                     }
                 }
@@ -114,44 +113,29 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
 
     private fun initView() {
         householdListViewModel.setUserJourney(HOUSEHOLDFILTER)
+        // Hide Household location
+        binding.tvVillageTitle.gone()
+        binding.villageChipGroup.gone()
+        // Show SS
         binding.tvSsTitle.visible()
         binding.ssChipGroup.visible()
-        villageListTagView =
-            TagListCustomView(binding.root.context, binding.villageChipGroup) { _, _, _ ->
-                enableConfirm()
-            }
+        // Hide registration status
+        binding.tvRegistrationStatus.gone()
+        binding.registrationStatusChipGroup.gone()
+        // Show village(sub-village)
+        binding.tvSubVillage.visible()
+        binding.subVillageChipGroup.visible()
+
         ssListTagView = TagListCustomView(binding.root.context, binding.ssChipGroup) { _, _, _ ->
             enableConfirm()
         }
-        statusListTagView =
-            TagListCustomView(
-                binding.root.context,
-                binding.registrationStatusChipGroup,
-            ) { _, _, _ ->
-                enableConfirm()
-            }
+        subVillageListTagView = TagListCustomView(binding.root.context, binding.subVillageChipGroup) { _, _, _ ->
+            enableConfirm()
+        }
 
         householdListViewModel.getFilterUiData()
-        composeStatusListChipView()
         binding.etFromDate.safeClickListener(this)
         binding.etToDate.safeClickListener(this)
-    }
-
-    private fun composeStatusListChipView() {
-        val itemList = arrayListOf(
-            HouseholdDefinedParams.Pending,
-            HouseholdDefinedParams.Finished,
-        )
-        val statusList = ArrayList<ChipViewItemModel>()
-        itemList.forEach {
-            statusList.add(
-                ChipViewItemModel(name = it),
-            )
-        }
-        statusListTagView.addChipItemList(
-            statusList,
-            householdListViewModel.getFilterLiveData().value?.filterByStatus,
-        )
     }
 
     override fun onClick(view: View) {
@@ -163,12 +147,11 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
             R.id.btnCancel -> {
                 householdListViewModel.setUserJourney(AnalyticsDefinedParams.HOUSEHOLDFILTERCANCELTRIGGERED)
                 householdListViewModel.setFilterLiveData(
-                    villageFilter = listOf(),
-                    statusFilter = listOf(),
+                    ssFilter = listOf(),
+                    subVillagesFilter = listOf(),
                 )
-                villageListTagView.clearSelection()
                 ssListTagView.clearSelection()
-                statusListTagView.clearSelection()
+                subVillageListTagView.clearSelection()
                 dismiss()
             }
         }
@@ -177,9 +160,8 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
     private fun applyFilter() {
         householdListViewModel.setUserJourney(AnalyticsDefinedParams.HOUSEHOLDFILTERAPPLYTRIGGERED)
         householdListViewModel.setFilterLiveData(
-            villageFilter = villageListTagView.getSelectedTags(),
             ssFilter = ssListTagView.getSelectedTags(),
-            statusFilter = statusListTagView.getSelectedTags(),
+            subVillagesFilter = subVillageListTagView.getSelectedTags(),
         )
         dismiss()
     }

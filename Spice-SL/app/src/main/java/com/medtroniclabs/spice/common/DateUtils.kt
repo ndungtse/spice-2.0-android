@@ -1031,4 +1031,14 @@ object DateUtils {
         val newDate = fromDate.plusDays(daysToAdd)
         return newDate.format(formatter)
     }
+
+    fun formatDateToDisplayFormat(date: Long): String? {
+        return try {
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = date
+            return getDateFormat().format(calendar.time)
+        } catch (_: Exception) {
+            null
+        }
+    }
 }
