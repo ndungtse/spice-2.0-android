@@ -573,7 +573,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                     val dateOfBirth = map[id] as? String
                     handleDob(dateOfBirth, map)
                 }
-            } else if (id == MemberRegistration.ID_GUARDIAN) {
+            } else if (id == MemberRegistration.ID_GUARDIAN && formGenerator.isViewVisible(id) && formGenerator.isViewEnabled(id)) {
                 val selectedId = CommonUtils.getLongOrNull(map[id]) ?: 0
                 if (selectedId == MemberRegistration.ADD_GUARDIAN_ID) {
                     handleAddGuardian()

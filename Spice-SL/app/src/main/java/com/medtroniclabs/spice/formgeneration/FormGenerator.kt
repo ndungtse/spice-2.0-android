@@ -3007,7 +3007,11 @@ class FormGenerator(
                             requestFocusView(data)
                         }
                     }
-                } else if (id == MemberRegistration.ID_GUARDIAN && resultHashMap.containsKey(id)) {
+                } else if (id == MemberRegistration.ID_GUARDIAN &&
+                    resultHashMap.containsKey(id) &&
+                    isViewVisible(id) &&
+                    isViewEnabled(id)
+                ) {
                     val id = CommonUtils.getLongOrNull(resultHashMap[id]) ?: 0
                     // For guardian if the selected id is less than 0,
                     // that means either the user selected --Select-- or + Add guardian
@@ -3070,7 +3074,7 @@ class FormGenerator(
         return view != null && view.isVisible
     }
 
-    private fun isViewEnabled(id: String): Boolean {
+    fun isViewEnabled(id: String): Boolean {
         val view = getViewByTag(id)
         return view != null && view.isEnabled
     }

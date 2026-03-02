@@ -78,9 +78,30 @@ import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
  * @param noOfDays TODO
  * @param informationVisibility TODO
  * @param isBooleanAnswer TODO
- * @param isInfo Can be visible, invisible, gone to display info [infoTitle] / [infoTitle] for view types **EditText**, **NoOfDaysView**, **SingleSelectionView**, **Spinner**. If nothing provided default is gone.
+ * @param isInfo Should be one of [com.medtroniclabs.spice.formgeneration.config.DefinedParams.VISIBLE], [com.medtroniclabs.spice.formgeneration.config.DefinedParams.INVISIBLE], [com.medtroniclabs.spice.formgeneration.config.DefinedParams.GONE] to display info [infoTitle] / [infoTitle] for view types **EditText**, **NoOfDaysView**, **SingleSelectionView**, **Spinner**. If nothing provided default is gone.
  * @param dosageListItems TODO
- * @param maxDecimalPlaces Maximum number of decimal filter for view type **EditText**, **EditTextArea**. If [applyDecimalFilter] or [applyTwoDigitPrecision] are given then that takes precedes.
+ * @param maxDecimalPlaces Maximum number of decimal filter for view type **EditText**, **EditTextArea**. If [applyDecimalFilter] or [applyTwoDigitPrecision] are given then that precedes.
+ * @param menstrualPeriod Needed to calculate minimum date for view type **DatePicker**. If this is true, then the min date for date picker is calculated based today's date - 287 days
+ * @param minDays Needed to calculate minimum date for view type **DatePicker**. If > 0, then minimum date for the date picker will be today date - [minDays]. If [menstrualPeriod] is true, then that precedes.
+ * @param maxDays Used in [com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationGenerator] to calculate maximum date for view type **DatePicker**. If [maxDate] is not given and this is > 0, then the maximum date for the date picker will be today date + [maxDays].
+ * @param unitList Used in [com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationGenerator] for choosing unit for given value for view type **EditText**.
+ * @param maxAge Used to validate date of birth fields. If given and the selected date of birth crosses max age, then displays error message.
+ * @param code TODO
+ * @param url TODO
+ * @param resource TODO
+ * @param spinnerAsObject If true then stored result for view type **Spinner** will be whole selected map from [optionsList], otherwise only ID is getting stored in the result.
+ * @param enableSingleSelection If given then whether to enable selection for view type **SingleSelectionView**, **TimeView**.
+ * @param ranges TODO
+ * @param category TODO
+ * @param textLabelColor If valid color given, then it applies the text color to the label/title for view type **TextLabel**.
+ * @param textLabelStyle If given, then it applies text style to the label/title for view type **TextLabel**. One of [com.medtroniclabs.spice.common.DefinedParams.BOLD], [com.medtroniclabs.spice.common.DefinedParams.ITALIC], , [com.medtroniclabs.spice.common.DefinedParams.BOLD_ITALIC]
+ * @param familyOrder TODO
+ * @param ageCondition TODO
+ * @param workflowType TODO
+ * @param orderId TODO
+ * @param customizedWorkflowId TODO
+ * @param infoTitle Info title for view types **EditText**, **NoOfDaysView**, **SingleSelectionView**, **Spinner**. If [isInfo] is not given then this field is of no use.
+ * @param infoTitleCulture Info title in second language for view types **EditText**, **NoOfDaysView**, **SingleSelectionView**, **Spinner**. If [isInfo] is not given then this field is of no use.
  */
 data class FormLayout(
     override val viewType: String,
