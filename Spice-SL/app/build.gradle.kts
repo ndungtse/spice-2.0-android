@@ -1,4 +1,4 @@
-﻿import java.util.Properties
+import java.util.Properties
 
 val envProperties = Properties()
 val envFile = rootProject.file("environment.properties")
@@ -27,8 +27,8 @@ android {
         applicationId = "com.medtroniclabs.spice"
         minSdk = 23
         targetSdk = 36
-        versionCode = 8
-        versionName = "2.0.1"
+        versionCode = 10
+        versionName = "2.0.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
         missingDimensionStrategy("version", "prod")
@@ -46,26 +46,6 @@ android {
         // abortOnError = false // <- enable if you need CI to pass while stabilizing
     }
 
-    flavorDimensions += "version"
-    productFlavors {
-        create("africa") {
-            dimension = "version"
-            versionName = "2.2"
-            versionCode = 24
-        }
-        create("sl") {
-            dimension = "version"
-            versionName = "2.0.3"
-            applicationIdSuffix = ".sl"
-            versionCode = 12
-        }
-        create("tiberbu") {
-            dimension = "version"
-            versionName = "1.0.0"
-            applicationIdSuffix = ".tiberbu"
-        }
-    }
-
     signingConfigs {
         val prodKeyAlias = envProperties["PROD_JKS_ALIAS"].toString()
         val prodKeyPassword = envProperties["PROD_JKS_KEY_PASSWORD"].toString()
@@ -75,12 +55,14 @@ android {
         val devKeyPassword = envProperties["STAGE_JKS_KEY_PASSWORD"].toString()
         val devStorePassword = envProperties["STAGE_JKS_STORE_PASSWORD"].toString()
 
-        create("release") {
+        // Signing Key for Prod Release
+        create("production") {
             keyAlias = prodKeyAlias
             keyPassword = prodKeyPassword
             storePassword = prodStorePassword
             storeFile = file("spice_prod.jks")
         }
+        // Signing Key for Staging Release
         create("staging") {
             keyAlias = devKeyAlias
             keyPassword = devKeyPassword
@@ -89,8 +71,61 @@ android {
         }
     }
 
-    buildTypes {
+    flavorDimensions += "version"
+    productFlavors {
+        create("dev") {
+            dimension = "version"
+            applicationIdSuffix = ".dev"
+            resValue("string", "app_name", "ComEMR Dev")
+        }
+        create("qa") {
+            applicationIdSuffix = ".dev"
+            dimension = "version"
+        }
+        create("staging") {
+            dimension = "version"
+            applicationIdSuffix = ".staging"
+            signingConfig = signingConfigs.getByName("staging")
+        }
+        create("production") {
+            dimension = "version"
+            signingConfig = signingConfigs.getByName("production")
+        }
+    }
 
+    androidComponents {
+        beforeVariants(selector().withBuildType("debug")) { variantBuilder ->
+            // If the flavor is 'production/staging', disable the debug variant
+            if (variantBuilder.productFlavors.any { it.second == "production" }) {
+                variantBuilder.enable = false
+            }
+            if (variantBuilder.productFlavors.any { it.second == "staging" }) {
+                variantBuilder.enable = false
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+            isDebuggable = true
+            applicationVariants.all {
+                when (productFlavors[0].name) {
+                    "dev" -> {
+                        buildConfigField("String", "API_BASE_URL", "\"${envProperties["UHIS_DEV_API_BASE_URL"]}\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["UHIS_DEV_ADMIN_BASE_URL"]}\"")
+                        buildConfigField("String", "SALT", "\"${envProperties["UHIS_DEV_SALT_KEY"]}\"")
+                        buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["UHIS_DEV_DB_ENCRYPTION_KEY"]}\"")
+                    }
+                    "qa" -> {
+                        buildConfigField("String", "API_BASE_URL", "\"${envProperties["UHIS_QA_API_BASE_URL"]}\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["UHIS_QA_ADMIN_BASE_URL"]}\"")
+                        buildConfigField("String", "SALT", "\"${envProperties["UHIS_QA_SALT_KEY"]}\"")
+                        buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["UHIS_QA_DB_ENCRYPTION_KEY"]}\"")
+                    }
+                }
+            }
+        }
         release {
             isMinifyEnabled = true
             proguardFiles(
@@ -98,133 +133,33 @@ android {
                 "proguard-rules.pro",
             )
             applicationVariants.all {
-                if (buildType.name == "release") {
-                    when (productFlavors[0].name) {
-                        "sl" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["SL_PROD_API_BASE_URL"]}\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_PROD_ADMIN_BASE_URL"]}\"")
-                            buildConfigField("String", "SALT", "\"${envProperties["SL_PROD_SALT_KEY"]}\"")
-                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_PROD_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "ComEMR")
-                        }
-                        "africa" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_PROD_API_BASE_URL"]}\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["AF_PROD_ADMIN_BASE_URL"]}\"")
-                            buildConfigField("String", "SALT", "\"${envProperties["AF_PROD_SALT_KEY"]}\"")
-                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["AF_PROD_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "SPICE")
-                        }
-                        "tiberbu" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["TBU_PROD_API_BASE_URL"]}\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["TBU_PROD_ADMIN_BASE_URL"]}\"")
-                            buildConfigField("String", "SALT", "\"${envProperties["TBU_PROD_SALT_KEY"]}\"")
-                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["TBU_PROD_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "TaifaCare(by SPICE) Dev")
-                        }
+                when (productFlavors[0].name) {
+                    "dev" -> {
+                        buildConfigField("String", "API_BASE_URL", "\"${envProperties["UHIS_DEV_API_BASE_URL"]}\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["UHIS_DEV_ADMIN_BASE_URL"]}\"")
+                        buildConfigField("String", "SALT", "\"${envProperties["UHIS_DEV_SALT_KEY"]}\"")
+                        buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["UHIS_DEV_DB_ENCRYPTION_KEY"]}\"")
+                    }
+                    "qa" -> {
+                        buildConfigField("String", "API_BASE_URL", "\"${envProperties["UHIS_QA_API_BASE_URL"]}\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["UHIS_QA_ADMIN_BASE_URL"]}\"")
+                        buildConfigField("String", "SALT", "\"${envProperties["UHIS_QA_SALT_KEY"]}\"")
+                        buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["UHIS_QA_DB_ENCRYPTION_KEY"]}\"")
+                    }
+                    "staging" -> {
+                        buildConfigField("String", "API_BASE_URL", "\"${envProperties["UHIS_STAGE_API_BASE_URL"]}\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["UHIS_STAGE_ADMIN_BASE_URL"]}\"")
+                        buildConfigField("String", "SALT", "\"${envProperties["UHIS_STAGE_SALT_KEY"]}\"")
+                        buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["UHIS_STAGE_DB_ENCRYPTION_KEY"]}\"")
+                    }
+                    "production" -> {
+                        buildConfigField("String", "API_BASE_URL", "\"${envProperties["UHIS_PROD_API_BASE_URL"]}\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["UHIS_PROD_ADMIN_BASE_URL"]}\"")
+                        buildConfigField("String", "SALT", "\"${envProperties["UHIS_PROD_SALT_KEY"]}\"")
+                        buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["UHIS_PROD_DB_ENCRYPTION_KEY"]}\"")
                     }
                 }
             }
-            signingConfig = signingConfigs.getByName("release")
-        }
-
-        debug {
-            isDebuggable = true
-            applicationIdSuffix = ".dev"
-            applicationVariants.all {
-                if (buildType.name == "debug") {
-                    when (productFlavors[0].name) {
-                        "sl" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["SL_DEV_API_BASE_URL"]}\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_DEV_ADMIN_BASE_URL"]}\"")
-                            buildConfigField("String", "SALT", "\"${envProperties["SL_DEV_SALT_KEY"]}\"")
-                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_DEV_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "ComEMR Dev")
-                        }
-                        "africa" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_DEV_API_BASE_URL"]}\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["AF_DEV_ADMIN_BASE_URL"]}\"")
-                            buildConfigField("String", "SALT", "\"${envProperties["AF_DEV_SALT_KEY"]}\"")
-                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["AF_DEV_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "SPICE Dev")
-                        }
-                        "tiberbu" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["TBU_DEV_API_BASE_URL"]}\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["TBU_DEV_ADMIN_BASE_URL"]}\"")
-                            buildConfigField("String", "SALT", "\"${envProperties["TBU_DEV_SALT_KEY"]}\"")
-                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["TBU_DEV_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "TaifaCare(by SPICE) Dev")
-                        }
-                    }
-                }
-            }
-//            signingConfig = signingConfigs.getByName("staging")
-        }
-
-        create("staging") {
-            initWith(getByName("release"))
-            applicationIdSuffix = ".dev"
-            isMinifyEnabled = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
-            )
-            applicationVariants.all {
-                if (buildType.name == "staging") {
-                    if (productFlavors[0].name == "sl") {
-                        buildConfigField("String", "API_BASE_URL", "\"${envProperties["SL_STAGE_API_BASE_URL"]}\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_STAGE_ADMIN_BASE_URL"]}\"")
-                        buildConfigField("String", "SALT", "\"${envProperties["SL_STAGE_SALT_KEY"]}\"")
-                        buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_STAGE_DB_ENCRYPTION_KEY"]}\"")
-                        resValue("string", "spice_app_name", "ComEMR Staging")
-                    } else if (productFlavors[0].name == "africa") {
-                        buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_STAGE_API_BASE_URL"]}\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["AF_STAGE_ADMIN_BASE_URL"]}\"")
-                        buildConfigField("String", "SALT", "\"${envProperties["AF_STAGE_SALT_KEY"]}\"")
-                        buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["AF_STAGE_DB_ENCRYPTION_KEY"]}\"")
-                        resValue("string", "spice_app_name", "SPICE 2.1 Staging")
-                    }
-                }
-            }
-            signingConfig = signingConfigs.getByName("staging")
-        }
-
-        create("training") {
-            initWith(getByName("release"))
-            applicationIdSuffix = ".training"
-//            versionNameSuffix = "-(20240829_01)"
-            isMinifyEnabled = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
-            )
-            applicationVariants.all {
-                if (buildType.name == "training") {
-                    when (productFlavors[0].name) {
-                        "sl" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["SL_TRAINING_API_BASE_URL"]}\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["SL_TRAINING_ADMIN_BASE_URL"]}\"")
-                            buildConfigField("String", "SALT", "\"${envProperties["SL_TRAINING_SALT_KEY"]}\"")
-                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["SL_TRAINING_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "ComEMR Training")
-                        }
-                        "africa" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["AF_TRAINING_API_BASE_URL"]}\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["AF_TRAINING_ADMIN_BASE_URL"]}\"")
-                            buildConfigField("String", "SALT", "\"${envProperties["AF_TRAINING_SALT_KEY"]}\"")
-                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["AF_TRAINING_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "SPICE Training")
-                        }
-                        "tiberbu" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"${envProperties["TBU_TRAINING_API_BASE_URL"]}\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"${envProperties["TBU_TRAINING_ADMIN_BASE_URL"]}\"")
-                            buildConfigField("String", "SALT", "\"${envProperties["TBU_TRAINING_SALT_KEY"]}\"")
-                            buildConfigField("String", "ROOM_DB_ENCRYPTION_KEY", "\"${envProperties["TBU_TRAINING_DB_ENCRYPTION_KEY"]}\"")
-                            resValue("string", "spice_app_name", "TaifaCare(by SPICE) Training")
-                        }
-                    }
-                }
-            }
-            signingConfig = signingConfigs.getByName("staging")
         }
     }
 

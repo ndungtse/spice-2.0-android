@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">@string/spice_app_name</string>
+    <string name="app_name">ComEMR</string>
     <string name="logo_description">Medtronic Logo</string>
     <string name="welcome">Welcome</string>
     <string name="login_to_your_account">Login to your account</string>

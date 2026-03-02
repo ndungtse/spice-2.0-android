@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">@string/spice_app_name</string>
+    <string name="app_name">ComEMR</string>
     <string name="logo_description">Medtronic Logo</string>
     <string name="welcome">Karibu</string>
     <string name="login_to_your_account">Ingia kwenye akaunti yako</string>

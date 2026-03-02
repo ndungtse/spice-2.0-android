@@ -1,273 +1,421 @@
-[
-  {
-    "familyOrder": 0,
-    "id": "pncChild",
-    "orderId": 1,
-    "title": "Child Details",
-    "viewType": "CardView"
-  },
-  {
-    "id": "childhoodVisitSigns",
-    "fieldName": "childhoodVisitSigns",
-    "family": "pncChild",
-    "orderId": 2,
-    "viewType": "DialogCheckbox",
-    "localDataCache": "childhoodVisitSigns",
-    "isMandatory": false,
-    "errorMessage": "Please select a valid option",
-    "isEnabled": true,
-    "title": "Is the newborn baby experiencing any of these danger signs?",
-    "visibility": "visible",
-    "isSummary": true,
-    "condition": [
-      {
-        "eq": "Other",
-        "targetId": "otherChildhoodVisitSigns",
-        "visibility": "visible"
-      }
-    ]
-  },{
-  "errorMessage": "Please enter a valid sign",
-  "family": "pncChild",
-  "fieldName": "Other Signs",
-  "hint": "Enter Other Sign",
-  "id": "otherChildhoodVisitSigns",
-  "inputType": 96,
-  "isEnabled": true,
-  "isMandatory": true,
-  "isNeededDefault": true,
-  "isNotDefault": false,
-  "orderId": 5,
-  "isSummary": false,
-  "title": "Other Signs",
-  "viewType": "EditText",
-  "isInfo": "gone",
-  "visibility": "gone"
-},
-  {
-    "family": "pncChild",
-    "fieldName": "fatherPresent",
-    "id": "fatherPresent",
-    "condition": [],
-    "orderId": 3,
-    "isBooleanAnswer": true,
-    "errorMessage": "Please select a valid option",
-    "isEnabled": true,
-    "isMandatory": true,
-    "isNeededDefault": true,
-    "isSummary": true,
-    "optionsList": [
-      {
-        "id": true,
-        "name": "Yes"
-      },
-      {
-        "id": false,
-        "name": "No"
-      }
+{
+    "formLayout": [
+        {
+            "familyOrder": 0,
+            "id": "pncChild",
+            "orderId": 1,
+            "title": "Child Details",
+            "titleCulture": "",
+            "viewType": "CardView"
+        },
+        {
+            "family": "pncChild",
+            "id": "congenitalDefect",
+            "fieldName": "Congenital defect",
+            "condition": [],
+            "orderId": 2,
+            "isBooleanAnswer": true,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "viewType": "SingleSelectionView",
+            "errorMessage": "Please select a valid option",
+            "isSummary": true,
+            "optionsList": [
+                {
+                    "id": true,
+                    "name": "Yes",
+                    "cultureValue": "হ্যাঁ"
+                },
+                {
+                    "id": false,
+                    "name": "No",
+                    "cultureValue": "না"
+                }
+            ],
+            "optionType": "boolean",
+            "readOnly": true,
+            "title": "Does the child have any congenital defect?",
+            "titleCulture": "শিশুর কি কোনো জন্মগত ত্রুটি আছে কিনা?",
+            "visibility": "visible"
+        },
+        {
+            "family": "pncChild",
+            "id": "weight",
+            "fieldName": "Weight",
+            "orderId": 3,
+            "hint": "",
+            "hintCulture": "",
+            "inputType": 8192,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "errorMessage": "Please select a valid option",
+            "title": "Weight",
+            "titleCulture": "ওজন (কেজি)",
+            "viewType": "EditText",
+            "visibility": "visible"
+        },
+        {
+            "family": "pncChild",
+            "id": "childFeedLast24Hrs",
+            "fieldName": "What was fed in the last 24 hours",
+            "orderId": 4,
+            "viewType": "DialogCheckbox",
+            "localDataCache": "childFeedLast24Hrs",
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "errorMessage": "Please select a valid option",
+            "title": "What was the child fed in the last 24 hours?",
+            "titleCulture": "গত ২৪ ঘন্টায় শিশুকে কি কি খাওয়ানো হয়েছে?",
+            "visibility": "visible",
+            "isSummary": true,
+            "condition": [
+                {
+                    "eq": "other",
+                    "targetId": "otherChildFeed",
+                    "visibility": "visible"
+                }
+            ]
+        },
+        {
+            "family": "pncChild",
+            "id": "otherChildFeed",
+            "fieldName": "Other Feed",
+            "errorMessage": "Please enter a valid sign",
+            "hint": "Enter Other Feed",
+            "hintCulture": "",
+            "inputType": 96,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "isNotDefault": false,
+            "orderId": 5,
+            "isSummary": true,
+            "title": "Other Feed",
+            "titleCulture": "Other Feed",
+            "viewType": "EditText",
+            "isInfo": "gone",
+            "visibility": "gone"
+        },
+        {
+            "family": "pncChild",
+            "id": "hrsBreastFed",
+            "fieldName": "Breast feed after birth in hrs",
+            "orderId": 6,
+            "hint": "",
+            "hintCulture": "",
+            "inputType": 2,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "isSummary": true,
+            "errorMessage": "Please select a valid option",
+            "title": "Within how many hours after birth was breastfed?",
+            "titleCulture": "প্রসবের কত ঘণ্টার মধ্যে মায়ের বুকের দুধ খাওয়ানো হয়েছে?",
+            "viewType": "EditText",
+            "visibility": "gone"
+        },
+        {
+            "family": "pncChild",
+            "id": "monthAdditionalFeedGiven",
+            "fieldName": "Additional food started month",
+            "orderId": 7,
+            "hint": "",
+            "hintCulture": "",
+            "inputType": 2,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "isSummary": true,
+            "optionsList": [
+                {
+                    "id": "7",
+                    "name": "7 Months",
+                    "cultureValue": "৭ মাসে"
+                },
+                {
+                    "id": "8",
+                    "name": "8 Months",
+                    "cultureValue": "৮ মাসে"
+                },
+                {
+                    "id": "9",
+                    "name": "9 Months",
+                    "cultureValue": "৯ মাসে"
+                }
+            ],
+            "readOnly": true,
+            "errorMessage": "Please select a valid option",
+            "title": "At what month was additional food started?",
+            "titleCulture": "শিশুকে  বাড়তি খাবার কত মাসে শুরু করা হয়েছে?",
+            "viewType": "Spinner",
+            "visibility": "gone"
+        },
+        {
+            "family": "pncChild",
+            "id": "childBreastFeeding",
+            "fieldName": "Breast feeding",
+            "orderId": 8,
+            "isBooleanAnswer": true,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "viewType": "SingleSelectionView",
+            "errorMessage": "Please select a valid option",
+            "isSummary": true,
+            "optionsList": [
+                {
+                    "id": true,
+                    "name": "Yes",
+                    "cultureValue": "হ্যাঁ"
+                },
+                {
+                    "id": false,
+                    "name": "No",
+                    "cultureValue": "না"
+                }
+            ],
+            "optionType": "boolean",
+            "readOnly": true,
+            "title": "Is the child breastfeeding?",
+            "titleCulture": " শিশু মায়ের বুকের দুধ খাচ্ছে কি না?",
+            "visibility": "gone"
+        },
+        {
+            "family": "pncChild",
+            "id": "additionalFood24Hrs",
+            "fieldName": "Additional Food in 24 Hrs",
+            "orderId": 9,
+            "isBooleanAnswer": true,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "viewType": "SingleSelectionView",
+            "errorMessage": "Please select a valid option",
+            "isSummary": true,
+            "optionsList": [
+                {
+                    "id": true,
+                    "name": "Yes",
+                    "cultureValue": "হ্যাঁ"
+                },
+                {
+                    "id": false,
+                    "name": "No",
+                    "cultureValue": "না"
+                }
+            ],
+            "optionType": "boolean",
+            "readOnly": true,
+            "title": "In the past 24 hours, was the child given additional food?",
+            "titleCulture": "গত ২৪ ঘন্টায় শিশুকে কোনো বাড়তি খাবার দেওয়া হয়েছে কি?",
+            "visibility": "gone"
+        },
+        {
+            "family": "pncChild",
+            "id": "receivedVaccine",
+            "fieldName": "Received vaccines",
+            "orderId": 10,
+            "isBooleanAnswer": true,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "viewType": "SingleSelectionView",
+            "errorMessage": "Please select a valid option",
+            "isSummary": true,
+            "optionsList": [
+                {
+                    "id": true,
+                    "name": "Yes",
+                    "cultureValue": "হ্যাঁ"
+                },
+                {
+                    "id": false,
+                    "name": "No",
+                    "cultureValue": "না"
+                }
+            ],
+            "optionType": "boolean",
+            "readOnly": true,
+            "title": "Has the child received vaccines?",
+            "titleCulture": "শিশু টিকা নিয়েছে কি না?",
+            "visibility": "gone"
+        },
+        {
+            "family": "pncChild",
+            "id": "dewormingMedicine",
+            "fieldName": "Deworming medication",
+            "orderId": 11,
+            "isBooleanAnswer": true,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "viewType": "SingleSelectionView",
+            "errorMessage": "Please select a valid option",
+            "isSummary": true,
+            "optionsList": [
+                {
+                    "id": true,
+                    "name": "Yes",
+                    "cultureValue": "হ্যাঁ"
+                },
+                {
+                    "id": false,
+                    "name": "No",
+                    "cultureValue": "না"
+                }
+            ],
+            "optionType": "boolean",
+            "readOnly": true,
+            "title": "Has the child taken deworming medicine?",
+            "titleCulture": "শিশু  কৃমিনাশক ওষুধ খেয়েছি কি?",
+            "visibility": "gone"
+        },
+        {
+            "family": "pncChild",
+            "id": "anyIllness",
+            "fieldName": "Illness/Complications",
+            "condition": [
+                {
+                    "eq": "Yes",
+                    "targetId": "childIllnessType",
+                    "visibility": "visible"
+                }
+            ],
+            "orderId": 12,
+            "isBooleanAnswer": true,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "viewType": "SingleSelectionView",
+            "errorMessage": "Please select a valid option",
+            "isSummary": true,
+            "optionsList": [
+                {
+                    "id": true,
+                    "name": "Yes",
+                    "cultureValue": "হ্যাঁ"
+                },
+                {
+                    "id": false,
+                    "name": "No",
+                    "cultureValue": "না"
+                }
+            ],
+            "optionType": "boolean",
+            "readOnly": true,
+            "title": "Any Illness/Complications",
+            "titleCulture": "কোনো রোগ বা জটিলতা আছে কি?",
+            "visibility": "visible"
+        },
+        {
+            "family": "pncChild",
+            "id": "childIllnessType",
+            "fieldName": "Specify Complications",
+            "orderId": 13,
+            "viewType": "DialogCheckbox",
+            "localDataCache": "childIllnessType",
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "errorMessage": "Please select a valid option",
+            "title": "If any complication, specify",
+            "titleCulture": "কোনো জটিলতা থাকলে লিখুন",
+            "isInfo": "gone",
+            "visibility": "gone",
+            "isSummary": true,
+            "condition": []
+        },
+        {
+            "family": "pncChild",
+            "id": "childReferral",
+            "fieldName": "Referred",
+            "condition": [
+                {
+                    "eq": "Yes",
+                    "targetId": "childReferralFacilityType",
+                    "visibility": "visible"
+                }
+            ],
+            "orderId": 14,
+            "isBooleanAnswer": true,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "viewType": "SingleSelectionView",
+            "errorMessage": "Please select a valid option",
+            "isSummary": true,
+            "optionsList": [
+                {
+                    "id": true,
+                    "name": "Yes",
+                    "cultureValue": "হ্যাঁ"
+                },
+                {
+                    "id": false,
+                    "name": "No",
+                    "cultureValue": "না"
+                }
+            ],
+            "optionType": "boolean",
+            "readOnly": true,
+            "title": "Has referral been made?",
+            "titleCulture": "রেফারেল করা হয়েছে কিনা?",
+            "visibility": "visible"
+        },
+        {
+            "condition": [],
+            "defaultValue": null,
+            "errorMessage": "Please select Referral Facility",
+            "cultureErrorMessage": "অনুগ্রহ করে রেফারেল সুবিধার ধরন নির্বাচন করুন",
+            "family": "pncChild",
+            "fieldName": "Referral place",
+            "id": "childReferralFacilityType",
+            "isEditable": true,
+            "isEnabled": true,
+            "isMandatory": false,
+            "isNeededDefault": true,
+            "isSummary": true,
+            "orderId": 15,
+            "optionsList": [
+                {
+                    "id": "medicalCollegeHospital",
+                    "name": "Medical College Hospital",
+                    "cultureValue": "মেডিকেল কলেজ হাসপাতাল"
+                },
+                {
+                    "id": "governmentHospital",
+                    "name": "Government Hospital",
+                    "cultureValue": "সরকারি হাসপাতাল"
+                },
+                {
+                    "id": "upazilaHealthComplex",
+                    "name": "Upazila Health Complex",
+                    "cultureValue": "উপজেলা স্বাস্থ্য কমপ্লেক্স"
+                },
+                {
+                    "id": "privateHospital",
+                    "name": "Private Hospital/Clinic",
+                    "cultureValue": "বেসরকারি হাসপাতাল/ক্লিনিক"
+                },
+                {
+                    "id": "hwc",
+                    "name": "Health & Family Welfare Center",
+                    "cultureValue": "স্বাস্থ্য ও পরিবার কল্যাণ কেন্দ্র"
+                },
+                {
+                    "id": "communityClinic",
+                    "name": "Community Clinic",
+                    "cultureValue": "কমিউনিটি ক্লিনিক"
+                }
+            ],
+            "title": "Referral place",
+            "titleCulture": "রেফারেলের স্থান",
+            "viewType": "Spinner",
+            "visibility": "gone"
+        }
     ],
-    "optionType": "boolean",
-    "readOnly": true,
-    "viewType": "SingleSelectionView",
-    "title": "Father present?",
-    "visibility": "visible"
-  },
-  {
-    "family": "pncChild",
-    "fieldName": "exclusivelyBreastfeeding",
-    "id": "exclusivelyBreastfeeding",
-    "condition": [],
-    "orderId": 4,
-    "isBooleanAnswer": true,
-    "errorMessage": "Please select a valid option",
-    "isEnabled": true,
-    "isMandatory": true,
-    "isNeededDefault": true,
-    "isSummary": true,
-    "optionsList": [
-      {
-        "id": true,
-        "name": "Yes"
-      },
-      {
-        "id": false,
-        "name": "No"
-      }
-    ],
-    "optionType": "boolean",
-    "readOnly": true,
-    "viewType": "SingleSelectionView",
-    "title": "Exclusively breastfeeding?",
-    "visibility": "visible"
-  },
-  {
-    "family": "pncChild",
-    "fieldName": "sleepsUnderBedNet",
-    "id": "sleepsUnderBedNet",
-    "condition": [],
-    "isBooleanAnswer": true,
-    "orderId": 5,
-    "errorMessage": "Please select a valid option",
-    "isEnabled": true,
-    "isMandatory": true,
-    "isNeededDefault": true,
-    "isSummary": true,
-    "optionsList": [
-      {
-        "id": true,
-        "name": "Yes"
-      },
-      {
-        "id": false,
-        "name": "No"
-      }
-    ],
-    "optionType": "boolean",
-    "viewType": "SingleSelectionView",
-    "title": "Sleeps under Bednet",
-    "visibility": "visible"
-  },
-  {
-    "family": "pncChild",
-    "fieldName": "muac",
-    "id": "muac",
-    "viewType": "Spinner",
-    "orderId": 6,
-    "isSummary": true,
-    "isEnabled": true,
-    "isMandatory": true,
-    "title": "MUAC",
-    "isInfo": "visible",
-    "optionsList": [
-      {
-        "id": "Green",
-        "name": "Green"
-      },
-      {
-        "id": "Yellow",
-        "name": "Yellow"
-      },
-      {
-        "id": "Red",
-        "name": "Red"
-      }
-    ],
-    "errorMessage": "Please select a valid option"
-  },
-  {
-    "family": "pncChild",
-    "id": "muacStatus",
-    "title": "MUAC",
-    "backgroundColor": "#FDF4F0",
-    "visibility": "visible",
-    "viewType": "InformationLabel"
-  },
-  {
-    "family": "pncChild",
-    "fieldName": "takingMinimumMealsPerDay",
-    "id": "takingMinimumMealsPerDay",
-    "condition": [],
-    "isBooleanAnswer": true,
-    "orderId": 7,
-    "errorMessage": "Please select a valid option",
-    "isEnabled": true,
-    "isMandatory": true,
-    "isNeededDefault": true,
-    "isSummary": true,
-    "optionsList": [
-      {
-        "id": true,
-        "name": "Yes"
-      },
-      {
-        "id": false,
-        "name": "No"
-      }
-    ],
-    "optionType": "boolean",
-    "viewType": "SingleSelectionView",
-    "title": "Taking minimum meals per day",
-    "visibility": "visible"
-  },
-  {
-    "family": "pncChild",
-    "fieldName": "fedFrom4FoodGroups",
-    "id": "fedFrom4FoodGroups",
-    "condition": [],
-    "isBooleanAnswer": true,
-    "orderId": 9,
-    "errorMessage": "Please select a valid option",
-    "isEnabled": true,
-    "isMandatory": true,
-    "isNeededDefault": true,
-    "isSummary": true,
-    "optionsList": [
-      {
-        "id": true,
-        "name": "Yes"
-      },
-      {
-        "id": false,
-        "name": "No"
-      }
-    ],
-    "optionType": "boolean",
-    "viewType": "SingleSelectionView",
-    "title": "Fed from 4 food groups",
-    "visibility": "visible"
-  },
-  {
-    "family": "pncChild",
-    "fieldName": "motherOrPartnerUsingFamilyPlanning",
-    "id": "motherOrPartnerUsingFamilyPlanning",
-    "condition": [],
-    "orderId": 10,
-    "isBooleanAnswer": true,
-    "errorMessage": "Please select a valid option",
-    "isEnabled": true,
-    "isMandatory": true,
-    "isNeededDefault": true,
-    "isSummary": true,
-    "optionsList": [
-      {
-        "id": true,
-        "name": "Yes"
-      },
-      {
-        "id": false,
-        "name": "No"
-      }
-    ],
-    "optionType": "boolean",
-    "viewType": "SingleSelectionView",
-    "title": "Mother / Partner using family planning",
-    "visibility": "visible"
-  },
-  {
-    "family": "pncChild",
-    "fieldName": "deathOfBaby",
-    "id": "deathOfBaby",
-    "condition": [],
-    "orderId": 11,
-    "errorMessage": "Please select a valid option",
-    "isEnabled": true,
-    "isBooleanAnswer": true,
-    "isMandatory": true,
-    "isNeededDefault": true,
-    "isSummary": true,
-    "optionsList": [
-      {
-        "id": true,
-        "name": "Yes"
-      },
-      {
-        "id": false,
-        "name": "No"
-      }
-    ],
-    "optionType": "boolean",
-    "viewType": "SingleSelectionView",
-    "title": "Death of baby",
-    "visibility": "visible"
-  }
-]
+    "time": 1772173111827
+}

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">@string/spice_app_name</string>
+    <string name="app_name">ComEMR</string>
     <string name="logo_description">মেডট্রনিক লোগো</string>
     <string name="welcome">স্বাগতম</string>
     <string name="login_to_your_account">আপনার অ্যাকাউন্টে লগইন করুন</string>
@@ -104,7 +104,7 @@
     <string name="household_registration">পরিবার নিবন্ধন</string>
     <string name="household_head_registration">পরিবারের প্রধান নিবন্ধন</string>
     <string name="household_head_name">পরিবারের প্রধান নাম</string>
-    <string name="household_family">%1 এর পরিবার</string>
+    <string name="household_family">%1$s এর পরিবার</string>
     <string name="cancel">বাতিল</string>
     <string name="member_registration">সদস্য নিবন্ধন</string>
     <string name="submit">জমা দিন</string>
@@ -1020,7 +1020,7 @@
     <string name="smoking_comments">"Smoking Comments "</string>
     <string name="alcohol_comments">Alcohol Comments</string>
     <string name="delete">মুছুন</string>
-    <string name="patient_delete_confirmation">আপনি কি নিশ্চিত যে আপনি %1 %2 আর্কাইভ করতে চান?</string>
+    <string name="patient_delete_confirmation">আপনি কি নিশ্চিত যে আপনি %1$s %2$s আর্কাইভ করতে চান?</string>
     <string name="valid_reason">কারণ আবশ্যক</string>
     <string name="patient_delete_message">রোগী সফলভাবে মুছে ফেলা হয়েছে</string>
     <string name="patient_details">রোগীর বিবরণ</string>
@@ -1046,7 +1046,7 @@
     <string name="patient_transfer">রোগী স্থানান্তর</string>
     <string name="notification">বিজ্ঞপ্তি</string>
     <string name="no_notifications_found">কোন বিজ্ঞপ্তি পাওয়া যায়নি</string>
-    <string name="notification_count">বিজ্ঞপ্তি (%1)</string>
+    <string name="notification_count">বিজ্ঞপ্তি (%1$s)</string>
     <string name="reject">প্রত্যাখ্যান</string>
     <string name="reason_with_colon">Reason:</string>
     <string name="pending_message_format">%1$s এর %2$s এ স্থানান্তর অনুরোধ অনুমোদনের অপেক্ষায়।</string>

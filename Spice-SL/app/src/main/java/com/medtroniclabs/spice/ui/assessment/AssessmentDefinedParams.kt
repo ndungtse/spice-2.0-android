@@ -209,4 +209,13 @@ object AssessmentDefinedParams {
     const val DesireYesAfter2Yrs = "yesAfter2Yrs"
     const val DesireNoMore = "noMoreChildren"
     const val DesireUnsure = "unsure"
+
+    // Child Health Field Ids
+    const val WHAT_FED_LAST_24_HRS = "childFeedLast24Hrs"
+    const val HOURS_BREAST_FEED_AFTER_BIRTH = "hrsBreastFed"
+    const val ADDITIONAL_FOOD_GIVEN_MONTHS = "monthAdditionalFeedGiven"
+    const val BREAST_FEEDING = "childBreastFeeding"
+    const val ADDITIONAL_FOOD_GIVEN_LAST_24_HRS = "additionalFood24Hrs"
+    const val VACCINE_RECEIVED = "receivedVaccine"
+    const val DEWORMING_MEDICINE = "dewormingMedicine"
 }

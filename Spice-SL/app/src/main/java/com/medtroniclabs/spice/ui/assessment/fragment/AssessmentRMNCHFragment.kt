@@ -16,7 +16,6 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.extractNumber
-import com.medtroniclabs.spice.common.CommonUtils.isMandateOrNot
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.calculateAgeInMonths
 import com.medtroniclabs.spice.common.DateUtils.formatGestationalAge
@@ -27,8 +26,6 @@ import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.VISIBLE
-import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -160,6 +157,7 @@ class AssessmentRMNCHFragment :
                             viewModel.getPNCChildInfoByParentId(resource.data.id)
                         }
                     }
+                    showHideOptionsForChildHealth()
                 }
 
                 ResourceState.ERROR -> {}
@@ -226,53 +224,32 @@ class AssessmentRMNCHFragment :
             binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled(),
             callback = { map, id ->
-                viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let {
-                    calculateAgeInMonths(it)?.let { pair ->
-                        // TODO: @Venkat Calculate Age of Child Here & Hide/Show Fields Based On That
-                    }
-                }
-                when (id) {
-                    deathOfBaby -> {
-                        val isDeathOfBaby = (map[deathOfBaby] as? Boolean) ?: false
-                        if (!isDeathOfBaby && map.containsKey(deathOfBaby)) {
-                            viewModel.selectedMemberDob?.let { dateOfBirth ->
-                                formGenerator.getServerData()?.let { serverDataList ->
-                                    val visible = isMandateOrNot(dateOfBirth)
-
-                                    serverDataList.forEach { serverData ->
-                                        if (serverData.id == MUAC) {
-                                            serverData.apply {
-                                                visibility = visible
-                                                isMandatory = (visible == VISIBLE)
-                                                isSummary = (visible == VISIBLE)
-                                                if ((visible == VISIBLE)) {
-                                                    formGenerator
-                                                        .getViewByTag(MUAC + rootSuffix)
-                                                        ?.visible()
-                                                    (formGenerator.getViewByTag(MUAC + formGenerator.titleSuffix) as? TextView)?.let { textView ->
-                                                        val text = textView.text.toString()
-                                                        if (!text.endsWith("*")) {
-                                                            textView.markMandatory()
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    formGenerator.setServerData(serverDataList)
-                                }
-                            }
-                            viewModel.formRenderedLiveData.postValue(true)
-                        } else {
-                            formGenerator.getViewByTag(MUAC + rootSuffix)?.gone()
-                            formGenerator.getViewByTag(muacStatus + rootSuffix)?.gone()
-                        }
-                    }
-                }
+                showHideOptionsForChildHealth()
             },
         )
         showRespectiveWorkflow()
+    }
+
+    private fun showHideOptionsForChildHealth() {
+        viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let {
+            calculateAgeInMonths(it)?.let { pair ->
+                if (pair.first > 18) {
+                    formGenerator.getViewByTag(AssessmentDefinedParams.WHAT_FED_LAST_24_HRS + rootSuffix)?.visibility = View.GONE
+                    formGenerator.getViewByTag(AssessmentDefinedParams.BREAST_FEEDING + rootSuffix)?.visibility = View.VISIBLE
+                    formGenerator.getViewByTag(AssessmentDefinedParams.ADDITIONAL_FOOD_GIVEN_LAST_24_HRS + rootSuffix)?.visibility = View.VISIBLE
+                    formGenerator.getViewByTag(AssessmentDefinedParams.DEWORMING_MEDICINE + rootSuffix)?.visibility = View.VISIBLE
+                    formGenerator.getViewByTag(AssessmentDefinedParams.VACCINE_RECEIVED + rootSuffix)?.visibility = View.VISIBLE
+                } else if (pair.first > 11) {
+                    formGenerator.getViewByTag(AssessmentDefinedParams.BREAST_FEEDING + rootSuffix)?.visibility = View.VISIBLE
+                    formGenerator.getViewByTag(AssessmentDefinedParams.ADDITIONAL_FOOD_GIVEN_LAST_24_HRS + rootSuffix)?.visibility = View.VISIBLE
+                    formGenerator.getViewByTag(AssessmentDefinedParams.DEWORMING_MEDICINE + rootSuffix)?.visibility = View.VISIBLE
+                } else if (pair.first > 6) {
+                    formGenerator.getViewByTag(AssessmentDefinedParams.ADDITIONAL_FOOD_GIVEN_MONTHS + rootSuffix)?.visibility = View.VISIBLE
+                } else if (pair.first <= 3) {
+                    formGenerator.getViewByTag(AssessmentDefinedParams.HOURS_BREAST_FEED_AFTER_BIRTH + rootSuffix)?.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
     private fun showRespectiveWorkflow() {
