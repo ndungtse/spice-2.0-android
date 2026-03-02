@@ -363,7 +363,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         val assessmentId = requireArguments().getLong(AssessmentId)
         resultMap?.let { details ->
@@ -438,7 +438,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                     // It is used to reset PNC and ANC and update the pregnancy status in the member table.
                     result?.second?.let { resultValue ->
                         viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
-                        viewModel.saveCallResult(data, resultValue, memberIdOfMotherForResetPNCANC)
+                        viewModel.saveCallResult(serverData, data, resultValue, memberIdOfMotherForResetPNCANC)
                     }
                 }
             } else {
@@ -497,7 +497,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                         )
                     }
                     viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
-                    viewModel.saveAssessment(resultValue, referralResult, viewModel.menuId)
+                    viewModel.saveAssessment(serverData, resultValue, referralResult, viewModel.menuId)
                 }
             }
         }
@@ -547,7 +547,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
     }

@@ -323,7 +323,7 @@ class AssessmentRMNCHFragment :
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         resultMap?.let { details ->
             if (viewModel.workflowName == RMNCH.PNC) {
@@ -338,7 +338,7 @@ class AssessmentRMNCHFragment :
                 )
             }
             result?.second?.let { second ->
-                handleNextPregnancyFlow(second)
+                handleNextPregnancyFlow(serverData, second)
             }
         }
         viewModel.setAnalyticsData(
@@ -362,7 +362,10 @@ class AssessmentRMNCHFragment :
         return false
     }
 
-    private fun handleNextPregnancyFlow(second: HashMap<String, Any>) {
+    private fun handleNextPregnancyFlow(
+        serverData: List<FormLayout>,
+        second: HashMap<String, Any>,
+    ) {
         viewModel.workflowName?.let { name ->
             when (name) {
                 RMNCH.PNC -> {
@@ -395,6 +398,7 @@ class AssessmentRMNCHFragment :
                     val resultGenerator = ReferralResultGenerator()
                     val referralResult = resultGenerator.calculateRMNCHReferralResult(second, false)
                     viewModel.saveAssessment(
+                        serverData,
                         second,
                         referralResult,
                         RMNCH.getMenuName(viewModel.workflowName),
@@ -679,7 +683,7 @@ class AssessmentRMNCHFragment :
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
         /*

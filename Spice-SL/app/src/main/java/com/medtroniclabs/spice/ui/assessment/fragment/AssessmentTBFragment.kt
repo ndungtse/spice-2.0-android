@@ -233,7 +233,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         val dob = viewModel.memberDetailsLiveData.value
             ?.data
@@ -290,7 +290,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
                         val tbType = viewModel.assessmentTBType.value ?: TBScreening
                         viewModel.setUserJourney("$TBTYPE - ${viewModel.assessmentTBType.value ?: TBScreening}")
-                        viewModel.saveTbAssessment(it, referralResult, tbType, viewModel.menuId)
+                        viewModel.saveTbAssessment(serverData, it, referralResult, tbType, viewModel.menuId)
                         viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                     }
                 }
@@ -324,7 +324,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
         /*

@@ -93,8 +93,8 @@ class RegistrationRepository @Inject constructor(
 
     suspend fun validatePatient(
         requestMap: HashMap<String, Any>,
-        patientCreateReq: Pair<HashMap<String, Any>, List<FormLayout?>?>,
-    ): Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>> =
+        patientCreateReq: Pair<HashMap<String, Any>, List<FormLayout>?>,
+    ): Resource<Pair<HashMap<String, Any>, List<FormLayout>?>> =
         try {
             val response = apiHelper.validatePatient(CommonUtils.validationRequest(requestMap))
 

@@ -1411,7 +1411,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
     }
 
@@ -1443,7 +1443,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
         /*

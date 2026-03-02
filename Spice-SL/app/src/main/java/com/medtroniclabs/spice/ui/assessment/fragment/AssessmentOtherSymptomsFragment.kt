@@ -166,7 +166,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         resultMap?.let { details ->
             val referralResult =
@@ -180,7 +180,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
             }
 
             result?.second?.let {
-                viewModel.saveAssessment(it, referralResult, viewModel.menuId)
+                viewModel.saveAssessment(serverData, it, referralResult, viewModel.menuId)
             }
         }
         viewModel.setAnalyticsData(
@@ -301,7 +301,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
         /*

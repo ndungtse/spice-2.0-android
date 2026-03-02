@@ -592,6 +592,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
         if (age <= 2) {
             guardianView.visible()
         } else {
+            guardianView.gone()
             formGenerator.resetChildViews(guardianView)
             // Remove guardian entry if household is
             map.remove(MemberRegistration.ID_GUARDIAN)
@@ -675,7 +676,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         resultMap?.let { map ->
             if (memberRegistrationViewModel.startAssessment == true) {
@@ -800,7 +801,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
         /*

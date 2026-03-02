@@ -369,7 +369,7 @@ class AssessmentICCMFragment :
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         val dob = viewModel.memberDetailsLiveData.value
             ?.data
@@ -444,7 +444,7 @@ class AssessmentICCMFragment :
 
     private fun onSubmitICCM(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         if (viewModel.isDangerSignFlow) {
             resultMap?.keys?.retainAll(listOf(isUnusualSleepy, isConvulsionPastFewDays, isBreastfeed, isVomiting))
@@ -464,7 +464,7 @@ class AssessmentICCMFragment :
             }
 
             result?.second?.let {
-                viewModel.saveAssessment(it, referralResult, viewModel.menuId)
+                viewModel.saveAssessment(serverData, it, referralResult, viewModel.menuId)
             }
         }
         viewModel.setAnalyticsData(
@@ -733,7 +733,7 @@ class AssessmentICCMFragment :
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
         /*

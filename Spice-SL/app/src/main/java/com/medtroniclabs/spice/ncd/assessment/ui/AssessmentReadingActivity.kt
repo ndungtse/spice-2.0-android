@@ -246,7 +246,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         withNetworkCheck(connectivityManager, {
             resultMap?.let { map ->
@@ -292,7 +292,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
         /*
@@ -302,7 +302,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
 
     private fun processValuesAndProceed(
         resultMap: HashMap<String, Any>,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         val map = HashMap<String, Any>()
         map.putAll(resultMap)

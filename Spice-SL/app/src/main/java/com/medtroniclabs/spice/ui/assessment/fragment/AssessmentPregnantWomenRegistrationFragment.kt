@@ -375,7 +375,7 @@ class AssessmentPregnantWomenRegistrationFragment :
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         resultMap?.let {
             val result = serverData?.let {
@@ -386,7 +386,7 @@ class AssessmentPregnantWomenRegistrationFragment :
                 )
             }
             result?.second?.let {
-                viewModel.saveAssessment(it, null, viewModel.menuId)
+                viewModel.saveAssessment(serverData, it, null, viewModel.menuId)
             }
         }
         viewModel.setAnalyticsData(
@@ -421,7 +421,7 @@ class AssessmentPregnantWomenRegistrationFragment :
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
     }

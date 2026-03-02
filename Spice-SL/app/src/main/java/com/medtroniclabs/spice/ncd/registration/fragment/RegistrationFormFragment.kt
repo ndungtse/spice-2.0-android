@@ -342,7 +342,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         withNetworkAvailability(online = {
             resultMap?.let {
@@ -403,7 +403,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
 
     private fun proceedRegistration(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         resultMap?.remove(Screening.identityType)
         withNetworkAvailability(online = {
@@ -466,7 +466,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
         /*

@@ -438,7 +438,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         // Calling Local DB
         val regDateUtc = DateUtils
@@ -630,7 +630,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
     }

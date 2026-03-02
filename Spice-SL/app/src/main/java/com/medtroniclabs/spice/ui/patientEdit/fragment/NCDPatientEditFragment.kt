@@ -210,7 +210,7 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
         /**
@@ -258,7 +258,7 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         val map = HashMap<String, Any>()
         if (resultMap != null) {

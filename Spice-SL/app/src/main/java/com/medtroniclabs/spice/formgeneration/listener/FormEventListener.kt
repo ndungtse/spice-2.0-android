@@ -28,7 +28,7 @@ interface FormEventListener {
 
     fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>? = null,
+        serverData: List<FormLayout>? = null,
     )
 
     fun onRenderingComplete()
@@ -51,7 +51,7 @@ interface FormEventListener {
 
     fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>? = null,
+        serverData: List<FormLayout>? = null,
         resultHashMap: HashMap<String, Any>,
     )
 }

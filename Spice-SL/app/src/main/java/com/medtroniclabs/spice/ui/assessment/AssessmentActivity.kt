@@ -465,7 +465,8 @@ class AssessmentActivity : BaseActivity() {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    resource.data?.let { assessment ->
+                    resource.data?.let { data ->
+                        val assessment = data.second
                         val detailsJson = JSONObject(assessment.assessmentDetails)
                         val ancObject = detailsJson.optJSONObject(ANC_MENU)
                         val isDeathOfMother = ancObject?.optBoolean(DeathOfMother, false) == true
@@ -477,9 +478,7 @@ class AssessmentActivity : BaseActivity() {
                                 startCbsActivity(
                                     workFlowName = it,
                                     memberId = viewModel.selectedHouseholdMemberId,
-                                    assessmentId = viewModel.assessmentSaveLiveData.value
-                                        ?.data
-                                        ?.id,
+                                    assessmentId = assessment.id,
                                     deathOfMother = isDeathOfMother,
                                     deathOfNewborn = isDeathOfNeonate,
                                 )

@@ -150,7 +150,8 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
     }
 
     private fun saveCallResult() {
-        viewModel.assessmentSaveLiveData.value?.data?.let { data ->
+        viewModel.assessmentSaveLiveData.value?.data?.let { saveData ->
+            val data = saveData.second
             val gson = Gson()
             val type = object : TypeToken<CbsFollowUp>() {}.type
 
@@ -200,7 +201,7 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
 
             // Update callResult JSON and save
             data.apply { callResult = gson.toJson(callResults) }
-            viewModel.saveCallResult(data)
+            viewModel.saveCallResult(saveData.first, data)
         }
     }
 }

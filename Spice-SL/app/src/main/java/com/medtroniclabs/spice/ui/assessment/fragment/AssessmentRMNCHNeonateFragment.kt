@@ -311,7 +311,7 @@ class AssessmentRMNCHNeonateFragment :
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         resultMap?.let { map ->
             viewModel.pncMotherDetailMap?.let { motherDetailMap ->
@@ -374,7 +374,7 @@ class AssessmentRMNCHNeonateFragment :
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
         /*

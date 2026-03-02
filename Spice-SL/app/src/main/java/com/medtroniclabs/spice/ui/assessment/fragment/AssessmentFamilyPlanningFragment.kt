@@ -133,7 +133,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         resultMap?.let { details ->
             val referralResult = ReferralResultGenerator().calculateFamilyPlanningStatus(details)
@@ -146,7 +146,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
             }
             result?.second?.let {
                 viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
-                viewModel.saveAssessment(it, referralResult, viewModel.menuId)
+                viewModel.saveAssessment(serverData, it, referralResult, viewModel.menuId)
             }
         }
     }
@@ -179,7 +179,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
     }

@@ -3,7 +3,7 @@ package com.medtroniclabs.spice.common
 object RoleConstant {
     val PROVIDER = "PROVIDER"
     val COMMUNITY_HEALTH_WORKER = "CHW"
-    var CHWs = arrayOf("SHASTIYA_KORMI", "CHW")
+    val CHWs = arrayOf("SHASTIYA_KORMI", "CHW")
     val PEER_SUPERVISOR = "PEER_SUPERVISOR"
     val SECHN = "SECHN"
     val MCHA = "MCHA"

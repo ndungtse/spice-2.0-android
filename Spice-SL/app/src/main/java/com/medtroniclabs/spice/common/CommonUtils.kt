@@ -254,23 +254,11 @@ object CommonUtils {
         }
     }
 
-    fun isChw(): Boolean {
-        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
-        if (userRole != null) {
-            return CHWs.contains(userRole)
-        }
-        return false
-    }
+    fun isChw(): Boolean = SecuredPreference.getUserDetails()?.roles?.any { it.name in CHWs } == true
 
     fun offlineUsers(): Boolean = isNonCommunity() || (isCommunity() && isChw())
 
-    fun isChwChp(): Boolean {
-        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
-        return CHWs.contains(userRole ?: "") ||
-            userRole?.contains(
-                RoleConstant.COMMUNITY_HEALTH_PROVIDER,
-            ) == true
-    }
+    fun isChwChp(): Boolean = isChw() || isChp()
 
     fun isProvider(): Boolean {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
@@ -1922,7 +1910,7 @@ object CommonUtils {
         if (userRole != null) {
             return isFromMyPatients &&
                 (
-                    CHWs.contains(userRole) ||
+                    isChw() ||
                         userRole.contains(PROVIDER) ||
                         userRole.contains(
                             PHYSICIAN_PRESCRIBER,

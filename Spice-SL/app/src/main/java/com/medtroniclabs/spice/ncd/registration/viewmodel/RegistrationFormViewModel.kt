@@ -38,7 +38,7 @@ class RegistrationFormViewModel @Inject constructor(
 ) : BaseViewModel(dispatcherIO) {
     var registrationResponseLiveData = MutableLiveData<Resource<RegistrationResponse>>()
     var validatePatientResponseLiveDate =
-        MutableLiveData<Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>>>()
+        MutableLiveData<Resource<Pair<HashMap<String, Any>, List<FormLayout>?>>>()
 
     val countrySpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
     val districtSpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
@@ -160,7 +160,7 @@ class RegistrationFormViewModel @Inject constructor(
 
     fun validatePatient(
         resp: HashMap<String, Any>,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         viewModelScope.launch(dispatcherIO) {
             validatePatientResponseLiveDate.postLoading()

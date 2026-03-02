@@ -403,7 +403,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         resultMap?.let { map ->
             if (householdRegistrationViewModel.householdId != -1L) {
@@ -446,7 +446,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
         /*

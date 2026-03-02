@@ -387,7 +387,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         resultMap?.let {
             viewModel.getCurrentLocation()?.let { location ->
@@ -536,13 +536,13 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
         var matchingCondition: String? = null
         val hivViewBasedOnAge =
             serverData?.filter {
-                val (matches, condition) = it?.ageCondition?.let { ageConditionList ->
+                val (matches, condition) = it.ageCondition?.let { ageConditionList ->
                     getAgeConditionCategory(age, ageConditionList)
                 } ?: Pair(false, null)
                 if (matches) {

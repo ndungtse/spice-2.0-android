@@ -362,7 +362,7 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
     }
 
@@ -392,7 +392,7 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
     }

@@ -55,6 +55,7 @@ import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.TreatmentDetailsEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.FormGenerator
+import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.mappingkey.PregnantWomen
@@ -87,7 +88,6 @@ import com.medtroniclabs.spice.ui.MenuConstants.TB_MENU_ID
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanning
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanningDetails
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanningMethods
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsClinicTaken
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBContactTracing
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBRxBuddyFollowUp
@@ -101,7 +101,6 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.symptomsDTO
 import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Diarrhoea
-import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.DiarrhoeaSigns
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralReasons
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
@@ -110,7 +109,6 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Miscarriage
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ancSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.childhoodVisitSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.estimatedDeliveryDate
@@ -143,7 +141,7 @@ class AssessmentViewModel @Inject constructor(
     var memberFhirId: String? = null
     var selectedHouseholdId = -1L
     var followUpId: Long? = null
-    val assessmentSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
+    val assessmentSaveLiveData = MutableLiveData<Resource<Pair<List<FormLayout>?, AssessmentEntity>>>()
     val assessmentStringLiveData = MutableLiveData<String?>()
     val assessmentUpdateLiveData = MutableLiveData<Resource<String>>()
     val memberDetailsLiveData = MutableLiveData<Resource<AssessmentMemberDetails>>()
@@ -191,7 +189,7 @@ class AssessmentViewModel @Inject constructor(
     val userProfileLiveData = MutableLiveData<Resource<UserProfile>>()
     val callResultHashMap = HashMap<String, Any>()
     val patientHealthFacility = MutableLiveData<Resource<List<HealthFacilityEntity>>>()
-    val callResultSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
+    val callResultSaveLiveData = MutableLiveData<Resource<Pair<List<FormLayout>?, AssessmentEntity>>>()
     val getAssessmentDetails = MutableLiveData<Resource<AssessmentEntity>>()
     var isCbs = false
     var motherID: Long? = null
@@ -269,6 +267,7 @@ class AssessmentViewModel @Inject constructor(
     }
 
     fun saveTbAssessment(
+        serverData: List<FormLayout>,
         assessmentMap: HashMap<String, Any>,
         referralResult: Pair<String?, ArrayList<String>>?,
         tbType: String,
@@ -276,11 +275,11 @@ class AssessmentViewModel @Inject constructor(
     ) {
         when (tbType) {
             TBScreening -> {
-                saveAssessment(assessmentMap, referralResult, menuId, tbType)
+                saveAssessment(serverData, assessmentMap, referralResult, menuId, tbType)
             }
 
             TBContactTracing -> {
-                saveAssessment(assessmentMap, referralResult, menuId, tbType)
+                saveAssessment(serverData, assessmentMap, referralResult, menuId, tbType)
             }
 
             TBRxBuddyRegister -> {
@@ -344,6 +343,7 @@ class AssessmentViewModel @Inject constructor(
     }
 
     fun saveAssessment(
+        serverData: List<FormLayout>?,
         assessmentMap: HashMap<String, Any>,
         referralResult: Pair<String?, ArrayList<String>>?,
         menuId: String?,
@@ -353,7 +353,7 @@ class AssessmentViewModel @Inject constructor(
             memberDetailsLiveData.value?.data?.let { details ->
                 referralStatus = referralResult?.first
                 val assessmentDetail =
-                    getAssessmentDetails(assessmentMap as HashMap<Any, Any>)
+                    getAssessmentDetails(serverData, assessmentMap as HashMap<Any, Any>)
                 assessmentStringLiveData.postValue(assessmentDetail.first)
                 referralReason = referralResult?.second
                 val otherDetails = calculateOtherDetails(assessmentMap, referralStatus, menuId)
@@ -379,7 +379,11 @@ class AssessmentViewModel @Inject constructor(
                 }
 
                 assessmentSaveLiveData.postValue(
-                    assessmentResult,
+                    when (assessmentResult.state) {
+                        ResourceState.ERROR -> Resource(state = ResourceState.ERROR)
+                        ResourceState.LOADING -> Resource(state = ResourceState.LOADING)
+                        ResourceState.SUCCESS -> Resource(state = assessmentResult.state, data = Pair(serverData, assessmentResult.data!!))
+                    },
                 )
             }
         }
@@ -415,6 +419,7 @@ class AssessmentViewModel @Inject constructor(
     }
 
     fun saveCallResult(
+        serverData: List<FormLayout>?,
         assessmentEntity: AssessmentEntity,
         assessmentMap: HashMap<String, Any>? = null,
         memberId: Long? = null,
@@ -422,7 +427,7 @@ class AssessmentViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             assessmentMap?.let {
                 val assessmentDetail =
-                    getAssessmentDetails(it as HashMap<Any, Any>)
+                    getAssessmentDetails(serverData, it as HashMap<Any, Any>)
                 assessmentStringLiveData.postValue(assessmentDetail.first)
             }
             memberId?.let {
@@ -435,7 +440,22 @@ class AssessmentViewModel @Inject constructor(
                     ),
                 )
             }
-            callResultSaveLiveData.postValue(assessmentRepository.saveCallResult(assessmentEntity))
+            val saveResult = assessmentRepository.saveCallResult(assessmentEntity)
+            callResultSaveLiveData.postValue(
+                when (saveResult.state) {
+                    ResourceState.LOADING -> {
+                        Resource(state = ResourceState.LOADING)
+                    }
+
+                    ResourceState.ERROR -> {
+                        Resource(state = ResourceState.ERROR)
+                    }
+
+                    ResourceState.SUCCESS -> {
+                        Resource(state = ResourceState.SUCCESS, data = Pair(serverData, saveResult.data!!))
+                    }
+                },
+            )
         }
     }
 
@@ -638,30 +658,24 @@ class AssessmentViewModel @Inject constructor(
         return Triple(assessmentDetail, motherMapString ?: "", childMapString ?: "")
     }
 
-    private fun getAssessmentDetails(map: HashMap<Any, Any>): Pair<String, String> {
+    private fun getAssessmentDetails(
+        serverData: List<FormLayout>?,
+        map: HashMap<Any, Any>,
+    ): Pair<String, String> {
         val assessmentDetail = StringConverter.convertGivenMapToString(map) ?: ""
+        modifyDialogCheckboxValues(map, serverData)
 
         // Request modification for syncing ICCM to Backend
         if (map.containsKey(ICCM_MENU_ID)) {
             val iccm = map[ICCM_MENU_ID] as HashMap<*, *>
             if (iccm.containsKey(Diarrhoea)) {
                 val diarrhoea = iccm[Diarrhoea] as HashMap<Any, Any>
-                if (diarrhoea.containsKey(DiarrhoeaSigns)) {
-                    val signsList = mutableListOf<String>()
-                    val list = diarrhoea[DiarrhoeaSigns] as List<*>
-                    list.forEach { it ->
-                        if (it is HashMap<*, *>) {
-                            signsList.add(it[DefinedParams.Value] as String)
-                        }
-                    }
-                    diarrhoea[DiarrhoeaSigns] = signsList
-                }
 
                 if (diarrhoea.containsKey(IccmDiarrheaNotifiableCondition)) {
                     val cbsData = hashMapOf<String, Any>()
-                    val conditions =
-                        getFormatedNotifiableCondition(diarrhoea, IccmDiarrheaNotifiableCondition)
-                    cbsData[NotifiableConditions] = conditions
+                    diarrhoea[IccmDiarrheaNotifiableCondition]?.let {
+                        cbsData[NotifiableConditions] = it
+                    }
                     if (diarrhoea.containsKey(OtherNotifiableConditionsForDiarrhoea)) {
                         cbsData[OtherNotifiableConditions] =
                             diarrhoea[OtherNotifiableConditionsForDiarrhoea] as String
@@ -676,9 +690,9 @@ class AssessmentViewModel @Inject constructor(
                 val fever = iccm[fever.lowercase()] as HashMap<Any, Any>
                 if (fever.containsKey(IccmFeverNotifiableCondition)) {
                     val cbsData = hashMapOf<String, Any>()
-                    val conditions =
-                        getFormatedNotifiableCondition(fever, IccmFeverNotifiableCondition)
-                    cbsData[NotifiableConditions] = conditions
+                    fever[IccmFeverNotifiableCondition]?.let {
+                        cbsData[NotifiableConditions] = it
+                    }
                     if (fever.containsKey(OtherNotifiableConditionsForFever)) {
                         cbsData[OtherNotifiableConditions] =
                             fever[OtherNotifiableConditionsForFever] as String
@@ -695,41 +709,13 @@ class AssessmentViewModel @Inject constructor(
             val otherSymptom = map[OTHER_SYMPTOMS] as HashMap<Any, Any>
             if (otherSymptom.containsKey(signsAndSymptoms)) {
                 val signsAndSymptom = otherSymptom[signsAndSymptoms] as HashMap<Any, Any>
-                if (signsAndSymptom.containsKey(otherSymptoms)) {
-                    val signsList = mutableListOf<String>()
-                    val list = signsAndSymptom[otherSymptoms] as List<*>
-                    list.forEach { it ->
-                        if (it is HashMap<*, *>) {
-                            signsList.add(it[DefinedParams.Value] as String)
-                        }
-                    }
-
-                    signsAndSymptom.remove(otherSymptoms)
-                    signsAndSymptom[symptoms] = signsList
+                signsAndSymptom[otherSymptoms]?.let {
+                    signsAndSymptom[symptoms] = it
                 }
+                signsAndSymptom.remove(otherSymptoms)
             }
             map.remove(OTHER_SYMPTOMS)
             map[otherSymptoms] = otherSymptom
-        }
-
-        // Request modification for syncing Other Symptoms to Backend
-        if (map.containsKey(familyPlanning.lowercase())) {
-            val otherSymptom = map[familyPlanning.lowercase()] as HashMap<Any, Any>
-            if (otherSymptom.containsKey(FamilyPlanningDetails)) {
-                val signsAndSymptom = otherSymptom[FamilyPlanningDetails] as HashMap<Any, Any>
-                if (signsAndSymptom.containsKey(FamilyPlanningMethods)) {
-                    val signsList = mutableListOf<String>()
-                    val list = signsAndSymptom[FamilyPlanningMethods] as List<*>
-                    list.forEach { it ->
-                        if (it is HashMap<*, *>) {
-                            signsList.add(it[DefinedParams.Value] as String)
-                        }
-                    }
-
-                    signsAndSymptom.remove(FamilyPlanningMethods)
-                    signsAndSymptom[FamilyPlanningMethods] = signsList
-                }
-            }
         }
 
         // Request modification for syncing NCD Symptoms to Backend
@@ -737,36 +723,20 @@ class AssessmentViewModel @Inject constructor(
             val otherSymptom = map[ncd] as HashMap<Any, Any>
             if (otherSymptom.containsKey(signsAndSymptoms)) {
                 val signsAndSymptom = otherSymptom[signsAndSymptoms] as HashMap<Any, Any>
-                if (signsAndSymptom.containsKey(symptomsDTO)) {
-                    val signsList = mutableListOf<String>()
-                    val list = signsAndSymptom[symptomsDTO] as List<*>
-                    list.forEach { it ->
-                        if (it is HashMap<*, *>) {
-                            signsList.add(it[DefinedParams.Value] as String)
-                        }
-                    }
-
-                    signsAndSymptom.remove(symptomsDTO)
-                    signsAndSymptom[symptoms] = signsList
+                signsAndSymptom[symptomsDTO]?.let {
+                    signsAndSymptom[symptoms] = it
                 }
+                signsAndSymptom.remove(symptomsDTO)
             }
         }
 
         // Request modification for syncing RMNCH Childhood Visit to Backend
         if (map.containsKey(ChildHoodVisit)) {
             val childHoodVisit = map[ChildHoodVisit] as HashMap<Any, Any>
-            if (childHoodVisit.containsKey(childhoodVisitSigns)) {
-                val signsList = mutableListOf<String>()
-                val list = childHoodVisit[childhoodVisitSigns] as List<*>
-                list.forEach { it ->
-                    if (it is HashMap<*, *>) {
-                        signsList.add(it[DefinedParams.Value] as String)
-                    }
-                }
-
-                childHoodVisit.remove(childhoodVisitSigns)
-                childHoodVisit[pncChildSigns] = signsList
+            childHoodVisit[childhoodVisitSigns]?.let {
+                childHoodVisit[pncChildSigns] = it
             }
+            childHoodVisit.remove(childhoodVisitSigns)
 
             if (childHoodVisit.containsKey(otherChildhoodVisitSigns)) {
                 val os = childHoodVisit[otherChildhoodVisitSigns] as Any
@@ -778,16 +748,6 @@ class AssessmentViewModel @Inject constructor(
         // Request modification for syncing RMNCH ANC Visit to Backend
         if (map.containsKey(ANC_MENU)) {
             val anc = map[ANC_MENU] as HashMap<Any, Any>
-            if (anc.containsKey(ancSigns)) {
-                val signsList = mutableListOf<String>()
-                val list = anc[ancSigns] as List<*>
-                list.forEach { it ->
-                    if (it is HashMap<*, *>) {
-                        signsList.add(it[DefinedParams.Value] as String)
-                    }
-                }
-                anc[ancSigns] = signsList
-            }
 
             if (anc.containsKey(otherAncSigns)) {
                 val os = anc[otherAncSigns] as Any
@@ -808,14 +768,6 @@ class AssessmentViewModel @Inject constructor(
             if (contactTracing?.size == 0) {
                 result.remove(CONTACT_TRACING)
             }
-
-            /* if ( result != null && result.containsKey(TbScreening) && contactTracing?.size == 0) {
-                 val value = result[TbScreening] as? HashMap<Any, Any>
-                 if (!value.isNullOrEmpty()) {
-                     map.remove(TB.lowercase())
-                     map[TB.lowercase()] = value
-                 }
-             }*/
         }
 
         // Request modification for CBS Register
@@ -825,22 +777,11 @@ class AssessmentViewModel @Inject constructor(
                 val value = result[surveillanceDetails] as? HashMap<*, *>
                 value?.takeIf { it.isNotEmpty() }?.let {
                     val conditions = mutableListOf<String>()
-                    if (value.containsKey(CbsNotifiableCondition)) {
-                        conditions.addAll(
-                            getFormatedNotifiableCondition(
-                                value,
-                                CbsNotifiableCondition,
-                            ),
-                        )
+                    (value[CbsNotifiableCondition] as? List<String>)?.let { condition ->
+                        conditions.addAll(condition)
                     }
-
-                    if (value.containsKey(RmnchNotifiableCondition)) {
-                        conditions.addAll(
-                            getFormatedNotifiableCondition(
-                                value,
-                                RmnchNotifiableCondition,
-                            ),
-                        )
+                    (value[RmnchNotifiableCondition] as? List<String>)?.let { condition ->
+                        conditions.addAll(condition)
                     }
 
                     val cbs = it.toMutableMap()
@@ -865,48 +806,6 @@ class AssessmentViewModel @Inject constructor(
                 result?.let {
                     map.remove(DefinedParams.familyPlanning)
                     map[FamilyPlanning] = it
-                }
-            }
-        }
-
-        // Request modifications for Pregnant women profile
-        if (map.containsKey(PREGNANT_WOMEN_PROFILE)) {
-            val pregnantWomenProfile = map[PREGNANT_WOMEN_PROFILE] as? Map<String, Any>
-            if (pregnantWomenProfile != null && pregnantWomenProfile.containsKey(PregnantWomen.ID_HEALTH_RISK_SCREENING)) {
-                val healthRiskScreening =
-                    pregnantWomenProfile[PregnantWomen.ID_HEALTH_RISK_SCREENING] as? HashMap<String, Any>
-
-                val obstetricComplications =
-                    healthRiskScreening?.get(PregnantWomen.ID_OBSTETRIC_COMPLICATIONS) as? List<Map<String, Any>>
-                // Mutate obstetric complications
-                if (obstetricComplications != null) {
-                    val signsList = mutableListOf<String>()
-                    obstetricComplications.forEach {
-                        signsList.add(it[DefinedParams.Value] as String)
-                    }
-                    healthRiskScreening[PregnantWomen.ID_OBSTETRIC_COMPLICATIONS] = signsList
-                }
-
-                val medicalComplications =
-                    healthRiskScreening?.get(PregnantWomen.ID_MEDICAL_COMPLICATIONS) as? List<Map<String, Any>>
-                // Mutate medical complications
-                if (medicalComplications != null) {
-                    val signsList = mutableListOf<String>()
-                    medicalComplications.forEach {
-                        signsList.add(it[DefinedParams.Value] as String)
-                    }
-                    healthRiskScreening[PregnantWomen.ID_MEDICAL_COMPLICATIONS] = signsList
-                }
-
-                val currentMedicalConditions =
-                    healthRiskScreening?.get(PregnantWomen.ID_CURRENT_MEDICAL_CONDITIONS) as? List<Map<String, Any>>
-                // Mutate current medical conditions
-                if (currentMedicalConditions != null) {
-                    val signsList = mutableListOf<String>()
-                    currentMedicalConditions.forEach {
-                        signsList.add(it[DefinedParams.Value] as String)
-                    }
-                    healthRiskScreening[PregnantWomen.ID_CURRENT_MEDICAL_CONDITIONS] = signsList
                 }
             }
         }
@@ -937,7 +836,7 @@ class AssessmentViewModel @Inject constructor(
             }
             assessmentUpdateLiveData.postValue(
                 assessmentRepository.updateOtherAssessmentDetails(
-                    assessmentSaveLiveData.value?.data,
+                    assessmentSaveLiveData.value?.data?.second,
                     otherAssessmentDetails,
                     lastLocation,
                 ),
@@ -1488,9 +1387,10 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    val memberCbsDetailsLiveData = MutableLiveData<Resource<AssessmentMemberDetails>>()
+    val memberCbsDetailsLiveData = MutableLiveData<Resource<Pair<List<FormLayout>?, AssessmentMemberDetails>>>()
 
     fun saveMember(
+        serverData: List<FormLayout>?,
         memberMap: HashMap<String, Any>,
         householdId: Long,
         motherID: Long,
@@ -1507,10 +1407,18 @@ class AssessmentViewModel @Inject constructor(
             // Update Mother member details to NotSynced for PNC Flow
             memberRegistrationRepository.changeMemberDetailsToNotSynced(motherID)
             id?.let {
+                val result = memberRegistrationRepository.getAssessmentMemberDetails(id)
                 memberCbsDetailsLiveData.postValue(
-                    memberRegistrationRepository.getAssessmentMemberDetails(
-                        id,
-                    ),
+                    when (result.state) {
+                        ResourceState.ERROR -> Resource(state = ResourceState.ERROR)
+                        ResourceState.SUCCESS -> {
+                            Resource(state = ResourceState.SUCCESS, data = Pair(serverData, result.data!!))
+                        }
+
+                        ResourceState.LOADING -> {
+                            Resource(state = ResourceState.LOADING)
+                        }
+                    },
                 )
             }
         }
@@ -1792,4 +1700,54 @@ class AssessmentViewModel @Inject constructor(
             Pair(4, 4), // 5th Month, 4th Week
             Pair(5, 1), // 6th Month, 1st Week
         )
+
+    /**
+     * Identifies fields of type DialogCheckbox from the server data and initiates the transformation
+     * of their values in the assessment map from a list of maps to a list of strings.
+     *
+     * @param map The assessment data map to be modified.
+     * @param serverData The list of FormLayout defining the field types.
+     */
+    private fun modifyDialogCheckboxValues(
+        map: MutableMap<Any, Any>,
+        serverData: List<FormLayout>?,
+    ) {
+        serverData?.let { layouts ->
+            val dialogCheckboxIds =
+                layouts.filter { it.viewType == ViewType.VIEW_TYPE_DIALOG_CHECKBOX }.map { it.id }.toSet()
+            if (dialogCheckboxIds.isNotEmpty()) {
+                processMapForDialogCheckbox(map, dialogCheckboxIds)
+            }
+        }
+    }
+
+    /**
+     * Recursively traverses the assessment map to find and transform values for keys that match
+     * DialogCheckbox IDs. It converts a List<Map<*, *>> into a List<String> by extracting the "value" field.
+     *
+     * @param map The map (or nested map) to process.
+     * @param dialogCheckboxIds The set of IDs identified as DialogCheckbox fields.
+     */
+    private fun processMapForDialogCheckbox(
+        map: MutableMap<Any, Any>,
+        dialogCheckboxIds: Set<String>,
+    ) {
+        val keys = map.keys.toList()
+        keys.forEach { key ->
+            val value = map[key]
+            if (key is String && dialogCheckboxIds.contains(key)) {
+                if (value is List<*>) {
+                    val stringList = mutableListOf<String>()
+                    value.forEach { item ->
+                        if (item is Map<*, *>) {
+                            (item[DefinedParams.Value] as? String)?.let { stringList.add(it) }
+                        }
+                    }
+                    map[key] = stringList
+                }
+            } else if (value is MutableMap<*, *>) {
+                processMapForDialogCheckbox(value as MutableMap<Any, Any>, dialogCheckboxIds)
+            }
+        }
+    }
 }

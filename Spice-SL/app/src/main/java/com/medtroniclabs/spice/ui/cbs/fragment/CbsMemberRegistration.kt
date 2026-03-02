@@ -96,27 +96,6 @@ class CbsMemberRegistration :
         }
     }
 
-//    private fun removeHouseHoldHeadMemberRelationShip() {
-//        val spinnerTitle =
-//            childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship + com.medtroniclabs.spice.formgeneration.config.DefinedParams.titleSuffix)
-//        spinnerTitle?.let {
-//            val tvTitle = it as TextView
-//            tvTitle.text = getString(R.string.relationship_to_household_head)
-//        }
-//
-//        childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship)?.let { view ->
-//            if (view is AppCompatSpinner) {
-//                val adapter = view.adapter
-//                if (adapter is CustomSpinnerAdapter) {
-//                    adapter.removeItemById(DefinedParams.HouseholdHead)
-//                    adapter.removeItemById(MemberRegistration.WifeOrHusband)
-//                    adapter.removeItemById(MemberRegistration.FatherOrMother)
-//                    adapter.removeItemById(MemberRegistration.Grandparent)
-//                }
-//            }
-//        }
-//    }
-
     override fun onClick(v: View) {
         when (v.id) {
             binding.btnStartAssessment.id -> {
@@ -130,7 +109,7 @@ class CbsMemberRegistration :
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         resultMap?.let { map ->
             // Hide Error message
@@ -157,6 +136,7 @@ class CbsMemberRegistration :
             viewModel.memberDetailsLiveData.value?.data?.let {
                 viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
                 viewModel.saveMember(
+                    serverData,
                     resultMap,
                     householdId = it.householdLocalId,
                     it.id,
@@ -267,7 +247,7 @@ class CbsMemberRegistration :
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
     }

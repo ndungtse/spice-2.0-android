@@ -417,7 +417,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberId)
         intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
         intent.putExtra(MenuConstants.WorkFlowName, workFlowName)
-        viewModel.assessmentSaveLiveData.value?.data?.id?.let {
+        viewModel.assessmentSaveLiveData.value?.data?.second?.id?.let {
             intent.putExtra(AssessmentId, it)
         }
         if (workFlowName.equals(ChildHoodVisit, true)) {

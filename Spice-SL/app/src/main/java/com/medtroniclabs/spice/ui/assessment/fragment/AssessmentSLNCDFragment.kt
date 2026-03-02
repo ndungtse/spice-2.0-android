@@ -128,7 +128,7 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
 
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
     ) {
         resultMap?.let { details ->
             val referralResult = ReferralResultGenerator().calculateNCDStatus(requireContext(), details)
@@ -151,7 +151,7 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
                 map.remove(ncd)
                 map[ncd] = ncdResultMap
                 viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
-                viewModel.saveAssessment(map, referralResult, viewModel.menuId)
+                viewModel.saveAssessment(serverData, map, referralResult, viewModel.menuId)
             }
         }
     }
@@ -181,7 +181,7 @@ class AssessmentSLNCDFragment : BaseFragment(), FormEventListener, View.OnClickL
 
     override fun onAgeUpdateListener(
         age: Int,
-        serverData: List<FormLayout?>?,
+        serverData: List<FormLayout>?,
         resultHashMap: HashMap<String, Any>,
     ) {
     }

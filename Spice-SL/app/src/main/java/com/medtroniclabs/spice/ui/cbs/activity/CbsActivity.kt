@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.common.DefinedParams.AssessmentId
 import com.medtroniclabs.spice.common.DefinedParams.CBS
 import com.medtroniclabs.spice.databinding.ActivityAssessmentBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
+import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
@@ -213,7 +214,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                     hideLoading()
                     resource.data?.let {
                         // insertOtherAssessmentDetails()
-                        viewModel.assessmentSaveLiveData.postValue(resource)
+                        viewModel.assessmentSaveLiveData.postValue(Resource(state = ResourceState.SUCCESS, Pair(it.first, it.second)))
                         viewModel.callResultSaveLiveData.postError()
                     }
                 }
@@ -231,7 +232,8 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    resource.data?.let {
+                    resource.data?.let { data ->
+                        val it = data.second
                         // insertOtherAssessmentDetails()
                         val deathReason =
                             (
@@ -302,6 +304,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                                 )
                             }
                             viewModel.saveAssessment(
+                                data.first,
                                 viewModel.assessmentMap,
                                 viewModel.referralResult,
                                 viewModel.menuId,
@@ -316,7 +319,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                                 cbsMap[RMNCH.DateOfDelivery] = dataOfDelivery
                                 assessmentMap[cbsKey] = cbsMap
                                 assessment.assessmentDetails = Gson().toJson(assessmentMap)
-                                viewModel.saveCallResult(assessment, viewModel.resultValue)
+                                viewModel.saveCallResult(data.first, assessment, viewModel.resultValue)
                             }
                         }
                     }
