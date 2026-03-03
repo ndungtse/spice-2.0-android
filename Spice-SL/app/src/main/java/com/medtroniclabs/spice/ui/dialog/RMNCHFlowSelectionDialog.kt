@@ -16,8 +16,8 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.FragmentRmnchSelectionDialogBinding
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
-import com.medtroniclabs.spice.ui.MenuConstants.DialogResult
-import com.medtroniclabs.spice.ui.MenuConstants.WorkFlowName
+import com.medtroniclabs.spice.ui.MenuConstants.DIALOG_RESULT
+import com.medtroniclabs.spice.ui.MenuConstants.WORKFLOW_NAME
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
 
@@ -92,7 +92,7 @@ class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
 
     private fun saveSelectedOptionValue(selectedId: Any?) {
         selectedId?.let {
-            setFragmentResult(DialogResult, bundleOf(WorkFlowName to it))
+            setFragmentResult(DIALOG_RESULT, bundleOf(WORKFLOW_NAME to it))
             dismiss()
         }
     }

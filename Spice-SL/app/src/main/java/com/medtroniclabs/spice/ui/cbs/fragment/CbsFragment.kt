@@ -263,7 +263,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
     }
 
     private fun getFormDataForWorkflow() {
-        val workflowName = requireArguments().getString(MenuConstants.WorkFlowName)
+        val workflowName = requireArguments().getString(MenuConstants.WORKFLOW_NAME)
         val memberData = viewModel.memberDetailsLiveData.value?.data
         when {
             workflowName.equals(ChildHoodVisit, true) -> viewModel.getFormData(

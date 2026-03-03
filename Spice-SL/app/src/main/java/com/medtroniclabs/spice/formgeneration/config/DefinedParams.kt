@@ -46,6 +46,12 @@ object DefinedParams {
     const val NCD = "NCD"
     const val IMMUNISATION = "IMMUNISATION"
 
+    const val SPINNER_VALUE = "_"
+
+    const val DEFAULT_ID = "-1"
+
+    const val OPTIONAL_DATA = "optionalData"
+
     /**
      * Returns true if a given name starts with no symptoms or equals none
      */

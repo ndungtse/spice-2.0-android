@@ -148,7 +148,7 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
         lifeStyleBinding: LayoutQuantityDifferenceBinding,
         model: DispensePrescriptionResponse,
     ) {
-        if (model.reason.isNullOrBlank() || (!model.reason.equals(MenuConstants.Other_Reason))) {
+        if (model.reason.isNullOrBlank() || (!model.reason.equals(MenuConstants.OTHER_REASON))) {
             lifeStyleBinding.clOtherHolder.gone()
             lifeStyleBinding.etOther.setText("")
         } else {

@@ -2292,4 +2292,25 @@ object CommonUtils {
             insets
         }
     }
+
+    fun getTitle(
+        formLayout: FormLayout,
+        translate: Boolean,
+    ): String {
+        val titleModel = formLayout.titles?.first()
+
+        if (titleModel != null) {
+            return if (translate) {
+                titleModel.titleCulture ?: titleModel.title
+            } else {
+                titleModel.title
+            }
+        }
+
+        return if (translate) {
+            formLayout.titleCulture ?: formLayout.title
+        } else {
+            formLayout.title
+        }
+    }
 }

@@ -399,14 +399,14 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
     private fun loadFragment() {
         viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MemberID, -1L)
         viewModel.menuId = intent.getStringExtra(DefinedParams.MenuId)
-        viewModel.workflowName = intent.getStringExtra(MenuConstants.WorkFlowName)
+        viewModel.workflowName = intent.getStringExtra(MenuConstants.WORKFLOW_NAME)
         viewModel.motherID = intent.getLongExtra(DefinedParams.MOTHER_ID, -1L)
         val bundle = Bundle()
         bundle.putString(DefinedParams.FhirId, intent.getStringExtra(DefinedParams.FhirId))
         bundle.putString(DefinedParams.ORIGIN, intent.getStringExtra(DefinedParams.ORIGIN))
         bundle.putString(
-            MenuConstants.WorkFlowName,
-            intent.getStringExtra(MenuConstants.WorkFlowName),
+            MenuConstants.WORKFLOW_NAME,
+            intent.getStringExtra(MenuConstants.WORKFLOW_NAME),
         )
         bundle.putLong(AssessmentId, intent.getLongExtra(AssessmentId, 0L))
         bundle.putBoolean(deathOfNewborn, intent.getBooleanExtra(deathOfNewborn, false))

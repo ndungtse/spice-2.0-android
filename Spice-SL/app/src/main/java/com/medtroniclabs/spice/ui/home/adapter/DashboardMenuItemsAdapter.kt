@@ -133,6 +133,16 @@ class DashboardMenuItemsAdapter(
                 R.drawable.ic_ncd_tool,
             )
 
+            MenuConstants.EYE_CARE_MENU_ID -> ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_eye_care,
+            )
+
+            MenuConstants.CATARACT_MENU_ID -> ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_cataract,
+            )
+
             MenuConstants.RMNCH_MENU_ID, MenuConstants.MATERNAL_HEALTH, MenuConstants.PREGNANT_WOMEN_PROFILE -> ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_rmnch_tool,
@@ -167,7 +177,7 @@ class DashboardMenuItemsAdapter(
                 context,
                 R.drawable.ic_epi,
             )
-            MenuConstants.PerformanceMonitoring_ID -> ContextCompat.getDrawable(
+            MenuConstants.PERFORMANCE_MONITORING_ID -> ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_performance_monitoring,
             )

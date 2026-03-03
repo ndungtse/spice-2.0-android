@@ -218,4 +218,12 @@ object AssessmentDefinedParams {
     const val ADDITIONAL_FOOD_GIVEN_LAST_24_HRS = "additionalFood24Hrs"
     const val VACCINE_RECEIVED = "receivedVaccine"
     const val DEWORMING_MEDICINE = "dewormingMedicine"
+
+    const val NAME = "name"
+
+    const val NCD_SYMPTOMS = "ncdSymptom"
+
+    const val ANY_NEW_OR_WORSENING_SYMPTOMS = "Any new or worsening symptoms"
+
+    const val NEW_WORSENING_SYMPTOMS = "newWorseningSymptoms"
 }
