@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
+import com.medtroniclabs.spice.db.entity.EntitiesName
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithLastActivity
@@ -54,10 +55,27 @@ interface HouseholdDAO {
     @Query("SELECT hh.no_of_people as noOfPeople, count(hhm.id) AS memberCount FROM HouseHold AS hh INNER JOIN HouseHoldMember AS hhm ON hhm.household_id = hh.id WHERE household_id =:householdId")
     fun getHouseholdMemberCountLiveData(householdId: Long): LiveData<HouseholdMemberCount>
 
-    @Query("UPDATE HouseHold SET no_of_people =:newNoOfPeople, sync_status =:syncStatus, updated_at =:updatedAt WHERE id =:householdId")
-    suspend fun updateHeadCount(
+    @Query(
+        """
+        UPDATE HouseHold
+            SET
+                no_of_people = (
+                    SELECT COUNT(id)
+                        FROM ${EntitiesName.HOUSEHOLD_MEMBER} AS member
+                    WHERE member.household_id = id
+                ),
+                sync_status =:syncStatus,
+                updated_at =:updatedAt
+        WHERE id =:householdId
+        AND no_of_people < (
+                SELECT COUNT(member.id)
+                        FROM ${EntitiesName.HOUSEHOLD_MEMBER} AS member
+                WHERE member.household_id = id
+        )
+        """,
+    )
+    suspend fun updateHeadCountIfUnderCounted(
         householdId: Long,
-        newNoOfPeople: Int,
         syncStatus: String = OfflineSyncStatus.NotSynced.name,
         updatedAt: Long = System.currentTimeMillis(),
     )
@@ -110,7 +128,7 @@ interface HouseholdDAO {
     /**
      * Internal raw-query entry point. Use [getHouseholdsWithLastActivity] instead.
      *
-     * [observedEntities] ensures Room re-delivers LiveData whenever any of the
+     * **observedEntities** ensures Room re-delivers LiveData whenever any of the
      * three underlying tables change.
      */
     @RawQuery(observedEntities = [HouseholdEntity::class, HouseholdMemberEntity::class, AssessmentEntity::class])
@@ -235,6 +253,83 @@ interface HouseholdDAO {
         return getHouseholdsRaw(SimpleSQLiteQuery(sql, args.toTypedArray()))
     }
 
-    @Query("SELECT disability_persons_count FROM household WHERE id =:houseHoldId")
-    fun getDisabilityMembersCount(houseHoldId: Long): Int
+    @Query(
+        """
+            UPDATE HouseHold
+            SET
+                disability_persons_count = (
+                    SELECT COUNT(member.id)
+                        FROM HouseholdMember AS member
+                    WHERE member.household_id = HouseHold.id
+                    AND member.disability = 'present'
+                ),
+                sync_status =:syncStatus,
+                updated_at =:updatedAt
+            WHERE id =:householdId
+            AND disability_persons_count < (
+                SELECT COUNT(member.id)
+                        FROM HouseholdMember AS member
+                WHERE member.household_id = Household.id
+                AND member.disability = 'present'
+            )
+            """,
+    )
+    suspend fun updateDisabilityPersonsCountIfUnderCounted(
+        householdId: Long,
+        syncStatus: String = OfflineSyncStatus.NotSynced.name,
+        updatedAt: Long = System.currentTimeMillis(),
+    )
+
+    @Query(
+        """
+        UPDATE Household
+        SET
+            no_of_people = (
+                SELECT COUNT(member.id)
+                FROM HouseholdMember AS member
+                WHERE member.household_id = Household.id
+            ),
+            sync_status =:syncStatus,
+            updated_at =:updatedAt
+        WHERE id IN (
+            SELECT Household.id
+            FROM Household
+            INNER JOIN HouseholdMember AS member ON member.household_id = household.id
+            GROUP BY Household.id
+            HAVING Household.no_of_people < COUNT(member.id)
+        )
+    """,
+    )
+    suspend fun updateUndercountedHouseholds(
+        syncStatus: String = OfflineSyncStatus.NotSynced.name,
+        updatedAt: Long = System.currentTimeMillis(),
+    ): Int
+
+    @Query(
+        """
+        UPDATE Household
+        SET
+            disability_persons_count = (
+                SELECT COUNT(member.id)
+                FROM HouseholdMember AS member
+                WHERE member.household_id = Household.id
+                AND member.disability = 'present'
+            ),
+            sync_status =:syncStatus,
+            updated_at =:updatedAt
+        WHERE id IN (
+            SELECT Household.id
+            FROM Household
+            INNER JOIN HouseholdMember AS member
+                ON member.household_id = Household.id
+                WHERE member.disability = 'present'
+            GROUP BY Household.id
+            HAVING Household.disability_persons_count < COUNT(member.id)
+        )
+    """,
+    )
+    suspend fun updateUndercountedDisabilityHouseholds(
+        syncStatus: String = OfflineSyncStatus.NotSynced.name,
+        updatedAt: Long = System.currentTimeMillis(),
+    ): Int
 }

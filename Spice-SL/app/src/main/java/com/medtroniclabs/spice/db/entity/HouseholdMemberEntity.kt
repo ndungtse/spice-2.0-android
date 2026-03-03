@@ -11,6 +11,9 @@ import com.medtroniclabs.spice.db.entity.EntitiesName.HOUSEHOLD_MEMBER
     indices = [
         Index(value = ["household_id"], name = "idx_household_id"),
         Index(value = ["updated_at"], name = "idx_HouseholdMember_updated_at"),
+        Index(value = ["fhir_id"], name = "idx_HouseholdMember_fhir_id", unique = true),
+        Index(value = ["guardian_hh_member_fhir_id"], name = "idx_guardian_hh_member_fhir_id"),
+        Index(value = ["disability"], name = "idx_HouseholdMember_disability"),
     ],
 )
 data class HouseholdMemberEntity(

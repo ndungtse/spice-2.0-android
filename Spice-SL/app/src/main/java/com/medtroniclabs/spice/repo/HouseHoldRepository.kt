@@ -129,15 +129,16 @@ class HouseHoldRepository @Inject constructor(
         val monthlyIncome = map[HouseHoldRegistration.monthlyIncome]
         householdEntity.monthlyIncome = CommonUtils.getDoubleOrNull(monthlyIncome)
 
-        val disabilityPersonsCount = map[HouseHoldRegistration.ID_DISABILITY_PERSONS_COUNT]
-        householdEntity.disabilityPersonsCount = CommonUtils.getIntegerOrNull(disabilityPersonsCount) ?: 0
-
         if (entity != null) {
             householdEntity.updatedAt = System.currentTimeMillis()
             householdEntity.sync_status = OfflineSyncStatus.NotSynced
 
             val noOfPeople = map[HouseHoldRegistration.noOfPeople] ?: map[HouseHoldRegistration.totalMembers]
             householdEntity.noOfPeople = checkHeadCountOfHouseHold(CommonUtils.getIntegerOrNull(noOfPeople) ?: 0, getMemberCountPerHouseHold(entity.id))
+
+            val disabilityPersonsCount = map[HouseHoldRegistration.ID_DISABILITY_PERSONS_COUNT]
+            householdEntity.disabilityPersonsCount =
+                checkHeadCountOfHouseHold(CommonUtils.getIntegerOrNull(disabilityPersonsCount) ?: 0, getDisabilityMembersCountPerHousehold(entity.id))
         } else {
             // Use household number from form if provided, otherwise generate new one
             val householdNumberFromForm = map[HouseHoldRegistration.householdNumber]
@@ -146,6 +147,9 @@ class HouseHoldRepository @Inject constructor(
                 "HH${System.currentTimeMillis()}"
             val noOfPeople = map[HouseHoldRegistration.noOfPeople] ?: map[HouseHoldRegistration.totalMembers]
             householdEntity.noOfPeople = CommonUtils.getIntegerOrNull(noOfPeople) ?: 0
+
+            val disabilityPersonsCount = map[HouseHoldRegistration.ID_DISABILITY_PERSONS_COUNT]
+            householdEntity.disabilityPersonsCount = CommonUtils.getIntegerOrNull(disabilityPersonsCount) ?: 0
         }
         return householdEntity
     }
@@ -216,6 +220,8 @@ class HouseHoldRepository @Inject constructor(
     }
 
     suspend fun getMemberCountPerHouseHold(householdId: Long): Int = roomHelper.getMemberCountPerHouseHold(householdId)
+
+    suspend fun getDisabilityMembersCountPerHousehold(householdId: Long): Int = roomHelper.getDisabilityMembersCountForHousehold(householdId)
 
     private suspend fun insertHouseholdMembers(
         householdMembers: List<HouseHoldMember>?,

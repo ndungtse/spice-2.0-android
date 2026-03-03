@@ -303,12 +303,14 @@ class OfflineSyncRepository @Inject constructor(
         val hhMapping = insertHouseholds(requestInitialDownload.households)
         insertHouseholdMembers(requestInitialDownload.members, hhMapping)
 
-        /*
-         * Query to update household no of people mismatch
-         * */
-        roomHelper.getHouseholdsWithMemberCountsExceeding().forEach { item ->
-            roomHelper.updateHeadCount(item.id, item.hhmCount)
-        }
+        // Update households where count exceeds no of members
+        roomHelper.updateUndercountedHouseholds()
+
+        // Update guardian id if exists with respective to fhir_id
+        roomHelper.updateGuardianHhIds()
+
+        // Update households where count of disabilities exceeds actual no of disability members
+        roomHelper.updateUndercountedDisabilityHouseholds()
 
         // List of changes for Followup incremental
         // 1. Delete All Followup where Followup id is null and SyncStatus is InProgress -> Because it is created from Mobile
@@ -401,23 +403,6 @@ class OfflineSyncRepository @Inject constructor(
 
                 roomHelper.insertTreatmentDetails(entity)
             }
-        }
-
-        // Only for Testing
-        val memberFhirIds = listOf("186564", "186566", "186568", "186570", "186572")
-        memberFhirIds.forEach { memberId ->
-            val prescriptionList = "[{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Moxifloxacin\",\"prescribedDays\":30},{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Linezolid\",\"prescribedDays\":30},{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Pretomanid\",\"prescribedDays\":30},{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Bedaquiline\",\"prescribedDays\":30},{\"frequency\":1,\"isActive\":true,\"medicationName\":\"Dolo\",\"prescribedDays\":15}]"
-            val entity = TreatmentDetailsEntity(
-                memberId = memberId,
-                type = TB_MENU_ID.lowercase(),
-                treatmentStartDate = "2025-04-28T07:41:19+00:00",
-                diagnoses = "Drug Sensitive TB",
-                diagnosedDate = "2025-04-28T07:43:17+00:00",
-                prescriptions = prescriptionList,
-                tbConfirmationDate = "2025-04-28T00:00:00+00:00",
-            )
-
-            roomHelper.insertTreatmentDetails(entity)
         }
     }
 

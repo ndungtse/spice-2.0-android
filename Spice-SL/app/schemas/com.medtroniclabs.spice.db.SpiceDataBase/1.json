@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "140e3291d4fea689387f09695ed4d9f8",
+    "identityHash": "5303ee3287d5fd6ffc088e0cbc2b70da",
     "entities": [
       {
         "tableName": "Household",
@@ -375,6 +375,33 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `idx_HouseholdMember_updated_at` ON `${TABLE_NAME}` (`updated_at`)"
+          },
+          {
+            "name": "idx_HouseholdMember_fhir_id",
+            "unique": true,
+            "columnNames": [
+              "fhir_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `idx_HouseholdMember_fhir_id` ON `${TABLE_NAME}` (`fhir_id`)"
+          },
+          {
+            "name": "idx_guardian_hh_member_fhir_id",
+            "unique": false,
+            "columnNames": [
+              "guardian_hh_member_fhir_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_guardian_hh_member_fhir_id` ON `${TABLE_NAME}` (`guardian_hh_member_fhir_id`)"
+          },
+          {
+            "name": "idx_HouseholdMember_disability",
+            "unique": false,
+            "columnNames": [
+              "disability"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_HouseholdMember_disability` ON `${TABLE_NAME}` (`disability`)"
           }
         ],
         "foreignKeys": []
@@ -3594,7 +3621,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '140e3291d4fea689387f09695ed4d9f8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5303ee3287d5fd6ffc088e0cbc2b70da')"
     ]
   }
 }

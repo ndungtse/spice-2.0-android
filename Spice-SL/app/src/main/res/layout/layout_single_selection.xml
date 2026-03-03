@@ -12,15 +12,15 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:background="@color/background_job_aid"
-        android:drawableEnd="@drawable/ic_job_aid"
         android:fontFamily="@font/inter_bold"
         android:gravity="center_vertical"
         android:paddingHorizontal="@dimen/_16sdp"
         android:paddingVertical="@dimen/_4sdp"
-        android:text="Job Aid"
+        android:text="@string/job_aid"
         android:textColor="@color/primary_medium_blue"
-        android:textSize="@dimen/_12sdp"
-        android:visibility="gone" />
+        android:textSize="@dimen/_12ssp"
+        android:visibility="gone"
+        app:drawableEndCompat="@drawable/ic_job_aid" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

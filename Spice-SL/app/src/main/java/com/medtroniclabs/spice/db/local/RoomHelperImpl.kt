@@ -25,7 +25,6 @@ import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberCallRegiste
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberFhirId
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberStatus
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
-import com.medtroniclabs.spice.data.offlinesync.model.HouseholdWithMemberCount
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyFollowUpDetails
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyRegisterDetail
 import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
@@ -190,10 +189,7 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.insertHealthFacility(healthFacilityEntityList)
     }
 
-    override suspend fun updateHeadCount(
-        householdId: Long,
-        newNoOfPeople: Int,
-    ) = householdDAO.updateHeadCount(householdId, newNoOfPeople)
+    override suspend fun updateHeadCountIfUnderCounted(householdId: Long) = householdDAO.updateHeadCountIfUnderCounted(householdId)
 
     override suspend fun deleteAllHealthFacility() {
         metaDataDAO.deleteAllHealthFacility()
@@ -1184,8 +1180,6 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getUnSyncedHouseHoldByMemberId(hhmId: Long): HouseHold? = householdDAO.getUnSyncedHouseHoldByMemberId(hhmId)
 
-    override suspend fun getHouseholdsWithMemberCountsExceeding(): List<HouseholdWithMemberCount> = memberDAO.getHouseholdsWithMemberCountsExceeding()
-
     override suspend fun getMemberFhirIdByLocalId(hhmId: Long): String? = memberDAO.getMemberFhirIdByLocalId(hhmId)
 
     override suspend fun getAllUnSyncedRxBuddyDetailWithHHM(
@@ -1210,4 +1204,14 @@ class RoomHelperImpl @Inject constructor(
     }
 
     override suspend fun getHouseholdsCountBasedSubVillage(subVillageId: Long): Int = householdDAO.getHouseholdsCountBasedSubVillage(subVillageId)
+
+    override suspend fun getDisabilityMembersCountForHousehold(householdId: Long): Int = memberDAO.getDisabilityMembersCountForHousehold(householdId)
+
+    override suspend fun updateDisabilityPersonsCountIfUnderCounted(householdId: Long) = householdDAO.updateDisabilityPersonsCountIfUnderCounted(householdId)
+
+    override suspend fun updateGuardianHhIds(): Int = memberDAO.updateGuardianHhIds()
+
+    override suspend fun updateUndercountedHouseholds(): Int = householdDAO.updateUndercountedHouseholds()
+
+    override suspend fun updateUndercountedDisabilityHouseholds(): Int = householdDAO.updateUndercountedDisabilityHouseholds()
 }

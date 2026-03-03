@@ -21,7 +21,6 @@ import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberCallRegiste
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberFhirId
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberStatus
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
-import com.medtroniclabs.spice.data.offlinesync.model.HouseholdWithMemberCount
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyFollowUpDetails
 import com.medtroniclabs.spice.data.offlinesync.model.RxBuddyRegisterDetail
 import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
@@ -105,10 +104,11 @@ interface RoomHelper {
 
     suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity>
 
-    suspend fun updateHeadCount(
-        householdId: Long,
-        newNoOfPeople: Int,
-    )
+    /**
+     * Updates no of people with actual count of members for given household
+     * where no of people is less than actual members
+     */
+    suspend fun updateHeadCountIfUnderCounted(householdId: Long)
 
     suspend fun getMemberCountPerHouseHold(householdId: Long): Int
 
@@ -814,8 +814,6 @@ interface RoomHelper {
 
     suspend fun getUnSyncedHouseHoldByMemberId(hhmId: Long): HouseHold?
 
-    suspend fun getHouseholdsWithMemberCountsExceeding(): List<HouseholdWithMemberCount>
-
     suspend fun getMemberFhirIdByLocalId(hhmId: Long): String?
 
     suspend fun getAllUnSyncedRxBuddyDetailWithHHM(
@@ -836,4 +834,26 @@ interface RoomHelper {
     )
 
     suspend fun getHouseholdsCountBasedSubVillage(subVillageId: Long): Int
+
+    suspend fun getDisabilityMembersCountForHousehold(householdId: Long): Int
+
+    /**
+     * Updates no of disabilities with actual count disability members for given household
+     * where no of disabilities is less than actual members
+     */
+    suspend fun updateDisabilityPersonsCountIfUnderCounted(householdId: Long)
+
+    suspend fun updateGuardianHhIds(): Int
+
+    /**
+     * Updates no of people with actual count of members in household
+     * where no of people is less than actual members
+     */
+    suspend fun updateUndercountedHouseholds(): Int
+
+    /**
+     * Updates no of disabilities with actual count disability members in household
+     * where no of disabilities is less than actual members
+     */
+    suspend fun updateUndercountedDisabilityHouseholds(): Int
 }

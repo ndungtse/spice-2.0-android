@@ -79,13 +79,10 @@ class HouseholdMemberRepository @Inject constructor(
 
         // Update Member count in household only in insert case
         if (entity == null || isPhuWalkInFlow == true) {
-            val memberAddedForHouseHold = getMemberCountPerHouseHold(householdId)
-            val memberMentionedInHouseHold =
-                roomHelper.getHouseHoldDetailsById(householdId).noOfPeople
-            if (memberAddedForHouseHold > memberMentionedInHouseHold) {
-                updateHeadCount(householdId, memberAddedForHouseHold)
-            }
+            roomHelper.updateHeadCountIfUnderCounted(householdId)
         }
+
+        roomHelper.updateDisabilityPersonsCountIfUnderCounted(householdId)
 
         return memberId
     }
@@ -243,13 +240,6 @@ class HouseholdMemberRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
-
-    private suspend fun getMemberCountPerHouseHold(householdId: Long): Int = roomHelper.getMemberCountPerHouseHold(householdId)
-
-    private suspend fun updateHeadCount(
-        householdId: Long,
-        newNoOfPeople: Int,
-    ) = roomHelper.updateHeadCount(householdId, newNoOfPeople)
 
     suspend fun getPatientVisitCountByType(
         type: String,

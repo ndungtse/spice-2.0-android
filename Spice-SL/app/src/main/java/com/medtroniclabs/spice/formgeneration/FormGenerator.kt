@@ -1333,14 +1333,29 @@ class FormGenerator(
             isInfo?.let {
                 binding.ivInfo.text = getInfoTitle(translate, getString(R.string.job_aid))
                 binding.ivInfo.visibility = getVisibility(it)
-            }
-
-            binding.ivInfo.setOnClickListener {
-                listener.onInstructionClicked(
-                    id,
-                    title,
-                    dosageListModel = formLayout.dosageListItems,
-                )
+                if (formLayout.dosageListItems.isNullOrEmpty()) {
+                    // Hide arrow icon
+                    binding.ivInfo.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        0,
+                        0,
+                        0,
+                        0,
+                    )
+                } else {
+                    binding.ivInfo.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        0,
+                        0,
+                        R.drawable.ic_job_aid,
+                        0,
+                    )
+                    binding.ivInfo.setOnClickListener {
+                        listener.onInstructionClicked(
+                            id,
+                            title,
+                            dosageListModel = formLayout.dosageListItems,
+                        )
+                    }
+                }
             }
 
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {

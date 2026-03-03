@@ -17,12 +17,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
-import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
-import com.medtroniclabs.spice.common.DefinedParams.BUILD_FLAVOR_AFRICA
-import com.medtroniclabs.spice.common.DefinedParams.BUILD_FLAVOR_SL
 import com.medtroniclabs.spice.common.RoleConstant.CHA
 import com.medtroniclabs.spice.common.RoleConstant.CHWs
 import com.medtroniclabs.spice.common.RoleConstant.COMMUNITY_HEALTH_ASSISTANT
@@ -2188,10 +2185,6 @@ object CommonUtils {
         // Check if the given date is not lesser than the noOfDayFever
         return daysDifference >= noOfDayFever
     }
-
-    fun isAfrica(): Boolean = BuildConfig.FLAVOR == BUILD_FLAVOR_AFRICA
-
-    fun isSL(): Boolean = BuildConfig.FLAVOR == BUILD_FLAVOR_SL
 
     fun formatDecimalValue(value: String?): String? {
         if (value.isNullOrEmpty()) return null

@@ -496,7 +496,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
                 visibility = View.GONE
             }
-            handleDob(details.dateOfBirth, formGenerator.getResultMap())
+            handleDob(details.dateOfBirth)
         }
         details.maritalStatus?.let {
             singleSelectValueOption(
@@ -566,13 +566,8 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                                 getString(R.string.please_select_a_valid_value_month)
                         }
                 }
-                // Flow is for member create or edit
-                if (!householdRegistrationViewModel.isCreateHouseholdForPhu &&
-                    (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L)
-                ) {
-                    val dateOfBirth = map[id] as? String
-                    handleDob(dateOfBirth, map)
-                }
+                val dateOfBirth = map[id] as? String
+                handleDob(dateOfBirth)
             } else if (id == MemberRegistration.ID_GUARDIAN && formGenerator.isViewVisible(id) && formGenerator.isViewEnabled(id)) {
                 val selectedId = CommonUtils.getLongOrNull(map[id]) ?: 0
                 if (selectedId == MemberRegistration.ADD_GUARDIAN_ID) {
@@ -582,20 +577,32 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
         }
     }
 
-    private fun handleDob(
-        dateOfBirth: String?,
-        map: HashMap<String, Any>,
-    ) {
-        val age = DateUtils.calculateAge(dateOfBirth)
-        val guardianView = formGenerator.getViewByTag(MemberRegistration.ID_GUARDIAN + formGenerator.rootSuffix) ?: return
-        // Add guardian If age is < =2 years of age
-        if (age <= 2) {
-            guardianView.visible()
-        } else {
-            guardianView.gone()
-            formGenerator.resetChildViews(guardianView)
-            // Remove guardian entry if household is
-            map.remove(MemberRegistration.ID_GUARDIAN)
+    private fun handleDob(dateOfBirth: String?) {
+        val dateOfBirthDate = DateUtils.parseDate(dateOfBirth) ?: return
+        // Flow is for member create or edit then check for guardian otherwise ignore
+        if (!householdRegistrationViewModel.isCreateHouseholdForPhu &&
+            (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L)
+        ) {
+            formGenerator.getViewByTag(MemberRegistration.ID_GUARDIAN + formGenerator.rootSuffix)?.let { guardianView ->
+                val twoYearBeforeDate = LocalDate.now().minusYears(MemberRegistration.MAX_AGE_GUARDIAN)
+                // Add guardian if age is <= 2 years of age
+                if (dateOfBirthDate >= twoYearBeforeDate) {
+                    guardianView.visible()
+                } else {
+                    guardianView.gone()
+                    formGenerator.resetChildViews(guardianView)
+                }
+            }
+        }
+        formGenerator.getViewByTag(MemberRegistration.ID_MARITAL_STATUS + formGenerator.rootSuffix)?.let { maritalStatusView ->
+            val fourteenYearBeforeDate = LocalDate.now().minusYears(MemberRegistration.MIN_AGE_MARITAL_STATUS)
+            // Add marital status if age >= 14 years of age
+            if (fourteenYearBeforeDate >= dateOfBirthDate) {
+                maritalStatusView.visible()
+            } else {
+                maritalStatusView.gone()
+                formGenerator.resetChildViews(maritalStatusView)
+            }
         }
     }
 
@@ -749,6 +756,9 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                         ),
                     )
                 }
+
+                // Remove guardian key for household head
+                map.remove(MemberRegistration.ID_GUARDIAN)
 
                 // For Household head
                 memberRegistrationViewModel.registerHouseThenMember(

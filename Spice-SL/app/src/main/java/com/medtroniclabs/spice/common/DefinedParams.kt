@@ -261,8 +261,6 @@ object DefinedParams {
     const val EN = "en"
     const val SW = "sw"
     const val BN = "bn"
-    const val BUILD_FLAVOR_AFRICA = "africa"
-    const val BUILD_FLAVOR_SL = "sl"
     const val COMMUNITY_PROFILE = "community_profile"
     const val COMMUNITY_ID = "community_id"
 

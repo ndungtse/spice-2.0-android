@@ -47,6 +47,16 @@ object MemberRegistration {
      */
     const val ADD_GUARDIAN_ID = -2L
 
+    /**
+     * Maximum age till which guardian is mandatory
+     */
+    const val MAX_AGE_GUARDIAN = 2L
+
+    /**
+     * Minimum age for marital status capture
+     */
+    const val MIN_AGE_MARITAL_STATUS = 14L
+
     fun isValidRelationAge(
         ctx: Context,
         dob: String,

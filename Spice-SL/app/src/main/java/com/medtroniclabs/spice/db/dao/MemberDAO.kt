@@ -10,7 +10,6 @@ import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberStatus
 import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberWithTb
-import com.medtroniclabs.spice.data.offlinesync.model.HouseholdWithMemberCount
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.model.MemberDobGenderModel
@@ -215,9 +214,6 @@ interface MemberDAO {
     @Query("SELECT id, isActive FROM HouseholdMember WHERE fhir_id =:fhirId")
     suspend fun getHouseholdMemberIdAndStatusByFhirId(fhirId: String): HouseholdMemberStatus?
 
-    @Query("SELECT hh.id AS id, COUNT(hhm.id) AS hhmCount, hh.no_of_people AS noOfPeople FROM Household AS hh LEFT JOIN HouseholdMember AS hhm ON hh.id = hhm.household_id group by hh.id HAVING hhmCount > noOfPeople")
-    suspend fun getHouseholdsWithMemberCountsExceeding(): List<HouseholdWithMemberCount>
-
     @Query("SELECT fhir_id FROM HouseholdMember WHERE id =:hhmId")
     suspend fun getMemberFhirIdByLocalId(hhmId: Long): String?
 
@@ -239,4 +235,20 @@ interface MemberDAO {
         syncStatus: String = OfflineSyncStatus.NotSynced.name,
         updatedAt: Long = System.currentTimeMillis(),
     )
+
+    @Query("SELECT COUNT(id) FROM HouseholdMember WHERE disability='present' AND household_id=:householdId")
+    suspend fun getDisabilityMembersCountForHousehold(householdId: Long): Int
+
+    @Query(
+        """
+        UPDATE HouseholdMember
+        SET guardian_hh_member_id = (
+            SELECT guardian.id
+            FROM HouseholdMember AS guardian
+            WHERE guardian.fhir_id = HouseholdMember.guardian_hh_member_fhir_id
+        )
+        WHERE guardian_hh_member_fhir_id IS NOT NULL
+        """,
+    )
+    suspend fun updateGuardianHhIds(): Int
 }
