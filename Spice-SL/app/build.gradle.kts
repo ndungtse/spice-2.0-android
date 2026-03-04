@@ -1,4 +1,4 @@
-import java.util.Properties
+﻿import java.util.Properties
 
 val envProperties = Properties()
 val envFile = rootProject.file("environment.properties")
@@ -76,7 +76,7 @@ android {
         create("dev") {
             dimension = "version"
             applicationIdSuffix = ".dev"
-            resValue("string", "app_name", "ComEMR Dev")
+            resValue("string", "app_name", "Spice")
         }
         create("qa") {
             applicationIdSuffix = ".dev"

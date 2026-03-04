@@ -3369,7 +3369,11 @@ class FormGenerator(
                         } else if (id.contains("conditions", true)) {
                             getString(R.string.conditions_selected)
                         } else {
-                            getString(R.string.symptoms_selected)
+                            if (formLayout.hint != null) {
+                                " ${formLayout.hint} ${getString((R.string.selected))}"
+                            } else {
+                                getString(R.string.symptoms_selected)
+                            }
                         }
                     }
                 }
@@ -3461,15 +3465,22 @@ class FormGenerator(
     ): String =
         if (isContainsOther(mapList)) {
             "${getString(R.string.other)} $checkBoxText"
-        } else if (isNoSymptomContain(mapList)) {
-            if (id.contains("complication", true)) {
-                getString(R.string.no_s, getString(R.string.complications))
-            } else if (id.contains("conditions", true)) {
-                getString(R.string.no_s, getString(R.string.condition))
-            } else {
-                getString(R.string.no_symptom_selected)
-            }
-        } else {
+        }
+//        else if (isNoSymptomContain(mapList)) {
+//            if (id.contains("complication", true)) {
+//                getString(R.string.no_s, getString(R.string.complications))
+//            } else if (id.contains("conditions", true)) {
+//                getString(R.string.no_s, getString(R.string.condition))
+//            } else {
+//                getString(R.string.no_symptom_selected)
+//                if (formLayout.hint != null) {
+//                    " ${formLayout.hint} ${getString((R.string.selected))}"
+//                } else {
+//                    getString(R.string.symptoms_selected)
+//                }
+//            }
+//        }
+        else {
             "${mapList.size} $checkBoxText"
         }
 
