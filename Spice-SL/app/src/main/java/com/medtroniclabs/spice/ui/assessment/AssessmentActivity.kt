@@ -37,6 +37,7 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentSLNCDFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentSLNCDSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.BDNCDAssessmentFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.RxBuddySummaryFragment
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
@@ -258,7 +259,7 @@ class AssessmentActivity : BaseActivity() {
 
     private fun loadSummaryFragment() {
         val bundle = Bundle()
-        bundle.putString(MenuConstants.WorkFlowName, viewModel.workflowName)
+        bundle.putString(MenuConstants.WORKFLOW_NAME, viewModel.workflowName)
         when (viewModel.menuId) {
             MenuConstants.ICCM_MENU_ID -> {
                 setTitle(Summary.capitalizeFirstChar())
@@ -408,12 +409,34 @@ class AssessmentActivity : BaseActivity() {
                     setTitle(AssessmentDefinedParams.ncd.uppercase())
                     bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
                     showLoading()
-                    replaceFragmentInId<AssessmentSLNCDFragment>(
+                    replaceFragmentInId<BDNCDAssessmentFragment>(
                         binding.formsFragmentContainer.id,
                         bundle = bundle,
-                        tag = AssessmentSLNCDFragment.TAG,
+                        tag = BDNCDAssessmentFragment.TAG,
                     )
                 }
+            }
+
+            MenuConstants.EYE_CARE_MENU_ID -> {
+                /* setTitle(AssessmentDefinedParams.ncd.uppercase())
+                bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
+                showLoading()
+                replaceFragmentInId<BDEyeCareAssessmentFragment>(
+                    binding.formsFragmentContainer.id,
+                    bundle = bundle,
+                    tag = BDEyeCareAssessmentFragment.TAG,
+                ) */
+            }
+
+            MenuConstants.CATARACT_MENU_ID -> {
+                /* setTitle(AssessmentDefinedParams.ncd.uppercase())
+                bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
+                showLoading()
+                replaceFragmentInId<BDCataractAssessmentFragment>(
+                    binding.formsFragmentContainer.id,
+                    bundle = bundle,
+                    tag = BDCataractAssessmentFragment.TAG,
+                ) */
             }
 
             MenuConstants.MATERNAL_HEALTH -> {
@@ -618,7 +641,7 @@ class AssessmentActivity : BaseActivity() {
         val intent = Intent(this, CbsActivity::class.java).apply {
             putExtra(DefinedParams.MemberID, memberId)
             putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
-            putExtra(MenuConstants.WorkFlowName, workFlowName)
+            putExtra(MenuConstants.WORKFLOW_NAME, workFlowName)
             putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
             putExtra(DefinedParams.MOTHER_ID, motherId)
             if (assessmentId != null) putExtra(DefinedParams.AssessmentId, assessmentId)
@@ -643,7 +666,7 @@ class AssessmentActivity : BaseActivity() {
     private fun getIntentValue() {
         viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MemberID, -1L)
         viewModel.menuId = intent.getStringExtra(DefinedParams.MenuId)
-        viewModel.workflowName = intent.getStringExtra(MenuConstants.WorkFlowName)
+        viewModel.workflowName = intent.getStringExtra(MenuConstants.WORKFLOW_NAME)
         viewModel.memberFhirId = intent.getStringExtra(DefinedParams.FhirId)
         viewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
         viewModel.selectedHouseholdId = intent.getLongExtra(DefinedParams.HouseholdId, -1L)

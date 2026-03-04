@@ -185,6 +185,7 @@ data class FormLayout(
     var url: String? = null,
     var resource: String? = null,
     var spinnerAsObject: Boolean = false,
+    var dependentIDList: ArrayList<String>? = null,
     var enableSingleSelection: Boolean? = null,
     var ranges: ArrayList<RangeModel>? = null,
     var category: List<String>? = null,
@@ -195,6 +196,7 @@ data class FormLayout(
     var workflowType: ArrayList<String>? = null,
     var orderId: Int? = null,
     var customizedWorkflowId: Double? = null,
+    var titles: ArrayList<TitleModel>? = null,
     var infoTitle: String? = null,
     var infoTitleCulture: String? = null,
 ) : BaseViewParams {

@@ -416,7 +416,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         val intent = Intent(requireContext(), CbsActivity::class.java)
         intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberId)
         intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
-        intent.putExtra(MenuConstants.WorkFlowName, workFlowName)
+        intent.putExtra(MenuConstants.WORKFLOW_NAME, workFlowName)
         viewModel.assessmentSaveLiveData.value?.data?.second?.id?.let {
             intent.putExtra(AssessmentId, it)
         }

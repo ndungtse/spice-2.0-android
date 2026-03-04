@@ -22,8 +22,8 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
-import com.medtroniclabs.spice.ui.MenuConstants.DialogResult
-import com.medtroniclabs.spice.ui.MenuConstants.WorkFlowName
+import com.medtroniclabs.spice.ui.MenuConstants.DIALOG_RESULT
+import com.medtroniclabs.spice.ui.MenuConstants.WORKFLOW_NAME
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
@@ -55,10 +55,10 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
     ) {
         super.onViewCreated(view, savedInstanceState)
         childFragmentManager.setFragmentResultListener(
-            DialogResult,
+            DIALOG_RESULT,
             viewLifecycleOwner,
         ) { _, bundle ->
-            val result = bundle.getString(WorkFlowName)
+            val result = bundle.getString(WORKFLOW_NAME)
             startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, result)
         }
         viewModel.getMenuForClinicalWorkflows(requireArguments().getString(DefinedParams.Gender))
@@ -191,7 +191,7 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         intent.putExtra(DefinedParams.FhirId, getMemberReference())
         intent.putExtra(DefinedParams.ORIGIN, getOrigin())
         workFlowName?.let { name ->
-            intent.putExtra(WorkFlowName, name)
+            intent.putExtra(WORKFLOW_NAME, name)
         }
         startActivity(intent)
     }
