@@ -8,7 +8,15 @@
       "viewType": "CardView"
     },
     {
-      "condition": [],
+      "condition": [
+        {
+          "eqList": [
+            "nid","brn"
+          ],
+          "targetId": "national_id",
+          "visibility": "visible"
+        }
+      ],
       "defaultValue": null,
       "errorMessage": "Please select ID Type",
       "cultureErrorMessage": "অনুগ্রহ করে আইডির ধরন নির্বাচন করুন",
@@ -23,11 +31,16 @@
         {
           "id": "nid",
           "name": "National ID",
-          "cultureValue": "জাতীয় পরিচয়পত্র"
+          "cultureValue": "জাতীয় পরিচয়পত্র (NID) (≥১৮ বছর)"
         },
         {
           "id": "brn",
           "name": "BRN",
+          "cultureValue": "জন্ম নিবন্ধন আইডি (Birth Reg ID) (<১৮ বছর)"
+        },
+        {
+          "id": "na",
+          "name": "Not Available",
           "cultureValue": "জন্ম নিবন্ধন নম্বর"
         }
       ],
@@ -49,9 +62,9 @@
       "isNeededDefault": true,
       "orderId": 2,
       "title": "National ID",
-      "titleCulture": "জাতীয় পরিচয়পত্র",
+      "titleCulture": "জাতীয় পরিচয়পত্র (NID) (≥১৮ বছর)",
       "viewType": "EditText",
-      "visibility": "visible"
+      "visibility": "gone"
     },
     {
       "family": "bioData",
@@ -70,6 +83,26 @@
       "visibility": "visible"
     },
     {
+      "family": "bioData",
+      "fieldName": "Mobile Number",
+      "hint": "Enter Mobile Number",
+      "hintCulture": "মোবাইল নম্বর লিখুন",
+      "id": "phone_number",
+      "inputType": 3,
+      "isEnabled": true,
+      "maxLength": 11,
+      "minLength": 1,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "orderId": 9,
+      "title": "Mobile Number",
+      "titleCulture": "মোবাইল নম্বর",
+      "viewType": "EditText",
+      "visibility": "visible",
+      "optionType": "phoneNumberWithoutCountryCode",
+      "startsWith": ["01"]
+    },
+    {
       "disableFutureDate": true,
       "family": "bioData",
       "fieldName": "Age",
@@ -79,8 +112,10 @@
       "isMandatory": true,
       "isNeededDefault": true,
       "isSummary": true,
-      "title": "Age",
-      "titleCulture": "বয়স",
+      "title": "Date of Birth",
+      "titleCulture": "জন্ম তারিখ",
+      "hint": "DD/MM/YYYY",
+      "hintCulture": "দিন/মাস/বছর",
       "viewType": "Age",
       "orderId": 4,
       "visibility": "visible"
@@ -125,7 +160,9 @@
       "isMandatory": true,
       "orderId": 6,
       "title": "Guardian Name",
-      "titleCulture": "অভিভাবকের নাম",
+      "titleCulture": "মাতা/ অভিভাবকের নাম",
+      "hint": "Drop down list of all registered members from the house",
+      "hintCulture": "ঘরের সকল নিবন্ধিত সদস্যদের ড্রপডাউন তালিকা",
       "viewType": "Spinner",
       "visibility": "gone",
       "localDataCache": "guardian"
@@ -149,7 +186,7 @@
           },
           {
               "name": "Single",
-              "cultureValue": "একক",
+              "cultureValue": "একক (বিচ্ছিন্ন/বিবাহবিচ্ছেদ/সঙ্গী মৃত)",
               "id": "single"
           },
           {
@@ -180,12 +217,12 @@
       "optionsList": [
           {
               "name": "Present",
-              "cultureValue": "হ্যাঁ",
+              "cultureValue": "Present",
               "id": "present"
           },
           {
               "name": "Absent",
-              "cultureValue": "না",
+              "cultureValue": "Absent",
               "id": "absent"
           }
       ],
@@ -197,26 +234,7 @@
       "infoTitle": "Who has great difficulty or cannot see, hear, walk, climb, do things independently",
       "infoTitleCulture": "যার খুব অসুবিধা হয় অথবা সে স্বাধীনভাবে দেখতে, শুনতে, হাঁটতে, আরোহণ করতে, কিছু করতে পারে না"
     },
-    {
-      "family": "bioData",
-      "fieldName": "Mobile Number",
-      "hint": "Enter Mobile Number",
-      "hintCulture": "মোবাইল নম্বর লিখুন",
-      "id": "phone_number",
-      "inputType": 3,
-      "isEnabled": true,
-      "maxLength": 11,
-      "minLength": 1,
-      "isMandatory": false,
-      "isNeededDefault": true,
-      "orderId": 9,
-      "title": "Mobile Number",
-      "titleCulture": "মোবাইল নম্বর",
-      "viewType": "EditText",
-      "visibility": "visible",
-      "optionType": "phoneNumberWithoutCountryCode",
-      "startsWith": ["01"]
-    },
+    
     {
       "family": "bioData",
       "fieldName": "Is Household Head",

@@ -23,7 +23,7 @@
       "maxLength": 2,
       "minValue": 0,
       "title": "Number of Living Children",
-      "titleCulture": "জীবিত সন্তানের সংখ্যা",
+      "titleCulture": "জীবিত বাচ্চার সংখ্যা",
       "viewType": "EditText",
       "visibility": "visible",
       "condition": [
@@ -45,7 +45,7 @@
       "isNeededDefault": true,
       "isSummary": false,
       "title": "Age of last child",
-      "titleCulture": "সর্বশেষ সন্তানের বয়স",
+      "titleCulture": "সবচেয়ে ছোট সন্তানের বয়স কত?",
       "viewType": "Age",
       "orderId": 2,
       "visibility": "gone"
@@ -81,13 +81,13 @@
         {
           "id": "unsure",
           "name": "Unsure",
-          "cultureValue": "অনিশ্চিত"
+          "cultureValue": "সিদ্ধান্ত নেয়নি"
         }
       ],
       "condition": [
       ],
       "title": "Desire for children in future",
-      "titleCulture": "ভবিষ্যতে সন্তান নেওয়ার ইচ্ছা",
+      "titleCulture": "আপনার কি ভবিষ্যতে সন্তান নেওয়ার ইচ্ছা আছে?",
       "orderId": 3,
       "viewType": "Spinner",
       "visibility": "visible"
@@ -120,46 +120,46 @@
         {
           "id": "pills",
           "name": "Pills",
-          "cultureValue": "বড়ি"
+          "cultureValue": "পিল"
         },
         {
           "id": "injectables",
           "name": "Injectables",
-          "cultureValue": "ইনজেকশন"
+          "cultureValue": "ইঞ্জেকশান"
         },
         {
           "id": "implant",
           "name": "Implant",
-          "cultureValue": "ইমপ্লান্ট"
+          "cultureValue": "নরপ্লান্ট"
         },
         {
           "id": "iud",
           "name": "IUD",
-          "cultureValue": "আইইউডি"
+          "cultureValue": "আই ইউ ডি  (গর্ভনিরোধক যন্ত্র)"
         },
         {
           "id": "condoms",
           "name": "Condoms",
-          "cultureValue": "কনডম"
+          "cultureValue": "কন্ডম"
         },
         {
           "id": "sterilizationFemale",
           "name": "Sterilization (F)",
-          "cultureValue": "বন্ধ্যাকরণ (মহিলা)"
+          "cultureValue": "মহিলা বন্ধ্যাকরণ"
         },
         {
           "id": "sterilizationMale",
           "name": "Sterilization (M)",
-          "cultureValue": "বন্ধ্যাকরণ (পুরুষ)"
+          "cultureValue": "পুরুষ বন্ধ্যাকরণ"
         },
         {
           "id": "none",
           "name": "None",
-          "cultureValue": "কোনটিই নয়"
+          "cultureValue": "কোনোটি নয়"
         }
       ],
       "title": "Current use of modern methods of Family Planning",
-      "titleCulture": "পরিবার পরিকল্পনার আধুনিক পদ্ধতির বর্তমান ব্যবহার",
+      "titleCulture": "বর্তমানে কি আধুনিক পরিবার পরিকল্পনা পদ্ধতি ব্যবহার করছেন?",
       "orderId": 4,
       "viewType": "DialogCheckbox",
       "visibility": "visible"
@@ -181,6 +181,8 @@
         "viewType": "TextLabel",
         "textLabelStyle": "bold",
         "textLabelColor": "#001E46",
+        "backgroundColor": "#f4f5bf",
+        "textColor": "#001E46",
         "orderId": 1,
         "visibility": "visible",
         "condition": [
@@ -192,10 +194,12 @@
       "fieldName": "Counselling Message - SARCs",
       "id": "counsellingMessageSarcs",
       "title": "Short-Acting Reversible Methods (SARCs) (Pills, Condoms, Injectables)",
-      "titleCulture": "স্বল্প-মেয়াদী বিপরীতমুখী পদ্ধতি (SARCs) (বড়ি, কনডম, ইনজেকশন)",
+      "titleCulture": "স্বল্পমেয়াদি পদ্ধতি – (পিল, কনডম, ইনজেকশন)",
       "viewType": "TextLabel",
       "textLabelStyle": "bold",
       "textLabelColor": "#001E46",
+      "backgroundColor": "#f4f5bf",
+      "textColor": "#001E46",
       "orderId": 1,
       "visibility": "visible",
       "condition": [
@@ -207,10 +211,12 @@
       "fieldName": "Counselling Message - LARCs",
       "id": "counsellingMessageLarcs",
       "title": "Long-Acting Reversible Methods (LARCs)- (IUCD, Implant)",
-      "titleCulture": "দীর্ঘ-মেয়াদী বিপরীতমুখী পদ্ধতি (LARCs)- (আইইউডি, ইমপ্লান্ট)",
+      "titleCulture": "দীর্ঘমেয়াদি পদ্ধতি – (আইইউসিডি/কপার-টি, ইমপ্লান্ট)",
       "viewType": "TextLabel",
       "textLabelStyle": "bold",
       "textLabelColor": "#001E46",
+      "backgroundColor": "#f4f5bf",
+      "textColor": "#001E46",
       "orderId": 2,
       "visibility": "visible",
       "condition": [
@@ -222,10 +228,12 @@
       "fieldName": "Counselling Message - Permanent",
       "id": "counsellingMessagePermanent",
       "title": "Permanent- (Sterilization)",
-      "titleCulture": "স্থায়ী- (বন্ধ্যাকরণ)",
+      "titleCulture": "স্থায়ী পদ্ধতি – (স্থায়ী বন্ধ্যাকরণ/স্টেরিলাইজেশন)",
       "viewType": "TextLabel",
       "textLabelStyle": "bold",
-      "textLabelColor": "#001E46",
+      "textLabelColor": "#FFFFFF",
+      "backgroundColor": "#001E46",
+      "textColor": "#FFFFFF",
       "orderId": 3,
       "visibility": "visible",
       "condition": [
@@ -252,19 +260,19 @@
       "isNeededDefault": true,
       "optionsList": [
         {
-          "id": "referred",
-          "name": "Referred",
-          "cultureValue": "রেফার করা হয়েছে"
-        },
-        {
           "id": "referralNotRequired",
-          "name": "Referral not required - client using recommended method",
-          "cultureValue": "রেফারেল প্রয়োজন নেই - ক্লায়েন্ট সুপারিশকৃত পদ্ধতি ব্যবহার করছেন"
+          "name": "Referral not required as client using recommended method",
+          "cultureValue": "রেফারেলের প্রয়োজন নেই, কারণ ক্লায়েন্ট সুপারিশকৃত পদ্ধতি ব্যবহার করছেন"
         },
         {
           "id": "notReferredDeclined",
-          "name": "Not referred - client declined referral",
-          "cultureValue": "রেফার করা হয়নি - ক্লায়েন্ট রেফারেল প্রত্যাখ্যান করেছেন"
+          "name": "Not Referred as client declined referral",
+          "cultureValue": "রেফারেল করা হয়নি, কারণ ক্লায়েন্ট রেফারেল গ্রহণ করেননি"
+        },
+        {
+          "id": "referred",
+          "name": "Referred to health facility",
+          "cultureValue": "রেফারেল সেবা কেন্দ্র"
         }
       ],
       "title": "Referral",
@@ -302,12 +310,12 @@
         {
           "id": "mcwc",
           "name": "Mother and Child Welfare Center (MCWC)",
-          "cultureValue": "মা ও শিশু কল্যাণ কেন্দ্র (MCWC)"
+          "cultureValue": "মাতৃত্ব ও শিশু কল্যাণ কেন্দ্র (MCWC)"
         },
         {
           "id": "unionHealthSubCenter",
           "name": "Union Health Sub Center",
-          "cultureValue": "ইউনিয়ন স্বাস্থ্য উপ-কেন্দ্র"
+          "cultureValue": "ইউনিয়ন স্বাস্থ্য উপকেন্দ্র"
         },
         {
           "id": "uhc",
@@ -325,8 +333,8 @@
           "cultureValue": "মেডিকেল কলেজ হাসপাতাল"
         }
       ],
-      "title": "Referral Facility Type",
-      "titleCulture": "রেফারেল সুবিধার ধরন",
+      "title": "Referral Facility",
+      "titleCulture": "রেফারেল সেবা কেন্দ্র",
       "orderId": 2,
       "viewType": "Spinner",
       "visibility": "gone"

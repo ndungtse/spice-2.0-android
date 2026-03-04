@@ -1,0 +1,1132 @@
+{
+  "formLayout": [
+    
+    {
+      "familyOrder": 0,
+      "id": "medicalHistoryPhysicalExamination",
+      "title": "Medical History, Physical Examination & Vitals",
+      "titleCulture": "চিকিৎসার ইতিহাস, শারীরিক পরীক্ষা এবং গুরুত্বপূর্ণ লক্ষণ",
+      "viewType": "CardView"
+    },
+    {
+      "family": "medicalHistoryPhysicalExamination",
+      "fieldName": "Any complication during all previous pregnancies",
+      "id": "previousPregnancyComplications",
+      "orderId": 0,
+      "isSummary": false,
+      "viewType": "Spinner",
+      "isMandatory": true,
+      "isEnabled": true,
+      "title": "Any complication during all previous pregnancies",
+      "titleCulture": "গর্ভবতী মা কি নিচের কোনো সমস্যায় ভুগছে?",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "abortion_mr",
+          "name": "Abortion/MR",
+          "cultureValue": "গর্ভপাত/এম আর"
+        },
+        {
+          "id": "stillbirth",
+          "name": "Stillbirth",
+          "cultureValue": "মৃত প্রসব"
+        },
+        {
+          "id": "caesarean_operation",
+          "name": "Caesarean operation",
+          "cultureValue": "সিজারিয়ান অপারেশন"
+        },
+        {
+          "id": "convulsions",
+          "name": "Convulsions",
+          "cultureValue": "খিচুনি"
+        },
+        {
+          "id": "postpartum_hemorrhage",
+          "name": "Postpartum hemorrhage",
+          "cultureValue": "প্রসব পরবর্তি রক্ত ক্ষরণ"
+        },
+        {
+          "id": "assisted_delivery",
+          "name": "Assisted Delivery",
+          "cultureValue": "প্রসবে সহায়তা নিয়ে প্রসব করাতে হয়েছে"
+        },
+        {
+          "id": "preterm_birth",
+          "name": "Preterm birth",
+          "cultureValue": "নির্ধারিত সময়ের আগেই প্রসব হয়েছে"
+        },
+        {
+          "id": "gestational_diabetes",
+          "name": "Gestational diabetes",
+          "cultureValue": "গর্ভকালীন ডায়াবেটিস"
+        },
+        {
+          "id": "severe_anemia",
+          "name": "Severe anemia",
+          "cultureValue": "মারাত্মক রক্তস্বল্পতা"
+        },
+        {
+          "id": "none",
+          "name": "None",
+          "cultureValue": "না (উপরের কোনোটি নয়)"
+        }
+      ]
+    },
+    {
+      "family": "medicalHistoryPhysicalExamination",
+      "fieldName": "Pregnant woman has any existing illness",
+      "id": "pregnantWomanExistingIllness",
+      "orderId": 1,
+      "hint":"Illness",
+      "isSummary": false,
+      "viewType": "DialogCheckbox",
+      "isMandatory": true,
+      "isEnabled": true,
+      "title": "Pregnant woman has any existing illness",
+      "titleCulture": "গর্ভবতী মায়ের আগে থেকে কোনো অসুখ আছে কি?",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "localDataCache": "illness"
+    },
+    {
+      "family": "medicalHistoryPhysicalExamination",
+      "fieldName": "Pregnant woman on treatment for any existing illness",
+      "id": "pregnantWomanOnTreatment",
+      "orderId": 2,
+      "isSummary": false,
+      "hint":"Illness",
+      "viewType": "DialogCheckbox",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Pregnant woman on treatment for any existing illness",
+      "titleCulture": "গর্ভবতী মা কোনো আগের অসুখের জন্য চিকিৎসা নিচ্ছেন কি?",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible"
+    },
+    {
+      "family": "medicalHistoryPhysicalExamination",
+      "fieldName": "Height",
+      "id": "height",
+      "orderId": 3,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 8192,
+      "isMandatory": true,
+      "isEnabled": true,
+      "title": "Height",
+      "titleCulture": "উচ্চতা",
+      "errorMessage": "Please enter a valid height",
+      "visibility": "visible",
+      "maxLength": 5,
+      "unitMeasurement": "cm"
+    },
+    {
+      "family": "medicalHistoryPhysicalExamination",
+      "fieldName": "Weight",
+      "id": "weight",
+      "orderId": 4,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 8192,
+      "isMandatory": true,
+      "isEnabled": true,
+      "title": "Weight",
+      "titleCulture": "ওজন",
+      "errorMessage": "Please enter a valid weight",
+      "visibility": "visible",
+      "maxLength": 5,
+      "unitMeasurement": "kg"
+    },
+    {
+      "family": "medicalHistoryPhysicalExamination",
+      "id": "bmi",
+      "title": "BMI",
+      "titleCulture": "বি.এম.আই",
+      "backgroundColor": "#FDF4F0",
+      "viewType": "InformationLabel",
+      "isSummary": false
+    },
+    {
+      "family": "medicalHistoryPhysicalExamination",
+      "fieldName": "Blood Pressure",
+      "id": "bloodPressure",
+      "orderId": 6,
+      "isSummary": false,
+      "viewType": "TextLabel",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Blood Pressure",
+      "titleCulture": "রক্তচাপ",
+      "visibility": "visible",
+      "readOnly": true
+    },
+    {
+      "family": "medicalHistoryPhysicalExamination",
+      "fieldName": "Systolic",
+      "id": "systolic",
+      "orderId": 6,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 3,
+      "isMandatory": true,
+      "isEnabled": true,
+      "title": "Systolic",
+      "titleCulture": "সিস্টোলিক",
+      "errorMessage": "Please enter a valid systolic value",
+      "visibility": "visible",
+      "maxLength": 3,
+      "unitMeasurement": "mmHg"
+    },
+    {
+      "family": "medicalHistoryPhysicalExamination",
+      "fieldName": "Diastolic",
+      "id": "diastolic",
+      "orderId": 6,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 3,
+      "isMandatory": true,
+      "isEnabled": true,
+      "title": "Diastolic",
+      "titleCulture": "ডায়াস্টোলিক",
+      "errorMessage": "Please enter a valid diastolic value",
+      "visibility": "visible",
+      "maxLength": 3,
+      "unitMeasurement": "mmHg"
+    },
+    {
+      "family": "medicalHistoryPhysicalExamination",
+      "fieldName": "Edema",
+      "id": "edema",
+      "orderId": 7,
+      "isSummary": false,
+      "viewType": "SingleSelectionView",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Edema (To check on face / hands /feet)",
+      "titleCulture": "ইডিমা",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "present",
+          "name": "Present",
+          "cultureValue": " হ্যাঁ"
+        },
+        {
+          "id": "absent",
+          "name": "Absent",
+          "cultureValue": "না"
+        }
+      ],
+      "condition": [
+      ]
+    },
+    {
+      "family": "medicalHistoryPhysicalExamination",
+      "fieldName": "Temperature",
+      "id": "temperature",
+      "orderId": 6,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 8192,
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Temperature",
+      "titleCulture": "তাপমাত্রা",
+      "errorMessage": "Please enter a valid temperature",
+      "visibility": "visible",
+      "maxLength": 5,
+      "unitMeasurement": "°F"
+    },
+    {
+      "family": "medicalHistoryPhysicalExamination",
+      "fieldName": "Pulse",
+      "id": "pulse",
+      "orderId": 4,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 8192,
+      "isMandatory": true,
+      "isEnabled": true,
+      "title": "Pulse",
+      "titleCulture": "নাড়ির গতি(প্রতি মিনিটে )",
+      "errorMessage": "Please enter a valid pulse",
+      "visibility": "visible",
+      "maxLength": 5,
+      "unitMeasurement": "bpm"
+    },
+    {
+      "family": "medicalHistoryPhysicalExamination",
+      "fieldName": "Fundal Height",
+      "id": "fundalHeight",
+      "orderId": 8,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 8192,
+      "isMandatory": true,
+      "isEnabled": true,
+      "title": "Fundal Height",
+      "titleCulture": "জরায়ুর ঊচচতা (সেমি)",
+      "errorMessage": "Please enter a valid fundal height",
+      "visibility": "visible",
+      "maxLength": 3,
+      "unitMeasurement": "cm"
+    },
+    {
+      "familyOrder": 1,
+      "id": "pointOfCareInvestigations",
+      "title": "Point-of-Care Investigations",
+      "titleCulture": "পয়েন্ট-অফ-কেয়ার পরীক্ষা",
+      "viewType": "CardView"
+    },
+    {
+      "family": "pointOfCareInvestigations",
+      "fieldName": "Hemoglobin",
+      "id": "hemoglobin",
+      "orderId": 1,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 8192,
+      "isMandatory": true,
+      "isEnabled": true,
+      "title": "Hemoglobin (Hb)",
+      "titleCulture": "হিমোগ্লোবিন(gm/dl) - রক্ত পরীক্ষা",
+      "errorMessage": "Please enter a valid hemoglobin value",
+      "visibility": "visible",
+      "maxLength": 5,
+      "unitMeasurement": "g/dL"
+    },
+    {
+      "family": "pointOfCareInvestigations",
+      "fieldName": "Blood Sugar",
+      "id": "bloodSugar",
+      "orderId": 5,
+      "isSummary": false,
+      "viewType": "SingleSelectionView",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Blood Sugar",
+      "titleCulture": "রক্ত পরীক্ষায় গ্লুকোজ আছে কিনা",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "fasting",
+          "name": "Fasting",
+          "cultureValue": "ফাস্টিং"
+        },
+        {
+          "id": "random",
+          "name": "Random",
+          "cultureValue": "রেন্ডম"
+        }
+      ]
+    },
+    {
+      "family": "pointOfCareInvestigations",
+      "fieldName": "Blood Sugar Fasting",
+      "id": "bloodSugarFasting",
+      "orderId": 3,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 8192,
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Fasting",
+      "titleCulture": "ফাস্টিং",
+      "errorMessage": "Please enter a valid fasting blood sugar value",
+      "visibility": "gone",
+      "maxLength": 5,
+      "unitMeasurement": "mmol/L"
+    },
+    {
+      "family": "pointOfCareInvestigations",
+      "fieldName": "Blood Sugar Random",
+      "id": "bloodSugarRandom",
+      "orderId": 4,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 8192,
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Random",
+      "titleCulture": "রেন্ডম",
+      "errorMessage": "Please enter a valid random blood sugar value",
+      "visibility": "gone",
+      "maxLength": 5,
+      "unitMeasurement": "mmol/L"
+    },
+    {
+      "family": "pointOfCareInvestigations",
+      "fieldName": "Urinary Albumin",
+      "id": "urinaryAlbumin",
+      "orderId": 5,
+      "isSummary": false,
+      "viewType": "SingleSelectionView",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Urinary Albumin",
+      "titleCulture": "প্রস্রাব পরীক্ষায় অ্যালবুমিন আছে কিনা",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "present",
+          "name": "Present",
+          "cultureValue": "হ্যাঁ"
+        },
+        {
+          "id": "absent",
+          "name": "Absent",
+          "cultureValue": "না"
+        },
+        {
+          "id": "NA",
+          "name": "N/A",
+          "cultureValue": "N/A"
+        }
+      ]
+    },
+    {
+      "family": "pointOfCareInvestigations",
+      "fieldName": "Urinary Sugar",
+      "id": "urinarySugar",
+      "orderId": 6,
+      "isSummary": false,
+      "viewType": "SingleSelectionView",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Urinary Sugar",
+      "titleCulture": "প্রস্রাব পরীক্ষায় গ্লুকোজ আছে কিনা",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "present",
+          "name": "Present",
+          "cultureValue": "হ্যাঁ"
+        },
+        {
+          "id": "absent",
+          "name": "Absent",
+          "cultureValue": "না"
+        },
+        {
+          "id": "NA",
+          "name": "N/A",
+          "cultureValue": "N/A"
+        }
+      ]
+    },
+    {
+      "family": "pointOfCareInvestigations",
+      "fieldName": "Urinary Bilirubin",
+      "id": "urinaryBilirubin",
+      "orderId": 7,
+      "isSummary": false,
+      "viewType": "SingleSelectionView",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Urinary Bilirubin",
+      "titleCulture": "প্রস্রাব পরীক্ষায় বিলিরুবিন আছে কি না",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "present",
+          "name": "Present",
+          "cultureValue": "হ্যাঁ"
+        },
+        {
+          "id": "absent",
+          "name": "Absent",
+          "cultureValue": "না"
+        },
+        {
+          "id": "NA",
+          "name": "N/A",
+          "cultureValue": "N/A"
+        }
+      ]
+    },
+    {
+      "familyOrder": 2,
+      "id": "vaccinationAndSupplements",
+      "title": "Vaccination and Supplements",
+      "titleCulture": "টিকা এবং সম্পূরক",
+      "viewType": "CardView"
+    },
+    {
+      "family": "vaccinationAndSupplements",
+      "fieldName": "TT/TD completed",
+      "id": "ttTdCompleted",
+      "orderId": 1,
+      "isSummary": false,
+      "viewType": "SingleSelectionView",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "TT/TD completed",
+      "titleCulture": "আপনার কি টিটি টিকা ডোজ সম্পূর্ণ করা আছে?",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "yes",
+          "name": "Yes",
+          "cultureValue": "হ্যাঁ"
+        },
+        {
+          "id": "no",
+          "name": "No",
+          "cultureValue": "না"
+        }
+      ]
+    },
+    {
+        "family": "vaccinationAndSupplements",
+        "fieldName": "Folic Acid Tablets",
+        "id": "folicAcidTablets",
+        "orderId": 1,
+        "isSummary": false,
+        "viewType": "TextLabel",
+        "isMandatory": false,
+        "isEnabled": true,
+        "title": "Folic Acid Tablets",
+        "visibility": "visible",
+        "readOnly": true
+      },
+    {
+      "family": "vaccinationAndSupplements",
+      "fieldName": "Folic Acid Tablets Total Consumed",
+      "id": "folicAcidTotalConsumed",
+      "orderId": 2,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 3,
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "How many folic acid tablets taken last month?",
+      "titleCulture": "গতমাসে কয়টি ফলিক এসিড বড়ি খেয়েছেন?",
+      "hint": "Total Consumed last month",
+      "hintCulture": "গতমাসে মোট খাওয়া হয়েছে",
+      "errorMessage": "Please enter a valid number",
+      "visibility": "visible",
+      "maxLength": 4
+    },
+    {
+      "family": "vaccinationAndSupplements",
+      "fieldName": "Folic Acid Tablets Provided",
+      "id": "folicAcidProvided",
+      "orderId": 3,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 3,
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Provided during this visit",
+      "titleCulture": "এই ভিজিটের সময় প্রদানকৃত –",
+      "hint": "Enter number of tablets",
+      "hintCulture": "এই ভিজিটের সময় প্রদানকৃত",
+      "errorMessage": "Please enter a valid number",
+      "visibility": "visible",
+      "maxLength": 4
+    },
+    {
+        "family": "vaccinationAndSupplements",
+        "fieldName": "IFA Tablets",
+        "id": "ifaTablets",
+        "orderId": 1,
+        "isSummary": false,
+        "viewType": "TextLabel",
+        "isMandatory": false,
+        "isEnabled": true,
+        "title": "IFA Tablets",
+        "visibility": "visible",
+        "readOnly": true
+      },
+    {
+      "family": "vaccinationAndSupplements",
+      "fieldName": "IFA Tablets Total Consumed",
+      "id": "ifaTotalConsumed",
+      "orderId": 4,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 3,
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "How many iron tablets taken last month?",
+      "titleCulture": "গতমাসে কয়টি আয়রন বড়ি খেয়েছেন?",
+      "hint": "Total Consumed last month",
+      "hintCulture": "গতমাসে মোট খাওয়া হয়েছে",
+      "errorMessage": "Please enter a valid number",
+      "visibility": "visible",
+      "maxLength": 4
+    },
+    {
+      "family": "vaccinationAndSupplements",
+      "fieldName": "IFA Tablets Provided",
+      "id": "ifaProvided",
+      "orderId": 5,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 3,
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Provided during this visit",
+      "titleCulture": "এই ভিজিটের সময় প্রদানকৃত –",
+      "errorMessage": "Please enter a valid number",
+      "visibility": "visible",
+      "maxLength": 4
+    },
+    {
+      "family": "vaccinationAndSupplements",
+      "fieldName": "Calcium Tablets",
+      "id": "calciumTablets",
+      "orderId": 1,
+      "isSummary": false,
+      "viewType": "TextLabel",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Calcium Tablets",
+      "visibility": "visible",
+      "readOnly": true
+    },
+    {
+      "family": "vaccinationAndSupplements",
+      "fieldName": "Calcium Tablets Total Consumed",
+      "id": "calciumTotalConsumed",
+      "orderId": 6,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 3,
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "How many calcium tablets taken last month?",
+      "titleCulture": "গতমাসে কয়টি ক্যালসিয়াম বড়ি খেয়েছেন?",
+      "errorMessage": "Please enter a valid number",
+      "visibility": "visible",
+      "maxLength": 4
+    },
+    {
+      "family": "vaccinationAndSupplements",
+      "fieldName": "Calcium Tablets Provided",
+      "id": "calciumProvided",
+      "orderId": 7,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 3,
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Provided during this visit",
+      "titleCulture": "এই ভিজিটের সময় প্রদান করা হয়েছে –",
+      "errorMessage": "Please enter a valid number",
+      "visibility": "visible",
+      "maxLength": 4
+    },
+
+    {
+      "familyOrder": 3,
+      "id": "ancServicesBirthPreparedness",
+      "title": "ANC services and Birth Preparedness",
+      "titleCulture": "ANC সেবা এবং প্রসবের প্রস্তুতি",
+      "viewType": "CardView"
+    },
+    {
+      "family": "ancServicesBirthPreparedness",
+      "fieldName": "No.of ANC visits conducted with other providers",
+      "id": "ancVisitsOtherProviders",
+      "orderId": 1,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 3,
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "No.of ANC visits conducted with other providers",
+      "titleCulture": "অন্য সেবাদাতাদের সঙ্গে কতবার ANC (গর্ভকালীন স্বাস্থ্যপরিচর্যা) ভিজিট করা হয়েছে?",
+      "errorMessage": "Please enter a valid number",
+      "visibility": "visible",
+      "maxLength": 2,
+      "minValue": 0
+    },
+    {
+      "family": "ancServicesBirthPreparedness",
+      "fieldName": "PW received atleast one ANC from a medical doctor",
+      "id": "ancFromMedicalDoctor",
+      "orderId": 2,
+      "isSummary": false,
+      "viewType": "SingleSelectionView",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "PW received atleast one ANC from a medical doctor",
+      "titleCulture": "গর্ভবতী মা কমপক্ষে একবার কোনো চিকিৎসক থেকে ANC পেয়েছেন কি না?",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "yes",
+          "name": "Yes",
+          "cultureValue": "হ্যাঁ"
+        },
+        {
+          "id": "no",
+          "name": "No",
+          "cultureValue": "না"
+        }
+      ],
+      "condition": [
+        
+      ]
+    },
+    {
+      "family": "ancServicesBirthPreparedness",
+      "fieldName": "Ultrasound",
+      "id": "ultrasound",
+      "orderId": 3,
+      "isSummary": false,
+      "viewType": "SingleSelectionView",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Ultrasound",
+      "titleCulture": "আল্ট্রাসাউন্ড করা হয়েছে কি?",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "done",
+          "name": "Done",
+          "cultureValue": "সম্পন্ন হয়েছে"
+        },
+        {
+          "id": "notDone",
+          "name": "Not done yet",
+          "cultureValue": "এখনও সম্পন্ন হয়নি"
+        }
+      ]
+    },
+    {
+      "family": "ancServicesBirthPreparedness",
+      "fieldName": "Has the PW identified a health facility for institutional delivery",
+      "id": "facilityIdentifiedForDelivery",
+      "orderId": 4,
+      "isSummary": false,
+      "viewType": "Spinner",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Has the PW identified a health facility for institutional delivery?",
+      "titleCulture": "গর্ভবতী মা কি প্রসবের জন্য কোনো স্বাস্থ্যকেন্দ্র ঠিক করেছেন?",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "uhfwc",
+          "name": "UHFWC (Union health and family welfare center)",
+          "cultureValue": "ইউনিয়ন স্বাস্থ্য ও পরিবারকল্যাণ কেন্দ্র (UHFWC)"
+        },
+        {
+          "id": "mcwc",
+          "name": "MCWC (Mother and Child Welfare Center)",
+          "cultureValue": "মা ও শিশু কল্যাণ কেন্দ্র (MCWC)"
+        },
+        {
+          "id": "uhc",
+          "name": "UHC (Upazila Health complex)",
+          "cultureValue": "উপজেলা স্বাস্থ্য কমপ্লেক্স (UHC)"
+        },
+        {
+          "id": "districtHospital",
+          "name": "District Hospital",
+          "cultureValue": "জেলা সদর হাসপাতাল"
+        },
+        {
+          "id": "medicalCollegeHospital",
+          "name": "Medical College Hospital",
+          "cultureValue": "মেডিকেল কলেজ হাসপাতাল"
+        },
+        {
+          "id": "ngoFacility",
+          "name": "NGO facility",
+          "cultureValue": "এনজিও স্বাস্থ্যসেবা কেন্দ্র"
+        },
+        {
+          "id": "privateFacility",
+          "name": "Private Facility",
+          "cultureValue": "প্রাইভেট হাসপাতাল"
+        },
+        {
+          "id": "notIdentified",
+          "name": "Not identified yet",
+          "cultureValue": "এখনও ঠিক হয়নি"
+        },
+        {
+          "id": "homeDelivery",
+          "name": "Planned for home delivery",
+          "cultureValue": "ঘরে প্রসবের পরিকল্পনা করা হয়েছে"
+        }
+      ]
+    },
+    {
+      "familyOrder": 4,
+      "id": "dangerSignsRiskIdentification",
+      "title": "Danger Signs/Risk identification",
+      "titleCulture": "বিপদচিহ্ন/ঝুঁকি শনাক্তকরণ",
+      "viewType": "CardView"
+    },
+    {
+      "family": "dangerSignsRiskIdentification",
+      "fieldName": "Has the PW experienced any of the following (Gestation age ≤ 12 weeks)",
+      "id": "dangerSignsExperienced12",
+      "orderId": 1,
+      "isSummary": false,
+      "hint":"Danger Signs",
+      "viewType": "DialogCheckbox",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Has the PW experienced any of the following",
+      "titleCulture": "গর্ভবতী মা কি নিচের কোনো সমস্যায় ভুগছে?",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "vaginalBleeding",
+          "name": "Vaginal bleeding",
+          "cultureValue": "মাসিকের রাস্তা দিয়ে রক্তপাত"
+        },
+        {
+          "id": "severeAbdominalPain",
+          "name": "Severe abdominal pain",
+          "cultureValue": "তীব্র পেট ব্যথা"
+        },
+        {
+          "id": "severeHeadaches",
+          "name": "Severe headaches/blurred vision/sudden swelling of face/ hands",
+          "cultureValue": "তীব্র মাথাব্যথা / চোখে ঝাপসা দেখা / মুখ বা হাতে হঠাৎ ফুলে যাওয়া ( সম্ভাব্য প্রি-ইক্লাম্পসিয়া)"
+        },
+        {
+          "id": "severeVomiting",
+          "name": "Severe vomiting",
+          "cultureValue": "তীব্র বমি"
+        },
+        {
+          "id": "highFever",
+          "name": "High Fever/ Pain or burining while urinating",
+          "cultureValue": "তীব্র জ্বর/ প্রস্রাবের সময় ব্যথা বা প্রস্রাবে জ্বালা-পোড়া অনুভূতি"
+        },
+        {
+          "id": "shortnessOfBreath",
+          "name": "Shortness of breath/dizziness",
+          "cultureValue": "শ্বাস নিতে কষ্ট"
+        },
+        {
+          "id": "none",
+          "name": "None",
+          "cultureValue": "(উপরের কোনোটি নয়)"
+        },
+        {
+          "id": "other",
+          "name": "Other",
+          "cultureValue": "অন্যান্য"
+        }
+      ],
+      "condition": []
+    },
+    {
+      "family": "dangerSignsRiskIdentification",
+      "fieldName": "Has the PW experienced any of the following (Gestation age 13-27 weeks)",
+      "id": "dangerSignsExperienced13_27",
+      "orderId": 2,
+      "isSummary": false,
+      "hint":"Danger Signs",
+      "viewType": "DialogCheckbox",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Has the PW experienced any of the following",
+      "titleCulture": "গর্ভবতী মা কি নিচের কোনো সমস্যায় ভুগছে?",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "vaginalBleeding",
+          "name": "Vaginal bleeding",
+          "cultureValue": "মাসিকের রাস্তা দিয়ে রক্তপাত"
+        },
+        {
+          "id": "leakingFluid",
+          "name": "Leaking of fluid from vagina",
+          "cultureValue": "মাসিকের রাস্তা দিয়ে পানি বা তরল কিছু বের হওয়া"
+        },
+        {
+          "id": "regularContractions",
+          "name": "Regular/painful contractions",
+          "cultureValue": "তলপেটে অতিরিক্ত ব্যাথা/ পেট শক্ত হওয়া"
+        },
+        {
+          "id": "persistentHeadache",
+          "name": "Persistent headache or visual disturbances/  swelling of face/ hands",
+          "cultureValue": "দীর্ঘসময় মাথাব্যথা, চোখে ঝাপসা দেখা, বা মুখ/হাত ফুলে যাওয়া"
+        },
+        {
+          "id": "epigastricPain",
+          "name": "Epigastric pain (severe pain below ribs)",
+          "cultureValue": "বুকের পাঁজরের নিচে তীব্র ব্যথা"
+        },
+        {
+          "id": "highFever",
+          "name": "High fever/ Pain or burining while urinating",
+          "cultureValue": "তীব্র জ্বর/ প্রস্রাবের সময় ব্যথা বা প্রস্রাবে জ্বালা-পোড়া অনুভূতি"
+        },
+        {
+          "id": "reducedFetalMovements",
+          "name": "Reduced fetal movements",
+          "cultureValue": "বাচ্চার নড়াচড়া কমে যাওয়া"
+        },
+        {
+          "id": "none",
+          "name": "None",
+          "cultureValue": "না (উপরের কোনোটি নয়)"
+        },
+        {
+          "id": "other",
+          "name": "Other",
+          "cultureValue": "অন্যান্য"
+        }
+      ],
+      "condition": []
+    },
+    {
+      "family": "dangerSignsRiskIdentification",
+      "fieldName": "Has the PW experienced any of the following (Gestation age 28-40 weeks)",
+      "id": "dangerSignsExperienced28_40",
+      "orderId": 3,
+      "isSummary": false,
+      "hint":"Danger Signs",
+      "viewType": "DialogCheckbox",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Has the PW experienced any of the following",
+      "titleCulture": "গর্ভবতী মা কি নিচের কোনো সমস্যায় ভুগছে?",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "decreasedFetalMovements",
+          "name": "Decreased or absent fetal movements",
+          "cultureValue": "বাচ্চার নড়াচড়া কমে যাওয়া বা বন্ধ হয়ে যাওয়া"
+        },
+        {
+          "id": "severeAbdominalPain",
+          "name": "Severe abdominal pain or regular, painful contractions",
+          "cultureValue": "তলপেটে অতিরিক্ত ব্যাথা/ পেট শক্ত হওয়া"
+        },
+        {
+          "id": "vaginalBleeding",
+          "name": "Vaginal bleeding",
+          "cultureValue": "মাসিকের রাস্তা দিয়ে রক্তপাত"
+        },
+        {
+          "id": "leakingFluid",
+          "name": "Leaking of fluid from vagina",
+          "cultureValue": "মাসিকের রাস্তা দিয়ে পানি বা তরল কিছু বের হওয়া"
+        },
+        {
+          "id": "severeHeadaches",
+          "name": "Severe headaches/ visual disturbances/ epigastric pain/ sudden swelling of face or hands",
+          "cultureValue": " তীব্র মাথাব্যথা/চোখে ঝাপসা/পাঁজরের নিচে ব্যথা/হঠাৎ মুখ বা হাত ফুলে যাওয়া"
+        },
+        {
+          "id": "fever",
+          "name": "Fever/ Foul semlling vaginal discharge",
+          "cultureValue": "জ্বর/দুর্গন্ধযুক্ত মাসিকের রাস্তা দিয়ে স্রাব বের হওয়া"
+        },
+        {
+          "id": "fits",
+          "name": "Fits/Convulsions",
+          "cultureValue": " খিঁচুনি"
+        },
+        {
+          "id": "none",
+          "name": "None",
+          "cultureValue": "(উপরের কোনোটি নয়)"
+        },
+        {
+          "id": "other",
+          "name": "Other",
+          "cultureValue": "অন্যান্য"
+        }
+      ],
+      "condition": []
+    },
+    
+
+    {
+      "family": "summary",
+      "fieldName": "High risk pregnant woman",
+      "id": "highRiskPregnantWoman",
+      "orderId": 1,
+      "isSummary": true,
+      "viewType": "TextLabel",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "High risk pregnant woman",
+      "titleCulture": "উচ্চ ঝুঁকিপূর্ণ গর্ভবতী মা",
+      "visibility": "visible",
+      "readOnly": true
+    },
+    {
+      "family": "summary",
+      "fieldName": "Gaps in ANC",
+      "id": "gapsInAnc",
+      "orderId": 2,
+      "isSummary": true,
+      "viewType": "TextLabel",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Gaps in ANC",
+      "titleCulture": "গর্ভকালীন পরিচর্যায় (ANC) অসম্পূর্ণতা",
+      "visibility": "visible",
+      "readOnly": true
+    },
+    {
+      "familyOrder": 3,
+      "id": "counselling",
+      "title": "Counselling",
+      "titleCulture": "পরামর্শ",
+      "viewType": "CardView",
+      "isSummary": true
+    },
+    {
+      "family": "counselling",
+      "fieldName": "Nutrition Counselling",
+      "id": "nutritionCounselling",
+      "orderId": 1,
+      "isSummary": true,
+      "viewType": "Instruction",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Nutrition Counselling",
+      "titleCulture": "পুষ্টি পরামর্শ",
+      "instructions": [
+        "📌 Weight Management\nBMI assessment is only done during first trimester (before 12 weeks).\n\n📌 General Nutrition\nEat a balanced diet with fruits, vegetables, whole grains, and protein. Drink plenty of water (8-10 glasses daily)."
+      ],
+      "instructionsCulture": [
+        "📌 ওজন ব্যবস্থাপনা\nBMI মূল্যায়ন শুধুমাত্র প্রথম ত্রৈমাসিকে (১২ সপ্তাহের আগে) করা হয়।\n\n📌 সাধারণ পুষ্টি\nফল, শাকসবজি, আস্ত শস্য এবং প্রোটিন সহ একটি সুষম খাদ্য খান। প্রচুর পানি পান করুন (প্রতিদিন ৮-১০ গ্লাস)।"
+      ],
+      "visibility": "visible"
+    },
+    {
+      "family": "counselling",
+      "fieldName": "Care during Antenatal period",
+      "id": "careDuringAntenatalPeriod",
+      "orderId": 2,
+      "isSummary": true,
+      "viewType": "Instruction",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Care during Antenatal period",
+      "titleCulture": "গর্ভকালীন সময়ে যত্ন",
+      "instructions": [
+        "Regular antenatal check-ups are important for monitoring your baby's growth and your health. Attend all scheduled visits and inform your healthcare provider of any concerns or unusual symptoms."
+      ],
+      "instructionsCulture": [
+        "আপনার শিশুর বৃদ্ধি এবং আপনার স্বাস্থ্য পর্যবেক্ষণের জন্য নিয়মিত প্রসবপূর্ব পরীক্ষা গুরুত্বপূর্ণ। সমস্ত নির্ধারিত পরিদর্শনে উপস্থিত হন এবং যেকোনো উদ্বেগ বা অস্বাভাবিক লক্ষণ সম্পর্কে আপনার স্বাস্থ্যসেবা প্রদানকারীকে অবহিত করুন।"
+      ],
+      "visibility": "visible"
+    },
+    {
+      "family": "counselling",
+      "fieldName": "Birth Preparedness",
+      "id": "birthPreparedness",
+      "orderId": 3,
+      "isSummary": true,
+      "viewType": "Instruction",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Birth Preparedness",
+      "titleCulture": "প্রসবের প্রস্তুতি",
+      "instructions": [
+        "Plan for institutional delivery at your identified health facility. Prepare your birth plan, arrange transportation, and keep emergency contacts ready. Have a bag packed with necessary items for you and your baby."
+      ],
+      "instructionsCulture": [
+        "আপনার চিহ্নিত স্বাস্থ্যসেবা কেন্দ্রে প্রাতিষ্ঠানিক প্রসবের পরিকল্পনা করুন। আপনার প্রসব পরিকল্পনা প্রস্তুত করুন, পরিবহনের ব্যবস্থা করুন এবং জরুরি যোগাযোগ প্রস্তুত রাখুন। আপনার এবং আপনার শিশুর জন্য প্রয়োজনীয় জিনিসপত্র দিয়ে একটি ব্যাগ প্রস্তুত রাখুন।"
+      ],
+      "visibility": "visible"
+    },
+    {
+      "family": "counselling",
+      "fieldName": "Newborn Care Education",
+      "id": "newbornCareEducation",
+      "orderId": 4,
+      "isSummary": true,
+      "viewType": "Instruction",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Newborn Care Education",
+      "titleCulture": "নবজাতকের যত্ন শিক্ষা",
+      "instructions": [
+        "Initiate breastfeeding within one hour of birth. Keep the baby warm and ensure skin-to-skin contact. Follow the immunization schedule and attend regular newborn check-ups."
+      ],
+      "instructionsCulture": [
+        "জন্মের এক ঘন্টার মধ্যে স্তন্যপান শুরু করুন। শিশুকে উষ্ণ রাখুন এবং ত্বক থেকে ত্বকের যোগাযোগ নিশ্চিত করুন। টিকাদান সময়সূচী অনুসরণ করুন এবং নিয়মিত নবজাতক পরীক্ষায় অংশ নিন।"
+      ],
+      "visibility": "visible"
+    },
+    {
+      "family": "summary",
+      "fieldName": "Referral Facility",
+      "id": "referralFacility",
+      "orderId": 7,
+      "isSummary": true,
+      "viewType": "Spinner",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Referral Facility",
+      "titleCulture": "রেফারেল স্বাস্থ্যসেবা কেন্দ্র",
+      "errorMessage": "Please select a valid option",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "uhfwc",
+          "name": "UHFWC (Union health and family welfare center)",
+          "cultureValue": "ইউনিয়ন স্বাস্থ্য ও পরিবার কল্যাণ কেন্দ্র"
+        },
+        {
+          "id": "mcwc",
+          "name": "MCWC (Mother and Child Welfare Center)",
+          "cultureValue": "মাতৃ ও শিশু কল্যাণ কেন্দ্র"
+        },
+        {
+          "id": "uhc",
+          "name": "UHC (Upazila Health complex)",
+          "cultureValue": "উপজেলা স্বাস্থ্য কমপ্লেক্স"
+        },
+        {
+          "id": "districtHospital",
+          "name": "District Hospital",
+          "cultureValue": "জেলা সদর হাসপাতাল"
+        },
+        {
+          "id": "medicalCollegeHospital",
+          "name": "Medical College Hospital",
+          "cultureValue": "মেডিকেল কলেজ হাসপাতাল"
+        }
+      ]
+    },
+    
+    {
+      "family": "counsellingFollowUp",
+      "fieldName": "Follow up Visit",
+      "id": "followUpVisit",
+      "orderId": 8,
+      "isSummary": true,
+      "viewType": "DatePicker",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Follow up Visit",
+      "titleCulture": "পরবর্তী পরিদর্শন",
+      "visibility": "visible",
+      "readOnly": true
+    }
+  ]
+}

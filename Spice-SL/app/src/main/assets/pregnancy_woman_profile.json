@@ -1,1 +1,222 @@
-{"formLayout":[{"familyOrder":0,"id":"pregnancyDetailsAndHistory","title":"Pregnancy Details & History","titleCulture":"গর্ভাবস্থার বিবরণ এবং ইতিহাস","viewType":"CardView"},{"disableFutureDate":true,"errorMessage":"This field is required","family":"pregnancyDetailsAndHistory","hint":"dd-MM-yyyy","id":"lmp","isEnabled":true,"isMandatory":true,"orderId":1,"title":"LMP (Last Menstrual Period)","titleCulture":"এলএমপি (শেষ মাসিকের তারিখ)","viewType":"DatePicker","visibility":"visible"},{"family":"pregnancyDetailsAndHistory","id":"TooEarlyTitle","orderId":2,"textLabelColor":"#991b1b","textLabelStyle":"bold","title":"⚠️ Pregnancy Too Early to Assess","titleCulture":"⚠️ গর্ভাবস্থা মূল্যায়নের জন্য খুব প্রাথমিক পর্যায়","viewType":"TextLabel","visibility":"gone"},{"family":"pregnancyDetailsAndHistory","id":"TooEarlyDesc1","orderId":3,"textLabelColor":"#7f1d1d","title":"Pregnancy assessment can only be conducted after 6 weeks from LMP.","titleCulture":"এলএমপি থেকে ৬ সপ্তাহ পরেই কেবল গর্ভাবস্থা মূল্যায়ন করা সম্ভব।","viewType":"TextLabel","visibility":"gone"},{"family":"pregnancyDetailsAndHistory","id":"TooEarlyDesc2","orderId":4,"textLabelColor":"#7f1d1d","textLabelStyle":"bold","title":"Please revisit after 6 weeks for complete pregnancy profile assessment.","titleCulture":"সম্পূর্ণ গর্ভাবস্থা প্রোফাইল মূল্যায়নের জন্য দয়া করে ৬ সপ্তাহ পরে আবার আসুন।","viewType":"TextLabel","visibility":"gone"},{"family":"pregnancyDetailsAndHistory","id":"EDDTitle","isEnabled":false,"orderId":5,"title":"👶 EDD (Expected Date of Delivery)","titleCulture":"👶 ইডিডি (প্রসবের সম্ভাব্য তারিখ)","viewType":"TextLabel","visibility":"gone"},{"family":"pregnancyDetailsAndHistory","id":"EDD","isEnabled":false,"orderId":5,"textLabelStyle":"bold","title":"","viewType":"TextLabel","visibility":"gone"},{"family":"pregnancyDetailsAndHistory","id":"gestationalWeekTitle","isEnabled":false,"orderId":6,"title":"📅 Gestational Week","titleCulture":"📅 গর্ভকালীন সপ্তাহ","viewType":"TextLabel","visibility":"gone"},{"family":"pregnancyDetailsAndHistory","id":"gestationalWeek","isEnabled":false,"orderId":6,"textLabelColor":"#4f46e5","textLabelStyle":"bold","title":"","viewType":"TextLabel","visibility":"gone"},{"family":"pregnancyDetailsAndHistory","id":"pregnancyTest","isEnabled":true,"isMandatory":true,"optionsList":[{"cultureValue":"পজিটিভ","id":"Positive","name":"Positive"},{"cultureValue":"এখনও করা হয়নি","id":"NotDoneYet","name":"Not done yet"}],"orderId":7,"title":"Pregnancy Test","titleCulture":"গর্ভাবস্থা পরীক্ষা","viewType":"Spinner","visibility":"gone"},{"condition":[{"greaterThanOrEqual":"2","targetId":"parity","visibility":"visible"},{"lessThanOrEqual":"1","targetId":"livingChildren","visibility":"gone"},{"lessThanOrEqual":"1","targetId":"ageOfLastChild","visibility":"gone"}],"family":"pregnancyDetailsAndHistory","hint":"Total number of pregnancies including current","hintCulture":"বর্তমান গর্ভাবস্থাসহ মোট গর্ভধারণের সংখ্যা","id":"gravida","inputType":2,"isEnabled":true,"isMandatory":true,"orderId":8,"title":"Gravida (number of pregnancies)","titleCulture":"গ্রাভিডা (গর্ভধারণের সংখ্যা)","viewType":"EditText","visibility":"gone"},{"condition":[{"greaterThanOrEqual":"1","targetId":"livingChildren","visibility":"visible"},{"lessThanOrEqual":"0","targetId":"ageOfLastChild","visibility":"gone"}],"family":"pregnancyDetailsAndHistory","hint":"Enter total number of births","hintCulture":"মোট প্রসবের সংখ্যা লিখুন","id":"parity","infoTitle":"Include both live births and stillbirths","inputType":2,"isEnabled":true,"isInfo":"visible","isMandatory":true,"orderId":9,"title":"Parity (Number of Total Births)","titleCulture":"প্যারিটি (মোট প্রসবের সংখ্যা)","viewType":"EditText","visibility":"gone"},{"condition":[{"greaterThanOrEqual":"1","targetId":"ageOfLastChild","visibility":"visible"}],"family":"pregnancyDetailsAndHistory","hint":"Enter number","hintCulture":"সংখ্যাটি লিখুন","id":"livingChildren","inputType":2,"isEnabled":true,"isMandatory":true,"orderId":10,"title":"Number of Living Children","titleCulture":"জীবিত সন্তানের সংখ্যা","viewType":"EditText","visibility":"gone"},{"disableFutureDate":true,"family":"pregnancyDetailsAndHistory","id":"ageOfLastChild","isEnabled":true,"isMandatory":false,"orderId":11,"title":"Age of last child","titleCulture":"সর্বশেষ সন্তানের বয়স","viewType":"Age","visibility":"gone"}],"time":1771328934559}
+{
+    "formLayout": [
+        {
+            "familyOrder": 0,
+            "id": "pregnancyDetailsAndHistory",
+            "title": "Pregnancy Details & History",
+            "titleCulture": "গর্ভাবস্থার বিবরণ এবং ইতিহাস",
+            "viewType": "CardView"
+        },
+        {
+            "disableFutureDate": true,
+            "errorMessage": "This field is required",
+            "family": "pregnancyDetailsAndHistory",
+            "hint": "DD-MM-YYYY",
+            "hintCulture": "দিন-মাস-বছর",
+            "id": "lmp",
+            "isEnabled": true,
+            "isMandatory": true,
+            "orderId": 1,
+            "title": "LMP (Last Menstrual Period)",
+            "titleCulture": "শেষ মাসিক শুরুর তারিখ",
+            "viewType": "DatePicker",
+            "visibility": "visible"
+        },
+        {
+            "family": "pregnancyDetailsAndHistory",
+            "id": "TooEarlyTitle",
+            "orderId": 2,
+            "textLabelColor": "#991b1b",
+            "textLabelStyle": "bold",
+            "title": "⚠️ Pregnancy Too Early to Assess",
+            "titleCulture": "⚠️ গর্ভাবস্থা মূল্যায়নের জন্য খুব প্রাথমিক পর্যায়",
+            "viewType": "TextLabel",
+            "visibility": "gone"
+        },
+        {
+            "family": "pregnancyDetailsAndHistory",
+            "id": "TooEarlyDesc1",
+            "orderId": 3,
+            "textLabelColor": "#7f1d1d",
+            "title": "Pregnancy assessment can only be conducted after 6 weeks from LMP.",
+            "titleCulture": "এলএমপি থেকে ৬ সপ্তাহ পরেই কেবল গর্ভাবস্থা মূল্যায়ন করা সম্ভব।",
+            "viewType": "TextLabel",
+            "visibility": "gone"
+        },
+        {
+            "family": "pregnancyDetailsAndHistory",
+            "id": "TooEarlyDesc2",
+            "orderId": 4,
+            "textLabelColor": "#7f1d1d",
+            "textLabelStyle": "bold",
+            "title": "Please revisit after 6 weeks for complete pregnancy profile assessment.",
+            "titleCulture": "সম্পূর্ণ গর্ভাবস্থা প্রোফাইল মূল্যায়নের জন্য দয়া করে ৬ সপ্তাহ পরে আবার আসুন।",
+            "viewType": "TextLabel",
+            "visibility": "gone"
+        },
+        {
+            "family": "pregnancyDetailsAndHistory",
+            "id": "EDDTitle",
+            "isEnabled": false,
+            "orderId": 5,
+            "title": "👶 EDD (Expected Date of Delivery)",
+            "titleCulture": "সম্ভাব্য প্রসবের তারিখ",
+            "hint": "[Auto-calculate]\nDD-MM-YYYY",
+            "hintCulture": "দিন-মাস-বছর",
+            "viewType": "TextLabel",
+            "visibility": "gone"
+        },
+        {
+            "family": "pregnancyDetailsAndHistory",
+            "id": "EDD",
+            "isEnabled": false,
+            "orderId": 5,
+            "textLabelStyle": "bold",
+            "title": "",
+            "viewType": "TextLabel",
+            "visibility": "gone"
+        },
+        {
+            "family": "pregnancyDetailsAndHistory",
+            "id": "gestationalWeekTitle",
+            "isEnabled": false,
+            "orderId": 6,
+            "title": "📅 Gestational Week",
+            "titleCulture": "গর্ভ সপ্তাহ",
+            "hint": "[Auto-calculate]\n_______ weeks",
+            "hintCulture": "[স্বয়ংক্রিয়ভাবে গণনা]\n_______ সপ্তাহ",
+            "viewType": "TextLabel",
+            "visibility": "gone"
+        },
+        {
+            "family": "pregnancyDetailsAndHistory",
+            "id": "gestationalWeek",
+            "isEnabled": false,
+            "orderId": 6,
+            "textLabelColor": "#4f46e5",
+            "textLabelStyle": "bold",
+            "title": "",
+            "viewType": "TextLabel",
+            "visibility": "gone"
+        },
+        {
+            "family": "pregnancyDetailsAndHistory",
+            "id": "pregnancyTest",
+            "isEnabled": true,
+            "isMandatory": true,
+            "optionsList": [
+                {
+                    "cultureValue": "১. হ্যাঁ – গর্ভবতী",
+                    "id": "Positive",
+                    "name": "Done- Positive"
+                },
+                {
+                    "cultureValue": "২. না",
+                    "id": "NotDoneYet",
+                    "name": "Not done yet"
+                }
+            ],
+            "orderId": 7,
+            "title": "Pregnancy Test",
+            "titleCulture": "গর্ভবতী পরীক্ষা কি করেছেন?",
+            "viewType": "Spinner",
+            "visibility": "gone"
+        },
+        {
+            "condition": [
+                {
+                    "greaterThanOrEqual": "2",
+                    "targetId": "parity",
+                    "visibility": "visible"
+                },
+                {
+                    "lessThanOrEqual": "1",
+                    "targetId": "livingChildren",
+                    "visibility": "gone"
+                },
+                {
+                    "lessThanOrEqual": "1",
+                    "targetId": "ageOfLastChild",
+                    "visibility": "gone"
+                }
+            ],
+            "family": "pregnancyDetailsAndHistory",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "gravida",
+            "inputType": 2,
+            "isEnabled": true,
+            "isMandatory": true,
+            "orderId": 8,
+            "title": "Gravida (Number of total pregnancies)",
+            "titleCulture": "সর্বমোট গর্ভসংখ্যা (এই গর্ভ সহ)",
+            "viewType": "EditText",
+            "visibility": "gone"
+        },
+        {
+            "condition": [
+                {
+                    "greaterThanOrEqual": "1",
+                    "targetId": "livingChildren",
+                    "visibility": "visible"
+                },
+                {
+                    "lessThanOrEqual": "0",
+                    "targetId": "ageOfLastChild",
+                    "visibility": "gone"
+                }
+            ],
+            "family": "pregnancyDetailsAndHistory",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "parity",
+            "infoTitle": "Add prompt for Health workers to probe and include both live and still births",
+            "infoTitleCulture": "স্বাস্থ্যকর্মীদের জন্য প্রম্পট যোগ করুন যাতে তারা তদন্ত করে জীবিত এবং মৃত উভয় জন্ম অন্তর্ভুক্ত করে",
+            "inputType": 2,
+            "isEnabled": true,
+            "isInfo": "visible",
+            "isMandatory": true,
+            "orderId": 9,
+            "title": "Parity (Number of total births)",
+            "titleCulture": "জন্ম সংখ্যা (মোট সন্তান জন্মদানের সংখ্যা)",
+            "viewType": "EditText",
+            "visibility": "gone"
+        },
+        {
+            "condition": [
+                {
+                    "greaterThanOrEqual": "1",
+                    "targetId": "ageOfLastChild",
+                    "visibility": "visible"
+                }
+            ],
+            "family": "pregnancyDetailsAndHistory",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "livingChildren",
+            "inputType": 2,
+            "isEnabled": true,
+            "isMandatory": true,
+            "orderId": 10,
+            "title": "Number of Living Children",
+            "titleCulture": "জীবিত বাচ্চার সংখ্যা",
+            "viewType": "EditText",
+            "visibility": "gone"
+        },
+        {
+            "disableFutureDate": true,
+            "family": "pregnancyDetailsAndHistory",
+            "id": "ageOfLastChild",
+            "isEnabled": true,
+            "isMandatory": false,
+            "orderId": 11,
+            "title": "Age of last child",
+            "titleCulture": "সবচেয়ে ছোট সন্তানের বয়স কত?",
+            "hint": "[Enter number]\n______ Yrs______Months\nIf child is < 1year old then show in months only (enter as 0 yrs and no.of months)",
+            "hintCulture": "[সংখ্যা লিখুন]\n______ বছর ______ মাস\nশিশুর বয়স ১ বছরের কম হলে শুধুমাত্র মাসে দেখানো হবে (০ বছর এবং মোট মাস লিখুন)।",
+            "viewType": "Age",
+            "visibility": "gone"
+        }
+    ],
+    "time": 1771328934559
+}
