@@ -431,8 +431,13 @@ class AssessmentPregnantWomenRegistrationFragment :
             binding.btnSubmit.id -> {
                 withLocationCheck({
                     viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
-                    viewModel.fetchCurrentLocation(requireContext())
-                    formGenerator.formSubmitAction(view)
+                    // Since it is early pregnancy no need to access anything. Just stop the flow
+                    if (viewModel.isPregnancyTooEarlyToAccess) {
+                        viewModel.updatePregnantWomanAssessmentDetails()
+                    } else {
+                        viewModel.fetchCurrentLocation(requireContext())
+                        formGenerator.formSubmitAction(view)
+                    }
                 })
             }
         }

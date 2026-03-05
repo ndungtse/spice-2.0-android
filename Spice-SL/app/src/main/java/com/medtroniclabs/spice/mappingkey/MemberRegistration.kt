@@ -57,6 +57,11 @@ object MemberRegistration {
      */
     const val MIN_AGE_MARITAL_STATUS = 14L
 
+    /**
+     * Minimum age for household head
+     */
+    const val MIN_AGE_HH_HEAD = 14
+
     fun isValidRelationAge(
         ctx: Context,
         dob: String,
@@ -99,7 +104,7 @@ object MemberRegistration {
     fun isValidMinAge(dateOfBirth: LocalDate): Boolean {
         val today = LocalDate.now()
         val age = Period.between(dateOfBirth, today).years
-        return age >= 10
+        return age >= MIN_AGE_HH_HEAD
     }
 
     fun isValidMinAgeForCbsMemberAdd(dob: String): Boolean {

@@ -110,20 +110,19 @@ object PregnantWomen {
         } else if (calculatedAge > 35) {
             riskFactors.add("Age >35 years")
         }
-        val gravida = (input[ID_GRAVIDA] as? Double) ?: 0.0
-        val parity = (input[ID_PARITY] as? Double) ?: 0.0
         val livingChildren = (input[ID_LIVING_CHILDREN] as? Double) ?: 0.0
-        if (gravida > 1 && parity > 1 && livingChildren > 1) {
+        if (livingChildren >= 1) {
             val ageOfLastChild = input[ID_AGE_OF_LAST_CHILD] as String
             val calculatedAgeOfLastChild = DateUtils.calculateAge(ageOfLastChild)
             // Short term birth
             if (calculatedAgeOfLastChild < 2) {
                 riskFactors.add("Short birth spacing <2 year")
             }
-            // Multi para
-            if (parity > 3) {
-                riskFactors.add("Multipara >3")
-            }
+        }
+        val parity = (input[ID_PARITY] as? Double) ?: 0.0
+        // Multi para
+        if (parity > 3) {
+            riskFactors.add("Multipara >3")
         }
         val obstetricComplications = mutableListOf<String>()
         (input[ID_OBSTETRIC_COMPLICATIONS] as? List<Map<String, Any>>)?.let {

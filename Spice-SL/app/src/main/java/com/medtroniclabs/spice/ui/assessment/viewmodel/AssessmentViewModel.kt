@@ -370,9 +370,7 @@ class AssessmentViewModel @Inject constructor(
                     followUpId = followUpId,
                 )
 
-                if (
-                    menuId == PREGNANT_WOMEN_PROFILE &&
-                    !isPregnancyTooEarlyToAccess &&
+                if (menuId == PREGNANT_WOMEN_PROFILE &&
                     assessmentResult.isSuccess()
                 ) {
                     savePregnancyDetails(details, assessmentMap)

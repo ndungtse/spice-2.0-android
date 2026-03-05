@@ -301,6 +301,12 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                             householdRegistrationViewModel.generateHouseholdNumber()
                         }
                     }
+
+                    totalMembers -> {
+                        val totalMembers = CommonUtils.getIntegerOrNull(resultMap[totalMembers]) ?: 0
+                        // Disability persons count shouldn't cross total members count
+                        formGenerator.getFormLayout(HouseHoldRegistration.ID_DISABILITY_PERSONS_COUNT)?.maxValue = totalMembers.toDouble()
+                    }
                 }
             },
         )

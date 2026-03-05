@@ -1252,7 +1252,7 @@
 
     <string name="relationship_to_household" translatable="false">Relationship to Household</string>
     <string name="relationship_to_household_head" translatable="false">Relationship to Household Head</string>
-    <string name="age_validation_household_head" translatable="false">The age of the Household Head must be greater than 10 years.</string>
+    <string name="age_validation_household_head" translatable="false">The age of the Household Head must be greater than %1$d years.</string>
     <string name="age_validation_wife_husband" translatable="false">The Wife or Husband must be at least 10 years old.</string>
     <string name="age_validation_son_daughter" translatable="false">The Son or Daughter must be at least 10 years younger than the Household Head.</string>
     <string name="age_validation_father_mother" translatable="false">The Father or Mother must be at least 10 years older than the Household Head.</string>

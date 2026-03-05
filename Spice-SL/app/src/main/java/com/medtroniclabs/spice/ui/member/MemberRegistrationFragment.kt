@@ -744,7 +744,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             val memberDOB =
                 LocalDate.parse(dob, DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmssZZZZZ))
             if (!isValidMinAge(memberDOB)) {
-                showInValidDob(getString(R.string.age_validation_household_head))
+                showInValidDob(getString(R.string.age_validation_household_head, MemberRegistration.MIN_AGE_HH_HEAD))
                 return
             }
 
