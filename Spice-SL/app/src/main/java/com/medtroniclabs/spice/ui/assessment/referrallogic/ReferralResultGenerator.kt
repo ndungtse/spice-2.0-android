@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NoSymptoms
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.ui.MenuConstants.NCD_MENU_ID
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AlcoholConsumption
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DiagnosedWithDiabetes
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
@@ -112,6 +113,37 @@ class ReferralResultGenerator {
                     RMNCH.ancSigns,
                     ReferralReasons.aliasOf(ReferralReasons.ANCSigns),
                 )
+                
+                // Check for highRiskPregnantWoman or gapsInAnc in summary group
+                val ancMap = map[RMNCH.ANC] as? Map<*, *>
+                val summaryGroup = ancMap?.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<*, *>
+                val highRiskList = summaryGroup?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) as? List<*>
+                val gapsList = summaryGroup?.get(AssessmentDefinedParams.GAPS_IN_ANC) as? List<*>
+                
+                // If highRiskPregnantWoman has values, add referral reason
+                if (highRiskList != null && highRiskList.isNotEmpty()) {
+                    addResultMap(
+                        AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN,
+                        ReferralStatus.Referred.name,
+                    )
+                    addReferralReason(
+                        referralReason,
+                        AssessmentDefinedParams.LABEL_HIGH_RISK_PREGNANT_WOMAN,
+                    )
+                }
+                
+                // If gapsInAnc has values, add referral reason
+                if (gapsList != null && gapsList.isNotEmpty()) {
+                    addResultMap(
+                        AssessmentDefinedParams.GAPS_IN_ANC,
+                        ReferralStatus.Referred.name,
+                    )
+                    addReferralReason(
+                        referralReason,
+                        AssessmentDefinedParams.LABEL_GAPS_IN_ANC,
+                    )
+                }
+                
                 updateVisitCount(map, RMNCH.ANC)
             }
         } else if (map.containsKey(RMNCH.ChildHoodVisit)) {

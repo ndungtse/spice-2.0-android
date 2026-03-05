@@ -29,6 +29,11 @@ data class PregnancyDetail(
     var ancVisitNo: Long? = null,
     var lastMenstrualPeriod: String? = null,
     var estimatedDeliveryDate: String? = null,
+    var previousPregnancyComplications: String? = null,
+    var pregnantWomanExistingIllness: String? = null, // JSON string of list
+    var pregnantWomanOnTreatment: String? = null, // JSON string of list
+    var highRiskPregnantWoman: String? = null, // JSON string of list
+    var gapsInAnc: String? = null, // JSON string of list
     // Pnc Detail
     var pncVisitNo: Long? = null,
     var dateOfDelivery: String? = null,

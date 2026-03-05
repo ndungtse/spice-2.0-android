@@ -91,7 +91,7 @@ class BioDataFragment : BaseFragment() {
         when (viewModel.workflowName) {
             RMNCH.ANC -> {
                 title = getString(R.string.anc_visit)
-                showAncRelatedInformation(entity)
+                // showAncRelatedInformation(entity)
             }
 
             RMNCH.PNC -> {

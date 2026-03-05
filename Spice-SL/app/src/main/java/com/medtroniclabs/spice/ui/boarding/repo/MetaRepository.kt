@@ -735,30 +735,30 @@ class MetaRepository @Inject constructor(
             formData.map { data ->
                 // Override formInput for specific form types from assets
                 val formInput = when (data.formType) {
-                    "household_registration" -> {
-                        try {
-                            CommonUtils.getStringFromAssets("household_registration.json", context.assets)
-                        } catch (e: Exception) {
-                            // If asset file not found, use server formInput
-                            data.formInput
-                        }
-                    }
-                    "household_member_registration" -> {
-                        try {
-                            CommonUtils.getStringFromAssets("member_registration.json", context.assets)
-                        } catch (e: Exception) {
-                            // If asset file not found, use server formInput
-                            data.formInput
-                        }
-                    }
-                    "family_planning_form", "family_planning_review" -> {
-                        try {
-                            CommonUtils.getStringFromAssets("family_planning_form.json", context.assets)
-                        } catch (e: Exception) {
-                            // If asset file not found, use server formInput
-                            data.formInput
-                        }
-                    }
+//                    "household_registration" -> {
+//                        try {
+//                            CommonUtils.getStringFromAssets("household_registration.json", context.assets)
+//                        } catch (e: Exception) {
+//                            // If asset file not found, use server formInput
+//                            data.formInput
+//                        }
+//                    }
+//                    "household_member_registration" -> {
+//                        try {
+//                            CommonUtils.getStringFromAssets("member_registration.json", context.assets)
+//                        } catch (e: Exception) {
+//                            // If asset file not found, use server formInput
+//                            data.formInput
+//                        }
+//                    }
+//                    "family_planning_form", "family_planning_review" -> {
+//                        try {
+//                            CommonUtils.getStringFromAssets("family_planning_form.json", context.assets)
+//                        } catch (e: Exception) {
+//                            // If asset file not found, use server formInput
+//                            data.formInput
+//                        }
+//                    }
                     else -> data.formInput
                 }
 

@@ -2,6 +2,8 @@ package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +13,8 @@ import android.widget.AdapterView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.DONEBUTTONTRIGGERED
@@ -20,17 +24,25 @@ import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.calculateAgeInMonths
+import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.common.DateUtils.convertStringToDate
 import com.medtroniclabs.spice.common.DateUtils.getDateStringFromDate
+import com.medtroniclabs.spice.common.DateUtils.getLastMenstrualDate
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.AssessmentId
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
+import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.FragmentRmnchSummaryBinding
+import com.medtroniclabs.spice.databinding.InstructionLayoutBinding
+import com.medtroniclabs.spice.databinding.TextLabelLayoutBinding
+import com.medtroniclabs.spice.formgeneration.FormSupport.translateTitle
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustomLayout
+import com.medtroniclabs.spice.formgeneration.utility.InformationLayoutFragment
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
@@ -45,6 +57,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.childHoodVisitMaxMonth
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getValueFromMap
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCHAssessmentEvaluator
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
@@ -55,6 +68,8 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     private val viewModel: AssessmentViewModel by activityViewModels()
 
     private var datePickerDialog: DatePickerDialog? = null
+
+    // Variables to collect summary data for saving to PregnancyDetail
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -99,10 +114,20 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun updateStatusBar() {
+        // For ANC workflow, referral facility visibility is handled in initSummaryViewByWorkFlowName
+        // based on highRiskPregnantWoman and gapsInAnc values
+        if (viewModel.workflowName == RMNCH.ANC) {
+            // Visibility is already set in initSummaryViewByWorkFlowName, just update status
+            if (binding.labelPhuReferred.visibility == View.VISIBLE) {
+                viewModel.referralStatus = ReferralStatus.Referred.name
+            }
+//            return
+        }
+
         when (viewModel.referralStatus) {
             ReferralStatus.Referred.name -> {
                 viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
-                    loadPhuSitesList(siteList)
+//                    loadPhuSitesList(siteList)
                 }
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
@@ -133,35 +158,126 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         viewModel.assessmentStringLiveData.value?.let { mapString ->
             val map = StringConverter.stringToMap(mapString)
             binding.parentLayout.removeAllViews()
-            bindRmnchSummaryView(
-                getString(R.string.patient_status),
-                getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen),
-            )
+            // Hide patient status for ANC workflow
+            if (viewModel.workflowName != RMNCH.ANC) {
+                bindRmnchSummaryView(
+                    getString(R.string.patient_status),
+                    getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen),
+                )
+            }
             conditionBasedRendering(map)
-            addDefaultSummaryView(map)
-            viewModel.formLayoutsLiveData.value
-                ?.data
-                ?.formLayout
-                ?.filter { it.isSummary == true }
-                ?.filter {
-                    map.entries.any { map -> map.key != ChildHoodVisit } ||
-                        (map[ChildHoodVisit] as? Map<String, Any>)?.containsKey(
-                            it.id,
-                        ) == true
-                }?.filterNot { it.id in showQuestionBasedAge(map, it) } // Remove the item with id "childhoodVisitSigns"
-                ?.filterNot {
-                    it.id in showQuestionBasedAge(
-                        map,
-                        it,
-                    )
-                } // Remove the item with id "childhoodVisitSigns"
-                ?.forEach { data ->
-                    with(data) {
-                        updateStatusBar()
-                        binding.parentLayout.addView(
-                            addViewSummaryLayout(
-                                titleSummary ?: (titleCulture ?: title),
-                                getValueFromMap(
+            // Skip default summary views for ANC - only show specific isSummary fields
+            if (viewModel.workflowName != RMNCH.ANC) {
+                addDefaultSummaryView(map)
+            } else {
+                // For ANC, show Next Follow-up Date with label "Follow up Visit"
+                binding.etNextFollowUpDate.visible()
+                binding.tvNextFollowupDateTitle.visible()
+                binding.tvNextFollowupDateTitle.text = AssessmentDefinedParams.LABEL_FOLLOW_UP_VISIT
+
+                // Set follow-up date to 4 weeks (28 days) from current date
+                val fourWeeksFromNow = DateUtils.getDateAfterDays(28)
+                binding.etNextFollowUpDate.text = fourWeeksFromNow
+                updateFollowUpDate(fourWeeksFromNow)
+
+                // Load Referral Facility spinner options from JSON
+                loadReferralFacilityOptions()
+
+                // For ANC workflow, render Result section with only highRiskPregnantWoman and gapsInAnc
+                // (Counselling fields will be rendered separately after this block)
+                // First, read values to check if referral facility should be shown
+                val ancMap = map[viewModel.workflowName] as? Map<*, *>
+                val summaryGroup = ancMap?.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<*, *>
+                val highRiskList = (summaryGroup?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+                val gapsList = (summaryGroup?.get(AssessmentDefinedParams.GAPS_IN_ANC) as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+
+                // Show referral facility only if highRiskPregnantWoman or gapsInAnc has values
+                val hasHighRiskOrGaps = highRiskList.isNotEmpty() || gapsList.isNotEmpty()
+                if (hasHighRiskOrGaps) {
+                    viewModel.referralStatus = ReferralStatus.Referred.name
+                    binding.labelPhuReferred.text = AssessmentDefinedParams.LABEL_REFERRAL_FACILITY
+                    binding.labelPhuReferred.visible()
+                    binding.etPhuChange.visible()
+                } else {
+                    binding.labelPhuReferred.gone()
+                    binding.etPhuChange.gone()
+                }
+
+                viewModel.formLayoutsLiveData.value
+                    ?.data
+                    ?.formLayout
+                    ?.filter { it.isSummary == true }
+                    ?.filter {
+                        it.id == AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN ||
+                            it.id == AssessmentDefinedParams.GAPS_IN_ANC
+                    }?.sortedBy { it.orderId ?: Int.MAX_VALUE }
+                    ?.forEach { data ->
+                        with(data) {
+                            updateStatusBar()
+                            // For High Risk pregnant woman and Gaps in ANC, read from result map
+                            if (id == AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) {
+                                // Display heading only
+                                val displayTitle = title
+                                with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                                    with(tvTitle) {
+                                        text = displayTitle
+                                        setTypeface(null, Typeface.BOLD)
+                                    }
+                                    binding.parentLayout.addView(root)
+                                }
+
+                                // Display all high risk conditions as list items
+                                if (highRiskList.isNotEmpty()) {
+                                    highRiskList.forEach { condition ->
+                                        with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                                            with(tvTitle) {
+                                                text = "    • $condition" // Use bigger bullet (•)
+                                                setTextColor(Color.RED)
+                                            }
+                                            binding.parentLayout.addView(root)
+                                        }
+                                    }
+                                } else {
+                                    // Show hyphen if no high risk conditions
+                                    with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                                        with(tvTitle) {
+                                            text = getString(R.string.hyphen_symbol)
+                                        }
+                                        binding.parentLayout.addView(root)
+                                    }
+                                }
+                            } else if (id == AssessmentDefinedParams.GAPS_IN_ANC) {
+                                // Display heading only
+                                val displayTitle = title
+                                with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                                    with(tvTitle) {
+                                        text = displayTitle
+                                        setTypeface(null, Typeface.BOLD)
+                                    }
+                                    binding.parentLayout.addView(root)
+                                }
+
+                                // Add gaps as list items
+                                if (gapsList.isNotEmpty()) {
+                                    gapsList.forEach { gap ->
+                                        with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                                            with(tvTitle) {
+                                                text = "    • $gap" // Use bigger bullet (•)
+                                            }
+                                            binding.parentLayout.addView(root)
+                                        }
+                                    }
+                                } else {
+                                    // Show hyphen if no gaps
+                                    with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                                        with(tvTitle) {
+                                            text = getString(R.string.hyphen_symbol)
+                                        }
+                                        binding.parentLayout.addView(root)
+                                    }
+                                }
+                            } else {
+                                val displayValue = getValueFromMap(
                                     map,
                                     id,
                                     viewType,
@@ -173,13 +289,152 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                                         getString(R.string.hyphen_symbol),
                                     ),
                                     requireContext(),
-                                ),
-                                null,
-                                requireContext(),
-                            ),
-                        )
+                                )
+                                binding.parentLayout.addView(
+                                    addViewSummaryLayout(
+                                        titleSummary ?: (titleCulture ?: title),
+                                        displayValue,
+                                        null,
+                                        requireContext(),
+                                    ),
+                                )
+                            }
+                        }
                     }
+
+            }
+
+            // For ANC workflow, render Counselling fields in a CardView (similar to result card)
+            if (viewModel.workflowName == RMNCH.ANC) {
+                // Get the parent LinearLayout that contains resultCardView and referral facility fields
+                val scrollView = binding.scrollView
+                val parentLinearLayout = scrollView?.getChildAt(0) as? android.widget.LinearLayout
+
+                // Find the index right after resultCardView to insert counselling card
+                val resultCardIndex = parentLinearLayout?.indexOfChild(binding.resultCardView) ?: -1
+                val insertIndex = if (resultCardIndex >= 0) resultCardIndex + 1 else -1
+
+                // Get counselling card layout info for title
+                val counsellingCardLayout = viewModel.formLayoutsLiveData.value
+                    ?.data
+                    ?.formLayout
+                    ?.firstOrNull { it.id == AssessmentDefinedParams.GROUP_COUNSELLING && it.viewType == ViewType.VIEW_TYPE_FORM_CARD_FAMILY }
+
+                // Get counselling items
+                val counsellingItems = viewModel.formLayoutsLiveData.value
+                    ?.data
+                    ?.formLayout
+                    ?.filter { it.isSummary == true }
+                    ?.filter {
+                        it.id == AssessmentDefinedParams.NUTRITION_COUNSELLING ||
+                            it.id == AssessmentDefinedParams.CARE_DURING_ANTENATAL_PERIOD ||
+                            it.id == AssessmentDefinedParams.BIRTH_PREPAREDNESS ||
+                            it.id == AssessmentDefinedParams.NEW_BORN_CARE_EDUCATION ||
+                            (it.viewType == ViewType.VIEW_TYPE_INSTRUCTION && it.isSummary == true && it.family == AssessmentDefinedParams.GROUP_COUNSELLING)
+                    }?.sortedBy { it.orderId ?: Int.MAX_VALUE }
+
+                // Only create counselling card if there are items to display
+                if (counsellingItems != null && counsellingItems.isNotEmpty()) {
+                    // Create Counselling CardView using CardLayoutBinding
+                    val counsellingCardBinding = CardLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+
+                    // Set card title
+                    counsellingCardLayout?.let { cardLayout ->
+                        val isTranslationEnabled = com.medtroniclabs.spice.common.SecuredPreference
+                            .getIsTranslationEnabled()
+                        val cardTitle = if (isTranslationEnabled && !cardLayout.titleCulture.isNullOrBlank()) {
+                            cardLayout.titleCulture ?: cardLayout.title
+                        } else {
+                            cardLayout.title
+                        }
+                        counsellingCardBinding.cardTitle.text = cardTitle
+                    } ?: run {
+                        // Fallback title if cardLayout not found
+                        counsellingCardBinding.cardTitle.text = "Counselling"
+                    }
+
+                    // Add counselling items to the card's content layout
+                    counsellingItems.forEach { data ->
+                        with(data) {
+                            val instructionBinding = InstructionLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+                            val isTranslationEnabled = SecuredPreference.getIsTranslationEnabled()
+                            instructionBinding.tvTitle.text = translateTitle(titleCulture, title, isTranslationEnabled)
+                            instructionBinding.tvTitle.visibility = View.VISIBLE
+                            instructionBinding.tvTitle.setTextColor(Color.BLACK)
+
+                            instructionBinding.clInstructionRoot.safeClickListener {
+                                // Use instructionsCulture if translation is enabled and available, otherwise use instructions
+                                val instructionsList = if (isTranslationEnabled && !instructionsCulture.isNullOrEmpty()) {
+                                    instructionsCulture
+                                } else {
+                                    instructions
+                                }
+                                if (instructionsList != null && instructionsList.isNotEmpty()) {
+                                    InformationLayoutFragment
+                                        .newInstance(id, translateTitle(titleCulture, title, isTranslationEnabled), customInformationList = instructionsList)
+                                        .show(childFragmentManager, InformationLayoutFragment.TAG)
+                                    viewModel.setUserJourney("$id ${AnalyticsDefinedParams.INFORMATIONDIALOUGE}")
+                                }
+                            }
+                            // Add to counselling card's content layout
+                            counsellingCardBinding.llFamilyRoot.addView(instructionBinding.root)
+                        }
+                    }
+
+                    // Insert counselling card after result card
+                    if (insertIndex >= 0 && parentLinearLayout != null) {
+                        parentLinearLayout.addView(counsellingCardBinding.root, insertIndex)
+                    } else {
+                        // Fallback: add to end
+                        parentLinearLayout?.addView(counsellingCardBinding.root)
+                    }
+                } else {
+                    false
                 }
+            } else {
+                // For other workflows (ChildHoodVisit, PNC), use existing logic
+                viewModel.formLayoutsLiveData.value
+                    ?.data
+                    ?.formLayout
+                    ?.filter { it.isSummary == true }
+                    ?.filter {
+                        map.entries.any { map -> map.key != ChildHoodVisit } ||
+                            (map[ChildHoodVisit] as? Map<String, Any>)?.containsKey(
+                                it.id,
+                            ) == true
+                    }?.filterNot {
+                        // Only apply age-based filtering for ChildHoodVisit workflow
+                        if (viewModel.workflowName == ChildHoodVisit) {
+                            it.id in showQuestionBasedAge(map, it)
+                        } else {
+                            false
+                        }
+                    }?.forEach { data ->
+                        with(data) {
+                            updateStatusBar()
+                            binding.parentLayout.addView(
+                                addViewSummaryLayout(
+                                    titleSummary ?: (titleCulture ?: title),
+                                    getValueFromMap(
+                                        map,
+                                        id,
+                                        viewType,
+                                        viewModel.workflowName,
+                                        isBooleanAnswer,
+                                        Triple(
+                                            getString(R.string.yes),
+                                            getString(R.string.no),
+                                            getString(R.string.hyphen_symbol),
+                                        ),
+                                        requireContext(),
+                                    ),
+                                    null,
+                                    requireContext(),
+                                ),
+                            )
+                        }
+                    }
+            }
         }
 
         viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
@@ -200,6 +455,11 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun conditionBasedRendering(map: HashMap<String, Any>) {
+        // For ANC workflow, Next Follow-up Date is always shown (handled in initSummaryViewByWorkFlowName)
+        if (viewModel.workflowName == RMNCH.ANC) {
+            return
+        }
+
         if (map.containsKey(viewModel.workflowName)) {
             val workflowMap = map[viewModel.workflowName]
             if (workflowMap is Map<*, *>) {
@@ -226,6 +486,54 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun showCallBtnForDeathMother(isShow: Boolean) {
         binding.callSupervisor.setVisible(isShow)
+    }
+
+    private fun loadReferralFacilityOptions() {
+        val referralFacilityField = viewModel.formLayoutsLiveData.value
+            ?.data
+            ?.formLayout
+            ?.find { it.id == AssessmentDefinedParams.REFERRAL_FACILITY }
+
+        val optionsList = referralFacilityField?.optionsList as? ArrayList<Map<String, Any>> ?: return
+
+        // Convert optionsList to the format expected by the spinner
+        val siteList = ArrayList<Map<String, Any>>()
+        optionsList.forEach { option ->
+            val optionMap = HashMap<String, Any>()
+            optionMap[DefinedParams.id] = option["id"]?.toString() ?: ""
+            optionMap[DefinedParams.name] = option["name"]?.toString() ?: ""
+            siteList.add(optionMap)
+        }
+
+        binding.etPhuChange.background = ContextCompat.getDrawable(requireContext(), R.drawable.edittext_background)
+        val background = binding.etPhuChange.background as? GradientDrawable
+        background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), ContextCompat.getColor(requireContext(), R.color.edittext_stroke))
+        val adapter = CustomSpinnerAdapterCustomLayout(requireContext())
+        adapter.setData(siteList)
+        binding.etPhuChange.adapter = adapter
+        binding.etPhuChange.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long,
+                ) {
+                    val selectedItem = adapter.getData(position = pos)
+                    selectedItem?.let {
+                        val selectedId = it[DefinedParams.id] as String?
+                        // Store the selected referral facility ID
+                        viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
+                            selectedId ?: ""
+                    }
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    /**
+                     * this method is not used
+                     */
+                }
+            }
     }
 
     private fun loadPhuSitesList(siteList: ArrayList<Map<String, Any>>) {
@@ -554,4 +862,6 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 null
             }
         }
+
+
 }

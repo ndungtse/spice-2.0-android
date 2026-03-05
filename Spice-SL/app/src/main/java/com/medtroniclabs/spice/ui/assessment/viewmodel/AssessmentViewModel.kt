@@ -9,6 +9,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
@@ -376,6 +377,13 @@ class AssessmentViewModel @Inject constructor(
                     savePregnancyDetails(details, assessmentMap)
                 }
 
+                if (
+                    menuId == ANC_MENU.uppercase(Locale.getDefault()) &&
+                    assessmentResult.isSuccess()
+                ) {
+                    saveAncPregnancyDetails(details, assessmentMap)
+                }
+
                 assessmentSaveLiveData.postValue(
                     when (assessmentResult.state) {
                         ResourceState.ERROR -> Resource(state = ResourceState.ERROR)
@@ -414,6 +422,116 @@ class AssessmentViewModel @Inject constructor(
             ageOfLastChild = pregnancy?.get(PregnantWomen.ID_AGE_OF_LAST_CHILD) as? String,
         )
         memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
+    }
+
+    /**
+     * Saves ANC assessment fields to PregnancyDetail table
+     */
+    suspend fun saveAncPregnancyDetails(
+        details: AssessmentMemberDetails,
+        assessmentMap: HashMap<String, Any>,
+    ) {
+        val ancMap = assessmentMap[ANC] as? Map<*, *>
+        if (ancMap != null) {
+            // Get the latest pregnancy detail (ordered by ancVisitNo DESC)
+            val latestPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
+            
+            // Calculate the new visit number from the latest record
+            val newVisitNo = getVisitNumber(latestPregnancyDetail?.ancVisitNo)
+            
+            // Always create a new record (id = 0) instead of updating
+            val pregnancyDetail = PregnancyDetail(
+                householdMemberLocalId = details.id,
+                id = 0 // Always create new record
+            ).apply {
+                ancVisitNo = newVisitNo
+                
+                // Copy essential fields from latest record if they exist
+                // Otherwise use values from current details
+                patientId = latestPregnancyDetail?.patientId ?: details.patientId
+                householdMemberId = latestPregnancyDetail?.householdMemberId ?: details.memberId
+                
+                // Copy pregnancy-related fields from latest record (these don't change per visit)
+                lastMenstrualPeriod = latestPregnancyDetail?.lastMenstrualPeriod
+                estimatedDeliveryDate = latestPregnancyDetail?.estimatedDeliveryDate
+                gravida = latestPregnancyDetail?.gravida
+                parity = latestPregnancyDetail?.parity
+                numberOfLivingChildren = latestPregnancyDetail?.numberOfLivingChildren
+                ageOfLastChild = latestPregnancyDetail?.ageOfLastChild
+                pregnancyTest = latestPregnancyDetail?.pregnancyTest
+            }
+
+            // Extract and save previousPregnancyComplications (string)
+            val medicalExaminationData = ancMap.get(AssessmentDefinedParams.GROUP_MEDICAL_HISTORY_PHYSICAL_EXAMINATION) as? Map<String, Any>;
+            val complications = medicalExaminationData?.get(AssessmentDefinedParams.PREVIOUS_PREGNANCY_COMPLICATIONS)
+            pregnancyDetail.previousPregnancyComplications = convertListToString(complications)
+
+            // Extract and save pregnantWomanExistingIllness (list of strings -> JSON)
+            val existingIllness = medicalExaminationData?.get(AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS)
+            pregnancyDetail.pregnantWomanExistingIllness = convertListToString(existingIllness)
+
+            // Extract and save pregnantWomanOnTreatment (list of strings -> JSON)
+            val onTreatment = medicalExaminationData?.get(AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT)
+            pregnancyDetail.pregnantWomanOnTreatment = convertListToString(onTreatment)
+
+            // Extract and save highRiskPregnantWoman (list of strings -> JSON)
+            // Check both ANC map and result section
+            val summary = ancMap.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<String, Any>;
+            val highRisk = summary?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN)
+            pregnancyDetail.highRiskPregnantWoman = convertListToString(highRisk)
+
+            // Extract and save gapsInAnc (list of strings -> JSON)
+            // Check both ANC map and result section
+            val gapsInAnc = summary?.get(AssessmentDefinedParams.GAPS_IN_ANC);
+            pregnancyDetail.gapsInAnc = convertListToString(gapsInAnc)
+
+            // Save the new record (always creates new record with id = 0)
+            memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
+            
+            // Fetch the latest saved record to get the auto-generated id
+            // This ensures we have the complete saved record with correct id
+            val savedPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
+            
+            // Update the ViewModel's pregnancyDetail property with the saved record
+            // This ensures the fragment can access the updated visit number and all saved data
+            this.pregnancyDetail = savedPregnancyDetail
+            
+            // Refresh memberClinicalLiveData to update the displayed visit number
+            getPatientVisitCountByType(ANC, details.id)
+        }
+    }
+
+    /**
+     * Converts a list/array to JSON string for database storage
+     */
+    private fun convertListToString(value: Any?): String? {
+        return when (value) {
+            is List<*> -> {
+                val stringList = value.filterIsInstance<String>()
+                if (stringList.isNotEmpty()) {
+                    Gson().toJson(stringList)
+                } else {
+                    null
+                }
+            }
+            is ArrayList<*> -> {
+                val stringList = value.filterIsInstance<String>()
+                if (stringList.isNotEmpty()) {
+                    Gson().toJson(stringList)
+                } else {
+                    null
+                }
+            }
+            is Array<*> -> {
+                val stringList = value.filterIsInstance<String>()
+                if (stringList.isNotEmpty()) {
+                    Gson().toJson(stringList.toList())
+                } else {
+                    null
+                }
+            }
+            else -> null
+        }
     }
 
     fun saveCallResult(

@@ -38,15 +38,21 @@ class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "InformationLayoutFragment"
+        private const val KEY_CUSTOM_INFORMATION = "customInformation"
+        private const val KEY_CUSTOM_INFORMATION_LIST = "customInformationList"
 
         fun newInstance(
             id: String,
             title: String,
+            customInformation: String? = null,
+            customInformationList: ArrayList<String>? = null,
         ): InformationLayoutFragment {
             val fragment = InformationLayoutFragment()
             fragment.arguments = Bundle().apply {
                 putString(DefinedParams.ID, id)
                 putString(DefinedParams.Title, title)
+                customInformation?.let { putString(KEY_CUSTOM_INFORMATION, it) }
+                customInformationList?.let { putStringArrayList(KEY_CUSTOM_INFORMATION_LIST, it) }
             }
             return fragment
         }
@@ -78,23 +84,46 @@ class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
         arguments?.getString(ID)?.let { informationType ->
             viewModel.setUserJourney("$informationType  ${AnalyticsDefinedParams.INSTRUCTIONDIALOGUE}")
         }
-        val informationListByType: ArrayList<InformationModel>? = when (arguments?.getString(ID)) {
-            muacCode, MUAC -> InformationUtils().getMuacInformationListItem(requireContext())
-            hasOedemaOfBothFeet -> InformationUtils().getOedemaInformationList(requireContext())
-            chestInDrawing -> InformationUtils().getChestIndrawingInformation(requireContext())
-            isUnusualSleepy, isVomiting, isConvulsionPastFewDays, isBreastfeed -> {
-                InformationUtils().getDangerSignsInstructions(requireContext(), arguments?.getString(ID))
+
+        // Check for custom information first
+        val customInformation = arguments?.getString(KEY_CUSTOM_INFORMATION)
+        val customInformationList = arguments?.getStringArrayList(KEY_CUSTOM_INFORMATION_LIST)
+
+        val informationListByType: ArrayList<InformationModel>? = when {
+            // Use custom information if provided
+            !customInformation.isNullOrBlank() -> {
+                val model = InformationModel(
+                    inputText = customInformation,
+                )
+                arrayListOf(model)
             }
-            rdtTest -> {
-                InformationUtils().getRdtTest(requireContext())
+            customInformationList != null && customInformationList.isNotEmpty() -> {
+                customInformationList
+                    .map { info ->
+                        InformationModel(
+                            inputText = info,
+                        )
+                    }.let { ArrayList(it) }
             }
-            Contraceptive -> {
-                InformationUtils().getContraceptiveInformation(requireContext())
+            // Otherwise use predefined information based on ID
+            else -> when (arguments?.getString(ID)) {
+                muacCode, MUAC -> InformationUtils().getMuacInformationListItem(requireContext())
+                hasOedemaOfBothFeet -> InformationUtils().getOedemaInformationList(requireContext())
+                chestInDrawing -> InformationUtils().getChestIndrawingInformation(requireContext())
+                isUnusualSleepy, isVomiting, isConvulsionPastFewDays, isBreastfeed -> {
+                    InformationUtils().getDangerSignsInstructions(requireContext(), arguments?.getString(ID))
+                }
+                rdtTest -> {
+                    InformationUtils().getRdtTest(requireContext())
+                }
+                Contraceptive -> {
+                    InformationUtils().getContraceptiveInformation(requireContext())
+                }
+                PreTestCounselling, PostTestCounselling, TestForHiv -> {
+                    InformationUtils().getHIVTestInformation(requireContext(), arguments?.getString(ID))
+                }
+                else -> null
             }
-            PreTestCounselling, PostTestCounselling, TestForHiv -> {
-                InformationUtils().getHIVTestInformation(requireContext(), arguments?.getString(ID))
-            }
-            else -> null
         }
         binding.rvInfoList.apply {
             layoutManager = LinearLayoutManager(requireContext())

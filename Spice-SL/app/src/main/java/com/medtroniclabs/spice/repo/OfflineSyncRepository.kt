@@ -148,9 +148,9 @@ class OfflineSyncRepository @Inject constructor(
         }
 
         // CBS changes for ANC
-        if (assessmentType == RMNCH.ANC_MENU.lowercase()) {
-            updateCbsForRMNCH(assessmentDetails, followUpDetails, ANC)
-        }
+//        if (assessmentType == RMNCH.ANC_MENU.lowercase()) {
+//            updateCbsForRMNCH(assessmentDetails, followUpDetails, ANC)
+//        }
 
         // CBS changes for PNC Neonate
         if (assessmentType == RMNCH.pnc_neonate_key.lowercase()) {

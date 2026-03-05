@@ -314,6 +314,24 @@
     <file name="src/main/java/com/medtroniclabs/spice/db/entity/EntitiesName.kt">
         <error line="10" column="15" source="standard:property-naming" />
     </file>
+    <file name="src/main/java/com/medtroniclabs/spice/formgeneration/FormGenerator.kt">
+        <error line="3469" column="1" source="standard:if-else-wrapping" />
+        <error line="3470" column="1" source="standard:if-else-wrapping" />
+        <error line="3471" column="1" source="standard:if-else-wrapping" />
+        <error line="3472" column="1" source="standard:if-else-wrapping" />
+        <error line="3473" column="1" source="standard:if-else-wrapping" />
+        <error line="3474" column="1" source="standard:if-else-wrapping" />
+        <error line="3475" column="1" source="standard:if-else-wrapping" />
+        <error line="3476" column="1" source="standard:if-else-wrapping" />
+        <error line="3477" column="1" source="standard:if-else-wrapping" />
+        <error line="3478" column="1" source="standard:if-else-wrapping" />
+        <error line="3479" column="1" source="standard:if-else-wrapping" />
+        <error line="3480" column="1" source="standard:if-else-wrapping" />
+        <error line="3481" column="1" source="standard:if-else-wrapping" />
+        <error line="3482" column="1" source="standard:if-else-wrapping" />
+        <error line="4139" column="1" source="standard:no-trailing-spaces" />
+        <error line="4140" column="5" source="standard:blank-line-before-declaration" />
+    </file>
     <file name="src/main/java/com/medtroniclabs/spice/formgeneration/config/DefinedParams.kt">
         <error line="6" column="15" source="standard:property-naming" />
         <error line="7" column="15" source="standard:property-naming" />
@@ -844,12 +862,6 @@
         <error line="61" column="17" source="standard:property-naming" />
         <error line="62" column="17" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/MenuConstants.kt">
-        <error line="12" column="15" source="standard:property-naming" />
-        <error line="13" column="15" source="standard:property-naming" />
-        <error line="21" column="15" source="standard:property-naming" />
-        <error line="31" column="15" source="standard:property-naming" />
-    </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/AssessmentDefinedParams.kt">
         <error line="4" column="15" source="standard:property-naming" />
         <error line="5" column="15" source="standard:property-naming" />
@@ -1029,12 +1041,215 @@
         <error line="209" column="15" source="standard:property-naming" />
         <error line="210" column="15" source="standard:property-naming" />
         <error line="211" column="15" source="standard:property-naming" />
+        <error line="230" column="1" source="standard:indent" />
+        <error line="231" column="1" source="standard:indent" />
+        <error line="232" column="1" source="standard:indent" />
+        <error line="233" column="1" source="standard:indent" />
+        <error line="234" column="1" source="standard:indent" />
+        <error line="235" column="1" source="standard:indent" />
+        <error line="236" column="1" source="standard:indent" />
+        <error line="237" column="1" source="standard:indent" />
+        <error line="238" column="1" source="standard:indent" />
+        <error line="239" column="1" source="standard:indent" />
+        <error line="240" column="1" source="standard:indent" />
+        <error line="241" column="1" source="standard:indent" />
+        <error line="242" column="1" source="standard:indent" />
+        <error line="243" column="1" source="standard:indent" />
+        <error line="244" column="1" source="standard:indent" />
+        <error line="245" column="1" source="standard:indent" />
+        <error line="246" column="1" source="standard:indent" />
+        <error line="247" column="1" source="standard:indent" />
+        <error line="248" column="1" source="standard:indent" />
+        <error line="249" column="1" source="standard:indent" />
+        <error line="250" column="1" source="standard:indent" />
+        <error line="251" column="1" source="standard:indent" />
+        <error line="252" column="1" source="standard:indent" />
+        <error line="253" column="1" source="standard:indent" />
+        <error line="254" column="1" source="standard:indent" />
+        <error line="255" column="1" source="standard:indent" />
+        <error line="256" column="1" source="standard:indent" />
+        <error line="257" column="1" source="standard:indent" />
+        <error line="258" column="1" source="standard:indent" />
+        <error line="259" column="1" source="standard:indent" />
+        <error line="260" column="1" source="standard:indent" />
+        <error line="261" column="1" source="standard:indent" />
+        <error line="263" column="1" source="standard:indent" />
+        <error line="264" column="1" source="standard:indent" />
+        <error line="265" column="1" source="standard:indent" />
+        <error line="266" column="1" source="standard:indent" />
+        <error line="267" column="1" source="standard:indent" />
+        <error line="268" column="1" source="standard:indent" />
+        <error line="269" column="1" source="standard:indent" />
+        <error line="270" column="1" source="standard:indent" />
+        <error line="271" column="1" source="standard:indent" />
+        <error line="273" column="1" source="standard:indent" />
+        <error line="274" column="1" source="standard:indent" />
+        <error line="275" column="1" source="standard:indent" />
+        <error line="276" column="1" source="standard:indent" />
+        <error line="277" column="1" source="standard:indent" />
+        <error line="278" column="1" source="standard:indent" />
+        <error line="279" column="1" source="standard:indent" />
+        <error line="280" column="1" source="standard:indent" />
+        <error line="281" column="1" source="standard:indent" />
+        <error line="282" column="1" source="standard:indent" />
+        <error line="282" column="39" source="standard:trailing-comma-on-call-site" />
+        <error line="283" column="1" source="standard:indent" />
+        <error line="285" column="1" source="standard:indent" />
+        <error line="286" column="1" source="standard:indent" />
+        <error line="287" column="1" source="standard:indent" />
+        <error line="288" column="1" source="standard:indent" />
+        <error line="289" column="1" source="standard:indent" />
+        <error line="290" column="1" source="standard:indent" />
+        <error line="291" column="1" source="standard:indent" />
+        <error line="292" column="1" source="standard:indent" />
+        <error line="293" column="1" source="standard:indent" />
+        <error line="294" column="1" source="standard:indent" />
+        <error line="295" column="1" source="standard:indent" />
+        <error line="296" column="1" source="standard:indent" />
+        <error line="297" column="1" source="standard:indent" />
+        <error line="299" column="1" source="standard:indent" />
+        <error line="300" column="1" source="standard:indent" />
+        <error line="301" column="1" source="standard:indent" />
+        <error line="302" column="1" source="standard:indent" />
+        <error line="303" column="1" source="standard:indent" />
+        <error line="305" column="1" source="standard:indent" />
+        <error line="306" column="1" source="standard:indent" />
+        <error line="307" column="1" source="standard:indent" />
+        <error line="309" column="1" source="standard:indent" />
+        <error line="310" column="1" source="standard:indent" />
+        <error line="311" column="1" source="standard:indent" />
+        <error line="313" column="1" source="standard:indent" />
+        <error line="314" column="1" source="standard:indent" />
+        <error line="315" column="1" source="standard:indent" />
+        <error line="316" column="1" source="standard:indent" />
+        <error line="318" column="1" source="standard:indent" />
+        <error line="319" column="1" source="standard:indent" />
+        <error line="320" column="1" source="standard:indent" />
+        <error line="322" column="1" source="standard:indent" />
+        <error line="323" column="1" source="standard:indent" />
+        <error line="325" column="1" source="standard:indent" />
+        <error line="326" column="1" source="standard:indent" />
+        <error line="327" column="1" source="standard:indent" />
+        <error line="329" column="1" source="standard:indent" />
+        <error line="330" column="1" source="standard:indent" />
+        <error line="332" column="1" source="standard:indent" />
+        <error line="333" column="1" source="standard:indent" />
+        <error line="334" column="1" source="standard:indent" />
+        <error line="335" column="1" source="standard:indent" />
+        <error line="336" column="1" source="standard:indent" />
+        <error line="337" column="1" source="standard:indent" />
+        <error line="338" column="1" source="standard:indent" />
+        <error line="339" column="1" source="standard:indent" />
+        <error line="341" column="1" source="standard:indent" />
+        <error line="342" column="1" source="standard:indent" />
+        <error line="343" column="1" source="standard:indent" />
+        <error line="344" column="1" source="standard:indent" />
+        <error line="346" column="1" source="standard:indent" />
+        <error line="347" column="1" source="standard:indent" />
+        <error line="348" column="1" source="standard:indent" />
+        <error line="349" column="1" source="standard:indent" />
+        <error line="350" column="1" source="standard:indent" />
+        <error line="351" column="1" source="standard:indent" />
+        <error line="352" column="1" source="standard:indent" />
+        <error line="353" column="1" source="standard:indent" />
+        <error line="354" column="1" source="standard:indent" />
+        <error line="355" column="1" source="standard:indent" />
+        <error line="356" column="1" source="standard:indent" />
+        <error line="358" column="1" source="standard:indent" />
+        <error line="359" column="1" source="standard:indent" />
+        <error line="360" column="1" source="standard:indent" />
+        <error line="361" column="1" source="standard:indent" />
+        <error line="362" column="1" source="standard:indent" />
+        <error line="364" column="1" source="standard:indent" />
+        <error line="365" column="1" source="standard:indent" />
+        <error line="366" column="1" source="standard:indent" />
+        <error line="368" column="1" source="standard:indent" />
+        <error line="369" column="1" source="standard:indent" />
+        <error line="370" column="1" source="standard:indent" />
+        <error line="372" column="1" source="standard:indent" />
+        <error line="373" column="1" source="standard:indent" />
+        <error line="374" column="1" source="standard:indent" />
+        <error line="375" column="1" source="standard:indent" />
+        <error line="376" column="1" source="standard:indent" />
+        <error line="377" column="1" source="standard:indent" />
+        <error line="378" column="1" source="standard:indent" />
+        <error line="380" column="1" source="standard:indent" />
+        <error line="381" column="1" source="standard:indent" />
+        <error line="382" column="1" source="standard:indent" />
+        <error line="383" column="1" source="standard:indent" />
+        <error line="384" column="1" source="standard:indent" />
+        <error line="386" column="1" source="standard:indent" />
+        <error line="387" column="1" source="standard:indent" />
+        <error line="388" column="1" source="standard:indent" />
+        <error line="390" column="1" source="standard:indent" />
+        <error line="391" column="1" source="standard:indent" />
+        <error line="392" column="1" source="standard:indent" />
+        <error line="393" column="1" source="standard:indent" />
+        <error line="394" column="1" source="standard:indent" />
+        <error line="395" column="1" source="standard:indent" />
+        <error line="396" column="1" source="standard:indent" />
+        <error line="397" column="1" source="standard:indent" />
+        <error line="398" column="1" source="standard:indent" />
+        <error line="399" column="1" source="standard:indent" />
+        <error line="400" column="1" source="standard:indent" />
+        <error line="401" column="1" source="standard:indent" />
+        <error line="402" column="1" source="standard:indent" />
+        <error line="404" column="1" source="standard:indent" />
+        <error line="405" column="1" source="standard:indent" />
+        <error line="406" column="1" source="standard:indent" />
+        <error line="408" column="1" source="standard:indent" />
+        <error line="409" column="1" source="standard:indent" />
+        <error line="410" column="1" source="standard:indent" />
+        <error line="411" column="1" source="standard:indent" />
+        <error line="412" column="1" source="standard:indent" />
+        <error line="413" column="1" source="standard:indent" />
+        <error line="414" column="1" source="standard:indent" />
+        <error line="415" column="1" source="standard:indent" />
+        <error line="416" column="1" source="standard:indent" />
+        <error line="417" column="1" source="standard:indent" />
+        <error line="418" column="1" source="standard:indent" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/ComplianceChooseDialog.kt">
         <error line="1" column="1" source="standard:filename" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/fragment/AssessmentFamilyPlanningSummaryFragment.kt">
         <error line="233" column="161" source="standard:max-line-length" />
+    </file>
+    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/fragment/AssessmentRMNCHFragment.kt">
+        <error line="346" column="161" source="standard:max-line-length" />
+        <error line="515" column="34" source="standard:trailing-comma-on-call-site" />
+        <error line="575" column="1" source="standard:indent" />
+        <error line="576" column="1" source="standard:indent" />
+        <error line="577" column="1" source="standard:indent" />
+        <error line="578" column="1" source="standard:indent" />
+        <error line="947" column="5" source="standard:blank-line-before-declaration" />
+        <error line="947" column="5" source="standard:spacing-between-declarations-with-comments" />
+        <error line="1034" column="13" source="standard:property-naming" />
+        <error line="1041" column="13" source="standard:property-naming" />
+    </file>
+    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/fragment/AssessmentRMNCHSummaryFragment.kt">
+        <error line="3" column="1" source="standard:import-ordering" />
+        <error line="289" column="1" source="standard:no-trailing-spaces" />
+        <error line="295" column="1" source="standard:no-trailing-spaces" />
+        <error line="298" column="1" source="standard:no-trailing-spaces" />
+        <error line="301" column="1" source="standard:no-trailing-spaces" />
+        <error line="372" column="1" source="standard:indent" />
+        <error line="373" column="1" source="standard:indent" />
+        <error line="943" column="39" source="standard:function-signature" />
+        <error line="943" column="72" source="standard:function-signature" />
+        <error line="943" column="83" source="standard:function-signature" />
+        <error line="1135" column="35" source="standard:condition-wrapping" />
+        <error line="1144" column="38" source="standard:condition-wrapping" />
+        <error line="1190" column="75" source="standard:chain-method-continuation" />
+        <error line="1190" column="81" source="standard:chain-method-continuation" />
+        <error line="1196" column="64" source="standard:trailing-comma-on-call-site" />
+    </file>
+    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/fragment/PregnancyDetailsRMNCHFragment.kt">
+        <error line="3" column="1" source="standard:import-ordering" />
+        <error line="29" column="1" source="standard:no-unused-imports" />
+        <error line="226" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="227" column="1" source="standard:no-consecutive-blank-lines" />
+        <error line="286" column="73" source="standard:function-expression-body" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/referrallogic/ReferralResultGenerator.kt">
         <error line="84" column="9" source="standard:property-naming" />
@@ -1122,6 +1337,28 @@
         <error line="70" column="15" source="standard:property-naming" />
         <error line="72" column="15" source="standard:property-naming" />
         <error line="295" column="15" source="standard:property-naming" />
+    </file>
+    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/rmnch/RMNCHAssessmentEvaluator.kt">
+        <error line="17" column="39" source="standard:function-signature" />
+        <error line="17" column="72" source="standard:function-signature" />
+        <error line="17" column="83" source="standard:function-signature" />
+        <error line="23" column="1" source="standard:no-trailing-spaces" />
+        <error line="219" column="115" source="standard:no-trailing-spaces" />
+        <error line="248" column="1" source="standard:no-trailing-spaces" />
+        <error line="261" column="35" source="standard:trailing-comma-on-call-site" />
+    </file>
+    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/viewmodel/AssessmentViewModel.kt">
+        <error line="12" column="1" source="standard:no-unused-imports" />
+        <error line="440" column="1" source="standard:no-trailing-spaces" />
+        <error line="443" column="1" source="standard:no-trailing-spaces" />
+        <error line="448" column="44" source="standard:trailing-comma-on-call-site" />
+        <error line="465" column="141" source="standard:no-semi" />
+        <error line="479" column="97" source="standard:no-semi" />
+        <error line="485" column="78" source="standard:no-semi" />
+        <error line="489" column="1" source="standard:no-trailing-spaces" />
+        <error line="493" column="1" source="standard:no-trailing-spaces" />
+        <error line="525" column="37" source="standard:trailing-comma-on-call-site" />
+        <error line="535" column="59" source="standard:function-expression-body" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/boarding/MenuTypeEnums.kt">
         <error line="4" column="5" source="standard:enum-entry-name-case" />

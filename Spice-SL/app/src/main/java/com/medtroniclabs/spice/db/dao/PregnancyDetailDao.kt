@@ -19,16 +19,16 @@ interface PregnancyDetailDao {
     @Query("DELETE FROM PregnancyDetail WHERE householdMemberLocalId = :hhmLocalId")
     suspend fun updatePregnancyAnc(hhmLocalId: Long)
 
-    @Query("SELECT patientId, ancVisitNo as visitCount, lastMenstrualPeriod as clinicalDate FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
+    @Query("SELECT patientId, ancVisitNo as visitCount, lastMenstrualPeriod as clinicalDate FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId ORDER BY CASE WHEN ancVisitNo IS NULL THEN 0 ELSE 1 END DESC, ancVisitNo DESC, id DESC Limit 1")
     suspend fun getAncDetail(hhmLocalId: Long): MemberClinicalEntity?
 
-    @Query("SELECT pd.patientId, pd.pncVisitNo as visitCount, pd.dateOfDelivery as clinicalDate, pd.noOfNeonates as numberOfNeonate, pd.isDeliveryAtHome, pd.neonateHouseholdMemberLocalId, hhm.isActive as isNeonateAlive, pd.isNeonateDeathRecordedByPHU FROM PregnancyDetail AS pd LEFT JOIN HouseholdMember AS hhm ON pd.neonateHouseholdMemberLocalId = hhm.id WHERE pd.householdMemberLocalId = :hhmLocalId Limit 1")
+    @Query("SELECT pd.patientId, pd.pncVisitNo as visitCount, pd.dateOfDelivery as clinicalDate, pd.noOfNeonates as numberOfNeonate, pd.isDeliveryAtHome, pd.neonateHouseholdMemberLocalId, hhm.isActive as isNeonateAlive, pd.isNeonateDeathRecordedByPHU FROM PregnancyDetail AS pd LEFT JOIN HouseholdMember AS hhm ON pd.neonateHouseholdMemberLocalId = hhm.id WHERE pd.householdMemberLocalId = :hhmLocalId ORDER BY CASE WHEN pd.pncVisitNo IS NULL THEN 0 ELSE 1 END DESC, pd.pncVisitNo DESC, pd.id DESC Limit 1")
     suspend fun getPncDetail(hhmLocalId: Long): MemberClinicalEntity?
 
-    @Query("SELECT patientId, childVisitNo as visitCount FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
+    @Query("SELECT patientId, childVisitNo as visitCount FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId ORDER BY CASE WHEN childVisitNo IS NULL THEN 0 ELSE 1 END DESC, childVisitNo DESC, id DESC Limit 1")
     suspend fun getChildhoodVisitDetail(hhmLocalId: Long): MemberClinicalEntity?
 
-    @Query("SELECT * FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
+    @Query("SELECT * FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId ORDER BY CASE WHEN ancVisitNo IS NULL THEN 0 ELSE 1 END DESC, ancVisitNo DESC, id DESC Limit 1")
     suspend fun getPregnancyDetailByPatientId(hhmLocalId: Long): PregnancyDetail?
 
     @Query("SELECT id from HouseholdMember where fhir_id =:memberId")
