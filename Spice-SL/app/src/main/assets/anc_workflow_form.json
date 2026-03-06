@@ -836,7 +836,7 @@
     {
       "family": "dangerSignsRiskIdentification",
       "fieldName": "Has the PW experienced any of the following (Gestation age 13-27 weeks)",
-      "id": "dangerSignsExperienced13_27",
+      "id": "dangerSignsExperienced13To27",
       "orderId": 2,
       "isSummary": false,
       "hint":"Danger Signs",
@@ -899,7 +899,7 @@
     {
       "family": "dangerSignsRiskIdentification",
       "fieldName": "Has the PW experienced any of the following (Gestation age 28-40 weeks)",
-      "id": "dangerSignsExperienced28_40",
+      "id": "dangerSignsExperienced28To40",
       "orderId": 3,
       "isSummary": false,
       "hint":"Danger Signs",

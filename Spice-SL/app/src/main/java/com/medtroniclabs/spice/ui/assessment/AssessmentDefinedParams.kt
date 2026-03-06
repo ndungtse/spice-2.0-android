@@ -256,8 +256,8 @@ object AssessmentDefinedParams {
     const val URINARY_SUGAR = "urinarySugar"
     const val URINARY_BILIRUBIN = "urinaryBilirubin"
     const val DANGER_SIGNS_EXPERIENCED_12 = "dangerSignsExperienced12"
-    const val DANGER_SIGNS_EXPERIENCED_13_27 = "dangerSignsExperienced13_27"
-    const val DANGER_SIGNS_EXPERIENCED_28_40 = "dangerSignsExperienced28_40"
+    const val DANGER_SIGNS_EXPERIENCED_13_27 = "dangerSignsExperienced13To27"
+    const val DANGER_SIGNS_EXPERIENCED_28_40 = "dangerSignsExperienced28To40"
     const val HEIGHT = "height"
     const val BMI = "bmi"
 

@@ -235,6 +235,8 @@
     <string name="chest_in_drawing">Kuvuta kwa kifua</string>
     <string name="patient_on_treatment">Mgonjwa kwenye Matibabu</string>
     <string name="no_refferral_treatment_required">Hakuna rufaa/Hakuna Matibabu Yanayohitajika</string>
+    <string name="no_risk_identified">Hakuna Hatari Iliyotambuliwa</string>
+    <string name="no_gaps_found">Hakuna Mapungufu Yaliyopatikana</string>
     <string name="select">Chagua</string>
     <string name="muac_info_1"> Muulize mama aondoe nguo yoyote inayofunika mkono wa kushoto wa mtoto.</string>
     <string name="muac_info_2">Tambua katikati ya mkono wa kushoto wa mtoto. Hii inaweza kufanywa kwa kuchukua kipande cha kamba (au mkanda yenyewe), weka mwisho mmoja kwenye ncha ya bega la mtoto na nyingine kwenye kiwiko</string>

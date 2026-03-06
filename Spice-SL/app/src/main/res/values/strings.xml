@@ -255,6 +255,8 @@
     <string name="patient_on_treatment">Patient On Treatment</string>
     <string name="treatment_pneumonia" translatable="false"> Treatment for Pneumonia Amoxicillin 250mg tab</string>
     <string name="no_refferral_treatment_required">No Referral / No Treatment Required</string>
+    <string name="no_risk_identified">No Risk Identified</string>
+    <string name="no_gaps_found">No Gaps Found</string>
     <string name="select">Select</string>
     <string name="muac_info_1"> Ask the mother to remove any clothing that covers the child’s left arm.</string>
     <string name="muac_info_2"> Identify the midpoint of the child’s left upper arm. This can be done by taking a piece of string (or the tape itself), place one end on the tip of the child’s shoulder and the other on the elbow</string>

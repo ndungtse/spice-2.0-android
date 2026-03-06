@@ -255,6 +255,8 @@
     <string name="patient_on_treatment">চিকিৎসাধীন রোগী</string>
     <string name="treatment_pneumonia" translatable="false"> Treatment for Pneumonia Amoxicillin 250mg tab</string>
     <string name="no_refferral_treatment_required">কোন রেফারেল / চিকিৎসার প্রয়োজন নেই</string>
+    <string name="no_risk_identified">কোন ঝুঁকি শনাক্ত করা হয়নি</string>
+    <string name="no_gaps_found">কোন অসম্পূর্ণতা পাওয়া যায়নি</string>
     <string name="select">নির্বাচন করুন</string>
     <string name="muac_info_1">মাকে বলুন শিশুর বাম বাহু ঢেকে রাখে এমন যেকোনো পোশাক খুলে দিতে।</string>
     <string name="muac_info_2">শিশুর বাম উপরের বাহুর মধ্যবিন্দু নির্ধারণ করুন। এটি করার জন্য একটি সুতা (অথবা মাপার ফিতা) নিন, একটি প্রান্ত শিশুর কাঁধের শীর্ষে এবং অন্য প্রান্ত কনুইতে রাখুন।</string>

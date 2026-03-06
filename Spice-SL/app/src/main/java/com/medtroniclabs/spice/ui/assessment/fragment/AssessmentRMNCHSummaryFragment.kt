@@ -237,7 +237,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                                     // Show hyphen if no high risk conditions
                                     with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
                                         with(tvTitle) {
-                                            text = getString(R.string.hyphen_symbol)
+                                            text = getString(R.string.no_risk_identified)
                                         }
                                         binding.parentLayout.addView(root)
                                     }
@@ -267,7 +267,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                                     // Show hyphen if no gaps
                                     with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
                                         with(tvTitle) {
-                                            text = getString(R.string.hyphen_symbol)
+                                            text = getString(R.string.no_gaps_found)
                                         }
                                         binding.parentLayout.addView(root)
                                     }

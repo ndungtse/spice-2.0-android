@@ -1048,14 +1048,14 @@ class AssessmentRMNCHFragment :
         val showDangerSigns12 = gestationalAgeWeeks == null || gestationalAgeWeeks <= AssessmentDefinedParams.GESTATIONAL_AGE_WEEK_12
         updateFieldVisibility(AssessmentDefinedParams.DANGER_SIGNS_EXPERIENCED_12, showDangerSigns12)
 
-        // Show dangerSignsExperienced13_27 if gestational age >= 13 AND <= 27 weeks
+        // Show dangerSignsExperienced13To27 if gestational age >= 13 AND <= 27 weeks
         val showDangerSigns13_27 =
             gestationalAgeWeeks != null &&
                 gestationalAgeWeeks >= AssessmentDefinedParams.GESTATIONAL_AGE_WEEK_13 &&
                 gestationalAgeWeeks <= AssessmentDefinedParams.GESTATIONAL_AGE_WEEK_27
         updateFieldVisibility(AssessmentDefinedParams.DANGER_SIGNS_EXPERIENCED_13_27, showDangerSigns13_27)
 
-        // Show dangerSignsExperienced28_40 if gestational age >= 28 AND <= 40 weeks
+        // Show dangerSignsExperienced28To40 if gestational age >= 28 AND <= 40 weeks
         val showDangerSigns28_40 =
             gestationalAgeWeeks != null &&
                 gestationalAgeWeeks >= AssessmentDefinedParams.GESTATIONAL_AGE_WEEK_28 &&
