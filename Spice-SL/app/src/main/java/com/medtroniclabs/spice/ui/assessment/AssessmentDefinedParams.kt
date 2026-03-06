@@ -227,208 +227,208 @@ object AssessmentDefinedParams {
 
     const val NEW_WORSENING_SYMPTOMS = "newWorseningSymptoms"
 
-       // RMNCH Field IDs
-       const val BLOOD_SUGAR = "bloodSugar"
-       const val BLOOD_SUGAR_FASTING = "bloodSugarFasting"
-       const val BLOOD_SUGAR_RANDOM = "bloodSugarRandom"
-       const val SYSTOLIC = "systolic"
-       const val DIASTOLIC = "diastolic"
-       const val PREGNANT_WOMAN_EXISTING_ILLNESS = "pregnantWomanExistingIllness"
-       const val PREGNANT_WOMAN_ON_TREATMENT = "pregnantWomanOnTreatment"
-       const val PREVIOUS_PREGNANCY_COMPLICATIONS = "previousPregnancyComplications"
-       const val EDEMA = "edema"
-       const val URINARY_ALBUMIN = "urinaryAlbumin"
-       const val FOLIC_ACID_TOTAL_CONSUMED = "folicAcidTotalConsumed"
-       const val FOLIC_ACID_TABLETS = "folicAcidTablets"
-       const val FOLIC_ACID_PROVIDED = "folicAcidProvided"
-       const val IFA_TOTAL_CONSUMED = "ifaTotalConsumed"
-       const val IFA_TABLETS = "ifaTablets"
-       const val IFA_PROVIDED = "ifaProvided"
-       const val CALCIUM_TOTAL_CONSUMED = "calciumTotalConsumed"
-       const val CALCIUM_TABLETS = "calciumTablets"
-       const val CALCIUM_PROVIDED = "calciumProvided"
-       const val ANC_FROM_MEDICAL_DOCTOR = "ancFromMedicalDoctor"
-       const val ULTRASOUND = "ultrasound"
-       const val TEMPERATURE = "temperature"
-       const val PULSE = "pulse"
-       const val FUNDAL_HEIGHT = "fundalHeight"
-       const val HEMOGLOBIN = "hemoglobin"
-       const val URINARY_SUGAR = "urinarySugar"
-       const val URINARY_BILIRUBIN = "urinaryBilirubin"
-       const val DANGER_SIGNS_EXPERIENCED_12 = "dangerSignsExperienced12"
-       const val DANGER_SIGNS_EXPERIENCED_13_27 = "dangerSignsExperienced13_27"
-       const val DANGER_SIGNS_EXPERIENCED_28_40 = "dangerSignsExperienced28_40"
-       const val HEIGHT = "height"
-       const val BMI = "bmi"
+    // RMNCH Field IDs
+    const val BLOOD_SUGAR = "bloodSugar"
+    const val BLOOD_SUGAR_FASTING = "bloodSugarFasting"
+    const val BLOOD_SUGAR_RANDOM = "bloodSugarRandom"
+    const val SYSTOLIC = "systolic"
+    const val DIASTOLIC = "diastolic"
+    const val PREGNANT_WOMAN_EXISTING_ILLNESS = "pregnantWomanExistingIllness"
+    const val PREGNANT_WOMAN_ON_TREATMENT = "pregnantWomanOnTreatment"
+    const val PREVIOUS_PREGNANCY_COMPLICATIONS = "previousPregnancyComplications"
+    const val EDEMA = "edema"
+    const val URINARY_ALBUMIN = "urinaryAlbumin"
+    const val FOLIC_ACID_TOTAL_CONSUMED = "folicAcidTotalConsumed"
+    const val FOLIC_ACID_TABLETS = "folicAcidTablets"
+    const val FOLIC_ACID_PROVIDED = "folicAcidProvided"
+    const val IFA_TOTAL_CONSUMED = "ifaTotalConsumed"
+    const val IFA_TABLETS = "ifaTablets"
+    const val IFA_PROVIDED = "ifaProvided"
+    const val CALCIUM_TOTAL_CONSUMED = "calciumTotalConsumed"
+    const val CALCIUM_TABLETS = "calciumTablets"
+    const val CALCIUM_PROVIDED = "calciumProvided"
+    const val ANC_FROM_MEDICAL_DOCTOR = "ancFromMedicalDoctor"
+    const val ULTRASOUND = "ultrasound"
+    const val TEMPERATURE = "temperature"
+    const val PULSE = "pulse"
+    const val FUNDAL_HEIGHT = "fundalHeight"
+    const val HEMOGLOBIN = "hemoglobin"
+    const val URINARY_SUGAR = "urinarySugar"
+    const val URINARY_BILIRUBIN = "urinaryBilirubin"
+    const val DANGER_SIGNS_EXPERIENCED_12 = "dangerSignsExperienced12"
+    const val DANGER_SIGNS_EXPERIENCED_13_27 = "dangerSignsExperienced13_27"
+    const val DANGER_SIGNS_EXPERIENCED_28_40 = "dangerSignsExperienced28_40"
+    const val HEIGHT = "height"
+    const val BMI = "bmi"
 
-       // RMNCH Form Group IDs
-       const val GROUP_MEDICAL_HISTORY_PHYSICAL_EXAMINATION = "medicalHistoryPhysicalExamination"
-       const val GROUP_POINT_OF_CARE_INVESTIGATIONS = "pointOfCareInvestigations"
-       const val GROUP_VACCINATION_AND_SUPPLEMENTS = "vaccinationAndSupplements"
-       const val GROUP_ANC_SERVICES_BIRTH_PREPAREDNESS = "ancServicesBirthPreparedness"
-       const val GROUP_DANGER_SIGNS_RISK_IDENTIFICATION = "dangerSignsRiskIdentification"
-       const val GROUP_SUMMARY = "summary"
-       const val GROUP_COUNSELLING = "counselling"
-       const val GROUP_COUNSELLING_FOLLOW_UP = "counsellingFollowUp"
+    // RMNCH Form Group IDs
+    const val GROUP_MEDICAL_HISTORY_PHYSICAL_EXAMINATION = "medicalHistoryPhysicalExamination"
+    const val GROUP_POINT_OF_CARE_INVESTIGATIONS = "pointOfCareInvestigations"
+    const val GROUP_VACCINATION_AND_SUPPLEMENTS = "vaccinationAndSupplements"
+    const val GROUP_ANC_SERVICES_BIRTH_PREPAREDNESS = "ancServicesBirthPreparedness"
+    const val GROUP_DANGER_SIGNS_RISK_IDENTIFICATION = "dangerSignsRiskIdentification"
+    const val GROUP_SUMMARY = "summary"
+    const val GROUP_COUNSELLING = "counselling"
+    const val GROUP_COUNSELLING_FOLLOW_UP = "counsellingFollowUp"
 
-       // RMNCH Form Group IDs (for nested field access)
-       val ANC_FORM_GROUPS = listOf(
-           GROUP_MEDICAL_HISTORY_PHYSICAL_EXAMINATION,
-           GROUP_POINT_OF_CARE_INVESTIGATIONS,
-           GROUP_VACCINATION_AND_SUPPLEMENTS,
-           GROUP_ANC_SERVICES_BIRTH_PREPAREDNESS,
-           GROUP_DANGER_SIGNS_RISK_IDENTIFICATION,
-           GROUP_SUMMARY,
-           GROUP_COUNSELLING,
-           GROUP_COUNSELLING_FOLLOW_UP
-       )
+    // RMNCH Form Group IDs (for nested field access)
+    val ANC_FORM_GROUPS = listOf(
+        GROUP_MEDICAL_HISTORY_PHYSICAL_EXAMINATION,
+        GROUP_POINT_OF_CARE_INVESTIGATIONS,
+        GROUP_VACCINATION_AND_SUPPLEMENTS,
+        GROUP_ANC_SERVICES_BIRTH_PREPAREDNESS,
+        GROUP_DANGER_SIGNS_RISK_IDENTIFICATION,
+        GROUP_SUMMARY,
+        GROUP_COUNSELLING,
+        GROUP_COUNSELLING_FOLLOW_UP,
+    )
 
-       // RMNCH Status Values
-       const val STATUS_HIGH_RISK = "High Risk"
-       const val STATUS_HIGH_FEVER = "High Fever"
-       const val STATUS_FEVER = "Fever"
-       const val STATUS_ABNORMAL = "Abnormal"
-       const val STATUS_MODERATE_ANEMIA = "Moderate Anemia"
-       const val STATUS_SEVERE_ANEMIA = "Severe Anemia"
-       const val STATUS_GAP = "gap"
-       const val VALUE_PRESENT = "present"
-       const val VALUE_NOT_DONE = "notDone"
-       const val VALUE_NO = "no"
-       const val VALUE_FASTING = "fasting"
-       const val VALUE_RANDOM = "random"
+    // RMNCH Status Values
+    const val STATUS_HIGH_RISK = "High Risk"
+    const val STATUS_HIGH_FEVER = "High Fever"
+    const val STATUS_FEVER = "Fever"
+    const val STATUS_ABNORMAL = "Abnormal"
+    const val STATUS_MODERATE_ANEMIA = "Moderate Anemia"
+    const val STATUS_SEVERE_ANEMIA = "Severe Anemia"
+    const val STATUS_GAP = "gap"
+    const val VALUE_PRESENT = "present"
+    const val VALUE_NOT_DONE = "notDone"
+    const val VALUE_NO = "no"
+    const val VALUE_FASTING = "fasting"
+    const val VALUE_RANDOM = "random"
 
-       // RMNCH Illness Identifiers
-       const val ILLNESS_HTN = "HTN"
-       const val ILLNESS_DM = "DM"
-       const val ILLNESS_HYPERTENSION = "hypertension"
-       const val ILLNESS_DIABETES = "diabetes"
+    // RMNCH Illness Identifiers
+    const val ILLNESS_HTN = "HTN"
+    const val ILLNESS_DM = "DM"
+    const val ILLNESS_HYPERTENSION = "hypertension"
+    const val ILLNESS_DIABETES = "diabetes"
 
-       // RMNCH Blood Pressure Thresholds
-       const val BP_SYSTOLIC_THRESHOLD = 140.0
-       const val BP_DIASTOLIC_THRESHOLD = 90.0
+    // RMNCH Blood Pressure Thresholds
+    const val BP_SYSTOLIC_THRESHOLD = 140.0
+    const val BP_DIASTOLIC_THRESHOLD = 90.0
 
-       // RMNCH Blood Sugar Thresholds
-       const val BLOOD_SUGAR_FASTING_THRESHOLD = 5.1
-       const val BLOOD_SUGAR_RANDOM_THRESHOLD = 8.5
+    // RMNCH Blood Sugar Thresholds
+    const val BLOOD_SUGAR_FASTING_THRESHOLD = 5.1
+    const val BLOOD_SUGAR_RANDOM_THRESHOLD = 8.5
 
-       // RMNCH Temperature Thresholds (Fahrenheit)
-       const val TEMP_HIGH_FEVER_THRESHOLD = 102.0
-       const val TEMP_FEVER_MIN_THRESHOLD = 100.0
-       const val TEMP_FEVER_MAX_THRESHOLD = 101.9
+    // RMNCH Temperature Thresholds (Fahrenheit)
+    const val TEMP_HIGH_FEVER_THRESHOLD = 102.0
+    const val TEMP_FEVER_MIN_THRESHOLD = 100.0
+    const val TEMP_FEVER_MAX_THRESHOLD = 101.9
 
-       // RMNCH Pulse Thresholds
-       const val PULSE_HIGH_THRESHOLD = 90.0
-       const val PULSE_LOW_THRESHOLD = 60.0
+    // RMNCH Pulse Thresholds
+    const val PULSE_HIGH_THRESHOLD = 90.0
+    const val PULSE_LOW_THRESHOLD = 60.0
 
-       // RMNCH Fundal Height Tolerance
-       const val FUNDAL_HEIGHT_TOLERANCE_CM = 2.0
+    // RMNCH Fundal Height Tolerance
+    const val FUNDAL_HEIGHT_TOLERANCE_CM = 2.0
 
-       // RMNCH Hemoglobin Thresholds
-       const val HEMOGLOBIN_SEVERE_ANEMIA_THRESHOLD = 8.0
-       const val HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD = 10.0
+    // RMNCH Hemoglobin Thresholds
+    const val HEMOGLOBIN_SEVERE_ANEMIA_THRESHOLD = 8.0
+    const val HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD = 10.0
 
-       // RMNCH Tablet Consumption Threshold
-       const val TABLET_CONSUMPTION_THRESHOLD = 30
+    // RMNCH Tablet Consumption Threshold
+    const val TABLET_CONSUMPTION_THRESHOLD = 30
 
-       // RMNCH Gestational Age Thresholds (weeks)
-       const val GESTATIONAL_AGE_WEEK_12 = 12.0
-       const val GESTATIONAL_AGE_WEEK_13 = 13.0
-       const val GESTATIONAL_AGE_WEEK_24 = 24.0
-       const val GESTATIONAL_AGE_WEEK_27 = 27.0
-       const val GESTATIONAL_AGE_WEEK_28 = 28.0
-       const val GESTATIONAL_AGE_WEEK_36 = 36.0
-       const val GESTATIONAL_AGE_WEEK_40 = 40.0
+    // RMNCH Gestational Age Thresholds (weeks)
+    const val GESTATIONAL_AGE_WEEK_12 = 12.0
+    const val GESTATIONAL_AGE_WEEK_13 = 13.0
+    const val GESTATIONAL_AGE_WEEK_24 = 24.0
+    const val GESTATIONAL_AGE_WEEK_27 = 27.0
+    const val GESTATIONAL_AGE_WEEK_28 = 28.0
+    const val GESTATIONAL_AGE_WEEK_36 = 36.0
+    const val GESTATIONAL_AGE_WEEK_40 = 40.0
 
-       // RMNCH Other Constants
-       const val DAYS_PER_WEEK = 7.0
-       const val UI_UPDATE_DELAY_MS = 400
-       const val ANC_VISIT_NUMBER_1 = 1
+    // RMNCH Other Constants
+    const val DAYS_PER_WEEK = 7.0
+    const val UI_UPDATE_DELAY_MS = 400
+    const val ANC_VISIT_NUMBER_1 = 1
 
-       // RMNCH Pregnancy Details Constants
-       const val PREGNANCY_DETAILS_DELAY_300_MS = 300L
-       const val PREGNANCY_DETAILS_DELAY_100_MS = 100L
-       const val PREGNANCY_DETAILS_DELAY_500_MS = 500L
-       const val GRAVIDA_THRESHOLD_FOR_PARITY = 2
-       const val PARITY_HIGH_RISK_THRESHOLD = 4
-       const val NUMBER_OF_LIVING_CHILDREN_THRESHOLD = 1
-       const val AGE_OF_LAST_CHILD_HIGH_RISK_YEARS = 2
-       const val WEEKS_SINGULAR_THRESHOLD = 1.0
-       const val MONTHS_FOR_YEARS_DISPLAY = 12
-       const val MONTHS_YEARS_SINGULAR_THRESHOLD = 1
+    // RMNCH Pregnancy Details Constants
+    const val PREGNANCY_DETAILS_DELAY_300_MS = 300L
+    const val PREGNANCY_DETAILS_DELAY_100_MS = 100L
+    const val PREGNANCY_DETAILS_DELAY_500_MS = 500L
+    const val GRAVIDA_THRESHOLD_FOR_PARITY = 2
+    const val PARITY_HIGH_RISK_THRESHOLD = 4
+    const val NUMBER_OF_LIVING_CHILDREN_THRESHOLD = 1
+    const val AGE_OF_LAST_CHILD_HIGH_RISK_YEARS = 2
+    const val WEEKS_SINGULAR_THRESHOLD = 1.0
+    const val MONTHS_FOR_YEARS_DISPLAY = 12
+    const val MONTHS_YEARS_SINGULAR_THRESHOLD = 1
 
-       // RMNCH Summary Field IDs
-       const val HIGH_RISK_PREGNANT_WOMAN = "highRiskPregnantWoman"
-       const val GAPS_IN_ANC = "gapsInAnc"
-       const val REFERRAL_FACILITY = "referralFacility"
-       const val FACILITY_IDENTIFIED_FOR_DELIVERY = "facilityIdentifiedForDelivery"
+    // RMNCH Summary Field IDs
+    const val HIGH_RISK_PREGNANT_WOMAN = "highRiskPregnantWoman"
+    const val GAPS_IN_ANC = "gapsInAnc"
+    const val REFERRAL_FACILITY = "referralFacility"
+    const val FACILITY_IDENTIFIED_FOR_DELIVERY = "facilityIdentifiedForDelivery"
 
-       // RMNCH Summary Labels
-       const val LABEL_REFERRAL_FACILITY = "Referral Facility"
-       const val LABEL_FOLLOW_UP_VISIT = "Follow up Visit"
-       const val LABEL_HIGH_RISK_PREGNANT_WOMAN = "High risk pregnant woman"
-       const val LABEL_GAPS_IN_ANC = "Gaps in ANC"
+    // RMNCH Summary Labels
+    const val LABEL_REFERRAL_FACILITY = "Referral Facility"
+    const val LABEL_FOLLOW_UP_VISIT = "Follow up Visit"
+    const val LABEL_HIGH_RISK_PREGNANT_WOMAN = "High risk pregnant woman"
+    const val LABEL_GAPS_IN_ANC = "Gaps in ANC"
 
-       // Facility Identified For Delivery option IDs
-       const val FACILITY_NOT_IDENTIFIED = "notIdentified"
-       const val FACILITY_HOME_DELIVERY = "homeDelivery"
+    // Facility Identified For Delivery option IDs
+    const val FACILITY_NOT_IDENTIFIED = "notIdentified"
+    const val FACILITY_HOME_DELIVERY = "homeDelivery"
 
-       // Chronic Illness Identifiers
-       const val ILLNESS_NONE_ID = "none"
-       const val ILLNESS_HEART_DISEASE = "Heart Disease"
-       const val ILLNESS_TUBERCULOSIS = "Tuberculosis"
-       const val ILLNESS_TB = "TB"
-       const val ILLNESS_ASTHMA = "Asthma"
-       const val ILLNESS_THYROID = "Thyroid"
-       const val ILLNESS_KIDNEY_DISEASE = "Kidney Disease"
+    // Chronic Illness Identifiers
+    const val ILLNESS_NONE_ID = "none"
+    const val ILLNESS_HEART_DISEASE = "Heart Disease"
+    const val ILLNESS_TUBERCULOSIS = "Tuberculosis"
+    const val ILLNESS_TB = "TB"
+    const val ILLNESS_ASTHMA = "Asthma"
+    const val ILLNESS_THYROID = "Thyroid"
+    const val ILLNESS_KIDNEY_DISEASE = "Kidney Disease"
 
-       // Age Thresholds for High Risk Pregnancy
-       const val AGE_MIN_THRESHOLD = 18
-       const val AGE_MAX_THRESHOLD = 35
-       const val BIRTH_SPACING_THRESHOLD_YEARS = 2
-       const val MULTIPARA_THRESHOLD = 3
+    // Age Thresholds for High Risk Pregnancy
+    const val AGE_MIN_THRESHOLD = 18
+    const val AGE_MAX_THRESHOLD = 35
+    const val BIRTH_SPACING_THRESHOLD_YEARS = 2
+    const val MULTIPARA_THRESHOLD = 3
 
-       // Referral Labels
-       const val LABEL_EMERGENCY_REFERRAL = "Emergency Referral"
-       const val LABEL_NON_EMERGENCY_REFERRAL = "Non Emergency Referral"
+    // Referral Labels
+    const val LABEL_EMERGENCY_REFERRAL = "Emergency Referral"
+    const val LABEL_NON_EMERGENCY_REFERRAL = "Non Emergency Referral"
 
-       // Referral Condition Texts
-       const val CONDITION_SUSPECTED_PRE_ECLAMPSIA = "Suspected Pre-eclampsia"
-       const val CONDITION_HIGH_FEVER = "High Fever"
-       const val CONDITION_ABNORMAL_PULSE = "Abnormal Pulse"
-       const val CONDITION_SEVERE_ANEMIA = "Severe Anemia"
-       const val CONDITION_URINARY_BILIRUBIN = "Urinary Bilirubin present"
-       const val CONDITION_CHRONIC_ILLNESS_NOT_ON_TREATMENT = "PW not on treatment for existing chronic illnesses"
-       const val CONDITION_HIGH_RISK_PREGNANCY = "High risk PW due to age/birth spacing"
-       const val CONDITION_MODERATE_ANEMIA = "Moderate Anemia"
-       const val CONDITION_SUSPECTED_DIABETES = "Suspected/Existing Case of Diabetes"
-       const val CONDITION_CHRONIC_ILLNESS_WITH_TREATMENT = "PW with existing chronic illnesses with treatment"
-       const val CONDITION_MILD_FEVER = "Mild Fever"
-       const val CONDITION_PREGNANCY_RELATED_MEDICAL_COMPLICATIONS = "H/O Preg related medical complications"
-       const val CONDITION_ANY_OTHER = "Any Other"
+    // Referral Condition Texts
+    const val CONDITION_SUSPECTED_PRE_ECLAMPSIA = "Suspected Pre-eclampsia"
+    const val CONDITION_HIGH_FEVER = "High Fever"
+    const val CONDITION_ABNORMAL_PULSE = "Abnormal Pulse"
+    const val CONDITION_SEVERE_ANEMIA = "Severe Anemia"
+    const val CONDITION_URINARY_BILIRUBIN = "Urinary Bilirubin present"
+    const val CONDITION_CHRONIC_ILLNESS_NOT_ON_TREATMENT = "PW not on treatment for existing chronic illnesses"
+    const val CONDITION_HIGH_RISK_PREGNANCY = "High risk PW due to age/birth spacing"
+    const val CONDITION_MODERATE_ANEMIA = "Moderate Anemia"
+    const val CONDITION_SUSPECTED_DIABETES = "Suspected/Existing Case of Diabetes"
+    const val CONDITION_CHRONIC_ILLNESS_WITH_TREATMENT = "PW with existing chronic illnesses with treatment"
+    const val CONDITION_MILD_FEVER = "Mild Fever"
+    const val CONDITION_PREGNANCY_RELATED_MEDICAL_COMPLICATIONS = "H/O Preg related medical complications"
+    const val CONDITION_ANY_OTHER = "Any Other"
 
-       // Pregnancy Complication IDs
-       const val COMPLICATION_CONVULSIONS = "convulsions"
-       const val COMPLICATION_POSTPARTUM_HEMORRHAGE = "postpartum_hemorrhage"
-       const val COMPLICATION_SEVERE_ANEMIA = "severe_anemia"
-       const val COMPLICATION_GESTATIONAL_DIABETES = "gestational_diabetes"
+    // Pregnancy Complication IDs
+    const val COMPLICATION_CONVULSIONS = "convulsions"
+    const val COMPLICATION_POSTPARTUM_HEMORRHAGE = "postpartum_hemorrhage"
+    const val COMPLICATION_SEVERE_ANEMIA = "severe_anemia"
+    const val COMPLICATION_GESTATIONAL_DIABETES = "gestational_diabetes"
 
-       // Gap Condition Field IDs
-       const val TT_TD_COMPLETED = "ttTdCompleted"
-       const val MIN_ANC_VISITS_REQUIRED = 3
+    // Gap Condition Field IDs
+    const val TT_TD_COMPLETED = "ttTdCompleted"
+    const val MIN_ANC_VISITS_REQUIRED = 3
 
-       // Gap Condition Texts
-       const val GAP_TT_VACCINATION_INCOMPLETE = "TT vaccination incomplete"
-       const val GAP_USG_NOT_DONE = "USG not done >36 weeks"
-       const val GAP_ANC_WITH_DOCTOR_NOT_DONE = "ANC with Doctor not done >36 weeks"
-       const val GAP_LESS_THAN_3_ANCS = "Less than 3 ANCs completed at end of 36 weeks"
-       const val GAP_INADEQUATE_IFA = "Inadequate /Non consumption IFA"
-       const val GAP_INADEQUATE_CALCIUM = "Inadequate /Non consumption Calcium"
-       const val GAP_FACILITY_NOT_IDENTIFIED = "Facility not identified for institutional delivery"
-       const val GAP_PLANNED_HOME_DELIVERY = "Planned for Home Delivery"
-       const val YES = "Yes"
-       const val NO = "No"
-       const val NUTRITION_COUNSELLING = "nutritionCounselling";
-       const val CARE_DURING_ANTENATAL_PERIOD = "careDuringAntenatalPeriod"
-       const val BIRTH_PREPAREDNESS = "birthPreparedness"
-       const val NEW_BORN_CARE_EDUCATION = "newbornCareEducation"
+    // Gap Condition Texts
+    const val GAP_TT_VACCINATION_INCOMPLETE = "TT vaccination incomplete"
+    const val GAP_USG_NOT_DONE = "USG not done >36 weeks"
+    const val GAP_ANC_WITH_DOCTOR_NOT_DONE = "ANC with Doctor not done >36 weeks"
+    const val GAP_LESS_THAN_3_ANCS = "Less than 3 ANCs completed at end of 36 weeks"
+    const val GAP_INADEQUATE_IFA = "Inadequate /Non consumption IFA"
+    const val GAP_INADEQUATE_CALCIUM = "Inadequate /Non consumption Calcium"
+    const val GAP_FACILITY_NOT_IDENTIFIED = "Facility not identified for institutional delivery"
+    const val GAP_PLANNED_HOME_DELIVERY = "Planned for Home Delivery"
+    const val YES = "Yes"
+    const val NO = "No"
+    const val NUTRITION_COUNSELLING = "nutritionCounselling"
+    const val CARE_DURING_ANTENATAL_PERIOD = "careDuringAntenatalPeriod"
+    const val BIRTH_PREPAREDNESS = "birthPreparedness"
+    const val NEW_BORN_CARE_EDUCATION = "newbornCareEducation"
 }

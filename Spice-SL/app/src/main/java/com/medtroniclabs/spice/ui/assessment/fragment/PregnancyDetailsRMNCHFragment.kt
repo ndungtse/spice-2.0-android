@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -23,10 +25,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
-import java.util.concurrent.TimeUnit
 
 class PregnancyDetailsRMNCHFragment : BaseFragment() {
     private lateinit var binding: FragmentPregnancyDetailsRmnchBinding
@@ -223,8 +222,6 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
                     }
                 }
             }
-
-
         } ?: run {
             // If no pregnancy detail, don't show any fields except Date of Visit and ANC Visit
         }
@@ -283,14 +280,13 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
     /**
      * Parses a JSON string to a List<String>
      */
-    private fun parseJsonStringToList(jsonString: String): List<String> {
-        return try {
+    private fun parseJsonStringToList(jsonString: String): List<String> =
+        try {
             val type: Type = object : TypeToken<List<String>>() {}.type
             Gson().fromJson(jsonString, type) ?: emptyList()
         } catch (e: Exception) {
             emptyList()
         }
-    }
 
     private fun getVisitCount(visitCount: Long?): Long =
         if (visitCount == null) {

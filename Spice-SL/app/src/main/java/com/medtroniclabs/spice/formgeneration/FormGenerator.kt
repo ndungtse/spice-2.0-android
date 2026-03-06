@@ -4136,7 +4136,7 @@ class FormGenerator(
         } else {
             selectedItems.map { it[DefinedParams.NAME] }
         }
-    
+
     private fun addEditableCards(serverData: List<FormLayout>) {
         serverData.forEach { data ->
             if (data.isEditable) {

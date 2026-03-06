@@ -14,7 +14,10 @@ object RMNCHAssessmentEvaluator {
      * Helper method to get value from nested structure
      * Checks all ANC form groups first, then top level
      */
-    private fun getValueFromNestedMap(resultMap: HashMap<String, Any>, key: String): Any? {
+    private fun getValueFromNestedMap(
+        resultMap: HashMap<String, Any>,
+        key: String,
+    ): Any? {
         // Check all ANC form groups for the field
         for (groupId in AssessmentDefinedParams.ANC_FORM_GROUPS) {
             val groupMap = resultMap[groupId] as? Map<*, *>
@@ -42,10 +45,10 @@ object RMNCHAssessmentEvaluator {
             val illnessMap = illness as? Map<*, *> ?: return@filter true
             val id = illnessMap[DefinedParams.ID]?.toString()?.lowercase() ?: ""
             val name = illnessMap[DefinedParams.NAME]?.toString()?.lowercase() ?: ""
-            
+
             // Filter out if id is "none" or name is "None"
             id != AssessmentDefinedParams.ILLNESS_NONE_ID &&
-            name != DefinedParams.None.lowercase()
+                name != DefinedParams.None.lowercase()
         } as ArrayList<*>
     }
 
@@ -285,7 +288,7 @@ object RMNCHAssessmentEvaluator {
             AssessmentDefinedParams.COMPLICATION_CONVULSIONS,
             AssessmentDefinedParams.COMPLICATION_POSTPARTUM_HEMORRHAGE,
             AssessmentDefinedParams.COMPLICATION_SEVERE_ANEMIA,
-            AssessmentDefinedParams.COMPLICATION_GESTATIONAL_DIABETES
+            AssessmentDefinedParams.COMPLICATION_GESTATIONAL_DIABETES,
         )
 
         return complicationsList.any { complication ->

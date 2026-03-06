@@ -13,8 +13,6 @@ import android.widget.AdapterView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.DONEBUTTONTRIGGERED
@@ -24,10 +22,9 @@ import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.calculateAgeInMonths
-import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.common.DateUtils.convertStringToDate
 import com.medtroniclabs.spice.common.DateUtils.getDateStringFromDate
-import com.medtroniclabs.spice.common.DateUtils.getLastMenstrualDate
+
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.AssessmentId
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -57,7 +54,6 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.childHoodVisitMaxMonth
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getValueFromMap
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCHAssessmentEvaluator
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
@@ -301,7 +297,6 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                             }
                         }
                     }
-
             }
 
             // For ANC workflow, render Counselling fields in a CardView (similar to result card)
@@ -862,6 +857,4 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 null
             }
         }
-
-
 }

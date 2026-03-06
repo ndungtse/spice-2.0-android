@@ -441,7 +441,7 @@ class AssessmentRMNCHFragment :
                 val id = illnessItem[DefinedParams.ID]?.toString()?.lowercase() ?: ""
                 val name = illnessItem[DefinedParams.NAME]?.toString()?.lowercase() ?: ""
                 id != AssessmentDefinedParams.ILLNESS_NONE_ID &&
-                name != DefinedParams.None.lowercase()
+                    name != DefinedParams.None.lowercase()
             }
 
             // Convert filtered illness selections HashMap to SignsAndSymptomsEntity list
@@ -522,7 +522,7 @@ class AssessmentRMNCHFragment :
                     FormResultComposer().groupValues(
                         serverData = it,
                         details,
-                        RMNCH.ANC
+                        RMNCH.ANC,
                     )
                 } else {
                     FormResultComposer().groupValues(
@@ -582,10 +582,10 @@ class AssessmentRMNCHFragment :
 //                            )
 //                        }
 //                    } else {
-                        if (second.containsKey(name) && second[name] is Map<*, *>) {
-                            val clinicalMap = second[name] as HashMap<String, Any>
-                            clinicalMap[RMNCH.visitNo] = getANCVisitNumber()
-                        }
+                    if (second.containsKey(name) && second[name] is Map<*, *>) {
+                        val clinicalMap = second[name] as HashMap<String, Any>
+                        clinicalMap[RMNCH.visitNo] = getANCVisitNumber()
+                    }
 //                    }
                     calculateGestationalAge(second, name)
 
@@ -960,6 +960,7 @@ class AssessmentRMNCHFragment :
             visibility = View.GONE
         }
     }
+
     /**
      * Gets the current ANC visit number
      * Visit number is calculated as visitCount + 1 (visitCount is 0-based)
@@ -1178,7 +1179,7 @@ class AssessmentRMNCHFragment :
             val id = illnessItem[DefinedParams.ID]?.toString()?.lowercase() ?: ""
             val name = illnessItem[DefinedParams.NAME]?.toString()?.lowercase() ?: ""
             id != AssessmentDefinedParams.ILLNESS_NONE_ID &&
-            name != DefinedParams.None.lowercase()
+                name != DefinedParams.None.lowercase()
         }
 
         // Get total available options from filtered existing illness (excluding "none")
@@ -1673,19 +1674,22 @@ class AssessmentRMNCHFragment :
         val emergencyConditions = evaluateEmergencyReferralConditions(ancResultMap)
         val nonEmergencyConditions = evaluateNonEmergencyReferralConditions(
             ancResultMap,
-            viewModel.memberDetailsLiveData.value?.data?.dateOfBirth,
-            hasOtherSelected
+            viewModel.memberDetailsLiveData.value
+                ?.data
+                ?.dateOfBirth,
+            hasOtherSelected,
         )
 
         // Combine all high risk conditions
         val combinedHighRiskList = mutableListOf<String>()
         dangerSignsList.forEach { dangerSign ->
             // Split by comma, trim, and filter out "None" (defensive check)
-            val individualSigns = dangerSign.split(",")
+            val individualSigns = dangerSign
+                .split(",")
                 .map { it.trim() }
                 .filter {
                     it.isNotEmpty() &&
-                    !it.equals(DefinedParams.None, ignoreCase = true)
+                        !it.equals(DefinedParams.None, ignoreCase = true)
                 }
             combinedHighRiskList.addAll(individualSigns)
         }
@@ -1704,7 +1708,10 @@ class AssessmentRMNCHFragment :
      * Helper method to get value from nested structure
      * Checks all ANC form groups first, then top level
      */
-    private fun getValueFromNestedMap(resultMap: HashMap<String, Any>, key: String): Any? {
+    private fun getValueFromNestedMap(
+        resultMap: HashMap<String, Any>,
+        key: String,
+    ): Any? {
         // Check all ANC form groups for the field
         for (groupId in AssessmentDefinedParams.ANC_FORM_GROUPS) {
             val groupMap = resultMap[groupId] as? Map<*, *>
@@ -1822,11 +1829,12 @@ class AssessmentRMNCHFragment :
      * @return Filtered string with "None" removed, or empty string if only "None" was present
      */
     private fun filterNoneFromDangerSignsString(dangerSignString: String): String {
-        val signs = dangerSignString.split(",")
+        val signs = dangerSignString
+            .split(",")
             .map { it.trim() }
             .filter {
                 it.isNotEmpty() &&
-                !it.equals(DefinedParams.None, ignoreCase = true)
+                    !it.equals(DefinedParams.None, ignoreCase = true)
             }
         return signs.joinToString(", ")
     }
@@ -1865,7 +1873,7 @@ class AssessmentRMNCHFragment :
                             }
                         }
                     }
-                    
+
                     val formattedValue = RMNCH.getValueFromMap(
                         map,
                         dangerSignId,
@@ -1914,7 +1922,8 @@ class AssessmentRMNCHFragment :
 
         // 2. USG not done >36 weeks
         val ultrasound = getValueFromNestedMap(resultMap, AssessmentDefinedParams.ULTRASOUND) as? String
-        if (ultrasound != null && ultrasound.equals(AssessmentDefinedParams.VALUE_NOT_DONE, ignoreCase = true) &&
+        if (ultrasound != null &&
+            ultrasound.equals(AssessmentDefinedParams.VALUE_NOT_DONE, ignoreCase = true) &&
             gestationalAgeWeeks != null &&
             gestationalAgeWeeks > AssessmentDefinedParams.GESTATIONAL_AGE_WEEK_36
         ) {
@@ -1923,7 +1932,8 @@ class AssessmentRMNCHFragment :
 
         // 3. ANC with Doctor not done >36 weeks
         val ancFromDoctor = getValueFromNestedMap(resultMap, AssessmentDefinedParams.ANC_FROM_MEDICAL_DOCTOR) as? String
-        if (ancFromDoctor != null && ancFromDoctor.equals(AssessmentDefinedParams.VALUE_NO, ignoreCase = true) &&
+        if (ancFromDoctor != null &&
+            ancFromDoctor.equals(AssessmentDefinedParams.VALUE_NO, ignoreCase = true) &&
             gestationalAgeWeeks != null &&
             gestationalAgeWeeks > AssessmentDefinedParams.GESTATIONAL_AGE_WEEK_36
         ) {

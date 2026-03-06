@@ -9,7 +9,6 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-import com.google.gson.JsonElement
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
@@ -435,22 +434,22 @@ class AssessmentViewModel @Inject constructor(
         if (ancMap != null) {
             // Get the latest pregnancy detail (ordered by ancVisitNo DESC)
             val latestPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
-            
+
             // Calculate the new visit number from the latest record
             val newVisitNo = getVisitNumber(latestPregnancyDetail?.ancVisitNo)
-            
+
             // Always create a new record (id = 0) instead of updating
             val pregnancyDetail = PregnancyDetail(
                 householdMemberLocalId = details.id,
-                id = 0 // Always create new record
+                id = 0, // Always create new record
             ).apply {
                 ancVisitNo = newVisitNo
-                
+
                 // Copy essential fields from latest record if they exist
                 // Otherwise use values from current details
                 patientId = latestPregnancyDetail?.patientId ?: details.patientId
                 householdMemberId = latestPregnancyDetail?.householdMemberId ?: details.memberId
-                
+
                 // Copy pregnancy-related fields from latest record (these don't change per visit)
                 lastMenstrualPeriod = latestPregnancyDetail?.lastMenstrualPeriod
                 estimatedDeliveryDate = latestPregnancyDetail?.estimatedDeliveryDate
@@ -462,7 +461,7 @@ class AssessmentViewModel @Inject constructor(
             }
 
             // Extract and save previousPregnancyComplications (string)
-            val medicalExaminationData = ancMap.get(AssessmentDefinedParams.GROUP_MEDICAL_HISTORY_PHYSICAL_EXAMINATION) as? Map<String, Any>;
+            val medicalExaminationData = ancMap.get(AssessmentDefinedParams.GROUP_MEDICAL_HISTORY_PHYSICAL_EXAMINATION) as? Map<String, Any>
             val complications = medicalExaminationData?.get(AssessmentDefinedParams.PREVIOUS_PREGNANCY_COMPLICATIONS)
             pregnancyDetail.previousPregnancyComplications = convertListToString(complications)
 
@@ -476,26 +475,26 @@ class AssessmentViewModel @Inject constructor(
 
             // Extract and save highRiskPregnantWoman (list of strings -> JSON)
             // Check both ANC map and result section
-            val summary = ancMap.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<String, Any>;
+            val summary = ancMap.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<String, Any>
             val highRisk = summary?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN)
             pregnancyDetail.highRiskPregnantWoman = convertListToString(highRisk)
 
             // Extract and save gapsInAnc (list of strings -> JSON)
             // Check both ANC map and result section
-            val gapsInAnc = summary?.get(AssessmentDefinedParams.GAPS_IN_ANC);
+            val gapsInAnc = summary?.get(AssessmentDefinedParams.GAPS_IN_ANC)
             pregnancyDetail.gapsInAnc = convertListToString(gapsInAnc)
 
             // Save the new record (always creates new record with id = 0)
             memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
-            
+
             // Fetch the latest saved record to get the auto-generated id
             // This ensures we have the complete saved record with correct id
             val savedPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
-            
+
             // Update the ViewModel's pregnancyDetail property with the saved record
             // This ensures the fragment can access the updated visit number and all saved data
             this.pregnancyDetail = savedPregnancyDetail
-            
+
             // Refresh memberClinicalLiveData to update the displayed visit number
             getPatientVisitCountByType(ANC, details.id)
         }
@@ -504,8 +503,8 @@ class AssessmentViewModel @Inject constructor(
     /**
      * Converts a list/array to JSON string for database storage
      */
-    private fun convertListToString(value: Any?): String? {
-        return when (value) {
+    private fun convertListToString(value: Any?): String? =
+        when (value) {
             is List<*> -> {
                 val stringList = value.filterIsInstance<String>()
                 if (stringList.isNotEmpty()) {
@@ -532,7 +531,6 @@ class AssessmentViewModel @Inject constructor(
             }
             else -> null
         }
-    }
 
     fun saveCallResult(
         serverData: List<FormLayout>?,
