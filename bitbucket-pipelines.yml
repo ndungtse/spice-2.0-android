@@ -31,7 +31,7 @@ pipelines:
             - |
               cd Spice-SL
               echo "Generating environment.properties from Bitbucket variables..."
-              env | grep -E "^(SL_|AF_|TBU_|PROD_|STAGE_|DEV_|BD_)" > environment.properties
+              env | grep -E "^(UHIS_|SL_|AF_|TBU_|PROD_|STAGE_|DEV_|BD_)" > environment.properties
               echo "Environment properties generated."
               FLAVOR_CAP="$(tr '[:lower:]' '[:upper:]' <<< ${FLAVOR:0:1})${FLAVOR:1}"
               BUILD_TYPE_CAP="$(tr '[:lower:]' '[:upper:]' <<< ${BUILD_TYPE:0:1})${BUILD_TYPE:1}"
