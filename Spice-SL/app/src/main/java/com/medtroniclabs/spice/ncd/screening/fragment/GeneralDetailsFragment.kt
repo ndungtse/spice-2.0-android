@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.fragment.app.activityViewModels
-import com.askjeffreyliu.flexboxradiogroup.FlexBoxRadioGroup
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isVisible
@@ -29,6 +28,7 @@ import com.medtroniclabs.spice.mappingkey.Screening.outpatient
 import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
+import io.github.mrherintsoahasina.flextools.FlexRadioGroup
 
 // --- FIX 1: Remove the conflicting listener interfaces from the class declaration ---
 class GeneralDetailsFragment : BaseFragment(), View.OnClickListener {
@@ -277,7 +277,7 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener {
 
     // --- FIX 2: Renamed method for the FlexBoxRadioGroup, remove 'override' ---
     private fun onFlexBoxGroupChanged(
-        radioGroup: FlexBoxRadioGroup,
+        radioGroup: FlexRadioGroup,
         radioButton: Int,
     ) {
         when (radioGroup.checkedRadioButtonId) {

@@ -91,7 +91,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/rgCategoryRow"
                 tools:ignore="RtlSymmetry" />
 
-            <com.askjeffreyliu.flexboxradiogroup.FlexBoxRadioGroup
+            <io.github.mrherintsoahasina.flextools.FlexRadioGroup
                 android:id="@+id/rgType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -157,7 +157,7 @@
                     android:paddingEnd="@dimen/_24sdp"
                     android:text="@string/camp" />
 
-            </com.askjeffreyliu.flexboxradiogroup.FlexBoxRadioGroup>
+            </io.github.mrherintsoahasina.flextools.FlexRadioGroup>
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/etOthers"

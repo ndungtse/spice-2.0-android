@@ -31,7 +31,7 @@ android {
         versionName = "2.0.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
-        missingDimensionStrategy("version", "prod")
+        missingDimensionStrategy("version", "production")
     }
 
     // Make exported Room schemas available to tests
@@ -294,7 +294,7 @@ dependencies {
     implementation("com.google.android.play:app-update-ktx:2.1.0")
 
     // NCD
-    implementation("com.github.jeffreyliu8:FlexBoxRadioGroup:0.0.8") {
+    implementation("io.github.mrherintsoahasina:flextools:1.0.3") {
         exclude(group = "com.google.android", module = "flexbox")
     }
 
