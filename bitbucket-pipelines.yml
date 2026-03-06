@@ -1,0 +1,46 @@
+image: mingc/android-build-box:latest
+
+definitions:
+  caches:
+    gradle: ~/.gradle/caches
+    gradle-wrapper: ~/.gradle/wrapper
+
+pipelines:
+  custom:
+    custom-build:
+      - variables:
+          - name: FLAVOR
+            default: dev
+            allowed-values:
+              - dev
+              - qa
+              - staging
+              - production
+          - name: BUILD_TYPE
+            default: debug
+            allowed-values:
+              - debug
+              - release
+      - step:
+          name: Build Android App
+          size: 2x
+          caches:
+            - gradle
+            - gradle-wrapper
+          script:
+            - |
+              cd Spice-SL
+              echo "Generating environment.properties from Bitbucket variables..."
+              env | grep -E "^(SL_|AF_|TBU_|PROD_|STAGE_|DEV_|BD_)" > environment.properties
+              echo "Environment properties generated."
+              FLAVOR_CAP="$(tr '[:lower:]' '[:upper:]' <<< ${FLAVOR:0:1})${FLAVOR:1}"
+              BUILD_TYPE_CAP="$(tr '[:lower:]' '[:upper:]' <<< ${BUILD_TYPE:0:1})${BUILD_TYPE:1}"
+              TASK_NAME="assemble${FLAVOR_CAP}${BUILD_TYPE_CAP}"
+              echo "Running Gradle task: $TASK_NAME"
+              export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx3g -Dkotlin.daemon.jvm.options=-Xmx1g -Dfile.encoding=UTF-8"
+              export _JAVA_OPTIONS="-Xmx3g"
+              ./gradlew --no-daemon --stacktrace --info --max-workers=2 "$TASK_NAME"
+              mkdir -p ../artifacts
+              find app/build/outputs/apk -type f -name "*.apk" -print -exec cp {} ../artifacts/ \;
+          artifacts:
+            - artifacts/*.apk
