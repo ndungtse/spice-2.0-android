@@ -71,6 +71,158 @@ object RMNCH {
 
     const val otherPlaceOfDelivery = "otherPlaceOfDelivery"
 
+    const val childHoodVisitMaxMonth = 15
+
+    /**
+     * CardView : Pregnancy History
+     */
+    const val ID_PREGNANCY_HISTORY = "pregnancyHistory"
+
+    /**
+     * CardView : Maternal Health Assessment
+     */
+    const val ID_MATERNAL_HEALTH_ASSESSMENT = "maternalHealthAssessment"
+
+    /**
+     * CardView : Postpartum Contraception
+     */
+    const val ID_POSTPARTUM_CONTRACEPTION = "postpartumContraception"
+
+    /**
+     * Spinner : Modern Family planning method being used
+     */
+    const val ID_FAMILY_PLANNING_METHODS = "familyPlanningMethods"
+
+    /**
+     * DialogCheckbox : Danger Signs present
+     */
+    const val ID_POSTPARTUM_DANGER_SIGNS = "postpartumDangerSigns"
+
+    /**
+     * EditText : Hemoglobin (Hb)
+     */
+    const val ID_HEMOGLOBIN = "hemoglobin"
+
+    /**
+     * EditText : Temperature
+     */
+    const val ID_TEMPERATURE = "temperature"
+
+    /**
+     * EditText : Pulse
+     */
+    const val ID_PULSE = "pulse"
+
+    /**
+     * EditText : Systolic
+     */
+    const val ID_SYSTOLIC = "systolic"
+
+    /**
+     * EditText : Diastolic
+     */
+    const val ID_DIASTOLIC = "diastolic"
+
+    /**
+     * SingleSelectionView : Edema
+     */
+    const val ID_EDEMA = "edema"
+
+    /**
+     * SingleSelectionView : Urinary Albumin
+     */
+    const val ID_URINARY_ALBUMIN = "urinaryAlbumin"
+
+    /**
+     * SingleSelectionView : Urinary Bilirubin
+     */
+    const val ID_URINARY_BILIRUBIN = "urinaryBilirubin"
+
+    /**
+     * RadioGroup : Known DM patient
+     */
+    const val ID_DM_PATIENT = "dmPatient"
+
+    /**
+     * RadioGroup : Known GDM patient
+     */
+    const val ID_GDM_PATIENT = "gdmPatient"
+
+    /**
+     * SingleSelectionView : Blood Sugar
+     */
+    const val ID_BLOOD_SUGAR = "bloodSugar"
+
+    /**
+     * EditText : Fasting (Blood Sugar)
+     */
+    const val ID_FASTING_BLOOD_SUGAR = "fastingBloodSugar"
+
+    /**
+     * EditText : Random (Blood Sugar)
+     */
+    const val ID_RANDOM_BLOOD_SUGAR = "randomBloodSugar"
+
+    /**
+     * RadioGroup : On treatment for DM/GDM
+     */
+    const val ID_ON_TREATMENT_DM_GDM = "onTreatmentDmGdm"
+
+    /**
+     * RadioGroup : Known HTN patient
+     */
+    const val ID_KNOWN_HTN = "htnPatient"
+
+    /**
+     * RadioGroup : Known Eclampsia patient
+     */
+    const val ID_ECLAMPSIA = "eclampsia"
+
+    /**
+     * RadioGroup : On treatment for HTN/ Pre-eclampsia/ Eclampsia
+     */
+    const val ID_ON_TREATMENT_HTN_ECLAMPSIA = "onTreatmentHtnEclampsia"
+
+    /**
+     * Value : Days since delivery
+     */
+    const val ID_DAYS_SINCE_DELIVERY = "daysSinceDelivery"
+
+    /**
+     * RadioGroup : Vitamin A capsule consumed
+     */
+    const val ID_VITAMIN_A_CONSUMED = "vitaminAConsumed"
+
+    /**
+     * EditText : IFA Tablets Consumed
+     */
+    const val ID_IFA_TABLETS_CONSUMED = "ifaTabletsConsumed"
+
+    /**
+     * EditText : Calcium Tablets Consumed
+     */
+    const val ID_CALCIUM_TABLETS_CONSUMED = "calciumTabletsConsumed"
+
+    /**
+     * Instructions : Maternal danger signs
+     */
+    const val ID_MATERNAL_DANGER_SIGNS = "maternalDangerSigns"
+
+    /**
+     * Instructions : Maternal nutrition
+     */
+    const val ID_MATERNAL_NUTRITION = "maternalNutrition"
+
+    /**
+     * Instructions : Maternal nutrition
+     */
+    const val ID_FAMILY_PLANNING = "familyPlanning"
+
+    /**
+     * TextLabel : Care of the Mother
+     */
+    const val ID_COUNSELLING_MOTHER_CARE = "counsellingMotherCare"
+
     fun getValueFromMap(
         resultMap: HashMap<String, Any>,
         id: String,
@@ -291,8 +443,6 @@ object RMNCH {
             }
         }
     }
-
-    const val childHoodVisitMaxMonth = 15
 
     fun getMenuName(workflowName: String?): String {
         when (workflowName) {

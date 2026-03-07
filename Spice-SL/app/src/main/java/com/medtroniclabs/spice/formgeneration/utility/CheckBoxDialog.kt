@@ -30,14 +30,14 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
     var autoPopulate: List<Pair<String, Boolean>> = emptyList()
 
     // Prepopulated input data
-    var inputData: List<SignsAndSymptomsEntity> = emptyList()
+    var inputData: List<SignsAndSymptomsEntity>? = null
 
     constructor(
         callback: (result: ArrayList<HashMap<String, Any>>) -> Unit,
         resultMap: Any?,
         title: String?,
         autoPopulate: List<Pair<String, Boolean>> = emptyList(),
-        inputData: List<SignsAndSymptomsEntity> = emptyList(),
+        inputData: List<SignsAndSymptomsEntity>? = null,
     ) : this() {
         this.callback = callback
         this.resultMap = resultMap
@@ -58,7 +58,7 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
             resultMap: Any?,
             title: String? = null,
             autoPopulate: List<Pair<String, Boolean>> = emptyList(),
-            inputData: List<SignsAndSymptomsEntity> = emptyList(),
+            inputData: List<SignsAndSymptomsEntity>? = null,
             callback: (result: ArrayList<HashMap<String, Any>>) -> Unit,
         ): CheckBoxDialog {
             val args = Bundle()
@@ -158,7 +158,7 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
 
     private fun getRespectiveList(
         key: String?,
-        inputData: List<SignsAndSymptomsEntity>,
+        inputData: List<SignsAndSymptomsEntity>?,
     ) {
         key?.let { viewModel.getSymptomListByType(it, inputData) }
     }

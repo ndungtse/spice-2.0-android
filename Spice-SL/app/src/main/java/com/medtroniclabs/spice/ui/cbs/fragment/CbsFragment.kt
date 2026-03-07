@@ -471,7 +471,13 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                     }
                     if (!birth.isNullOrBlank() && birth.equals(DefinedParams.still_birth, true)) {
                         viewModel.memberDetailsLiveData.value?.data?.id?.let {
-                            viewModel.savePatientClinicalInformation(viewModel.getUpdatedPregnancyDetail(it, viewModel.pregnancyDetail, true))
+                            viewModel.savePatientClinicalInformation(
+                                viewModel.getUpdatedPregnancyDetail(
+                                    it,
+                                    viewModel.pregnancyDetailLiveData.value,
+                                    true,
+                                ),
+                            )
                         }
                     }
                     val rmnchText = rmnchList?.mapNotNull { it[DefinedParams.NAME] as? String }?.toMutableList() ?: mutableListOf()

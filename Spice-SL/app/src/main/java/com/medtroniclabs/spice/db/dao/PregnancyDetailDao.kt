@@ -28,7 +28,7 @@ interface PregnancyDetailDao {
     @Query("SELECT patientId, childVisitNo as visitCount FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId ORDER BY CASE WHEN childVisitNo IS NULL THEN 0 ELSE 1 END DESC, childVisitNo DESC, id DESC Limit 1")
     suspend fun getChildhoodVisitDetail(hhmLocalId: Long): MemberClinicalEntity?
 
-    @Query("SELECT * FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId ORDER BY CASE WHEN ancVisitNo IS NULL THEN 0 ELSE 1 END DESC, ancVisitNo DESC, id DESC Limit 1")
+    @Query("SELECT * FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId ORDER BY id DESC Limit 1")
     suspend fun getPregnancyDetailByPatientId(hhmLocalId: Long): PregnancyDetail?
 
     @Query("SELECT id from HouseholdMember where fhir_id =:memberId")

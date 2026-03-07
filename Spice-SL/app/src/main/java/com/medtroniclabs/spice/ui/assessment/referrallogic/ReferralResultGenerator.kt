@@ -73,10 +73,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Miscarriage
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfNewborn
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getDeathStatus
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.lowBirthWeight
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.newbornReferredToSBCU
 
 class ReferralResultGenerator {
     private var patientStatus = HashMap<String, Any>()
@@ -96,10 +93,7 @@ class ReferralResultGenerator {
         return Pair(checkStatus(), referralReason)
     }
 
-    fun calculateRMNCHReferralResult(
-        map: HashMap<String, Any>,
-        isChild: Boolean = false,
-    ): Pair<String?, ArrayList<String>> {
+    fun calculateRMNCHReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
         if (map.containsKey(RMNCH.ANC)) {
             val deathOfMother = getDeathStatus(map, RMNCH.ANC, DeathOfMother)
             if (!deathOfMother) {
@@ -162,54 +156,18 @@ class ReferralResultGenerator {
                 updateVisitCount(map, RMNCH.ChildHoodVisit)
             }
         } else {
-            val deathOfNewBorn = getDeathStatus(map, RMNCH.PNCNeonatal, deathOfNewborn)
-            if (isChild) {
-                if (!deathOfNewBorn) {
-                    findSignListByWorkflow(
-                        RMNCH.PNCNeonatal,
-                        map,
-                        RMNCH.pncNeonateSigns,
-                        ReferralReasons.aliasOf(ReferralReasons.PNCNeonateSigns),
-                    )
-
-                    if (checkMiscarrageStatus(map, RMNCH.PNCNeonatal, newbornReferredToSBCU)) {
-                        addResultMap("", ReferralStatus.Referred.name)
-                        addReferralReason(referralReason, "")
-                    }
-
-                    if (checkMiscarrageStatus(map, RMNCH.PNCNeonatal, lowBirthWeight)) {
-                        addResultMap("", ReferralStatus.Referred.name)
-                        addReferralReason(referralReason, "")
-                    }
-
-                    updateVisitCount(map, RMNCH.PNC)
-                }
+            val urgentReferrals = PNCAssessmentEvaluator.getUrgentReferral(map[RMNCH.PNC] as Map<String, Any>)
+            if (urgentReferrals.isNotEmpty()) {
+                addResultMap(ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns), ReferralStatus.Referred.name)
+                addReferralReason(referralReason, ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns))
             } else {
-                findSignListByWorkflow(
-                    RMNCH.PNC,
-                    map,
-                    RMNCH.pncMotherSigns,
-                    ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns),
-                )
-                if (!deathOfNewBorn) {
-                    findSignListByWorkflow(
-                        RMNCH.PNCNeonatal,
-                        map,
-                        RMNCH.pncNeonateSigns,
-                        ReferralReasons.aliasOf(ReferralReasons.PNCNeonateSigns),
-                    )
-                    if (checkMiscarrageStatus(map, RMNCH.PNCNeonatal, newbornReferredToSBCU)) {
-                        addResultMap("", ReferralStatus.Referred.name)
-                        addReferralReason(referralReason, "")
-                    }
-
-                    if (checkMiscarrageStatus(map, RMNCH.PNCNeonatal, lowBirthWeight)) {
-                        addResultMap("", ReferralStatus.Referred.name)
-                        addReferralReason(referralReason, "")
-                    }
+                val nonUrgentReferrals = PNCAssessmentEvaluator.getNonUrgentReferral(map[RMNCH.PNC] as Map<String, Any>)
+                if (nonUrgentReferrals.isNotEmpty()) {
+                    addResultMap(ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns), ReferralStatus.Referred.name)
+                    addReferralReason(referralReason, ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns))
                 }
-                updateVisitCount(map, RMNCH.PNC)
             }
+            updateVisitCount(map, RMNCH.PNC)
         }
         return Pair(checkStatus(), referralReason)
     }
@@ -319,7 +277,7 @@ class ReferralResultGenerator {
         val workflowMap = map[workflow]
         if (workflowMap is Map<*, *> && workflowMap.containsKey(signType)) {
             val ancList = workflowMap[signType]
-            if (ancList is ArrayList<*> && ancList.size > 0) {
+            if (ancList is ArrayList<*> && ancList.isNotEmpty()) {
                 if (!(ancList.any { (it as Map<*, *>)[DefinedParams.NAME] == NoSymptoms })) {
                     addResultMap(referralReasonName, ReferralStatus.Referred.name)
                     addReferralReason(referralReason, referralReasonName)

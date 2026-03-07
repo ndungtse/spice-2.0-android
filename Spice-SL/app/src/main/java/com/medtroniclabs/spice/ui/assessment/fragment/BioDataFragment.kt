@@ -11,8 +11,6 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
-import com.medtroniclabs.spice.common.DateUtils.calculateEstimatedDeliveryDate
-import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentBioDataBinding
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
@@ -24,7 +22,6 @@ import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
-import java.text.DecimalFormat
 
 class BioDataFragment : BaseFragment() {
     private lateinit var binding: FragmentBioDataBinding
@@ -86,151 +83,27 @@ class BioDataFragment : BaseFragment() {
     }
 
     private fun showPatientOtherInformation(entity: MemberClinicalEntity?) {
-        val title: String
         val visitCount = getVisitCount(entity?.visitCount)
-        when (viewModel.workflowName) {
-            RMNCH.ANC -> {
-                title = getString(R.string.anc_visit)
-                // showAncRelatedInformation(entity)
-            }
-
-            RMNCH.PNC -> {
-                title = getString(R.string.pnc_visit)
-                showPncRelatedInformation(entity, visitCount)
-            }
-
+        val title = when (viewModel.workflowName) {
             RMNCH.ChildHoodVisit -> {
-                title = getString(R.string.child_hood_visit)
+                getString(R.string.child_hood_visit)
             }
 
             else -> {
-                title = getString(R.string.hyphen_symbol)
+                null
             }
         }
 
-        binding.llPatientInfo.addView(
-            AssessmentCommonUtils.addViewSummaryLayout(
-                title = title,
-                value = visitCount.toString(),
-                null,
-                binding.root.context,
-            ),
-        )
-    }
-
-    private fun showPncRelatedInformation(
-        entity: MemberClinicalEntity?,
-        visitCount: Long,
-    ) {
-        if (entity != null) {
-            entity.apply {
-                if (visitCount == 1L) {
-                    binding.llPatientInfo.addView(
-                        AssessmentCommonUtils.addViewSummaryLayout(
-                            title = getString(R.string.delivery_at),
-                            value = getString(R.string.home_title),
-                            context = binding.llPatientInfo.context,
-                        ),
-                    )
-                } else {
-                    isDeliveryAtHome?.let {
-                        val value =
-                            if (it) getString(R.string.home_title) else getString(R.string.phu)
-                        binding.llPatientInfo.addView(
-                            AssessmentCommonUtils.addViewSummaryLayout(
-                                title = getString(R.string.delivery_at),
-                                value = value,
-                                context = binding.llPatientInfo.context,
-                            ),
-                        )
-                    }
-                }
-
-                clinicalDate?.let {
-                    binding.llPatientInfo.addView(
-                        AssessmentCommonUtils.addViewSummaryLayout(
-                            title = getString(R.string.date_of_delivery),
-                            value = DateUtils.convertDateFormat(
-                                clinicalDate,
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                DATE_ddMMyyyy,
-                            ),
-                            context = binding.llPatientInfo.context,
-                        ),
-                    )
-                }
-                if (numberOfNeonate != null) {
-                    binding.llPatientInfo.addView(
-                        AssessmentCommonUtils.addViewSummaryLayout(
-                            title = getString(R.string.no_of_neonates),
-                            value = DecimalFormat("##.#").format(numberOfNeonate),
-                            context = binding.llPatientInfo.context,
-                        ),
-                    )
-                }
-            }
-        } else {
-            if (visitCount == 1L) {
-                binding.llPatientInfo.addView(
-                    AssessmentCommonUtils.addViewSummaryLayout(
-                        title = getString(R.string.delivery_at),
-                        value = getString(R.string.home_title),
-                        context = binding.llPatientInfo.context,
-                    ),
-                )
-            }
+        if (title != null) {
+            binding.llPatientInfo.addView(
+                AssessmentCommonUtils.addViewSummaryLayout(
+                    title = title,
+                    value = visitCount.toString(),
+                    null,
+                    binding.root.context,
+                ),
+            )
         }
-    }
-
-    private fun showAncRelatedInformation(entity: MemberClinicalEntity?) {
-        entity?.apply {
-            if (!clinicalDate.isNullOrEmpty()) {
-                binding.llPatientInfo.addView(
-                    AssessmentCommonUtils.addViewSummaryLayout(
-                        title = getString(R.string.last_menstrual_period),
-                        value = DateUtils.convertDateFormat(
-                            clinicalDate,
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DATE_ddMMyyyy,
-                        ),
-                        context = binding.llPatientInfo.context,
-                    ),
-                )
-                val lastMenstrualDate = DateUtils.getLastMenstrualDate(clinicalDate)
-                val gestationWeek = calculateGestationalAge(lastMenstrualDate).first
-                createSummary(
-                    getString(R.string.gestational_age),
-                    "$gestationWeek ${getWeekPeriod(gestationWeek)}",
-                )
-                val estimatedDeliveryDate = calculateEstimatedDeliveryDate(lastMenstrualDate)
-                val formattedEstimatedDeliveryDate =
-                    DateUtils.getDateFormat().format(estimatedDeliveryDate.time)
-                createSummary(
-                    getString(R.string.estimated_delivery_date),
-                    formattedEstimatedDeliveryDate,
-                )
-            }
-        }
-    }
-
-    private fun getWeekPeriod(gestationWeek: Long): String =
-        if (gestationWeek == 1L) {
-            requireContext().getString(R.string.week)
-        } else {
-            requireContext().getString(R.string.weeks)
-        }
-
-    private fun createSummary(
-        title: String,
-        value: String,
-    ) {
-        binding.llPatientInfo.addView(
-            AssessmentCommonUtils.addViewSummaryLayout(
-                title = title,
-                value = value,
-                context = binding.llPatientInfo.context,
-            ),
-        )
     }
 
     private fun getVisitCount(visitCount: Long?): Long =

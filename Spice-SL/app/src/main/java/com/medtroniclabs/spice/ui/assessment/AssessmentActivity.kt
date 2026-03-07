@@ -30,8 +30,6 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomsFra
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentPregnantWomenRegistrationFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentPregnantWomenRegistrationSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHFragment
-import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHNeonateFragment
-import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHNeonateSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentSLNCDFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentSLNCDSummaryFragment
@@ -44,9 +42,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
-import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentRMNCHNeonateViewModel
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
 import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
@@ -59,7 +55,6 @@ import org.json.JSONObject
 class AssessmentActivity : BaseActivity() {
     private lateinit var binding: ActivityAssessmentBinding
     private val viewModel: AssessmentViewModel by viewModels()
-    private val assessmentRMNCHNeonateViewModel: AssessmentRMNCHNeonateViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -126,10 +121,6 @@ class AssessmentActivity : BaseActivity() {
                 return Pair(fragment.getCurrentAnsweredStatus(), false)
             }
 
-            is AssessmentRMNCHNeonateFragment -> {
-                return Pair(fragment.getCurrentAnsweredStatus(), false)
-            }
-
             is AssessmentICCMSummaryFragment -> {
                 return Pair(fragment.getCurrentAnsweredStatus(), true)
             }
@@ -139,10 +130,6 @@ class AssessmentActivity : BaseActivity() {
             }
 
             is AssessmentRMNCHSummaryFragment -> {
-                return Pair(fragment.getCurrentAnsweredStatus(), true)
-            }
-
-            is AssessmentRMNCHNeonateSummaryFragment -> {
                 return Pair(fragment.getCurrentAnsweredStatus(), true)
             }
 
@@ -209,7 +196,6 @@ class AssessmentActivity : BaseActivity() {
             when (supportFragmentManager.findFragmentById(R.id.fragmentContainer)) {
                 is AssessmentICCMSummaryFragment,
                 is AssessmentRMNCHSummaryFragment,
-                is AssessmentRMNCHNeonateSummaryFragment,
                 is AssessmentOtherSymptomSummaryFragment,
                 -> {
                     finishSuccessFlow()
@@ -234,9 +220,6 @@ class AssessmentActivity : BaseActivity() {
             }
             is AssessmentRMNCHFragment -> {
                 viewModel.workflowName.plus(AnalyticsDefinedParams.RMNCHAssessment)
-            }
-            is AssessmentRMNCHNeonateFragment -> {
-                AnalyticsDefinedParams.RMNCHNeonateAssessment
             }
             is AssessmentOtherSymptomsFragment -> {
                 AnalyticsDefinedParams.OtherSymptoms
@@ -522,25 +505,9 @@ class AssessmentActivity : BaseActivity() {
             when (resource.state) {
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    if (!viewModel.isCbs) {
-                        finishSuccessFlow()
-                        if (!CommonUtils.isNonCommunity()) {
-                            startBackgroundOfflineSync()
-                        }
-                    } else {
-                        viewModel.isCbs = false
-                        startCbsActivity(
-                            workFlowName = PNCNeonatal,
-                            memberId = assessmentRMNCHNeonateViewModel.childId,
-                            assessmentId = assessmentRMNCHNeonateViewModel.assessmentSaveLiveData.value
-                                ?.data
-                                ?.second
-                                ?.id,
-                            deathOfNewborn = true,
-                            motherId = viewModel.memberDetailsLiveData.value
-                                ?.data
-                                ?.id,
-                        )
+                    finishSuccessFlow()
+                    if (!CommonUtils.isNonCommunity()) {
+                        startBackgroundOfflineSync()
                     }
                 }
 
@@ -690,21 +657,6 @@ class AssessmentActivity : BaseActivity() {
         } else {
             it.plus(getString(R.string.assessment))
         }
-
-    fun replaceAssessmentRMNCHNeonateFragment() {
-        replaceFragmentInId<AssessmentRMNCHNeonateFragment>(
-            binding.formsFragmentContainer.id,
-            tag = AssessmentRMNCHNeonateFragment::class.simpleName,
-        )
-    }
-
-    fun replaceAssessmentRMNCHNeonateSummaryFragment() {
-        hideBackButton()
-        replaceFragmentInId<AssessmentRMNCHNeonateSummaryFragment>(
-            binding.formsFragmentContainer.id,
-            tag = AssessmentRMNCHNeonateSummaryFragment::class.simpleName,
-        )
-    }
 
     private val onBackPressedCallback: OnBackPressedCallback =
         object : OnBackPressedCallback(true) {

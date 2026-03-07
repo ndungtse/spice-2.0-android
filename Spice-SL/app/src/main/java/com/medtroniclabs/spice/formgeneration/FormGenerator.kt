@@ -970,12 +970,12 @@ class FormGenerator(
 
     private var singleSelectionCallbackForDate: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedId, elementID, formLayout, name ->
-            saveSelectedOptionValue(elementID, selectedId, formLayout, name)
+            saveSelectedOptionValue(elementID, selectedId, formLayout)
         }
 
     private var singleSelectionCallbackForTime: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedId, elementID, formLayout, name ->
-            saveSelectedOptionValue(elementID, selectedId, formLayout, name)
+            saveSelectedOptionValue(elementID, selectedId, formLayout)
         }
 
     private fun storeTimeValue(
@@ -1291,6 +1291,7 @@ class FormGenerator(
                     formLayout,
                     it[checkedId][DefinedParams.NAME] as String? ?: "",
                 )
+                callback?.invoke(resultHashMap, id)
             }
         }
     }
@@ -1382,7 +1383,7 @@ class FormGenerator(
 
     private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedId, elementID, formLayout, name ->
-            saveSelectedOptionValue(elementID, selectedId, formLayout, name)
+            saveSelectedOptionValue(elementID, selectedId, formLayout)
             if ((selectedId as? String).equals(female, true)) {
                 listener.onAgeCheckForPregnancy()
             }
@@ -1402,13 +1403,12 @@ class FormGenerator(
         id: Pair<String, String?>,
         idValue: Any?,
         formLayout: FormLayout,
-        name: String?,
     ) {
         idValue?.let {
             resultHashMap[id.first] = it
             setConditionalVisibility(
                 formLayout,
-                name,
+                it as? String,
             )
         } ?: kotlin.run {
             setConditionalVisibility(
@@ -4170,4 +4170,19 @@ class FormGenerator(
             id.contains(CommunityDetails.EmergencyTransportContactNo) ||
             id.contains(CommunityDetails.AmbulanceDriverContactNo) ||
             id.contains(RxBuddy.rxBuddyPhoneNumber)
+
+    /**
+     * Mark a field as mandatory or non-mandatory
+     */
+    fun markMandatory(
+        id: String,
+        mandatory: Boolean,
+    ) {
+        getFormLayout(id)?.isMandatory = mandatory
+        if (mandatory) {
+            (getViewByTag(id + titleSuffix) as? TextView)?.markMandatory()
+        } else {
+            (getViewByTag(id + titleSuffix) as? TextView)?.markNonMandatory()
+        }
+    }
 }

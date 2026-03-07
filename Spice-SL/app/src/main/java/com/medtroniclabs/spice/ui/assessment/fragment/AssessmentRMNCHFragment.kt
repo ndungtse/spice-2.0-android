@@ -11,28 +11,28 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.text.buildSpannedString
 import androidx.core.text.color
+import androidx.core.view.children
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils
+import com.medtroniclabs.spice.appextensions.getLongTime
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.extractNumber
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.calculateAgeInMonths
-import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
-import com.medtroniclabs.spice.common.DateUtils.getLastMenstrualDate
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
-import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.formgeneration.FormGenerator
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.VISIBLE
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.value
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -41,10 +41,10 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.formgeneration.utility.InformationLayoutFragment
+import com.medtroniclabs.spice.mappingkey.PregnantWomen
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getMuacColorCode
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getNutritionStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
@@ -58,6 +58,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.YellowFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.summaryKey
+import com.medtroniclabs.spice.ui.assessment.referrallogic.PostpartumDangerSigns
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
@@ -117,7 +118,7 @@ class AssessmentRMNCHFragment :
                     hideProgress()
                     resourceState.data?.let { data ->
                         // For ANC workflow, filter out fields marked as isSummary
-                        val filteredFormLayout = if (viewModel.workflowName == RMNCH.ANC) {
+                        val filteredFormLayout = if (viewModel.workflowName == RMNCH.ANC || viewModel.workflowName == RMNCH.PNC) {
                             data.formLayout.filter { it.isSummary != true }
                         } else {
                             data.formLayout
@@ -170,11 +171,6 @@ class AssessmentRMNCHFragment :
             when (resource.state) {
                 ResourceState.LOADING -> {}
                 ResourceState.SUCCESS -> {
-                    if (viewModel.workflowName == RMNCH.PNC) {
-                        resource.data?.id?.let {
-                            viewModel.getPNCChildInfoByParentId(resource.data.id)
-                        }
-                    }
                     showHideOptionsForChildHealth()
                 }
 
@@ -182,12 +178,15 @@ class AssessmentRMNCHFragment :
             }
         }
 
-        viewModel.pncChildMemberDetailsLiveData.observe(viewLifecycleOwner) {
-        }
-
-        viewModel.memberClinicalLiveData.observe(viewLifecycleOwner) { data ->
-            data?.let {
-                hideOrShowFormBasedOnCondition(data)
+        if (viewModel.workflowName == RMNCH.PNC) {
+            viewModel.pregnancyDetailLiveData.observe(viewLifecycleOwner) { detail ->
+                hideOrShowPNCFormBasedOnCondition(detail)
+            }
+        } else {
+            viewModel.memberClinicalLiveData.observe(viewLifecycleOwner) { data ->
+                data?.let {
+                    hideOrShowNonPNCFormBasedOnCondition(data)
+                }
             }
         }
 
@@ -196,25 +195,6 @@ class AssessmentRMNCHFragment :
 
         viewModel.childhoodVisitConditionLiveData.observe(viewLifecycleOwner) {
             updateAgeInMonths(it)
-        }
-
-        viewModel.pncAssessmentSaveLiveData.observe(viewLifecycleOwner) { resources ->
-            when (resources.state) {
-                ResourceState.LOADING -> {
-                    showProgress()
-                }
-
-                ResourceState.SUCCESS -> {
-                    hideProgress()
-                    resources.data?.let { _ ->
-                        (requireActivity() as AssessmentActivity).replaceAssessmentRMNCHNeonateSummaryFragment()
-                    }
-                }
-
-                ResourceState.ERROR -> {
-                    hideProgress()
-                }
-            }
         }
         viewModel.isAssessmentCancelLiveData.observe(viewLifecycleOwner) {
             if (it) {
@@ -227,6 +207,10 @@ class AssessmentRMNCHFragment :
                 }
             }
         }
+
+        viewModel.familyPlanningMethodsLiveData.observe(viewLifecycleOwner) { data ->
+            formGenerator.spinnerDataInjection(data, EntityMapper.getResultSpinnerMapList(data))
+        }
     }
 
     private fun initView() {
@@ -234,15 +218,15 @@ class AssessmentRMNCHFragment :
             binding.bioDataFragmentContainer.id,
             tag = BioDataFragment.TAG,
         )
-        childFragmentManager.executePendingTransactions() // Ensures transaction is complete
 
-        // Add Pregnancy Details Fragment for ANC workflow
-        if (viewModel.workflowName == RMNCH.ANC) {
+        // Add Pregnancy Details Fragment for ANC & PNC workflow
+        if (viewModel.workflowName == RMNCH.ANC || viewModel.workflowName == RMNCH.PNC) {
             replaceFragmentInId<PregnancyDetailsRMNCHFragment>(
                 binding.pregnancyDetailsFragmentContainer.id,
                 tag = PregnancyDetailsRMNCHFragment.TAG,
             )
         }
+        childFragmentManager.executePendingTransactions() // Ensures transaction is complete
 
         formGenerator = FormGenerator(
             requireContext(),
@@ -251,11 +235,16 @@ class AssessmentRMNCHFragment :
             binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled(),
             callback = { map, id ->
-                showHideOptionsForChildHealth()
-                showHideOptionsForANC(id, map)
+                if (viewModel.workflowName == RMNCH.PNC) {
+                    handlePNCDetails(map, id)
+                } else if (viewModel.workflowName == RMNCH.ANC) {
+                    showHideOptionsForANC(id, map)
+                } else {
+                    showHideOptionsForChildHealth()
+                }
             },
         )
-        showRespectiveWorkflow()
+        fetchWorkFlowData()
     }
 
     private fun showHideOptionsForANC(
@@ -266,6 +255,7 @@ class AssessmentRMNCHFragment :
             Screening.Weight, Screening.Height -> {
                 viewModel.renderBMIValue(requireContext(), formGenerator, map)
             }
+
             RMNCH.lastMenstrualPeriod -> {
                 // Update field visibility when LMP changes (affects gestational age)
                 updateConditionalFieldVisibility()
@@ -306,12 +296,14 @@ class AssessmentRMNCHFragment :
                     formGenerator.getResultMap().remove(AssessmentDefinedParams.BLOOD_SUGAR_FASTING)
                 }
             }
+
             AssessmentDefinedParams.SYSTOLIC, AssessmentDefinedParams.DIASTOLIC -> {
                 // Update BP-related fields when systolic or diastolic changes
                 handleFieldStatusUpdate(AssessmentDefinedParams.SYSTOLIC)
                 handleFieldStatusUpdate(AssessmentDefinedParams.DIASTOLIC)
                 updateAllFieldStatuses() // BP affects multiple fields (edema, urinaryAlbumin)
             }
+
             AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS -> {
                 // When existing illness changes, update status for dependent fields
                 updateAllFieldStatuses() // Illness affects multiple fields
@@ -322,29 +314,37 @@ class AssessmentRMNCHFragment :
                 handleFieldStatusUpdate(AssessmentDefinedParams.BLOOD_SUGAR_RANDOM)
                 handleFieldStatusUpdate(AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT)
             }
+
             AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT -> {
                 updateAllFieldStatuses() // Treatment affects multiple fields
             }
+
             AssessmentDefinedParams.EDEMA, AssessmentDefinedParams.URINARY_ALBUMIN -> {
                 updateAllFieldStatuses() // These affect each other
             }
+
             AssessmentDefinedParams.FOLIC_ACID_TOTAL_CONSUMED -> {
                 handleFieldStatusUpdate(AssessmentDefinedParams.FOLIC_ACID_TABLETS)
             }
+
             AssessmentDefinedParams.IFA_TOTAL_CONSUMED -> {
                 handleFieldStatusUpdate(AssessmentDefinedParams.IFA_TABLETS)
             }
+
             AssessmentDefinedParams.CALCIUM_TOTAL_CONSUMED -> {
                 handleFieldStatusUpdate(AssessmentDefinedParams.CALCIUM_TABLETS)
             }
+
             AssessmentDefinedParams.BLOOD_SUGAR_FASTING, AssessmentDefinedParams.BLOOD_SUGAR_RANDOM -> {
                 // Update blood sugar status when value changes
                 handleFieldStatusUpdate(id)
             }
+
             AssessmentDefinedParams.ANC_FROM_MEDICAL_DOCTOR, AssessmentDefinedParams.ULTRASOUND -> {
                 // Update status when these fields change (they depend on gestational age)
                 handleFieldStatusUpdate(id)
             }
+
             AssessmentDefinedParams.TEMPERATURE, AssessmentDefinedParams.PULSE, AssessmentDefinedParams.FUNDAL_HEIGHT, AssessmentDefinedParams.HEMOGLOBIN, AssessmentDefinedParams.URINARY_SUGAR, AssessmentDefinedParams.URINARY_BILIRUBIN, AssessmentDefinedParams.FACILITY_IDENTIFIED_FOR_DELIVERY -> {
                 // Update status for individual fields
                 handleFieldStatusUpdate(id)
@@ -374,20 +374,55 @@ class AssessmentRMNCHFragment :
         }
     }
 
-    private fun showRespectiveWorkflow() {
-        when (viewModel.workflowName) {
-            RMNCH.ANC -> {
-                binding.btnSubmit.text = getString(R.string.submit)
+    /**
+     * Gets triggered on changing of any value in the form.
+     */
+    private fun handlePNCDetails(
+        resultMap: HashMap<String, Any>,
+        id: String,
+    ) {
+        when (id) {
+            RMNCH.ID_POSTPARTUM_DANGER_SIGNS -> {
+                // Hemoglobin (Hb) : Mandatory  during 1st PNC Visit only for
+                // Woman reporting heavy bleeding during PNC period
+                if (getPNCVisitCount() == 1) {
+                    val dangerSigns = resultMap[id] as? List<*>
+                    if (!dangerSigns.isNullOrEmpty()) {
+                        val haveHeavyBleeding = dangerSigns.any {
+                            it is HashMap<*, *> && it[DefinedParams.Value] == PostpartumDangerSigns.HEAVY_BLEEDING.value
+                        }
+                        formGenerator.markMandatory(RMNCH.ID_HEMOGLOBIN, haveHeavyBleeding)
+                    }
+                }
             }
 
-            RMNCH.ChildHoodVisit -> {
-                binding.btnSubmit.text = getString(R.string.submit)
+            RMNCH.ID_GDM_PATIENT, RMNCH.ID_DM_PATIENT -> {
+                // Blood Sugar : Mandatory during 1st PNC visit in case of
+                // Woman had GDM or was a known DM patient
+                if (getPNCVisitCount() == 1) {
+                    val haveDMOrGDM = DefinedParams.yes.equals(resultMap[RMNCH.ID_GDM_PATIENT] as? String, true) ||
+                        DefinedParams.yes.equals(resultMap[RMNCH.ID_DM_PATIENT] as? String, true)
+                    formGenerator.markMandatory(RMNCH.ID_BLOOD_SUGAR, haveDMOrGDM)
+                    formGenerator.markMandatory(RMNCH.ID_FASTING_BLOOD_SUGAR, haveDMOrGDM)
+                    formGenerator.markMandatory(RMNCH.ID_RANDOM_BLOOD_SUGAR, haveDMOrGDM)
+                }
             }
 
-            RMNCH.PNC -> {
-                binding.btnSubmit.text = getString(R.string.next)
+            PregnantWomen.ID_GRAVIDA -> {
+                val gravida = CommonUtils.getDoubleOrNull(resultMap[id]) ?: return
+                // Parity should less than or equal gravida (as gravida includes parity + current birth)
+                formGenerator.getFormLayout(PregnantWomen.ID_PARITY)?.maxValue = gravida
+            }
+
+            PregnantWomen.ID_PARITY -> {
+                val parity = CommonUtils.getDoubleOrNull(resultMap[id]) ?: return
+                // Living children can be less than or equal to parity
+                formGenerator.getFormLayout(PregnantWomen.ID_LIVING_CHILDREN)?.maxValue = parity
             }
         }
+    }
+
+    private fun fetchWorkFlowData() {
         viewModel.workflowName?.let { name ->
             viewModel.getFormData(name)
         }
@@ -411,6 +446,12 @@ class AssessmentRMNCHFragment :
     ) {
         when (id) {
             PlaceOfDelivery -> {
+                if (localDataCache is String) {
+                    viewModel.loadDataCacheByType(id, localDataCache)
+                }
+            }
+
+            RMNCH.ID_FAMILY_PLANNING_METHODS -> {
                 if (localDataCache is String) {
                     viewModel.loadDataCacheByType(id, localDataCache)
                 }
@@ -444,19 +485,7 @@ class AssessmentRMNCHFragment :
                     name != DefinedParams.None.lowercase()
             }
 
-            // Convert filtered illness selections HashMap to SignsAndSymptomsEntity list
-            val inputData = filteredSelections.mapIndexed { index, illnessItem ->
-                SignsAndSymptomsEntity(
-                    _id = (illnessItem[DefinedParams.ID] as? Number)?.toLong()
-                        ?: illnessItem[DefinedParams.ID]?.toString()?.toLongOrNull()
-                        ?: index.toLong(),
-                    symptom = illnessItem[DefinedParams.NAME]?.toString() ?: "",
-                    type = dialogKey, // Use the same type as the dialog key
-                    value = illnessItem[value]?.toString()
-                        ?: illnessItem[DefinedParams.ID]?.toString(),
-                    displayValue = illnessItem[DefinedParams.cultureValue]?.toString(),
-                )
-            }
+            val inputData = EntityMapper.mapToSignsAndSymptomsEntity(filteredSelections, dialogKey)
 
             CheckBoxDialog
                 .newInstance(
@@ -474,20 +503,7 @@ class AssessmentRMNCHFragment :
                         formGenerator.validateCheckboxDialogue(id, formLayout, map)
                     }.show(childFragmentManager, CheckBoxDialog.TAG)
             } else {
-                val inputData = arrayListOf<SignsAndSymptomsEntity>()
-                formLayout.optionsList?.forEachIndexed { index, it ->
-                    val name = it[DefinedParams.NAME] as String
-                    val value = it[DefinedParams.ID] as String
-                    inputData.add(
-                        SignsAndSymptomsEntity(
-                            _id = index.toLong(),
-                            symptom = name,
-                            type = dialogKey,
-                            value = value,
-                            displayValue = it[DefinedParams.cultureValue]?.toString(),
-                        ),
-                    )
-                }
+                val inputData = EntityMapper.mapToSignsAndSymptomsEntity(formLayout.optionsList)
                 CheckBoxDialog
                     .newInstance(dialogKey, resultMap, title = formLayout.hint, inputData = inputData) { map ->
                         formGenerator.validateCheckboxDialogue(id, formLayout, map)
@@ -512,24 +528,20 @@ class AssessmentRMNCHFragment :
         serverData: List<FormLayout>?,
     ) {
         resultMap?.let { details ->
-            if (viewModel.workflowName == RMNCH.PNC) {
-                viewModel.setUserJourney(AnalyticsDefinedParams.NEXTBUTTONTRIGGERED)
-            } else {
-                viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
-            }
+            viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
             val result = serverData?.let {
-                if (viewModel.workflowName == RMNCH.ANC) {
-                    FormResultComposer().groupValues(
-                        serverData = it,
-                        details,
-                        RMNCH.ANC,
-                    )
-                } else {
-                    FormResultComposer().groupValues(
-                        serverData = it,
-                        details,
-                    )
+                val menuType = when (viewModel.workflowName) {
+                    RMNCH.PNC -> RMNCH.PNC
+                    RMNCH.ANC -> RMNCH.ANC
+                    else -> {
+                        null
+                    }
                 }
+                FormResultComposer().groupValues(
+                    serverData = it,
+                    details,
+                    menuType = menuType,
+                )
             }
             result?.second?.let { second ->
                 handleNextPregnancyFlow(serverData, second)
@@ -542,20 +554,6 @@ class AssessmentRMNCHFragment :
         )
     }
 
-    private fun shouldHideNeonateFlow(): Boolean {
-        val memberClinicalDetail = viewModel.memberClinicalLiveData.value
-        if (memberClinicalDetail != null) {
-            if (memberClinicalDetail.isNeonateAlive == false || memberClinicalDetail.isNeonateDeathRecordedByPHU == true) {
-                return true // Marked child death by provider
-            }
-
-            if (memberClinicalDetail.visitCount >= 1 && memberClinicalDetail.neonateHouseholdMemberLocalId == null) {
-                return true // Still birth and Miscarriage
-            }
-        }
-        return false
-    }
-
     private fun handleNextPregnancyFlow(
         serverData: List<FormLayout>,
         second: HashMap<String, Any>,
@@ -563,12 +561,7 @@ class AssessmentRMNCHFragment :
         viewModel.workflowName?.let { name ->
             when (name) {
                 RMNCH.PNC -> {
-                    if (shouldHideNeonateFlow()) {
-                        proceedChildDeadFlow(second)
-                    } else {
-                        viewModel.pncMotherDetailMap = second
-                        (requireActivity() as AssessmentActivity).replaceAssessmentRMNCHNeonateFragment()
-                    }
+                    savePNC(second)
                 }
 
                 else -> {
@@ -595,7 +588,7 @@ class AssessmentRMNCHFragment :
                     }
 
                     val resultGenerator = ReferralResultGenerator()
-                    val referralResult = resultGenerator.calculateRMNCHReferralResult(second, false)
+                    val referralResult = resultGenerator.calculateRMNCHReferralResult(second)
                     viewModel.saveAssessment(
                         serverData,
                         second,
@@ -607,24 +600,18 @@ class AssessmentRMNCHFragment :
         }
     }
 
-    private fun proceedChildDeadFlow(second: HashMap<String, Any>) {
-        val childDetails = viewModel.pncChildMemberDetailsLiveData.value
-
+    private fun savePNC(assessmentMap: HashMap<String, Any>) {
         viewModel.memberDetailsLiveData.value?.data?.let { memberDetail ->
             viewModel.handlePregnancy(
-                second,
+                assessmentMap,
                 workflowName = RMNCH.PNC,
                 memberDetail,
-                viewModel.memberClinicalLiveData.value,
-                null,
             )
             viewModel.savePNCDetails(
-                motherDetailMap = second,
+                formGenerator.getServerData(),
+                assessmentMap = assessmentMap,
                 memberDetail = memberDetail,
-                childMemberId = childDetails?.id ?: 0,
-                childFhirId = childDetails?.fhirId,
                 followUpId = viewModel.followUpId,
-                deathOfNewborn = true,
             )
         }
     }
@@ -763,8 +750,14 @@ class AssessmentRMNCHFragment :
 
     override fun onRenderingComplete() {
         viewModel.formRenderedLiveData.postValue(true)
-        viewModel.memberClinicalLiveData.value?.let {
-            hideOrShowFormBasedOnCondition(it)
+        if (viewModel.workflowName == RMNCH.PNC) {
+            if (viewModel.pregnancyDetailLiveData.isInitialized) {
+                hideOrShowPNCFormBasedOnCondition(viewModel.pregnancyDetailLiveData.value)
+            }
+        } else {
+            viewModel.memberClinicalLiveData.value?.let {
+                hideOrShowNonPNCFormBasedOnCondition(it)
+            }
         }
         binding.bioDataFragmentContainer.visible()
         // Store original titles for fields that have status conditions
@@ -780,45 +773,41 @@ class AssessmentRMNCHFragment :
         }
     }
 
-    private fun hideOrShowFormBasedOnCondition(data: MemberClinicalEntity) {
-        if (viewModel.workflowName == RMNCH.PNC) {
-            data.visitCount.let { visitNo ->
-                if (visitNo >= 1) {
-                    formGenerator
-                        .getViewByTag(RMNCH.DateOfDelivery + formGenerator.rootSuffix)
-                        ?.gone()
-                    formGenerator
-                        .getViewByTag(RMNCH.NoOfNeonate + formGenerator.rootSuffix)
-                        ?.gone()
-                    formGenerator
-                        .getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
-                        ?.gone()
-                }
+    private fun hideOrShowPNCFormBasedOnCondition(details: PregnancyDetail?) {
+        val pregnancyHistoryView = formGenerator.getViewByTag(RMNCH.ID_PREGNANCY_HISTORY + formGenerator.rootSuffix) as? ViewGroup
+        // For first PNC visit only, if gravida is not set, then ask for pregnancy history
+        // The user is visiting the member for the first time, no PW Profile, no ANC.
+        if (((details?.pncVisitNo ?: 1L) <= 1L) && (details?.gravida ?: 0) == 0) {
+            pregnancyHistoryView?.visible()
+            pregnancyHistoryView?.children?.forEach { pregnancyField ->
+                pregnancyField.visible()
             }
         } else {
-            data.clinicalDate?.let { date ->
-                if (date.isNotEmpty()) {
-                    formGenerator
-                        .getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
-                        ?.gone()
-                }
+            pregnancyHistoryView?.gone()
+            pregnancyHistoryView?.children?.forEach { pregnancyField ->
+                formGenerator.resetChildViews(pregnancyField)
+                pregnancyField.gone()
             }
         }
 
-        if (viewModel.workflowName == RMNCH.PNC) {
-            if (shouldHideNeonateFlow()) {
-                viewModel.isDeathOfNewborn = true
-                if (viewModel.workflowName == RMNCH.PNC) {
-                    formGenerator.getViewByTag(ExclusivelyBreastfeeding + rootSuffix)?.apply {
-                        visibility = View.GONE
-                    }
+        // Update days since delivery
+        details?.dateOfDelivery?.let { clinicalDate ->
+            DateUtils.parseDate(clinicalDate)?.let { date ->
+                val days = DateUtils.getDaysDifference(date.getLongTime())
+                days?.let {
+                    formGenerator.getResultMap()[RMNCH.ID_DAYS_SINCE_DELIVERY] = days
                 }
-                binding.btnSubmit.text = getString(R.string.submit)
-            } else {
-                binding.btnSubmit.text = getString(R.string.next)
             }
-        } else {
-            binding.btnSubmit.text = getString(R.string.submit)
+        }
+    }
+
+    private fun hideOrShowNonPNCFormBasedOnCondition(data: MemberClinicalEntity) {
+        data.clinicalDate?.let { date ->
+            if (date.isNotEmpty()) {
+                formGenerator
+                    .getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
+                    ?.gone()
+            }
         }
     }
 
@@ -983,7 +972,7 @@ class AssessmentRMNCHFragment :
 
             if (lmpString.isNullOrBlank()) {
                 // Try to get from pregnancy detail
-                viewModel.pregnancyDetail?.lastMenstrualPeriod?.let { lmp ->
+                viewModel.pregnancyDetailLiveData.value?.lastMenstrualPeriod?.let { lmp ->
                     val lmpCalendar = DateUtils.getLastMenstrualDate(lmp)
                     val gestationalAge = DateUtils.calculateGestationalAge(lmpCalendar)
                     gestationalAge.first.toDouble() + (gestationalAge.second / AssessmentDefinedParams.DAYS_PER_WEEK)
@@ -1284,6 +1273,7 @@ class AssessmentRMNCHFragment :
                 AssessmentDefinedParams.STATUS_FEVER,
                 null,
             )
+
             else -> null
         }
     }
@@ -1778,7 +1768,7 @@ class AssessmentRMNCHFragment :
         val conditions = mutableListOf<String>()
 
         // 1. High risk pregnancy (short birth spacing <2 years/Age <18 years or >35 years/Multipara>3)
-        if (RMNCHAssessmentEvaluator.isHighRiskPregnancy(dateOfBirth, viewModel.pregnancyDetail)) {
+        if (RMNCHAssessmentEvaluator.isHighRiskPregnancy(dateOfBirth, viewModel.pregnancyDetailLiveData.value)) {
             conditions.add(AssessmentDefinedParams.CONDITION_HIGH_RISK_PREGNANCY)
         }
 
@@ -1941,7 +1931,7 @@ class AssessmentRMNCHFragment :
         }
 
         // 4. Less than 3 ANCs completed at end of 36 weeks
-        val ancVisitNo = viewModel.pregnancyDetail?.ancVisitNo ?: 0L
+        val ancVisitNo = viewModel.pregnancyDetailLiveData.value?.ancVisitNo ?: 0L
         if (ancVisitNo < AssessmentDefinedParams.MIN_ANC_VISITS_REQUIRED &&
             gestationalAgeWeeks != null &&
             gestationalAgeWeeks >= AssessmentDefinedParams.GESTATIONAL_AGE_WEEK_36
@@ -1974,4 +1964,6 @@ class AssessmentRMNCHFragment :
 
         return gaps
     }
+
+    private fun getPNCVisitCount(): Int = (viewModel.pregnancyDetailLiveData.value?.pncVisitNo ?: 1L).toInt()
 }

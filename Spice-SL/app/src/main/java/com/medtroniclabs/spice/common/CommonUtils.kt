@@ -112,6 +112,14 @@ object CommonUtils {
             null
         }
 
+    /**
+     * Returns integer value from the answer, if the value is not integer, then returns [defaultValue]
+     */
+    fun getInteger(
+        answer: Any?,
+        defaultValue: Int = 0,
+    ): Int = getIntegerOrNull(answer) ?: defaultValue
+
     fun getLongOrNull(answer: Any?): Long? {
         when (answer) {
             is Long -> return answer
@@ -161,6 +169,14 @@ object CommonUtils {
             }
         }
     }
+
+    /**
+     * Returns double value from the answer else [defaultValue]
+     */
+    fun getDouble(
+        answer: Any?,
+        defaultValue: Double = 0.0,
+    ): Double = getDoubleOrNull(answer) ?: defaultValue
 
     fun getStringOrEmptyString(answer: Any?): String =
         if (answer is String) {

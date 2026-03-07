@@ -12,12 +12,13 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsUtils
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.formatGestationalAge
+import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
-import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -217,16 +218,14 @@ class AssessmentPregnantWomenRegistrationFragment :
 
                     PregnantWomen.ID_GRAVIDA -> {
                         fixObstetricComplications()
-                        val gravida = resultHashMap[PregnantWomen.ID_GRAVIDA] as? Double
-                            ?: return@FormGenerator
+                        val gravida = CommonUtils.getDoubleOrNull(resultHashMap[id]) ?: return@FormGenerator
                         // Parity should be less than gravida (as gravida includes parity + current birth)
                         formGenerator.getFormLayout(PregnantWomen.ID_PARITY)?.maxValue = gravida - 1
                     }
 
                     PregnantWomen.ID_PARITY -> {
                         fixObstetricComplications()
-                        val parity = resultHashMap[PregnantWomen.ID_PARITY] as? Double
-                            ?: return@FormGenerator
+                        val parity = CommonUtils.getDoubleOrNull(resultHashMap[id]) ?: return@FormGenerator
                         // Living children can be less than or equal to parity
                         formGenerator
                             .getFormLayout(PregnantWomen.ID_LIVING_CHILDREN)
@@ -291,8 +290,8 @@ class AssessmentPregnantWomenRegistrationFragment :
      */
     private fun getGravidaParityDiff(): Double {
         val resultHashMap = formGenerator.getResultMap()
-        val gravida = resultHashMap[PregnantWomen.ID_GRAVIDA] as? Double ?: 0.0
-        val parity = resultHashMap[PregnantWomen.ID_PARITY] as? Double ?: 0.0
+        val gravida = CommonUtils.getDouble(resultHashMap[PregnantWomen.ID_GRAVIDA])
+        val parity = CommonUtils.getDouble(resultHashMap[PregnantWomen.ID_PARITY])
         return gravida - parity
     }
 
@@ -331,27 +330,12 @@ class AssessmentPregnantWomenRegistrationFragment :
         formLayout: FormLayout,
         resultMap: Any?,
     ) {
-        val gravidaParityDiff = getGravidaParityDiff()
-        val inputData = arrayListOf<SignsAndSymptomsEntity>()
-        formLayout.optionsList?.forEachIndexed { index, it ->
-            val name = it[DefinedParams.NAME] as String
-            val value = it[DefinedParams.Value] as String
-            if (id == PregnantWomen.ID_OBSTETRIC_COMPLICATIONS &&
-                gravidaParityDiff < PregnantWomen.GRAVIDA_PARITY_IGNORE_DIFF &&
-                PregnantWomen.OBSTETRIC_COMPLICATIONS_TO_IGNORE.contains(value)
-            ) {
-                return@forEachIndexed
+        val inputData = EntityMapper.mapToSignsAndSymptomsEntity(formLayout.optionsList)
+        if (id == PregnantWomen.ID_OBSTETRIC_COMPLICATIONS) {
+            val gravidaParityDiff = getGravidaParityDiff()
+            if (gravidaParityDiff < PregnantWomen.GRAVIDA_PARITY_IGNORE_DIFF) {
+                inputData.removeIf { PregnantWomen.OBSTETRIC_COMPLICATIONS_TO_IGNORE.contains(it.value) }
             }
-            inputData.add(
-                SignsAndSymptomsEntity(
-                    _id = it[DefinedParams.ID] as? Long ?: index.toLong(),
-                    symptom = name,
-                    type = it["type"] as String,
-                    value = value,
-                    displayOrder = it["displayOrder"] as? Int,
-                    displayValue = it[DefinedParams.cultureValue] as? String,
-                ),
-            )
         }
         CheckBoxDialog
             .newInstance(

@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.ShasthyaShebikaEntity
+import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.SubVillageEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 
@@ -33,9 +34,11 @@ object EntityMapper {
             is VillageEntity -> {
                 updateMapsIdName(map, properties.id, properties.name)
             }
+
             is HealthFacilityEntity -> {
                 updateMapsIdName(map, properties.name, properties.name)
             }
+
             is CountryModel -> {
                 updateMapsIdName(map, properties.id, properties.name)
             }
@@ -43,6 +46,7 @@ object EntityMapper {
             is ChiefDomEntity -> {
                 updateMapsIdName(map, properties.id, properties.name)
             }
+
             is DistrictEntity -> {
                 updateMapsIdName(map, properties.id, properties.name)
             }
@@ -50,6 +54,7 @@ object EntityMapper {
             is ProgramEntity -> {
                 updateMapsIdName(map, properties.id, properties.name)
             }
+
             is ShasthyaShebikaEntity -> {
                 // Format as "[ssid] [name]" if ssId exists, otherwise just use name
                 val displayName = if (!properties.ssId.isNullOrBlank()) {
@@ -59,11 +64,17 @@ object EntityMapper {
                 }
                 updateMapsIdName(map, properties.id, displayName)
             }
+
             is SubVillageEntity -> {
                 updateMapsIdName(map, properties.id, properties.name)
             }
+
             is HouseholdMemberEntity -> {
                 updateMapsIdName(map, properties.id, properties.name)
+            }
+
+            is SignsAndSymptomsEntity -> {
+                updateMapsIdName(map, properties.value ?: "", properties.symptom, properties.displayValue)
             }
         }
     }
@@ -72,8 +83,35 @@ object EntityMapper {
         map: HashMap<String, Any>,
         id: Any,
         name: String,
+        cultureValue: String? = null,
     ) {
         map[DefinedParams.ID] = id
         map[DefinedParams.NAME] = name
+        cultureValue?.let {
+            map[DefinedParams.cultureValue] = cultureValue
+        }
+    }
+
+    fun mapToSignsAndSymptomsEntity(
+        optionsList: List<Map<String, Any>>?,
+        type: String? = null,
+    ): ArrayList<SignsAndSymptomsEntity> {
+        if (optionsList.isNullOrEmpty()) {
+            return arrayListOf()
+        }
+        val outputList = arrayListOf<SignsAndSymptomsEntity>()
+        optionsList.forEachIndexed { index, it ->
+            outputList.add(
+                SignsAndSymptomsEntity(
+                    _id = it[DefinedParams.ID] as? Long ?: index.toLong(),
+                    symptom = it[DefinedParams.NAME] as String,
+                    type = it[DefinedParams.type] as? String ?: type,
+                    value = it[DefinedParams.Value] as? String,
+                    displayOrder = it[DefinedParams.DisplayOrder] as? Int,
+                    displayValue = it[DefinedParams.cultureValue] as? String,
+                ),
+            )
+        }
+        return outputList
     }
 }

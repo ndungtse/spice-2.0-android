@@ -26,9 +26,12 @@ import java.io.Serializable
 import java.util.Locale
 
 fun TextView.markMandatory() {
-    text = buildSpannedString {
-        append(text)
-        color(Color.RED) { append(" *") } // Mind the space prefix.
+    val startIndex = text.toString().lastIndexOf(" *")
+    if (startIndex == -1) {
+        text = buildSpannedString {
+            append(text)
+            color(Color.RED) { append(" *") } // Mind the space prefix.
+        }
     }
 }
 

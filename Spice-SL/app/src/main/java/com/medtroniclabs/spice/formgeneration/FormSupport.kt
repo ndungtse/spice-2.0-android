@@ -49,7 +49,7 @@ object FormSupport {
         titleCulture: String?,
         title: String,
         translate: Boolean,
-    ): String = if (translate) (titleCulture ?: title) else title
+    ): String = if (translate && !titleCulture.isNullOrBlank()) titleCulture else title
 
     fun getResId(
         resName: String,

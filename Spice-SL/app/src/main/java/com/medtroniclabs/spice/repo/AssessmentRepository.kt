@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.ApiHelper
@@ -26,14 +27,6 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBScreening
 import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.NeonateOutcome
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC_MENU
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfNewborn
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.visitNo
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.LiveBirth
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.StillBirth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Locale
@@ -44,30 +37,16 @@ class AssessmentRepository @Inject constructor(
     private var apiHelper: ApiHelper,
 ) {
     suspend fun savePNCAssessment(
-        second: String,
-        third: String? = null,
+        formLayouts: List<FormLayout>?,
+        motherAssessmentString: String,
         memberDetail: AssessmentMemberDetails,
         referralResult: Pair<String?, ArrayList<String>>,
         lastLocation: Location?,
         otherDetails: HashMap<String, Any>?,
-        childMemberIdFollowupIDAndDeathOfNewBorn: Triple<Long, Long?, Boolean?>,
-        childReferralResult: Pair<String?, ArrayList<String>>,
-    ): Resource<Pair<AssessmentEntity, AssessmentEntity?>> =
+        followUpId: Long? = null,
+    ): Resource<Pair<List<FormLayout>?, AssessmentEntity>> =
         try {
-            val motherAsstDetail = JsonParser.parseString(second)
-            val pncMother = motherAsstDetail.asJsonObject.get(PNC).asJsonObject
-            if (pncMother.get(visitNo).asLong == 1L) {
-                third?.let {
-                    val pncNeonate = JsonParser
-                        .parseString(it)
-                        .asJsonObject
-                        .get(PNCNeonatal)
-                        .asJsonObject
-                    val isNeonateDeath = pncNeonate.get(deathOfNewborn).asBoolean
-                    val neonateOutcome = if (isNeonateDeath) StillBirth else LiveBirth
-                    pncMother.addProperty(NeonateOutcome, neonateOutcome)
-                }
-            }
+            val motherAsstDetail = JsonParser.parseString(motherAssessmentString)
 
             val motherAssessmentEntity = getAssessmentEntity(
                 memberDetail,
@@ -76,46 +55,15 @@ class AssessmentRepository @Inject constructor(
                 referralResult,
                 lastLocation,
                 RMNCH.pnc_mother_key,
-                followUpId = childMemberIdFollowupIDAndDeathOfNewBorn.second,
+                followUpId = followUpId,
             )
             motherAssessmentEntity.id = roomHelper.saveAssessment(motherAssessmentEntity)
 
-            if (third != null) {
-                val childMemberDetail =
-                    roomHelper.getAssessmentMemberDetails(childMemberIdFollowupIDAndDeathOfNewBorn.first)
-
-                val childAssessmentEntity = getAssessmentEntity(
-                    childMemberDetail,
-                    third,
-                    otherDetails,
-                    childReferralResult,
-                    lastLocation,
-                    RMNCH.pnc_neonate_key,
-                    followUpId = childMemberIdFollowupIDAndDeathOfNewBorn.second,
-                )
-                childAssessmentEntity.id = roomHelper.saveAssessment(childAssessmentEntity)
-
-                childMemberIdFollowupIDAndDeathOfNewBorn.third?.let { deathOfNewborn ->
-                    if (deathOfNewborn) {
-                        roomHelper.updateMemberDeceasedReason(childMemberDetail.id, false, PNC_MENU.uppercase())
-                    }
-                }
-
-                //
-                roomHelper.updateNeonatePatientId(memberDetail.id, childMemberDetail.id)
-                //
-
-                Resource(
-                    state = ResourceState.SUCCESS,
-                    data = Pair(motherAssessmentEntity, childAssessmentEntity),
-                )
-            } else {
-                Resource(
-                    state = ResourceState.SUCCESS,
-                    data = Pair(motherAssessmentEntity, null),
-                )
-            }
-        } catch (e: Exception) {
+            Resource(
+                state = ResourceState.SUCCESS,
+                data = Pair(formLayouts, motherAssessmentEntity),
+            )
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -248,39 +196,6 @@ class AssessmentRepository @Inject constructor(
                         assessmentEntity.longitude = it.longitude
                     }
                     roomHelper.updateOtherAssessmentDetails(assessmentEntity)
-                }
-                Resource(state = ResourceState.SUCCESS)
-            } catch (e: Exception) {
-                Resource(state = ResourceState.ERROR)
-            }
-        }
-
-    suspend fun updateOtherAssessmentDetails(
-        pair: Pair<AssessmentEntity, AssessmentEntity?>?,
-        otherAssessmentDetails: HashMap<String, Any>,
-        lastLocation: Location?,
-    ): Resource<String> =
-        withContext(Dispatchers.IO) {
-            try {
-                val motherAssessmentEntity = pair?.first
-                if (motherAssessmentEntity != null) {
-                    motherAssessmentEntity.otherDetails =
-                        StringConverter.convertGivenMapToString(otherAssessmentDetails)
-                    lastLocation?.let {
-                        motherAssessmentEntity.latitude = it.latitude
-                        motherAssessmentEntity.longitude = it.longitude
-                    }
-                    roomHelper.updateOtherAssessmentDetails(motherAssessmentEntity)
-                }
-                val childAssessmentEntity = pair?.second
-                if (childAssessmentEntity != null) {
-                    childAssessmentEntity.otherDetails =
-                        StringConverter.convertGivenMapToString(otherAssessmentDetails)
-                    lastLocation?.let {
-                        childAssessmentEntity.latitude = it.latitude
-                        childAssessmentEntity.longitude = it.longitude
-                    }
-                    roomHelper.updateOtherAssessmentDetails(childAssessmentEntity)
                 }
                 Resource(state = ResourceState.SUCCESS)
             } catch (e: Exception) {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ComEMR</string>
+    <string name="app_name" translatable="false">ComEMR</string>
     <string name="logo_description">Medtronic Logo</string>
     <string name="welcome">Welcome</string>
     <string name="login_to_your_account">Login to your account</string>
@@ -1622,4 +1622,8 @@
     <string name="add_guardian">+ Add Guardian</string>
     <string name="date_of_visit">Date of Visit</string>
     <string name="age_of_last_child">Age of Last Child</string>
+    <string name="days_since_delivery">Days Since Delivery</string>
+    <string name="high_risk_mother">High Risk Mother</string>
+    <string name="gaps_in_pnc">Gaps in PNC</string>
+    <string name="counseling_education"><![CDATA[COUNSELING & EDUCATION]]></string>
 </resources>

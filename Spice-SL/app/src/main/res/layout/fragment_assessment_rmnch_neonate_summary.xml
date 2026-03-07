@@ -36,34 +36,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/callSupervisor"
-            style="@style/Button_Style"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/_8sdp"
-            android:layout_marginEnd="@dimen/_18sdp"
-            android:layout_weight="1"
-            android:background="@drawable/call_button_selector_cobalt"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="gone"
-            android:fontFamily="@font/inter_bold"
-            android:paddingHorizontal="@dimen/_24sdp"
-            android:paddingVertical="@dimen/_12sdp"
-            android:text="@string/call_peer_supervisor"
-            android:textAlignment="center"
-            android:textAllCaps="true"
-            android:textColor="@color/reset_btn_selector" />
-
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnDone"
             style="@style/Button_Style"
             android:layout_width="match_parent"
             android:layout_gravity="center"
             android:layout_margin="@dimen/_8sdp"
-            android:layout_weight="1"
             android:background="@drawable/button_selector_cobalt"
             android:enabled="false"
             android:text="@string/done"
@@ -110,50 +88,11 @@
                         android:background="@color/grey_bg"
                         android:gravity="center"
                         android:padding="@dimen/_10sdp"
-                        android:text="@string/result_mother"
+                        android:text="@string/result"
                         android:textSize="@dimen/_16ssp" />
 
                     <LinearLayout
                         android:id="@+id/motherParentLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingHorizontal="@dimen/_16sdp"
-                        android:paddingVertical="@dimen/_10sdp"
-                        android:visibility="visible" />
-
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/resultNeonateCardView"
-                style="@style/CardView_Style"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_6sdp"
-                android:layout_marginVertical="@dimen/_6sdp"
-                app:cardUseCompatPadding="true">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvNeonateTitle"
-                        style="@style/Form_Header_Style"
-                        android:layout_width="match_parent"
-                        android:background="@color/grey_bg"
-                        android:gravity="center"
-                        android:padding="@dimen/_10sdp"
-                        android:text="@string/result_neonate"
-                        android:textSize="@dimen/_16ssp" />
-
-                    <LinearLayout
-                        android:id="@+id/neonateParentLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"

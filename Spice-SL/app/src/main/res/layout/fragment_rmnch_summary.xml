@@ -83,6 +83,7 @@
         app:layout_constraintTop_toBottomOf="@+id/riskResultLayout">
 
         <LinearLayout
+            android:id="@+id/scrollViewLL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
