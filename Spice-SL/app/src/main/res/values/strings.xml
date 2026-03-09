@@ -1626,4 +1626,11 @@
     <string name="high_risk_mother">High Risk Mother</string>
     <string name="gaps_in_pnc">Gaps in PNC</string>
     <string name="counseling_education"><![CDATA[COUNSELING & EDUCATION]]></string>
+    <string name="service_recipient_list"><![CDATA[Service Recipient List]]></string>
+    <string name="no_members_found"><![CDATA[No members found]]></string>
+    <plurals name="plural_member">
+        <item quantity="zero">%d Member</item>
+        <item quantity="one">%d Member</item>
+        <item quantity="other">%d Members</item>
+    </plurals>
 </resources>

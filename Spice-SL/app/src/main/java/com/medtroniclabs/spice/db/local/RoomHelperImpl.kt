@@ -104,6 +104,7 @@ import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
+import com.medtroniclabs.spice.model.services.ServiceStaticFilter
 import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.boarding.MenuTypeEnums
@@ -1214,4 +1215,11 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun updateUndercountedHouseholds(): Int = householdDAO.updateUndercountedHouseholds()
 
     override suspend fun updateUndercountedDisabilityHouseholds(): Int = householdDAO.updateUndercountedDisabilityHouseholds()
+
+    override fun getServiceMembers(
+        searchInput: String,
+        filterBySs: List<Long>,
+        filterBySubVillages: List<Long>,
+        staticFilter: ServiceStaticFilter,
+    ) = memberDAO.getServiceMembers(searchInput, filterBySs, filterBySubVillages, staticFilter)
 }

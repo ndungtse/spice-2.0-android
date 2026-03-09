@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.ID_MARITAL_STATUS
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
+import com.medtroniclabs.spice.model.services.ServiceStaticFilter
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deceasedReason
@@ -41,9 +42,9 @@ class HouseholdMemberRepository @Inject constructor(
         location: Location?,
     ): Long? {
         val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentReferenceId, initial, signature, location)
-       /* if (memberEntity.patientId == null) {
-            return  null
-        }*/
+        /* if (memberEntity.patientId == null) {
+             return  null
+         }*/
 
         // If updating a member and isHouseholdHead is not explicitly set in the map, preserve the old value
         if (entity != null && !map.containsKey(MemberRegistration.isHouseholdHead)) {
@@ -344,4 +345,11 @@ class HouseholdMemberRepository @Inject constructor(
             updateMemberAsAssigned(hhmFhirId.hhmFhirId)
         }
     }
+
+    fun getServiceMembers(
+        searchInput: String,
+        filterBySs: List<Long> = emptyList(),
+        filterBySubVillages: List<Long> = emptyList(),
+        staticFilter: ServiceStaticFilter,
+    ) = roomHelper.getServiceMembers(searchInput, filterBySs, filterBySubVillages, staticFilter)
 }

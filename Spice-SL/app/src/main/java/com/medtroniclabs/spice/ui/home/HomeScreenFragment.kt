@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 import com.medtroniclabs.spice.ui.peersupervisor.PerformanceMonitoringActivity
+import com.medtroniclabs.spice.ui.services.ServicesActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -225,6 +226,10 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
                     val intent = Intent(requireContext(), NCDFollowUpActivity::class.java)
                     startActivity(intent)
                 }
+            }
+
+            MenuConstants.SERVICE_RECIPIENT -> {
+                startActivity(Intent(requireContext(), ServicesActivity::class.java))
             }
         }
     }

@@ -1555,4 +1555,10 @@
     <string name="high_risk_mother">উচ্চ ঝুঁকিপূর্ণ মা-  রেফারালের কারণ</string>
     <string name="gaps_in_pnc">পিএনসি সময়ে / প্রসবের পর মায়ের জন্য প্রয়োজনীয় সেবায় ঘাটতি</string>
     <string name="counseling_education"><![CDATA[পরামর্শ]]></string>
+    <string name="service_recipient_list"><![CDATA[সেবা গ্রহণকারীর তালিকা]]></string>
+    <string name="no_members_found"><![CDATA[কোনো সদস্য পাওয়া যায়নি]]></string>
+    <plurals name="plural_member">
+        <item quantity="one">%d সদস্য</item>
+        <item quantity="other">%d সদস্যগণ</item>
+    </plurals>
 </resources>

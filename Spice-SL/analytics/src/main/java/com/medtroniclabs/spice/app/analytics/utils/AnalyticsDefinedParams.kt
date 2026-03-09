@@ -231,4 +231,7 @@ object AnalyticsDefinedParams {
     const val ImmunisationSummary = "Immunisation Summary"
 
     const val EpiCatchUpPolicyDialog = "Epi Catch Up Policy Dialog"
+
+    const val SERVICES = "Services Recipient List"
+    const val SERVICES_SEARCH_TRIGGERED = "Services Recipient List Screen Search Triggered"
 }

@@ -16,8 +16,6 @@ data class HouseholdMemberWithTb(
     var gender: String = "",
     @ColumnInfo("household_id")
     var householdId: Long? = null,
-    @ColumnInfo("villageId")
-    var villageId: Long? = null,
     @ColumnInfo("patient_id")
     var patientId: String? = null,
     var isActive: Boolean = true,
@@ -42,4 +40,10 @@ data class HouseholdMemberWithTb(
     val recentService: String? = null,
     @ColumnInfo("recent_service_date")
     val recentServiceDate: Long? = null,
+    @ColumnInfo("shasthya_shebika_name")
+    val shasthyaShebikaName: String? = null,
+    @ColumnInfo("shasthya_shebika_ssId")
+    val shasthyaShebikaNameSsId: String? = null,
+    @ColumnInfo("sub_village_name")
+    val subVillageName: String? = null,
 )

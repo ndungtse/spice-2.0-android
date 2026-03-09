@@ -202,6 +202,11 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
+            android:name=".ui.services.ServicesActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".ui.assessment.AssessmentActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"

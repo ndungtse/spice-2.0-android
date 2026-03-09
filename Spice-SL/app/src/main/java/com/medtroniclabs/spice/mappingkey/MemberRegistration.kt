@@ -62,6 +62,22 @@ object MemberRegistration {
      */
     const val MIN_AGE_HH_HEAD = 14
 
+    /**
+     * Minimum age for pregnancy
+     */
+    const val MIN_AGE_PREGNANCY = 14
+
+    /**
+     * Maximum age for pregnancy
+     */
+    const val MAX_AGE_PREGNANCY = 50
+
+    enum class MaritalStatus(val value: String) {
+        MARRIED("married"),
+        SINGLE("single"),
+        UNMARRIED("unmarried"),
+    }
+
     fun isValidRelationAge(
         ctx: Context,
         dob: String,

@@ -8,7 +8,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
@@ -225,7 +224,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         isEdit: Boolean,
         dateOfBirth: String?,
         isContactTrace: Boolean,
-        householdId: Long?,
+        houseHoldId: Long?,
     ) {
         if (isContactTrace) {
             val intent = Intent(this, AssessmentActivity::class.java)
@@ -243,7 +242,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                 startActivity(intent)
             } else {
                 val intent = Intent(this, AssessmentToolsActivity::class.java)
-                intent.putExtra(DefinedParams.HouseholdId, householdId)
+                intent.putExtra(DefinedParams.HouseholdId, houseHoldId)
                 intent.putExtra(DefinedParams.MemberID, item)
                 intent.putExtra(DefinedParams.DOB, dateOfBirth)
                 startActivity(intent)

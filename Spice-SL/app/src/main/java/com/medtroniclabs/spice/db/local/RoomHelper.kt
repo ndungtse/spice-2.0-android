@@ -73,6 +73,7 @@ import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
+import com.medtroniclabs.spice.model.services.ServiceStaticFilter
 import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 
 interface RoomHelper {
@@ -856,4 +857,11 @@ interface RoomHelper {
      * where no of disabilities is less than actual members
      */
     suspend fun updateUndercountedDisabilityHouseholds(): Int
+
+    fun getServiceMembers(
+        searchInput: String,
+        filterBySs: List<Long> = emptyList(),
+        filterBySubVillages: List<Long> = emptyList(),
+        staticFilter: ServiceStaticFilter,
+    ): LiveData<List<HouseholdMemberWithTb>>
 }
