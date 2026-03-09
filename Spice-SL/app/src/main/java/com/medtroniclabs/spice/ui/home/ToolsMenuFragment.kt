@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -27,8 +28,8 @@ import com.medtroniclabs.spice.ui.MenuConstants.WORKFLOW_NAME
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
-import com.medtroniclabs.spice.ui.dialog.RMNCHFlowSelectionDialog
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
+import kotlinx.coroutines.launch
 
 class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
     private lateinit var binding: FragmentToolsMenuBinding
@@ -133,9 +134,14 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         when (menuId) {
             MenuConstants.RMNCH_MENU_ID -> {
                 if (subModule == null) {
-                    RMNCHFlowSelectionDialog
-                        .newInstance()
-                        .show(childFragmentManager, RMNCHFlowSelectionDialog.TAG)
+                    lifecycleScope.launch {
+                        viewModel.getANCPNCStatus()?.let { workflowName ->
+                            startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, workflowName)
+                        }
+                    }
+//                    RMNCHFlowSelectionDialog
+//                        .newInstance()
+//                        .show(childFragmentManager, RMNCHFlowSelectionDialog.TAG)
                 } else {
                     startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, RMNCH.ChildHoodVisit)
                 }
@@ -148,6 +154,7 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
             MenuConstants.CBS_MENU_ID -> {
                 startCbsActivity(menuId)
             }
+
             else -> {
                 if (getOrigin().equals(MenuConstants.MY_PATIENTS_MENU_ID, true)) {
                     val intent =

@@ -37,6 +37,7 @@ data class PregnancyDetail(
     // Pnc Detail
     var pncVisitNo: Long? = null,
     var dateOfDelivery: String? = null,
+    var typeOfAbortion: String? = null,
     var noOfNeonates: Int? = null,
     var neonatePatientId: String? = null,
     var isDeliveryAtHome: Boolean? = null,

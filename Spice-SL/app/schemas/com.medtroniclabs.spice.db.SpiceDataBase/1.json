@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "cbee94a38efcbf2357b98ae9920683c3",
+    "identityHash": "730e029d6e0f76af33b0babd9a654459",
     "entities": [
       {
         "tableName": "Household",
@@ -1471,7 +1471,7 @@
       },
       {
         "tableName": "PregnancyDetail",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `householdMemberLocalId` INTEGER NOT NULL, `patientId` TEXT, `householdMemberId` TEXT, `ancVisitNo` INTEGER, `lastMenstrualPeriod` TEXT, `estimatedDeliveryDate` TEXT, `previousPregnancyComplications` TEXT, `pregnantWomanExistingIllness` TEXT, `pregnantWomanOnTreatment` TEXT, `highRiskPregnantWoman` TEXT, `gapsInAnc` TEXT, `pncVisitNo` INTEGER, `dateOfDelivery` TEXT, `noOfNeonates` INTEGER, `neonatePatientId` TEXT, `isDeliveryAtHome` INTEGER, `neonateHouseholdMemberLocalId` INTEGER, `isNeonateDeathRecordedByPHU` INTEGER, `childVisitNo` INTEGER, `tbContactTraceStatus` INTEGER, `pregnancyTest` TEXT, `gravida` INTEGER, `parity` INTEGER, `numberOfLivingChildren` INTEGER, `ageOfLastChild` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `householdMemberLocalId` INTEGER NOT NULL, `patientId` TEXT, `householdMemberId` TEXT, `ancVisitNo` INTEGER, `lastMenstrualPeriod` TEXT, `estimatedDeliveryDate` TEXT, `previousPregnancyComplications` TEXT, `pregnantWomanExistingIllness` TEXT, `pregnantWomanOnTreatment` TEXT, `highRiskPregnantWoman` TEXT, `gapsInAnc` TEXT, `pncVisitNo` INTEGER, `dateOfDelivery` TEXT, `typeOfAbortion` TEXT, `noOfNeonates` INTEGER, `neonatePatientId` TEXT, `isDeliveryAtHome` INTEGER, `neonateHouseholdMemberLocalId` INTEGER, `isNeonateDeathRecordedByPHU` INTEGER, `childVisitNo` INTEGER, `tbContactTraceStatus` INTEGER, `pregnancyTest` TEXT, `gravida` INTEGER, `parity` INTEGER, `numberOfLivingChildren` INTEGER, `ageOfLastChild` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -1554,6 +1554,12 @@
           {
             "fieldPath": "dateOfDelivery",
             "columnName": "dateOfDelivery",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "typeOfAbortion",
+            "columnName": "typeOfAbortion",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -3651,7 +3657,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cbee94a38efcbf2357b98ae9920683c3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '730e029d6e0f76af33b0babd9a654459')"
     ]
   }
 }

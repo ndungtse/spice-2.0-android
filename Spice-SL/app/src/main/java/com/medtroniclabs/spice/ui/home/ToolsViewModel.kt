@@ -40,6 +40,8 @@ class ToolsViewModel @Inject constructor(
         }
     }
 
+    suspend fun getANCPNCStatus(): String? = metaRepository.getANCPNCStatus(selectedHouseholdMemberID)
+
     fun getMyPatientsMenuItemsList() {
         viewModelScope.launch(dispatcherIO) {
             menuListLiveData.postLoading()

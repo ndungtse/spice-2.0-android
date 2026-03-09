@@ -35,6 +35,7 @@ import com.medtroniclabs.spice.db.entity.LinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
+import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.ShasthyaShebikaEntity
@@ -61,6 +62,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanningMethods
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -897,6 +899,23 @@ class MetaRepository @Inject constructor(
         )
     }
 
+    suspend fun getANCPNCStatus(selectedHouseholdMemberID: Long): String? {
+        roomHelper.getPregnancyDetailByPatientId(selectedHouseholdMemberID)?.let { memberPregnancyDetail ->
+            val ddDay = getDayCountFromDD(memberPregnancyDetail)
+            if (memberPregnancyDetail.typeOfAbortion.isNullOrBlank() && (ddDay == null || ddDay <= 42)) {
+                val dd = getDayCountFromDD(memberPregnancyDetail)
+                val lmp = getDayCountFromLMP(memberPregnancyDetail)
+                if (lmp != null && lmp > 42 && dd == null) {
+                    return RMNCH.ANC
+                } else if (dd != null && dd <= 42) {
+                    return RMNCH.PNC
+                }
+            }
+        }
+
+        return null
+    }
+
     suspend fun getMenuForClinicalWorkflows(
         selectedHouseholdMemberID: Long,
         gender: String?,
@@ -911,18 +930,17 @@ class MetaRepository @Inject constructor(
                     months -= 1
                 }
 
-                val list = roomHelper.getClinicalWorkflowId(memberData.gender, months)
+                val clinicalMenu = roomHelper.getClinicalWorkflowId(memberData.gender, months)
 
-                /*val (months, weeks) = DateUtils.dateToMonthsAndWeeks(memberData.dateOfBirth) ?: Pair(0, 0)
-                val list = if (months == 15 && weeks == 0) {
-                    roomHelper.getClinicalWorkflowId(memberData.gender, months.minus(1))
-                } else {
-                    roomHelper.getClinicalWorkflowId(memberData.gender, months)
-                }*/
+                val menuList = convertorClinicalWorkflowsToMenuEntity(clinicalMenu)
+
+                if (months > 24) {
+                    setCustomStatus(menuList, selectedHouseholdMemberID)
+                }
 
                 Resource(
                     state = ResourceState.SUCCESS,
-                    data = convertorClinicalWorkflowsToMenuEntity(list),
+                    data = menuList.filter { !it.isDisabled },
                 )
             } else if (!gender.isNullOrBlank()) {
                 val list = roomHelper.getAssessmentClinicalWorkflow(gender, DefinedParams.Assessment)
@@ -937,6 +955,98 @@ class MetaRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
+
+    private suspend fun setCustomStatus(
+        menu: List<MenuEntity>,
+        selectedHouseholdMemberID: Long,
+    ) {
+        var memberPregnancyDetail: PregnancyDetail? = null
+        roomHelper.getPregnancyDetailByPatientId(selectedHouseholdMemberID)?.let { pregnancyDetail ->
+            val ddDay = getDayCountFromDD(pregnancyDetail)
+            if (pregnancyDetail.typeOfAbortion.isNullOrBlank() && (ddDay == null || ddDay <= 42)) {
+                memberPregnancyDetail = pregnancyDetail
+            }
+        }
+        menu.forEach { item ->
+            when (item.menuId) {
+                MenuConstants.FP_MENU_ID -> {
+                    item.isDisabled = isFPMenuDisable(memberPregnancyDetail)
+                }
+
+                MenuConstants.PREGNANT_WOMEN_PROFILE -> {
+                    item.isDisabled = isPWProfileMenuDisable(memberPregnancyDetail)
+                }
+
+                MenuConstants.PO_MENU_ID -> {
+                    item.isDisabled = isPOMenuDisable(memberPregnancyDetail)
+                }
+
+                MenuConstants.RMNCH_MENU_ID -> {
+                    item.isDisabled = isRMNCHMenuDisable(memberPregnancyDetail)
+                }
+            }
+        }
+    }
+
+    fun getDayCountFromLMP(pregnancyDetail: PregnancyDetail): Long? {
+        val today = java.util.Date()
+        val lmpDate = parseToDate(pregnancyDetail.lastMenstrualPeriod)
+        return if (lmpDate != null) {
+            DateUtils.daysBetweenDates(lmpDate, today)
+        } else {
+            null
+        }
+    }
+
+    fun getDayCountFromDD(pregnancyDetail: PregnancyDetail): Long? {
+        val today = java.util.Date()
+        val dDate = parseToDate(pregnancyDetail.dateOfDelivery)
+        return if (dDate != null) {
+            DateUtils.daysBetweenDates(dDate, today)
+        } else {
+            null
+        }
+    }
+
+    // Reuse DateUtils: try common formats then daysBetweenDates for day difference
+    fun parseToDate(dateStr: String?): java.util.Date? {
+        if (dateStr.isNullOrBlank()) return null
+        return DateUtils.convertStringToDate(dateStr, DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+            ?: DateUtils.convertStringToDate(dateStr, DateUtils.DATE_ddMMyyyy)
+            ?: DateUtils.convertStringToDate(dateStr, DateUtils.DATE_FORMAT_yyyyMMdd)
+    }
+
+    private fun isFPMenuDisable(pregnancyDetail: PregnancyDetail?): Boolean {
+        if (pregnancyDetail == null) return false
+        val daysFromDelivery = getDayCountFromDD(pregnancyDetail)
+        val daysFromLmp = getDayCountFromLMP(pregnancyDetail)
+        if ((daysFromLmp != null && daysFromLmp >= 42) && (daysFromDelivery == null)) {
+            return true
+        } else {
+            if (daysFromDelivery != null && daysFromDelivery <= 42) return true
+        }
+        return false
+    }
+
+    private fun isPWProfileMenuDisable(pregnancyDetail: PregnancyDetail?): Boolean {
+        if (pregnancyDetail == null) return false
+        val daysFromDelivery = getDayCountFromDD(pregnancyDetail)
+        val daysFromLmp = getDayCountFromLMP(pregnancyDetail)
+        if (daysFromLmp != null && daysFromLmp >= 42) {
+            return true
+        } else {
+            if (daysFromDelivery != null && daysFromDelivery <= 42) return true
+        }
+        return false
+    }
+
+    private fun isRMNCHMenuDisable(pregnancyDetail: PregnancyDetail?): Boolean = pregnancyDetail == null
+
+    private fun isPOMenuDisable(pregnancyDetail: PregnancyDetail?): Boolean {
+        if (pregnancyDetail == null) return false
+        val daysFromDelivery = getDayCountFromDD(pregnancyDetail)
+        return daysFromDelivery != null && daysFromDelivery <= 42
+    }
 
     private fun convertorClinicalWorkflowsToMenuEntity(clinicalWorkflows: List<NCDAssessmentClinicalWorkflow>): List<MenuEntity> {
         val (individualWorkflows, groupWorkflows) = clinicalWorkflows.partition { it.category.isNullOrBlank() }
