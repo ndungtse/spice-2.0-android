@@ -156,16 +156,10 @@ class ReferralResultGenerator {
                 updateVisitCount(map, RMNCH.ChildHoodVisit)
             }
         } else {
-            val urgentReferrals = PNCAssessmentEvaluator.getUrgentReferral(map[RMNCH.PNC] as Map<String, Any>)
-            if (urgentReferrals.isNotEmpty()) {
+            val pncMap = map[RMNCH.PNC] as Map<String, Any>
+            if (pncMap.containsKey(RMNCH.ID_MOTHER_RISKS)) {
                 addResultMap(ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns), ReferralStatus.Referred.name)
                 addReferralReason(referralReason, ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns))
-            } else {
-                val nonUrgentReferrals = PNCAssessmentEvaluator.getNonUrgentReferral(map[RMNCH.PNC] as Map<String, Any>)
-                if (nonUrgentReferrals.isNotEmpty()) {
-                    addResultMap(ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns), ReferralStatus.Referred.name)
-                    addReferralReason(referralReason, ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns))
-                }
             }
             updateVisitCount(map, RMNCH.PNC)
         }
@@ -201,21 +195,21 @@ class ReferralResultGenerator {
 
         referralReason.add(visitInfo)
 
-       /* if (referralReason.isNotEmpty()) {
-            var lastReason = referralReason[referralReason.size - 1]
-            val workflowMap = map[workFlow]
-            if (workflowMap is Map<*, *> && workflowMap.containsKey(RMNCH.visitNo)) {
-                val visitNo = workflowMap[RMNCH.visitNo]
-                if (visitNo is Long) {
-                    if (lastReason.trim().isNotEmpty()) {
-                        lastReason = "$lastReason - ${getVisitLabel(workFlow)} $visitNo"
-                    } else {
-                        lastReason = "${getVisitLabel(workFlow)} $visitNo"
-                    }
-                    referralReason[referralReason.size - 1] = lastReason
-                }
-            }
-        }*/
+        /* if (referralReason.isNotEmpty()) {
+             var lastReason = referralReason[referralReason.size - 1]
+             val workflowMap = map[workFlow]
+             if (workflowMap is Map<*, *> && workflowMap.containsKey(RMNCH.visitNo)) {
+                 val visitNo = workflowMap[RMNCH.visitNo]
+                 if (visitNo is Long) {
+                     if (lastReason.trim().isNotEmpty()) {
+                         lastReason = "$lastReason - ${getVisitLabel(workFlow)} $visitNo"
+                     } else {
+                         lastReason = "${getVisitLabel(workFlow)} $visitNo"
+                     }
+                     referralReason[referralReason.size - 1] = lastReason
+                 }
+             }
+         }*/
     }
 
     private fun getVisitLabel(workFlow: String): String {

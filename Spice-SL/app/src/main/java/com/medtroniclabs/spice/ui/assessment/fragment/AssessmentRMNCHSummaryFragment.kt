@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
+import com.google.gson.JsonParser
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.DONEBUTTONTRIGGERED
@@ -46,6 +47,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummar
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DEATH_OF_MOTHER_KEY
 import com.medtroniclabs.spice.ui.assessment.referrallogic.PNCAssessmentEvaluator
+import com.medtroniclabs.spice.ui.assessment.referrallogic.PNCReferralType
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
@@ -56,7 +58,6 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import java.util.Calendar
-import kotlin.collections.isNotEmpty
 
 class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     lateinit var binding: FragmentRmnchSummaryBinding
@@ -94,17 +95,16 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), ContextCompat.getColor(requireContext(), R.color.edittext_stroke))
     }
 
-    private fun getUserJourneyName(): String {
+    private fun getUserJourneyName(): String =
         when (viewModel.workflowName) {
             ChildHoodVisit -> {
-                return "${viewModel.workflowName}${AnalyticsDefinedParams.RMNCHCHILDASSESSMENTSUMMARY}"
+                "${viewModel.workflowName}${AnalyticsDefinedParams.RMNCHCHILDASSESSMENTSUMMARY}"
             }
 
             else -> {
-                return "${viewModel.workflowName}${AnalyticsDefinedParams.RMNCHSummaryAssessment}"
+                "${viewModel.workflowName}${AnalyticsDefinedParams.RMNCHSummaryAssessment}"
             }
         }
-    }
 
     private fun setListener() {
         binding.btnDone.safeClickListener(this)
@@ -123,14 +123,10 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             if (binding.labelPhuReferred.visibility == View.VISIBLE) {
                 viewModel.referralStatus = ReferralStatus.Referred.name
             }
-//            return
         }
 
         when (viewModel.referralStatus) {
             ReferralStatus.Referred.name -> {
-                viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
-//                    loadPhuSitesList(siteList)
-                }
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
                 binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
@@ -509,35 +505,32 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             }
             binding.parentLayout.addView(root)
         }
-        val urgentReferral = PNCAssessmentEvaluator.getUrgentReferral(pncMap)
-        if (urgentReferral.isNotEmpty()) {
-            urgentReferral.forEach { condition ->
+        val risks = PNCAssessmentEvaluator.getRisks(pncMap[RMNCH.ID_MOTHER_RISKS] as? String)
+        if (risks?.first == PNCReferralType.URGENT && !risks.second.isEmpty) {
+            risks.second.forEach { condition ->
                 with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
                     with(tvTitle) {
-                        text = "    • $condition" // Use bigger bullet (•)
+                        text = "    • ${condition.asString}" // Use bigger bullet (•)
                         setTextColor(Color.RED)
                     }
                     binding.parentLayout.addView(root)
                 }
             }
-        } else {
-            val nonUrgentReferral = PNCAssessmentEvaluator.getNonUrgentReferral(pncMap)
-            if (nonUrgentReferral.isNotEmpty()) {
-                nonUrgentReferral.forEach { condition ->
-                    with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
-                        with(tvTitle) {
-                            text = "    • $condition" // Use bigger bullet (•)
-                        }
-                        binding.parentLayout.addView(root)
-                    }
-                }
-            } else {
+        } else if (risks?.first == PNCReferralType.NON_URGENT && !risks.second.isEmpty) {
+            risks.second.forEach { condition ->
                 with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
                     with(tvTitle) {
-                        setText(R.string.separator_double_hyphen)
+                        text = "    • ${condition.asString}" // Use bigger bullet (•)
                     }
                     binding.parentLayout.addView(root)
                 }
+            }
+        } else {
+            with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                with(tvTitle) {
+                    setText(R.string.separator_double_hyphen)
+                }
+                binding.parentLayout.addView(root)
             }
         }
 
@@ -548,12 +541,16 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             }
             binding.parentLayout.addView(root)
         }
-        val gaps = PNCAssessmentEvaluator.getPncGaps(pncMap)
-        if (gaps.isNotEmpty()) {
+        val gaps = if (pncMap.containsKey(RMNCH.ID_PNC_GAPS)) {
+            JsonParser.parseString(pncMap[RMNCH.ID_PNC_GAPS] as String).asJsonArray
+        } else {
+            null
+        }
+        if (gaps != null && !gaps.isEmpty) {
             gaps.forEach { condition ->
                 with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
                     with(tvTitle) {
-                        text = "    • $condition" // Use bigger bullet (•)
+                        text = "    • ${condition.asString}" // Use bigger bullet (•)
                     }
                     binding.parentLayout.addView(root)
                 }
@@ -589,10 +586,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
 
         // Get counseling items
         val counselingItems = formLayouts.filter {
-            it.id == RMNCH.ID_MATERNAL_DANGER_SIGNS ||
-                it.id == RMNCH.ID_MATERNAL_NUTRITION ||
-                it.id == RMNCH.ID_FAMILY_PLANNING ||
-                (it.viewType == ViewType.VIEW_TYPE_INSTRUCTION && it.isSummary == true && it.family == AssessmentDefinedParams.GROUP_COUNSELLING)
+            it.family == AssessmentDefinedParams.GROUP_COUNSELLING &&
+                it.viewType == ViewType.VIEW_TYPE_INSTRUCTION &&
+                it.isSummary == true
         }
 
         // Only create counseling card if there are items to display

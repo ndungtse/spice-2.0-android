@@ -204,24 +204,32 @@ object RMNCH {
     const val ID_CALCIUM_TABLETS_CONSUMED = "calciumTabletsConsumed"
 
     /**
-     * Instructions : Maternal danger signs
-     */
-    const val ID_MATERNAL_DANGER_SIGNS = "maternalDangerSigns"
-
-    /**
-     * Instructions : Maternal nutrition
-     */
-    const val ID_MATERNAL_NUTRITION = "maternalNutrition"
-
-    /**
-     * Instructions : Maternal nutrition
-     */
-    const val ID_FAMILY_PLANNING = "familyPlanning"
-
-    /**
      * TextLabel : Care of the Mother
      */
     const val ID_COUNSELLING_MOTHER_CARE = "counsellingMotherCare"
+
+    /**
+     * Value : Mother Risks
+     */
+    const val ID_MOTHER_RISKS = "motherRisks"
+
+    /**
+     * Value : PNC Gaps
+     */
+    const val ID_PNC_GAPS = "pncGaps"
+
+    /**
+     * Value : PNC Illness
+     */
+    const val ID_PNC_ILLNESS = "pncIllness"
+
+    /**
+     * Value : Anemia
+     */
+    const val ID_ANEMIA = "anemia"
+
+    const val KEY_REFERRAL_TYPE = "referralType"
+    const val KEY_REFERRAL_VALUE = "referralValue"
 
     fun getValueFromMap(
         resultMap: HashMap<String, Any>,

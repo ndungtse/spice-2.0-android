@@ -25,10 +25,17 @@ data class PregnancyDetail(
     var householdMemberLocalId: Long,
     var patientId: String? = null,
     var householdMemberId: String? = null,
-    // Anc Details
-    var ancVisitNo: Long? = null,
+    var tbContactTraceStatus: Int? = null,
+    // Pregnancy details
     var lastMenstrualPeriod: String? = null,
     var estimatedDeliveryDate: String? = null,
+    var pregnancyTest: String? = null,
+    var gravida: Int? = null,
+    var parity: Int? = null,
+    var numberOfLivingChildren: Int? = null,
+    var ageOfLastChild: String? = null,
+    // Anc Details
+    var ancVisitNo: Long? = null,
     var previousPregnancyComplications: String? = null,
     var pregnantWomanExistingIllness: String? = null, // JSON string of list
     var pregnantWomanOnTreatment: String? = null, // JSON string of list
@@ -36,7 +43,12 @@ data class PregnancyDetail(
     var gapsInAnc: String? = null, // JSON string of list
     // Pnc Detail
     var pncVisitNo: Long? = null,
+    var pncIllness: String? = null,
+    var highRiskMother: String? = null,
+    var gapsInPnc: String? = null,
+    // Pregnancy outcome
     var dateOfDelivery: String? = null,
+    var anyComplicationsDuringDelivery: String? = null,
     var typeOfAbortion: String? = null,
     var noOfNeonates: Int? = null,
     var neonatePatientId: String? = null,
@@ -45,11 +57,4 @@ data class PregnancyDetail(
     var isNeonateDeathRecordedByPHU: Boolean? = null,
     // Childhood Visit Detail
     var childVisitNo: Long? = null,
-    var tbContactTraceStatus: Int? = null,
-    // Pregnancy details
-    var pregnancyTest: String? = null,
-    var gravida: Int? = null,
-    var parity: Int? = null,
-    var numberOfLivingChildren: Int? = null,
-    var ageOfLastChild: String? = null,
 )

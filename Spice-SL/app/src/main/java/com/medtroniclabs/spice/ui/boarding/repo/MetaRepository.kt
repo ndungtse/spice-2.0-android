@@ -135,6 +135,7 @@ class MetaRepository @Inject constructor(
                                         SecuredPreference.EnvironmentKey.IS_COMMUNITY.name,
                                         true,
                                     )
+
                                     DefinedParams.NON_COMMUNITY -> SecuredPreference.putBoolean(
                                         SecuredPreference.EnvironmentKey.IS_NON_COMMUNITY.name,
                                         true,
@@ -761,6 +762,15 @@ class MetaRepository @Inject constructor(
 //                            data.formInput
 //                        }
 //                    }
+                    RMNCH.PNC -> {
+                        try {
+                            CommonUtils.getStringFromAssets("pnc.json", context.assets)
+                        } catch (e: Exception) {
+                            // If asset file not found, use server formInput
+                            data.formInput
+                        }
+                    }
+
                     else -> data.formInput
                 }
 

@@ -482,7 +482,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             val dateDob = DateUtils.convertStringToDate(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
             formGenerator.getViewByTag(MemberRegistration.dateOfBirth)?.let { view ->
                 if (memberRegistrationViewModel.isPhuWalkInsFlow == false && dateOfBirth.isNotBlank()) {
-                    formGenerator.disableView(view, requireContext())
+                    formGenerator.disableView(view)
                 }
                 formGenerator.setValueForView(dateOfBirth, view)
             }

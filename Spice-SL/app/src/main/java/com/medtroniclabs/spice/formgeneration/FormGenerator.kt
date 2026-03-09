@@ -2665,12 +2665,9 @@ class FormGenerator(
         }
     }
 
-    fun disableView(
-        view: View,
-        context: Context,
-    ) {
+    fun disableView(view: View) {
         view.isEnabled = false
-        view.setBackgroundColor(ContextCompat.getColor(context, R.color.border_gray))
+        view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.border_gray))
     }
 
     private fun resetChildFormViewGroupComponents(viewGroup: ViewGroup?) {

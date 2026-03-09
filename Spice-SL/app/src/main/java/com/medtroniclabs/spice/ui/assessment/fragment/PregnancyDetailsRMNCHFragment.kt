@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
+import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.getLongTime
@@ -23,6 +24,7 @@ import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.referrallogic.PNCAssessmentEvaluator
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import java.lang.reflect.Type
@@ -196,7 +198,7 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
 
             // Show High risk pregnant woman and Gaps in ANC only if visit count > 1 and values exist
             // Display these BEFORE Date of Visit (only for ANC workflow)
-            if (viewModel.workflowName == RMNCH.ANC && visitCount > 1) {
+            if (visitCount > 1) {
                 // High risk pregnant woman
                 pregnancyDetail?.highRiskPregnantWoman?.let { highRiskJson ->
                     val highRiskList = parseJsonStringToList(highRiskJson)
@@ -244,6 +246,36 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
                 getString(R.string.pnc_visit),
                 visitCount.toString(),
             )
+            if (visitCount > 1) {
+                val gapsInPnc = pregnancyDetail?.gapsInPnc
+                val highRiskMother = pregnancyDetail?.highRiskMother
+                val risks = PNCAssessmentEvaluator.getRisks(highRiskMother)
+                if (risks != null && !risks.second.isEmpty) {
+                    val risksArray = mutableListOf<String>()
+                    risks.second.forEach {
+                        risksArray.add(it.asString)
+                    }
+                    val risksString = risksArray.joinToString(", ")
+                    createSummary(
+                        getString(R.string.high_risk_mother),
+                        risksString,
+                    )
+                }
+                if (!gapsInPnc.isNullOrBlank()) {
+                    val gapsJsonArray = JsonParser.parseString(gapsInPnc).asJsonArray
+                    if (!gapsJsonArray.isEmpty) {
+                        val gapsArray = mutableListOf<String>()
+                        gapsJsonArray.forEach {
+                            gapsArray.add(it.asString)
+                        }
+                        val gapsString = gapsArray.joinToString(", ")
+                        createSummary(
+                            getString(R.string.gaps_in_pnc),
+                            gapsString,
+                        )
+                    }
+                }
+            }
             pregnancyDetail?.dateOfDelivery?.let { clinicalDate ->
                 DateUtils.parseDate(clinicalDate)?.let { date ->
                     val days = DateUtils.getDaysDifference(date.getLongTime())

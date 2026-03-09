@@ -315,6 +315,9 @@
         <error line="10" column="15" source="standard:property-naming" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/formgeneration/FormGenerator.kt">
+        <error line="3466" column="1" source="standard:if-else-wrapping" />
+        <error line="3467" column="1" source="standard:if-else-wrapping" />
+        <error line="3468" column="1" source="standard:if-else-wrapping" />
         <error line="3469" column="1" source="standard:if-else-wrapping" />
         <error line="3470" column="1" source="standard:if-else-wrapping" />
         <error line="3471" column="1" source="standard:if-else-wrapping" />
@@ -326,9 +329,6 @@
         <error line="3477" column="1" source="standard:if-else-wrapping" />
         <error line="3478" column="1" source="standard:if-else-wrapping" />
         <error line="3479" column="1" source="standard:if-else-wrapping" />
-        <error line="3480" column="1" source="standard:if-else-wrapping" />
-        <error line="3481" column="1" source="standard:if-else-wrapping" />
-        <error line="3482" column="1" source="standard:if-else-wrapping" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/formgeneration/config/DefinedParams.kt">
         <error line="6" column="15" source="standard:property-naming" />
@@ -1045,11 +1045,6 @@
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/fragment/AssessmentFamilyPlanningSummaryFragment.kt">
         <error line="233" column="161" source="standard:max-line-length" />
-    </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/fragment/AssessmentRMNCHFragment.kt">
-        <error line="348" column="160" source="standard:max-line-length" />
-        <error line="1041" column="13" source="standard:property-naming" />
-        <error line="1048" column="13" source="standard:property-naming" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/referrallogic/ReferralResultGenerator.kt">
         <error line="82" column="9" source="standard:property-naming" />

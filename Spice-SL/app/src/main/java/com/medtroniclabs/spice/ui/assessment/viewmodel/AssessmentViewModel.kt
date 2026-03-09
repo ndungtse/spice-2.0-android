@@ -1105,18 +1105,30 @@ class AssessmentViewModel @Inject constructor(
                 val visitNo = getVisitNumber(pregnancyDetail.pncVisitNo)
                 pregnancyDetail.pncVisitNo = visitNo
                 details[RMNCH.visitNo] = pregnancyDetail.pncVisitNo ?: 0L
-                if (details.containsKey(PregnantWomen.ID_GRAVIDA)) {
-                    pregnancyDetail.gravida = CommonUtils.getDouble(details.containsKey(PregnantWomen.ID_GRAVIDA)).toInt()
-                }
-                if (details.containsKey(PregnantWomen.ID_PARITY)) {
-                    pregnancyDetail.parity = CommonUtils.getDouble(details.containsKey(PregnantWomen.ID_PARITY)).toInt()
-                }
-                if (details.containsKey(PregnantWomen.ID_LIVING_CHILDREN)) {
-                    pregnancyDetail.numberOfLivingChildren = CommonUtils.getDouble(details.containsKey(PregnantWomen.ID_LIVING_CHILDREN)).toInt()
+                val pregnancyHistory = details[RMNCH.ID_PREGNANCY_HISTORY] as? HashMap<String, Any>
+                if (pregnancyHistory != null) {
+                    if (pregnancyHistory.containsKey(PregnantWomen.ID_GRAVIDA)) {
+                        pregnancyDetail.gravida = CommonUtils.getDouble(pregnancyHistory[PregnantWomen.ID_GRAVIDA]).toInt()
+                    }
+                    if (pregnancyHistory.containsKey(PregnantWomen.ID_PARITY)) {
+                        pregnancyDetail.parity = CommonUtils.getDouble(pregnancyHistory[PregnantWomen.ID_PARITY]).toInt()
+                    }
+                    if (pregnancyHistory.containsKey(PregnantWomen.ID_LIVING_CHILDREN)) {
+                        pregnancyDetail.numberOfLivingChildren = CommonUtils.getDouble(pregnancyHistory[PregnantWomen.ID_LIVING_CHILDREN]).toInt()
+                    }
                 }
                 pregnancyDetail.ancVisitNo = 0
                 pregnancyDetail.lastMenstrualPeriod = null
                 pregnancyDetail.estimatedDeliveryDate = null
+                (details[RMNCH.ID_PNC_GAPS] as? String)?.let {
+                    pregnancyDetail.gapsInPnc = it
+                }
+                (details[RMNCH.ID_MOTHER_RISKS] as? String)?.let {
+                    pregnancyDetail.highRiskMother = it
+                }
+                (details[RMNCH.ID_PNC_ILLNESS] as? String)?.let {
+                    pregnancyDetail.pncIllness = it
+                }
                 updatePregnantStatus(memberDetail.id, false)
             }
 

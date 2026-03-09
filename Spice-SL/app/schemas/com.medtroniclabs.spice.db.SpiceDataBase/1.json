@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "730e029d6e0f76af33b0babd9a654459",
+    "identityHash": "96f5f122296665f62b6aee02447b8bb9",
     "entities": [
       {
         "tableName": "Household",
@@ -1471,7 +1471,7 @@
       },
       {
         "tableName": "PregnancyDetail",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `householdMemberLocalId` INTEGER NOT NULL, `patientId` TEXT, `householdMemberId` TEXT, `ancVisitNo` INTEGER, `lastMenstrualPeriod` TEXT, `estimatedDeliveryDate` TEXT, `previousPregnancyComplications` TEXT, `pregnantWomanExistingIllness` TEXT, `pregnantWomanOnTreatment` TEXT, `highRiskPregnantWoman` TEXT, `gapsInAnc` TEXT, `pncVisitNo` INTEGER, `dateOfDelivery` TEXT, `typeOfAbortion` TEXT, `noOfNeonates` INTEGER, `neonatePatientId` TEXT, `isDeliveryAtHome` INTEGER, `neonateHouseholdMemberLocalId` INTEGER, `isNeonateDeathRecordedByPHU` INTEGER, `childVisitNo` INTEGER, `tbContactTraceStatus` INTEGER, `pregnancyTest` TEXT, `gravida` INTEGER, `parity` INTEGER, `numberOfLivingChildren` INTEGER, `ageOfLastChild` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `householdMemberLocalId` INTEGER NOT NULL, `patientId` TEXT, `householdMemberId` TEXT, `tbContactTraceStatus` INTEGER, `lastMenstrualPeriod` TEXT, `estimatedDeliveryDate` TEXT, `pregnancyTest` TEXT, `gravida` INTEGER, `parity` INTEGER, `numberOfLivingChildren` INTEGER, `ageOfLastChild` TEXT, `ancVisitNo` INTEGER, `previousPregnancyComplications` TEXT, `pregnantWomanExistingIllness` TEXT, `pregnantWomanOnTreatment` TEXT, `highRiskPregnantWoman` TEXT, `gapsInAnc` TEXT, `pncVisitNo` INTEGER, `pncIllness` TEXT, `highRiskMother` TEXT, `gapsInPnc` TEXT, `dateOfDelivery` TEXT, `anyComplicationsDuringDelivery` TEXT, `typeOfAbortion` TEXT, `noOfNeonates` INTEGER, `neonatePatientId` TEXT, `isDeliveryAtHome` INTEGER, `neonateHouseholdMemberLocalId` INTEGER, `isNeonateDeathRecordedByPHU` INTEGER, `childVisitNo` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -1498,8 +1498,8 @@
             "notNull": false
           },
           {
-            "fieldPath": "ancVisitNo",
-            "columnName": "ancVisitNo",
+            "fieldPath": "tbContactTraceStatus",
+            "columnName": "tbContactTraceStatus",
             "affinity": "INTEGER",
             "notNull": false
           },
@@ -1513,6 +1513,42 @@
             "fieldPath": "estimatedDeliveryDate",
             "columnName": "estimatedDeliveryDate",
             "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "pregnancyTest",
+            "columnName": "pregnancyTest",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "gravida",
+            "columnName": "gravida",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "parity",
+            "columnName": "parity",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "numberOfLivingChildren",
+            "columnName": "numberOfLivingChildren",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "ageOfLastChild",
+            "columnName": "ageOfLastChild",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "ancVisitNo",
+            "columnName": "ancVisitNo",
+            "affinity": "INTEGER",
             "notNull": false
           },
           {
@@ -1552,8 +1588,32 @@
             "notNull": false
           },
           {
+            "fieldPath": "pncIllness",
+            "columnName": "pncIllness",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "highRiskMother",
+            "columnName": "highRiskMother",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "gapsInPnc",
+            "columnName": "gapsInPnc",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
             "fieldPath": "dateOfDelivery",
             "columnName": "dateOfDelivery",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "anyComplicationsDuringDelivery",
+            "columnName": "anyComplicationsDuringDelivery",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -1597,42 +1657,6 @@
             "fieldPath": "childVisitNo",
             "columnName": "childVisitNo",
             "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
-            "fieldPath": "tbContactTraceStatus",
-            "columnName": "tbContactTraceStatus",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
-            "fieldPath": "pregnancyTest",
-            "columnName": "pregnancyTest",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "gravida",
-            "columnName": "gravida",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
-            "fieldPath": "parity",
-            "columnName": "parity",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
-            "fieldPath": "numberOfLivingChildren",
-            "columnName": "numberOfLivingChildren",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
-            "fieldPath": "ageOfLastChild",
-            "columnName": "ageOfLastChild",
-            "affinity": "TEXT",
             "notNull": false
           }
         ],
@@ -3657,7 +3681,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '730e029d6e0f76af33b0babd9a654459')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '96f5f122296665f62b6aee02447b8bb9')"
     ]
   }
 }
