@@ -129,8 +129,10 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
                 binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
-                binding.etPhuChange.visible()
-                binding.labelPhuReferred.visible()
+                if (viewModel.workflowName != ChildHoodVisit) {
+                    binding.etPhuChange.visible()
+                    binding.labelPhuReferred.visible()
+                }
             }
 
             ReferralStatus.OnTreatment.name -> {
@@ -197,9 +199,8 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         }?.forEach { data ->
                             with(data) {
                                 updateStatusBar()
-                                var title: String? = null
-                                if (titleSummary != null) {
-                                    title = titleSummary
+                                val title = if (titleSummary != null) {
+                                    titleSummary
                                 } else {
                                     if (SecuredPreference.getIsTranslationEnabled() && !titleCulture.isNullOrBlank()) {
                                         titleCulture
