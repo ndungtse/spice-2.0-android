@@ -88,7 +88,7 @@
             "family": "pncChild",
             "id": "otherChildFeed",
             "fieldName": "Other Feed",
-            "errorMessage": "Please enter a valid sign",
+            "errorMessage": "Please enter a valid value",
             "hint": "Enter Other Feed",
             "hintCulture": "",
             "inputType": 96,
