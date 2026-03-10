@@ -45,7 +45,7 @@ data class HouseHoldMember(
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
     @ColumnInfo("id_type")
-    val idType: String = "",
+    val idType: String? = null,
     @ColumnInfo("national_id")
     val nationalId: String? = null,
     @ColumnInfo("is_house_hold_head")
@@ -97,7 +97,7 @@ data class HouseHoldMember(
             deceasedReason = this.deceasedReason,
             latitude = this.latitude,
             longitude = this.longitude,
-            idType = this.idType,
+            idType = this.idType ?: "",
             nationalId = this.nationalId,
             isHouseholdHead = this.isHouseholdHead,
             householdFhirId = this.householdId,

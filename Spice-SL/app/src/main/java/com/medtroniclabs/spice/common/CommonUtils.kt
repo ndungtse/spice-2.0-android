@@ -2289,11 +2289,8 @@ object CommonUtils {
             }
 
             // 2. Nav Bar logic:
-            // If keyboard is visible, hide fake nav bar (height = 0)
-            // because the keyboard handles its own padding.
             fakeNavBar?.updateLayoutParams {
-                // Setting height as 0 to view takes full height for some reason, hence keeping 1
-                height = if (isImeVisible) 0 else systemBars.bottom
+                height = systemBars.bottom
             }
 
             // 3. Landscape Safety: Apply horizontal padding to the root container
