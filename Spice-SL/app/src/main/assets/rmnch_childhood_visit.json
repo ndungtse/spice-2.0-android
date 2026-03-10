@@ -1,5 +1,6 @@
 {
-    "formLayout": [
+    "formLayout":
+    [
         {
             "familyOrder": 0,
             "id": "pncChild",
@@ -12,7 +13,8 @@
             "family": "pncChild",
             "id": "congenitalDefect",
             "fieldName": "Congenital defect",
-            "condition": [],
+            "condition":
+            [],
             "orderId": 2,
             "isBooleanAnswer": true,
             "isEnabled": true,
@@ -21,7 +23,8 @@
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
             "isSummary": true,
-            "optionsList": [
+            "optionsList":
+            [
                 {
                     "id": true,
                     "name": "Yes",
@@ -71,34 +74,7 @@
             "title": "What was the child fed in the last 24 hours?",
             "titleCulture": "গত ২৪ ঘন্টায় শিশুকে কি কি খাওয়ানো হয়েছে?",
             "visibility": "visible",
-            "isSummary": true,
-            "condition": [
-                {
-                    "eq": "other",
-                    "targetId": "otherChildFeed",
-                    "visibility": "visible"
-                }
-            ]
-        },
-        {
-            "family": "pncChild",
-            "id": "otherChildFeed",
-            "fieldName": "Other Feed",
-            "errorMessage": "Please enter a valid sign",
-            "hint": "Enter Other Feed",
-            "hintCulture": "",
-            "inputType": 96,
-            "isEnabled": true,
-            "isMandatory": true,
-            "isNeededDefault": true,
-            "isNotDefault": false,
-            "orderId": 5,
-            "isSummary": true,
-            "title": "Other Feed",
-            "titleCulture": "Other Feed",
-            "viewType": "EditText",
-            "isInfo": "gone",
-            "visibility": "gone"
+            "isSummary": true
         },
         {
             "family": "pncChild",
@@ -130,7 +106,8 @@
             "isMandatory": true,
             "isNeededDefault": true,
             "isSummary": true,
-            "optionsList": [
+            "optionsList":
+            [
                 {
                     "id": "7",
                     "name": "7 Months",
@@ -166,7 +143,8 @@
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
             "isSummary": true,
-            "optionsList": [
+            "optionsList":
+            [
                 {
                     "id": true,
                     "name": "Yes",
@@ -196,7 +174,8 @@
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
             "isSummary": true,
-            "optionsList": [
+            "optionsList":
+            [
                 {
                     "id": true,
                     "name": "Yes",
@@ -226,7 +205,8 @@
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
             "isSummary": true,
-            "optionsList": [
+            "optionsList":
+            [
                 {
                     "id": true,
                     "name": "Yes",
@@ -256,7 +236,8 @@
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
             "isSummary": true,
-            "optionsList": [
+            "optionsList":
+            [
                 {
                     "id": true,
                     "name": "Yes",
@@ -278,9 +259,10 @@
             "family": "pncChild",
             "id": "anyIllness",
             "fieldName": "Illness/Complications",
-            "condition": [
+            "condition":
+            [
                 {
-                    "eq": "Yes",
+                    "eq": "yes",
                     "targetId": "childIllnessType",
                     "visibility": "visible"
                 }
@@ -293,14 +275,15 @@
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
             "isSummary": true,
-            "optionsList": [
+            "optionsList":
+            [
                 {
-                    "id": true,
+                    "id": "yes",
                     "name": "Yes",
                     "cultureValue": "হ্যাঁ"
                 },
                 {
-                    "id": false,
+                    "id": "no",
                     "name": "No",
                     "cultureValue": "না"
                 }
@@ -327,15 +310,17 @@
             "isInfo": "gone",
             "visibility": "gone",
             "isSummary": true,
-            "condition": []
+            "condition":
+            []
         },
         {
             "family": "pncChild",
             "id": "childReferral",
             "fieldName": "Referred",
-            "condition": [
+            "condition":
+            [
                 {
-                    "eq": "Yes",
+                    "eq": "yes",
                     "targetId": "childReferralFacilityType",
                     "visibility": "visible"
                 }
@@ -348,14 +333,15 @@
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
             "isSummary": true,
-            "optionsList": [
+            "optionsList":
+            [
                 {
-                    "id": true,
+                    "id": "yes",
                     "name": "Yes",
                     "cultureValue": "হ্যাঁ"
                 },
                 {
-                    "id": false,
+                    "id": "no",
                     "name": "No",
                     "cultureValue": "না"
                 }
@@ -367,7 +353,8 @@
             "visibility": "visible"
         },
         {
-            "condition": [],
+            "condition":
+            [],
             "defaultValue": null,
             "errorMessage": "Please select Referral Facility",
             "cultureErrorMessage": "অনুগ্রহ করে রেফারেল সুবিধার ধরন নির্বাচন করুন",
@@ -380,7 +367,8 @@
             "isNeededDefault": true,
             "isSummary": true,
             "orderId": 15,
-            "optionsList": [
+            "optionsList":
+            [
                 {
                     "id": "medicalCollegeHospital",
                     "name": "Medical College Hospital",

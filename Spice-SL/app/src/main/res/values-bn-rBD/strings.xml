@@ -255,6 +255,7 @@
     <string name="patient_on_treatment">চিকিৎসাধীন রোগী</string>
     <string name="treatment_pneumonia" translatable="false"> Treatment for Pneumonia Amoxicillin 250mg tab</string>
     <string name="no_refferral_treatment_required">কোন রেফারেল / চিকিৎসার প্রয়োজন নেই</string>
+    <string name="no_referral_required">কোন রেফারেল নেই</string>
     <string name="no_risk_identified">কোন ঝুঁকি শনাক্ত করা হয়নি</string>
     <string name="no_gaps_found">কোন অসম্পূর্ণতা পাওয়া যায়নি</string>
     <string name="baby_label">শিশু %d</string>

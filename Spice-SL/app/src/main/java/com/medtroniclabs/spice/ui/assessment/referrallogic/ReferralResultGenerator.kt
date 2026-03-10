@@ -72,8 +72,8 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Miscarriage
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getDeathStatus
+import com.medtroniclabs.spice.common.DefinedParams as CommonDefinedParams
 
 class ReferralResultGenerator {
     private var patientStatus = HashMap<String, Any>()
@@ -141,20 +141,14 @@ class ReferralResultGenerator {
                 updateVisitCount(map, RMNCH.ANC)
             }
         } else if (map.containsKey(RMNCH.ChildHoodVisit)) {
-            val deathOfBaby = getDeathStatus(map, RMNCH.ChildHoodVisit, deathOfBaby)
-            if (!deathOfBaby) {
-                if (checkMUACReferralStatus(map, RMNCH.ChildHoodVisit, MUAC)) {
-                    addResultMap(ReferralReasons.MUAC.name, ReferralStatus.Referred.name)
-                    addReferralReason(referralReason, ReferralReasons.MUAC.name)
-                }
-                findSignListByWorkflow(
-                    RMNCH.ChildHoodVisit,
-                    map,
-                    RMNCH.childhoodVisitSigns,
-                    ReferralReasons.aliasOf(ReferralReasons.childhoodVisitSigns),
-                )
-                updateVisitCount(map, RMNCH.ChildHoodVisit)
+            val childVisitMap = map[RMNCH.ChildHoodVisit] as Map<String, Any>
+            if (CommonDefinedParams.yes
+                    .equals(childVisitMap[AssessmentDefinedParams.ID_CHILD_REFERRAL] as? String, true)
+            ) {
+                addResultMap(ReferralReasons.aliasOf(ReferralReasons.childhoodVisitSigns), ReferralStatus.Referred.name)
+                addReferralReason(referralReason, ReferralReasons.aliasOf(ReferralReasons.childhoodVisitSigns))
             }
+            updateVisitCount(map, RMNCH.ChildHoodVisit)
         } else {
             val pncMap = map[RMNCH.PNC] as Map<String, Any>
             if (pncMap.containsKey(RMNCH.ID_MOTHER_RISKS)) {

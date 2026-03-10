@@ -1,271 +1,280 @@
 {
-  "formLayout": [
-    {
-      "familyOrder": 0,
-      "id": "householdInformation",
-      "title": "Household Information",
-      "titleCulture": "পরিবারের তথ্য",
-      "viewType": "CardView"
-    },
-    {
-      "condition": [],
-      "defaultValue": null,
-      "errorMessage": "Please select Union",
-      "family": "householdInformation",
-      "fieldName": "Union",
-      "titleCulture": "ইউনিয়ন",
-      "id": "village_id",
-      "isEditable": true,
-      "isEnabled": true,
-      "isMandatory": true,
-      "isNeededDefault": true,
-      "localDataCache": "village_id",
-      "title": "Union",
-      "orderId": 1,
-      "viewType": "Spinner",
-      "visibility": "gone"
-    },
-    {
-      "condition": [],
-      "defaultValue": null,
-      "errorMessage": "Please select SS",
-      "family": "householdInformation",
-      "fieldName": "SS Name",
-      "id": "shasthya_shebika_id",
-      "isEditable": true,
-      "isEnabled": true,
-      "isMandatory": true,
-      "isNeededDefault": true,
-      "localDataCache": "shasthya_shebika_id",
-      "dependentID": "sub_village_id",
-      "title": "SS Name",
-      "titleCulture": "স্বাস্থ্য সেবিকার নামঃ",
-      "orderId": 2,
-      "viewType": "Spinner",
-      "visibility": "visible"
-    },
-    {
-      "condition": [],
-      "defaultValue": null,
-      "errorMessage": "Please select Village",
-      "family": "householdInformation",
-      "fieldName": "Village",
-      "id": "sub_village_id",
-      "isEditable": true,
-      "isEnabled": true,
-      "isMandatory": true,
-      "isNeededDefault": true,
-      "localDataCache": "sub_village_id",
-      "title": "Village",
-      "titleCulture": "গ্রাম",
-      "orderId": 3,
-      "viewType": "Spinner",
-      "visibility": "visible"
-    },
-    {
-      "condition": [],
-      "defaultValue": null,
-      "errorMessage": "Please select Household Type",
-      "family": "householdInformation",
-      "fieldName": "Household Type",
-      "id": "household_type",
-      "isEditable": true,
-      "isEnabled": true,
-      "isMandatory": false,
-      "isNeededDefault": true,
-      "optionsList": [
+    "formLayout":
+    [
         {
-          "id": "BRACVO",
-          "name": "BRAC VO",
-          "cultureValue": "BRAC VO"
+            "familyOrder": 0,
+            "id": "householdInformation",
+            "title": "Household Information",
+            "titleCulture": "পরিবারের তথ্য",
+            "viewType": "CardView"
         },
         {
-          "id": "BRACNVO",
-          "name": "NVO",
-          "cultureValue": "NVO"
+            "condition":
+            [],
+            "defaultValue": null,
+            "errorMessage": "Please select Union",
+            "family": "householdInformation",
+            "fieldName": "Union",
+            "titleCulture": "ইউনিয়ন",
+            "id": "village_id",
+            "isEditable": true,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "localDataCache": "village_id",
+            "title": "Union",
+            "orderId": 1,
+            "viewType": "Spinner",
+            "visibility": "gone"
+        },
+        {
+            "condition":
+            [],
+            "defaultValue": null,
+            "errorMessage": "Please select SS",
+            "family": "householdInformation",
+            "fieldName": "SS Name",
+            "id": "shasthya_shebika_id",
+            "isEditable": true,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "localDataCache": "shasthya_shebika_id",
+            "dependentID": "sub_village_id",
+            "title": "SS Name",
+            "titleCulture": "স্বাস্থ্য সেবিকার নামঃ",
+            "orderId": 2,
+            "viewType": "Spinner",
+            "visibility": "visible"
+        },
+        {
+            "condition":
+            [],
+            "defaultValue": null,
+            "errorMessage": "Please select Village",
+            "family": "householdInformation",
+            "fieldName": "Village",
+            "id": "sub_village_id",
+            "isEditable": true,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "localDataCache": "sub_village_id",
+            "title": "Village",
+            "titleCulture": "গ্রাম",
+            "orderId": 3,
+            "viewType": "Spinner",
+            "visibility": "visible"
+        },
+        {
+            "condition":
+            [],
+            "defaultValue": null,
+            "errorMessage": "Please select Household Type",
+            "family": "householdInformation",
+            "fieldName": "Household Type",
+            "id": "household_type",
+            "isEditable": true,
+            "isEnabled": true,
+            "isMandatory": false,
+            "isNeededDefault": true,
+            "optionsList":
+            [
+                {
+                    "id": "BRACVO",
+                    "name": "BRAC VO",
+                    "cultureValue": "BRAC VO"
+                },
+                {
+                    "id": "BRACNVO",
+                    "name": "NVO",
+                    "cultureValue": "NVO"
+                }
+            ],
+            "title": "Household Type",
+            "titleCulture": "খানার ধরণ",
+            "orderId": 4,
+            "viewType": "Spinner",
+            "visibility": "visible"
+        },
+        {
+            "family": "householdInformation",
+            "fieldName": "Household Number",
+            "hint": "Enter Household Number",
+            "id": "household_number",
+            "inputType": 96,
+            "isEnabled": false,
+            "isMandatory": false,
+            "isNeededDefault": true,
+            "isNotDefault": false,
+            "orderId": 5,
+            "title": "Household Number",
+            "titleCulture": "খানা নাম্বার",
+            "viewType": "EditText",
+            "visibility": "visible"
+        },
+        {
+            "family": "householdInformation",
+            "fieldName": "Total Members",
+            "hint": "Enter Total Members",
+            "hintCulture": "মোট সদস্য সংখ্যা লিখুন",
+            "id": "total_members",
+            "inputType": 3,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "isNotDefault": false,
+            "isSummary": true,
+            "orderId": 6,
+            "maxLength": 2,
+            "minValue": 1,
+            "title": "Total Members",
+            "titleCulture": "খানার মোট সদস্য সংখ্যা",
+            "viewType": "EditText",
+            "visibility": "visible"
+        },
+        {
+            "condition":
+            [
+                {
+                    "eq": "Other",
+                    "targetId": "otherOccupation",
+                    "visibility": "visible"
+                }
+            ],
+            "defaultValue": null,
+            "errorMessage": "Please select Occupation",
+            "family": "householdInformation",
+            "fieldName": "Household Head's Occupation",
+            "id": "householdHeadOccupation",
+            "isEditable": true,
+            "isEnabled": true,
+            "isMandatory": false,
+            "isNeededDefault": true,
+            "optionsList":
+            [
+                {
+                    "id": "Agriculture",
+                    "name": "Agriculture",
+                    "cultureValue": "কৃষি"
+                },
+                {
+                    "id": "Garments worker",
+                    "name": "Garments worker",
+                    "cultureValue": "গার্মেন্টস কর্মী"
+                },
+                {
+                    "id": "Service/Job",
+                    "name": "Service/Job",
+                    "cultureValue": "চাকরি"
+                },
+                {
+                    "id": "Technical worker",
+                    "name": "Technical worker",
+                    "cultureValue": "কারিগরি কর্মী"
+                },
+                {
+                    "id": "Day laborer",
+                    "name": "Day laborer",
+                    "cultureValue": "দিনমজুর"
+                },
+                {
+                    "id": "Vendor/Shopkeeper/Vegetable",
+                    "name": "Vendor/Shopkeeper/Vegetable",
+                    "cultureValue": "বিক্রেতা/দোকানদার/সবজি বা মাছ বিক্রেতা"
+                },
+                {
+                    "id": "Businessman",
+                    "name": "Businessman",
+                    "cultureValue": "ব্যবসায়ী"
+                },
+                {
+                    "id": "Foreign worker",
+                    "name": "Foreign worker",
+                    "cultureValue": "বিদেশে কর্মরত"
+                },
+                {
+                    "id": "Self-employed",
+                    "name": "Self-employed",
+                    "cultureValue": "স্ব-কর্মসংস্থান"
+                },
+                {
+                    "id": "Unemployed",
+                    "name": "Unemployed",
+                    "cultureValue": "বেকার"
+                },
+                {
+                    "id": "Other",
+                    "name": "Other",
+                    "cultureValue": "অন্যান্য"
+                }
+            ],
+            "title": "Household Head's Occupation",
+            "titleCulture": "খানা প্রধানের পেশা",
+            "orderId": 7,
+            "viewType": "Spinner",
+            "visibility": "visible"
+        },
+        {
+            "condition":
+            [],
+            "family": "householdInformation",
+            "fieldName": "If Other Occupation",
+            "hint": "Enter other occupation",
+            "hintCulture": "অন্য পেশা লিখুন",
+            "id": "otherOccupation",
+            "inputType": 1,
+            "isEditable": true,
+            "isEnabled": true,
+            "isMandatory": false,
+            "isNeededDefault": true,
+            "isNotDefault": false,
+            "orderId": 8,
+            "title": "If Other Occupation",
+            "titleCulture": "অন্য পেশা হলে উল্লেখ করুন",
+            "viewType": "EditText",
+            "visibility": "gone"
+        },
+        {
+            "family": "householdInformation",
+            "fieldName": "Monthly Income",
+            "hint": "Enter Monthly Income",
+            "hintCulture": "মাসিক আয় লিখুন",
+            "id": "monthly_income",
+            "inputType": 3,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "isNotDefault": false,
+            "isSummary": true,
+            "orderId": 9,
+            "maxLength": 10,
+            "minValue": 0,
+            "title": "Monthly Income",
+            "titleCulture": "খানার মাসিক আয় (টাকায়)",
+            "viewType": "EditText",
+            "visibility": "visible"
+        },
+        {
+            "family": "householdInformation",
+            "fieldName": "Persons with disability in the HH",
+            "hintCulture": "সংখ্যা যোগ করুন",
+            "id": "disability_persons_count",
+            "inputType": 3,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "isNotDefault": false,
+            "isSummary": true,
+            "orderId": 10,
+            "minValue": 0,
+            "title": "Persons with disability in the HH",
+            "titleCulture": "খানায় প্রতিবন্ধী ব্যক্তির সংখ্যা",
+            "viewType": "EditText",
+            "visibility": "visible",
+            "isInfo": "visible",
+            "infoTitle": "Who has great difficulty or cannot see, hear, walk, climb, do things independently, remember, concentrate, communicate, or understand others",
+            "infoTitleCulture": "যার খুব অসুবিধা হয় অথবা সে দেখতে, শুনতে, হাঁটতে, আরোহণ করতে, স্বাধীনভাবে কিছু করতে, মনে রাখতে, মনোযোগ দিতে, যোগাযোগ করতে বা অন্যদের বোঝাতে পারে না"
         }
-      ],
-      "title": "Household Type",
-      "titleCulture": "খানার ধরণ",
-      "orderId": 4,
-      "viewType": "Spinner",
-      "visibility": "visible"
-    },
-    {
-      "family": "householdInformation",
-      "fieldName": "Household Number",
-      "hint": "Enter Household Number",
-      "id": "household_number",
-      "inputType": 96,
-      "isEnabled": false,
-      "isMandatory": false,
-      "isNeededDefault": true,
-      "isNotDefault": false,
-      "orderId": 5,
-      "title": "Household Number",
-      "titleCulture": "খানা নাম্বার",
-      "viewType": "EditText",
-      "visibility": "visible"
-    },
-    {
-      "family": "householdInformation",
-      "fieldName": "Total Members",
-      "hint": "Enter Total Members",
-      "hintCulture": "মোট সদস্য সংখ্যা লিখুন",
-      "id": "total_members",
-      "inputType": 3,
-      "isEnabled": true,
-      "isMandatory": true,
-      "isNeededDefault": true,
-      "isNotDefault": false,
-      "isSummary": true,
-      "orderId": 6,
-      "maxLength": 2,
-      "minValue": 1,
-      "title": "Total Members",
-      "titleCulture": "খানার মোট সদস্য সংখ্যা",
-      "viewType": "EditText",
-      "visibility": "visible"
-    },
-    {
-      "family": "householdInformation",
-      "fieldName": "Monthly Income",
-      "hint": "Enter Monthly Income",
-      "hintCulture": "মাসিক আয় লিখুন",
-      "id": "monthly_income",
-      "inputType": 3,
-      "isEnabled": true,
-      "isMandatory": true,
-      "isNeededDefault": true,
-      "isNotDefault": false,
-      "isSummary": true,
-      "orderId": 7,
-      "maxLength": 10,
-      "minValue": 0,
-      "title": "Monthly Income",
-      "titleCulture": "খানার মাসিক আয় (টাকায়)",
-      "viewType": "EditText",
-      "visibility": "visible"
-    },
-    {
-      "family": "householdInformation",
-      "fieldName": "Persons with disability in the HH",
-      "hintCulture": "সংখ্যা যোগ করুন",
-      "id": "disability_persons_count",
-      "inputType": 3,
-      "isEnabled": true,
-      "isMandatory": true,
-      "isNeededDefault": true,
-      "isNotDefault": false,
-      "isSummary": true,
-      "orderId": 9,
-      "minValue": 0,
-      "title": "Persons with disability in the HH",
-      "titleCulture": "খানায় প্রতিবন্ধী ব্যক্তির সংখ্যা",
-      "viewType": "EditText",
-      "visibility": "visible",
-      "isInfo": "visible",
-      "infoTitle": "Who has great difficulty or cannot see, hear, walk, climb, do things independently, remember, concentrate, communicate, or understand others",
-      "infoTitleCulture": "যার খুব অসুবিধা হয় অথবা সে দেখতে, শুনতে, হাঁটতে, আরোহণ করতে, স্বাধীনভাবে কিছু করতে, মনে রাখতে, মনোযোগ দিতে, যোগাযোগ করতে বা অন্যদের বোঝাতে পারে না"
-    },
-    {
-      "condition": [
-        {
-          "eq": "Other",
-          "targetId": "otherOccupation",
-          "visibility": "visible"
-        }
-      ],
-      "defaultValue": null,
-      "errorMessage": "Please select Occupation",
-      "family": "householdInformation",
-      "fieldName": "Household Head's Occupation",
-      "id": "householdHeadOccupation",
-      "isEditable": true,
-      "isEnabled": true,
-      "isMandatory": false,
-      "isNeededDefault": true,
-      "optionsList": [
-        {
-          "id": "Agriculture",
-          "name": "Agriculture",
-          "cultureValue": "কৃষি"
-        },
-        {
-          "id": "Garments worker",
-          "name": "Garments worker",
-          "cultureValue": "গার্মেন্টস কর্মী"
-        },
-        {
-          "id": "Service/Job",
-          "name": "Service/Job",
-          "cultureValue": "চাকরি"
-        },
-        {
-          "id": "Technical worker",
-          "name": "Technical worker",
-          "cultureValue": "কারিগরি কর্মী"
-        },
-        {
-          "id": "Day laborer",
-          "name": "Day laborer",
-          "cultureValue": "দিনমজুর"
-        },
-        {
-          "id": "Vendor/Shopkeeper/Vegetable",
-          "name": "Vendor/Shopkeeper/Vegetable",
-          "cultureValue": "বিক্রেতা/দোকানদার/সবজি বা মাছ বিক্রেতা"
-        },
-        {
-          "id": "Businessman",
-          "name": "Businessman",
-          "cultureValue": "ব্যবসায়ী"
-        },
-        {
-          "id": "Foreign worker",
-          "name": "Foreign worker",
-          "cultureValue": "বিদেশে কর্মরত"
-        },
-        {
-          "id": "Self-employed",
-          "name": "Self-employed",
-          "cultureValue": "স্ব-কর্মসংস্থান"
-        },
-        {
-          "id": "Unemployed",
-          "name": "Unemployed",
-          "cultureValue": "বেকার"
-        },
-        {
-          "id": "Other",
-          "name": "Other",
-          "cultureValue": "অন্যান্য"
-        }
-      ],
-      "title": "Household Head's Occupation",
-      "titleCulture": "খানা প্রধানের পেশা",
-      "orderId": 10,
-      "viewType": "Spinner",
-      "visibility": "visible"
-    },
-    {
-      "condition": [],
-      "family": "householdInformation",
-      "fieldName": "If Other Occupation",
-      "hint": "Enter other occupation",
-      "hintCulture": "অন্য পেশা লিখুন",
-      "id": "otherOccupation",
-      "inputType": 1,
-      "isEditable": true,
-      "isEnabled": true,
-      "isMandatory": false,
-      "isNeededDefault": true,
-      "isNotDefault": false,
-      "orderId": 11,
-      "title": "If Other Occupation",
-      "titleCulture": "অন্য পেশা হলে উল্লেখ করুন",
-      "viewType": "EditText",
-      "visibility": "gone"
-    }
-  ]
+    ]
 }

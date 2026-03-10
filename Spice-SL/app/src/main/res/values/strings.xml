@@ -255,6 +255,7 @@
     <string name="patient_on_treatment">Patient On Treatment</string>
     <string name="treatment_pneumonia" translatable="false"> Treatment for Pneumonia Amoxicillin 250mg tab</string>
     <string name="no_refferral_treatment_required">No Referral / No Treatment Required</string>
+    <string name="no_referral_required">No Referral Required</string>
     <string name="no_risk_identified">No Risk Identified</string>
     <string name="no_gaps_found">No Gaps Found</string>
     <string name="select">Select</string>

@@ -45,7 +45,6 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DEATH_OF_MOTHER_KEY
 import com.medtroniclabs.spice.ui.assessment.referrallogic.PNCAssessmentEvaluator
 import com.medtroniclabs.spice.ui.assessment.referrallogic.PNCReferralType
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
@@ -145,7 +144,12 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             else -> {
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.green_attention_color)
-                binding.riskResultLayout.text = getString(R.string.no_refferral_treatment_required)
+                // Change no referral status display in case of childhood visit
+                if (viewModel.workflowName == ChildHoodVisit) {
+                    binding.riskResultLayout.text = getString(R.string.no_referral_required)
+                } else {
+                    binding.riskResultLayout.text = getString(R.string.no_refferral_treatment_required)
+                }
                 binding.etPhuChange.gone()
                 binding.labelPhuReferred.gone()
             }
@@ -164,245 +168,68 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 )
             }
 
-            if (viewModel.workflowName == RMNCH.PNC) {
-                bindPNCSummary(map, viewModel.workflowName)
-            } else if (viewModel.workflowName != RMNCH.ANC) {
-                // Skip default summary views for ANC - only show specific isSummary fields
-                addDefaultSummaryView(map)
-            } else {
-                // For ANC, show Next Follow-up Date with label "Follow up Visit"
-                binding.etNextFollowUpDate.visible()
-                binding.tvNextFollowupDateTitle.visible()
-                binding.tvNextFollowupDateTitle.text = AssessmentDefinedParams.LABEL_FOLLOW_UP_VISIT
-
-                // Set follow-up date to 4 weeks (28 days) from current date
-                val fourWeeksFromNow = DateUtils.getDateAfterDays(28)
-                binding.etNextFollowUpDate.text = fourWeeksFromNow
-                updateFollowUpDate(fourWeeksFromNow)
-
-                // Load Referral Facility spinner options from JSON
-                loadReferralFacilityOptions()
-
-                // For ANC workflow, render Result section with only highRiskPregnantWoman and gapsInAnc
-                // (Counselling fields will be rendered separately after this block)
-                // First, read values to check if referral facility should be shown
-                val ancMap = map[viewModel.workflowName] as? Map<*, *>
-                val summaryGroup = ancMap?.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<*, *>
-                val highRiskList = (summaryGroup?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) as? List<*>)?.filterIsInstance<String>() ?: emptyList()
-                val gapsList = (summaryGroup?.get(AssessmentDefinedParams.GAPS_IN_ANC) as? List<*>)?.filterIsInstance<String>() ?: emptyList()
-
-                // Show referral facility only if highRiskPregnantWoman or gapsInAnc has values
-                val hasHighRiskOrGaps = highRiskList.isNotEmpty() || gapsList.isNotEmpty()
-                if (hasHighRiskOrGaps) {
-                    viewModel.referralStatus = ReferralStatus.Referred.name
-                    binding.labelPhuReferred.text = AssessmentDefinedParams.LABEL_REFERRAL_FACILITY
-                    binding.labelPhuReferred.visible()
-                    binding.etPhuChange.visible()
-                } else {
-                    binding.labelPhuReferred.gone()
-                    binding.etPhuChange.gone()
+            when (viewModel.workflowName) {
+                RMNCH.PNC -> {
+                    bindPNCSummary(map, viewModel.workflowName)
                 }
 
-                viewModel.formLayoutsLiveData.value
-                    ?.data
-                    ?.formLayout
-                    ?.filter { it.isSummary == true }
-                    ?.filter {
-                        it.id == AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN ||
-                            it.id == AssessmentDefinedParams.GAPS_IN_ANC
-                    }?.sortedBy { it.orderId ?: Int.MAX_VALUE }
-                    ?.forEach { data ->
-                        with(data) {
-                            updateStatusBar()
-                            // For High Risk pregnant woman and Gaps in ANC, read from result map
-                            if (id == AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) {
-                                // Display heading only
-                                val displayTitle = title
-                                with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
-                                    with(tvTitle) {
-                                        text = displayTitle
-                                        setTypeface(null, Typeface.BOLD)
-                                    }
-                                    binding.parentLayout.addView(root)
-                                }
+                RMNCH.ANC -> {
+                    bindAncSummary(map, viewModel.workflowName)
+                }
 
-                                // Display all high risk conditions as list items
-                                if (highRiskList.isNotEmpty()) {
-                                    highRiskList.forEach { condition ->
-                                        with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
-                                            with(tvTitle) {
-                                                text = "    • $condition" // Use bigger bullet (•)
-                                                setTextColor(Color.RED)
-                                            }
-                                            binding.parentLayout.addView(root)
-                                        }
-                                    }
-                                } else {
-                                    // Show hyphen if no high risk conditions
-                                    with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
-                                        with(tvTitle) {
-                                            text = getString(R.string.no_risk_identified)
-                                        }
-                                        binding.parentLayout.addView(root)
-                                    }
-                                }
-                            } else if (id == AssessmentDefinedParams.GAPS_IN_ANC) {
-                                // Display heading only
-                                val displayTitle = title
-                                with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
-                                    with(tvTitle) {
-                                        text = displayTitle
-                                        setTypeface(null, Typeface.BOLD)
-                                    }
-                                    binding.parentLayout.addView(root)
-                                }
+                else -> {
+                    // Skip default summary views for ANC - only show specific isSummary fields
+                    addDefaultSummaryView(map)
+                    // Hide referred to field
+                    binding.labelPhuReferred.gone()
+                    binding.etPhuChange.gone()
 
-                                // Add gaps as list items
-                                if (gapsList.isNotEmpty()) {
-                                    gapsList.forEach { gap ->
-                                        with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
-                                            with(tvTitle) {
-                                                text = "    • $gap" // Use bigger bullet (•)
-                                            }
-                                            binding.parentLayout.addView(root)
-                                        }
-                                    }
+                    // For other workflows (ChildHoodVisit), use existing logic
+                    viewModel.formLayoutsLiveData.value
+                        ?.data
+                        ?.formLayout
+                        ?.filter { it.isSummary == true }
+                        ?.filter {
+                            map.entries.any { map -> map.key != ChildHoodVisit } ||
+                                (map[ChildHoodVisit] as? Map<String, Any>)?.containsKey(
+                                    it.id,
+                                ) == true
+                        }?.forEach { data ->
+                            with(data) {
+                                updateStatusBar()
+                                var title: String? = null
+                                if (titleSummary != null) {
+                                    title = titleSummary
                                 } else {
-                                    // Show hyphen if no gaps
-                                    with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
-                                        with(tvTitle) {
-                                            text = getString(R.string.no_gaps_found)
-                                        }
-                                        binding.parentLayout.addView(root)
+                                    if (SecuredPreference.getIsTranslationEnabled() && !titleCulture.isNullOrBlank()) {
+                                        titleCulture
+                                    } else {
+                                        this.title
                                     }
                                 }
-                            } else {
-                                val displayValue = getValueFromMap(
-                                    map,
-                                    id,
-                                    viewType,
-                                    viewModel.workflowName,
-                                    isBooleanAnswer,
-                                    Triple(
-                                        getString(R.string.yes),
-                                        getString(R.string.no),
-                                        getString(R.string.hyphen_symbol),
-                                    ),
-                                    requireContext(),
-                                )
                                 binding.parentLayout.addView(
                                     addViewSummaryLayout(
-                                        titleSummary ?: (titleCulture ?: title),
-                                        displayValue,
+                                        title ?: "",
+                                        getValueFromMap(
+                                            map,
+                                            id,
+                                            viewType,
+                                            viewModel.workflowName,
+                                            isBooleanAnswer,
+                                            Triple(
+                                                getString(R.string.yes),
+                                                getString(R.string.no),
+                                                getString(R.string.hyphen_symbol),
+                                            ),
+                                            requireContext(),
+                                        ),
                                         null,
                                         requireContext(),
                                     ),
                                 )
                             }
                         }
-                    }
-            }
-
-            // For ANC workflow, render Counselling fields in a CardView (similar to result card)
-            if (viewModel.workflowName == RMNCH.ANC) {
-                // Find the index right after resultCardView to insert counselling card
-                val resultCardIndex = binding.scrollViewLL.indexOfChild(binding.resultCardView)
-                val insertIndex = if (resultCardIndex >= 0) resultCardIndex + 1 else -1
-
-                // Get counselling card layout info for title
-                val counsellingCardLayout = viewModel.formLayoutsLiveData.value
-                    ?.data
-                    ?.formLayout
-                    ?.firstOrNull { it.id == AssessmentDefinedParams.GROUP_COUNSELLING && it.viewType == ViewType.VIEW_TYPE_FORM_CARD_FAMILY }
-
-                // Get counselling items
-                val counsellingItems = viewModel.formLayoutsLiveData.value
-                    ?.data
-                    ?.formLayout
-                    ?.filter {
-                        it.id == AssessmentDefinedParams.NUTRITION_COUNSELLING ||
-                            it.id == AssessmentDefinedParams.CARE_DURING_ANTENATAL_PERIOD ||
-                            it.id == AssessmentDefinedParams.BIRTH_PREPAREDNESS ||
-                            it.id == AssessmentDefinedParams.NEW_BORN_CARE_EDUCATION ||
-                            (it.viewType == ViewType.VIEW_TYPE_INSTRUCTION && it.isSummary == true && it.family == AssessmentDefinedParams.GROUP_COUNSELLING)
-                    }?.sortedBy { it.orderId ?: Int.MAX_VALUE }
-
-                // Only create counselling card if there are items to display
-                if (counsellingItems != null && counsellingItems.isNotEmpty()) {
-                    // Create Counselling CardView using CardLayoutBinding
-                    val counsellingCardBinding = CardLayoutBinding.inflate(LayoutInflater.from(requireContext()))
-
-                    // Set card title
-                    counsellingCardLayout?.let { cardLayout ->
-                        val isTranslationEnabled = com.medtroniclabs.spice.common.SecuredPreference
-                            .getIsTranslationEnabled()
-                        val cardTitle = if (isTranslationEnabled && !cardLayout.titleCulture.isNullOrBlank()) {
-                            cardLayout.titleCulture ?: cardLayout.title
-                        } else {
-                            cardLayout.title
-                        }
-                        counsellingCardBinding.cardTitle.text = cardTitle
-                    } ?: run {
-                        // Fallback title if cardLayout not found
-                        counsellingCardBinding.cardTitle.text = "Counselling"
-                    }
-
-                    // Add counselling items to the card's content layout
-                    counsellingItems.forEach { data ->
-                        addInstructionsCard(data, counsellingCardBinding.llFamilyRoot)
-                    }
-
-                    // Insert counselling card after result card
-                    if (insertIndex >= 0) {
-                        binding.scrollViewLL.addView(counsellingCardBinding.root, insertIndex)
-                    } else {
-                        // Fallback: add to end
-                        binding.scrollViewLL.addView(counsellingCardBinding.root)
-                    }
                 }
-            } else if (viewModel.workflowName != RMNCH.PNC) {
-                // For other workflows (ChildHoodVisit), use existing logic
-                viewModel.formLayoutsLiveData.value
-                    ?.data
-                    ?.formLayout
-                    ?.filter { it.isSummary == true }
-                    ?.filter {
-                        map.entries.any { map -> map.key != ChildHoodVisit } ||
-                            (map[ChildHoodVisit] as? Map<String, Any>)?.containsKey(
-                                it.id,
-                            ) == true
-                    }?.filterNot {
-                        // Only apply age-based filtering for ChildHoodVisit workflow
-                        if (viewModel.workflowName == ChildHoodVisit) {
-                            it.id in showQuestionBasedAge(map, it)
-                        } else {
-                            false
-                        }
-                    }?.forEach { data ->
-                        with(data) {
-                            updateStatusBar()
-                            binding.parentLayout.addView(
-                                addViewSummaryLayout(
-                                    titleSummary ?: (titleCulture ?: title),
-                                    getValueFromMap(
-                                        map,
-                                        id,
-                                        viewType,
-                                        viewModel.workflowName,
-                                        isBooleanAnswer,
-                                        Triple(
-                                            getString(R.string.yes),
-                                            getString(R.string.no),
-                                            getString(R.string.hyphen_symbol),
-                                        ),
-                                        requireContext(),
-                                    ),
-                                    null,
-                                    requireContext(),
-                                ),
-                            )
-                        }
-                    }
             }
         }
 
@@ -419,6 +246,293 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 ResourceState.ERROR -> {
                     hideProgress()
                 }
+            }
+        }
+    }
+
+    /**
+     * Binds summary for ANC
+     */
+    private fun bindAncSummary(
+        map: HashMap<String, Any>,
+        workflowName: String?,
+    ) {
+        // For ANC, show Next Follow-up Date with label "Follow up Visit"
+        binding.etNextFollowUpDate.visible()
+        binding.tvNextFollowupDateTitle.visible()
+        binding.tvNextFollowupDateTitle.text = AssessmentDefinedParams.LABEL_FOLLOW_UP_VISIT
+
+        // Set follow-up date to 4 weeks (28 days) from current date
+        val fourWeeksFromNow = DateUtils.getDateAfterDays(28)
+        binding.etNextFollowUpDate.text = fourWeeksFromNow
+        updateFollowUpDate(fourWeeksFromNow)
+
+        // Load Referral Facility spinner options from JSON
+        loadReferralFacilityOptions()
+
+        // For ANC workflow, render Result section with only highRiskPregnantWoman and gapsInAnc
+        // (Counselling fields will be rendered separately after this block)
+        // First, read values to check if referral facility should be shown
+        val ancMap = map[workflowName] as? Map<*, *>
+        val summaryGroup = ancMap?.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<*, *>
+        val highRiskList = (summaryGroup?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+        val gapsList = (summaryGroup?.get(AssessmentDefinedParams.GAPS_IN_ANC) as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+
+        // Show referral facility only if highRiskPregnantWoman or gapsInAnc has values
+        val hasHighRiskOrGaps = highRiskList.isNotEmpty() || gapsList.isNotEmpty()
+        if (hasHighRiskOrGaps) {
+            viewModel.referralStatus = ReferralStatus.Referred.name
+            binding.labelPhuReferred.text = AssessmentDefinedParams.LABEL_REFERRAL_FACILITY
+            binding.labelPhuReferred.visible()
+            binding.etPhuChange.visible()
+        } else {
+            binding.labelPhuReferred.gone()
+            binding.etPhuChange.gone()
+        }
+
+        viewModel.formLayoutsLiveData.value
+            ?.data
+            ?.formLayout
+            ?.filter { it.isSummary == true }
+            ?.filter {
+                it.id == AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN ||
+                    it.id == AssessmentDefinedParams.GAPS_IN_ANC
+            }?.sortedBy { it.orderId ?: Int.MAX_VALUE }
+            ?.forEach { data ->
+                with(data) {
+                    updateStatusBar()
+                    // For High Risk pregnant woman and Gaps in ANC, read from result map
+                    if (id == AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) {
+                        // Display heading only
+                        val displayTitle = title
+                        with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                            with(tvTitle) {
+                                text = displayTitle
+                                setTypeface(null, Typeface.BOLD)
+                            }
+                            binding.parentLayout.addView(root)
+                        }
+
+                        // Display all high risk conditions as list items
+                        if (highRiskList.isNotEmpty()) {
+                            highRiskList.forEach { condition ->
+                                with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                                    with(tvTitle) {
+                                        text = "    • $condition" // Use bigger bullet (•)
+                                        setTextColor(Color.RED)
+                                    }
+                                    binding.parentLayout.addView(root)
+                                }
+                            }
+                        } else {
+                            // Show hyphen if no high risk conditions
+                            with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                                with(tvTitle) {
+                                    text = getString(R.string.no_risk_identified)
+                                }
+                                binding.parentLayout.addView(root)
+                            }
+                        }
+                    } else if (id == AssessmentDefinedParams.GAPS_IN_ANC) {
+                        // Display heading only
+                        val displayTitle = title
+                        with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                            with(tvTitle) {
+                                text = displayTitle
+                                setTypeface(null, Typeface.BOLD)
+                            }
+                            binding.parentLayout.addView(root)
+                        }
+
+                        // Add gaps as list items
+                        if (gapsList.isNotEmpty()) {
+                            gapsList.forEach { gap ->
+                                with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                                    with(tvTitle) {
+                                        text = "    • $gap" // Use bigger bullet (•)
+                                    }
+                                    binding.parentLayout.addView(root)
+                                }
+                            }
+                        } else {
+                            // Show hyphen if no gaps
+                            with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                                with(tvTitle) {
+                                    text = getString(R.string.no_gaps_found)
+                                }
+                                binding.parentLayout.addView(root)
+                            }
+                        }
+                    } else {
+                        val displayValue = getValueFromMap(
+                            map,
+                            id,
+                            viewType,
+                            workflowName,
+                            isBooleanAnswer,
+                            Triple(
+                                getString(R.string.yes),
+                                getString(R.string.no),
+                                getString(R.string.hyphen_symbol),
+                            ),
+                            requireContext(),
+                        )
+                        binding.parentLayout.addView(
+                            addViewSummaryLayout(
+                                titleSummary ?: (titleCulture ?: title),
+                                displayValue,
+                                null,
+                                requireContext(),
+                            ),
+                        )
+                    }
+                }
+            }
+        bindAncInstructions(ancMap)
+    }
+
+    /**
+     * Binds instructions card for PNC
+     */
+    private fun bindAncInstructions(ancMap: Map<*, *>?) {
+        // Find the index right after resultCardView to insert counselling card
+        val resultCardIndex = binding.scrollViewLL.indexOfChild(binding.resultCardView)
+        val insertIndex = if (resultCardIndex >= 0) resultCardIndex + 1 else -1
+
+        // Get counselling card layout info for title
+        val counsellingCardLayout = viewModel.formLayoutsLiveData.value
+            ?.data
+            ?.formLayout
+            ?.firstOrNull { it.id == AssessmentDefinedParams.GROUP_COUNSELLING && it.viewType == ViewType.VIEW_TYPE_FORM_CARD_FAMILY }
+
+        // Get counselling items
+        val counsellingItems = viewModel.formLayoutsLiveData.value
+            ?.data
+            ?.formLayout
+            ?.filter {
+                it.id == AssessmentDefinedParams.NUTRITION_COUNSELLING ||
+                    it.id == AssessmentDefinedParams.CARE_DURING_ANTENATAL_PERIOD ||
+                    it.id == AssessmentDefinedParams.BIRTH_PREPAREDNESS ||
+                    it.id == AssessmentDefinedParams.NEW_BORN_CARE_EDUCATION ||
+                    (it.viewType == ViewType.VIEW_TYPE_INSTRUCTION && it.isSummary == true && it.family == AssessmentDefinedParams.GROUP_COUNSELLING)
+            }?.sortedBy { it.orderId ?: Int.MAX_VALUE }
+            ?.toMutableList()
+
+        viewModel.pregnancyDetailLiveData.value?.lastMenstrualPeriod?.let { lmp ->
+            val lmpCalendar = DateUtils.getLastMenstrualDate(lmp)
+            val gestationalAge = DateUtils.calculateGestationalAge(lmpCalendar)
+            // New born care : Shown only during 3rd trimester
+            if (gestationalAge.first < AssessmentDefinedParams.GESTATIONAL_AGE_WEEK_27) {
+                counsellingItems?.removeIf { it.id == AssessmentDefinedParams.NEW_BORN_CARE_EDUCATION }
+            }
+        }
+
+        counsellingItems?.firstOrNull { it.id == AssessmentDefinedParams.NUTRITION_COUNSELLING }?.let { nutritionCounselling ->
+            val options = nutritionCounselling.optionsList
+            val instructions = arrayListOf<String>()
+            val instructionsCulture = arrayListOf<String>()
+            if (!options.isNullOrEmpty()) {
+                val bmi = CommonUtils.getDouble(ancMap?.get(AssessmentDefinedParams.BMI)).takeIf { it > 0 }
+                bmi?.let {
+                    if (bmi < 18.5) {
+                        val option = options.firstOrNull { it[DefinedParams.id] == "underWeight" }
+                        option?.let {
+                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                        }
+                    } else if (bmi in 18.5..<25.0) {
+                        val option = options.firstOrNull { it[DefinedParams.id] == "normalWeight" }
+                        option?.let {
+                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                        }
+                    } else if (bmi in 25.0..<30.0) {
+                        val option = options.firstOrNull { it[DefinedParams.id] == "overWeight" }
+                        option?.let {
+                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                        }
+                    } else {
+                        val option = options.firstOrNull { it[DefinedParams.id] == "obsess" }
+                        option?.let {
+                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                        }
+                    }
+                }
+                val hb = CommonUtils.getDouble(ancMap?.get(AssessmentDefinedParams.HEMOGLOBIN)).takeIf { it > 0 }
+                hb?.let {
+                    if (hb < 7) {
+                        val option = options.firstOrNull { it[DefinedParams.id] == "severeAnemia" }
+                        option?.let {
+                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                        }
+                    } else if (hb < 10) {
+                        val option = options.firstOrNull { it[DefinedParams.id] == "moderateAnemia" }
+                        option?.let {
+                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                        }
+                    } else if (hb < 11) {
+                        val option = options.firstOrNull { it[DefinedParams.id] == "mildAnemia" }
+                        option?.let {
+                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                        }
+                    } else {
+                        // Do nothing
+                    }
+                }
+                val fastingSugar = CommonUtils.getDouble(ancMap?.get(AssessmentDefinedParams.BLOOD_SUGAR_FASTING)).takeIf { it > 0 }
+                val randomSugar = CommonUtils.getDouble(ancMap?.get(AssessmentDefinedParams.BLOOD_SUGAR_RANDOM)).takeIf { it > 0 }
+                if ((fastingSugar != null && fastingSugar < 4) || (randomSugar != null && randomSugar < 4)) {
+                    val option = options.firstOrNull { it[DefinedParams.id] == "lowSugar" }
+                    option?.let {
+                        instructions.add(option[DefinedParams.name] as? String ?: "")
+                        instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                    }
+                }
+            }
+            if (instructions.isEmpty() || instructionsCulture.isEmpty()) {
+                counsellingItems.removeIf { it.id == AssessmentDefinedParams.NUTRITION_COUNSELLING }
+            } else {
+                nutritionCounselling.instructions = instructions
+                nutritionCounselling.instructionsCulture = instructionsCulture
+            }
+        }
+
+        // Only create counselling card if there are items to display
+        if (!counsellingItems.isNullOrEmpty()) {
+            // Create Counselling CardView using CardLayoutBinding
+            val counsellingCardBinding = CardLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+
+            // Set card title
+            counsellingCardLayout?.let { cardLayout ->
+                val isTranslationEnabled = SecuredPreference
+                    .getIsTranslationEnabled()
+                val cardTitle = if (isTranslationEnabled && !cardLayout.titleCulture.isNullOrBlank()) {
+                    cardLayout.titleCulture ?: cardLayout.title
+                } else {
+                    cardLayout.title
+                }
+                counsellingCardBinding.cardTitle.text = cardTitle
+            } ?: run {
+                // Fallback title if cardLayout not found
+                counsellingCardBinding.cardTitle.text = "Counselling"
+            }
+
+            // Add counselling items to the card's content layout
+            counsellingItems.forEach { data ->
+                addInstructionsCard(data, counsellingCardBinding.llFamilyRoot)
+            }
+
+            // Insert counselling card after result card
+            if (insertIndex >= 0) {
+                binding.scrollViewLL.addView(counsellingCardBinding.root, insertIndex)
+            } else {
+                // Fallback: add to end
+                binding.scrollViewLL.addView(counsellingCardBinding.root)
             }
         }
     }
@@ -830,65 +944,6 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     fun getCurrentAnsweredStatus(): Boolean = viewModel.otherAssessmentDetails.isNotEmpty()
-
-    private fun showQuestionBasedAge(
-        map: HashMap<String, Any>,
-        formLayout: FormLayout,
-    ): List<String> {
-        var age = viewModel.ageInMonth.value
-        var questionList = ArrayList<String>()
-        val resultMap = map[RMNCH.ANC] as? Map<String, Any> // Cast to Map<String, Any>
-        val deathOfMother = resultMap?.get(DEATH_OF_MOTHER_KEY) as? Boolean
-        if (deathOfMother == true) {
-            if (formLayout.id != DEATH_OF_MOTHER_KEY) {
-                questionList.add(getAllIdsExcludingDeathOfMother(formLayout))
-            }
-        } else {
-            if (age?.contains(getString(R.string.week), true) == true ||
-                age?.contains(getString(R.string.day), true) == true
-            ) {
-                questionList.add(AssessmentDefinedParams.TakingMinimumMealsPerDay)
-                questionList.add(AssessmentDefinedParams.FedFrom4FoodGroups)
-                questionList.add(AssessmentDefinedParams.Measles1Given)
-                questionList.add(AssessmentDefinedParams.YellowFeverVacineGiven)
-                questionList.add(AssessmentDefinedParams.Measles2Given)
-            } else {
-                when (
-                    age
-                        ?.replace(getString(R.string.months), "")
-                        ?.replace(getString(R.string.month), "")
-                        ?.trim()
-                        ?.toInt()
-                ) {
-                    in 0..5 -> {
-                        questionList.add(AssessmentDefinedParams.TakingMinimumMealsPerDay)
-                        questionList.add(AssessmentDefinedParams.FedFrom4FoodGroups)
-                        questionList.add(AssessmentDefinedParams.Measles1Given)
-                        questionList.add(AssessmentDefinedParams.YellowFeverVacineGiven)
-                        questionList.add(AssessmentDefinedParams.Measles2Given)
-                    }
-
-                    in 6..12 -> {
-                        questionList.add(AssessmentDefinedParams.ExclusivelyBreastfeeding)
-                        questionList.add(AssessmentDefinedParams.Measles2Given)
-                    }
-
-                    in 13..15 -> {
-                        questionList.add(AssessmentDefinedParams.ExclusivelyBreastfeeding)
-                    }
-
-                    else -> {
-                    }
-                }
-            }
-        }
-
-        return questionList
-    }
-
-    private fun getAllIdsExcludingDeathOfMother(formLayouts: FormLayout): String {
-        return formLayouts.id // Exclude "deathOfMother"
-    }
 
     private fun bindRmnchSummaryView(
         title: String?,

@@ -443,4 +443,14 @@ object AssessmentDefinedParams {
     const val SEX = "sex"
     const val BIRTH_WEIGHT = "birthWeight"
     const val CAUSE_OF_NEONATAL_DEATH = "causeOfNeonatalDeath"
+
+    /**
+     * DialogCheckbox : Child complications
+     */
+    const val ID_CHILD_ILLNESS_TYPE = "childIllnessType"
+
+    /**
+     * SingleSelectionView : Has referral been made?
+     */
+    const val ID_CHILD_REFERRAL = "childReferral"
 }
