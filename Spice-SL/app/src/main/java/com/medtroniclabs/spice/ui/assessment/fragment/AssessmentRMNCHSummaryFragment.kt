@@ -421,7 +421,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         viewModel.pregnancyDetailLiveData.value?.lastMenstrualPeriod?.let { lmp ->
             val lmpCalendar = DateUtils.getLastMenstrualDate(lmp)
             val gestationalAge = DateUtils.calculateGestationalAge(lmpCalendar)
-            // New born care : Shown only during 3rd trimester
+            // Newborn care : Shown only during 3rd trimester
             if (gestationalAge.first < AssessmentDefinedParams.GESTATIONAL_AGE_WEEK_27) {
                 counsellingItems?.removeIf { it.id == AssessmentDefinedParams.NEW_BORN_CARE_EDUCATION }
             }
@@ -432,7 +432,8 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             val instructions = arrayListOf<String>()
             val instructionsCulture = arrayListOf<String>()
             if (!options.isNullOrEmpty()) {
-                val bmi = CommonUtils.getDouble(ancMap?.get(AssessmentDefinedParams.BMI)).takeIf { it > 0 }
+                val medicalHistoryPhysicalExaminationMap = ancMap?.get(AssessmentDefinedParams.GROUP_MEDICAL_HISTORY_PHYSICAL_EXAMINATION) as? Map<*, *>
+                val bmi = CommonUtils.getDouble(medicalHistoryPhysicalExaminationMap?.get(AssessmentDefinedParams.BMI)).takeIf { it > 0 }
                 bmi?.let {
                     if (bmi < 18.5) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "underWeight" }
@@ -460,7 +461,8 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         }
                     }
                 }
-                val hb = CommonUtils.getDouble(ancMap?.get(AssessmentDefinedParams.HEMOGLOBIN)).takeIf { it > 0 }
+                val pointOfCareInvestigationMap = ancMap?.get(AssessmentDefinedParams.GROUP_POINT_OF_CARE_INVESTIGATIONS) as? Map<*, *>
+                val hb = CommonUtils.getDouble(pointOfCareInvestigationMap?.get(AssessmentDefinedParams.HEMOGLOBIN)).takeIf { it > 0 }
                 hb?.let {
                     if (hb < 7) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "severeAnemia" }
@@ -484,8 +486,8 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         // Do nothing
                     }
                 }
-                val fastingSugar = CommonUtils.getDouble(ancMap?.get(AssessmentDefinedParams.BLOOD_SUGAR_FASTING)).takeIf { it > 0 }
-                val randomSugar = CommonUtils.getDouble(ancMap?.get(AssessmentDefinedParams.BLOOD_SUGAR_RANDOM)).takeIf { it > 0 }
+                val fastingSugar = CommonUtils.getDouble(pointOfCareInvestigationMap?.get(AssessmentDefinedParams.BLOOD_SUGAR_FASTING)).takeIf { it > 0 }
+                val randomSugar = CommonUtils.getDouble(pointOfCareInvestigationMap?.get(AssessmentDefinedParams.BLOOD_SUGAR_RANDOM)).takeIf { it > 0 }
                 if ((fastingSugar != null && fastingSugar < 4) || (randomSugar != null && randomSugar < 4)) {
                     val option = options.firstOrNull { it[DefinedParams.id] == "lowSugar" }
                     option?.let {
