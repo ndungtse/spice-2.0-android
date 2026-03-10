@@ -779,19 +779,20 @@ class AssessmentRMNCHFragment :
      * Manipulates form based on pregnancy details
      */
     private fun managePncFormBasedOnPregnancyDetail(details: PregnancyDetail?) {
-        val pregnancyHistoryView = formGenerator.getViewByTag(RMNCH.ID_PREGNANCY_HISTORY + formGenerator.rootSuffix) as? ViewGroup
+        val pregnancyHistoryCardView = formGenerator.getViewByTag(RMNCH.ID_PREGNANCY_HISTORY + formGenerator.rootSuffix)
+        val pregnancyHistoryView = formGenerator.getViewByTag(RMNCH.ID_PREGNANCY_HISTORY) as? ViewGroup
         val pncVisitCount = getPncVisitCount()
         val ancVisitCountForPnc = getAncVisitCountForPnc()
 
         // For first PNC visit only, if gravida is not set, then ask for pregnancy history
         // The user is visiting the member for the first time, no PW Profile, no ANC.
         if (pncVisitCount <= 1L && (details?.gravida ?: 0) == 0) {
-            pregnancyHistoryView?.visible()
+            pregnancyHistoryCardView?.visible()
             pregnancyHistoryView?.children?.forEach { pregnancyField ->
                 pregnancyField.visible()
             }
         } else {
-            pregnancyHistoryView?.gone()
+            pregnancyHistoryCardView?.gone()
             pregnancyHistoryView?.children?.forEach { pregnancyField ->
                 formGenerator.resetChildViews(pregnancyField)
                 pregnancyField.gone()
