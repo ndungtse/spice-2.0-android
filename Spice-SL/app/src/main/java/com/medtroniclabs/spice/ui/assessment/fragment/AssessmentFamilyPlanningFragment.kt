@@ -16,7 +16,6 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
-import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.formgeneration.utility.InformationLayoutFragment
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -64,11 +63,6 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
             this,
             binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled(),
-            callback = { resultMap, fieldId ->
-                if (fieldId == AssessmentDefinedParams.NumberOfLivingChildren || fieldId == AssessmentDefinedParams.DesireForChildrenInFuture) {
-                    updateCounsellingMessages(resultMap)
-                }
-            },
         )
     }
 
@@ -86,10 +80,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resourceState.data?.let { data ->
-                        val filteredFormLayout = data.formLayout.filterNot {
-                            it.id == AssessmentDefinedParams.ReferralFacilityType
-                        }
-                        formGenerator.populateViews(filteredFormLayout)
+                        formGenerator.populateViews(data.formLayout)
                     }
                 }
 
@@ -115,10 +106,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
         formLayout: FormLayout,
         resultMap: Any?,
     ) {
-        CheckBoxDialog
-            .newInstance(id, resultMap, title = getString(R.string.methods)) { resultMap ->
-                formGenerator.validateCheckboxDialogue(id, formLayout, resultMap)
-            }.show(childFragmentManager, CheckBoxDialog.TAG)
+        // No checkbox dialogs in family planning workflow
     }
 
     override fun onInstructionClicked(
@@ -136,6 +124,13 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
         serverData: List<FormLayout>?,
     ) {
         resultMap?.let { details ->
+            // Convert single Spinner value to array format (for backward compatibility with existing data format)
+            details[AssessmentDefinedParams.FamilyPlanningMethods]?.let { value ->
+                if (value is String && value.isNotBlank()) {
+                    details[AssessmentDefinedParams.FamilyPlanningMethods] = arrayListOf(value)
+                }
+            }
+
             val referralResult = ReferralResultGenerator().calculateFamilyPlanningStatus(details)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
@@ -152,9 +147,6 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
     }
 
     override fun onRenderingComplete() {
-        formGenerator.getResultMap().let { resultMap ->
-            updateCounsellingMessages(resultMap)
-        }
     }
 
     override fun onUpdateInstruction(
@@ -223,74 +215,4 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
     }
 
     fun getCurrentAnsweredStatus(): Boolean = formGenerator.getResultMap().isNotEmpty()
-
-    /**
-     * Updates counselling messages visibility based on number of living children
-     * and desire for children in future.
-     *
-     * Business Rules:
-     * 1. SARCs: Show if (Children = 0) OR (Desire = "yes_within_2_yrs")
-     * 2. LARCs: Show if (Children ≥ 1) OR (Desire = "yes_after_2_yrs")
-     * 3. Permanent: Show if (Children ≥ 2) OR (Desire = "no_more_children")
-     * 4. Special: If Desire = "unsure", ignore desire and use only children logic
-     */
-    private fun updateCounsellingMessages(resultMap: HashMap<String, Any>) {
-        // Extract number of living children
-        val numChildren = when (val childrenValue = resultMap[AssessmentDefinedParams.NumberOfLivingChildren]) {
-            is Number -> childrenValue.toInt()
-            is String -> childrenValue.toIntOrNull() ?: 0
-            else -> 0
-        }
-
-        // Extract desire for children in future
-        val desire = resultMap[AssessmentDefinedParams.DesireForChildrenInFuture] as? String
-
-        // Handle unsure special case - ignore desire field
-        val isUnsure = desire == AssessmentDefinedParams.DesireUnsure
-
-        // Evaluate conditions with OR logic
-        val showSARCs = if (isUnsure) {
-            // Unsure case: use only children logic
-            numChildren == 0
-        } else {
-            // Normal case: (Children = 0) OR (Desire = "yes_within_2_yrs")
-            numChildren == 0 || desire == AssessmentDefinedParams.DesireYesWithin2Yrs
-        }
-
-        val showLARCs = if (isUnsure) {
-            // Unsure case: use only children logic
-            numChildren >= 1
-        } else {
-            // Normal case: (Children ≥ 1) OR (Desire = "yes_after_2_yrs")
-            numChildren >= 1 || desire == AssessmentDefinedParams.DesireYesAfter2Yrs
-        }
-
-        val showPermanent = if (isUnsure) {
-            // Unsure case: use only children logic
-            numChildren >= 2
-        } else {
-            // Normal case: (Children ≥ 2) OR (Desire = "no_more_children")
-            numChildren >= 2 || desire == AssessmentDefinedParams.DesireNoMore
-        }
-
-        // Update visibility of counselling message views
-        updateCounsellingMessageVisibility(AssessmentDefinedParams.CounsellingMessageSarcs, showSARCs)
-        updateCounsellingMessageVisibility(AssessmentDefinedParams.CounsellingMessageLarcs, showLARCs)
-        updateCounsellingMessageVisibility(AssessmentDefinedParams.CounsellingMessagePermanent, showPermanent)
-    }
-
-    /**
-     * Updates the visibility of a counselling message view.
-     *
-     * @param messageId The ID of the counselling message field
-     * @param show True to show (VISIBLE), false to hide (GONE)
-     */
-    private fun updateCounsellingMessageVisibility(
-        messageId: String,
-        show: Boolean,
-    ) {
-        val viewTag = messageId + AssessmentDefinedParams.rootSuffix
-        val view = formGenerator.getViewByTag(viewTag)
-        view?.visibility = if (show) View.VISIBLE else View.GONE
-    }
 }

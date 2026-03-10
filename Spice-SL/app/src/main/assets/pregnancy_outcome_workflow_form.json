@@ -1,0 +1,726 @@
+{
+  "formLayout": [
+    {
+      "familyOrder": 0,
+      "id": "maternalDeath",
+      "title": "Maternal Death",
+      "titleCulture": "মাতৃমৃত্যু",
+      "viewType": "CardView"
+    },
+    {
+      "family": "maternalDeath",
+      "fieldName": "Time of death",
+      "id": "timeOfDeath",
+      "orderId": 1,
+      "isSummary": false,
+      "viewType": "Spinner",
+      
+      "isEnabled": true,
+      "title": "Time of death",
+      "titleCulture": "মৃত্যুর সময়",
+      "errorMessage": "Please select time of death",
+      "errorMessageCulture": "অনুগ্রহ করে মৃত্যুর সময় নির্বাচন করুন",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "beforeDelivery",
+          "name": "Before delivery",
+          "cultureValue": "প্রসবের পূর্বে"
+        },
+        {
+          "id": "duringChildbirth",
+          "name": "During childbirth",
+          "cultureValue": "প্রসবের সময়"
+        },
+        {
+          "id": "within42DaysAfterDelivery",
+          "name": "Within 42 days after Delivery",
+          "cultureValue": "প্রসবের ৪২ দিনের মধ্যে"
+        }
+      ],
+      "condition": [
+        {
+          "eq": "beforeDelivery",
+          "targetId": "gestationMonthAtDeath",
+          "visibility": "visible"
+        },
+        {
+          "eqList": ["beforeDelivery","within42DaysAfterDelivery","duringChildbirth"],
+          "targetId": "abortion",
+          "visibility": "gone"
+        },
+        {
+          "eqList": ["beforeDelivery","within42DaysAfterDelivery","duringChildbirth"],
+          "targetId": "gestationMonthAtAbortion",
+          "visibility": "gone"
+        },
+        {
+          "eqList": ["beforeDelivery","within42DaysAfterDelivery","duringChildbirth"],
+          "targetId": "typeOfAbortion",
+          "visibility": "gone"
+        },
+        {
+          "eq": "beforeDelivery",
+          "targetId": "deliveryOutcomes",
+          "visibility": "gone"
+        },
+        {
+          "eq": "beforeDelivery",
+          "targetId": "deliveryOutcome",
+          "visibility": "gone"
+        },
+        {
+          "eq": "beforeDelivery",
+          "targetId": "liveBirthNumbers",
+          "visibility": "gone"
+        },
+        {
+          "eq": "beforeDelivery",
+          "targetId": "stillbirthNumbers",
+          "visibility": "gone"
+        },
+        {
+          "eq": "beforeDelivery",
+          "targetId": "placeOfDelivery",
+          "visibility": "gone"
+        },
+        {
+          "eq": "beforeDelivery",
+          "targetId": "dateOfDelivery",
+          "visibility": "gone"
+        },
+        {
+          "eq": "beforeDelivery",
+          "targetId": "modeOfDelivery",
+          "visibility": "gone"
+        },
+        {
+          "eq": "beforeDelivery",
+          "targetId": "birthAttendant",
+          "visibility": "gone"
+        },
+        {
+          "eq": "beforeDelivery",
+          "targetId": "anyComplicationsDuringDelivery",
+          "visibility": "gone"
+        },
+        {
+          "eq": "beforeDelivery",
+          "targetId": "complicationsDuringDelivery",
+          "visibility": "gone"
+        },
+        {
+          "eq": "beforeDelivery",
+          "targetId": "counsellingAdverseEvent",
+          "visibility": "gone"
+        },
+        {
+          "eq": "beforeDelivery",
+          "targetId": "counsellingAbortion",
+          "visibility": "gone"
+        },
+        {
+          "eq": "beforeDelivery",
+          "targetId": "counsellingStillBirth",
+          "visibility": "gone"
+        },
+        {
+          "eq": "beforeDelivery",
+          "targetId": "counsellingNeonatalDeath",
+          "visibility": "gone"
+        },
+        {
+          "eqList": ["beforeDelivery", "within42DaysAfterDelivery", "duringChildbirth"],
+          "targetId": "causeOfDeath",
+          "visibility": "visible"
+        }
+      ]
+    },
+    {
+      "family": "maternalDeath",
+      "fieldName": "Gestation month at the time of death",
+      "id": "gestationMonthAtDeath",
+      "orderId": 2,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 2,
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Gestation month at the time of death",
+      "titleCulture": "মৃত্যুর সময় গর্ভকাল (মাস)",
+      "errorMessage": "Please enter gestation month",
+      "errorMessageCulture": "অনুগ্রহ করে গর্ভকাল (মাস) লিখুন",
+      "visibility": "gone",
+      "hint": "Enter gestation month",
+      "hintCulture": "গর্ভকাল (মাস) লিখুন",
+      "maxLength": 2,
+      "minValue": 1,
+      "maxValue": 10
+    },
+    {
+      "family": "maternalDeath",
+      "fieldName": "Cause of death",
+      "id": "causeOfDeath",
+      "orderId": 3,
+      "isSummary": false,
+      "viewType": "DialogCheckbox",
+      
+      "isEnabled": true,
+      "title": "Cause of death",
+      "titleCulture": "মাতৃমৃত্যুর কারণ",
+      "errorMessage": "Please select cause of death",
+      "errorMessageCulture": "অনুগ্রহ করে মাতৃমৃত্যুর কারণ নির্বাচন করুন",
+      "visibility": "gone",
+      "hint": "Cause of death",
+      "hintCulture": "মাতৃমৃত্যুর কারণ নির্বাচন করুন",
+      "optionsList": [
+        {
+          "id": "excessiveBleeding",
+          "name": "Excessive bleeding",
+          "cultureValue": "অতিরিক্ত রক্তক্ষরণ"
+        },
+        {
+          "id": "infection",
+          "name": "Infection",
+          "cultureValue": "সংক্রমণ"
+        },
+        {
+          "id": "hypertensiveDisorder",
+          "name": "Hypertensive disorder (Eclampsia)",
+          "cultureValue": "উচ্চ রক্তচাপজনিত জটিলতা (ইক্ল্যাম্পসিয়া)"
+        },
+        {
+          "id": "obstructedLabor",
+          "name": "Obstructed labor",
+          "cultureValue": "বাধাগ্রস্থ প্রসব"
+        },
+        {
+          "id": "uterineRupture",
+          "name": "Uterine rupture",
+          "cultureValue": "জরায়ু ফেটে যাওয়া"
+        },
+        {
+          "id": "unsafeAbortion",
+          "name": "Unsafe abortion",
+          "cultureValue": "অনিরাপদ গর্ভপাত"
+        },
+        {
+          "id": "severeAnemia",
+          "name": "Severe Anemia",
+          "cultureValue": "মারাত্মক রক্তস্বল্পতা"
+        },
+        {
+          "id": "otherMedicalComplications",
+          "name": "Other medical complications",
+          "cultureValue": "অন্যান্য চিকিৎসাজনিত জটিলতা"
+        }
+      ],
+      "condition": []
+    },
+    {
+      "familyOrder": 1,
+      "id": "abortion",
+      "title": "Abortion",
+      "titleCulture": "গর্ভপাত",
+      "viewType": "CardView"
+    },
+    {
+      "family": "abortion",
+      "fieldName": "Gestation month at the time of abortion",
+      "id": "gestationMonthAtAbortion",
+      "orderId": 1,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 2,
+      "isEnabled": true,
+      "title": "Gestation month at the time of abortion",
+      "titleCulture": "গর্ভপাতের সময় গর্ভকাল (মাস)",
+      "errorMessage": "Please enter gestation month (must be less than 6 months)",
+      "errorMessageCulture": "অনুগ্রহ করে গর্ভকাল (মাস) লিখুন (৬ মাসের কম হতে হবে)",
+      "visibility": "visible",
+      "hint": "Enter gestation month",
+      "hintCulture": "গর্ভকাল (মাস) লিখুন",
+      "maxLength": 1,
+      "minValue": 1,
+      "maxValue": 6,
+      "condition": [
+        {
+          "greaterThanOrEqual": 1,
+          "targetId": "typeOfAbortion",
+          "visibility": "visible"
+        },
+        {
+          "greaterThanOrEqual": 1,
+          "targetId": "deliveryOutcomes",
+          "visibility": "gone"
+      },
+      {
+          "greaterThanOrEqual": 1,
+          "targetId": "deliveryOutcome",
+          "visibility": "gone"
+      },
+      {
+          "greaterThanOrEqual": 1,
+          "targetId": "liveBirthNumbers",
+          "visibility": "gone"
+      },
+      {
+          "greaterThanOrEqual": 1,
+          "targetId": "stillbirthNumbers",
+          "visibility": "gone"
+      },
+      {
+          "greaterThanOrEqual": 1,
+          "targetId": "placeOfDelivery",
+          "visibility": "gone"
+      },
+      {
+          "greaterThanOrEqual": 1,
+          "targetId": "dateOfDelivery",
+          "visibility": "gone"
+      },
+      {
+          "greaterThanOrEqual": 1,
+          "targetId": "modeOfDelivery",
+          "visibility": "gone"
+      },
+      {
+          "greaterThanOrEqual": 1,
+          "targetId": "birthAttendant",
+          "visibility": "gone"
+      },
+      {
+          "greaterThanOrEqual": 1,
+          "targetId": "anyComplicationsDuringDelivery",
+          "visibility": "gone"
+      },
+      {
+          "greaterThanOrEqual": 1,
+          "targetId": "complicationsDuringDelivery",
+          "visibility": "gone"
+      },
+      {
+          "greaterThanOrEqual": 1,
+          "targetId": "counsellingAdverseEvent",
+          "visibility": "gone"
+      },
+      {
+          "greaterThanOrEqual": 1,
+          "targetId": "counsellingAbortion",
+          "visibility": "gone"
+      },
+      {
+          "greaterThanOrEqual": 1,
+          "targetId": "counsellingStillBirth",
+          "visibility": "gone"
+      },
+      {
+          "greaterThanOrEqual": 1,
+          "targetId": "counsellingNeonatalDeath",
+          "visibility": "gone"
+      }
+      ]
+    },
+    {
+      "family": "abortion",
+      "fieldName": "Type of Abortion",
+      "id": "typeOfAbortion",
+      "orderId": 2,
+      "isSummary": false,
+      "viewType": "SingleSelectionView",
+      "isEnabled": true,
+      "title": "Type of Abortion",
+      "titleCulture": "গর্ভপাতের ধরন",
+      "errorMessage": "Please select type of abortion",
+      "errorMessageCulture": "অনুগ্রহ করে গর্ভপাতের ধরন নির্বাচন করুন",
+      "visibility": "gone",
+      "optionsList": [
+        {
+          "id": "spontaneous",
+          "name": "Spontaneous",
+          "cultureValue": "অনাকাঙ্খিত গর্ভপাত"
+        },
+        {
+          "id": "induced",
+          "name": "Induced",
+          "cultureValue": "ইচ্ছাকৃতভাবে/চিকিৎসার মাধ্যমে গর্ভপাত"
+        }
+      ],
+      "condition": [
+        
+      ]
+    },
+    {
+      "familyOrder": 2,
+      "id": "deliveryOutcomes",
+      "title": "Delivery outcomes",
+      "titleCulture": "প্রসবের ফলাফল",
+      "viewType": "CardView"
+    },
+    {
+      "family": "deliveryOutcomes",
+      "fieldName": "Delivery outcome",
+      "id": "deliveryOutcome",
+      "orderId": 1,
+      "isSummary": false,
+      "viewType": "TextLabel",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Delivery outcome",
+      "titleCulture": "প্রসবের ফলাফল",
+      "visibility": "visible"
+    },
+    {
+      "family": "deliveryOutcomes",
+      "fieldName": "Live Birth Numbers",
+      "id": "liveBirthNumbers",
+      "orderId": 2,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 2,
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Live Birth",
+      "titleCulture": "জীবিত জন্ম",
+      "errorMessage": "Please enter number of live births",
+      "errorMessageCulture": "অনুগ্রহ করে জীবিত জন্মের সংখ্যা লিখুন",
+      "visibility": "visible",
+      "hint": "Enter number",
+      "hintCulture": "সংখ্যা লিখুন",
+      "maxLength": 1,
+      "minValue": 0,
+      "maxValue": 5,
+      "condition": []
+    },
+    {
+      "family": "deliveryOutcomes",
+      "fieldName": "Stillbirth Numbers",
+      "id": "stillbirthNumbers",
+      "orderId": 3,
+      "isSummary": false,
+      "viewType": "EditText",
+      "inputType": 2,
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Stillbirth",
+      "titleCulture": "মৃত জন্ম",
+      "errorMessage": "Please enter number of stillbirths",
+      "errorMessageCulture": "অনুগ্রহ করে মৃত জন্মের সংখ্যা লিখুন",
+      "visibility": "visible",
+      "hint": "Enter number",
+      "hintCulture": "সংখ্যা লিখুন",
+      "maxLength": 2,
+      "minValue": 0
+    },
+    {
+      "family": "deliveryOutcomes",
+      "fieldName": "Place of delivery",
+      "id": "placeOfDelivery",
+      "orderId": 4,
+      "isSummary": false,
+      "viewType": "SingleSelectionView",
+      
+      "isEnabled": true,
+      "title": "Place of delivery",
+      "titleCulture": "প্রসবের স্থান",
+      "errorMessage": "Please select place of delivery",
+      "errorMessageCulture": "অনুগ্রহ করে প্রসবের স্থান নির্বাচন করুন",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "home",
+          "name": "Home",
+          "cultureValue": "বাড়িতে"
+        },
+        {
+          "id": "govtHealthFacility",
+          "name": "Govt. Health facility",
+          "cultureValue": "সরকারি স্বাস্থ্যকেন্দ্রে"
+        },
+        {
+          "id": "privateFacility",
+          "name": "Private facility",
+          "cultureValue": "বেসরকারি স্বাস্থ্যকেন্দ্রে"
+        }
+      ],
+      "condition": [
+        {
+            "eq": "Home",
+            "targetId": "birthAttendant",
+            "visibility": "visible"
+        }
+      ]
+    },
+    {
+      "family": "deliveryOutcomes",
+      "fieldName": "Date of delivery",
+      "id": "dateOfDelivery",
+      "orderId": 5,
+      "isSummary": false,
+      "viewType": "DatePicker",
+      
+      "isEnabled": true,
+      "title": "Date of delivery",
+      "titleCulture": "প্রসবের তারিখ",
+      "errorMessage": "Please select date of delivery",
+      "errorMessageCulture": "অনুগ্রহ করে প্রসবের তারিখ নির্বাচন করুন",
+      "visibility": "visible",
+      "hint": "Select date",
+      "hintCulture": "তারিখ নির্বাচন করুন",
+      "disableFutureDate": true
+    },
+    {
+      "family": "deliveryOutcomes",
+      "fieldName": "Mode of Delivery",
+      "id": "modeOfDelivery",
+      "orderId": 6,
+      "isSummary": false,
+      "viewType": "SingleSelectionView",
+      
+      "isEnabled": true,
+      "title": "Mode of Delivery",
+      "titleCulture": "প্রসবের পদ্ধতি",
+      "errorMessage": "Please select mode of delivery",
+      "errorMessageCulture": "অনুগ্রহ করে প্রসবের পদ্ধতি নির্বাচন করুন",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "normalDelivery",
+          "name": "Normal Delivery",
+          "cultureValue": "স্বাভাবিক"
+        },
+        {
+          "id": "assistedDelivery",
+          "name": "Assisted Delivery",
+          "cultureValue": "প্রসবে সহায়তা নিয়ে প্রসব করাতে হয়েছে (ভ্যাকুয়াম কাপ বা ফোরসেপ ব্যবহার করে প্রসব)"
+        },
+        {
+          "id": "cesareanSection",
+          "name": "Cesarean Section",
+          "cultureValue": "সিজারিয়ান"
+        }
+      ]
+    },
+    {
+      "family": "deliveryOutcomes",
+      "fieldName": "Birth Attendant",
+      "id": "birthAttendant",
+      "orderId": 7,
+      "isSummary": false,
+      "viewType": "Spinner",
+      
+      "isEnabled": true,
+      "title": "Birth Attendant",
+      "titleCulture": "প্রসবের সহায়তাকারী",
+      "errorMessage": "Please select birth attendant",
+      "errorMessageCulture": "অনুগ্রহ করে প্রসবের সহায়তাকারী নির্বাচন করুন",
+      "visibility": "gone",
+      "optionsList": [
+        {
+          "id": "fwv",
+          "name": "FWV (Family welfare visitor)",
+          "cultureValue": "এফ ডাব্লিউ ভি"
+        },
+        {
+          "id": "csbaBrac",
+          "name": "CSBA-BRAC (Community based Skilled birth attendant)",
+          "cultureValue": "সি এস বি এ (ব্র্যাক)"
+        },
+        {
+          "id": "csbaOther",
+          "name": "CSBA-Other (Community based Skilled birth attendant)",
+          "cultureValue": "সি এস বি এ (অন্যান্য)"
+        },
+        {
+          "id": "healthWorker",
+          "name": "Health worker",
+          "cultureValue": "স্বাস্থ্যকর্মী"
+        },
+        {
+          "id": "nurse",
+          "name": "Nurse",
+          "cultureValue": "নার্স"
+        },
+        {
+          "id": "midwife",
+          "name": "Midwife",
+          "cultureValue": "মিডওয়াইফ"
+        },
+        {
+          "id": "doctor",
+          "name": "Doctor",
+          "cultureValue": "ডাক্তার"
+        },
+        {
+          "id": "untrainedBirthAttendant",
+          "name": "Untrained Birth attendant",
+          "cultureValue": "অপ্রশিক্ষিত ধাত্রী"
+        },
+        {
+          "id": "other",
+          "name": "Other",
+          "cultureValue": "অন্যান্য"
+        }
+      ]
+    },
+    {
+      "family": "deliveryOutcomes",
+      "fieldName": "Any complications during delivery?",
+      "id": "anyComplicationsDuringDelivery",
+      "orderId": 8,
+      "isSummary": false,
+      "viewType": "SingleSelectionView",
+      
+      "isEnabled": true,
+      "title": "Any complications during delivery?",
+      "titleCulture": "প্রসব কালীন কোন জটিলতা হয়েছিল কিনা",
+      "errorMessage": "Please select if there were any complications",
+      "errorMessageCulture": "অনুগ্রহ করে নির্বাচন করুন যে কোন জটিলতা ছিল কিনা",
+      "visibility": "visible",
+      "optionsList": [
+        {
+          "id": "yes",
+          "name": "Yes",
+          "cultureValue": "হ্যাঁ"
+        },
+        {
+          "id": "no",
+          "name": "No",
+          "cultureValue": "না"
+        }
+      ],
+      "optionType": "boolean",
+      "condition": [
+        {
+            "eq": "Yes",
+            "targetId": "complicationsDuringDelivery",
+            "visibility": "visible"
+        }
+      ]
+    },
+    {
+      "family": "deliveryOutcomes",
+      "fieldName": "Complications during delivery",
+      "id": "complicationsDuringDelivery",
+      "orderId": 9,
+      "isSummary": false,
+      "viewType": "DialogCheckbox",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Complications during delivery",
+      "titleCulture": "প্রসবকালীন জটিলতা",
+      "errorMessage": "Please select complications",
+      "errorMessageCulture": "অনুগ্রহ করে জটিলতা নির্বাচন করুন",
+      "visibility": "gone",
+      "hint": "complications",
+      "hintCulture": "জটিলতা নির্বাচন করুন",
+      "optionsList": [
+        {
+          "id": "excessiveBleeding",
+          "name": "Excessive bleeding",
+          "cultureValue": "অতিরিক্ত রক্তক্ষরণ"
+        },
+        {
+          "id": "convulsions",
+          "name": "Convulsions",
+          "cultureValue": "খিঁচুনি"
+        },
+        {
+          "id": "prolongedLabor",
+          "name": "Prolonged labor",
+          "cultureValue": "বিলম্বিত প্রসব"
+        },
+        {
+          "id": "obstructedLabor",
+          "name": "Obstructed labor",
+          "cultureValue": "বাধাগ্রস্ত প্রসব"
+        },
+        {
+          "id": "multipleBirths",
+          "name": "Multiple births",
+          "cultureValue": "জমজ প্রসব"
+        },
+        {
+          "id": "retainedPlacenta",
+          "name": "Retained Placenta",
+          "cultureValue": "গর্ভফুল আটকে গিয়েছিল"
+        },
+        {
+          "id": "other",
+          "name": "Other",
+          "cultureValue": "অন্যান্য"
+        },
+        {
+          "id": "dontKnow",
+          "name": "Don't know",
+          "cultureValue": "জানা নেই"
+        }
+      ]
+    },
+    {
+      "familyOrder": 4,
+      "id": "counsellingAdverseEvent",
+      "isSummary": true,
+      "title": "Counselling in case of adverse event",
+      "titleCulture": "প্রতিকূল ঘটনার ক্ষেত্রে কাউন্সেলিং",
+      "viewType": "CardView"
+    },
+    {
+      "family": "counsellingAdverseEvent",
+      "fieldName": "Abortion",
+      "id": "counsellingAbortion",
+      "orderId": 1,
+      "isSummary": true,
+      "viewType": "Instruction",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Abortion",
+      "titleCulture": "গর্ভপাত",
+      "visibility": "visible",
+      "instructions": [
+        "Customized counselling messages for abortion will be provided here"
+      ],
+      "instructionsCulture": [
+        "গর্ভপাতের জন্য কাস্টমাইজড কাউন্সেলিং বার্তা এখানে প্রদান করা হবে"
+      ]
+    },
+    {
+      "family": "counsellingAdverseEvent",
+      "fieldName": "Still Birth",
+      "id": "counsellingStillBirth",
+      "orderId": 2,
+      "isSummary": true,
+      "viewType": "Instruction",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Still Birth",
+      "titleCulture": "মৃত সন্তান প্রসব(স্টিলবার্থ)",
+      "visibility": "visible",
+      "instructions": [
+        "Customized counselling messages for stillbirth will be provided here"
+      ],
+      "instructionsCulture": [
+        "স্টিলবার্থের জন্য কাস্টমাইজড কাউন্সেলিং বার্তা এখানে প্রদান করা হবে"
+      ]
+    },
+    {
+      "family": "counsellingAdverseEvent",
+      "fieldName": "Neonatal Death",
+      "id": "counsellingNeonatalDeath",
+      "orderId": 3,
+      "isSummary": true,
+      "viewType": "Instruction",
+      "isMandatory": false,
+      "isEnabled": true,
+      "title": "Neonatal Death",
+      "titleCulture": "নবজাতকের মৃত্যু",
+      "visibility": "visible",
+      "instructions": [
+        "Customized counselling messages for neonatal death will be provided here"
+      ],
+      "instructionsCulture": [
+        "নবজাতকের মৃত্যুর জন্য কাস্টমাইজড কাউন্সেলিং বার্তা এখানে প্রদান করা হবে"
+      ]
+    }
+  ]
+}

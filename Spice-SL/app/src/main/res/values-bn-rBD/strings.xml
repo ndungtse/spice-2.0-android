@@ -257,6 +257,13 @@
     <string name="no_refferral_treatment_required">কোন রেফারেল / চিকিৎসার প্রয়োজন নেই</string>
     <string name="no_risk_identified">কোন ঝুঁকি শনাক্ত করা হয়নি</string>
     <string name="no_gaps_found">কোন অসম্পূর্ণতা পাওয়া যায়নি</string>
+    <string name="baby_label">শিশু %d</string>
+    <string name="is_baby_alive">বাচ্চাটি কি জীবিত আছে?</string>
+    <string name="sex_label">লিঙ্গ</string>
+    <string name="cause_of_neonatal_death">নবজাতকের মৃত্যুর কারণ</string>
+    <string name="enter_weight_in_kg">ওজন কেজিতে লিখুন</string>
+    <string name="cause_of_death_hint">মৃত্যুর কারণ</string>
+    <string name="max_babies_allowed">সর্বোচ্চ %d শিশু অনুমোদিত</string>
     <string name="select">নির্বাচন করুন</string>
     <string name="muac_info_1">মাকে বলুন শিশুর বাম বাহু ঢেকে রাখে এমন যেকোনো পোশাক খুলে দিতে।</string>
     <string name="muac_info_2">শিশুর বাম উপরের বাহুর মধ্যবিন্দু নির্ধারণ করুন। এটি করার জন্য একটি সুতা (অথবা মাপার ফিতা) নিন, একটি প্রান্ত শিশুর কাঁধের শীর্ষে এবং অন্য প্রান্ত কনুইতে রাখুন।</string>

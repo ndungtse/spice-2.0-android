@@ -20,4 +20,7 @@ object HouseHoldRegistration {
      * EditText : Disability persons count
      */
     const val ID_DISABILITY_PERSONS_COUNT = "disability_persons_count"
+
+    const val householdHeadOccupation = "householdHeadOccupation"
+    const val otherOccupation = "otherOccupation"
 }

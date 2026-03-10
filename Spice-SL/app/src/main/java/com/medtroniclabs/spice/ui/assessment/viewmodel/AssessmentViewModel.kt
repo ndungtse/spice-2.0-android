@@ -56,6 +56,7 @@ import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.PregnantWomen
 import com.medtroniclabs.spice.mappingkey.RxBuddy.hasCough
 import com.medtroniclabs.spice.mappingkey.RxBuddy.hasProvidedMonitoringSheet
@@ -81,6 +82,7 @@ import com.medtroniclabs.spice.repo.TreatmentDetailsRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
+import com.medtroniclabs.spice.ui.MenuConstants.PREGNANCY_OUTCOME
 import com.medtroniclabs.spice.ui.MenuConstants.PREGNANT_WOMEN_PROFILE
 import com.medtroniclabs.spice.ui.MenuConstants.TB_MENU_ID
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
@@ -365,6 +367,12 @@ class AssessmentViewModel @Inject constructor(
                     savePregnancyDetails(details, assessmentMap)
                 }
 
+                if (menuId == PREGNANCY_OUTCOME &&
+                    assessmentResult.isSuccess()
+                ) {
+                    savePregnancyOutcomeDetails(details, assessmentMap)
+                }
+
                 if (
                     menuId == ANC_MENU.uppercase(Locale.getDefault()) &&
                     assessmentResult.isSuccess()
@@ -413,7 +421,113 @@ class AssessmentViewModel @Inject constructor(
     }
 
     /**
-     * Saves ANC assessment fields to PregnancyDetail table
+     * Saves pregnancy outcome details from pregnancy outcome assessment to PregnancyDetail entity.
+     * Extracts fields from deliveryOutcomes and abortion sections.
+     * Also creates household members for live babies from newborn details.
+     */
+    suspend fun savePregnancyOutcomeDetails(
+        details: AssessmentMemberDetails,
+        assessmentMap: HashMap<String, Any>,
+    ) {
+        val pregnancyOutcomeMap = assessmentMap[PREGNANCY_OUTCOME.lowercase()] as? Map<String, Any?>
+            ?: return
+
+        val existingPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
+        val pregnancyDetail = existingPregnancyDetail ?: PregnancyDetail(
+            householdMemberLocalId = details.id,
+            patientId = details.patientId,
+            householdMemberId = details.memberId,
+        )
+
+        // Extract fields from deliveryOutcomes section
+        val deliveryOutcomes = pregnancyOutcomeMap["deliveryOutcomes"] as? Map<String, Any?>
+        deliveryOutcomes?.let { delivery ->
+            pregnancyDetail.dateOfDelivery = delivery["dateOfDelivery"] as? String
+            pregnancyDetail.anyComplicationsDuringDelivery = delivery["anyComplicationsDuringDelivery"] as? String
+
+            // liveBirthNumbers → noOfNeonates (Int)
+            val liveBirthNumbers = delivery["liveBirthNumbers"]
+            pregnancyDetail.noOfNeonates = when (liveBirthNumbers) {
+                is Number -> liveBirthNumbers.toInt()
+                is String -> liveBirthNumbers.toIntOrNull()
+                else -> null
+            }
+
+            // placeOfDelivery → isDeliveryAtHome (Boolean)
+            val placeOfDelivery = delivery["placeOfDelivery"] as? String
+            pregnancyDetail.isDeliveryAtHome = placeOfDelivery?.equals("Home", ignoreCase = true)
+        }
+
+        // Extract typeOfAbortion from abortion section
+        val abortionMap = pregnancyOutcomeMap["abortion"] as? Map<String, Any?>
+        abortionMap?.let { abortion ->
+            pregnancyDetail.typeOfAbortion = abortion["typeOfAbortion"] as? String
+        }
+
+        // Create household members for live babies
+        val dateOfDelivery = deliveryOutcomes?.get("dateOfDelivery") as? String
+        val newbornDetailsList = findNewbornDetailsFromMap(pregnancyOutcomeMap)
+        var firstBabyMemberId: Long? = null
+
+        if (newbornDetailsList != null && !dateOfDelivery.isNullOrBlank()) {
+            newbornDetailsList.forEachIndexed { index, babyData ->
+                if (babyData is Map<*, *>) {
+                    val isBabyAlive = babyData["isBabyAlive"]?.toString()
+                    // Only create members for live babies
+                    if (isBabyAlive.equals("Yes", ignoreCase = true)) {
+                        val babyNumber = index + 1
+                        val babyMap = HashMap<String, Any>()
+                        babyMap[MemberRegistration.name] = "Baby $babyNumber of ${details.name}"
+                        babyMap[MemberRegistration.dateOfBirth] = dateOfDelivery
+                        babyMap[MemberRegistration.gender] = babyData["sex"]?.toString() ?: ""
+                        babyMap[MemberRegistration.isHouseholdHead] = false
+                        babyMap[MemberRegistration.ID_GUARDIAN] = details.id
+
+                        val memberId = memberRegistrationRepository.registerMember(
+                            map = babyMap,
+                            householdId = details.householdLocalId,
+                            parentReferenceId = details.id,
+                            location = lastLocation,
+                        )
+
+                        // Store first baby's member ID
+                        if (firstBabyMemberId == null && memberId != null) {
+                            firstBabyMemberId = memberId
+                        }
+                    }
+                }
+            }
+        }
+
+        // Save first baby's member ID to pregnancy detail
+        firstBabyMemberId?.let {
+            pregnancyDetail.neonateHouseholdMemberLocalId = it
+        }
+
+        memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
+    }
+
+    /**
+     * Finds newborn details list from the pregnancy outcome map.
+     * Searches both at the top level and within nested family maps.
+     */
+    private fun findNewbornDetailsFromMap(map: Map<String, Any?>): List<*>? {
+        val directList = map["newbornDetails"]
+        if (directList is List<*>) return directList
+
+        for (entry in map.entries) {
+            if (entry.value is Map<*, *>) {
+                val nestedMap = entry.value as Map<*, *>
+                val nestedList = nestedMap["newbornDetails"]
+                if (nestedList is List<*>) return nestedList
+            }
+        }
+        return null
+    }
+
+    /**
+     * Saves ANC assessment fields to PregnancyDetail table.
+     * Updates the existing record if one exists, otherwise creates a new one.
      */
     suspend fun saveAncPregnancyDetails(
         details: AssessmentMemberDetails,
@@ -421,33 +535,16 @@ class AssessmentViewModel @Inject constructor(
     ) {
         val ancMap = assessmentMap[ANC] as? Map<*, *>
         if (ancMap != null) {
-            // Get the latest pregnancy detail (ordered by ancVisitNo DESC)
-            val latestPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
-
-            // Calculate the new visit number from the latest record
-            val newVisitNo = getVisitNumber(latestPregnancyDetail?.ancVisitNo)
-
-            // Always create a new record (id = 0) instead of updating
-            val pregnancyDetail = PregnancyDetail(
+            // Fetch existing record or create new
+            val existingPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
+            val pregnancyDetail = existingPregnancyDetail ?: PregnancyDetail(
                 householdMemberLocalId = details.id,
-                id = 0, // Always create new record
-            ).apply {
-                ancVisitNo = newVisitNo
+                patientId = details.patientId,
+                householdMemberId = details.memberId,
+            )
 
-                // Copy essential fields from latest record if they exist
-                // Otherwise use values from current details
-                patientId = latestPregnancyDetail?.patientId ?: details.patientId
-                householdMemberId = latestPregnancyDetail?.householdMemberId ?: details.memberId
-
-                // Copy pregnancy-related fields from latest record (these don't change per visit)
-                lastMenstrualPeriod = latestPregnancyDetail?.lastMenstrualPeriod
-                estimatedDeliveryDate = latestPregnancyDetail?.estimatedDeliveryDate
-                gravida = latestPregnancyDetail?.gravida
-                parity = latestPregnancyDetail?.parity
-                numberOfLivingChildren = latestPregnancyDetail?.numberOfLivingChildren
-                ageOfLastChild = latestPregnancyDetail?.ageOfLastChild
-                pregnancyTest = latestPregnancyDetail?.pregnancyTest
-            }
+            // Increment visit number on the existing record
+            pregnancyDetail.ancVisitNo = getVisitNumber(pregnancyDetail.ancVisitNo)
 
             // Extract and save previousPregnancyComplications (string)
             val medicalExaminationData = ancMap.get(AssessmentDefinedParams.GROUP_MEDICAL_HISTORY_PHYSICAL_EXAMINATION) as? Map<String, Any>
@@ -463,25 +560,21 @@ class AssessmentViewModel @Inject constructor(
             pregnancyDetail.pregnantWomanOnTreatment = convertListToString(onTreatment)
 
             // Extract and save highRiskPregnantWoman (list of strings -> JSON)
-            // Check both ANC map and result section
             val summary = ancMap.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<String, Any>
             val highRisk = summary?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN)
             pregnancyDetail.highRiskPregnantWoman = convertListToString(highRisk)
 
             // Extract and save gapsInAnc (list of strings -> JSON)
-            // Check both ANC map and result section
             val gapsInAnc = summary?.get(AssessmentDefinedParams.GAPS_IN_ANC)
             pregnancyDetail.gapsInAnc = convertListToString(gapsInAnc)
 
-            // Save the new record (always creates new record with id = 0)
+            // Save (updates existing record or inserts new one)
             memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
 
-            // Fetch the latest saved record to get the auto-generated id
-            // This ensures we have the complete saved record with correct id
+            // Fetch the saved record to refresh LiveData
             val savedPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
 
             // Update the ViewModel's pregnancyDetail property with the saved record
-            // This ensures the fragment can access the updated visit number and all saved data
             this.pregnancyDetailLiveData.postValue(savedPregnancyDetail)
 
             // Refresh memberClinicalLiveData to update the displayed visit number

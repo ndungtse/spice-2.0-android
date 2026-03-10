@@ -197,12 +197,6 @@ object AssessmentDefinedParams {
     // Family Planning Field IDs
     const val NumberOfLivingChildren = "numberOfLivingChildren"
     const val DesireForChildrenInFuture = "desireForChildrenInFuture"
-    const val ReferralFacilityType = "referralFacilityType"
-
-    // Family Planning Counselling Message IDs
-    const val CounsellingMessageSarcs = "counsellingMessageSarcs"
-    const val CounsellingMessageLarcs = "counsellingMessageLarcs"
-    const val CounsellingMessagePermanent = "counsellingMessagePermanent"
 
     // Family Planning Desire Values
     const val DesireYesWithin2Yrs = "yesWithin2Yrs"
@@ -431,4 +425,22 @@ object AssessmentDefinedParams {
     const val CARE_DURING_ANTENATAL_PERIOD = "careDuringAntenatalPeriod"
     const val BIRTH_PREPAREDNESS = "birthPreparedness"
     const val NEW_BORN_CARE_EDUCATION = "newbornCareEducation"
+
+    // Pregnancy Outcome Field IDs
+    const val TIME_OF_DEATH = "timeOfDeath"
+    const val GESTATION_MONTH_AT_DEATH = "gestationMonthAtDeath"
+    const val CAUSE_OF_DEATH = "causeOfDeath"
+    const val GESTATION_MONTH_AT_ABORTION = "gestationMonthAtAbortion"
+    const val TYPE_OF_ABORTION = "typeOfAbortion"
+    const val DELIVERY_OUTCOME = "deliveryOutcome"
+    const val PLACE_OF_DELIVERY = "placeOfDelivery"
+    const val DATE_OF_DELIVERY = "dateOfDelivery"
+    const val COUNSELLING_ABORTION = "counsellingAbortion"
+    const val COUNSELLING_STILL_BIRTH = "counsellingStillBirth"
+    const val COUNSELLING_NEONATAL_DEATH = "counsellingNeonatalDeath"
+    const val NEWBORN_DETAILS = "newbornDetails"
+    const val IS_BABY_ALIVE = "isBabyAlive"
+    const val SEX = "sex"
+    const val BIRTH_WEIGHT = "birthWeight"
+    const val CAUSE_OF_NEONATAL_DEATH = "causeOfNeonatalDeath"
 }

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "96f5f122296665f62b6aee02447b8bb9",
+    "identityHash": "0ac1fc932581b6d8ad72160d2085c75e",
     "entities": [
       {
         "tableName": "Household",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `household_no` TEXT, `name` TEXT NOT NULL, `village_id` INTEGER NOT NULL, `no_of_people` INTEGER NOT NULL, `shasthya_shebika_id` INTEGER, `sub_village_id` INTEGER, `household_type` TEXT, `monthly_income` REAL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `version` TEXT, `lastUpdated` TEXT, `disability_persons_count` INTEGER, `fhir_id` TEXT, `sync_status` TEXT NOT NULL, `created_by` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `created_at` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `household_no` TEXT, `name` TEXT NOT NULL, `village_id` INTEGER NOT NULL, `no_of_people` INTEGER NOT NULL, `shasthya_shebika_id` INTEGER, `sub_village_id` INTEGER, `household_type` TEXT, `monthly_income` REAL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `version` TEXT, `lastUpdated` TEXT, `disability_persons_count` INTEGER, `household_head_occupation` TEXT, `other_occupation` TEXT, `fhir_id` TEXT, `sync_status` TEXT NOT NULL, `created_by` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `created_at` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -90,6 +90,18 @@
             "fieldPath": "disabilityPersonsCount",
             "columnName": "disability_persons_count",
             "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "householdHeadOccupation",
+            "columnName": "household_head_occupation",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "otherOccupation",
+            "columnName": "other_occupation",
+            "affinity": "TEXT",
             "notNull": false
           },
           {
@@ -3681,7 +3693,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '96f5f122296665f62b6aee02447b8bb9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0ac1fc932581b6d8ad72160d2085c75e')"
     ]
   }
 }

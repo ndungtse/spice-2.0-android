@@ -273,6 +273,16 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                 formGenerator.setValueForView(disabilityPersonsCount, view)
             }
         }
+        formGenerator.getViewByTag(HouseHoldRegistration.householdHeadOccupation)?.let { view ->
+            details.householdHeadOccupation?.let { occupation ->
+                formGenerator.setValueForView(occupation, view)
+            }
+        }
+        formGenerator.getViewByTag(HouseHoldRegistration.otherOccupation)?.let { view ->
+            details.otherOccupation?.let { otherOccupation ->
+                formGenerator.setValueForView(otherOccupation, view)
+            }
+        }
     }
 
     private fun initializeFormGenerator() {

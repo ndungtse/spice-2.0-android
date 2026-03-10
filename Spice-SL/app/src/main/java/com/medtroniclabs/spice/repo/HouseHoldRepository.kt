@@ -129,6 +129,12 @@ class HouseHoldRepository @Inject constructor(
         val monthlyIncome = map[HouseHoldRegistration.monthlyIncome]
         householdEntity.monthlyIncome = CommonUtils.getDoubleOrNull(monthlyIncome)
 
+        val occupation = map[HouseHoldRegistration.householdHeadOccupation]
+        householdEntity.householdHeadOccupation = CommonUtils.getStringOrEmptyString(occupation).takeIf { it.isNotEmpty() }
+
+        val otherOccupation = map[HouseHoldRegistration.otherOccupation]
+        householdEntity.otherOccupation = CommonUtils.getStringOrEmptyString(otherOccupation).takeIf { it.isNotEmpty() }
+
         if (entity != null) {
             householdEntity.updatedAt = System.currentTimeMillis()
             householdEntity.sync_status = OfflineSyncStatus.NotSynced

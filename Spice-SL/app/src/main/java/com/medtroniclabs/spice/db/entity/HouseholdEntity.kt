@@ -43,4 +43,8 @@ data class HouseholdEntity(
     val lastUpdated: String? = null,
     @ColumnInfo("disability_persons_count")
     var disabilityPersonsCount: Int? = null,
+    @ColumnInfo("household_head_occupation")
+    var householdHeadOccupation: String? = null,
+    @ColumnInfo("other_occupation")
+    var otherOccupation: String? = null,
 ) : BaseEntity()

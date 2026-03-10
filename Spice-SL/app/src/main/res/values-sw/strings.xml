@@ -237,6 +237,13 @@
     <string name="no_refferral_treatment_required">Hakuna rufaa/Hakuna Matibabu Yanayohitajika</string>
     <string name="no_risk_identified">Hakuna Hatari Iliyotambuliwa</string>
     <string name="no_gaps_found">Hakuna Mapungufu Yaliyopatikana</string>
+    <string name="baby_label">Mtoto %d</string>
+    <string name="is_baby_alive">Je, mtoto yu hai</string>
+    <string name="sex_label">Jinsia</string>
+    <string name="cause_of_neonatal_death">Sababu ya kifo cha mtoto mchanga</string>
+    <string name="enter_weight_in_kg">Ingiza uzito kwa kg</string>
+    <string name="cause_of_death_hint">Sababu ya kifo</string>
+    <string name="max_babies_allowed">Upeo wa watoto %d unaruhusiwa</string>
     <string name="select">Chagua</string>
     <string name="muac_info_1"> Muulize mama aondoe nguo yoyote inayofunika mkono wa kushoto wa mtoto.</string>
     <string name="muac_info_2">Tambua katikati ya mkono wa kushoto wa mtoto. Hii inaweza kufanywa kwa kuchukua kipande cha kamba (au mkanda yenyewe), weka mwisho mmoja kwenye ncha ya bega la mtoto na nyingine kwenye kiwiko</string>

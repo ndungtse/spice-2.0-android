@@ -42,6 +42,10 @@ data class HouseHold(
     val lastUpdated: String? = null,
     @ColumnInfo("disability_persons_count")
     var disabilityPersonsCount: Int? = null,
+    @ColumnInfo("household_head_occupation")
+    val householdHeadOccupation: String? = null,
+    @ColumnInfo("other_occupation")
+    val otherOccupation: String? = null,
 ) {
     @Ignore
     var provenance: ProvanceDto = ProvanceDto(modifiedDate = updatedAt.convertToUtcDateTime())
@@ -68,6 +72,8 @@ data class HouseHold(
             version = this.version,
             lastUpdated = this.lastUpdated,
             disabilityPersonsCount = this.disabilityPersonsCount,
+            householdHeadOccupation = this.householdHeadOccupation,
+            otherOccupation = this.otherOccupation,
         ).apply {
             fhirId = this@HouseHold.id.toString()
             sync_status = status

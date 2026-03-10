@@ -27,6 +27,8 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentNCDFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentNCDSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomsFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentPregnancyOutcomeFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentPregnancyOutcomeSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentPregnantWomenRegistrationFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentPregnantWomenRegistrationSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHFragment
@@ -173,6 +175,14 @@ class AssessmentActivity : BaseActivity() {
                 return Pair(false, true)
             }
 
+            is AssessmentPregnancyOutcomeFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentPregnancyOutcomeSummaryFragment -> {
+                return Pair(false, true)
+            }
+
             else -> return Pair(false, false)
         }
     }
@@ -226,6 +236,9 @@ class AssessmentActivity : BaseActivity() {
             }
             is AssessmentPregnantWomenRegistrationFragment -> {
                 AnalyticsDefinedParams.PREGNANT_WOMEN_PROFILE
+            }
+            is AssessmentPregnancyOutcomeFragment -> {
+                AnalyticsDefinedParams.PREGNANCY_OUTCOME
             }
             else -> {
                 ""
@@ -331,6 +344,14 @@ class AssessmentActivity : BaseActivity() {
                 replaceFragmentInId<AssessmentPregnantWomenRegistrationSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentPregnantWomenRegistrationSummaryFragment.TAG,
+                )
+            }
+            MenuConstants.PREGNANCY_OUTCOME -> {
+                setTitle(getString(R.string.assessment_summary))
+                hideBackButton()
+                replaceFragmentInId<AssessmentPregnancyOutcomeSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentPregnancyOutcomeSummaryFragment.TAG,
                 )
             }
         }
@@ -457,6 +478,13 @@ class AssessmentActivity : BaseActivity() {
                 replaceFragmentInId<AssessmentPregnantWomenRegistrationFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentPregnantWomenRegistrationFragment.TAG,
+                )
+            }
+            MenuConstants.PREGNANCY_OUTCOME -> {
+                setTitle(getString(R.string.pregnancy_outcome))
+                replaceFragmentInId<AssessmentPregnancyOutcomeFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentPregnancyOutcomeFragment.TAG,
                 )
             }
         }

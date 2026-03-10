@@ -1394,6 +1394,14 @@
     <string name="on_time" translatable="false">On Time</string>
     <string name="family_planning" translatable="false">Family Planning</string>
     <string name="pregnant_women_profile" translatable="false">Pregnant women profile</string>
+    <string name="pregnancy_outcome" translatable="false">Pregnancy Outcome</string>
+    <string name="baby_label">Baby %d</string>
+    <string name="is_baby_alive">Is the baby alive</string>
+    <string name="sex_label">Sex</string>
+    <string name="cause_of_neonatal_death">Cause of neonatal death</string>
+    <string name="enter_weight_in_kg">Enter weight in kg</string>
+    <string name="cause_of_death_hint">Cause of death</string>
+    <string name="max_babies_allowed">Maximum %d babies allowed</string>
     <string name="epi_catch_up_policy" translatable="false">EPI Catch-Up Policy</string>
     <string name="vaccine" translatable="false">Vaccine</string>
     <string name="minimum_age" translatable="false">Minimum Age</string>

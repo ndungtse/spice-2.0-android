@@ -47,4 +47,5 @@ object MenuConstants {
     const val PO_MENU_ID = "pregnancyOutcome"
     const val FP_MENU_MR = "FAMILY PLANNING"
     const val HIV = "HIV"
+    const val PREGNANCY_OUTCOME = "pregnancyOutcome"
 }

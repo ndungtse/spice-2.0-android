@@ -143,10 +143,12 @@ class DashboardMenuItemsAdapter(
                 R.drawable.ic_cataract,
             )
 
-            MenuConstants.RMNCH_MENU_ID, MenuConstants.MATERNAL_HEALTH, MenuConstants.PREGNANT_WOMEN_PROFILE -> ContextCompat.getDrawable(
-                context,
-                R.drawable.ic_rmnch_tool,
-            )
+            MenuConstants.RMNCH_MENU_ID, MenuConstants.MATERNAL_HEALTH, MenuConstants.PREGNANT_WOMEN_PROFILE, MenuConstants.PREGNANCY_OUTCOME ->
+                ContextCompat
+                    .getDrawable(
+                        context,
+                        R.drawable.ic_rmnch_tool,
+                    )
 
             MenuConstants.OTHER_SYMPTOMS -> ContextCompat.getDrawable(
                 context,
