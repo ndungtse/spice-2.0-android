@@ -21,7 +21,6 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Contraceptive
-import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -131,7 +130,6 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
                 }
             }
 
-            val referralResult = ReferralResultGenerator().calculateFamilyPlanningStatus(details)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
                     serverData = it,
@@ -141,7 +139,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
             }
             result?.second?.let {
                 viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
-                viewModel.saveAssessment(serverData, it, referralResult, viewModel.menuId)
+                viewModel.saveAssessment(serverData, it, null, viewModel.menuId)
             }
         }
     }
@@ -189,7 +187,6 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
 
     private fun getFormDataForWorkflow() {
         viewModel.getFormData(AssessmentDefinedParams.Family_Planning)
-        viewModel.getNearestHealthFacility()
     }
 
     companion object {

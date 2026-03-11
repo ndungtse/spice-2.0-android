@@ -1569,4 +1569,8 @@
         <item quantity="one">%d সদস্য</item>
         <item quantity="other">%d সদস্যগণ</item>
     </plurals>
+    <string name="counselling_message">পরামর্শ বার্তা</string>
+    <string name="short_acting_message">স্বল্পমেয়াদি পদ্ধতি – (পিল, কনডম, ইনজেকশন)</string>
+    <string name="long_acting_message">দীর্ঘমেয়াদি পদ্ধতি – (আইইউসিডি/কপার-টি, ইমপ্লান্ট)</string>
+    <string name="permanent_acting_message">স্থায়ী পদ্ধতি – (স্থায়ী বন্ধ্যাকরণ/স্টেরিলাইজেশন)</string>
 </resources>

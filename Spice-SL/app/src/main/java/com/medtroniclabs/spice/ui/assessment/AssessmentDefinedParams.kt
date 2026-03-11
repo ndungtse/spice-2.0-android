@@ -284,6 +284,7 @@ object AssessmentDefinedParams {
     const val STATUS_ABNORMAL = "Abnormal"
     const val STATUS_MODERATE_ANEMIA = "Moderate Anemia"
     const val STATUS_SEVERE_ANEMIA = "Severe Anemia"
+    const val STATUS_MILD_ANEMIA = "Mild Anemia"
     const val STATUS_GAP = "gap"
     const val VALUE_PRESENT = "present"
     const val VALUE_NOT_DONE = "notDone"
@@ -320,6 +321,7 @@ object AssessmentDefinedParams {
     // RMNCH Hemoglobin Thresholds
     const val HEMOGLOBIN_SEVERE_ANEMIA_THRESHOLD = 8.0
     const val HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD = 10.0
+    const val HEMOGLOBIN_MILD_ANEMIA_THRESHOLD = 11.0
 
     // RMNCH Tablet Consumption Threshold
     const val TABLET_CONSUMPTION_THRESHOLD = 30
@@ -453,4 +455,7 @@ object AssessmentDefinedParams {
      * SingleSelectionView : Has referral been made?
      */
     const val ID_CHILD_REFERRAL = "childReferral"
+
+    const val FP_METHOD_STERILIZATION_MALE = "sterilizationMale"
+    const val FP_METHOD_STERILIZATION_FEMALE = "sterilizationFemale"
 }

@@ -194,9 +194,19 @@ object RMNCH {
     const val ID_VITAMIN_A_CONSUMED = "vitaminAConsumed"
 
     /**
+     * TextLabel : IFA tables
+     */
+    const val ID_IFA_TABLETS = "ifaTablets"
+
+    /**
      * EditText : IFA Tablets Consumed
      */
     const val ID_IFA_TABLETS_CONSUMED = "ifaTabletsConsumed"
+
+    /**
+     * TextLabel : Calcium tablets
+     */
+    const val ID_CALCIUM_TABLETS = "calciumTablets"
 
     /**
      * EditText : Calcium Tablets Consumed

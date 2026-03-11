@@ -56,6 +56,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.summaryKey
 import com.medtroniclabs.spice.ui.assessment.referrallogic.AnemiaLevel
 import com.medtroniclabs.spice.ui.assessment.referrallogic.PNCAssessmentEvaluator
+import com.medtroniclabs.spice.ui.assessment.referrallogic.PNCAssessmentEvaluator.isSelectionPresent
 import com.medtroniclabs.spice.ui.assessment.referrallogic.PNCReferralType
 import com.medtroniclabs.spice.ui.assessment.referrallogic.PostpartumDangerSigns
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
@@ -189,10 +190,6 @@ class AssessmentRMNCHFragment :
             }
         }
 
-        viewModel.familyPlanningMethodsLiveData.observe(viewLifecycleOwner) { data ->
-            formGenerator.spinnerDataInjection(data, EntityMapper.getResultSpinnerMapList(data))
-        }
-
         // Child symptoms filter
         viewModel.symptomTypeListResponse.observe(this) { options ->
             val fragment = childFragmentManager.findFragmentByTag(CheckBoxDialog.TAG)
@@ -200,21 +197,25 @@ class AssessmentRMNCHFragment :
             if (fragment != null) {
                 return@observe
             }
-            val mutableOptions = options.toMutableList()
-            viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dateOfBirth ->
-                calculateAgeInMonths(dateOfBirth)?.let { pair ->
-                    val listOfOptionsNotEligible = if (pair.first <= 18) {
-                        listOf("cannotStandWalk", "cannotBalance", "cannotSpeak")
-                    } else {
-                        listOf("convulsion", "rapidBreathing", "fever", "lethargy", "unableToSuckMilk", "redUmbilicus", "skinRash", "eyeProblem")
+            if (id == AssessmentDefinedParams.ID_CHILD_ILLNESS_TYPE) {
+                viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dateOfBirth ->
+                    calculateAgeInMonths(dateOfBirth)?.let { pair ->
+                        val mutableOptions = options.toMutableList()
+                        val listOfOptionsNotEligible = if (pair.first <= 18) {
+                            listOf("cannotStandWalk", "cannotBalance", "cannotSpeak")
+                        } else {
+                            listOf("convulsion", "rapidBreathing", "fever", "lethargy", "unableToSuckMilk", "redUmbilicus", "skinRash", "eyeProblem")
+                        }
+                        mutableOptions.removeIf {
+                            listOfOptionsNotEligible.contains(it.value)
+                        }
+                        CheckBoxDialog
+                            .newInstance(dialogKey, resultMap, title = formLayout?.hint, inputData = mutableOptions) { map ->
+                                formLayout?.let { formLayout ->
+                                    formGenerator.validateCheckboxDialogue(id, formLayout, map)
+                                }
+                            }.show(childFragmentManager, CheckBoxDialog.TAG)
                     }
-                    mutableOptions.removeIf {
-                        listOfOptionsNotEligible.contains(it.value)
-                    }
-                    CheckBoxDialog
-                        .newInstance(dialogKey, resultMap, title = formLayout?.hint, inputData = mutableOptions) { map ->
-                            formLayout?.let { formGenerator.validateCheckboxDialogue(id, it, map) }
-                        }.show(childFragmentManager, CheckBoxDialog.TAG)
                 }
             }
         }
@@ -297,8 +298,8 @@ class AssessmentRMNCHFragment :
 
             AssessmentDefinedParams.SYSTOLIC, AssessmentDefinedParams.DIASTOLIC -> {
                 // Update BP-related fields when systolic or diastolic changes
-                handleFieldStatusUpdate(AssessmentDefinedParams.SYSTOLIC)
-                handleFieldStatusUpdate(AssessmentDefinedParams.DIASTOLIC)
+                handleAncFieldStatusUpdate(AssessmentDefinedParams.SYSTOLIC)
+                handleAncFieldStatusUpdate(AssessmentDefinedParams.DIASTOLIC)
                 updateAllFieldStatuses() // BP affects multiple fields (edema, urinaryAlbumin)
             }
 
@@ -306,11 +307,11 @@ class AssessmentRMNCHFragment :
                 // When existing illness changes, update status for dependent fields
                 updateAllFieldStatuses() // Illness affects multiple fields
                 // Specifically update BP fields, blood sugar fields, and on treatment status
-                handleFieldStatusUpdate(AssessmentDefinedParams.SYSTOLIC)
-                handleFieldStatusUpdate(AssessmentDefinedParams.DIASTOLIC)
-                handleFieldStatusUpdate(AssessmentDefinedParams.BLOOD_SUGAR_FASTING)
-                handleFieldStatusUpdate(AssessmentDefinedParams.BLOOD_SUGAR_RANDOM)
-                handleFieldStatusUpdate(AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT)
+                handleAncFieldStatusUpdate(AssessmentDefinedParams.SYSTOLIC)
+                handleAncFieldStatusUpdate(AssessmentDefinedParams.DIASTOLIC)
+                handleAncFieldStatusUpdate(AssessmentDefinedParams.BLOOD_SUGAR_FASTING)
+                handleAncFieldStatusUpdate(AssessmentDefinedParams.BLOOD_SUGAR_RANDOM)
+                handleAncFieldStatusUpdate(AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT)
             }
 
             AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT -> {
@@ -322,25 +323,25 @@ class AssessmentRMNCHFragment :
             }
 
             AssessmentDefinedParams.FOLIC_ACID_TOTAL_CONSUMED -> {
-                handleFieldStatusUpdate(AssessmentDefinedParams.FOLIC_ACID_TABLETS)
+                handleAncFieldStatusUpdate(AssessmentDefinedParams.FOLIC_ACID_TABLETS)
             }
 
             AssessmentDefinedParams.IFA_TOTAL_CONSUMED -> {
-                handleFieldStatusUpdate(AssessmentDefinedParams.IFA_TABLETS)
+                handleAncFieldStatusUpdate(AssessmentDefinedParams.IFA_TABLETS)
             }
 
             AssessmentDefinedParams.CALCIUM_TOTAL_CONSUMED -> {
-                handleFieldStatusUpdate(AssessmentDefinedParams.CALCIUM_TABLETS)
+                handleAncFieldStatusUpdate(AssessmentDefinedParams.CALCIUM_TABLETS)
             }
 
             AssessmentDefinedParams.BLOOD_SUGAR_FASTING, AssessmentDefinedParams.BLOOD_SUGAR_RANDOM -> {
                 // Update blood sugar status when value changes
-                handleFieldStatusUpdate(id)
+                handleAncFieldStatusUpdate(id)
             }
 
             AssessmentDefinedParams.ANC_FROM_MEDICAL_DOCTOR, AssessmentDefinedParams.ULTRASOUND -> {
                 // Update status when these fields change (they depend on gestational age)
-                handleFieldStatusUpdate(id)
+                handleAncFieldStatusUpdate(id)
             }
 
             AssessmentDefinedParams.TEMPERATURE,
@@ -352,7 +353,7 @@ class AssessmentRMNCHFragment :
             AssessmentDefinedParams.FACILITY_IDENTIFIED_FOR_DELIVERY,
             -> {
                 // Update status for individual fields
-                handleFieldStatusUpdate(id)
+                handleAncFieldStatusUpdate(id)
             }
 
             Screening.Weight, Screening.Height -> {
@@ -400,6 +401,7 @@ class AssessmentRMNCHFragment :
                     // Hemoglobin (Hb) : Mandatory Woman reporting heavy bleeding during PNC period
                     formGenerator.markMandatory(RMNCH.ID_HEMOGLOBIN, haveHeavyBleeding || mandatoryHemoglobin)
                 }
+                handlePncFieldStatusUpdate(id)
             }
 
             PregnantWomen.ID_GRAVIDA -> {
@@ -412,6 +414,55 @@ class AssessmentRMNCHFragment :
                 val parity = CommonUtils.getDoubleOrNull(resultMap[id]) ?: return
                 // Living children can be less than or equal to parity
                 formGenerator.getFormLayout(PregnantWomen.ID_LIVING_CHILDREN)?.maxValue = parity
+            }
+
+            RMNCH.ID_IFA_TABLETS_CONSUMED -> {
+                handlePncFieldStatusUpdate(RMNCH.ID_IFA_TABLETS)
+            }
+
+            RMNCH.ID_CALCIUM_TABLETS_CONSUMED -> {
+                handlePncFieldStatusUpdate(RMNCH.ID_CALCIUM_TABLETS)
+            }
+
+            RMNCH.ID_VITAMIN_A_CONSUMED,
+            RMNCH.ID_FAMILY_PLANNING_METHODS,
+            RMNCH.ID_TEMPERATURE,
+            RMNCH.ID_URINARY_BILIRUBIN,
+            RMNCH.ID_PULSE,
+            RMNCH.ID_HEMOGLOBIN,
+            RMNCH.ID_ECLAMPSIA,
+            -> {
+                handlePncFieldStatusUpdate(id)
+            }
+
+            RMNCH.ID_EDEMA,
+            RMNCH.ID_URINARY_ALBUMIN,
+            -> {
+                handlePncBpHighRiskHighlight()
+            }
+
+            RMNCH.ID_KNOWN_HTN -> {
+                handlePncFieldStatusUpdate(id)
+                handlePncBpHighRiskHighlight()
+            }
+
+            RMNCH.ID_GDM_PATIENT,
+            RMNCH.ID_DM_PATIENT,
+            -> {
+                handlePncFieldStatusUpdate(id)
+                handlePncBloodSugarHighRiskHighlight()
+            }
+
+            RMNCH.ID_FASTING_BLOOD_SUGAR,
+            RMNCH.ID_RANDOM_BLOOD_SUGAR,
+            -> {
+                handlePncBloodSugarHighRiskHighlight()
+            }
+
+            RMNCH.ID_SYSTOLIC,
+            RMNCH.ID_DIASTOLIC,
+            -> {
+                handlePncBpHighRiskHighlight()
             }
         }
     }
@@ -438,13 +489,6 @@ class AssessmentRMNCHFragment :
         localDataCache: Any,
         selectedParent: Long?,
     ) {
-        when (id) {
-            RMNCH.ID_FAMILY_PLANNING_METHODS -> {
-                if (localDataCache is String) {
-                    viewModel.loadDataCacheByType(id, localDataCache)
-                }
-            }
-        }
     }
 
     override fun onPopulate(targetId: String) {
@@ -620,13 +664,8 @@ class AssessmentRMNCHFragment :
         val pncMap = assessmentMap[RMNCH.PNC] as? HashMap<String, Any> ?: return
         val gson = Gson()
         // Update days since delivery
-        viewModel.pregnancyDetailLiveData.value?.dateOfDelivery?.let { clinicalDate ->
-            DateUtils.parseDate(clinicalDate)?.let { date ->
-                val days = DateUtils.getDaysDifference(date.getLongTime())
-                days?.let {
-                    pncMap[RMNCH.ID_DAYS_SINCE_DELIVERY] = days
-                }
-            }
+        getDaysSinceDelivery()?.let { days ->
+            pncMap[RMNCH.ID_DAYS_SINCE_DELIVERY] = days
         }
         val gapsInPnc = PNCAssessmentEvaluator.getPncGaps(pncMap)
         if (gapsInPnc.isNotEmpty()) {
@@ -1162,10 +1201,10 @@ class AssessmentRMNCHFragment :
     }
 
     /**
-     * Evaluates status condition for a field and returns status text if condition matches
+     * ANC : Evaluates status condition for a field and returns status text if condition matches
      * Returns Pair<statusText, statusTextCulture> or null if no condition matches
      */
-    private fun evaluateFieldStatus(
+    private fun evaluateAncFieldStatus(
         fieldId: String,
         value: Any?,
     ): Pair<String?, String?>? {
@@ -1192,6 +1231,132 @@ class AssessmentRMNCHFragment :
             AssessmentDefinedParams.BLOOD_SUGAR_RANDOM -> evaluateBloodSugarRandomStatus(value, resultMap)
             AssessmentDefinedParams.FACILITY_IDENTIFIED_FOR_DELIVERY -> evaluateFacilityIdentifiedForDeliveryStatus(value)
             else -> null
+        }
+    }
+
+    /**
+     * PNC : Evaluates status condition for a field and returns status text if condition matches
+     * Returns Pair<statusText, statusTextCulture> or null if no condition matches
+     */
+    private fun evaluatePncFieldStatus(
+        fieldId: String,
+        value: Any?,
+    ): Pair<String?, String?>? =
+        when (fieldId) {
+            RMNCH.ID_IFA_TABLETS -> {
+                evaluateIfaTabletsStatus()
+            }
+
+            RMNCH.ID_CALCIUM_TABLETS -> {
+                evaluateCalciumTabletStatus()
+            }
+
+            RMNCH.ID_VITAMIN_A_CONSUMED -> {
+                if (isSelectionPresent(value, DefinedParams.Yes)) {
+                    null
+                } else {
+                    AssessmentDefinedParams.STATUS_GAP to null
+                }
+            }
+
+            RMNCH.ID_FAMILY_PLANNING_METHODS -> {
+                if (isSelectionPresent(value, DefinedParams.None)) {
+                    AssessmentDefinedParams.STATUS_GAP to null
+                } else {
+                    null
+                }
+            }
+
+            RMNCH.ID_TEMPERATURE -> {
+                evaluateTemperatureStatus(value)
+            }
+
+            RMNCH.ID_URINARY_BILIRUBIN -> {
+                evaluateUrinaryBilirubinStatus(value)
+            }
+
+            RMNCH.ID_PULSE -> {
+                val pulse = CommonUtils.getInteger(value)
+                if (pulse !in 60..90) {
+                    AssessmentDefinedParams.STATUS_HIGH_RISK to null
+                } else {
+                    null
+                }
+            }
+
+            RMNCH.ID_POSTPARTUM_DANGER_SIGNS -> {
+                evaluatePostpartumDangerSigns(value)
+            }
+
+            RMNCH.ID_HEMOGLOBIN -> {
+                CommonUtils.getDouble(value).takeIf { it > 0 }?.let {
+                    evaluateHemoglobinStatus(it)
+                }
+            }
+
+            RMNCH.ID_ECLAMPSIA,
+            RMNCH.ID_KNOWN_HTN,
+            RMNCH.ID_GDM_PATIENT,
+            RMNCH.ID_DM_PATIENT,
+            -> {
+                if (isSelectionPresent(value, DefinedParams.Yes)) {
+                    AssessmentDefinedParams.STATUS_HIGH_RISK to null
+                } else {
+                    null
+                }
+            }
+
+            else -> null
+        }
+
+    /**
+     * Evaluates Postpartum Danger Signs, if danger signs are there than high risk
+     */
+    private fun evaluatePostpartumDangerSigns(value: Any?): Pair<String, String?>? {
+        val dangerSigns = value as? List<*>
+        val selectedSigns = dangerSigns?.filterIsInstance<Map<String, Any>>()?.mapNotNull { it[DefinedParams.Value] as? String }?.toSet()
+        return if (isSelectionPresent(selectedSigns.toString(), DefinedParams.None)) {
+            null
+        } else {
+            AssessmentDefinedParams.STATUS_HIGH_RISK to null
+        }
+    }
+
+    /**
+     * Evaluates calcium tablets status, if consumption is less than (days since delviery + 1) then gap
+     */
+    private fun evaluateCalciumTabletStatus(): Pair<String, Nothing?>? {
+        val daysSinceDelivery = getDaysSinceDelivery()
+        return daysSinceDelivery?.let {
+            val expectedTablets = daysSinceDelivery + 1
+            val resultMap = formGenerator.getResultMap()
+            val calciumConsumed = CommonUtils.getInteger(resultMap[RMNCH.ID_CALCIUM_TABLETS_CONSUMED])
+            if (calciumConsumed < expectedTablets) {
+                AssessmentDefinedParams.STATUS_GAP to null
+            } else {
+                null
+            }
+        } ?: run {
+            null
+        }
+    }
+
+    /**
+     * Evaluates ifa tablets status, if consumption is less than (days since delviery + 1) then gap
+     */
+    private fun evaluateIfaTabletsStatus(): Pair<String, Nothing?>? {
+        val daysSinceDelivery = getDaysSinceDelivery()
+        return daysSinceDelivery?.let {
+            val expectedTablets = daysSinceDelivery + 1
+            val resultMap = formGenerator.getResultMap()
+            val ifaConsumed = CommonUtils.getInteger(resultMap[RMNCH.ID_IFA_TABLETS_CONSUMED])
+            if (ifaConsumed < expectedTablets) {
+                AssessmentDefinedParams.STATUS_GAP to null
+            } else {
+                null
+            }
+        } ?: run {
+            null
         }
     }
 
@@ -1363,6 +1528,7 @@ class AssessmentRMNCHFragment :
         return when {
             hb < AssessmentDefinedParams.HEMOGLOBIN_SEVERE_ANEMIA_THRESHOLD -> Pair(AssessmentDefinedParams.STATUS_SEVERE_ANEMIA, null)
             hb < AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD -> Pair(AssessmentDefinedParams.STATUS_MODERATE_ANEMIA, null)
+            hb < AssessmentDefinedParams.HEMOGLOBIN_MILD_ANEMIA_THRESHOLD -> Pair(AssessmentDefinedParams.STATUS_MILD_ANEMIA, null)
             else -> null
         }
     }
@@ -1594,14 +1760,14 @@ class AssessmentRMNCHFragment :
 
         // Always evaluate fields that depend on other fields
         fieldsToAlwaysCheck.forEach { fieldId ->
-            handleFieldStatusUpdate(fieldId)
+            handleAncFieldStatusUpdate(fieldId)
         }
 
         // Evaluate fields only if they have values
         fieldsToCheckIfValueExists.forEach { fieldId ->
             val value = resultMap[fieldId]
             if (value != null) {
-                handleFieldStatusUpdate(fieldId)
+                handleAncFieldStatusUpdate(fieldId)
             }
         }
     }
@@ -1612,13 +1778,11 @@ class AssessmentRMNCHFragment :
      */
     private fun updateFieldTitleWithStatus(
         fieldId: String,
+        textLabelFieldIds: List<String>,
         statusText: String?,
         statusTextCulture: String?,
     ) {
-        // TextLabel fields (folicAcidTablets, ifaTablets, calciumTablets) use just 'id' as tag, not 'id + titleSuffix'
-        val textLabelFields = listOf(AssessmentDefinedParams.FOLIC_ACID_TABLETS, AssessmentDefinedParams.IFA_TABLETS, AssessmentDefinedParams.CALCIUM_TABLETS)
-
-        val tag = if (fieldId in textLabelFields) {
+        val tag = if (fieldId in textLabelFieldIds) {
             // For TextLabel, the title TextView is tagged with just the fieldId
             fieldId
         } else {
@@ -1664,18 +1828,115 @@ class AssessmentRMNCHFragment :
     }
 
     /**
+     * Handles status evaluation and title update for ANC field
+     */
+    private fun handleAncFieldStatusUpdate(fieldId: String) {
+        // TextLabel fields (folicAcidTablets, ifaTablets, calciumTablets) use just 'id' as tag, not 'id + titleSuffix'
+        val textLabelFields = listOf(AssessmentDefinedParams.FOLIC_ACID_TABLETS, AssessmentDefinedParams.IFA_TABLETS, AssessmentDefinedParams.CALCIUM_TABLETS)
+        handleFieldStatusUpdate(fieldId, textLabelFields, ::evaluateAncFieldStatus)
+    }
+
+    /**
+     * Handles status evaluation and title update for PNC field
+     */
+    private fun handlePncFieldStatusUpdate(fieldId: String) {
+        val textLabelFields = listOf(RMNCH.ID_IFA_TABLETS, RMNCH.ID_CALCIUM_TABLETS)
+        handleFieldStatusUpdate(fieldId, textLabelFields, ::evaluatePncFieldStatus)
+    }
+
+    /**
+     * Handles status evaluation and title update for PNC BP fields
+     */
+    private fun handlePncBpHighRiskHighlight() {
+        val resultMap = formGenerator.getResultMap()
+        val systolic = CommonUtils.getInteger(resultMap[RMNCH.ID_SYSTOLIC])
+        val diastolic = CommonUtils.getInteger(resultMap[RMNCH.ID_DIASTOLIC])
+        val isKnownHtn = isSelectionPresent(resultMap[RMNCH.ID_KNOWN_HTN], DefinedParams.Yes)
+        val edema = resultMap[RMNCH.ID_EDEMA] as? String
+        val urinaryAlbumin = resultMap[RMNCH.ID_URINARY_ALBUMIN] as? String
+
+        val isHighBp = PNCAssessmentEvaluator.isHighBp(systolic, diastolic)
+        val isEdemaPresent = isSelectionPresent(edema)
+        val isAlbuminPositive = isSelectionPresent(urinaryAlbumin)
+
+        // Common high risk triggers for BP (Point 1, 2, 3)
+        val bpHighRiskTrigger = isHighBp || isKnownHtn || (isEdemaPresent && isAlbuminPositive)
+
+        // Systolic
+        if (systolic > 0 && bpHighRiskTrigger) {
+            updateFieldTitleWithStatus(RMNCH.ID_SYSTOLIC, emptyList(), AssessmentDefinedParams.STATUS_HIGH_RISK, null)
+        } else {
+            updateFieldTitleWithStatus(RMNCH.ID_SYSTOLIC, emptyList(), null, null)
+        }
+
+        // Diastolic
+        if (diastolic > 0 && bpHighRiskTrigger) {
+            updateFieldTitleWithStatus(RMNCH.ID_DIASTOLIC, emptyList(), AssessmentDefinedParams.STATUS_HIGH_RISK, null)
+        } else {
+            updateFieldTitleWithStatus(RMNCH.ID_DIASTOLIC, emptyList(), null, null)
+        }
+
+        // Edema (Point 2)
+        if (isEdemaPresent && (isHighBp || isKnownHtn || isAlbuminPositive)) {
+            updateFieldTitleWithStatus(RMNCH.ID_EDEMA, emptyList(), AssessmentDefinedParams.STATUS_HIGH_RISK, null)
+        } else {
+            updateFieldTitleWithStatus(RMNCH.ID_EDEMA, emptyList(), null, null)
+        }
+
+        // Urinary Albumin (Point 3)
+        if (isAlbuminPositive && (isHighBp || isKnownHtn || isEdemaPresent)) {
+            updateFieldTitleWithStatus(RMNCH.ID_URINARY_ALBUMIN, emptyList(), AssessmentDefinedParams.STATUS_HIGH_RISK, null)
+        } else {
+            updateFieldTitleWithStatus(RMNCH.ID_URINARY_ALBUMIN, emptyList(), null, null)
+        }
+    }
+
+    /**
+     * Handles status evaluation and title update for PNC Blood Sugar fields
+     */
+    private fun handlePncBloodSugarHighRiskHighlight() {
+        val resultMap = formGenerator.getResultMap()
+        val fastingSugar = CommonUtils.getDouble(resultMap[RMNCH.ID_FASTING_BLOOD_SUGAR])
+        val randomSugar = CommonUtils.getDouble(resultMap[RMNCH.ID_RANDOM_BLOOD_SUGAR])
+        val isDmPatient = isSelectionPresent(resultMap[RMNCH.ID_DM_PATIENT], DefinedParams.Yes)
+        val isGdmPatient = isSelectionPresent(resultMap[RMNCH.ID_GDM_PATIENT], DefinedParams.Yes)
+        val isDmOrGdm = isDmPatient || isGdmPatient
+
+        // Fasting (Point 1)
+        if (fastingSugar > 0 && (fastingSugar >= 7.0 || isDmOrGdm)) {
+            updateFieldTitleWithStatus(RMNCH.ID_FASTING_BLOOD_SUGAR, emptyList(), AssessmentDefinedParams.STATUS_HIGH_RISK, null)
+        } else {
+            updateFieldTitleWithStatus(RMNCH.ID_FASTING_BLOOD_SUGAR, emptyList(), null, null)
+        }
+
+        // Random (Point 2)
+        if (randomSugar > 0 && (randomSugar >= 11.1 || isDmOrGdm)) {
+            updateFieldTitleWithStatus(RMNCH.ID_RANDOM_BLOOD_SUGAR, emptyList(), AssessmentDefinedParams.STATUS_HIGH_RISK, null)
+        } else {
+            updateFieldTitleWithStatus(RMNCH.ID_RANDOM_BLOOD_SUGAR, emptyList(), null, null)
+        }
+    }
+
+    /**
      * Handles status evaluation and title update for a field
      */
-    private fun handleFieldStatusUpdate(fieldId: String) {
+    private fun handleFieldStatusUpdate(
+        fieldId: String,
+        textLabelFieldIds: List<String>,
+        evaluateStatus: (
+            fieldId: String,
+            value: Any?,
+        ) -> Pair<String?, String?>?,
+    ) {
         val resultMap = formGenerator.getResultMap()
         val value = resultMap[fieldId]
 
-        val status = evaluateFieldStatus(fieldId, value)
+        val status = evaluateStatus(fieldId, value)
         if (status != null) {
-            updateFieldTitleWithStatus(fieldId, status.first, status.second)
+            updateFieldTitleWithStatus(fieldId, textLabelFieldIds, status.first, status.second)
         } else {
             // No status condition matched, remove status from title
-            updateFieldTitleWithStatus(fieldId, null, null)
+            updateFieldTitleWithStatus(fieldId, textLabelFieldIds, null, null)
         }
     }
 
@@ -2015,4 +2276,14 @@ class AssessmentRMNCHFragment :
      * Returns ANC visit count
      */
     private fun getAncVisitCountForPnc(): Int = (viewModel.pregnancyDetailLiveData.value?.ancVisitNo ?: 0L).toInt()
+
+    /**
+     * Calculates days since delivery from the delivery date
+     */
+    private fun getDaysSinceDelivery(): Int? =
+        viewModel.pregnancyDetailLiveData.value?.dateOfDelivery?.let { clinicalDate ->
+            DateUtils.parseDate(clinicalDate)?.let { date ->
+                DateUtils.getDaysDifference(date.getLongTime())
+            }
+        }
 }

@@ -154,7 +154,6 @@ class AssessmentViewModel @Inject constructor(
     val nearestFacilityLiveData = MutableLiveData<Resource<ArrayList<Map<String, Any>>>>()
     var referralStatus: String? = null
     var lastLocation: Location? = null
-    val facilitySpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
     val memberClinicalLiveData = MutableLiveData<MemberClinicalEntity?>()
     var pncMotherDetailMap: HashMap<String, Any>? = null
     var dosageListModel: ArrayList<RecommendedDosageListModel>? = null
@@ -232,11 +231,6 @@ class AssessmentViewModel @Inject constructor(
      * during pregnancy registration is too early to access
      */
     var isPregnancyTooEarlyToAccess: Boolean = true
-
-    /**
-     * Live data storing family planning methods, used in PNC flows
-     */
-    var familyPlanningMethodsLiveData = MutableLiveData<LocalSpinnerResponse>()
 
     /**
      * Live data storing pregnancy details
@@ -595,6 +589,7 @@ class AssessmentViewModel @Inject constructor(
                     null
                 }
             }
+
             is ArrayList<*> -> {
                 val stringList = value.filterIsInstance<String>()
                 if (stringList.isNotEmpty()) {
@@ -603,6 +598,7 @@ class AssessmentViewModel @Inject constructor(
                     null
                 }
             }
+
             is Array<*> -> {
                 val stringList = value.filterIsInstance<String>()
                 if (stringList.isNotEmpty()) {
@@ -611,6 +607,7 @@ class AssessmentViewModel @Inject constructor(
                     null
                 }
             }
+
             else -> null
         }
 
@@ -981,6 +978,11 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
+    fun updateFamilyPlanningAssessmentDetails() {
+        // Nothing to update, just update the state to success
+        assessmentUpdateLiveData.value = Resource(state = ResourceState.SUCCESS)
+    }
+
     fun updatePregnantWomanAssessmentDetails() {
         // Nothing to update, just update the state to success
         assessmentUpdateLiveData.value = Resource(state = ResourceState.SUCCESS)
@@ -1080,30 +1082,6 @@ class AssessmentViewModel @Inject constructor(
     }
 
     fun getCurrentLocation(): Location? = this.lastLocation
-
-    fun loadDataCacheByType(
-        type: String,
-        tag: String,
-    ) {
-        viewModelScope.launch(dispatcherIO) {
-            when (type) {
-                RMNCH.PlaceOfDelivery -> {
-                    facilitySpinnerLiveData.postLoading()
-                    facilitySpinnerLiveData.postValue(
-                        assessmentRepository.getNearestHealthFacility(
-                            tag,
-                        ),
-                    )
-                }
-
-                RMNCH.ID_FAMILY_PLANNING_METHODS -> {
-                    familyPlanningMethodsLiveData.postValue(
-                        LocalSpinnerResponse(tag, assessmentRepository.getSymptomListByType(tag)),
-                    )
-                }
-            }
-        }
-    }
 
     fun getPatientVisitCountByType(
         type: String,

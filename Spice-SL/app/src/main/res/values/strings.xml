@@ -1642,4 +1642,8 @@
         <item quantity="one">%d Member</item>
         <item quantity="other">%d Members</item>
     </plurals>
+    <string name="counselling_message">Counselling Message</string>
+    <string name="short_acting_message">Short-Acting Reversible Methods (SARCs) (Pills, Condoms, Injectables)</string>
+    <string name="long_acting_message">Long-Acting Reversible Methods (LARCs)- (IUCD, Implant)</string>
+    <string name="permanent_acting_message">Permanent- (Sterilization)</string>
 </resources>

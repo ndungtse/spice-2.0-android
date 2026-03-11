@@ -62,7 +62,7 @@ object PNCAssessmentEvaluator {
 
             val systolic = CommonUtils.getInteger(maternalAssessment[RMNCH.ID_SYSTOLIC])
             val diastolic = CommonUtils.getInteger(maternalAssessment[RMNCH.ID_DIASTOLIC])
-            val isBpHigh = isBpHigh(systolic, diastolic)
+            val isBpHigh = isHighBp(systolic, diastolic)
             val isKnownHtn = isSelectionPresent(maternalAssessment[RMNCH.ID_KNOWN_HTN], DefinedParams.Yes)
             val isEclampsia = isSelectionPresent(maternalAssessment[RMNCH.ID_ECLAMPSIA], DefinedParams.Yes)
             val isOnTreatmentHtn = isSelectionPresent(maternalAssessment[RMNCH.ID_ON_TREATMENT_HTN_ECLAMPSIA], DefinedParams.Yes)
@@ -91,7 +91,7 @@ object PNCAssessmentEvaluator {
 
             // 10. High Fever - >=102°F
             CommonUtils.getDoubleOrNull(maternalAssessment[RMNCH.ID_TEMPERATURE])?.takeIf { it > 0 }?.let { temp ->
-                if (temp >= 102.0) {
+                if (temp >= AssessmentDefinedParams.TEMP_HIGH_FEVER_THRESHOLD) {
                     urgentReferral.add(PNCUrgentReferrals.HIGH_FEVER.value)
                 }
             }
@@ -145,14 +145,14 @@ object PNCAssessmentEvaluator {
         (resultMap[RMNCH.ID_MATERNAL_HEALTH_ASSESSMENT] as? Map<*, *>)?.let { maternalAssessment ->
             // 1. Moderate Anemia - Hb 8–10
             CommonUtils.getDoubleOrNull(maternalAssessment[RMNCH.ID_HEMOGLOBIN])?.takeIf { it > 0 }?.let { hb ->
-                if (hb in 8.0..10.0) {
+                if (hb in AssessmentDefinedParams.HEMOGLOBIN_SEVERE_ANEMIA_THRESHOLD..AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD) {
                     nonUrgentReferral.add(PNCNonUrgentReferral.MODERATE_ANEMIA.value)
                 }
             }
 
             // 2. Mild Anemia - Hb < 11
             CommonUtils.getDoubleOrNull(maternalAssessment[RMNCH.ID_HEMOGLOBIN])?.takeIf { it > 0 }?.let { hb ->
-                if (hb > 10 && hb < 11) {
+                if (hb > AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD && hb < AssessmentDefinedParams.HEMOGLOBIN_MILD_ANEMIA_THRESHOLD) {
                     nonUrgentReferral.add(PNCNonUrgentReferral.MILD_ANEMIA.value)
                 }
             }
@@ -172,7 +172,7 @@ object PNCAssessmentEvaluator {
 
             // 4. Fever - >=100°F
             CommonUtils.getDoubleOrNull(maternalAssessment[RMNCH.ID_TEMPERATURE])?.takeIf { it > 0 }?.let { temp ->
-                if (temp in 100.0..<102.0) {
+                if (temp in AssessmentDefinedParams.TEMP_FEVER_MIN_THRESHOLD..<AssessmentDefinedParams.TEMP_FEVER_MAX_THRESHOLD) {
                     nonUrgentReferral.add(PNCNonUrgentReferral.FEVER.value)
                 }
             }
@@ -300,7 +300,7 @@ object PNCAssessmentEvaluator {
      * @param diastolic The diastolic pressure value.
      * @return True if either value exceeds its respective limit, false otherwise.
      */
-    private fun isBpHigh(
+    fun isHighBp(
         systolic: Int,
         diastolic: Int,
     ): Boolean {
@@ -316,7 +316,7 @@ object PNCAssessmentEvaluator {
      * @param target The expected target value (defaults to "present").
      * @return True if the value matches the target (case-insensitive), false otherwise.
      */
-    private fun isSelectionPresent(
+    fun isSelectionPresent(
         value: Any?,
         target: String = "present",
     ): Boolean = (value as? String)?.equals(target, ignoreCase = true) == true
