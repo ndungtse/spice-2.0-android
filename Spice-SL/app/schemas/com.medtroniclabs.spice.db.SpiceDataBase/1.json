@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0ac1fc932581b6d8ad72160d2085c75e",
+    "identityHash": "f6018b0c102dfd0a9416768b6d095e4d",
     "entities": [
       {
         "tableName": "Household",
@@ -1483,7 +1483,7 @@
       },
       {
         "tableName": "PregnancyDetail",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `householdMemberLocalId` INTEGER NOT NULL, `patientId` TEXT, `householdMemberId` TEXT, `tbContactTraceStatus` INTEGER, `lastMenstrualPeriod` TEXT, `estimatedDeliveryDate` TEXT, `pregnancyTest` TEXT, `gravida` INTEGER, `parity` INTEGER, `numberOfLivingChildren` INTEGER, `ageOfLastChild` TEXT, `ancVisitNo` INTEGER, `previousPregnancyComplications` TEXT, `pregnantWomanExistingIllness` TEXT, `pregnantWomanOnTreatment` TEXT, `highRiskPregnantWoman` TEXT, `gapsInAnc` TEXT, `pncVisitNo` INTEGER, `pncIllness` TEXT, `highRiskMother` TEXT, `gapsInPnc` TEXT, `dateOfDelivery` TEXT, `anyComplicationsDuringDelivery` TEXT, `typeOfAbortion` TEXT, `noOfNeonates` INTEGER, `neonatePatientId` TEXT, `isDeliveryAtHome` INTEGER, `neonateHouseholdMemberLocalId` INTEGER, `isNeonateDeathRecordedByPHU` INTEGER, `childVisitNo` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `householdMemberLocalId` INTEGER NOT NULL, `patientId` TEXT, `householdMemberId` TEXT, `pregnancyEpisodeId` TEXT, `tbContactTraceStatus` INTEGER, `lastMenstrualPeriod` TEXT, `estimatedDeliveryDate` TEXT, `pregnancyTest` TEXT, `gravida` INTEGER, `parity` INTEGER, `numberOfLivingChildren` INTEGER, `ageOfLastChild` TEXT, `ancVisitNo` INTEGER, `previousPregnancyComplications` TEXT, `pregnantWomanExistingIllness` TEXT, `pregnantWomanOnTreatment` TEXT, `highRiskPregnantWoman` TEXT, `gapsInAnc` TEXT, `pncVisitNo` INTEGER, `pncIllness` TEXT, `highRiskMother` TEXT, `gapsInPnc` TEXT, `dateOfDelivery` TEXT, `anyComplicationsDuringDelivery` TEXT, `typeOfAbortion` TEXT, `noOfNeonates` INTEGER, `neonatePatientId` TEXT, `isDeliveryAtHome` INTEGER, `neonateHouseholdMemberLocalId` INTEGER, `isNeonateDeathRecordedByPHU` INTEGER, `childVisitNo` INTEGER, `startAt` TEXT, `endAt` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -1506,6 +1506,12 @@
           {
             "fieldPath": "householdMemberId",
             "columnName": "householdMemberId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "pregnancyEpisodeId",
+            "columnName": "pregnancyEpisodeId",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -1670,6 +1676,18 @@
             "columnName": "childVisitNo",
             "affinity": "INTEGER",
             "notNull": false
+          },
+          {
+            "fieldPath": "startAt",
+            "columnName": "startAt",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "endAt",
+            "columnName": "endAt",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -1678,7 +1696,17 @@
             "id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_PregnancyDetail_pregnancyEpisodeId",
+            "unique": true,
+            "columnNames": [
+              "pregnancyEpisodeId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_PregnancyDetail_pregnancyEpisodeId` ON `${TABLE_NAME}` (`pregnancyEpisodeId`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
@@ -3693,7 +3721,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0ac1fc932581b6d8ad72160d2085c75e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f6018b0c102dfd0a9416768b6d095e4d')"
     ]
   }
 }
