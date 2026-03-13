@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.InputType
@@ -7,9 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.text.buildSpannedString
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
+import androidx.core.text.color
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
@@ -24,6 +28,7 @@ import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
 import com.medtroniclabs.spice.databinding.LayoutSingleSelectionBinding
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -57,6 +62,9 @@ class AssessmentPregnancyOutcomeFragment :
     // Store baby data: babyIndex (1-based) -> fieldId -> value
     private val babyDataMap = HashMap<Int, HashMap<String, Any>>()
 
+    // Store original field titles (without status) for fields that have status conditions
+    private val originalTitles = HashMap<String, String>()
+
     // Neonatal death cause options
     private val neonatalDeathCauseOptions: ArrayList<Map<String, Any>> = arrayListOf(
         mapOf("id" to "asphyxia", "name" to "Asphyxia", "cultureValue" to "শ্বাসরোধ"),
@@ -79,8 +87,8 @@ class AssessmentPregnancyOutcomeFragment :
 
     // Baby alive options
     private val babyAliveOptions: ArrayList<Map<String, Any>> = arrayListOf(
-        mapOf("id" to "Yes", "name" to "Yes", "cultureValue" to "হ্যাঁ"),
-        mapOf("id" to "No", "name" to "No", "cultureValue" to "না"),
+        mapOf(DefinedParams.ID to AssessmentDefinedParams.YES, DefinedParams.NAME to AssessmentDefinedParams.YES, DefinedParams.cultureValue to "হ্যাঁ"),
+        mapOf(DefinedParams.ID to AssessmentDefinedParams.NO, DefinedParams.NAME to AssessmentDefinedParams.NO, DefinedParams.cultureValue to "না"),
     )
 
     override fun onCreateView(
@@ -105,6 +113,13 @@ class AssessmentPregnancyOutcomeFragment :
     }
 
     private fun attachObservers() {
+        // Load pregnancy details to get EDD for preterm calculation
+        viewModel.getPregnancyDetailInformation()
+        viewModel.pregnancyDetailLiveData.observe(viewLifecycleOwner) {
+            // When pregnancy details are loaded, check and update preterm status if date exists
+            checkAndUpdatePretermStatus()
+        }
+
         viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.SUCCESS -> {
@@ -113,6 +128,8 @@ class AssessmentPregnancyOutcomeFragment :
                         // Filter out fields marked as isSummary to hide them in form view
                         val filteredFormLayout = data.formLayout.filter { it.isSummary != true }
                         formGenerator.populateViews(filteredFormLayout)
+                        // Store original title for date of delivery
+                        storeOriginalDateOfDeliveryTitle()
                     }
                 }
 
@@ -144,9 +161,12 @@ class AssessmentPregnancyOutcomeFragment :
             binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled(),
             callback = { resultMap, changedFieldId ->
-                if (changedFieldId == "liveBirthNumbers") {
-                    val count = (resultMap["liveBirthNumbers"] as? Number)?.toInt() ?: 0
+                if (changedFieldId == AssessmentDefinedParams.LIVE_BIRTH_NUMBERS) {
+                    val count = (resultMap[AssessmentDefinedParams.LIVE_BIRTH_NUMBERS] as? Number)?.toInt() ?: 0
                     updateBabySections(count)
+                }
+                if (changedFieldId == AssessmentDefinedParams.DATE_OF_DELIVERY) {
+                    checkAndUpdatePretermStatus()
                 }
             },
         )
@@ -206,7 +226,7 @@ class AssessmentPregnancyOutcomeFragment :
 
         // Find the position of the counselling section and insert before it
         // or just append at the end of the form
-        val counsellingCardTag = "counsellingAdverseEvent" + AssessmentDefinedParams.rootSuffix
+        val counsellingCardTag = AssessmentDefinedParams.COUNSELLING_ADVERSE_EVENT + AssessmentDefinedParams.rootSuffix
         val counsellingView = binding.llForm.findViewWithTag<View>(counsellingCardTag)
         if (counsellingView != null) {
             val counsellingIndex = binding.llForm.indexOfChild(counsellingView)
@@ -235,8 +255,7 @@ class AssessmentPregnancyOutcomeFragment :
         // 2. Sex - SingleSelectionView
         addSexField(familyRoot, babyIndex, translate)
 
-        // 3. Birth Weight - EditText
-        addBirthWeightField(familyRoot, babyIndex)
+        // 3. Birth Weight - Removed (no longer needed)
 
         // 4. Cause of neonatal death - DialogCheckbox (initially hidden)
         addCauseOfDeathField(familyRoot, babyIndex, translate)
@@ -258,6 +277,7 @@ class AssessmentPregnancyOutcomeFragment :
         } else {
             getString(R.string.is_baby_alive)
         }
+        selectionBinding.tvTitle.markMandatory()
 
         val singleSelectionView = SingleSelectionCustomView(requireContext())
         singleSelectionView.tag = "isBabyAlive_$babyIndex"
@@ -280,9 +300,12 @@ class AssessmentPregnancyOutcomeFragment :
         ) { selectedId, _, _, name ->
             babyDataMap[babyIndex]?.set(AssessmentDefinedParams.IS_BABY_ALIVE, selectedId ?: "")
 
+            // Clear error message when value is selected
+            selectionBinding.tvErrorMessage.visibility = View.GONE
+
             // Toggle cause of neonatal death visibility
             val causeRoot = parent.findViewWithTag<View>("${AssessmentDefinedParams.CAUSE_OF_NEONATAL_DEATH}_${babyIndex}_root")
-            if (name == "No") {
+            if (name == AssessmentDefinedParams.NO) {
                 causeRoot?.visibility = View.VISIBLE
             } else {
                 causeRoot?.visibility = View.GONE
@@ -293,6 +316,11 @@ class AssessmentPregnancyOutcomeFragment :
                 if (checkboxView is androidx.appcompat.widget.AppCompatTextView) {
                     checkboxView.text = getString(R.string.cause_of_death_hint)
                 }
+                // Clear error message for cause of death when baby is alive
+                val checkboxBinding = causeRoot?.let {
+                    CheckboxDialogSpinnerLayoutBinding.bind(it)
+                }
+                checkboxBinding?.tvErrorMessage?.visibility = View.GONE
             }
         }
 
@@ -314,6 +342,7 @@ class AssessmentPregnancyOutcomeFragment :
         } else {
             getString(R.string.sex_label)
         }
+        selectionBinding.tvTitle.markMandatory()
 
         val singleSelectionView = SingleSelectionCustomView(requireContext())
         singleSelectionView.tag = "sex_$babyIndex"
@@ -335,6 +364,9 @@ class AssessmentPregnancyOutcomeFragment :
             formLayout,
         ) { selectedId, _, _, _ ->
             babyDataMap[babyIndex]?.set(AssessmentDefinedParams.SEX, selectedId ?: "")
+            // Clear error message when value is selected
+            selectionBinding.tvErrorMessage.visibility = View.GONE
+            Unit
         }
 
         selectionBinding.selectionGroup.addView(singleSelectionView)
@@ -383,6 +415,7 @@ class AssessmentPregnancyOutcomeFragment :
         )
         checkboxBinding.root.tag = "${AssessmentDefinedParams.CAUSE_OF_NEONATAL_DEATH}_${babyIndex}_root"
         checkboxBinding.tvTitle.text = getString(R.string.cause_of_neonatal_death)
+        checkboxBinding.tvTitle.markMandatory()
         checkboxBinding.etUserInput.tag = "${AssessmentDefinedParams.CAUSE_OF_NEONATAL_DEATH}_$babyIndex"
         checkboxBinding.etUserInput.text = getString(R.string.cause_of_death_hint)
 
@@ -420,13 +453,32 @@ class AssessmentPregnancyOutcomeFragment :
 
         CheckBoxDialog
             .newInstance(dialogKey, existingData, title = getString(R.string.cause_of_death_hint), inputData = inputData) { map ->
+                // Get the root view to access error message
+                val rootView = binding.llForm.findViewWithTag<View>("${AssessmentDefinedParams.CAUSE_OF_NEONATAL_DEATH}_${babyIndex}_root")
+                val checkboxBinding = rootView?.let { CheckboxDialogSpinnerLayoutBinding.bind(it) }
+                
                 if (map.isEmpty()) {
                     babyDataMap[babyIndex]?.remove(AssessmentDefinedParams.CAUSE_OF_NEONATAL_DEATH)
                     textView.text = getString(R.string.cause_of_death_hint)
+                    // Show error if empty and baby is not alive
+                    val isBabyAlive = babyDataMap[babyIndex]?.get(AssessmentDefinedParams.IS_BABY_ALIVE)
+                    if (isBabyAlive == AssessmentDefinedParams.NO) {
+                        checkboxBinding?.tvErrorMessage?.visibility = View.VISIBLE
+                        checkboxBinding?.tvErrorMessage?.text = getString(R.string.default_user_input_error)
+                    }
                 } else {
-                    babyDataMap[babyIndex]?.set(AssessmentDefinedParams.CAUSE_OF_NEONATAL_DEATH, map)
-                    val count = map.size
+                    // Transform ArrayList<HashMap> to ArrayList<String> (extract 'value' field)
+                    val valueList = ArrayList<String>()
+                    map.forEach { item ->
+                        val value = item[DefinedParams.Value]?.toString()
+                            ?: item[DefinedParams.ID]?.toString()
+                        value?.let { valueList.add(it) }
+                    }
+                    babyDataMap[babyIndex]?.set(AssessmentDefinedParams.CAUSE_OF_NEONATAL_DEATH, valueList)
+                    val count = valueList.size
                     textView.text = "$count ${getString(R.string.selected)}"
+                    // Clear error message when value is selected
+                    checkboxBinding?.tvErrorMessage?.visibility = View.GONE
                 }
             }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
@@ -456,25 +508,35 @@ class AssessmentPregnancyOutcomeFragment :
                     formGenerator.validateCheckboxDialogue(id, formLayout, map)
                 }.show(childFragmentManager, CheckBoxDialog.TAG)
         } else {
-            // Create inputData from optionsList
-            val inputData = arrayListOf<SignsAndSymptomsEntity>()
-            formLayout.optionsList?.forEachIndexed { index, it ->
-                val name = it[DefinedParams.NAME] as String
-                val value = it[DefinedParams.ID] as String
-                inputData.add(
-                    SignsAndSymptomsEntity(
-                        _id = index.toLong(),
-                        symptom = name,
-                        type = dialogKey,
-                        value = value,
-                        displayValue = it[DefinedParams.cultureValue]?.toString(),
-                    ),
-                )
+            // Handle causeOfDeath field with conditional filtering based on timeOfDeath
+            if (id == AssessmentDefinedParams.CAUSE_OF_DEATH) {
+                val filteredInputData = getFilteredCauseOfDeathOptions(formLayout, dialogKey)
+                val validatedResultMap = validateCauseOfDeathSelections(resultMap, formLayout)
+                CheckBoxDialog
+                    .newInstance(dialogKey, validatedResultMap, title = formLayout.hint, inputData = filteredInputData) { map ->
+                        formGenerator.validateCheckboxDialogue(id, formLayout, map)
+                    }.show(childFragmentManager, CheckBoxDialog.TAG)
+            } else {
+                // Create inputData from optionsList for other fields
+                val inputData = arrayListOf<SignsAndSymptomsEntity>()
+                formLayout.optionsList?.forEachIndexed { index, it ->
+                    val name = it[DefinedParams.NAME] as String
+                    val value = it[DefinedParams.ID] as String
+                    inputData.add(
+                        SignsAndSymptomsEntity(
+                            _id = index.toLong(),
+                            symptom = name,
+                            type = dialogKey,
+                            value = value,
+                            displayValue = it[DefinedParams.cultureValue]?.toString(),
+                        ),
+                    )
+                }
+                CheckBoxDialog
+                    .newInstance(dialogKey, resultMap, title = formLayout.hint, inputData = inputData) { map ->
+                        formGenerator.validateCheckboxDialogue(id, formLayout, map)
+                    }.show(childFragmentManager, CheckBoxDialog.TAG)
             }
-            CheckBoxDialog
-                .newInstance(dialogKey, resultMap, title = formLayout.hint, inputData = inputData) { map ->
-                    formGenerator.validateCheckboxDialogue(id, formLayout, map)
-                }.show(childFragmentManager, CheckBoxDialog.TAG)
         }
     }
 
@@ -487,10 +549,89 @@ class AssessmentPregnancyOutcomeFragment :
     ) {
     }
 
+    /**
+     * Validates all baby fields before form submission
+     * @return true if all required fields are filled, false otherwise
+     */
+    private fun validateBabyFields(): Boolean {
+        if (currentBabyCount == 0) {
+            return true // No babies to validate
+        }
+
+        var isValid = true
+
+        for (babyIndex in 1..currentBabyCount) {
+            // Validate isBabyAlive
+            val isBabyAliveValue = babyDataMap[babyIndex]?.get(AssessmentDefinedParams.IS_BABY_ALIVE)?.toString()
+            val isBabyAliveRoot = binding.llForm.findViewWithTag<View>("isBabyAlive_${babyIndex}_root")
+            val isBabyAliveBinding = isBabyAliveRoot?.let { LayoutSingleSelectionBinding.bind(it) }
+
+            if (isBabyAliveValue.isNullOrBlank()) {
+                isValid = false
+                isBabyAliveBinding?.tvErrorMessage?.visibility = View.VISIBLE
+                isBabyAliveBinding?.tvErrorMessage?.text = getString(R.string.default_user_input_error)
+            } else {
+                isBabyAliveBinding?.tvErrorMessage?.visibility = View.GONE
+            }
+
+            // Validate sex
+            val sexValue = babyDataMap[babyIndex]?.get(AssessmentDefinedParams.SEX)?.toString()
+            val sexRoot = binding.llForm.findViewWithTag<View>("sex_${babyIndex}_root")
+            val sexBinding = sexRoot?.let { LayoutSingleSelectionBinding.bind(it) }
+
+            if (sexValue.isNullOrBlank()) {
+                isValid = false
+                sexBinding?.tvErrorMessage?.visibility = View.VISIBLE
+                sexBinding?.tvErrorMessage?.text = getString(R.string.default_user_input_error)
+            } else {
+                sexBinding?.tvErrorMessage?.visibility = View.GONE
+            }
+
+            // Validate causeOfNeonatalDeath (only if baby is not alive)
+            if (isBabyAliveValue == AssessmentDefinedParams.NO) {
+                val causeOfDeathValue = babyDataMap[babyIndex]?.get(AssessmentDefinedParams.CAUSE_OF_NEONATAL_DEATH)
+                val causeOfDeathRoot = binding.llForm.findViewWithTag<View>("${AssessmentDefinedParams.CAUSE_OF_NEONATAL_DEATH}_${babyIndex}_root")
+                val causeOfDeathBinding = causeOfDeathRoot?.let { CheckboxDialogSpinnerLayoutBinding.bind(it) }
+
+                val isEmpty = when {
+                    causeOfDeathValue == null -> true
+                    causeOfDeathValue is ArrayList<*> -> causeOfDeathValue.isEmpty()
+                    causeOfDeathValue is List<*> -> causeOfDeathValue.isEmpty()
+                    causeOfDeathValue.toString().isBlank() -> true
+                    else -> false
+                }
+
+                if (isEmpty) {
+                    isValid = false
+                    causeOfDeathBinding?.tvErrorMessage?.visibility = View.VISIBLE
+                    causeOfDeathBinding?.tvErrorMessage?.text = getString(R.string.default_user_input_error)
+                } else {
+                    causeOfDeathBinding?.tvErrorMessage?.visibility = View.GONE
+                }
+            } else {
+                // Hide error message if baby is alive
+                val causeOfDeathRoot = binding.llForm.findViewWithTag<View>("${AssessmentDefinedParams.CAUSE_OF_NEONATAL_DEATH}_${babyIndex}_root")
+                val causeOfDeathBinding = causeOfDeathRoot?.let { CheckboxDialogSpinnerLayoutBinding.bind(it) }
+                causeOfDeathBinding?.tvErrorMessage?.visibility = View.GONE
+            }
+        }
+
+        return isValid
+    }
+
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
         serverData: List<FormLayout>?,
     ) {
+        // Validate baby fields before processing
+        if (!validateBabyFields()) {
+            // Scroll to first error if needed
+            binding.scrollView.post {
+                binding.scrollView.smoothScrollTo(0, 0)
+            }
+            return
+        }
+
         resultMap?.let { details ->
             // Add baby data as an array under "newbornDetails" key
             if (currentBabyCount > 0) {
@@ -498,7 +639,30 @@ class AssessmentPregnancyOutcomeFragment :
                 for (babyIndex in 1..currentBabyCount) {
                     babyDataMap[babyIndex]?.let { babyData ->
                         if (babyData.isNotEmpty()) {
-                            newbornDetailsList.add(HashMap(babyData))
+                            val cleanedBabyData = HashMap<String, Any>()
+                            babyData.forEach { (key, value) ->
+                                // Transform causeOfNeonatalDeath if it's ArrayList<HashMap>
+                                if (key == AssessmentDefinedParams.CAUSE_OF_NEONATAL_DEATH && value is ArrayList<*>) {
+                                    val transformedList = ArrayList<String>()
+                                    value.forEach { item ->
+                                        if (item is HashMap<*, *>) {
+                                            val stringValue = item[DefinedParams.Value]?.toString()
+                                                ?: item[DefinedParams.ID]?.toString()
+                                            stringValue?.let { transformedList.add(it) }
+                                        } else if (item is String) {
+                                            transformedList.add(item)
+                                        }
+                                    }
+                                    if (transformedList.isNotEmpty()) {
+                                        cleanedBabyData[key] = transformedList
+                                    }
+                                } else {
+                                    cleanedBabyData[key] = value
+                                }
+                            }
+                            if (cleanedBabyData.isNotEmpty()) {
+                                newbornDetailsList.add(cleanedBabyData)
+                            }
                         }
                     }
                 }
@@ -506,16 +670,21 @@ class AssessmentPregnancyOutcomeFragment :
                     details[AssessmentDefinedParams.NEWBORN_DETAILS] = newbornDetailsList
                 }
             }
+
+            // Remove empty objects from the result map
+
+
             val referralResult = ReferralResultGenerator().calculatePregnancyOutcomeStatus(details)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
                     serverData = it,
                     details,
-                    MenuConstants.PREGNANCY_OUTCOME.lowercase(),
+                    MenuConstants.PREGNANCY_OUTCOME,
                 )
             }
             result?.second?.let {
-                viewModel.saveAssessment(serverData, it, referralResult, viewModel.menuId)
+                val cleanedDetails = removeEmptyObjects(it)
+                viewModel.saveAssessment(serverData, cleanedDetails, referralResult, viewModel.menuId)
             }
         }
         viewModel.setAnalyticsData(
@@ -532,6 +701,10 @@ class AssessmentPregnancyOutcomeFragment :
         id: String,
         selectedId: Any?,
     ) {
+        // When timeOfDeath changes, validate and clean causeOfDeath selections
+        if (id == AssessmentDefinedParams.TIME_OF_DEATH) {
+            validateCauseOfDeathOnTimeOfDeathChange()
+        }
     }
 
     override fun onInformationHandling(
@@ -573,6 +746,344 @@ class AssessmentPregnancyOutcomeFragment :
      * Based on this check, when user pressing back, we show alert for confirmation
      */
     fun getCurrentAnsweredStatus(): Boolean = formGenerator.getResultMap().isNotEmpty() || babyDataMap.any { it.value.isNotEmpty() }
+
+    /**
+     * Recursively removes empty HashMap objects from the map
+     */
+    private fun removeEmptyObjects(map: HashMap<String, Any>): HashMap<String, Any> {
+        val result = HashMap<String, Any>()
+        map.forEach { (key, value) ->
+            when (value) {
+                is HashMap<*, *> -> {
+                    val cleaned = removeEmptyObjects(value as HashMap<String, Any>)
+                    if (cleaned.isNotEmpty()) {
+                        result[key] = cleaned
+                    }
+                }
+                is Map<*, *> -> {
+                    val cleaned = removeEmptyObjects(value as HashMap<String, Any>)
+                    if (cleaned.isNotEmpty()) {
+                        result[key] = cleaned
+                    }
+                }
+                else -> {
+                    if (value != null) {
+                        result[key] = value
+                    }
+                }
+            }
+        }
+        return result
+    }
+
+    /**
+     * Filters cause of death options based on time of death selection
+     * Option 6 (unsafeAbortion): Hide when death is during/after delivery
+     * Option 4 (obstructedLabor): Hide when death is before/after delivery
+     */
+    private fun getFilteredCauseOfDeathOptions(
+        formLayout: FormLayout,
+        dialogKey: String,
+    ): ArrayList<SignsAndSymptomsEntity> {
+        val timeOfDeathValue = getTimeOfDeathValue()
+        val inputData = arrayListOf<SignsAndSymptomsEntity>()
+
+        formLayout.optionsList?.forEachIndexed { index, it ->
+            val optionId = it[DefinedParams.ID] as? String ?: ""
+
+            // Option 4: "obstructedLabor" - Hide when death is before/after delivery
+            if (optionId == AssessmentDefinedParams.CAUSE_OF_DEATH_OBSTRUCTED_LABOR) {
+                if (timeOfDeathValue == AssessmentDefinedParams.TIME_OF_DEATH_DURING_CHILDBIRTH) {
+                    // Show only when death is during childbirth
+                    addOptionToInputData(it, index, dialogKey, inputData)
+                }
+                // Hide for "beforeDelivery" and "within42DaysAfterDelivery"
+            }
+            // Option 6: "unsafeAbortion" - Hide when death is during/after delivery
+            else if (optionId == AssessmentDefinedParams.CAUSE_OF_DEATH_UNSAFE_ABORTION) {
+                if (timeOfDeathValue == AssessmentDefinedParams.TIME_OF_DEATH_BEFORE_DELIVERY) {
+                    // Show only when death is before delivery
+                    addOptionToInputData(it, index, dialogKey, inputData)
+                }
+                // Hide for "duringChildbirth" and "within42DaysAfterDelivery"
+            }
+            // All other options are always shown
+            else {
+                addOptionToInputData(it, index, dialogKey, inputData)
+            }
+        }
+
+        return inputData
+    }
+
+    /**
+     * Helper method to add option to inputData
+     */
+    private fun addOptionToInputData(
+        option: Map<String, Any>,
+        index: Int,
+        dialogKey: String,
+        inputData: ArrayList<SignsAndSymptomsEntity>,
+    ) {
+        val name = option[DefinedParams.NAME] as? String ?: ""
+        val value = option[DefinedParams.ID] as? String ?: ""
+        inputData.add(
+            SignsAndSymptomsEntity(
+                _id = index.toLong(),
+                symptom = name,
+                type = dialogKey,
+                value = value,
+                displayValue = option[DefinedParams.cultureValue]?.toString(),
+            ),
+        )
+    }
+
+    /**
+     * Gets the current timeOfDeath value from form result
+     */
+    private fun getTimeOfDeathValue(): String? {
+        val timeOfDeathResult = formGenerator.getResult(AssessmentDefinedParams.TIME_OF_DEATH)
+        return when (timeOfDeathResult) {
+            is Map<*, *> -> {
+                // If it's a Map, extract the "id" value
+                timeOfDeathResult[DefinedParams.ID]?.toString()
+                    ?: timeOfDeathResult[DefinedParams.id]?.toString()
+            }
+            is String -> timeOfDeathResult
+            else -> null
+        }
+    }
+
+    /**
+     * Validates and filters existing causeOfDeath selections based on current timeOfDeath
+     * Removes invalid selections that should be hidden
+     */
+    private fun validateCauseOfDeathSelections(
+        resultMap: Any?,
+        formLayout: FormLayout,
+    ): Any? {
+        val timeOfDeathValue = getTimeOfDeathValue()
+        if (timeOfDeathValue == null || resultMap == null) {
+            return resultMap
+        }
+
+        val resultList = resultMap as? ArrayList<HashMap<String, Any>> ?: return resultMap
+        val validatedList = ArrayList<HashMap<String, Any>>()
+
+        resultList.forEach { selectedItem ->
+            val optionId = selectedItem[DefinedParams.ID]?.toString()
+                ?: selectedItem[DefinedParams.id]?.toString()
+                ?: selectedItem[DefinedParams.Value]?.toString()
+
+            // Option 4: "obstructedLabor" - Only valid when death is during childbirth
+            if (optionId == AssessmentDefinedParams.CAUSE_OF_DEATH_OBSTRUCTED_LABOR) {
+                if (timeOfDeathValue == AssessmentDefinedParams.TIME_OF_DEATH_DURING_CHILDBIRTH) {
+                    validatedList.add(selectedItem)
+                }
+                // Remove if death is before/after delivery
+            }
+            // Option 6: "unsafeAbortion" - Only valid when death is before delivery
+            else if (optionId == AssessmentDefinedParams.CAUSE_OF_DEATH_UNSAFE_ABORTION) {
+                if (timeOfDeathValue == AssessmentDefinedParams.TIME_OF_DEATH_BEFORE_DELIVERY) {
+                    validatedList.add(selectedItem)
+                }
+                // Remove if death is during/after delivery
+            }
+            // All other options are always valid
+            else {
+                validatedList.add(selectedItem)
+            }
+        }
+
+        return if (validatedList.isEmpty()) null else validatedList
+    }
+
+    /**
+     * Validates causeOfDeath selections when timeOfDeath changes
+     * Updates the form result and UI if invalid selections are found
+     */
+    private fun validateCauseOfDeathOnTimeOfDeathChange() {
+        val causeOfDeathResult = formGenerator.getResult(AssessmentDefinedParams.CAUSE_OF_DEATH)
+        if (causeOfDeathResult == null) {
+            return
+        }
+
+        // Get the formLayout for causeOfDeath to validate selections
+        val serverData = formGenerator.getServerData()
+        val causeOfDeathLayout = serverData?.find { it.id == AssessmentDefinedParams.CAUSE_OF_DEATH }
+
+        if (causeOfDeathLayout != null) {
+            val validatedResult = validateCauseOfDeathSelections(causeOfDeathResult, causeOfDeathLayout)
+
+            // Update the result map if selections were removed
+            if (validatedResult != causeOfDeathResult) {
+                if (validatedResult == null) {
+                    formGenerator.getResultMap().remove(AssessmentDefinedParams.CAUSE_OF_DEATH)
+                } else {
+                    formGenerator.getResultMap()[AssessmentDefinedParams.CAUSE_OF_DEATH] = validatedResult
+                }
+
+                // Update the UI display
+                formGenerator.getViewByTag(AssessmentDefinedParams.CAUSE_OF_DEATH)?.let { view ->
+                    if (view is androidx.appcompat.widget.AppCompatTextView) {
+                        val validatedList = validatedResult as? ArrayList<HashMap<String, Any>> ?: arrayListOf()
+                        if (validatedList.isEmpty()) {
+                            view.text = causeOfDeathLayout.hint ?: getString(R.string.cause_of_death_hint)
+                        } else {
+                            view.text = "${validatedList.size} ${getString(R.string.selected)}"
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Stores the original title for Date of Delivery field (without status)
+     */
+    private fun storeOriginalDateOfDeliveryTitle() {
+        val fieldId = AssessmentDefinedParams.DATE_OF_DELIVERY
+        val tag = fieldId + formGenerator.titleSuffix
+        val titleView = formGenerator.getViewByTag(tag) as? TextView
+        titleView?.let {
+            val currentText = it.text.toString()
+            // Remove any existing status pattern: " (Status Text)"
+            val statusPattern = "\\s+\\([^)]+\\)\\s*$".toRegex()
+            val original = currentText.replace(statusPattern, "")
+            originalTitles[fieldId] = original
+        }
+    }
+
+    /**
+     * Checks if delivery is preterm and updates the field title accordingly
+     */
+    private fun checkAndUpdatePretermStatus() {
+        val dateOfDelivery = formGenerator.getResult(AssessmentDefinedParams.DATE_OF_DELIVERY) as? String
+        if (dateOfDelivery.isNullOrBlank()) {
+            // No date selected, restore original title
+            updateDateOfDeliveryTitleWithPretermStatus(null)
+            return
+        }
+
+        val pregnancyDetail = viewModel.pregnancyDetailLiveData.value
+        val edd = pregnancyDetail?.estimatedDeliveryDate
+
+        if (edd.isNullOrBlank()) {
+            // No EDD available, can't determine preterm
+            updateDateOfDeliveryTitleWithPretermStatus(null)
+            return
+        }
+
+        // Check if preterm
+        val isPreterm = isPretermDelivery(dateOfDelivery, edd)
+        updateDateOfDeliveryTitleWithPretermStatus(if (isPreterm) getString(R.string.preterm_birth) else null)
+    }
+
+    /**
+     * Updates the Date of Delivery field title with preterm status in red (like ANC pattern)
+     */
+    private fun updateDateOfDeliveryTitleWithPretermStatus(statusText: String?) {
+        val fieldId = AssessmentDefinedParams.DATE_OF_DELIVERY
+        val tag = fieldId + formGenerator.titleSuffix
+        val titleView = formGenerator.getViewByTag(tag) as? TextView
+
+        titleView?.let { tv ->
+            // Get original title (store it first time if not stored)
+            val originalTitle = originalTitles[fieldId] ?: run {
+                val currentText = tv.text.toString()
+                // Remove any existing status pattern: " (Status Text)"
+                val statusPattern = "\\s+\\([^)]+\\)\\s*$".toRegex()
+                val original = currentText.replace(statusPattern, "")
+                originalTitles[fieldId] = original
+                original
+            }
+
+            // Build title with status
+            if (statusText != null && statusText.isNotEmpty()) {
+                tv.text = buildSpannedString {
+                    append(originalTitle)
+                    append(" ")
+                    color(Color.RED) {
+                        append("($statusText)")
+                    }
+                }
+            } else {
+                // No status, show original title
+                tv.text = originalTitle
+            }
+        }
+    }
+
+    /**
+     * Checks if delivery is preterm (<37 weeks from EDD)
+     */
+    private fun isPretermDelivery(
+        dateOfDelivery: String,
+        edd: String,
+    ): Boolean {
+        try {
+            val gestationalWeeks = calculateGestationalAgeAtDelivery(dateOfDelivery, edd)
+            return gestationalWeeks != null && gestationalWeeks < 37
+        } catch (e: Exception) {
+            return false
+        }
+    }
+
+    /**
+     * Calculates gestational age in weeks at delivery based on EDD
+     * Returns weeks or null if calculation fails
+     */
+    private fun calculateGestationalAgeAtDelivery(
+        dateOfDelivery: String,
+        edd: String,
+    ): Int? {
+        try {
+            // Parse dates - both are in yyyy-MM-dd'T'HH:mm:ssZZZZZ format
+            // Convert to yyyyMMdd format for calculation
+            val deliveryDateStr = com.medtroniclabs.spice.common.DateUtils.convertDateFormat(
+                dateOfDelivery,
+                com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMdd,
+            )
+            val eddDateStr = com.medtroniclabs.spice.common.DateUtils.convertDateFormat(
+                edd,
+                com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMdd,
+            )
+
+            if (deliveryDateStr.isNullOrBlank() || eddDateStr.isNullOrBlank()) {
+                return null
+            }
+
+            // Get time in milliseconds
+            val deliveryMillis = com.medtroniclabs.spice.common.DateUtils.getCalendarFromString(
+                deliveryDateStr,
+                com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMdd,
+            )
+            val eddMillis = com.medtroniclabs.spice.common.DateUtils.getCalendarFromString(
+                eddDateStr,
+                com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMdd,
+            )
+
+            if (deliveryMillis == null || eddMillis == null) {
+                return null
+            }
+
+            // Calculate difference in days
+            val diffInMillis = eddMillis - deliveryMillis
+            val diffInDays = diffInMillis / (1000 * 60 * 60 * 24)
+
+            // Calculate gestational age at delivery
+            // EDD is typically at 40 weeks from LMP
+            // If delivery is before EDD, gestational age = 40 - (days before EDD / 7)
+            val weeksFromEDD = (diffInDays / 7.0).toInt()
+            val gestationalWeeks = 40 - weeksFromEDD
+
+            return gestationalWeeks
+        } catch (e: Exception) {
+            return null
+        }
+    }
 
     companion object {
         const val TAG = "AssessmentPregnancyOutcomeFragment"

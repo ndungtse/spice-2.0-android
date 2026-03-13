@@ -87,6 +87,11 @@
                         layout="@layout/summary_layout"
                         android:visibility="gone" />
 
+                    <include
+                        android:id="@+id/totalAncServices"
+                        layout="@layout/summary_layout"
+                        android:visibility="gone" />
+
                 </LinearLayout>
 
             </LinearLayout>

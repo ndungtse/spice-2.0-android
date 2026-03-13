@@ -347,7 +347,7 @@ class AssessmentActivity : BaseActivity() {
                 )
             }
             MenuConstants.PREGNANCY_OUTCOME -> {
-                setTitle(getString(R.string.assessment_summary))
+                setTitle(Summary.capitalizeFirstChar())
                 hideBackButton()
                 replaceFragmentInId<AssessmentPregnancyOutcomeSummaryFragment>(
                     binding.formsFragmentContainer.id,

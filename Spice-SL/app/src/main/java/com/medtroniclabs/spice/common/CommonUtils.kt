@@ -1747,9 +1747,15 @@ object CommonUtils {
         }
     }
 
-    fun getListActual(map: Any?): String? =
-        (map as? Map<*, *>)?.get(DefinedParams.cultureValue) as? String
-            ?: (map as? Map<*, *>)?.get(DefinedParams.NAME) as? String
+    fun getListActual(map: Any?): String? {
+        val mapData = map as? Map<*, *> ?: return null
+        return if (parseUserLocale() == DefinedParams.EN) {
+            mapData[DefinedParams.NAME] as? String
+        } else {
+            (mapData[DefinedParams.cultureValue] as? String)?.takeIf { it.isNotEmpty() }
+                ?: (mapData[DefinedParams.NAME] as? String)
+        }
+    }
 
     fun getBMIFormattedText(
         context: Context,

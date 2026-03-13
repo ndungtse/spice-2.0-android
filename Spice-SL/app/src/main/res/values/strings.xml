@@ -190,6 +190,7 @@
     <string name="villages">Villages</string>
     <string name="start_with_validation">Phone number should starts with %1$s </string>
     <string name="or">or</string>
+    <string name="OR">OR</string>
     <string name="edit_household">Edit Household</string>
     <string name="edit_member">Edit Member</string>
     <string name="select_member">Select Member</string>
@@ -298,6 +299,7 @@
     <string name="delivery_by">Delivery By</string>
     <string name="delivery_by_others">Delivery By (Others)</string>
     <string name="delivery_status">Delivery Status</string>
+    <string name="preterm_birth">Preterm Birth</string>
     <string name="error_label">Please enter valid input</string>
     <string name="select_date">Select Date</string>
     <string name="number">Number</string>
@@ -309,6 +311,7 @@
     <string name="result_mother">Result - Mother</string>
     <string name="result_neonate">Result - Neonate</string>
     <string name="anc_visit">ANC Visit</string>
+    <string name="total_anc_services_received">Total ANC services received</string>
     <string name="pnc_visit">PNC Visit</string>
     <string name="exit_reason">If you leave this screen, your entered data will not be saved.</string>
     <string name="add_new_member_small">Add New Member</string>

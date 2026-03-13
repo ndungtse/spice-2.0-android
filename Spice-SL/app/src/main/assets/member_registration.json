@@ -116,7 +116,7 @@
       "titleCulture": "জন্ম তারিখ",
       "hint": "DD/MM/YYYY",
       "hintCulture": "দিন/মাস/বছর",
-      "viewType": "Age",
+      "viewType": "AgeOrDob",
       "orderId": 4,
       "visibility": "visible"
     },

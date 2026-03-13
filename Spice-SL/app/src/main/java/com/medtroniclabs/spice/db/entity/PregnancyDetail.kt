@@ -54,7 +54,7 @@ data class PregnancyDetail(
     var gapsInPnc: String? = null,
     // Pregnancy outcome
     var dateOfDelivery: String? = null,
-    var anyComplicationsDuringDelivery: String? = null,
+    var complicationsDuringDelivery: String? = null,
     var typeOfAbortion: String? = null,
     var noOfNeonates: Int? = null,
     var neonatePatientId: String? = null,

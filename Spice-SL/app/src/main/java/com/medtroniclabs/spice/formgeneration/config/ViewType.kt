@@ -14,6 +14,8 @@ object ViewType {
     const val VIEW_TYPE_FORM_BP = "BP"
     const val VIEW_TYPE_FORM_TEXTLABEL = "TextLabel"
     const val VIEW_TYPE_FORM_AGE = "Age"
+    const val VIEW_TYPE_FORM_AGE_YMD = "AgeYMD"
+    const val VIEW_TYPE_FORM_AGE_OR_DOB = "AgeOrDob"
     const val VIEW_TYPE_FORM_CHEKBOX = "CheckBox"
     const val VIEW_TYPE_FORM_BUTTON = "Button"
     const val VIEW_TYPE_FORM_TAG = "TagView"

@@ -423,7 +423,7 @@ class AssessmentViewModel @Inject constructor(
         details: AssessmentMemberDetails,
         assessmentMap: HashMap<String, Any>,
     ) {
-        val pregnancyOutcomeMap = assessmentMap[PREGNANCY_OUTCOME.lowercase()] as? Map<String, Any?>
+        val pregnancyOutcomeMap = assessmentMap[PREGNANCY_OUTCOME] as? Map<String, Any?>
             ?: return
 
         val existingPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
@@ -437,7 +437,7 @@ class AssessmentViewModel @Inject constructor(
         val deliveryOutcomes = pregnancyOutcomeMap["deliveryOutcomes"] as? Map<String, Any?>
         deliveryOutcomes?.let { delivery ->
             pregnancyDetail.dateOfDelivery = delivery["dateOfDelivery"] as? String
-            pregnancyDetail.anyComplicationsDuringDelivery = delivery["anyComplicationsDuringDelivery"] as? String
+            pregnancyDetail.complicationsDuringDelivery = delivery["complicationsDuringDelivery"] as? String
 
             // liveBirthNumbers → noOfNeonates (Int)
             val liveBirthNumbers = delivery["liveBirthNumbers"]

@@ -45,8 +45,9 @@
       "isNeededDefault": true,
       "isSummary": false,
       "title": "Age of last child",
+      "hideDob": true,
       "titleCulture": "সবচেয়ে ছোট সন্তানের বয়স কত?",
-      "viewType": "Age",
+      "viewType": "AgeYMD",
       "orderId": 2,
       "visibility": "gone"
     },

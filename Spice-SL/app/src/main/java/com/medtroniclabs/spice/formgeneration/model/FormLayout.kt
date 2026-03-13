@@ -199,6 +199,7 @@ data class FormLayout(
     var titles: ArrayList<TitleModel>? = null,
     var infoTitle: String? = null,
     var infoTitleCulture: String? = null,
+    var hideDob: Boolean? = null,
 ) : BaseViewParams {
     /**
      * Returns info title

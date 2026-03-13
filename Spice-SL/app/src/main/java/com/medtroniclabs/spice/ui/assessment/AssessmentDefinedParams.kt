@@ -440,11 +440,27 @@ object AssessmentDefinedParams {
     const val COUNSELLING_ABORTION = "counsellingAbortion"
     const val COUNSELLING_STILL_BIRTH = "counsellingStillBirth"
     const val COUNSELLING_NEONATAL_DEATH = "counsellingNeonatalDeath"
+    const val COUNSELLING_EMOTIONAL_SUPPORT = "counsellingEmotionalSupport"
+    const val COUNSELLING_FUTURE_PREGNANCY_PLANNING = "counsellingFuturePregnancyPlanning"
+    const val STILLBIRTH_NUMBERS = "stillbirthNumbers"
     const val NEWBORN_DETAILS = "newbornDetails"
     const val IS_BABY_ALIVE = "isBabyAlive"
     const val SEX = "sex"
     const val BIRTH_WEIGHT = "birthWeight"
     const val CAUSE_OF_NEONATAL_DEATH = "causeOfNeonatalDeath"
+
+    // Pregnancy Outcome Additional Field IDs
+    const val LIVE_BIRTH_NUMBERS = "liveBirthNumbers"
+    const val COUNSELLING_ADVERSE_EVENT = "counsellingAdverseEvent"
+
+    // Pregnancy Outcome Cause of Death Option IDs
+    const val CAUSE_OF_DEATH_OBSTRUCTED_LABOR = "obstructedLabor"
+    const val CAUSE_OF_DEATH_UNSAFE_ABORTION = "unsafeAbortion"
+
+    // Pregnancy Outcome Time of Death Values
+    const val TIME_OF_DEATH_BEFORE_DELIVERY = "beforeDelivery"
+    const val TIME_OF_DEATH_DURING_CHILDBIRTH = "duringChildbirth"
+    const val TIME_OF_DEATH_WITHIN_42_DAYS_AFTER_DELIVERY = "within42DaysAfterDelivery"
 
     /**
      * DialogCheckbox : Child complications

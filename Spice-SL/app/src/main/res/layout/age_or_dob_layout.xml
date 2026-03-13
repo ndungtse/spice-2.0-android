@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="@dimen/_12sdp"
+    android:paddingBottom="@dimen/_2sdp">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        style="@style/Form_Label_Style"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:layout_marginBottom="@dimen/_8sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="RtlSymmetry" />
+
+    <!-- Guidelines for proper width distribution -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/startGuideLine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.30" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/endGuideLine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.40" />
+
+    <!-- Age Label -->
+    <TextView
+        android:id="@+id/tvAgeLabel"
+        style="@style/Form_Label_Style"
+        android:layout_width="0dp"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:paddingEnd="@dimen/_10sdp"
+        app:layout_constraintEnd_toStartOf="@id/startGuideLine"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        tools:ignore="RtlSymmetry" />
+
+    <!-- DOB Label -->
+    <TextView
+        android:id="@+id/tvDobLabel"
+        style="@style/Form_Label_Style"
+        android:layout_width="0dp"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:paddingEnd="@dimen/_10sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/endGuideLine"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        tools:ignore="RtlSymmetry" />
+
+    <!-- Age EditText -->
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/etAge"
+        style="@style/Form_Input_Style_BG"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:layout_marginEnd="@dimen/_4sdp"
+        android:hint="@string/years"
+        android:inputType="number"
+        android:maxLength="3"
+        android:paddingHorizontal="@dimen/_12sdp"
+        android:paddingVertical="@dimen/_10sdp"
+        app:layout_constraintEnd_toStartOf="@id/startGuideLine"
+        app:layout_constraintStart_toStartOf="@id/tvAgeLabel"
+        app:layout_constraintTop_toBottomOf="@id/tvAgeLabel" />
+
+    <!-- OR Text - Fixed to prevent wrapping -->
+    <TextView
+        android:id="@+id/tvOr"
+        style="@style/Form_Input_Style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_4sdp"
+        android:gravity="center"
+        android:text="@string/OR"
+        android:textStyle="bold"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:minWidth="@dimen/_30sdp"
+        app:layout_constraintBottom_toBottomOf="@id/etAge"
+        app:layout_constraintEnd_toStartOf="@id/dobInputHolder"
+        app:layout_constraintStart_toEndOf="@id/etAge"
+        app:layout_constraintTop_toTopOf="@id/etAge" />
+
+    <!-- DOB Input Holder -->
+    <LinearLayout
+        android:id="@+id/dobInputHolder"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:layout_marginStart="@dimen/_4sdp"
+        android:background="@drawable/edittext_background"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintEnd_toEndOf="@id/tvDobLabel"
+        app:layout_constraintStart_toStartOf="@id/tvDobLabel"
+        app:layout_constraintTop_toBottomOf="@id/tvDobLabel">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/etDob"
+            style="@style/Form_Input_Style"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/dd_mm_yyyy"
+            android:paddingHorizontal="@dimen/_12sdp"
+            android:paddingVertical="@dimen/_10sdp"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivClearDob"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:padding="@dimen/_8sdp"
+            android:src="@drawable/ic_close"
+            android:visibility="gone"
+            android:contentDescription="Clear"
+            app:tint="@color/charcoal_grey" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivCalendar"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="match_parent"
+            android:padding="@dimen/_8sdp"
+            android:background="@drawable/blue_rectangle"
+            android:src="@drawable/ic_baseline_calendar_today_24"
+            android:contentDescription="@string/dateofbirth" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvErrorMessage"
+        style="@style/TextStyle_Error_14"
+        android:visibility="gone"
+        android:paddingHorizontal="@dimen/_16sdp"
+        android:paddingVertical="@dimen/_8sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etAge" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -476,15 +476,16 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                 formGenerator.disableSingleSelection(gender)
             }
         }
-        details.dateOfBirth.let {
+        details.dateOfBirth.let { originalDobUtc ->
             val dateOfBirth =
-                DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
-            val dateDob = DateUtils.convertStringToDate(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+                DateUtils.convertDateFormat(originalDobUtc, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
+            val dateDob = DateUtils.convertStringToDate(originalDobUtc, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
             formGenerator.getViewByTag(MemberRegistration.dateOfBirth)?.let { view ->
                 if (memberRegistrationViewModel.isPhuWalkInsFlow == false && dateOfBirth.isNotBlank()) {
                     formGenerator.disableView(view)
                 }
-                formGenerator.setValueForView(dateOfBirth, view)
+                // Store original UTC value before setting view value for AgeOrDob edit mode
+                formGenerator.setDobValueForAgeOrDob(MemberRegistration.dateOfBirth, originalDobUtc, dateOfBirth, view)
             }
 
             dateDob?.let { dob ->
@@ -549,23 +550,11 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             translate = SecuredPreference.getIsTranslationEnabled(),
         ) { map, id ->
             if (id == DateOfBirth) {
-                val month = map["month"] as? Int
-                val week = map["week"] as? Int
-                if (month in 0..11 && week in 0..4) {
+                
+                    // This is AgeOrDob component - hide error (validation handled elsewhere)
                     formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
                         visibility = View.GONE
                     }
-                } else {
-                    formGenerator
-                        .getViewByTag(DateOfBirth + errorSuffix)
-                        ?.apply {
-                            visibility = View.VISIBLE
-                        }.takeIf { it is TextView }
-                        ?.let { textView ->
-                            (textView as TextView).text =
-                                getString(R.string.please_select_a_valid_value_month)
-                        }
-                }
                 val dateOfBirth = map[id] as? String
                 handleDob(dateOfBirth)
             } else if (id == MemberRegistration.ID_GUARDIAN && formGenerator.isViewVisible(id) && formGenerator.isViewEnabled(id)) {
@@ -695,15 +684,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
                 visibility = View.GONE
             }
-
-            val month = map[Month] as? Int
-            val week = map[Week] as? Int
-            // Month and Week field validation
-            if (month !in 0..11 || week !in 0..4) {
-                showInValidDob(getString(R.string.please_select_a_valid_value_month))
-                return
-            }
-
+           
             // Add member from medical review
             if (memberRegistrationViewModel.medicalReviewFlow) {
                 memberRegistrationViewModel.addNewMember(

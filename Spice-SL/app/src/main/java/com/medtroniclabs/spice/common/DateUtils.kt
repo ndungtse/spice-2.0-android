@@ -180,6 +180,75 @@ object DateUtils {
         return "$resul+00:00"
     }
 
+    /**
+     * Calculates birth date from years, months, and days
+     * @param years Number of years
+     * @param months Number of months
+     * @param days Number of days
+     * @return Birth date in UTC format (yyyy-MM-dd'T'HH:mm:ss+00:00)
+     */
+    fun calculateBirthDateYMD(
+        years: Int,
+        months: Int,
+        days: Int,
+    ): String {
+        var localDate = OffsetDateTime.now()
+
+        localDate = localDate
+            .minusYears(years.toLong())
+            .minusMonths(months.toLong())
+            .minusDays(days.toLong())
+            .withHour(0)
+            .withMinute(0)
+            .withSecond(0)
+            .withNano(0)
+
+        val result = localDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmss).withLocale(Locale.ENGLISH))
+        return "$result+00:00"
+    }
+
+    /**
+     * Calculates DOB from age (years)
+     * Returns DOB as 01/01/{calculatedYear} in UTC format
+     * @param age Age in years (integer)
+     * @return DOB string in UTC format (yyyy-MM-dd'T'HH:mm:ss+00:00)
+     */
+    fun calculateDOBFromAge(age: Int): String {
+        val currentYear = LocalDate.now().year
+        val birthYear = currentYear - age
+        val dob = LocalDate.of(birthYear, 1, 1) // 01/01/birthYear
+        val offsetDateTime = dob.atStartOfDay(ZoneOffset.UTC)
+        return offsetDateTime.format(DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmssZZZZZ))
+    }
+
+    /**
+     * Calculates years, months, and days from a date of birth
+     * @param dob Date of birth in format yyyy-MM-dd'T'HH:mm:ssZZZZZ
+     * @param format Date format (default: DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+     * @return CalendarPeriod with years, months, weeks=0, and days
+     */
+    fun getYearMonthAndDays(
+        dob: String,
+        format: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+    ): CalendarPeriod {
+        val dobDate = LocalDate.parse(dob, DateTimeFormatter.ofPattern(format))
+        val today = LocalDate.now()
+
+        val period = Period.between(dobDate, today)
+
+        val years = period.years
+        val months = period.months
+
+        // Calculate the days by finding the number of days remaining after years and months
+        val daysBetween = ChronoUnit.DAYS.between(
+            dobDate,
+            today.minusYears(years.toLong()).minusMonths(months.toLong()),
+        )
+        val days = daysBetween.toInt()
+
+        return CalendarPeriod(years, months, 0, days)
+    }
+
     fun calculateAge(birthYear: Int): Int {
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         return currentYear - birthYear

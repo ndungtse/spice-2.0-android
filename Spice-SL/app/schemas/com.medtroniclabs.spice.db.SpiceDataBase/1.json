@@ -1483,7 +1483,7 @@
       },
       {
         "tableName": "PregnancyDetail",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `householdMemberLocalId` INTEGER NOT NULL, `patientId` TEXT, `householdMemberId` TEXT, `pregnancyEpisodeId` TEXT, `tbContactTraceStatus` INTEGER, `lastMenstrualPeriod` TEXT, `estimatedDeliveryDate` TEXT, `pregnancyTest` TEXT, `gravida` INTEGER, `parity` INTEGER, `numberOfLivingChildren` INTEGER, `ageOfLastChild` TEXT, `ancVisitNo` INTEGER, `previousPregnancyComplications` TEXT, `pregnantWomanExistingIllness` TEXT, `pregnantWomanOnTreatment` TEXT, `highRiskPregnantWoman` TEXT, `gapsInAnc` TEXT, `pncVisitNo` INTEGER, `pncIllness` TEXT, `highRiskMother` TEXT, `gapsInPnc` TEXT, `dateOfDelivery` TEXT, `anyComplicationsDuringDelivery` TEXT, `typeOfAbortion` TEXT, `noOfNeonates` INTEGER, `neonatePatientId` TEXT, `isDeliveryAtHome` INTEGER, `neonateHouseholdMemberLocalId` INTEGER, `isNeonateDeathRecordedByPHU` INTEGER, `childVisitNo` INTEGER, `startAt` TEXT, `endAt` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `householdMemberLocalId` INTEGER NOT NULL, `patientId` TEXT, `householdMemberId` TEXT, `pregnancyEpisodeId` TEXT, `tbContactTraceStatus` INTEGER, `lastMenstrualPeriod` TEXT, `estimatedDeliveryDate` TEXT, `pregnancyTest` TEXT, `gravida` INTEGER, `parity` INTEGER, `numberOfLivingChildren` INTEGER, `ageOfLastChild` TEXT, `ancVisitNo` INTEGER, `previousPregnancyComplications` TEXT, `pregnantWomanExistingIllness` TEXT, `pregnantWomanOnTreatment` TEXT, `highRiskPregnantWoman` TEXT, `gapsInAnc` TEXT, `pncVisitNo` INTEGER, `pncIllness` TEXT, `highRiskMother` TEXT, `gapsInPnc` TEXT, `dateOfDelivery` TEXT, `complicationsDuringDelivery` TEXT, `typeOfAbortion` TEXT, `noOfNeonates` INTEGER, `neonatePatientId` TEXT, `isDeliveryAtHome` INTEGER, `neonateHouseholdMemberLocalId` INTEGER, `isNeonateDeathRecordedByPHU` INTEGER, `childVisitNo` INTEGER, `startAt` TEXT, `endAt` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -1631,7 +1631,7 @@
           },
           {
             "fieldPath": "anyComplicationsDuringDelivery",
-            "columnName": "anyComplicationsDuringDelivery",
+            "columnName": "complicationsDuringDelivery",
             "affinity": "TEXT",
             "notNull": false
           },

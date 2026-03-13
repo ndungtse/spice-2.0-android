@@ -166,7 +166,7 @@
             "isSummary": false,
             "viewType": "EditText",
             "inputType": 2,
-            "isMandatory": false,
+            "isMandatory": true,
             "isEnabled": true,
             "title": "Gestation month at the time of death",
             "titleCulture": "মৃত্যুর সময় গর্ভকাল (মাস)",
@@ -185,6 +185,7 @@
             "id": "causeOfDeath",
             "orderId": 3,
             "isSummary": false,
+            "isMandatory": true,
             "viewType": "DialogCheckbox",
             "isEnabled": true,
             "title": "Cause of death",
@@ -265,7 +266,7 @@
             "hintCulture": "গর্ভকাল (মাস) লিখুন",
             "maxLength": 1,
             "minValue": 1,
-            "maxValue": 6,
+            "maxValue": 5,
             "condition":
             [
                 {
@@ -351,6 +352,7 @@
             "id": "typeOfAbortion",
             "orderId": 2,
             "isSummary": false,
+            "isMandatory": true,
             "viewType": "SingleSelectionView",
             "isEnabled": true,
             "title": "Type of Abortion",
@@ -402,7 +404,7 @@
             "isSummary": false,
             "viewType": "EditText",
             "inputType": 2,
-            "isMandatory": false,
+            "isMandatory": true,
             "isEnabled": true,
             "title": "Live Birth",
             "titleCulture": "জীবিত জন্ম",
@@ -425,7 +427,7 @@
             "isSummary": false,
             "viewType": "EditText",
             "inputType": 2,
-            "isMandatory": false,
+            "isMandatory": true,
             "isEnabled": true,
             "title": "Stillbirth",
             "titleCulture": "মৃত জন্ম",
@@ -443,6 +445,7 @@
             "id": "placeOfDelivery",
             "orderId": 4,
             "isSummary": false,
+            "isMandatory": true,
             "viewType": "SingleSelectionView",
             "isEnabled": true,
             "title": "Place of delivery",
@@ -459,7 +462,7 @@
                 },
                 {
                     "id": "govtHealthFacility",
-                    "name": "Govt. Health facility",
+                    "name": "Government Health Facility",
                     "cultureValue": "সরকারি স্বাস্থ্যকেন্দ্রে"
                 },
                 {
@@ -483,6 +486,7 @@
             "id": "dateOfDelivery",
             "orderId": 5,
             "isSummary": false,
+            "isMandatory": true,
             "viewType": "DatePicker",
             "isEnabled": true,
             "title": "Date of delivery",
@@ -500,6 +504,7 @@
             "id": "modeOfDelivery",
             "orderId": 6,
             "isSummary": false,
+            "isMandatory": true,
             "viewType": "SingleSelectionView",
             "isEnabled": true,
             "title": "Mode of Delivery",
@@ -532,6 +537,7 @@
             "id": "birthAttendant",
             "orderId": 7,
             "isSummary": false,
+            "isMandatory": true,
             "viewType": "Spinner",
             "isEnabled": true,
             "title": "Birth Attendant",
@@ -594,6 +600,7 @@
             "id": "anyComplicationsDuringDelivery",
             "orderId": 8,
             "isSummary": false,
+            "isMandatory": true,
             "viewType": "SingleSelectionView",
             "isEnabled": true,
             "title": "Any complications during delivery?",
@@ -631,7 +638,7 @@
             "orderId": 9,
             "isSummary": false,
             "viewType": "DialogCheckbox",
-            "isMandatory": false,
+            "isMandatory": true,
             "isEnabled": true,
             "title": "Complications during delivery",
             "titleCulture": "প্রসবকালীন জটিলতা",
@@ -694,65 +701,58 @@
         },
         {
             "family": "counsellingAdverseEvent",
-            "fieldName": "Abortion",
-            "id": "counsellingAbortion",
+            "fieldName": "Emotional Support",
+            "id": "counsellingEmotionalSupport",
             "orderId": 1,
             "isSummary": true,
             "viewType": "Instruction",
             "isMandatory": false,
             "isEnabled": true,
-            "title": "Abortion",
-            "titleCulture": "গর্ভপাত",
+            "title": "Emotional Support",
+            "titleCulture": "মানসিক সহায়তা",
             "visibility": "visible",
             "instructions":
             [
-                "Customized counselling messages for abortion will be provided here"
+                "I am very sorry for your loss. I know this is an incredibly difficult time for you and your family. What you are feeling right now - whether it's sadness, anger, confusion, or numbness - all of these feelings are completely normal. There is no right or wrong way to grieve.",
+                "It's important that you allow yourself to feel these emotions. Don't hold them inside. Talk to your partner, your family, or someone you trust about how you're feeling. Some days will be harder than others, and that's okay. Healing takes time, and everyone heals at their own pace.",
+                "If you feel comfortable, you can also connect with other mothers who have experienced similar losses. There are support groups available that can help. And if you ever feel overwhelmed or need professional support, please don't hesitate to reach out. We are here to help you.",
+                "Remember, seeking help is a sign of strength, not weakness. Your feelings matter, and you deserve support during this difficult time."
             ],
             "instructionsCulture":
             [
-                "গর্ভপাতের জন্য কাস্টমাইজড কাউন্সেলিং বার্তা এখানে প্রদান করা হবে"
+                "আমি আপনার ক্ষতির জন্য খুব দুঃখিত। আমি জানি এটি আপনার এবং আপনার পরিবারের জন্য একটি অবিশ্বাস্যভাবে কঠিন সময়। আপনি এখন যা অনুভব করছেন - তা দুঃখ, রাগ, বিভ্রান্তি বা অসাড়তা হোক - এই সমস্ত অনুভূতি সম্পূর্ণ স্বাভাবিক। শোক করার কোন সঠিক বা ভুল উপায় নেই।",
+                "আপনার নিজের জন্য এই আবেগগুলো অনুভব করা গুরুত্বপূর্ণ। এগুলো ভিতরে রাখবেন না। আপনার সঙ্গী, পরিবার বা কাউকে বিশ্বাস করেন এমন কারো সাথে আপনার অনুভূতি সম্পর্কে কথা বলুন। কিছু দিন অন্যদের চেয়ে কঠিন হবে, এবং সেটা ঠিক আছে। নিরাময়ের জন্য সময় লাগে, এবং প্রত্যেকে নিজের গতিতে নিরাময় করে।",
+                "আপনি যদি স্বাচ্ছন্দ্য বোধ করেন, আপনি অন্যান্য মায়েদের সাথেও সংযুক্ত হতে পারেন যারা অনুরূপ ক্ষতি অনুভব করেছেন। সহায়তা গোষ্ঠী উপলব্ধ যা সাহায্য করতে পারে। এবং যদি আপনি কখনও অভিভূত বোধ করেন বা পেশাদার সহায়তার প্রয়োজন হয়, অনুগ্রহ করে আমাদের সাথে যোগাযোগ করতে দ্বিধা করবেন না। আমরা এখানে আপনাকে সাহায্য করার জন্য আছি।",
+                "মনে রাখবেন, সাহায্য চাওয়া শক্তির লক্ষণ, দুর্বলতা নয়। আপনার অনুভূতি গুরুত্বপূর্ণ, এবং এই কঠিন সময়ে আপনি সহায়তার যোগ্য।"
             ]
         },
         {
             "family": "counsellingAdverseEvent",
-            "fieldName": "Still Birth",
-            "id": "counsellingStillBirth",
+            "fieldName": "Future Pregnancy Planning",
+            "id": "counsellingFuturePregnancyPlanning",
             "orderId": 2,
             "isSummary": true,
             "viewType": "Instruction",
             "isMandatory": false,
             "isEnabled": true,
-            "title": "Still Birth",
-            "titleCulture": "মৃত সন্তান প্রসব(স্টিলবার্থ)",
+            "title": "Future Pregnancy Planning",
+            "titleCulture": "ভবিষ্যত গর্ভাবস্থার পরিকল্পনা",
             "visibility": "visible",
             "instructions":
             [
-                "Customized counselling messages for stillbirth will be provided here"
+                "I know this may be difficult to think about right now, but I want to talk to you about family planning for your future health and wellbeing",
+                "It's very important to wait at least 6 months before becoming pregnant again. Your body needs this time to heal completely, both physically and emotionally. Becoming pregnant too soon can increase risks for you and your future baby.",
+                "To prevent pregnancy during this time, I recommend using a family planning method. We have several options available: IUD, contraceptive pills, injections, condoms, and other methods. We can discuss which method would work best for you based on your health and preferences. All of these methods are safe and effective.",
+                "Remember, you can become pregnant again even before your periods return, so it's important to start family planning right away if you don't want to conceive immediately.",
+                "When you and your family decide you're ready to try for another pregnancy, please come see us first. We'll make sure you're taking folic acid tablets, eating well, and managing any health conditions. We'll also help you register for antenatal care as early as possible in your next pregnancy - ideally within the first 3 months - so we can monitor you closely and ensure a healthy pregnancy."
             ],
             "instructionsCulture":
             [
-                "স্টিলবার্থের জন্য কাস্টমাইজড কাউন্সেলিং বার্তা এখানে প্রদান করা হবে"
-            ]
-        },
-        {
-            "family": "counsellingAdverseEvent",
-            "fieldName": "Neonatal Death",
-            "id": "counsellingNeonatalDeath",
-            "orderId": 3,
-            "isSummary": true,
-            "viewType": "Instruction",
-            "isMandatory": false,
-            "isEnabled": true,
-            "title": "Neonatal Death",
-            "titleCulture": "নবজাতকের মৃত্যু",
-            "visibility": "visible",
-            "instructions":
-            [
-                "Customized counselling messages for neonatal death will be provided here"
-            ],
-            "instructionsCulture":
-            [
-                "নবজাতকের মৃত্যুর জন্য কাস্টমাইজড কাউন্সেলিং বার্তা এখানে প্রদান করা হবে"
+                "আমি জানি এটি এখন ভাবতে কঠিন হতে পারে, কিন্তু আমি আপনার ভবিষ্যত স্বাস্থ্য এবং সুস্থতার জন্য পরিবার পরিকল্পনা সম্পর্কে কথা বলতে চাই",
+                "আবার গর্ভবতী হওয়ার আগে কমপক্ষে 6 মাস অপেক্ষা করা খুবই গুরুত্বপূর্ণ। আপনার শরীরের এই সময় প্রয়োজন সম্পূর্ণভাবে নিরাময়ের জন্য, শারীরিক এবং মানসিক উভয়ভাবেই। খুব শীঘ্রই গর্ভবতী হওয়া আপনার এবং আপনার ভবিষ্যত শিশুর জন্য ঝুঁকি বাড়াতে পারে।",
+                "এই সময়ে গর্ভাবস্থা প্রতিরোধ করতে, আমি একটি পরিবার পরিকল্পনা পদ্ধতি ব্যবহার করার পরামর্শ দিই। আমাদের কাছে বেশ কয়েকটি বিকল্প উপলব্ধ: IUD, গর্ভনিরোধক বড়ি, ইনজেকশন, কনডম এবং অন্যান্য পদ্ধতি। আমরা আপনার স্বাস্থ্য এবং পছন্দের উপর ভিত্তি করে কোন পদ্ধতিটি আপনার জন্য সবচেয়ে ভাল কাজ করবে তা নিয়ে আলোচনা করতে পারি। এই সমস্ত পদ্ধতি নিরাপদ এবং কার্যকর।",
+                "মনে রাখবেন, আপনার মাসিক ফিরে আসার আগেও আপনি আবার গর্ভবতী হতে পারেন, তাই যদি আপনি অবিলম্বে গর্ভধারণ করতে না চান তবে পরিবার পরিকল্পনা শুরু করা গুরুত্বপূর্ণ।",
+                "যখন আপনি এবং আপনার পরিবার সিদ্ধান্ত নেন যে আপনি আরেকটি গর্ভাবস্থার জন্য প্রস্তুত, অনুগ্রহ করে প্রথমে আমাদের দেখুন। আমরা নিশ্চিত করব যে আপনি ফলিক অ্যাসিড ট্যাবলেট গ্রহণ করছেন, ভাল খাচ্ছেন এবং কোন স্বাস্থ্য সমস্যা পরিচালনা করছেন। আমরা আপনার পরবর্তী গর্ভাবস্থায় যত তাড়াতাড়ি সম্ভব - আদর্শভাবে প্রথম 3 মাসের মধ্যে - প্রসবপূর্ব যত্নের জন্য নিবন্ধন করতে সাহায্য করব যাতে আমরা আপনাকে ঘনিষ্ঠভাবে পর্যবেক্ষণ করতে পারি এবং একটি সুস্থ গর্ভাবস্থা নিশ্চিত করতে পারি।"
             ]
         }
     ]

@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentBioDataBinding
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
+import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -79,6 +80,10 @@ class BioDataFragment : BaseFragment() {
 
         viewModel.memberClinicalLiveData.observe(viewLifecycleOwner) { entity ->
             showPatientOtherInformation(entity)
+        }
+
+        viewModel.pregnancyDetailLiveData.observe(viewLifecycleOwner) { pregnancyDetail ->
+            showAncServicesReceived(pregnancyDetail)
         }
     }
 
@@ -199,4 +204,18 @@ class BioDataFragment : BaseFragment() {
         } else {
             ageFromDob
         }
+
+    /**
+     * Shows "Total ANC services received" field only for pregnancy outcome workflow
+     */
+    private fun showAncServicesReceived(pregnancyDetail: PregnancyDetail?) {
+        if (viewModel.menuId.equals(MenuConstants.PREGNANCY_OUTCOME, ignoreCase = true)) {
+            val ancVisitNo = pregnancyDetail?.ancVisitNo
+            binding.totalAncServices.root.visible()
+            binding.totalAncServices.tvKey.text = getString(R.string.total_anc_services_received)
+            binding.totalAncServices.tvValue.text = ancVisitNo?.toString() ?: getString(R.string.separator_double_hyphen)
+        } else {
+            binding.totalAncServices.root.gone()
+        }
+    }
 }

@@ -830,7 +830,7 @@ class AssessmentRMNCHFragment :
 
             // Mandatory during 1st PNC visit in case of
             // Woman with excessive bleeding during delivery
-            if (details?.anyComplicationsDuringDelivery?.contains("Excessive bleeding", true) == true) {
+            if (details?.complicationsDuringDelivery?.contains("Excessive bleeding", true) == true) {
                 mandatoryHemoglobin = true
             }
 
