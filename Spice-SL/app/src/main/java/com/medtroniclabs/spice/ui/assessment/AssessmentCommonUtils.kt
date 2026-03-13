@@ -11,6 +11,8 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.No
 import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.databinding.AssessmentSummaryLayoutBinding
+import com.medtroniclabs.spice.databinding.TextLabelLayoutBinding
+import com.medtroniclabs.spice.formgeneration.extension.px
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import org.json.JSONArray
@@ -189,4 +191,14 @@ object AssessmentCommonUtils {
 
         return null
     }
+
+    /**
+     * Returns [TextLabelLayoutBinding] for summary screen with proper padding of 8 dp.
+     * Otherwise [TextLabelLayoutBinding] have 16 dp padding
+     */
+    fun getTextSummaryLabelLayoutBinding(context: Context?): TextLabelLayoutBinding =
+        with(TextLabelLayoutBinding.inflate(LayoutInflater.from(context))) {
+            root.setPadding(8.px, 8.px, 8.px, 8.px)
+            this
+        }
 }

@@ -49,6 +49,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
 import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
+import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -340,7 +341,7 @@ class AssessmentActivity : BaseActivity() {
                 )
             }
             MenuConstants.PREGNANT_WOMEN_PROFILE -> {
-                setTitle(getString(R.string.assessment_summary))
+                setTitle(getString(R.string.summary))
                 hideBackButton()
                 replaceFragmentInId<AssessmentPregnantWomenRegistrationSummaryFragment>(
                     binding.formsFragmentContainer.id,
@@ -651,7 +652,20 @@ class AssessmentActivity : BaseActivity() {
         val intent = if (viewModel.followUpId != null) {
             Intent(this, FollowUpMyPatientActivity::class.java)
         } else {
-            Intent(this, HouseholdSearchActivity::class.java)
+            // For pregnant women after click done navigate user to tools screen
+            if (viewModel.menuId == MenuConstants.PREGNANT_WOMEN_PROFILE) {
+                Intent(this, AssessmentToolsActivity::class.java).apply {
+                    putExtra(DefinedParams.HouseholdId, viewModel.selectedHouseholdId)
+                    putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberId)
+                    putExtra(DefinedParams.FollowUpId, viewModel.followUpId)
+                    putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
+                    putExtra(DefinedParams.FhirId, viewModel.memberFhirId)
+                    putExtra(DefinedParams.ORIGIN, this@AssessmentActivity.intent.getStringExtra(DefinedParams.ORIGIN))
+                    putExtra(MenuConstants.FOLLOW_UP, this@AssessmentActivity.intent.getBooleanExtra(MenuConstants.FOLLOW_UP, false))
+                }
+            } else {
+                Intent(this, HouseholdSearchActivity::class.java)
+            }
         }
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)

@@ -44,8 +44,6 @@ import com.medtroniclabs.spice.databinding.FragmentMemberRegistrationBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.titleSuffix
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
@@ -550,11 +548,10 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             translate = SecuredPreference.getIsTranslationEnabled(),
         ) { map, id ->
             if (id == DateOfBirth) {
-                
-                    // This is AgeOrDob component - hide error (validation handled elsewhere)
-                    formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
-                        visibility = View.GONE
-                    }
+                // This is AgeOrDob component - hide error (validation handled elsewhere)
+                formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
+                    visibility = View.GONE
+                }
                 val dateOfBirth = map[id] as? String
                 handleDob(dateOfBirth)
             } else if (id == MemberRegistration.ID_GUARDIAN && formGenerator.isViewVisible(id) && formGenerator.isViewEnabled(id)) {
@@ -684,7 +681,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
                 visibility = View.GONE
             }
-           
+
             // Add member from medical review
             if (memberRegistrationViewModel.medicalReviewFlow) {
                 memberRegistrationViewModel.addNewMember(

@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGr
 import com.medtroniclabs.spice.appextensions.isGpsEnabled
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.GeneralErrorDialog
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpDialogFragment
@@ -34,6 +35,17 @@ import javax.inject.Inject
 open class BaseFragment : Fragment() {
     @Inject
     lateinit var connectivityManager: ConnectivityManager
+
+    /**
+     * Boolean variable holding whether translation is enabled or not for the app.
+     * If it is true that means user is using the app in second language (other than english)
+     */
+    protected var isTranslationEnabled: Boolean = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        isTranslationEnabled = SecuredPreference.getIsTranslationEnabled()
+    }
 
     fun showProgress() {
         if (activity is BaseActivity) {

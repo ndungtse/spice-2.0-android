@@ -328,6 +328,14 @@ object AssessmentDefinedParams {
     const val HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD = 10.0
     const val HEMOGLOBIN_MILD_ANEMIA_THRESHOLD = 11.0
 
+    // RMNCH Blood sugar
+    const val LOW_SUGAR_THRESHOLD = 4
+
+    // ANC BMI
+    const val BMI_NORMAL_WEIGHT_THRESHOLD = 18.5
+    const val BMI_OVER_WEIGHT_THRESHOLD = 25.0
+    const val BMI_OBSESS_WEIGHT_THRESHOLD = 30.0
+
     // RMNCH Tablet Consumption Threshold
     const val TABLET_CONSUMPTION_THRESHOLD = 30
 
@@ -519,6 +527,21 @@ object AssessmentDefinedParams {
      * SingleSelectionView : Has referral been made?
      */
     const val ID_CHILD_REFERRAL = "childReferral"
+
+    /**
+     * Spinner : Please select Referral Facility
+     */
+    const val ID_CHILD_REFERRAL_FACILITY_TYPE = "childReferralFacilityType"
+
+    /**
+     * SingleSelectionView : Does the child have any congenital defect?
+     */
+    const val ID_CONGENITAL_DEFECT = "congenitalDefect"
+
+    /**
+     * SingleSelectionView : Has the child received vaccines?
+     */
+    const val ID_RECEIVED_VACCINE = "receivedVaccine"
 
     const val FP_METHOD_STERILIZATION_MALE = "sterilizationMale"
     const val FP_METHOD_STERILIZATION_FEMALE = "sterilizationFemale"

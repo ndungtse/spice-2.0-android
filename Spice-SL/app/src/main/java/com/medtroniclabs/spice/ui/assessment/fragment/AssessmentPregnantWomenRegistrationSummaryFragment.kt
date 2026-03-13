@@ -16,9 +16,7 @@ import com.medtroniclabs.spice.common.DateUtils.convertDateFormat
 import com.medtroniclabs.spice.common.DateUtils.formatGestationalAge
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentPregnantWomenRegistrationSummaryBinding
-import com.medtroniclabs.spice.databinding.TextLabelLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.formgeneration.extension.textSizeSsp
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.PregnantWomen
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -95,6 +93,7 @@ class AssessmentPregnantWomenRegistrationSummaryFragment : BaseFragment(), View.
             mapFlatData.putAll(it)
         }
 
+        // LMP
         val lastMenstrualDateString = mapFlatData[PregnantWomen.ID_LMP] as String
         val lastMenstrualDate =
             DateUtils.getLastMenstrualDate(lastMenstrualDateString)
@@ -113,32 +112,7 @@ class AssessmentPregnantWomenRegistrationSummaryFragment : BaseFragment(), View.
         val daysDifference =
             DateUtils.getDaysDifference(lastMenstrualDate.timeInMillis) ?: 0
 
-        if (daysDifference < PregnantWomen.LMP_THRESHOLD_DAYS) {
-            with(TextLabelLayoutBinding.inflate(LayoutInflater.from(context))) {
-                with(tvTitle) {
-                    setText(R.string.pregnancy_too_early_access_title)
-                    setTextColor("#991b1b".toColorInt())
-                    setTypeface(null, Typeface.BOLD)
-                    textSizeSsp = PregnantWomen.SSP_18
-                }
-                displayData.add(root)
-            }
-            with(TextLabelLayoutBinding.inflate(LayoutInflater.from(context))) {
-                with(tvTitle) {
-                    setText(R.string.pregnancy_too_early_access_desc_1)
-                    setTextColor("#7f1d1d".toColorInt())
-                }
-                displayData.add(root)
-            }
-            with(TextLabelLayoutBinding.inflate(LayoutInflater.from(context))) {
-                with(tvTitle) {
-                    setText(R.string.pregnancy_too_early_access_desc_2)
-                    setTextColor("#7f1d1d".toColorInt())
-                    setTypeface(null, Typeface.BOLD)
-                }
-                displayData.add(root)
-            }
-        } else {
+        if (daysDifference >= PregnantWomen.LMP_THRESHOLD_DAYS) {
             // EDD
             val estimatedDeliveryDate =
                 DateUtils.calculateEstimatedDeliveryDate(lastMenstrualDate)
@@ -157,42 +131,36 @@ class AssessmentPregnantWomenRegistrationSummaryFragment : BaseFragment(), View.
                 requireContext(),
             )
             bindSummaryView(
-                getString(R.string.gestational_week),
+                getString(R.string.gestational_age),
                 gestationalAgeWeekString,
             )
 
             // Risk factors
             val riskFactors = PregnantWomen.computeRiskFactors(mapFlatData)
-            with(TextLabelLayoutBinding.inflate(LayoutInflater.from(context))) {
-                with(tvTitle) {
-                    setText(R.string.the_following_risk_factors_identified)
-                    setTextColor("#991b1b".toColorInt())
-                    setTypeface(null, Typeface.BOLD)
-                }
-                displayData.add(root)
-            }
             if (riskFactors.isNotEmpty()) {
+                with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
+                    with(tvTitle) {
+                        setText(R.string.risk_factors_identified)
+                        setTextColor("#991b1b".toColorInt())
+                        setTypeface(null, Typeface.BOLD)
+                    }
+                    displayData.add(root)
+                }
+
                 riskFactors.forEach { riskFactor ->
-                    with(TextLabelLayoutBinding.inflate(LayoutInflater.from(context))) {
+                    with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                         with(tvTitle) {
-                            text = riskFactor
+                            text = "  • $riskFactor" // Use bigger bullet (•)
                             setTextColor("#7f1d1d".toColorInt())
                         }
                         displayData.add(root)
                     }
                 }
-            } else {
-                with(TextLabelLayoutBinding.inflate(LayoutInflater.from(context))) {
-                    with(tvTitle) {
-                        text = getString(R.string.none)
-                    }
-                    displayData.add(root)
-                }
             }
-        }
 
-        displayData.forEach {
-            binding.parentLayout.addView(it)
+            displayData.forEach {
+                binding.parentLayout.addView(it)
+            }
         }
     }
 

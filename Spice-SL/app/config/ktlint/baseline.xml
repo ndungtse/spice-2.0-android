@@ -315,39 +315,6 @@
         <error line="10" column="15" source="standard:property-naming" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/formgeneration/FormGenerator.kt">
-        <error line="3" column="1" source="standard:import-ordering" />
-        <error line="1985" column="46" source="standard:wrapping" />
-        <error line="1985" column="74" source="standard:wrapping" />
-        <error line="1992" column="13" source="standard:wrapping" />
-        <error line="2288" column="1" source="standard:no-trailing-spaces" />
-        <error line="2316" column="1" source="standard:no-trailing-spaces" />
-        <error line="2339" column="1" source="standard:no-trailing-spaces" />
-        <error line="2383" column="1" source="standard:no-trailing-spaces" />
-        <error line="2388" column="1" source="standard:no-trailing-spaces" />
-        <error line="2392" column="1" source="standard:no-trailing-spaces" />
-        <error line="2395" column="1" source="standard:no-trailing-spaces" />
-        <error line="2404" column="1" source="standard:no-trailing-spaces" />
-        <error line="2410" column="1" source="standard:no-trailing-spaces" />
-        <error line="2413" column="1" source="standard:no-trailing-spaces" />
-        <error line="2458" column="27" source="standard:function-signature" />
-        <error line="2458" column="39" source="standard:function-signature" />
-        <error line="2458" column="54" source="standard:function-signature" />
-        <error line="3486" column="68" source="standard:no-trailing-spaces" />
-        <error line="3487" column="21" source="standard:chain-wrapping" />
-        <error line="3487" column="24" source="standard:condition-wrapping" />
-        <error line="3488" column="21" source="standard:chain-wrapping" />
-        <error line="3488" column="24" source="standard:condition-wrapping" />
-        <error line="3488" column="35" source="standard:no-trailing-spaces" />
-        <error line="3489" column="21" source="standard:chain-wrapping" />
-        <error line="3489" column="24" source="standard:condition-wrapping" />
-        <error line="3489" column="52" source="standard:wrapping" />
-        <error line="4033" column="1" source="standard:if-else-wrapping" />
-        <error line="4034" column="1" source="standard:if-else-wrapping" />
-        <error line="4035" column="1" source="standard:if-else-wrapping" />
-        <error line="4036" column="1" source="standard:if-else-wrapping" />
-        <error line="4037" column="1" source="standard:if-else-wrapping" />
-        <error line="4038" column="1" source="standard:if-else-wrapping" />
-        <error line="4039" column="1" source="standard:if-else-wrapping" />
         <error line="4040" column="1" source="standard:if-else-wrapping" />
         <error line="4041" column="1" source="standard:if-else-wrapping" />
         <error line="4042" column="1" source="standard:if-else-wrapping" />
@@ -355,6 +322,13 @@
         <error line="4044" column="1" source="standard:if-else-wrapping" />
         <error line="4045" column="1" source="standard:if-else-wrapping" />
         <error line="4046" column="1" source="standard:if-else-wrapping" />
+        <error line="4047" column="1" source="standard:if-else-wrapping" />
+        <error line="4048" column="1" source="standard:if-else-wrapping" />
+        <error line="4049" column="1" source="standard:if-else-wrapping" />
+        <error line="4050" column="1" source="standard:if-else-wrapping" />
+        <error line="4051" column="1" source="standard:if-else-wrapping" />
+        <error line="4052" column="1" source="standard:if-else-wrapping" />
+        <error line="4053" column="1" source="standard:if-else-wrapping" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/formgeneration/config/DefinedParams.kt">
         <error line="6" column="15" source="standard:property-naming" />
@@ -1073,37 +1047,12 @@
         <error line="1" column="1" source="standard:filename" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/fragment/AssessmentPregnancyOutcomeFragment.kt">
-        <error line="3" column="1" source="standard:import-ordering" />
         <error line="58" column="17" source="standard:property-naming" />
         <error line="59" column="17" source="standard:property-naming" />
-        <error line="459" column="1" source="standard:no-trailing-spaces" />
-        <error line="676" column="1" source="standard:no-consecutive-blank-lines" />
-        <error line="802" column="13" source="standard:if-else-wrapping" />
-        <error line="810" column="13" source="standard:if-else-wrapping" />
-        <error line="885" column="13" source="standard:if-else-wrapping" />
-        <error line="892" column="13" source="standard:if-else-wrapping" />
-    </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/fragment/AssessmentPregnancyOutcomeSummaryFragment.kt">
-        <error line="3" column="1" source="standard:import-ordering" />
-        <error line="11" column="1" source="standard:no-unused-imports" />
-        <error line="17" column="1" source="standard:no-unused-imports" />
-        <error line="144" column="13" source="standard:chain-method-continuation" />
-        <error line="147" column="64" source="standard:trailing-comma-on-call-site" />
-        <error line="167" column="13" source="standard:chain-method-continuation" />
-        <error line="486" column="38" source="standard:chain-method-continuation" />
-        <error line="493" column="108" source="standard:chain-method-continuation" />
-        <error line="588" column="62" source="standard:chain-method-continuation" />
-        <error line="588" column="68" source="standard:chain-method-continuation" />
-        <error line="597" column="43" source="standard:chain-method-continuation" />
-        <error line="599" column="1" source="standard:indent" />
-        <error line="600" column="1" source="standard:indent" />
-        <error line="601" column="1" source="standard:indent" />
-        <error line="601" column="14" source="standard:wrapping" />
-        <error line="602" column="1" source="standard:indent" />
-        <error line="602" column="83" source="standard:wrapping" />
-        <error line="618" column="37" source="standard:trailing-comma-on-call-site" />
-        <error line="634" column="81" source="standard:chain-method-continuation" />
-        <error line="636" column="92" source="standard:trailing-comma-on-call-site" />
+        <error line="800" column="13" source="standard:if-else-wrapping" />
+        <error line="808" column="13" source="standard:if-else-wrapping" />
+        <error line="883" column="13" source="standard:if-else-wrapping" />
+        <error line="890" column="13" source="standard:if-else-wrapping" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/referrallogic/ReferralResultGenerator.kt">
         <error line="82" column="9" source="standard:property-naming" />
@@ -1385,17 +1334,6 @@
         <error line="79" column="5" source="standard:enum-entry-name-case" />
         <error line="80" column="5" source="standard:enum-entry-name-case" />
         <error line="82" column="5" source="standard:enum-entry-name-case" />
-    </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/member/MemberRegistrationFragment.kt">
-        <error line="47" column="1" source="standard:no-unused-imports" />
-        <error line="48" column="1" source="standard:no-unused-imports" />
-        <error line="553" column="1" source="standard:no-empty-first-line-in-method-block" />
-        <error line="553" column="1" source="standard:no-trailing-spaces" />
-        <error line="554" column="1" source="standard:indent" />
-        <error line="555" column="1" source="standard:indent" />
-        <error line="556" column="1" source="standard:indent" />
-        <error line="557" column="1" source="standard:indent" />
-        <error line="687" column="1" source="standard:no-trailing-spaces" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/mypatients/fragment/AddPresumptiveTBNoDialog.kt">
         <error line="38" column="19" source="standard:property-naming" />

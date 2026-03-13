@@ -162,7 +162,6 @@ class AssessmentViewModel @Inject constructor(
     var referralStatus: String? = null
     var lastLocation: Location? = null
     val memberClinicalLiveData = MutableLiveData<MemberClinicalEntity?>()
-    var pncMotherDetailMap: HashMap<String, Any>? = null
     var dosageListModel: ArrayList<RecommendedDosageListModel>? = null
     var instructionId: String? = null
     val treatmentDays = HashMap<String, Int>()

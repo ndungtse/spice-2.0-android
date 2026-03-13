@@ -248,7 +248,7 @@
             "isNotDefault": false,
             "isSummary": true,
             "orderId": 9,
-            "maxLength": 10,
+            "maxLength": 7,
             "minValue": 0,
             "title": "Monthly Income",
             "titleCulture": "খানার মাসিক আয় (টাকায়)",

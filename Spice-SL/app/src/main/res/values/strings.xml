@@ -46,6 +46,7 @@
     <string name="confirm_diagnoses">Confirm Diagnoses</string>
     <string name="edit_diagnosis">Edit Diagnoses</string>
     <string name="patient_status">Patient Status</string>
+    <string name="child_status">Child Status</string>
     <string name="referred">Referred</string>
     <string name="edit_diagnoses">Edit Diagnoses</string>
     <string name="edit_status">Edit Status</string>
@@ -1397,7 +1398,7 @@
     <string name="day_delay" translatable="false">%d Day Delay</string>
     <string name="on_time" translatable="false">On Time</string>
     <string name="family_planning" translatable="false">Family Planning</string>
-    <string name="pregnant_women_profile" translatable="false">Pregnant women profile</string>
+    <string name="pregnant_women_profile" translatable="false">Pregnant women registration</string>
     <string name="pregnancy_outcome" translatable="false">Pregnancy Outcome</string>
     <string name="baby_label">Baby %d</string>
     <string name="is_baby_alive">Is the baby alive</string>
@@ -1625,7 +1626,7 @@
     <string name="pregnancy_too_early_access_title">⚠️ Pregnancy Too Early to Assess</string>
     <string name="pregnancy_too_early_access_desc_1">Pregnancy assessment can only be conducted after 6 weeks from LMP.</string>
     <string name="pregnancy_too_early_access_desc_2">Please revisit after 6 weeks for complete pregnancy profile assessment.</string>
-    <string name="the_following_risk_factors_identified">⚠️ The following risk factors have been identified:</string>
+    <string name="risk_factors_identified">⚠️ Risk factors identified</string>
 
     <string name="last_visit_date">Last Visit Date</string>
     <string name="recent_service">Recent service</string>
@@ -1645,14 +1646,15 @@
         <item quantity="one">%d Member</item>
         <item quantity="other">%d Members</item>
     </plurals>
-    <string name="counselling_message">Counselling Message</string>
     <string name="short_acting_message">Short-Acting Reversible Methods (SARCs) (Pills, Condoms, Injectables)</string>
     <string name="long_acting_message">Long-Acting Reversible Methods (LARCs)- (IUCD, Implant)</string>
     <string name="permanent_acting_message">Permanent- (Sterilization)</string>
-
-
+    <string name="recommended_method">Recommended method</string>
+    <string name="referral_health_facility">Referral Health Facility</string>
+    <string name="place_of_referral">Place of referral</string>
+    <string name="vaccination">Vaccination</string>
+    <string name="taken">Taken</string>
+    <string name="not_taken">Not Taken</string>
     <string name="referred_for_nfurther_assessment_cc">Refer to the nearest community clinic for further assessment</string>
     <string name="referred_for_nfurther_assessment_Upazila">Refer to the nearest Upazila Health complex for further assessment</string>
-
-
 </resources>

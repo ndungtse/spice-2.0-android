@@ -63,6 +63,7 @@ data class PregnancyDetail(
     var isNeonateDeathRecordedByPHU: Boolean? = null,
     // Childhood Visit Detail
     var childVisitNo: Long? = null,
+    var hadCongenitalDefect: String? = null,
     var startAt: String? = null,
     var endAt: String? = null,
 )

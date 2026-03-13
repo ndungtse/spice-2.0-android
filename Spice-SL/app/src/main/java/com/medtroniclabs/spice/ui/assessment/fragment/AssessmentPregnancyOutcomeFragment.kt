@@ -11,9 +11,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.text.buildSpannedString
+import androidx.core.text.color
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
-import androidx.core.text.color
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
@@ -456,7 +456,7 @@ class AssessmentPregnancyOutcomeFragment :
                 // Get the root view to access error message
                 val rootView = binding.llForm.findViewWithTag<View>("${AssessmentDefinedParams.CAUSE_OF_NEONATAL_DEATH}_${babyIndex}_root")
                 val checkboxBinding = rootView?.let { CheckboxDialogSpinnerLayoutBinding.bind(it) }
-                
+
                 if (map.isEmpty()) {
                     babyDataMap[babyIndex]?.remove(AssessmentDefinedParams.CAUSE_OF_NEONATAL_DEATH)
                     textView.text = getString(R.string.cause_of_death_hint)
@@ -672,8 +672,6 @@ class AssessmentPregnancyOutcomeFragment :
             }
 
             // Remove empty objects from the result map
-
-
             val referralResult = ReferralResultGenerator().calculatePregnancyOutcomeStatus(details)
             val result = serverData?.let {
                 FormResultComposer().groupValues(

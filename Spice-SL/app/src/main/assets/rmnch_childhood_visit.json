@@ -26,12 +26,12 @@
             "optionsList":
             [
                 {
-                    "id": true,
+                    "id": "yes",
                     "name": "Yes",
                     "cultureValue": "হ্যাঁ"
                 },
                 {
-                    "id": false,
+                    "id": "no",
                     "name": "No",
                     "cultureValue": "না"
                 }
@@ -174,12 +174,12 @@
             "optionsList":
             [
                 {
-                    "id": true,
+                    "id": "yes",
                     "name": "Yes",
                     "cultureValue": "হ্যাঁ"
                 },
                 {
-                    "id": false,
+                    "id": "no",
                     "name": "No",
                     "cultureValue": "না"
                 }
@@ -205,12 +205,12 @@
             "optionsList":
             [
                 {
-                    "id": true,
+                    "id": "yes",
                     "name": "Yes",
                     "cultureValue": "হ্যাঁ"
                 },
                 {
-                    "id": false,
+                    "id": "no",
                     "name": "No",
                     "cultureValue": "না"
                 }
@@ -236,12 +236,12 @@
             "optionsList":
             [
                 {
-                    "id": true,
+                    "id": "yes",
                     "name": "Yes",
                     "cultureValue": "হ্যাঁ"
                 },
                 {
-                    "id": false,
+                    "id": "no",
                     "name": "No",
                     "cultureValue": "না"
                 }
@@ -267,12 +267,12 @@
             "optionsList":
             [
                 {
-                    "id": true,
+                    "id": "yes",
                     "name": "Yes",
                     "cultureValue": "হ্যাঁ"
                 },
                 {
-                    "id": false,
+                    "id": "no",
                     "name": "No",
                     "cultureValue": "না"
                 }
@@ -293,6 +293,16 @@
                     "eq": "yes",
                     "targetId": "childIllnessType",
                     "visibility": "visible"
+                },
+                {
+                    "eq": "yes",
+                    "targetId": "childReferral",
+                    "visibility": "visible"
+                },
+                {
+                    "eq": "no",
+                    "targetId": "childReferralFacilityType",
+                    "visibility": "gone"
                 }
             ],
             "orderId": 12,
@@ -378,7 +388,7 @@
             "readOnly": true,
             "title": "Has referral been made?",
             "titleCulture": "রেফারেল করা হয়েছে কিনা?",
-            "visibility": "visible"
+            "visibility": "gone"
         },
         {
             "condition":
