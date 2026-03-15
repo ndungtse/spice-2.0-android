@@ -26,7 +26,7 @@ import androidx.room.PrimaryKey
 )
 data class PregnancyDetail(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    var id: Long = 0,
     var householdMemberLocalId: Long,
     var patientId: String? = null,
     var householdMemberId: String? = null,

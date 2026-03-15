@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.model.assessment
 
 data class AssessmentDetails(
     val id: Long,
+    val householdMemberLocalId: Long,
     val villageId: String, // Village Id of household
     val assessmentType: String,
     val assessmentDetails: String,

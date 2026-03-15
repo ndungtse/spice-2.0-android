@@ -118,6 +118,8 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherAncSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherChildhoodVisitSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.pncChildSigns
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
+import java.util.UUID
 import com.medtroniclabs.spice.ui.boarding.repo.MetaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -399,18 +401,41 @@ class AssessmentViewModel @Inject constructor(
         if (!lmp.isNullOrBlank()) {
             edd = DateUtils.getEstDeliveryDateFromLmp(lmp)
         }
-        val pregnancyDetail = PregnancyDetail(
-            householdMemberLocalId = details.id,
-            patientId = details.patientId,
-            householdMemberId = details.memberId,
-            lastMenstrualPeriod = lmp,
-            estimatedDeliveryDate = edd,
-            pregnancyTest = pregnancy?.get(PregnantWomen.ID_PREGNANCY_TEST) as? String,
-            gravida = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_GRAVIDA)).toInt(),
-            parity = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_PARITY)).toInt(),
-            numberOfLivingChildren = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_LIVING_CHILDREN)).toInt(),
-            ageOfLastChild = pregnancy?.get(PregnantWomen.ID_AGE_OF_LAST_CHILD) as? String,
-        )
+
+        // Check if existing record exists
+        val existingPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
+        val isNewRecord = existingPregnancyDetail == null
+
+        val pregnancyDetail = if (existingPregnancyDetail != null) {
+            // Use existing record and update fields
+            existingPregnancyDetail.apply {
+                lastMenstrualPeriod = lmp
+                estimatedDeliveryDate = edd
+                pregnancyTest = pregnancy?.get(PregnantWomen.ID_PREGNANCY_TEST) as? String
+                gravida = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_GRAVIDA)).toInt()
+                parity = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_PARITY)).toInt()
+                numberOfLivingChildren = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_LIVING_CHILDREN)).toInt()
+                ageOfLastChild = pregnancy?.get(PregnantWomen.ID_AGE_OF_LAST_CHILD) as? String
+            }
+        } else {
+            // Create new record
+            PregnancyDetail(
+                householdMemberLocalId = details.id,
+                patientId = details.patientId,
+                householdMemberId = details.memberId,
+                lastMenstrualPeriod = lmp,
+                estimatedDeliveryDate = edd,
+                pregnancyTest = pregnancy?.get(PregnantWomen.ID_PREGNANCY_TEST) as? String,
+                gravida = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_GRAVIDA)).toInt(),
+                parity = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_PARITY)).toInt(),
+                numberOfLivingChildren = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_LIVING_CHILDREN)).toInt(),
+                ageOfLastChild = pregnancy?.get(PregnantWomen.ID_AGE_OF_LAST_CHILD) as? String,
+            )
+        }
+
+        // Ensure pregnancyEpisodeId and timestamps are set
+        ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail, isNewRecord)
+
         memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
     }
 
@@ -426,7 +451,26 @@ class AssessmentViewModel @Inject constructor(
         val pregnancyOutcomeMap = assessmentMap[PREGNANCY_OUTCOME] as? Map<String, Any?>
             ?: return
 
+        // Check if timeOfDeath has any value and update member status
+        val maternalDeath = pregnancyOutcomeMap[AssessmentDefinedParams.MATERNAL_DEATH] as? Map<String, Any?>
+        val timeOfDeath = maternalDeath?.get(AssessmentDefinedParams.TIME_OF_DEATH)
+        val hasTimeOfDeath = when (timeOfDeath) {
+            is String -> timeOfDeath.isNotBlank()
+            is Map<*, *> -> {
+                val timeOfDeathId = timeOfDeath[DefinedParams.ID]?.toString()
+                    ?: timeOfDeath[DefinedParams.id]?.toString()
+                !timeOfDeathId.isNullOrBlank()
+            }
+            else -> false
+        }
+
+        // Update member status to inactive if timeOfDeath exists
+        if (hasTimeOfDeath) {
+            memberRegistrationRepository.updateMemberDeceasedStatus(details.id, false)
+        }
+
         val existingPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
+        val isNewRecord = existingPregnancyDetail == null
         val pregnancyDetail = existingPregnancyDetail ?: PregnancyDetail(
             householdMemberLocalId = details.id,
             patientId = details.patientId,
@@ -498,6 +542,9 @@ class AssessmentViewModel @Inject constructor(
             pregnancyDetail.neonateHouseholdMemberLocalId = it
         }
 
+        // Ensure pregnancyEpisodeId and timestamps are set
+        ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail, isNewRecord)
+
         memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
     }
 
@@ -531,6 +578,7 @@ class AssessmentViewModel @Inject constructor(
         if (ancMap != null) {
             // Fetch existing record or create new
             val existingPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
+            val isNewRecord = existingPregnancyDetail == null
             val pregnancyDetail = existingPregnancyDetail ?: PregnancyDetail(
                 householdMemberLocalId = details.id,
                 patientId = details.patientId,
@@ -561,6 +609,9 @@ class AssessmentViewModel @Inject constructor(
             // Extract and save gapsInAnc (list of strings -> JSON)
             val gapsInAnc = summary?.get(AssessmentDefinedParams.GAPS_IN_ANC)
             pregnancyDetail.gapsInAnc = convertListToString(gapsInAnc)
+
+            // Ensure pregnancyEpisodeId and timestamps are set
+            ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail, isNewRecord)
 
             // Save (updates existing record or inserts new one)
             memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
@@ -709,9 +760,14 @@ class AssessmentViewModel @Inject constructor(
         }
 
         if (referralStatus != null && referralStatus == ReferralStatus.Referred.name) {
-            otherDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
-                SecuredPreference.getString(SecuredPreference.EnvironmentKey.DEFAULT_SITE_ID.name)
-                    ?: "-1"
+            // Add referralFacilityType to otherDetails if it does NOT exist in otherAssessmentDetails
+            if (!otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferralFacilityType)) {
+                otherDetails[AssessmentDefinedParams.ReferralFacilityType] =
+                    SecuredPreference.getString(SecuredPreference.EnvironmentKey.DEFAULT_SITE_ID.name)
+                        ?: "-1"
+            }
+            // Remove referredSiteId from otherDetails
+            otherDetails.remove(AssessmentDefinedParams.ReferredPHUSiteID)
         } else if (referralStatus != null && referralStatus == ReferralStatus.OnTreatment.name) {
             otherDetails[AssessmentDefinedParams.NextFollowupDate] =
                 DateUtils.convertDateTimeToDate(
@@ -724,6 +780,14 @@ class AssessmentViewModel @Inject constructor(
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                     inUTC = true,
                 )
+            // Add referralFacilityType to otherDetails if it does NOT exist in otherAssessmentDetails
+            if (!otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferralFacilityType)) {
+                otherDetails[AssessmentDefinedParams.ReferralFacilityType] =
+                    otherDetails[AssessmentDefinedParams.ReferredPHUSiteID]
+                        ?: "-1"
+            }
+            // Remove referredSiteId from otherDetails
+            otherDetails.remove(AssessmentDefinedParams.ReferredPHUSiteID)
         }
 
         if (menuId == ANC_MENU.uppercase(Locale.getDefault())) {
@@ -968,6 +1032,12 @@ class AssessmentViewModel @Inject constructor(
                 val isTakenToClinical = otherAssessmentDetails[IsClinicTaken] as String
                 otherAssessmentDetails[IsClinicTaken] = (isTakenToClinical == "Yes")
             }
+            if (!otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferralFacilityType)) {
+                otherAssessmentDetails[AssessmentDefinedParams.ReferralFacilityType] =
+                    otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID]
+                        ?: "-1"
+                otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSiteID);
+            }
             assessmentUpdateLiveData.postValue(
                 assessmentRepository.updateOtherAssessmentDetails(
                     assessmentSaveLiveData.value?.data?.second,
@@ -1131,8 +1201,45 @@ class AssessmentViewModel @Inject constructor(
         return null
     }
 
+    /**
+     * Ensures pregnancyEpisodeId exists and manages startAt/endAt timestamps
+     * @param pregnancyDetail The pregnancy detail entity to update
+     * @param isNewRecord Whether this is a new record (true) or existing record (false)
+     */
+    private fun ensurePregnancyEpisodeIdAndTimestamps(
+        pregnancyDetail: PregnancyDetail,
+        isNewRecord: Boolean,
+    ) {
+        // Generate pregnancyEpisodeId if not exists
+        if (pregnancyDetail.pregnancyEpisodeId.isNullOrBlank()) {
+            pregnancyDetail.pregnancyEpisodeId = UUID.randomUUID().toString()
+        }
+
+        // Set startAt when creating new pregnancyEpisodeId (first time)
+        if (pregnancyDetail.startAt.isNullOrBlank() && !pregnancyDetail.pregnancyEpisodeId.isNullOrBlank()) {
+            pregnancyDetail.startAt = System.currentTimeMillis().convertToUtcDateTime()
+        }
+
+        // Always update endAt on every save
+        pregnancyDetail.endAt = System.currentTimeMillis().convertToUtcDateTime()
+    }
+
     fun savePatientClinicalInformation(pregnancyDetail: PregnancyDetail) {
         viewModelScope.launch(dispatcherIO) {
+            // Get existing record to preserve pregnancyEpisodeId and startAt
+            val existingRecord = memberRegistrationRepository.getPregnancyDetailByPatientId(pregnancyDetail.householdMemberLocalId)
+            val isNewRecord = existingRecord == null
+
+            // If existing record found, preserve pregnancyEpisodeId and startAt
+            if (existingRecord != null) {
+                pregnancyDetail.pregnancyEpisodeId = existingRecord.pregnancyEpisodeId ?: pregnancyDetail.pregnancyEpisodeId
+                pregnancyDetail.startAt = existingRecord.startAt ?: pregnancyDetail.startAt
+                pregnancyDetail.id = existingRecord.id // Preserve ID for update
+            }
+
+            // Ensure pregnancyEpisodeId and timestamps are set
+            ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail, isNewRecord)
+
             memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
         }
     }

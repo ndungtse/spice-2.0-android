@@ -199,6 +199,8 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                             if (subVillageId != 0L) {
                                 formGenerator.getViewByTag(HouseHoldRegistration.subVillageId)?.let { view ->
                                     formGenerator.setValueForView(subVillageId, view)
+                                    // Disable Village field in edit mode
+                                    view.isEnabled = false
                                 }
                             }
                             pendingSubVillageId = null // Clear after setting
@@ -250,6 +252,8 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                 // Store sub village ID to set after list is loaded
                 pendingSubVillageId = details.subVillageId
                 formGenerator.setValueForView(shasthyaShebikaId, view)
+                // Disable SS field in edit mode
+                view.isEnabled = false
             }
         }
         formGenerator.getViewByTag(HouseHoldRegistration.householdType)?.let { view ->

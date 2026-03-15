@@ -878,8 +878,12 @@
         <error line="155" column="13" source="standard:no-consecutive-comments" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/repo/OfflineSyncRepository.kt">
-        <error line="259" column="13" source="standard:no-consecutive-comments" />
-        <error line="829" column="9" source="standard:no-consecutive-comments" />
+        <error line="107" column="14" source="standard:condition-wrapping" />
+        <error line="110" column="14" source="standard:condition-wrapping" />
+        <error line="113" column="14" source="standard:condition-wrapping" />
+        <error line="116" column="14" source="standard:condition-wrapping" />
+        <error line="291" column="13" source="standard:no-consecutive-comments" />
+        <error line="861" column="9" source="standard:no-consecutive-comments" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/signature/view/SignatureView.kt">
         <error line="58" column="17" source="standard:property-naming" />
@@ -926,7 +930,7 @@
         <error line="40" column="15" source="standard:property-naming" />
         <error line="41" column="15" source="standard:property-naming" />
         <error line="42" column="15" source="standard:property-naming" />
-        <error line="50" column="15" source="standard:property-naming" />
+        <error line="43" column="15" source="standard:property-naming" />
         <error line="51" column="15" source="standard:property-naming" />
         <error line="52" column="15" source="standard:property-naming" />
         <error line="53" column="15" source="standard:property-naming" />
@@ -967,13 +971,13 @@
         <error line="88" column="15" source="standard:property-naming" />
         <error line="89" column="15" source="standard:property-naming" />
         <error line="90" column="15" source="standard:property-naming" />
-        <error line="92" column="15" source="standard:property-naming" />
+        <error line="91" column="15" source="standard:property-naming" />
         <error line="93" column="15" source="standard:property-naming" />
         <error line="94" column="15" source="standard:property-naming" />
         <error line="95" column="15" source="standard:property-naming" />
         <error line="96" column="15" source="standard:property-naming" />
         <error line="97" column="15" source="standard:property-naming" />
-        <error line="100" column="15" source="standard:property-naming" />
+        <error line="98" column="15" source="standard:property-naming" />
         <error line="101" column="15" source="standard:property-naming" />
         <error line="102" column="15" source="standard:property-naming" />
         <error line="103" column="15" source="standard:property-naming" />
@@ -1014,24 +1018,24 @@
         <error line="138" column="15" source="standard:property-naming" />
         <error line="139" column="15" source="standard:property-naming" />
         <error line="140" column="15" source="standard:property-naming" />
-        <error line="142" column="15" source="standard:property-naming" />
+        <error line="141" column="15" source="standard:property-naming" />
         <error line="143" column="15" source="standard:property-naming" />
         <error line="144" column="15" source="standard:property-naming" />
         <error line="145" column="15" source="standard:property-naming" />
         <error line="146" column="15" source="standard:property-naming" />
         <error line="147" column="15" source="standard:property-naming" />
-        <error line="149" column="15" source="standard:property-naming" />
+        <error line="148" column="15" source="standard:property-naming" />
         <error line="150" column="15" source="standard:property-naming" />
-        <error line="154" column="15" source="standard:property-naming" />
+        <error line="151" column="15" source="standard:property-naming" />
         <error line="155" column="15" source="standard:property-naming" />
-        <error line="158" column="15" source="standard:property-naming" />
+        <error line="156" column="15" source="standard:property-naming" />
         <error line="159" column="15" source="standard:property-naming" />
         <error line="160" column="15" source="standard:property-naming" />
         <error line="161" column="15" source="standard:property-naming" />
         <error line="162" column="15" source="standard:property-naming" />
         <error line="163" column="15" source="standard:property-naming" />
         <error line="164" column="15" source="standard:property-naming" />
-        <error line="166" column="15" source="standard:property-naming" />
+        <error line="165" column="15" source="standard:property-naming" />
         <error line="167" column="15" source="standard:property-naming" />
         <error line="168" column="15" source="standard:property-naming" />
         <error line="169" column="15" source="standard:property-naming" />
@@ -1039,7 +1043,7 @@
         <error line="171" column="15" source="standard:property-naming" />
         <error line="172" column="15" source="standard:property-naming" />
         <error line="173" column="15" source="standard:property-naming" />
-        <error line="175" column="15" source="standard:property-naming" />
+        <error line="174" column="15" source="standard:property-naming" />
         <error line="176" column="15" source="standard:property-naming" />
         <error line="177" column="15" source="standard:property-naming" />
         <error line="178" column="15" source="standard:property-naming" />
@@ -1049,26 +1053,24 @@
         <error line="182" column="15" source="standard:property-naming" />
         <error line="183" column="15" source="standard:property-naming" />
         <error line="184" column="15" source="standard:property-naming" />
-        <error line="186" column="15" source="standard:property-naming" />
+        <error line="185" column="15" source="standard:property-naming" />
         <error line="187" column="15" source="standard:property-naming" />
         <error line="188" column="15" source="standard:property-naming" />
         <error line="189" column="15" source="standard:property-naming" />
-        <error line="192" column="15" source="standard:property-naming" />
+        <error line="190" column="15" source="standard:property-naming" />
         <error line="193" column="15" source="standard:property-naming" />
         <error line="194" column="15" source="standard:property-naming" />
         <error line="195" column="15" source="standard:property-naming" />
-        <error line="198" column="15" source="standard:property-naming" />
+        <error line="196" column="15" source="standard:property-naming" />
         <error line="199" column="15" source="standard:property-naming" />
-        <error line="202" column="15" source="standard:property-naming" />
+        <error line="200" column="15" source="standard:property-naming" />
         <error line="203" column="15" source="standard:property-naming" />
         <error line="204" column="15" source="standard:property-naming" />
         <error line="205" column="15" source="standard:property-naming" />
+        <error line="206" column="15" source="standard:property-naming" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/ComplianceChooseDialog.kt">
         <error line="1" column="1" source="standard:filename" />
-    </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/fragment/AssessmentFamilyPlanningSummaryFragment.kt">
-        <error line="153" column="161" source="standard:max-line-length" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/fragment/AssessmentPregnancyOutcomeFragment.kt">
         <error line="3" column="1" source="standard:import-ordering" />
@@ -1189,6 +1191,10 @@
         <error line="70" column="15" source="standard:property-naming" />
         <error line="72" column="15" source="standard:property-naming" />
         <error line="74" column="15" source="standard:property-naming" />
+    </file>
+    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/viewmodel/AssessmentViewModel.kt">
+        <error line="3" column="1" source="standard:import-ordering" />
+        <error line="1039" column="89" source="standard:no-semi" />
     </file>
     <file name="src/main/java/com/medtroniclabs/spice/ui/boarding/MenuTypeEnums.kt">
         <error line="4" column="5" source="standard:enum-entry-name-case" />

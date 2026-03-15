@@ -62,6 +62,8 @@ import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
+import com.medtroniclabs.spice.ui.MenuConstants.PREGNANCY_OUTCOME
+import com.medtroniclabs.spice.ui.MenuConstants.PREGNANT_WOMEN_PROFILE
 import com.medtroniclabs.spice.ui.MenuConstants.TB_MENU_ID
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
@@ -94,7 +96,36 @@ class OfflineSyncRepository @Inject constructor(
     private suspend fun getOtherUnSyncedAssessments(addedAssessmentIds: List<String>): List<Assessment> =
         convertEntityToRequest(roomHelper.getOtherUnSyncedAssessments(addedAssessmentIds))
 
-    private fun convertEntityToRequest(list: List<AssessmentDetails>): List<Assessment> {
+    /**
+     * Gets pregnancyEpisodeId from pregnancy details for pregnancy-related assessment types
+     */
+    private suspend fun getPregnancyEpisodeId(entity: AssessmentDetails): String? {
+        val assessmentType = entity.assessmentType
+        val isPregnancyRelated = assessmentType.equals(
+            PREGNANT_WOMEN_PROFILE,
+            ignoreCase = true,
+        ) || assessmentType.equals(
+            PREGNANCY_OUTCOME,
+            ignoreCase = true,
+        ) || assessmentType.equals(
+            RMNCH.ANC_MENU.uppercase(),
+            ignoreCase = true,
+        ) || assessmentType.equals(
+            RMNCH.PNC,
+            ignoreCase = true,
+        ) || assessmentType.equals(
+            ChildHoodVisit,
+            ignoreCase = true,
+        )
+
+        return if (isPregnancyRelated) {
+            roomHelper.getPregnancyDetailByPatientId(entity.householdMemberLocalId)?.pregnancyEpisodeId
+        } else {
+            null
+        }
+    }
+
+    private suspend fun convertEntityToRequest(list: List<AssessmentDetails>): List<Assessment> {
         val peerSupervisorId = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.PEER_SUPERVISOR_ID.name)
         return list.map { entity ->
             val assessmentDetail = getAssessmentDetails(entity)
@@ -116,6 +147,7 @@ class OfflineSyncRepository @Inject constructor(
                     latitude = entity.latitude,
                     longitude = entity.longitude,
                     visitNumber = getVisitNumber(entity.assessmentType, assessmentDetail, entity.neonatePatientId, entity.neonatePatientReferenceId),
+                    pregnancyEpisodeId = getPregnancyEpisodeId(entity),
                 ),
                 followUpId = entity.followUpId,
                 updatedAt = entity.createdAt,

@@ -22,6 +22,7 @@ object AssessmentDefinedParams {
     const val NextFollowupDate = "nextVisitDate"
     const val ReferredPHUSite = "referredSite"
     const val ReferredPHUSiteID = "referredSiteId"
+    const val ReferralFacilityType = "referralFacilityType"
     const val Green = "Green"
     const val Red = "Red"
     const val Yellow = "Yellow"
@@ -430,6 +431,7 @@ object AssessmentDefinedParams {
 
     // Pregnancy Outcome Field IDs
     const val TIME_OF_DEATH = "timeOfDeath"
+    const val MATERNAL_DEATH = "maternalDeath"
     const val GESTATION_MONTH_AT_DEATH = "gestationMonthAtDeath"
     const val CAUSE_OF_DEATH = "causeOfDeath"
     const val GESTATION_MONTH_AT_ABORTION = "gestationMonthAtAbortion"
