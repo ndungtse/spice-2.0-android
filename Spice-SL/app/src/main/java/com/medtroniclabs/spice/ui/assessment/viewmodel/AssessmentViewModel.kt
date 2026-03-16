@@ -128,6 +128,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import java.time.LocalDate
+import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
@@ -618,7 +619,11 @@ class AssessmentViewModel @Inject constructor(
             pregnancyDetail.ancWeight = weight
 
             // Date of visit
-            pregnancyDetail.ancVisitDate = DateUtils.getTodayDateDDMMYYYY()
+            pregnancyDetail.ancVisitDate = DateUtils.getDateString(
+                Calendar.getInstance().timeInMillis,
+                inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
+                outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+            )
 
             // Ensure pregnancyEpisodeId and timestamps are set
             ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail, isNewRecord)

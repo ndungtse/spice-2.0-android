@@ -1118,8 +1118,10 @@ class AssessmentRMNCHFragment :
         if (visitNumber > 1) {
             viewModel.pregnancyDetailLiveData.value?.pregnantWomanExistingIllness?.let { existingIllness ->
                 val existingIllnessList = parseJsonStringToList<String>(existingIllness)
-                val existingIllnessValue = ArrayList(existingIllnessList.map { hashMapOf(DefinedParams.Value to it) })
-                formGenerator.getResultMap()[AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS] = existingIllnessValue
+                val existingIllnessValue: ArrayList<HashMap<String, Any>> = ArrayList(existingIllnessList.map { hashMapOf(DefinedParams.Value to it) })
+                formGenerator.getFormLayout(AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS)?.let { formLayout ->
+                    formGenerator.validateCheckboxDialogue(AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS, formLayout, existingIllnessValue)
+                }
             }
         }
 
@@ -1780,7 +1782,7 @@ class AssessmentRMNCHFragment :
     }
 
     /**
-     * Evaluate : Auto-calculate difference in weight from previous ANC visit and highlight abnormal weight gain between ANC visits
+     * Evaluate : From 2nd ANC visit onwards – Auto-calculate difference in weight from previous ANC visit and highlight abnormal weight gain between ANC visits
      * i.e, less or more than expected weight gain of 1 kg per 15 days
      */
     private fun evaluateAncWeightStatus(value: Any?): Pair<String?, String?>? {
