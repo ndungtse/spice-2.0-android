@@ -32,6 +32,7 @@ import com.medtroniclabs.spice.common.DateUtils.calculateAgeInMonths
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.parseJsonStringToList
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
@@ -66,6 +67,7 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.abs
 
 class AssessmentRMNCHFragment :
     BaseFragment(),
@@ -102,6 +104,12 @@ class AssessmentRMNCHFragment :
      * Dialog checkbox dialog key
      */
     private var dialogKey: String = ""
+
+    /**
+     * Boolean flag storing whether user has already selected treatments for existing illness or not.
+     * Based on this we are showing high risk
+     */
+    private var ancSelectedTreatment = false
 
     companion object {
         const val TAG = "AssessmentRMNCHFragment"
@@ -170,11 +178,19 @@ class AssessmentRMNCHFragment :
         }
 
         viewModel.pregnancyDetailLiveData.observe(viewLifecycleOwner) { detail ->
-            if (viewModel.workflowName == RMNCH.PNC) {
-                managePncFormBasedOnPregnancyDetail(detail)
-            } else if (viewModel.workflowName == RMNCH.ANC) {
-                updateConditionalFieldVisibility()
-                updateAllFieldStatuses()
+            when (viewModel.workflowName) {
+                RMNCH.PNC -> {
+                    managePncFormBasedOnPregnancyDetail(detail)
+                }
+
+                RMNCH.ANC -> {
+                    updateConditionalFieldVisibility()
+                    updateAllFieldStatuses()
+                }
+
+                RMNCH.ChildHoodVisit -> {
+                    manageChildFormBasedOnPregnancyDetail(detail)
+                }
             }
         }
 
@@ -356,7 +372,13 @@ class AssessmentRMNCHFragment :
                 handleAncFieldStatusUpdate(id)
             }
 
-            Screening.Weight, Screening.Height -> {
+            Screening.Weight -> {
+                viewModel.renderBMIValue(requireContext(), formGenerator, map)
+                // Update status for individual fields
+                handleAncFieldStatusUpdate(id)
+            }
+
+            Screening.Height -> {
                 viewModel.renderBMIValue(requireContext(), formGenerator, map)
             }
         }
@@ -536,6 +558,7 @@ class AssessmentRMNCHFragment :
                     title = formLayout.hint,
                     inputData = inputData,
                 ) { map ->
+                    ancSelectedTreatment = true
                     formGenerator.validateCheckboxDialogue(id, formLayout, map)
                 }.show(childFragmentManager, CheckBoxDialog.TAG)
         } else {
@@ -789,11 +812,19 @@ class AssessmentRMNCHFragment :
         // Store original titles for fields that have status conditions
         storeOriginalTitles()
         if (viewModel.pregnancyDetailLiveData.isInitialized) {
-            if (viewModel.workflowName == RMNCH.PNC) {
-                managePncFormBasedOnPregnancyDetail(viewModel.pregnancyDetailLiveData.value)
-            } else if (viewModel.workflowName == RMNCH.ANC) {
-                updateConditionalFieldVisibility()
-                updateAllFieldStatuses()
+            when (viewModel.workflowName) {
+                RMNCH.PNC -> {
+                    managePncFormBasedOnPregnancyDetail(viewModel.pregnancyDetailLiveData.value)
+                }
+
+                RMNCH.ANC -> {
+                    updateConditionalFieldVisibility()
+                    updateAllFieldStatuses()
+                }
+
+                RMNCH.ChildHoodVisit -> {
+                    manageChildFormBasedOnPregnancyDetail(viewModel.pregnancyDetailLiveData.value)
+                }
             }
         }
     }
@@ -804,8 +835,8 @@ class AssessmentRMNCHFragment :
     private fun managePncFormBasedOnPregnancyDetail(details: PregnancyDetail?) {
         val pregnancyHistoryCardView = formGenerator.getViewByTag(RMNCH.ID_PREGNANCY_HISTORY + formGenerator.rootSuffix)
         val pregnancyHistoryView = formGenerator.getViewByTag(RMNCH.ID_PREGNANCY_HISTORY) as? ViewGroup
-        val pncVisitCount = getPncVisitCount()
-        val ancVisitCountForPnc = getAncVisitCountForPnc()
+        val pncVisitCount = getPncVisitNumber()
+        val ancVisitCountForPnc = getAncVisitNumberForPnc()
 
         // For first PNC visit only, if gravida is not set, then ask for pregnancy history
         // The user is visiting the member for the first time, no PW Profile, no ANC.
@@ -958,6 +989,28 @@ class AssessmentRMNCHFragment :
         formGenerator.markMandatory(RMNCH.ID_RANDOM_BLOOD_SUGAR, bloodSugarMandatory)
     }
 
+    /**
+     * Manipulates form based on pregnancy details
+     */
+    private fun manageChildFormBasedOnPregnancyDetail(details: PregnancyDetail?) {
+        val visitNumber = getChildVisitNumber()
+        if (visitNumber > 1) {
+            // CongenitalDefect
+            val congenitalView = formGenerator.getViewByTag(AssessmentDefinedParams.ID_CONGENITAL_DEFECT + formGenerator.rootSuffix)
+            congenitalView?.let {
+                (congenitalView.findViewWithTag("${DefinedParams.yes}_${AssessmentDefinedParams.ID_CONGENITAL_DEFECT}") as? View)?.isEnabled = false
+                (congenitalView.findViewWithTag("${DefinedParams.no}_${AssessmentDefinedParams.ID_CONGENITAL_DEFECT}") as? View)?.isEnabled = false
+                formGenerator.disableView(congenitalView)
+                if (isSelectionPresent(details?.childCongenitalDefect, DefinedParams.yes)) {
+                    (congenitalView.findViewWithTag("${DefinedParams.yes}_${AssessmentDefinedParams.ID_CONGENITAL_DEFECT}") as? View)?.isSelected = true
+                } else {
+                    (congenitalView.findViewWithTag("${DefinedParams.no}_${AssessmentDefinedParams.ID_CONGENITAL_DEFECT}") as? View)?.isSelected = true
+                }
+            }
+            formGenerator.getResultMap()[AssessmentDefinedParams.ID_CONGENITAL_DEFECT] = details?.childCongenitalDefect ?: ""
+        }
+    }
+
     override fun onUpdateInstruction(
         id: String,
         selectedId: Any?,
@@ -1028,15 +1081,6 @@ class AssessmentRMNCHFragment :
     fun getCurrentAnsweredStatus(): Boolean = formGenerator.getResultMap().isNotEmpty()
 
     /**
-     * Gets the current ANC visit number
-     * Visit number is calculated as visitCount + 1 (visitCount is 0-based)
-     */
-    private fun getANCVisitNumber(): Int {
-        val visitCount = viewModel.pregnancyDetailLiveData.value?.ancVisitNo ?: 0L
-        return (visitCount + 1).toInt()
-    }
-
-    /**
      * Calculates gestational age in weeks from LMP date
      * Returns null if LMP is not available
      * @param fullMap Optional map to use instead of formGenerator result map
@@ -1069,6 +1113,15 @@ class AssessmentRMNCHFragment :
     private fun updateConditionalFieldVisibility() {
         val visitNumber = getANCVisitNumber()
         val gestationalAgeWeeks = calculateGestationalAgeInWeeks()
+
+        // Pre-fill existing illness from last visit
+        if (visitNumber > 1) {
+            viewModel.pregnancyDetailLiveData.value?.pregnantWomanExistingIllness?.let { existingIllness ->
+                val existingIllnessList = parseJsonStringToList<String>(existingIllness)
+                val existingIllnessValue = ArrayList(existingIllnessList.map { hashMapOf(DefinedParams.Value to it) })
+                formGenerator.getResultMap()[AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS] = existingIllnessValue
+            }
+        }
 
         // Show previous pregnancy complications only for 1st visit
         updateFieldVisibility(AssessmentDefinedParams.PREVIOUS_PREGNANCY_COMPLICATIONS, visitNumber == AssessmentDefinedParams.ANC_VISIT_NUMBER_1)
@@ -1217,7 +1270,7 @@ class AssessmentRMNCHFragment :
             AssessmentDefinedParams.EDEMA -> evaluateEdemaStatus(value, resultMap)
             AssessmentDefinedParams.TEMPERATURE -> evaluateTemperatureStatus(value)
             AssessmentDefinedParams.PULSE -> evaluatePulseStatus(value)
-            AssessmentDefinedParams.FUNDAL_HEIGHT -> evaluateFundalHeightStatus(value, resultMap)
+            AssessmentDefinedParams.FUNDAL_HEIGHT -> evaluateFundalHeightStatus(value)
             AssessmentDefinedParams.HEMOGLOBIN -> evaluateHemoglobinStatus(value)
             AssessmentDefinedParams.URINARY_ALBUMIN -> evaluateUrinaryAlbuminStatus(value, resultMap)
             AssessmentDefinedParams.URINARY_SUGAR -> evaluateUrinarySugarStatus(value)
@@ -1230,6 +1283,7 @@ class AssessmentRMNCHFragment :
             AssessmentDefinedParams.BLOOD_SUGAR_FASTING -> evaluateBloodSugarFastingStatus(value, resultMap)
             AssessmentDefinedParams.BLOOD_SUGAR_RANDOM -> evaluateBloodSugarRandomStatus(value, resultMap)
             AssessmentDefinedParams.FACILITY_IDENTIFIED_FOR_DELIVERY -> evaluateFacilityIdentifiedForDeliveryStatus(value)
+            Screening.Weight -> evaluateAncWeightStatus(value)
             else -> null
         }
     }
@@ -1367,6 +1421,8 @@ class AssessmentRMNCHFragment :
         value: Any?,
         resultMap: HashMap<String, Any>,
     ): Pair<String?, String?>? {
+        // If user hasn't selected any treatment already, then ignore highlighting
+        if (!ancSelectedTreatment) return null
         val selectedOptions = value as? ArrayList<HashMap<String, Any>> ?: ArrayList<HashMap<String, Any>>()
         val existingIllnessOptions = resultMap[AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS] as? ArrayList<HashMap<String, Any>> ?: return null
 
@@ -1501,10 +1557,7 @@ class AssessmentRMNCHFragment :
     /**
      * 6. Fundal Height - High risk if fundal height is not within gestational age ± 2 cm
      */
-    private fun evaluateFundalHeightStatus(
-        value: Any?,
-        resultMap: HashMap<String, Any>,
-    ): Pair<String?, String?>? {
+    private fun evaluateFundalHeightStatus(value: Any?): Pair<String?, String?>? {
         val fundalHeight = (value as? Number)?.toDouble() ?: return null
         val gestationalAgeWeeks = calculateGestationalAgeInWeeks() ?: return null
 
@@ -1512,7 +1565,7 @@ class AssessmentRMNCHFragment :
         val expectedMin = gestationalAgeWeeks - AssessmentDefinedParams.FUNDAL_HEIGHT_TOLERANCE_CM
         val expectedMax = gestationalAgeWeeks + AssessmentDefinedParams.FUNDAL_HEIGHT_TOLERANCE_CM
 
-        return if (fundalHeight < expectedMin || fundalHeight > expectedMax) {
+        return if (fundalHeight !in expectedMin..expectedMax) {
             Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
             null
@@ -1723,6 +1776,37 @@ class AssessmentRMNCHFragment :
             Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
             null
+        }
+    }
+
+    /**
+     * Evaluate : Auto-calculate difference in weight from previous ANC visit and highlight abnormal weight gain between ANC visits
+     * i.e, less or more than expected weight gain of 1 kg per 15 days
+     */
+    private fun evaluateAncWeightStatus(value: Any?): Pair<String?, String?>? {
+        val ancVisitNumber = getANCVisitNumber()
+        return if (ancVisitNumber < 2) {
+            // If visit is less than 2 then no need to calculate risk
+            null
+        } else {
+            val weight = CommonUtils.getDouble(value).takeIf { it > 0 }
+            val daysSinceLastVisit = viewModel.pregnancyDetailLiveData.value
+                ?.ancVisitDate
+                ?.let { DateUtils.parseDate(it) }
+                ?.getLongTime()
+                ?.let { DateUtils.getDaysDifference(it) }
+            val previousWeight = viewModel.pregnancyDetailLiveData.value?.ancWeight
+            if (weight == null || daysSinceLastVisit == null || previousWeight == null) {
+                null
+            } else {
+                val weightDiff = abs(weight - previousWeight)
+                val daysForCalculate = daysSinceLastVisit / 15
+                if (weightDiff != daysForCalculate.toDouble()) {
+                    AssessmentDefinedParams.STATUS_ABNORMAL to null
+                } else {
+                    null
+                }
+            }
         }
     }
 
@@ -2031,25 +2115,37 @@ class AssessmentRMNCHFragment :
             conditions.add(AssessmentDefinedParams.CONDITION_HIGH_FEVER)
         }
 
-        // 3. Pulse - >90 or <60
+        // 3. Abnormal fundal height
+        val fundalHeightValue = getValueFromNestedMap(resultMap, AssessmentDefinedParams.FUNDAL_HEIGHT)
+        if (evaluateFundalHeightStatus(fundalHeightValue)?.first == AssessmentDefinedParams.STATUS_HIGH_RISK) {
+            conditions.add(AssessmentDefinedParams.CONDITION_ABNORMAL_FUNDAL_HEIGHT)
+        }
+
+        // 4. Abnormal weight gain
+        val weightValue = getValueFromNestedMap(resultMap, AssessmentDefinedParams.WEIGHT)
+        if (evaluateAncWeightStatus(weightValue)?.first == AssessmentDefinedParams.STATUS_ABNORMAL) {
+            conditions.add(AssessmentDefinedParams.CONDITION_ABNORMAL_WEIGHT_GAIN)
+        }
+
+        // 5. Pulse - >90 or <60
         val pulse = (getValueFromNestedMap(resultMap, AssessmentDefinedParams.PULSE) as? Number)?.toDouble()
         if (pulse != null && (pulse > AssessmentDefinedParams.PULSE_HIGH_THRESHOLD || pulse < AssessmentDefinedParams.PULSE_LOW_THRESHOLD)) {
             conditions.add(AssessmentDefinedParams.CONDITION_ABNORMAL_PULSE)
         }
 
-        // 4. Severe Anemia <8g/dl
+        // 6. Severe Anemia <8g/dl
         val hemoglobin = (getValueFromNestedMap(resultMap, AssessmentDefinedParams.HEMOGLOBIN) as? Number)?.toDouble()
         if (hemoglobin != null && hemoglobin < AssessmentDefinedParams.HEMOGLOBIN_SEVERE_ANEMIA_THRESHOLD) {
             conditions.add(AssessmentDefinedParams.CONDITION_SEVERE_ANEMIA)
         }
 
-        // 5. Urinary Bilirubin present
+        // 7. Urinary Bilirubin present
         val urinaryBilirubin = getValueFromNestedMap(resultMap, AssessmentDefinedParams.URINARY_BILIRUBIN) as? String
         if (urinaryBilirubin == AssessmentDefinedParams.VALUE_PRESENT) {
             conditions.add(AssessmentDefinedParams.CONDITION_URINARY_BILIRUBIN)
         }
 
-        // 6. PW with existing chronic illnesses and not on treatment
+        // 8. PW with existing chronic illnesses and not on treatment
         if (RMNCHAssessmentEvaluator.hasChronicIllnessNotOnTreatment(resultMap)) {
             conditions.add(AssessmentDefinedParams.CONDITION_CHRONIC_ILLNESS_NOT_ON_TREATMENT)
         }
@@ -2083,17 +2179,25 @@ class AssessmentRMNCHFragment :
             conditions.add(AssessmentDefinedParams.CONDITION_MODERATE_ANEMIA)
         }
 
-        // 3. Suspected/Existing Case of Diabetes
+        // 3. Mild Anemia (Hb < 11)
+        if (hemoglobin != null &&
+            hemoglobin >= AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD &&
+            hemoglobin < AssessmentDefinedParams.HEMOGLOBIN_MILD_ANEMIA_THRESHOLD
+        ) {
+            conditions.add(AssessmentDefinedParams.CONDITION_MILD_ANEMIA)
+        }
+
+        // 4. Suspected/Existing Case of Diabetes
         if (RMNCHAssessmentEvaluator.isSuspectedDiabetes(resultMap)) {
             conditions.add(AssessmentDefinedParams.CONDITION_SUSPECTED_DIABETES)
         }
 
-        // 4. PW with existing chronic illnesses with treatment
+        // 5. PW with existing chronic illnesses with treatment
         if (RMNCHAssessmentEvaluator.hasChronicIllnessWithTreatment(resultMap)) {
             conditions.add(AssessmentDefinedParams.CONDITION_CHRONIC_ILLNESS_WITH_TREATMENT)
         }
 
-        // 5. Mild Fever - 100-101.9
+        // 6. Mild Fever - 100-101.9
         val temperature = (getValueFromNestedMap(resultMap, AssessmentDefinedParams.TEMPERATURE) as? Number)?.toDouble()
         if (temperature != null &&
             temperature >= AssessmentDefinedParams.TEMP_FEVER_MIN_THRESHOLD &&
@@ -2102,12 +2206,12 @@ class AssessmentRMNCHFragment :
             conditions.add(AssessmentDefinedParams.CONDITION_MILD_FEVER)
         }
 
-        // 6. H/O Preg related medical complications (H/O Convulsions/ H/O Postpartum hemorrhage/H/O Severe Anemia /H/O GDM)
+        // 7. H/O Preg related medical complications (H/O Convulsions/ H/O Postpartum hemorrhage/H/O Severe Anemia /H/O GDM)
         if (RMNCHAssessmentEvaluator.hasPregnancyRelatedMedicalComplications(resultMap)) {
             conditions.add(AssessmentDefinedParams.CONDITION_PREGNANCY_RELATED_MEDICAL_COMPLICATIONS)
         }
 
-        // 7. Any Other - if "other" option is selected in danger signs
+        // 8. Any Other - if "other" option is selected in danger signs
         if (hasOtherSelected) {
             conditions.add(AssessmentDefinedParams.CONDITION_ANY_OTHER)
         }
@@ -2268,14 +2372,28 @@ class AssessmentRMNCHFragment :
     }
 
     /**
-     * Returns PNC visit count from the DB plus 1 to count current visit
+     * Gets the current ANC visit number.
+     * Visit number is calculated as visitCount + 1 (visitCount is 0-based)
      */
-    private fun getPncVisitCount(): Int = (viewModel.pregnancyDetailLiveData.value?.pncVisitNo ?: 0L).toInt() + 1
+    private fun getANCVisitNumber(): Int {
+        val visitCount = viewModel.pregnancyDetailLiveData.value?.ancVisitNo ?: 0L
+        return (visitCount + 1).toInt()
+    }
 
     /**
-     * Returns ANC visit count
+     * Returns pnc visit count from the DB plus 1 to count current visit
      */
-    private fun getAncVisitCountForPnc(): Int = (viewModel.pregnancyDetailLiveData.value?.ancVisitNo ?: 0L).toInt()
+    private fun getPncVisitNumber(): Int = (viewModel.pregnancyDetailLiveData.value?.pncVisitNo ?: 0L).toInt() + 1
+
+    /**
+     * Returns child visit number from the DB + 1 to count current visit
+     */
+    private fun getChildVisitNumber(): Int = (viewModel.pregnancyDetailLiveData.value?.childVisitNo ?: 0L).toInt() + 1
+
+    /**
+     * Returns anc visit count
+     */
+    private fun getAncVisitNumberForPnc(): Int = (viewModel.pregnancyDetailLiveData.value?.ancVisitNo ?: 0L).toInt()
 
     /**
      * Calculates days since delivery from the delivery date

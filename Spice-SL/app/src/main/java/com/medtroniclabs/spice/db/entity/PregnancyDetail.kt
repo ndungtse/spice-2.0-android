@@ -47,6 +47,8 @@ data class PregnancyDetail(
     var pregnantWomanOnTreatment: String? = null, // JSON string of list
     var highRiskPregnantWoman: String? = null, // JSON string of list
     var gapsInAnc: String? = null, // JSON string of list
+    var ancWeight: Double? = null,
+    var ancVisitDate: String? = null,
     // Pnc Detail
     var pncVisitNo: Long? = null,
     var pncIllness: String? = null,
@@ -63,7 +65,7 @@ data class PregnancyDetail(
     var isNeonateDeathRecordedByPHU: Boolean? = null,
     // Childhood Visit Detail
     var childVisitNo: Long? = null,
-    var hadCongenitalDefect: String? = null,
+    var childCongenitalDefect: String? = null,
     var startAt: String? = null,
     var endAt: String? = null,
 )

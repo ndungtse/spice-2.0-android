@@ -13,6 +13,7 @@ import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.getLocalDate
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
@@ -109,7 +110,6 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralReasons
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Miscarriage
@@ -122,8 +122,6 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherAncSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherChildhoodVisitSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.pncChildSigns
-import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
-import java.util.UUID
 import com.medtroniclabs.spice.ui.boarding.repo.MetaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -131,6 +129,7 @@ import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import java.time.LocalDate
 import java.util.Locale
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -374,7 +373,7 @@ class AssessmentViewModel @Inject constructor(
                 }
 
                 if (
-                    menuId == ANC_MENU.uppercase(Locale.getDefault()) &&
+                    menuId == ANC.uppercase(Locale.getDefault()) &&
                     assessmentResult.isSuccess()
                 ) {
                     saveAncPregnancyDetails(details, assessmentMap)
@@ -614,6 +613,13 @@ class AssessmentViewModel @Inject constructor(
             val gapsInAnc = summary?.get(AssessmentDefinedParams.GAPS_IN_ANC)
             pregnancyDetail.gapsInAnc = convertListToString(gapsInAnc)
 
+            // Weight during visit
+            val weight = CommonUtils.getDouble(medicalExaminationData?.get(Screening.Weight)).takeIf { it > 0 }
+            pregnancyDetail.ancWeight = weight
+
+            // Date of visit
+            pregnancyDetail.ancVisitDate = DateUtils.getTodayDateDDMMYYYY()
+
             // Ensure pregnancyEpisodeId and timestamps are set
             ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail, isNewRecord)
 
@@ -637,15 +643,6 @@ class AssessmentViewModel @Inject constructor(
     private fun convertListToString(value: Any?): String? =
         when (value) {
             is List<*> -> {
-                val stringList = value.filterIsInstance<String>()
-                if (stringList.isNotEmpty()) {
-                    Gson().toJson(stringList)
-                } else {
-                    null
-                }
-            }
-
-            is ArrayList<*> -> {
                 val stringList = value.filterIsInstance<String>()
                 if (stringList.isNotEmpty()) {
                     Gson().toJson(stringList)
@@ -800,7 +797,7 @@ class AssessmentViewModel @Inject constructor(
             otherDetails[REFERRAL_FACILITY_TYPE] = facilityType
         }
 
-        if (menuId == ANC_MENU.uppercase(Locale.getDefault())) {
+        if (menuId == ANC.uppercase(Locale.getDefault())) {
             if (assessmentMap.containsKey(ANC)) {
                 val ancMap = assessmentMap[ANC] as Map<*, *>
                 var miscarriageValue = false
@@ -958,8 +955,8 @@ class AssessmentViewModel @Inject constructor(
         }
 
         // Request modification for syncing RMNCH ANC Visit to Backend
-        if (map.containsKey(ANC_MENU)) {
-            val anc = map[ANC_MENU] as HashMap<Any, Any>
+        if (map.containsKey(ANC)) {
+            val anc = map[ANC] as HashMap<Any, Any>
 
             if (anc.containsKey(otherAncSigns)) {
                 val os = anc[otherAncSigns] as Any
@@ -1050,7 +1047,7 @@ class AssessmentViewModel @Inject constructor(
                 otherAssessmentDetails[AssessmentDefinedParams.ReferralFacilityType] =
                     otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID]
                         ?: "-1"
-                otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSiteID);
+                otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSiteID)
             }
             assessmentUpdateLiveData.postValue(
                 assessmentRepository.updateOtherAssessmentDetails(
@@ -1327,6 +1324,9 @@ class AssessmentViewModel @Inject constructor(
             else -> {
                 pregnancyDetail.childVisitNo =
                     getVisitNumber(pregnancyDetail.childVisitNo)
+                (details[AssessmentDefinedParams.ID_CONGENITAL_DEFECT] as? String)?.let { congenitalDefect ->
+                    pregnancyDetail.childCongenitalDefect = congenitalDefect
+                }
                 details[RMNCH.visitNo] = pregnancyDetail.childVisitNo ?: 0L
             }
         }

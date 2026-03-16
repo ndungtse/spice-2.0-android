@@ -138,7 +138,10 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
         if (resultMap.isNotEmpty()) {
             resultMap.forEach { resultSymptom ->
                 if (resultSymptom is Map<*, *>) {
-                    val map = list.find { it._id == resultSymptom[DefinedParams.ID] }
+                    val map = list.find {
+                        it._id == resultSymptom[DefinedParams.ID] ||
+                            (it.value != null && it.value == resultSymptom[DefinedParams.Value])
+                    }
                     map?.isSelected = true
                 }
             }

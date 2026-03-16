@@ -24,7 +24,6 @@ object RMNCH {
     const val estimatedDeliveryDate = "estimatedDeliveryDate"
     const val visitNo = "visitNo"
     const val PNC_MENU = "pnc"
-    const val ANC_MENU = "anc"
     const val CHILD_MENU = "ChildHood_Visit"
     const val DateOfDelivery = "dateOfDelivery"
     const val NoOfNeonate = "noOfNeonates"
@@ -464,7 +463,7 @@ object RMNCH {
 
     fun getMenuName(workflowName: String?): String {
         when (workflowName) {
-            ANC -> return ANC_MENU.uppercase(Locale.getDefault())
+            ANC -> return ANC.uppercase(Locale.getDefault())
             ChildHoodVisit -> return CHILD_MENU.uppercase(Locale.getDefault())
             PNC -> return PNC_MENU.uppercase(Locale.getDefault())
         }

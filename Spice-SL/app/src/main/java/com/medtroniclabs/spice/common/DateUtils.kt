@@ -214,11 +214,19 @@ object DateUtils {
      * @return DOB string in UTC format (yyyy-MM-dd'T'HH:mm:ss+00:00)
      */
     fun calculateDOBFromAge(age: Int): String {
-        val currentYear = LocalDate.now().year
-        val birthYear = currentYear - age
-        val dob = LocalDate.of(birthYear, 1, 1) // 01/01/birthYear
-        val offsetDateTime = dob.atStartOfDay(ZoneOffset.UTC)
-        return offsetDateTime.format(DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmssZZZZZ))
+        var localDate = OffsetDateTime.now()
+
+        localDate = localDate
+            .minusYears(age.toLong())
+            .withMonth(1)
+            .withDayOfMonth(1)
+            .withHour(0)
+            .withMinute(0)
+            .withSecond(0)
+            .withNano(0)
+
+        val resul = localDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmss).withLocale(Locale.ENGLISH))
+        return "$resul+00:00"
     }
 
     /**

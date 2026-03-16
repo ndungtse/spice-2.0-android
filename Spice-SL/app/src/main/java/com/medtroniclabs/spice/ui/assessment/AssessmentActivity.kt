@@ -41,7 +41,6 @@ import com.medtroniclabs.spice.ui.assessment.fragment.BDNCDAssessmentFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.BDNCDAssessmentSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.RxBuddySummaryFragment
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
@@ -504,7 +503,7 @@ class AssessmentActivity : BaseActivity() {
                     resource.data?.let { data ->
                         val assessment = data.second
                         val detailsJson = JSONObject(assessment.assessmentDetails)
-                        val ancObject = detailsJson.optJSONObject(ANC_MENU)
+                        val ancObject = detailsJson.optJSONObject(RMNCH.ANC)
                         val isDeathOfMother = ancObject?.optBoolean(DeathOfMother, false) == true
 
                         val childHoodObject = detailsJson.optJSONObject(ChildHoodVisit)

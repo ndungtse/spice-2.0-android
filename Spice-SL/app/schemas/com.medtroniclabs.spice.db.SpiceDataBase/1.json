@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "5b92d2ff2a2c0a87f4bc58e95e591a03",
+    "identityHash": "0dfe0d90f2b4a64a515e8455d48a9372",
     "entities": [
       {
         "tableName": "Household",
@@ -1483,7 +1483,7 @@
       },
       {
         "tableName": "PregnancyDetail",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `householdMemberLocalId` INTEGER NOT NULL, `patientId` TEXT, `householdMemberId` TEXT, `pregnancyEpisodeId` TEXT, `tbContactTraceStatus` INTEGER, `lastMenstrualPeriod` TEXT, `estimatedDeliveryDate` TEXT, `pregnancyTest` TEXT, `gravida` INTEGER, `parity` INTEGER, `numberOfLivingChildren` INTEGER, `ageOfLastChild` TEXT, `ancVisitNo` INTEGER, `previousPregnancyComplications` TEXT, `pregnantWomanExistingIllness` TEXT, `pregnantWomanOnTreatment` TEXT, `highRiskPregnantWoman` TEXT, `gapsInAnc` TEXT, `pncVisitNo` INTEGER, `pncIllness` TEXT, `highRiskMother` TEXT, `gapsInPnc` TEXT, `dateOfDelivery` TEXT, `complicationsDuringDelivery` TEXT, `typeOfAbortion` TEXT, `noOfNeonates` INTEGER, `neonatePatientId` TEXT, `isDeliveryAtHome` INTEGER, `neonateHouseholdMemberLocalId` INTEGER, `isNeonateDeathRecordedByPHU` INTEGER, `childVisitNo` INTEGER, `hadCongenitalDefect` TEXT, `startAt` TEXT, `endAt` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `householdMemberLocalId` INTEGER NOT NULL, `patientId` TEXT, `householdMemberId` TEXT, `pregnancyEpisodeId` TEXT, `tbContactTraceStatus` INTEGER, `lastMenstrualPeriod` TEXT, `estimatedDeliveryDate` TEXT, `pregnancyTest` TEXT, `gravida` INTEGER, `parity` INTEGER, `numberOfLivingChildren` INTEGER, `ageOfLastChild` TEXT, `ancVisitNo` INTEGER, `previousPregnancyComplications` TEXT, `pregnantWomanExistingIllness` TEXT, `pregnantWomanOnTreatment` TEXT, `highRiskPregnantWoman` TEXT, `gapsInAnc` TEXT, `ancWeight` REAL, `ancVisitDate` TEXT, `pncVisitNo` INTEGER, `pncIllness` TEXT, `highRiskMother` TEXT, `gapsInPnc` TEXT, `dateOfDelivery` TEXT, `complicationsDuringDelivery` TEXT, `typeOfAbortion` TEXT, `noOfNeonates` INTEGER, `neonatePatientId` TEXT, `isDeliveryAtHome` INTEGER, `neonateHouseholdMemberLocalId` INTEGER, `isNeonateDeathRecordedByPHU` INTEGER, `childVisitNo` INTEGER, `childCongenitalDefect` TEXT, `startAt` TEXT, `endAt` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -1600,6 +1600,18 @@
             "notNull": false
           },
           {
+            "fieldPath": "ancWeight",
+            "columnName": "ancWeight",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "ancVisitDate",
+            "columnName": "ancVisitDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
             "fieldPath": "pncVisitNo",
             "columnName": "pncVisitNo",
             "affinity": "INTEGER",
@@ -1678,8 +1690,8 @@
             "notNull": false
           },
           {
-            "fieldPath": "hadCongenitalDefect",
-            "columnName": "hadCongenitalDefect",
+            "fieldPath": "childCongenitalDefect",
+            "columnName": "childCongenitalDefect",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -3727,7 +3739,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5b92d2ff2a2c0a87f4bc58e95e591a03')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0dfe0d90f2b4a64a515e8455d48a9372')"
     ]
   }
 }

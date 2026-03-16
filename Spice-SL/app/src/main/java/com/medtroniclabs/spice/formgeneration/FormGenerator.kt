@@ -52,7 +52,6 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.convertDateFormat
-import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
 import com.medtroniclabs.spice.common.DefinedParams.BOLD
 import com.medtroniclabs.spice.common.DefinedParams.BOLD_ITALIC
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
@@ -2123,7 +2122,11 @@ class FormGenerator(
 
         isDOBUpdatedYMD = true
 
-        val dobString = convertDateToStringWithUTC(date)
+        val dobString = DateUtils.getDateString(
+            date.time,
+            inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
+            outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+        )
 
         addOrUpdateDOB(dobString, id)
 
@@ -2202,6 +2205,7 @@ class FormGenerator(
 
     private fun createAgeOrDobView(formLayout: FormLayout) {
         val binding = AgeOrDobLayoutBinding.inflate(LayoutInflater.from(context))
+        var ageListener: TextWatcher? = null
         formLayout.apply {
             binding.root.tag = id + rootSuffix
             binding.etAge.tag = id + "_age"
@@ -2216,7 +2220,7 @@ class FormGenerator(
             binding.etAge.filters = arrayOf(InputFilter.LengthFilter(3))
 
             // Always set up listeners - they will be disabled in edit mode when value is set
-            binding.etAge.addTextChangedListener { editable ->
+            ageListener = binding.etAge.addTextChangedListener { editable ->
                 // Only process if age field is enabled (not in edit mode)
                 if (binding.etAge.isEnabled) {
                     val ageText = editable?.toString()?.trim() ?: ""
@@ -2229,7 +2233,7 @@ class FormGenerator(
                             if (age > maxAge) {
                                 showError(id, "Age cannot exceed $maxAge years")
                             } else {
-                                fillDOBFromAge(age, id, binding.etDob, binding.ivClearDob, binding.dobInputHolder)
+                                fillDOBFromAge(age, id, binding.etDob)
                             }
                         }
                     }
@@ -2256,10 +2260,10 @@ class FormGenerator(
                             date = yearMonthDay,
                         ) { _, year, month, dayOfMonth ->
                             // Create date string in dd-MM-yyyy format
-                            val stringDate = String.format("%02d-%02d-%d", dayOfMonth, month + 1, year)
+                            val stringDate = String.format("%02d-%02d-%d", dayOfMonth, month, year)
                             val parsedDate = DateUtils.getDatePatternDDMMYYYY().parse(stringDate)
                             parsedDate?.let {
-                                fillAgeFromDOB(it, id, binding.etAge, binding.ivClearDob, binding.etDob)
+                                fillAgeFromDOB(it, id, binding.etAge, binding.etDob, ageListener)
                                 callback?.invoke(resultHashMap, id)
                             }
                         }
@@ -2304,8 +2308,6 @@ class FormGenerator(
         age: Int,
         id: String,
         etDob: AppCompatTextView,
-        ivClearDob: View,
-        dobInputHolder: View,
     ) {
         try {
             val dobInUTC = DateUtils.calculateDOBFromAge(age)
@@ -2332,8 +2334,8 @@ class FormGenerator(
         dob: Date,
         id: String,
         etAge: AppCompatEditText,
-        ivClearDob: View,
         etDob: AppCompatTextView,
+        ageListener: TextWatcher?,
     ) {
         try {
             // Format the date directly from the Date object to show exact selected date
@@ -2341,7 +2343,11 @@ class FormGenerator(
             etDob.text = dobFormatted
 
             // Convert to UTC for storage
-            val dobInUTC = convertDateToStringWithUTC(dob)
+            val dobInUTC = DateUtils.getDateString(
+                dob.time,
+                inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
+                outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+            )
             addOrUpdateDOB(dobInUTC, id)
 
             // Calculate age
@@ -2355,9 +2361,16 @@ class FormGenerator(
                 showError(id, "Age cannot exceed $maxAge years")
                 return
             }
-
+            // Remove listener from age field
+            ageListener?.let {
+                etAge.removeTextChangedListener(ageListener)
+            }
             // Keep age field enabled (no longer disabling after DOB input)
             etAge.setText(age.toString())
+            // Add listener once data is set
+            ageListener?.let {
+                etAge.addTextChangedListener(ageListener)
+            }
             // Clear icon remains hidden
             // Hide any error messages
             hideError(id)
@@ -2425,7 +2438,11 @@ class FormGenerator(
                 try {
                     val dobDate = DateUtils.getDatePatternDDMMYYYY().parse(dobFormatted)
                     dobDate?.let {
-                        val dobInUTC = convertDateToStringWithUTC(it)
+                        val dobInUTC = DateUtils.getDateString(
+                            dobDate.time,
+                            inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
+                            outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        )
                         addOrUpdateDOB(dobInUTC, id)
                     }
                 } catch (e: Exception) {
@@ -2488,7 +2505,11 @@ class FormGenerator(
 
         isDOBUpdated = true
 
-        val dobString = convertDateToStringWithUTC(date)
+        val dobString = DateUtils.getDateString(
+            date.time,
+            inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
+            outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+        )
 
         addOrUpdateDOB(dobString, id)
 

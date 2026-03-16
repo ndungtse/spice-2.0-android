@@ -350,13 +350,8 @@ object AssessmentDefinedParams {
 
     // RMNCH Other Constants
     const val DAYS_PER_WEEK = 7.0
-    const val UI_UPDATE_DELAY_MS = 400
     const val ANC_VISIT_NUMBER_1 = 1
 
-    // RMNCH Pregnancy Details Constants
-    const val PREGNANCY_DETAILS_DELAY_300_MS = 300L
-    const val PREGNANCY_DETAILS_DELAY_100_MS = 100L
-    const val PREGNANCY_DETAILS_DELAY_500_MS = 500L
     const val GRAVIDA_THRESHOLD_FOR_PARITY = 2
     const val PARITY_HIGH_RISK_THRESHOLD = 4
     const val NUMBER_OF_LIVING_CHILDREN_THRESHOLD = 1
@@ -396,19 +391,18 @@ object AssessmentDefinedParams {
     const val BIRTH_SPACING_THRESHOLD_YEARS = 2
     const val MULTIPARA_THRESHOLD = 3
 
-    // Referral Labels
-    const val LABEL_EMERGENCY_REFERRAL = "Emergency Referral"
-    const val LABEL_NON_EMERGENCY_REFERRAL = "Non Emergency Referral"
-
     // Referral Condition Texts
     const val CONDITION_SUSPECTED_PRE_ECLAMPSIA = "Suspected Pre-eclampsia"
     const val CONDITION_HIGH_FEVER = "High Fever"
+    const val CONDITION_ABNORMAL_FUNDAL_HEIGHT = "Abnormal fundal height"
+    const val CONDITION_ABNORMAL_WEIGHT_GAIN = "Abnormal weight gain"
     const val CONDITION_ABNORMAL_PULSE = "Abnormal Pulse"
     const val CONDITION_SEVERE_ANEMIA = "Severe Anemia"
     const val CONDITION_URINARY_BILIRUBIN = "Urinary Bilirubin present"
     const val CONDITION_CHRONIC_ILLNESS_NOT_ON_TREATMENT = "PW not on treatment for existing chronic illnesses"
     const val CONDITION_HIGH_RISK_PREGNANCY = "High risk PW due to age/birth spacing"
     const val CONDITION_MODERATE_ANEMIA = "Moderate Anemia"
+    const val CONDITION_MILD_ANEMIA = "Mild Anemia"
     const val CONDITION_SUSPECTED_DIABETES = "Suspected/Existing Case of Diabetes"
     const val CONDITION_CHRONIC_ILLNESS_WITH_TREATMENT = "PW with existing chronic illnesses with treatment"
     const val CONDITION_MILD_FEVER = "Mild Fever"

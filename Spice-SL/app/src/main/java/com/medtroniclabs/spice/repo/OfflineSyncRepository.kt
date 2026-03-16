@@ -101,22 +101,8 @@ class OfflineSyncRepository @Inject constructor(
      */
     private suspend fun getPregnancyEpisodeId(entity: AssessmentDetails): String? {
         val assessmentType = entity.assessmentType
-        val isPregnancyRelated = assessmentType.equals(
-            PREGNANT_WOMEN_PROFILE,
-            ignoreCase = true,
-        ) || assessmentType.equals(
-            PREGNANCY_OUTCOME,
-            ignoreCase = true,
-        ) || assessmentType.equals(
-            RMNCH.ANC_MENU.uppercase(),
-            ignoreCase = true,
-        ) || assessmentType.equals(
-            RMNCH.PNC,
-            ignoreCase = true,
-        ) || assessmentType.equals(
-            ChildHoodVisit,
-            ignoreCase = true,
-        )
+        val assessmentTypes = listOf(PREGNANT_WOMEN_PROFILE, PREGNANCY_OUTCOME, RMNCH.ANC, RMNCH.PNC, ChildHoodVisit)
+        val isPregnancyRelated = assessmentTypes.any { it.equals(assessmentType, true) }
 
         return if (isPregnancyRelated) {
             roomHelper.getPregnancyDetailByPatientId(entity.householdMemberLocalId)?.pregnancyEpisodeId
@@ -222,7 +208,7 @@ class OfflineSyncRepository @Inject constructor(
         neonatePatientReferenceId: Long?,
     ): Long? {
         when (assessmentType.lowercase()) {
-            RMNCH.ANC_MENU.lowercase() -> return getRMNCHVisitNumber(ANC, assessmentDetails)
+            RMNCH.ANC.lowercase() -> return getRMNCHVisitNumber(ANC, assessmentDetails)
             RMNCH.pnc_mother_key.lowercase() -> return getRMNCHPNCVisitNumber(PNC, assessmentDetails, neonatePatientId, neonatePatientReferenceId)
             RMNCH.pnc_neonate_key.lowercase() -> return getRMNCHVisitNumber(PNCNeonatal, assessmentDetails)
             RMNCH.CHILD_MENU.lowercase() -> return getRMNCHVisitNumber(
