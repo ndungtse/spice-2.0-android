@@ -10,12 +10,17 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NoSymptoms
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
+import com.medtroniclabs.spice.ncd.screening.utils.ReferredReason
 import com.medtroniclabs.spice.ui.MenuConstants.NCD_MENU_ID
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AlcoholConsumption
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DiagnosedWithDiabetes
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DryMouthOrTongue
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FACILITY_TYPE_COMMUNITY_CLINIC
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FACILITY_TYPE_UPAZILA
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FBS_MAXIMUM_MGDL_VALUE
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FBS_MAXIMUM_VALUE_BD
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_BREATHING
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_MONTH
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_BREATHING
@@ -24,13 +29,22 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasCoughLas
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasNightSweatsTB
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasWeightLoss
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.LittleOrNoUrine
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MGDL
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoTearsWhenCrying
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RBS_MAXIMUM_MGDL_VALUE
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RBS_MAXIMUM_VALUE_BD
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.REFERRAL_FACILITY_TYPE
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RegularSmoker
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RelationshipToIC
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SkinPinch
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SleepLocation
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SunkenEyes
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SunkenFontanella
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.UPAZILA_FBS_RBS_MAXIMUM_VALUE_BD
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.UPAZILA_UPPER_LIMIT_DIASTOLIC
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.UPAZILA_UPPER_LIMIT_SYSTOLIC
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.UpperLimitDiastolic
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.UpperLimitSystolic
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.VeryThirsty
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.symptomsDTO
@@ -79,7 +93,7 @@ class ReferralResultGenerator {
     private var patientStatus = HashMap<String, Any>()
     private val referralReason = arrayListOf<String>()
 
-    val MUAC = "muac"
+    val muac = "muac"
 
     fun calculateIccmReferralResult(
         map: HashMap<String, Any>,
@@ -730,4 +744,74 @@ class ReferralResultGenerator {
             false
         }
     }
+
+    fun computeReferralResultForBDNCD(
+        map: HashMap<String, Any>,
+        bpResult: Pair<Int, Int>,
+        bgResult: Triple<String, String, Double>,
+        symptomList: List<String>,
+    ): Pair<String, ArrayList<String>>? {
+        val referredReasonList = ArrayList<String>()
+
+        // Referral Logic for Symptoms
+//        if (symptomList.isNotEmpty()) {
+//            referredReasonList.add(ReferredReason.SYMPTOMS)
+//        }
+
+        // Referral Logic for BP
+        if (bpResult.first >= UpperLimitSystolic ||
+            bpResult.second >= UpperLimitDiastolic
+        ) {
+            referredReasonList.add(ReferredReason.bloodPressure)
+        }
+
+        // Referral Logic for BG
+        if (bgResult.first == MGDL &&
+            (bgResult.third > RBS_MAXIMUM_MGDL_VALUE || bgResult.third > FBS_MAXIMUM_MGDL_VALUE)
+        ) {
+            referredReasonList.add(ReferredReason.bloodGlucose)
+        } else {
+            if (bgResult.third > RBS_MAXIMUM_VALUE_BD || bgResult.third > FBS_MAXIMUM_VALUE_BD) {
+                if (bgResult.third >= UPAZILA_FBS_RBS_MAXIMUM_VALUE_BD) {
+                } else {
+                }
+
+                referredReasonList.add(ReferredReason.bloodGlucose)
+            }
+        }
+
+        // Add Referred Facility Type
+        if (referredReasonList.isNotEmpty()) {
+            val hasBpOrBgReason = ReferredReason.bloodPressure in referredReasonList ||
+                ReferredReason.bloodGlucose in referredReasonList
+
+            val shouldReferUpazila = hasBpOrBgReason &&
+                (
+                    isBPReferredForUpazila(bpResult.first, bpResult.second) ||
+                        isBGReferredForUpazila(bgResult.third)
+                )
+
+            map[REFERRAL_FACILITY_TYPE] =
+                if (shouldReferUpazila) {
+                    FACILITY_TYPE_UPAZILA
+                } else {
+                    FACILITY_TYPE_COMMUNITY_CLINIC
+                }
+        }
+
+        return if (referredReasonList.isNotEmpty()) {
+            Pair(ReferralStatus.Referred.name, referredReasonList)
+        } else {
+            null
+        }
+    }
+
+    private fun isBPReferredForUpazila(
+        avgSys: Int,
+        avgDia: Int,
+    ): Boolean =
+        avgSys >= UPAZILA_UPPER_LIMIT_SYSTOLIC ||
+            avgDia >= UPAZILA_UPPER_LIMIT_DIASTOLIC
+
+    private fun isBGReferredForUpazila(bg: Double): Boolean = bg >= UPAZILA_FBS_RBS_MAXIMUM_VALUE_BD
 }

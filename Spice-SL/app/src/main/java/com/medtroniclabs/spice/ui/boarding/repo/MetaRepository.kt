@@ -1337,4 +1337,6 @@ class MetaRepository @Inject constructor(
             }
         }
     }
+
+    suspend fun riskFactorListing() = roomHelper.getAllRiskFactorEntityList()
 }

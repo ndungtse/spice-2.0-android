@@ -1649,4 +1649,10 @@
     <string name="short_acting_message">Short-Acting Reversible Methods (SARCs) (Pills, Condoms, Injectables)</string>
     <string name="long_acting_message">Long-Acting Reversible Methods (LARCs)- (IUCD, Implant)</string>
     <string name="permanent_acting_message">Permanent- (Sterilization)</string>
+
+
+    <string name="referred_for_nfurther_assessment_cc">Refer to the nearest community clinic for further assessment</string>
+    <string name="referred_for_nfurther_assessment_Upazila">Refer to the nearest Upazila Health complex for further assessment</string>
+
+
 </resources>

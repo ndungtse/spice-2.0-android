@@ -9,6 +9,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
@@ -69,6 +70,7 @@ import com.medtroniclabs.spice.mappingkey.RxBuddy.rxBuddyPhoneNumber
 import com.medtroniclabs.spice.mappingkey.RxBuddy.selectHouseholdMember
 import com.medtroniclabs.spice.mappingkey.RxBuddy.tbScreening
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.mappingkey.Screening.BMI_CATEGORY
 import com.medtroniclabs.spice.mappingkey.UnderFiveYearExaminationKeyMapping.DiseaseName.fever
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
@@ -80,6 +82,7 @@ import com.medtroniclabs.spice.repo.HouseholdMemberRepository
 import com.medtroniclabs.spice.repo.RxBuddyRepository
 import com.medtroniclabs.spice.repo.TreatmentDetailsRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
 import com.medtroniclabs.spice.ui.MenuConstants.PREGNANCY_OUTCOME
@@ -89,6 +92,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanning
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FamilyPlanningDetails
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsClinicTaken
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.REFERRAL_FACILITY_TYPE
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBContactTracing
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBRxBuddyFollowUp
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TBRxBuddyRegister
@@ -124,6 +128,7 @@ import com.medtroniclabs.spice.ui.boarding.repo.MetaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import java.lang.reflect.Type
 import java.time.LocalDate
 import java.util.Locale
 import javax.inject.Inject
@@ -171,7 +176,7 @@ class AssessmentViewModel @Inject constructor(
     var complianceMap: ArrayList<HashMap<String, Any>>? = null
     var bioDataMap: HashMap<String, Any>? = null
     var bioMetric: HashMap<String, Any>? = null
-    var list = ArrayList<RiskClassificationModel>()
+    var riskClassificationModels = ArrayList<RiskClassificationModel>()
     private var fbsBloodGlucose: Double? = null
     private var rbsBloodGlucose: Double? = null
     var assessmentType: String? = null
@@ -790,6 +795,12 @@ class AssessmentViewModel @Inject constructor(
             otherDetails.remove(AssessmentDefinedParams.ReferredPHUSiteID)
         }
 
+        if (menuId == MenuConstants.NCD_MENU_ID && otherDetails.isNotEmpty()) {
+            val ncdAsst = assessmentMap[ncd] as HashMap<String, Any>
+            val facilityType = ncdAsst[REFERRAL_FACILITY_TYPE] as String
+            otherDetails[REFERRAL_FACILITY_TYPE] = facilityType
+        }
+
         if (menuId == ANC_MENU.uppercase(Locale.getDefault())) {
             if (assessmentMap.containsKey(ANC)) {
                 val ancMap = assessmentMap[ANC] as Map<*, *>
@@ -918,13 +929,17 @@ class AssessmentViewModel @Inject constructor(
 
         // Request modification for syncing NCD Symptoms to Backend
         if (map.containsKey(ncd)) {
-            val otherSymptom = map[ncd] as HashMap<Any, Any>
-            if (otherSymptom.containsKey(signsAndSymptoms)) {
-                val signsAndSymptom = otherSymptom[signsAndSymptoms] as HashMap<Any, Any>
+            val ncdMap = map[ncd] as HashMap<Any, Any>
+            if (ncdMap.containsKey(signsAndSymptoms)) {
+                val signsAndSymptom = ncdMap[signsAndSymptoms] as HashMap<Any, Any>
                 signsAndSymptom[symptomsDTO]?.let {
                     signsAndSymptom[symptoms] = it
                 }
                 signsAndSymptom.remove(symptomsDTO)
+            }
+
+            if (ncdMap.containsKey(BMI_CATEGORY)) {
+                ncdMap.remove(BMI_CATEGORY)
             }
         }
 
@@ -1967,6 +1982,21 @@ class AssessmentViewModel @Inject constructor(
                 }
             } else if (value is MutableMap<*, *>) {
                 processMapForDialogCheckbox(value as MutableMap<Any, Any>, dialogCheckboxIds)
+            }
+        }
+    }
+
+    fun getRiskEntityList() {
+        viewModelScope.launch(dispatcherIO) {
+            val resultOne = metaRepository.riskFactorListing()
+            val baseType: Type = object : TypeToken<ArrayList<RiskClassificationModel>>() {}.type
+            if (resultOne.isNotEmpty()) {
+                val resultList = Gson().fromJson<ArrayList<RiskClassificationModel>>(
+                    resultOne[0].nonLabEntity,
+                    baseType,
+                )
+                riskClassificationModels.clear()
+                riskClassificationModels.addAll(resultList)
             }
         }
     }

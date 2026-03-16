@@ -170,6 +170,7 @@ data class FormLayout(
     var backgroundColor: String? = null,
     var information: String? = null,
     var titleSummary: String? = null,
+    var titleSummaryCulture: String? = null,
     var noOfDays: Int? = null,
     var informationVisibility: String? = null,
     var isBooleanAnswer: Boolean = false,

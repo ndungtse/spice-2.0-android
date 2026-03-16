@@ -15,6 +15,8 @@ import com.medtroniclabs.spice.databinding.CheckboxDialogLayoutBinding
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NCD_SYMPTOM
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NCD_SYMPTOMS
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
@@ -160,7 +162,15 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
         key: String?,
         inputData: List<SignsAndSymptomsEntity>?,
     ) {
-        key?.let { viewModel.getSymptomListByType(it, inputData) }
+        key?.let { viewModel.getSymptomListByType(getType(it), inputData) }
+    }
+
+    private fun getType(inputType: String): String {
+        if (inputType == NCD_SYMPTOMS) {
+            return NCD_SYMPTOM
+        }
+
+        return inputType
     }
 
     private fun initializeView() {

@@ -13,6 +13,8 @@ import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.databinding.AssessmentSummaryLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
+import org.json.JSONArray
+import org.json.JSONObject
 
 object AssessmentCommonUtils {
     fun getListItemValue(
@@ -158,4 +160,33 @@ object AssessmentCommonUtils {
             AssessmentDefinedParams.Red -> context.getColor(R.color.medium_high_risk_color)
             else -> context.getColor(R.color.edittext_stroke)
         }
+
+    fun findValueByKey(
+        json: Any,
+        targetKey: String,
+    ): Any? {
+        when (json) {
+            is JSONObject -> {
+                json.keys().forEach { key ->
+                    val value = json.get(key)
+
+                    if (key == targetKey) {
+                        return value
+                    }
+
+                    val result = findValueByKey(value, targetKey)
+                    if (result != null) return result
+                }
+            }
+
+            is JSONArray -> {
+                for (i in 0 until json.length()) {
+                    val result = findValueByKey(json.get(i), targetKey)
+                    if (result != null) return result
+                }
+            }
+        }
+
+        return null
+    }
 }

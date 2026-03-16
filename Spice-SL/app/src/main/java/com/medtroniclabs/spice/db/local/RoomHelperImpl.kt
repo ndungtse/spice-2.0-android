@@ -847,6 +847,8 @@ class RoomHelperImpl @Inject constructor(
 
     override fun getRiskFactorEntity(): LiveData<List<RiskFactorEntity>> = riskFactorDAO.getAllRiskFactorEntity()
 
+    override suspend fun getAllRiskFactorEntityList(): List<RiskFactorEntity> = riskFactorDAO.getAllRiskFactorEntityList()
+
     override suspend fun deleteRiskFactor() = riskFactorDAO.deleteRiskFactor()
 
     override fun getSymptomListByTypeForNCD(type: String): LiveData<List<SignsAndSymptomsEntity>> = assessmentDAO.getSymptomListByTypeForNCD(type)

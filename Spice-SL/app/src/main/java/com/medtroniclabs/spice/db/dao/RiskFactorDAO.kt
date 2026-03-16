@@ -15,6 +15,9 @@ interface RiskFactorDAO {
     @Query("SELECT * FROM RiskFactorEntity")
     fun getAllRiskFactorEntity(): LiveData<List<RiskFactorEntity>>
 
+    @Query("SELECT * FROM RiskFactorEntity")
+    suspend fun getAllRiskFactorEntityList(): List<RiskFactorEntity>
+
     @Query("Delete from RiskFactorEntity")
     suspend fun deleteRiskFactor()
 }

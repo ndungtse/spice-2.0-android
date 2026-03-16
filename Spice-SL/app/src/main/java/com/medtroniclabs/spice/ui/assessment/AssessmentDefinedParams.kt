@@ -216,7 +216,9 @@ object AssessmentDefinedParams {
 
     const val NAME = "name"
 
-    const val NCD_SYMPTOMS = "ncdSymptom"
+    const val NCD_SYMPTOMS = "ncdSymptoms"
+
+    const val NCD_SYMPTOM = "ncdSymptom"
 
     const val ANY_NEW_OR_WORSENING_SYMPTOMS = "Any new or worsening symptoms"
 
@@ -254,6 +256,8 @@ object AssessmentDefinedParams {
     const val DANGER_SIGNS_EXPERIENCED_13_27 = "dangerSignsExperienced13To27"
     const val DANGER_SIGNS_EXPERIENCED_28_40 = "dangerSignsExperienced28To40"
     const val HEIGHT = "height"
+
+    const val WEIGHT = "weight"
     const val BMI = "bmi"
 
     // RMNCH Form Group IDs
@@ -413,22 +417,6 @@ object AssessmentDefinedParams {
     const val TT_TD_COMPLETED = "ttTdCompleted"
     const val MIN_ANC_VISITS_REQUIRED = 3
 
-    // Gap Condition Texts
-    const val GAP_TT_VACCINATION_INCOMPLETE = "TT vaccination incomplete"
-    const val GAP_USG_NOT_DONE = "USG not done >36 weeks"
-    const val GAP_ANC_WITH_DOCTOR_NOT_DONE = "ANC with Doctor not done >36 weeks"
-    const val GAP_LESS_THAN_3_ANCS = "Less than 3 ANCs completed at end of 36 weeks"
-    const val GAP_INADEQUATE_IFA = "Inadequate /Non consumption IFA"
-    const val GAP_INADEQUATE_CALCIUM = "Inadequate /Non consumption Calcium"
-    const val GAP_FACILITY_NOT_IDENTIFIED = "Facility not identified for institutional delivery"
-    const val GAP_PLANNED_HOME_DELIVERY = "Planned for Home Delivery"
-    const val YES = "Yes"
-    const val NO = "No"
-    const val NUTRITION_COUNSELLING = "nutritionCounselling"
-    const val CARE_DURING_ANTENATAL_PERIOD = "careDuringAntenatalPeriod"
-    const val BIRTH_PREPAREDNESS = "birthPreparedness"
-    const val NEW_BORN_CARE_EDUCATION = "newbornCareEducation"
-
     // Pregnancy Outcome Field IDs
     const val TIME_OF_DEATH = "timeOfDeath"
     const val MATERNAL_DEATH = "maternalDeath"
@@ -450,6 +438,64 @@ object AssessmentDefinedParams {
     const val SEX = "sex"
     const val BIRTH_WEIGHT = "birthWeight"
     const val CAUSE_OF_NEONATAL_DEATH = "causeOfNeonatalDeath"
+
+    // Gap Condition Texts
+    const val GAP_TT_VACCINATION_INCOMPLETE = "TT vaccination incomplete"
+    const val GAP_USG_NOT_DONE = "USG not done >36 weeks"
+    const val GAP_ANC_WITH_DOCTOR_NOT_DONE = "ANC with Doctor not done >36 weeks"
+    const val GAP_LESS_THAN_3_ANCS = "Less than 3 ANCs completed at end of 36 weeks"
+    const val GAP_INADEQUATE_IFA = "Inadequate /Non consumption IFA"
+    const val GAP_INADEQUATE_CALCIUM = "Inadequate /Non consumption Calcium"
+    const val GAP_FACILITY_NOT_IDENTIFIED = "Facility not identified for institutional delivery"
+    const val GAP_PLANNED_HOME_DELIVERY = "Planned for Home Delivery"
+    const val YES = "Yes"
+    const val NO = "No"
+    const val NUTRITION_COUNSELLING = "nutritionCounselling"
+    const val CARE_DURING_ANTENATAL_PERIOD = "careDuringAntenatalPeriod"
+    const val BIRTH_PREPAREDNESS = "birthPreparedness"
+    const val NEW_BORN_CARE_EDUCATION = "newbornCareEducation"
+
+    const val AVG_SYSTOLIC = "avgSystolic"
+    const val AVG_DIASTOLIC = "avgDiastolic"
+
+    const val BP_LOG = "bpLog"
+    const val BP_LOG_DETAILS = "bpLogDetails"
+    const val AVG_BLOOD_PRESSURE = "avgBloodPressure"
+
+    const val GLUCOSE_LOG = "glucoseLog"
+    const val SYMPTOMS_LOG = "symptomsLog"
+
+    const val HBA1C_DATE_TIME = "hba1cDateTime"
+
+    const val GLUCOSE_UNIT = "glucoseUnit"
+    const val GLUCOSE_TYPE = "glucoseType"
+    const val GLUCOSE = "glucose"
+    const val MMHG = "mmHg"
+    const val MMOLL = "mmol/L"
+    const val MGDL = "mg/dL"
+
+    const val FBS = "fbs"
+    const val RBS = "rbs"
+
+    const val REFERRAL_FACILITY_TYPE = "referralFacilityType"
+
+    const val FACILITY_TYPE_UPAZILA = "Upazila Health Complex"
+
+    const val FACILITY_TYPE_COMMUNITY_CLINIC = "Community Clinic"
+
+    const val CULTURE_VALUE = "cultureValue"
+
+    const val IS_REGULAR_SMOKER = "isRegularSmoker"
+
+    const val FBS_MAXIMUM_MGDL_VALUE = 110
+    const val RBS_MAXIMUM_MGDL_VALUE = 140
+    const val FBS_MAXIMUM_VALUE_BD = 7.0
+    const val RBS_MAXIMUM_VALUE_BD = 11.1
+
+    const val UPAZILA_FBS_RBS_MAXIMUM_VALUE_BD = 15
+
+    const val UPAZILA_UPPER_LIMIT_SYSTOLIC = 160
+    const val UPAZILA_UPPER_LIMIT_DIASTOLIC = 100
 
     // Pregnancy Outcome Additional Field IDs
     const val LIVE_BIRTH_NUMBERS = "liveBirthNumbers"

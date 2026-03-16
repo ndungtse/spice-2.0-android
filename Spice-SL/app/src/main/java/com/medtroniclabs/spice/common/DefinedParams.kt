@@ -384,4 +384,8 @@ object DefinedParams {
     const val Regimen = "regimen"
     const val PrescribedMedicine = "PrescribedMedicine"
     const val isMenutypeHiv = "isMenutypeHiv"
+
+    const val CVD_RISK_SCORE = "cvdRiskScore"
+    const val CVD_RISK_LEVEL = "cvdRiskLevel"
+    const val CVD_RISK_SCORE_DISPLAY = "cvdRiskScoreDisplay"
 }

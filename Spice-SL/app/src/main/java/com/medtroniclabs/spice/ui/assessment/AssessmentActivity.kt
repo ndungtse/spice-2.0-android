@@ -38,6 +38,7 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentSLNCDSummaryFrag
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.BDNCDAssessmentFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.BDNCDAssessmentSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.RxBuddySummaryFragment
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
@@ -305,9 +306,9 @@ class AssessmentActivity : BaseActivity() {
                 } else {
                     setTitle(Summary.capitalizeFirstChar())
                     hideBackButton()
-                    replaceFragmentInId<AssessmentSLNCDSummaryFragment>(
+                    replaceFragmentInId<BDNCDAssessmentSummaryFragment>(
                         binding.formsFragmentContainer.id,
-                        tag = AssessmentSLNCDSummaryFragment.TAG,
+                        tag = BDNCDAssessmentSummaryFragment.TAG,
                     )
                 }
             }
@@ -422,25 +423,25 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.EYE_CARE_MENU_ID -> {
-                /* setTitle(AssessmentDefinedParams.ncd.uppercase())
+                /*setTitle(AssessmentDefinedParams.ncd.uppercase())
                 bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
                 showLoading()
                 replaceFragmentInId<BDEyeCareAssessmentFragment>(
                     binding.formsFragmentContainer.id,
                     bundle = bundle,
                     tag = BDEyeCareAssessmentFragment.TAG,
-                ) */
+                )*/
             }
 
             MenuConstants.CATARACT_MENU_ID -> {
-                /* setTitle(AssessmentDefinedParams.ncd.uppercase())
+                /*setTitle(AssessmentDefinedParams.ncd.uppercase())
                 bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
                 showLoading()
                 replaceFragmentInId<BDCataractAssessmentFragment>(
                     binding.formsFragmentContainer.id,
                     bundle = bundle,
                     tag = BDCataractAssessmentFragment.TAG,
-                ) */
+                )*/
             }
 
             MenuConstants.MATERNAL_HEALTH -> {

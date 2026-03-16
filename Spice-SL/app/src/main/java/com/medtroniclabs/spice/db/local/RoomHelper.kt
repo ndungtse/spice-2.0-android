@@ -553,6 +553,8 @@ interface RoomHelper {
 
     fun getRiskFactorEntity(): LiveData<List<RiskFactorEntity>>
 
+    suspend fun getAllRiskFactorEntityList(): List<RiskFactorEntity>
+
     suspend fun deleteRiskFactor()
 
     fun getSymptomListByTypeForNCD(type: String): LiveData<List<SignsAndSymptomsEntity>>

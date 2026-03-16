@@ -1,12 +1,11 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.common.CVDRiskCalculator
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
@@ -19,17 +18,16 @@ import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ANY_NEW_OR_WORSENING_SYMPTOMS
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NAME
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NEW_WORSENING_SYMPTOMS
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ncd
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
+import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
+import com.medtroniclabs.spice.ui.assessment.utils.AssessmentUtil
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.common.GeneralInfoDialog
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.collections.set
-import kotlin.getValue
 
 @AndroidEntryPoint
 class BDNCDAssessmentFragment() : BaseFragment(), FormEventListener {
@@ -66,7 +64,8 @@ class BDNCDAssessmentFragment() : BaseFragment(), FormEventListener {
 
     private fun getFormDataForWorkflow() {
         viewModel.getFormData(MenuConstants.NCD_MENU_ID)
-        // viewModel.getNearestHealthFacility()
+        viewModel.getRiskEntityList()
+        viewModel.getNearestHealthFacility()
     }
 
     private fun initView() {
@@ -168,23 +167,34 @@ class BDNCDAssessmentFragment() : BaseFragment(), FormEventListener {
         serverData: List<FormLayout>?,
     ) {
         resultMap?.let { details ->
-            // val referralResult = ReferralResultGenerator().calculateNCDStatus(requireContext(), details)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
                     serverData = it,
                     details,
-                    AssessmentDefinedParams.ncd,
+                    ncd,
                 )
             }
-            result?.second?.let { map ->
-                viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
-                // viewModel.saveAssessment(map, null, viewModel.menuId)
+
+            viewModel.memberDetailsLiveData.value?.data?.let { memberDetail ->
+                result?.second?.let {
+                    val ncdMap = it[ncd] as HashMap<String, Any>
+                    val bpResult = AssessmentUtil.calculateAverageBloodPressure(ncdMap)
+                    val bgResult = AssessmentUtil.addDateAndTimeForGlucose(ncdMap)
+                    val symptomList = AssessmentUtil.getSymptomsList(ncdMap)
+
+                    // Compute Referral Logic
+                    val referralResult = ReferralResultGenerator().computeReferralResultForBDNCD(ncdMap, bpResult, bgResult, symptomList)
+
+                    // Compute CVD Risk
+                    CVDRiskCalculator.calculateCVDRiskFactor(ncdMap, viewModel.riskClassificationModels, memberDetail.dateOfBirth, memberDetail.gender)
+
+                    viewModel.saveAssessment(serverData, it, referralResult, viewModel.menuId)
+                }
             }
         }
     }
 
     override fun onRenderingComplete() {
-        Log.e("TEST", "Rendering Completed")
     }
 
     override fun onUpdateInstruction(
