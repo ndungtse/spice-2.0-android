@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.extractNumber
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.calculateAgeInMonths
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EntityMapper
@@ -2030,17 +2031,14 @@ class AssessmentRMNCHFragment :
      * Evaluate highRiskPregnantWoman and gapsInAnc and add to result map
      */
     private fun evaluateAndAddAncSummaryData(resultMap: HashMap<String, Any>) {
-        val ancMap = resultMap[RMNCH.ANC] as? Map<*, *> ?: return
+        val ancHashMap = resultMap[RMNCH.ANC] as? HashMap<String, Any> ?: return
 
-        // Convert ancMap to HashMap for processing
-        val ancResultMap = ancMap
-            .filterKeys { it is String }
-            .mapKeys { it.key as String }
-            .let { HashMap(it as Map<String, Any>) }
-
-        // Get or create summary group in the ANC map
-        val ancHashMap = resultMap[RMNCH.ANC] as? HashMap<String, Any>
-            ?: return // If not mutable, return early
+        // Store anc visit date
+        ancHashMap[AssessmentDefinedParams.ANC_VISIT_DATE] = DateUtils.getDateString(
+            Calendar.getInstance().timeInMillis,
+            inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
+            outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+        )
 
         val summaryGroup = (ancHashMap[AssessmentDefinedParams.GROUP_SUMMARY] as? HashMap<String, Any>)
             ?: HashMap<String, Any>().also {
@@ -2049,9 +2047,9 @@ class AssessmentRMNCHFragment :
 
         // Evaluate highRiskPregnantWoman
         val (dangerSignsList, hasOtherSelected) = getDangerSignsValues(ancHashMap, AssessmentDefinedParams.GROUP_DANGER_SIGNS_RISK_IDENTIFICATION)
-        val emergencyConditions = evaluateEmergencyReferralConditions(ancResultMap)
+        val emergencyConditions = evaluateEmergencyReferralConditions(ancHashMap)
         val nonEmergencyConditions = evaluateNonEmergencyReferralConditions(
-            ancResultMap,
+            ancHashMap,
             viewModel.memberDetailsLiveData.value
                 ?.data
                 ?.dateOfBirth,
@@ -2078,7 +2076,7 @@ class AssessmentRMNCHFragment :
         summaryGroup[AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN] = combinedHighRiskList
 
         // Evaluate gapsInAnc
-        val gapsList = evaluateGapsInANC(ancResultMap, resultMap)
+        val gapsList = evaluateGapsInANC(ancHashMap, resultMap)
         summaryGroup[AssessmentDefinedParams.GAPS_IN_ANC] = gapsList
     }
 

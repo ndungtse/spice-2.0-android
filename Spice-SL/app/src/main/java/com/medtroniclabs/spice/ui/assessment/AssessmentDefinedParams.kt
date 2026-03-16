@@ -366,6 +366,8 @@ object AssessmentDefinedParams {
     const val REFERRAL_FACILITY = "referralFacility"
     const val FACILITY_IDENTIFIED_FOR_DELIVERY = "facilityIdentifiedForDelivery"
 
+    const val ANC_VISIT_DATE = "ancVisitDate"
+
     // RMNCH Summary Labels
     const val LABEL_REFERRAL_FACILITY = "Referral Facility"
     const val LABEL_FOLLOW_UP_VISIT = "Follow up Visit"
