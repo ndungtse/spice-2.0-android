@@ -6,6 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import org.medtroniclabs.uhis.appextensions.convertToUtcDateTime
 import org.medtroniclabs.uhis.appextensions.postError
 import org.medtroniclabs.uhis.appextensions.postLoading
@@ -31,12 +37,6 @@ import org.medtroniclabs.uhis.di.IoDispatcher
 import org.medtroniclabs.uhis.model.PatientListRespModel
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.repo.MedicationRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject

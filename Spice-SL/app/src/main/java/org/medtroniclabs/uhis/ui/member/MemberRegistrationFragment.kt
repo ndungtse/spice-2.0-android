@@ -16,6 +16,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -32,7 +33,7 @@ import org.medtroniclabs.uhis.common.DateUtils.DATE_ddMMyyyy
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.DOB
 import org.medtroniclabs.uhis.common.DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION
-import org.medtroniclabs.uhis.common.DefinedParams.MemberID
+import org.medtroniclabs.uhis.common.DefinedParams.MEMBER_ID
 import org.medtroniclabs.uhis.common.DefinedParams.Other
 import org.medtroniclabs.uhis.common.DefinedParams.female
 import org.medtroniclabs.uhis.common.DefinedParams.isMemberRegistration
@@ -66,11 +67,9 @@ import org.medtroniclabs.uhis.ui.dialog.SuccessDialogFragment
 import org.medtroniclabs.uhis.ui.home.AssessmentToolsActivity
 import org.medtroniclabs.uhis.ui.household.HouseholdActivity
 import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams
-import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.ID
 import org.medtroniclabs.uhis.ui.household.summary.HouseholdSummaryActivity
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseRegistrationViewModel
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams
-import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -191,7 +190,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
 
                     (activity as BaseActivity?)?.hideLoading()
                     resourceState.data?.let {
-                        if (arguments?.getBoolean(HouseholdDefinedParams.isPhuWalkInsFlow) == true) {
+                        if (arguments?.getBoolean(HouseholdDefinedParams.IS_PHU_WALK_INS_FLOW) == true) {
                             requireActivity().startBackgroundOfflineSync()
                             val existingFragment =
                                 childFragmentManager.findFragmentByTag(
@@ -386,7 +385,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
         if (memberRegistrationViewModel.startAssessment == true) {
             val intent = Intent(requireActivity(), AssessmentToolsActivity::class.java)
             memberRegistrationViewModel.memberRegistrationLiveData.value?.data.let {
-                intent.putExtra(MemberID, it ?: -1)
+                intent.putExtra(MEMBER_ID, it ?: -1)
             }
             intent.putExtra(DOB, memberRegistrationViewModel.memberDob)
             startActivity(intent)
@@ -398,11 +397,11 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                     HouseholdSummaryActivity::class.java,
                 )
                 intent.putExtra(
-                    HouseholdDefinedParams.ID,
+                    DefinedParams.householdId,
                     memberRegistrationViewModel.selectedHouseholdId,
                 )
                 intent.putExtra(
-                    HouseholdDefinedParams.isFromHouseHoldRegistration,
+                    HouseholdDefinedParams.IS_FROM_HOUSEHOLD_REGISTRATION,
                     memberRegistrationViewModel.memberDetailsLiveData.value
                         ?.data
                         ?.id == null,
@@ -606,7 +605,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                     val intent =
                         Intent(requireActivity(), HouseholdActivity::class.java)
                     intent.putExtra(isMemberRegistration, true)
-                    intent.putExtra(ID, householdRegistrationViewModel.householdId)
+                    intent.putExtra(DefinedParams.householdId, householdRegistrationViewModel.householdId)
                     startActivity(intent)
                     requireActivity().finish()
                 }
@@ -829,7 +828,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
 
     private fun onPhuAddMember() {
         memberRegistrationViewModel.isPhuWalkInsFlow =
-            arguments?.getBoolean(HouseholdDefinedParams.isPhuWalkInsFlow, false)
+            arguments?.getBoolean(HouseholdDefinedParams.IS_PHU_WALK_INS_FLOW, false)
         if (memberRegistrationViewModel.isPhuWalkInsFlow == true) {
             binding.bottomNavigationView.gone()
             binding.bottomNavigationViewPhuSubmit.visible()

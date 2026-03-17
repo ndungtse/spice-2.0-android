@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams
@@ -29,7 +30,6 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentActivity
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.cbs.activity.CbsActivity
 import org.medtroniclabs.uhis.ui.home.adapter.DashboardMenuItemsAdapter
-import kotlinx.coroutines.launch
 
 class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
     private lateinit var binding: FragmentToolsMenuBinding
@@ -175,7 +175,7 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
 
     private fun startCbsActivity(menuId: String) {
         val intent = Intent(requireContext(), CbsActivity::class.java)
-        intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberID)
+        intent.putExtra(DefinedParams.MEMBER_ID, viewModel.selectedHouseholdMemberID)
         intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
         intent.putExtra(DefinedParams.FollowUpId, viewModel.followUpId)
         intent.putExtra(DefinedParams.MenuId, menuId)
@@ -189,8 +189,8 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         workFlowName: String?,
     ) {
         val intent = Intent(requireContext(), AssessmentActivity::class.java)
-        intent.putExtra(DefinedParams.HouseholdId, viewModel.selectedHouseholdId)
-        intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberID)
+        intent.putExtra(DefinedParams.HOUSEHOLD_ID, viewModel.selectedHouseholdId)
+        intent.putExtra(DefinedParams.MEMBER_ID, viewModel.selectedHouseholdMemberID)
         intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
         intent.putExtra(MenuConstants.FOLLOW_UP, isFollowUp())
         intent.putExtra(DefinedParams.FollowUpId, viewModel.followUpId)

@@ -17,9 +17,9 @@ import org.medtroniclabs.uhis.appextensions.invisible
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.databinding.FragmentSuccessDialogBinding
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
-import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.IsHousehold
-import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.IsHouseholdMember
-import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.isPhuWalkInsFlow
+import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.IS_HOUSEHOLD
+import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.IS_HOUSEHOLD_MEMBER
+import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.IS_PHU_WALK_INS_FLOW
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseRegistrationViewModel
 import org.medtroniclabs.uhis.ui.landing.OnDialogDismissListener
 import org.medtroniclabs.uhis.ui.phuwalkins.activity.PhuWalkInsActivity
@@ -55,9 +55,9 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
             descText: String? = null,
         ): SuccessDialogFragment {
             val bundle = Bundle()
-            bundle.putBoolean(IsHousehold, isHousehold)
-            bundle.putBoolean(IsHouseholdMember, isMember)
-            bundle.putBoolean(isPhuWalkInsFlow, isPhuLink)
+            bundle.putBoolean(IS_HOUSEHOLD, isHousehold)
+            bundle.putBoolean(IS_HOUSEHOLD_MEMBER, isMember)
+            bundle.putBoolean(IS_PHU_WALK_INS_FLOW, isPhuLink)
             if (!descText.isNullOrBlank()) {
                 bundle.putString(DefinedParams.label, descText)
             }
@@ -93,17 +93,17 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
         if (!arguments?.getString(DefinedParams.label).isNullOrBlank()) {
             binding.successMessage.text = arguments?.getString(DefinedParams.label)
         }
-        if (arguments?.getBoolean(IsHousehold) == true) {
+        if (arguments?.getBoolean(IS_HOUSEHOLD) == true) {
             viewModel.setUserJourney(AnalyticsDefinedParams.HouseHoldRegistrationSuccess)
             binding.successMessage.text = getString(R.string.household_successfully)
         }
 
-        if (arguments?.getBoolean(IsHouseholdMember) == true) {
+        if (arguments?.getBoolean(IS_HOUSEHOLD_MEMBER) == true) {
             viewModel.setUserJourney(AnalyticsDefinedParams.MemberRegistrationSuccess)
             binding.successMessage.text = getString(R.string.member_registered_successfully)
         }
 
-        if (arguments?.getBoolean(isPhuWalkInsFlow) == true) {
+        if (arguments?.getBoolean(IS_PHU_WALK_INS_FLOW) == true) {
             binding.successMessage.setPadding(50, 0, 50, 0)
             binding.successMessage.text = getString(R.string.member_registered_successfully_linked)
             binding.householdNo.gone()
@@ -115,14 +115,14 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
         when (view.id) {
             binding.btnDone.id -> {
                 viewModel.setUserJourney(AnalyticsDefinedParams.OKAYBUTTONTRIGGERED)
-                if (arguments?.getBoolean(isPhuWalkInsFlow) == true) {
+                if (arguments?.getBoolean(IS_PHU_WALK_INS_FLOW) == true) {
                     val intent = Intent(requireContext(), PhuWalkInsActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                     startActivity(intent)
                     requireActivity().finish()
                 } else {
                     onDismissListener?.onDialogDismissListener(
-                        arguments?.getBoolean(IsHousehold) == true,
+                        arguments?.getBoolean(IS_HOUSEHOLD) == true,
                     )
                     dismiss()
                 }

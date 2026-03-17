@@ -10,6 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.app.analytics.db.AnalyticsRepository
 import org.medtroniclabs.uhis.app.analytics.model.ScreenDetails
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
@@ -20,10 +24,6 @@ import org.medtroniclabs.uhis.appextensions.isDebug
 import org.medtroniclabs.uhis.common.SPICE
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.log.CrashReportingTree
-import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject

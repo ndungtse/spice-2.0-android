@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.getLocalDate
 import org.medtroniclabs.uhis.common.DateUtils
@@ -18,7 +19,6 @@ import org.medtroniclabs.uhis.model.AssessmentSummaryModel
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint

@@ -13,6 +13,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.chip.Chip
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.setDialogPercent
 import org.medtroniclabs.uhis.common.CommonUtils
@@ -27,7 +28,6 @@ import org.medtroniclabs.uhis.ncd.followup.viewmodel.NCDFollowUpViewModel
 import org.medtroniclabs.uhis.network.utils.ConnectivityManager
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.TagListCustomView
-import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale

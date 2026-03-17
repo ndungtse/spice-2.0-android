@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
@@ -29,7 +30,6 @@ import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralReasons
 import org.medtroniclabs.uhis.ui.mypatients.adapter.DateListAdapter
 import org.medtroniclabs.uhis.ui.referralhistory.adapter.ReferralHistoryAdapter
 import org.medtroniclabs.uhis.ui.referralhistory.viewmodel.ReferralHistoryViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
@@ -60,7 +60,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
             val fragment = ReferralTicketFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.FhirId, patientId)
-            bundle.putString(DefinedParams.MemberID, memberId)
+            bundle.putString(DefinedParams.MEMBER_ID, memberId)
             fragment.arguments = bundle
             return fragment
         }
@@ -77,7 +77,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
 
     private fun getPatientId(): String? = arguments?.getString(DefinedParams.FhirId, "")
 
-    private fun getMemberId(): String? = arguments?.getString(DefinedParams.MemberID, "")
+    private fun getMemberId(): String? = arguments?.getString(DefinedParams.MEMBER_ID, "")
 
     private fun getInitialReferralTickets() {
         viewModel.getReferralTicket(patientId = getPatientId())

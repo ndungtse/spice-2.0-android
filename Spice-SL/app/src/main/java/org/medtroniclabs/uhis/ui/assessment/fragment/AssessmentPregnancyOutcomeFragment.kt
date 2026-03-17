@@ -11,9 +11,10 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.text.buildSpannedString
+import androidx.core.text.color
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
-import androidx.core.text.color
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -41,7 +42,6 @@ import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.ReferralResultGenerator
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Fragment responsible for pregnancy outcome assessment

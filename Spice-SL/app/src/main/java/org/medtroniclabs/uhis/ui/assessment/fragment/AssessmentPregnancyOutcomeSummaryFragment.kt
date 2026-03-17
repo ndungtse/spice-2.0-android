@@ -11,9 +11,9 @@ import android.widget.TextView
 import androidx.core.text.buildSpannedString
 import androidx.core.text.color
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
-import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.common.StringConverter
@@ -21,15 +21,14 @@ import org.medtroniclabs.uhis.databinding.CardLayoutBinding
 import org.medtroniclabs.uhis.databinding.FragmentAssessmentPregnancyOutcomeSummaryBinding
 import org.medtroniclabs.uhis.databinding.InstructionLayoutBinding
 import org.medtroniclabs.uhis.formgeneration.FormSupport.translateTitle
-import org.medtroniclabs.uhis.formgeneration.utility.InformationLayoutFragment
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
+import org.medtroniclabs.uhis.formgeneration.utility.InformationLayoutFragment
 import org.medtroniclabs.uhis.model.AssessmentSummaryModel
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Fragment responsible for showing pregnancy outcome assessment summary details
@@ -584,7 +583,9 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
             return
         }
 
-        val formLayouts = viewModel.formLayoutsLiveData.value?.data?.formLayout ?: return
+        val formLayouts = viewModel.formLayoutsLiveData.value
+            ?.data
+            ?.formLayout ?: return
         val isTranslationEnabled = SecuredPreference.getIsTranslationEnabled()
 
         // Get counselling card layout for title
@@ -593,13 +594,16 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
         }
 
         // Get only the new counselling items (filter out old ones)
-        val counsellingItems = formLayouts.filter {
-            it.family == AssessmentDefinedParams.COUNSELLING_ADVERSE_EVENT &&
-            it.viewType == "Instruction" &&
-            it.isSummary == true &&
-            (it.id == AssessmentDefinedParams.COUNSELLING_EMOTIONAL_SUPPORT ||
-             it.id == AssessmentDefinedParams.COUNSELLING_FUTURE_PREGNANCY_PLANNING)
-        }.sortedBy { it.orderId ?: Int.MAX_VALUE }
+        val counsellingItems = formLayouts
+            .filter {
+                it.family == AssessmentDefinedParams.COUNSELLING_ADVERSE_EVENT &&
+                    it.viewType == "Instruction" &&
+                    it.isSummary == true &&
+                    (
+                        it.id == AssessmentDefinedParams.COUNSELLING_EMOTIONAL_SUPPORT ||
+                            it.id == AssessmentDefinedParams.COUNSELLING_FUTURE_PREGNANCY_PLANNING
+                    )
+            }.sortedBy { it.orderId ?: Int.MAX_VALUE }
 
         // If no counselling items found, don't show card
         if (counsellingItems.isEmpty()) {
@@ -614,7 +618,7 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
             counsellingCardBinding.cardTitle.text = translateTitle(
                 cardLayout.titleCulture,
                 cardLayout.title,
-                isTranslationEnabled
+                isTranslationEnabled,
             )
         } ?: run {
             // Fallback title if cardLayout not found
@@ -630,21 +634,22 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
         val scrollViewContent = binding.scrollView.getChildAt(0) as? androidx.constraintlayout.widget.ConstraintLayout
         scrollViewContent?.let { content ->
             // Set layout parameters with constraints
-            val layoutParams = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams(
-                androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.MATCH_PARENT,
-                androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                // Set margins to match resultCardView
-                marginStart = resources.getDimensionPixelSize(R.dimen._6sdp)
-                marginEnd = resources.getDimensionPixelSize(R.dimen._6sdp)
-                topMargin = resources.getDimensionPixelSize(R.dimen._6sdp)
-                bottomMargin = resources.getDimensionPixelSize(R.dimen._6sdp)
+            val layoutParams = androidx.constraintlayout.widget.ConstraintLayout
+                .LayoutParams(
+                    androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.MATCH_PARENT,
+                    androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ).apply {
+                    // Set margins to match resultCardView
+                    marginStart = resources.getDimensionPixelSize(R.dimen._6sdp)
+                    marginEnd = resources.getDimensionPixelSize(R.dimen._6sdp)
+                    topMargin = resources.getDimensionPixelSize(R.dimen._6sdp)
+                    bottomMargin = resources.getDimensionPixelSize(R.dimen._6sdp)
 
-                // Set constraints: below resultCardView, start/end to parent
-                startToStart = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
-                endToEnd = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
-                topToBottom = binding.resultCardView.id
-            }
+                    // Set constraints: below resultCardView, start/end to parent
+                    startToStart = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+                    endToEnd = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+                    topToBottom = binding.resultCardView.id
+                }
 
             counsellingCardBinding.root.layoutParams = layoutParams
 

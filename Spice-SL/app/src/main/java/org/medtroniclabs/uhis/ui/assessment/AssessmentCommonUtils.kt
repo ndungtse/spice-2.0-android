@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
+import org.json.JSONArray
+import org.json.JSONObject
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.setVisible
 import org.medtroniclabs.uhis.common.CommonUtils
@@ -11,12 +13,10 @@ import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.No
 import org.medtroniclabs.uhis.common.DefinedParams.Yes
 import org.medtroniclabs.uhis.databinding.AssessmentSummaryLayoutBinding
-import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
-import org.medtroniclabs.uhis.model.AssessmentSummaryModel
-import org.json.JSONArray
-import org.json.JSONObject
 import org.medtroniclabs.uhis.databinding.TextLabelLayoutBinding
 import org.medtroniclabs.uhis.formgeneration.extension.px
+import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
+import org.medtroniclabs.uhis.model.AssessmentSummaryModel
 
 object AssessmentCommonUtils {
     fun getListItemValue(

@@ -2,6 +2,9 @@ package org.medtroniclabs.uhis.ui.medicalreview.hiv.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.data.MedicalReviewMetaItems
 import org.medtroniclabs.uhis.data.model.HivStatus
@@ -9,9 +12,6 @@ import org.medtroniclabs.uhis.di.IoDispatcher
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.ui.BaseViewModel
 import org.medtroniclabs.uhis.ui.medicalreview.hiv.repo.HivMedicalReviewRepo
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

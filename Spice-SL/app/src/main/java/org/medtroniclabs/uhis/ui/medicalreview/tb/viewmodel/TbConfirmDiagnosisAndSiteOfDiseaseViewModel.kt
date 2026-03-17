@@ -3,6 +3,9 @@ package org.medtroniclabs.uhis.ui.medicalreview.tb.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.data.DiagnosisDiseaseModel
 import org.medtroniclabs.uhis.data.DiagnosisSaveUpdateRequest
@@ -12,9 +15,6 @@ import org.medtroniclabs.uhis.model.medicalreview.CreateUnderTwoMonthsResponse
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.network.utils.ConnectivityManager
 import org.medtroniclabs.uhis.repo.DiagnosisRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

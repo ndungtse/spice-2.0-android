@@ -5,13 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.databinding.FragmentImmunisationDetailsBinding
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.medicalreview.epi.adapter.ImmunisationListAdapter
 import org.medtroniclabs.uhis.ui.medicalreview.epi.viewmodel.ImmunisationViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ImmunisationDetailFragment : BaseFragment() {
@@ -34,7 +34,7 @@ class ImmunisationDetailFragment : BaseFragment() {
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
             bundle.putString(DefinedParams.ID, id)
-            bundle.putString(DefinedParams.MemberID, memberId)
+            bundle.putString(DefinedParams.MEMBER_ID, memberId)
             bundle.putString(DefinedParams.DOB, dateOfBirth)
             fragment.arguments = bundle
             return fragment
@@ -73,7 +73,7 @@ class ImmunisationDetailFragment : BaseFragment() {
     }
 
     private fun attachObserver() {
-        val memberId = arguments?.getString(DefinedParams.MemberID)
+        val memberId = arguments?.getString(DefinedParams.MEMBER_ID)
         val dob = arguments?.getString(DefinedParams.DOB)
         val patientId = arguments?.getString(DefinedParams.PatientId)
         val id = arguments?.getString(DefinedParams.ID)

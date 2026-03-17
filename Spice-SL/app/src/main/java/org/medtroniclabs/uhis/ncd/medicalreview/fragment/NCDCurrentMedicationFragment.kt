@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.setVisible
@@ -19,7 +20,6 @@ import org.medtroniclabs.uhis.ncd.medicalreview.viewmodel.NCDCurrentMedicationVi
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.TagListCustomView
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDCurrentMedicationFragment : BaseFragment() {

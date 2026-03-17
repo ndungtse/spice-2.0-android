@@ -2,6 +2,9 @@ package org.medtroniclabs.uhis.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.app.analytics.db.AnalyticsRepository
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -9,9 +12,6 @@ import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsUtils
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.data.offlinesync.model.FollowUpCallStatus
 import org.medtroniclabs.uhis.di.IoDispatcher
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject

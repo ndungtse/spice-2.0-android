@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
+import okhttp3.ResponseBody
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.nullIfEmpty
 import org.medtroniclabs.uhis.common.DateUtils.calculateAge
@@ -72,7 +73,6 @@ import org.medtroniclabs.uhis.ncd.screening.utils.ReferredReason
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
-import okhttp3.ResponseBody
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.math.RoundingMode

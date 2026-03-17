@@ -1,11 +1,11 @@
 package org.medtroniclabs.uhis.common
 
-import org.medtroniclabs.uhis.BuildConfig
-import org.medtroniclabs.uhis.data.model.BaseUrlRequest
-import org.medtroniclabs.uhis.data.model.BaseUrlResponse
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.medtroniclabs.uhis.BuildConfig
+import org.medtroniclabs.uhis.data.model.BaseUrlRequest
+import org.medtroniclabs.uhis.data.model.BaseUrlResponse
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.POST

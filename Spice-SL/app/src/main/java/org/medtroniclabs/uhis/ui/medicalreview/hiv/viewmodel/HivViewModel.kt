@@ -6,6 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DefinedParams
@@ -36,10 +40,6 @@ import org.medtroniclabs.uhis.model.medicalreview.HivVitalsResponse
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.ui.medicalreview.hiv.repo.HivMedicalReviewRepo
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

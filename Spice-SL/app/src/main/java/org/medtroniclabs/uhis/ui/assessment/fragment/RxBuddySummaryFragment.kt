@@ -110,12 +110,12 @@ class RxBuddySummaryFragment : BaseFragment(), View.OnClickListener {
         } else {
             val intent = Intent(requireContext(), HouseholdSummaryActivity::class.java)
             intent.putExtra(
-                HouseholdDefinedParams.ID,
+                DefinedParams.householdId,
                 viewModel.memberDetailsLiveData.value
                     ?.data
                     ?.householdLocalId ?: -1L,
             )
-            intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, false)
+            intent.putExtra(HouseholdDefinedParams.IS_FROM_HOUSEHOLD_REGISTRATION, false)
             startActivity(intent)
         }
     }

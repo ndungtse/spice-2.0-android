@@ -7,6 +7,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.isVisible
@@ -14,7 +15,7 @@ import org.medtroniclabs.uhis.appextensions.setVisible
 import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DefinedParams
-import org.medtroniclabs.uhis.common.DefinedParams.MemberID
+import org.medtroniclabs.uhis.common.DefinedParams.MEMBER_ID
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.common.SpiceLocationManager
 import org.medtroniclabs.uhis.data.model.HivRequestData
@@ -58,7 +59,6 @@ import org.medtroniclabs.uhis.ui.mypatients.fragment.ReferPatientFragment
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.ReferPatientViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HivImrAndCmrActivity :
@@ -722,7 +722,7 @@ class HivImrAndCmrActivity :
                         intent.getStringExtra(DefinedParams.PatientId),
                     )
                     putString(DefinedParams.ID, intent.getStringExtra(DefinedParams.ID))
-                    putString(MemberID, patientViewModel.getPatientMemberId())
+                    putString(MEMBER_ID, patientViewModel.getPatientMemberId())
                     putBoolean(DefinedParams.HIV_IMR_CMR, true)
                 },
                 tag = ARTRegimenFragment.TAG,

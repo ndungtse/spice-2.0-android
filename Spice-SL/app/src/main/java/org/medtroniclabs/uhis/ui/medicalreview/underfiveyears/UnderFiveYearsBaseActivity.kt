@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.widget.NestedScrollView
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -45,7 +46,6 @@ import org.medtroniclabs.uhis.ui.mypatients.fragment.PatientInfoFragment
 import org.medtroniclabs.uhis.ui.mypatients.fragment.ReferPatientFragment
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.ReferPatientViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class UnderFiveYearsBaseActivity :
@@ -394,7 +394,7 @@ class UnderFiveYearsBaseActivity :
                 intent.getStringExtra(DefinedParams.ID),
             )
             putString(
-                DefinedParams.MemberID,
+                DefinedParams.MEMBER_ID,
                 viewModel.memberId,
             )
         }

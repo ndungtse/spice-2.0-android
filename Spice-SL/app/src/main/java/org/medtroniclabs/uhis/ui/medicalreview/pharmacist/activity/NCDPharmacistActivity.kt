@@ -5,6 +5,7 @@ import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import android.view.View
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.numberOrZero
@@ -30,7 +31,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.pharmacist.fragment.NCDPrescripti
 import org.medtroniclabs.uhis.ui.medicalreview.pharmacist.fragment.NCDQuantityDifferenceDialogueFragment
 import org.medtroniclabs.uhis.ui.medicalreview.pharmacist.viewModel.NCDPharmacistViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDPharmacistActivity : BaseActivity(), View.OnClickListener {

@@ -2,6 +2,9 @@ package org.medtroniclabs.uhis.ui.medicalreview.epi.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.getLocalDate
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DateUtils.DATE_ddMMyyyy
@@ -24,9 +27,6 @@ import org.medtroniclabs.uhis.model.medicalreview.VaccinationGroupItem
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.repo.ImmunisationRepository
 import org.medtroniclabs.uhis.ui.BaseViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit

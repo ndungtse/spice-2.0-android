@@ -2,6 +2,9 @@ package org.medtroniclabs.uhis.ui.referralhistory.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.data.PncChildMedicalReview
 import org.medtroniclabs.uhis.data.history.BirthDetails
@@ -17,9 +20,6 @@ import org.medtroniclabs.uhis.network.utils.ConnectivityManager
 import org.medtroniclabs.uhis.ui.BaseViewModel
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
 import org.medtroniclabs.uhis.ui.referralhistory.repo.ReferralHistoryRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

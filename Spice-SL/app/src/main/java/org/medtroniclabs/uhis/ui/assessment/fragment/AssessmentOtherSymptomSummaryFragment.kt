@@ -9,6 +9,8 @@ import android.widget.AdapterView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
+import org.json.JSONObject
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.common.CommonUtils.getDaysValue
@@ -39,8 +41,6 @@ import org.medtroniclabs.uhis.ui.assessment.referrallogic.model.ReferralDefinedP
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtTest
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
-import dagger.hilt.android.AndroidEntryPoint
-import org.json.JSONObject
 
 @AndroidEntryPoint
 class AssessmentOtherSymptomSummaryFragment : BaseFragment(), View.OnClickListener {

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -36,7 +37,6 @@ import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.REGISTRATION
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseRegistrationViewModel
 import org.medtroniclabs.uhis.ui.landing.OnDialogDismissListener
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, FormEventListener {

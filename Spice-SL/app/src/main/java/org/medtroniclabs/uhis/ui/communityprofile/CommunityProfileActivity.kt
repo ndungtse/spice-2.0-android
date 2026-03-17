@@ -3,6 +3,7 @@ package org.medtroniclabs.uhis.ui.communityprofile
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.databinding.ActivityCommunityProfileBinding
@@ -11,7 +12,6 @@ import org.medtroniclabs.uhis.ui.communityprofile.fragments.CommunityProfileSear
 import org.medtroniclabs.uhis.ui.communityprofile.fragments.CommunityProfileSummaryFragment
 import org.medtroniclabs.uhis.ui.communityprofile.fragments.EditCommunityProfileFragment
 import org.medtroniclabs.uhis.ui.communityprofile.viewmodel.CommunityProfileViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CommunityProfileActivity : BaseActivity() {

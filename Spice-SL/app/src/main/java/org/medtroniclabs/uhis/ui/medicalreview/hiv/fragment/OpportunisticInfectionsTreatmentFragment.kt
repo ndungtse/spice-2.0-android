@@ -10,6 +10,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.google.android.material.textview.MaterialTextView
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.invisible
@@ -31,7 +32,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams.
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams.tbPreventiveDateRange
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams.tbTreatmentDateRange
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class OpportunisticInfectionsTreatmentFragment : BaseFragment() {

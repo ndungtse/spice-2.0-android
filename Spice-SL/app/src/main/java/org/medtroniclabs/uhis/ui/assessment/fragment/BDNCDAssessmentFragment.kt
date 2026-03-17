@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.common.CVDRiskCalculator
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
@@ -27,7 +28,6 @@ import org.medtroniclabs.uhis.ui.assessment.referrallogic.ReferralResultGenerato
 import org.medtroniclabs.uhis.ui.assessment.utils.AssessmentUtil
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import org.medtroniclabs.uhis.ui.common.GeneralInfoDialog
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class BDNCDAssessmentFragment() : BaseFragment(), FormEventListener {

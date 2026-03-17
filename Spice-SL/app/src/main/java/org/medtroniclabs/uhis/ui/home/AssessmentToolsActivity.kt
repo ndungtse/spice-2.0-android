@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams
@@ -12,7 +13,6 @@ import org.medtroniclabs.uhis.ncd.medicalreview.NCDMRUtil.EncounterReference
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.landing.LandingActivity
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AssessmentToolsActivity : BaseActivity() {
@@ -45,8 +45,8 @@ class AssessmentToolsActivity : BaseActivity() {
     }
 
     private fun initializeView() {
-        toolsViewModel.selectedHouseholdId = intent.getLongExtra(DefinedParams.HouseholdId, -1)
-        toolsViewModel.selectedHouseholdMemberID = intent.getLongExtra(DefinedParams.MemberID, -1)
+        toolsViewModel.selectedHouseholdId = intent.getLongExtra(DefinedParams.HOUSEHOLD_ID, -1)
+        toolsViewModel.selectedHouseholdMemberID = intent.getLongExtra(DefinedParams.MEMBER_ID, -1)
         toolsViewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
         toolsViewModel.followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1)
         val isDeepLink = intent.getBooleanExtra(DefinedParams.IsDeepLink, false)

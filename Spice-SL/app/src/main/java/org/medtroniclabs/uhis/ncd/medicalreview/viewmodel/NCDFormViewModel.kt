@@ -3,6 +3,9 @@ package org.medtroniclabs.uhis.ncd.medicalreview.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postError
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.appextensions.postSuccess
@@ -13,9 +16,6 @@ import org.medtroniclabs.uhis.formgeneration.model.FormResponse
 import org.medtroniclabs.uhis.ncd.medicalreview.repo.NCDFormsRepo
 import org.medtroniclabs.uhis.network.SingleLiveEvent
 import org.medtroniclabs.uhis.network.resource.Resource
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

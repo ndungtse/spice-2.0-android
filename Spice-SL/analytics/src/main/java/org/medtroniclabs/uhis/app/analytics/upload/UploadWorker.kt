@@ -6,6 +6,9 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import org.medtroniclabs.uhis.app.analytics.db.AnalyticsRepository
 import org.medtroniclabs.uhis.app.analytics.model.Analytics
 import org.medtroniclabs.uhis.app.analytics.model.AnalyticsData
@@ -14,9 +17,6 @@ import org.medtroniclabs.uhis.app.analytics.network.ApiService
 import org.medtroniclabs.uhis.app.analytics.network.RetrofitHelper
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsUtils
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
 class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {

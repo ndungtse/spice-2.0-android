@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.postError
@@ -30,7 +31,6 @@ import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.DialogDismissListener
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import org.medtroniclabs.uhis.ui.medicalreview.tb.viewmodel.AddHeightViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -72,7 +72,7 @@ class AddHeightDialog : DialogFragment(), View.OnClickListener {
             val fragment = AddHeightDialog()
             fragment.arguments = Bundle().apply {
                 putString(DefinedParams.PatientId, patientId)
-                putString(DefinedParams.MemberID, memberId)
+                putString(DefinedParams.MEMBER_ID, memberId)
                 putString(DefinedParams.villageId, villageId)
                 putString(DefinedParams.householdId, householdId)
             }
@@ -158,7 +158,7 @@ class AddHeightDialog : DialogFragment(), View.OnClickListener {
                 latitude = viewModel.lastLocation?.latitude,
                 longitude = viewModel.lastLocation?.longitude,
                 patientId = arguments?.getString(DefinedParams.PatientId, ""),
-                memberId = arguments?.getString(DefinedParams.MemberID, ""),
+                memberId = arguments?.getString(DefinedParams.MEMBER_ID, ""),
                 startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
                 endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
                 villageId = arguments?.getString(DefinedParams.villageId),

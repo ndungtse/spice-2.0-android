@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import okhttp3.ResponseBody
 import org.medtroniclabs.uhis.appextensions.postError
 import org.medtroniclabs.uhis.appextensions.postSuccess
 import org.medtroniclabs.uhis.common.DateUtils.convertToTimestamp
@@ -27,7 +28,6 @@ import org.medtroniclabs.uhis.ncd.data.RegisterCallResponse
 import org.medtroniclabs.uhis.network.ApiHelper
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.network.resource.ResourceState
-import okhttp3.ResponseBody
 import retrofit2.Response
 import timber.log.Timber
 import java.lang.reflect.Type

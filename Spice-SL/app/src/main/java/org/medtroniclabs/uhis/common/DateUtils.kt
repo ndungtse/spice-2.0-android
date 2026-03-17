@@ -1,12 +1,12 @@
 package org.medtroniclabs.uhis.common
 
 import android.content.Context
+import org.joda.time.PeriodType
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.data.model.CalendarPeriod
 import org.medtroniclabs.uhis.formgeneration.config.DefinedParams
 import org.medtroniclabs.uhis.mappingkey.Screening.TODAY
 import org.medtroniclabs.uhis.mappingkey.Screening.YESTERDAY
-import org.joda.time.PeriodType
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDate

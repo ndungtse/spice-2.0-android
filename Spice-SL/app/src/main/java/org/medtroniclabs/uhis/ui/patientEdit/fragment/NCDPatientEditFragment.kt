@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.FormAutofill
@@ -31,7 +32,6 @@ import org.medtroniclabs.uhis.ui.dialog.GeneralSuccessDialog
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
 import org.medtroniclabs.uhis.ui.patientEdit.NCDPatientEditActivity
 import org.medtroniclabs.uhis.ui.patientEdit.viewModel.NCDPatientEditViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickListener {

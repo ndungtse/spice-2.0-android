@@ -2,6 +2,9 @@ package org.medtroniclabs.uhis.ui.landing.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postError
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.appextensions.postSuccess
@@ -11,9 +14,6 @@ import org.medtroniclabs.uhis.model.CultureLocaleModel
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.ui.BaseViewModel
 import org.medtroniclabs.uhis.ui.boarding.repo.MetaRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

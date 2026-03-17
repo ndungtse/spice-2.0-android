@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DateUtils
@@ -19,7 +20,7 @@ import org.medtroniclabs.uhis.common.DefinedParams.DOB
 import org.medtroniclabs.uhis.common.DefinedParams.DateOfDelivery
 import org.medtroniclabs.uhis.common.DefinedParams.Gender
 import org.medtroniclabs.uhis.common.DefinedParams.ID
-import org.medtroniclabs.uhis.common.DefinedParams.MemberID
+import org.medtroniclabs.uhis.common.DefinedParams.MEMBER_ID
 import org.medtroniclabs.uhis.common.DefinedParams.NeonateOutcome
 import org.medtroniclabs.uhis.common.DefinedParams.PatientId
 import org.medtroniclabs.uhis.common.DefinedParams.female
@@ -45,7 +46,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.fragment.Select
 import org.medtroniclabs.uhis.ui.medicalreview.tb.activity.TBMedicalReviewActivity
 import org.medtroniclabs.uhis.ui.medicalreview.underfiveyears.UnderFiveYearsBaseActivity
 import org.medtroniclabs.uhis.ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
@@ -181,7 +181,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             val bundle = Bundle()
             bundle.putString(PatientId, patientId)
             bundle.putString(ID, id)
-            bundle.putString(MemberID, memberId)
+            bundle.putString(MEMBER_ID, memberId)
             bundle.putString(Gender, gender)
             bundle.putString(DOB, dob)
             bundle.putString(ChildPatientId, childPatientId)
@@ -238,7 +238,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                                 childPatientId,
                                 dateOfDelivery,
                                 neonateOutcome,
-                                arguments?.getString(MemberID),
+                                arguments?.getString(MEMBER_ID),
                                 isEmtctFlow,
                                 hivTestedPositive,
                                 viewModel.isMenutypeHiv,
@@ -266,7 +266,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                 intent.putExtra(PatientId, arguments?.getString(PatientId))
                 intent.putExtra(DOB, arguments?.getString(DOB))
                 intent.putExtra(ID, arguments?.getString(ID))
-                intent.putExtra(MemberID, arguments?.getString(MemberID))
+                intent.putExtra(MEMBER_ID, arguments?.getString(MEMBER_ID))
                 intent.putExtra(
                     DefinedParams.householdId,
                     arguments?.getString(DefinedParams.householdId),
@@ -283,7 +283,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                 intent.putExtra(PatientId, arguments?.getString(PatientId))
                 intent.putExtra(DOB, arguments?.getString(DOB))
                 intent.putExtra(ID, arguments?.getString(ID))
-                intent.putExtra(MemberID, arguments?.getString(MemberID))
+                intent.putExtra(MEMBER_ID, arguments?.getString(MEMBER_ID))
                 startActivity(intent)
             }
 
@@ -307,7 +307,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                                 arguments?.getString(ID),
                                 true,
                                 isPregnant == true,
-                                arguments?.getString(MemberID),
+                                arguments?.getString(MEMBER_ID),
                                 villageId,
                             ).show(childFragmentManager, SelectFlowDialog.TAG)
                     }

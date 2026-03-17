@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams
@@ -30,7 +31,6 @@ import org.medtroniclabs.uhis.ui.household.HouseholdSearchActivity
 import org.medtroniclabs.uhis.ui.landing.viewmodel.LandingViewModel
 import org.medtroniclabs.uhis.ui.peersupervisor.PerformanceMonitoringActivity
 import org.medtroniclabs.uhis.ui.services.ServicesActivity
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeScreenFragment : BaseFragment(), MenuSelectionListener {

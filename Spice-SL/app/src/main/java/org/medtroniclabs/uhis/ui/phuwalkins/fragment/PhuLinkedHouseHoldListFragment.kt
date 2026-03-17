@@ -19,7 +19,7 @@ import org.medtroniclabs.uhis.appextensions.setTextChangeListener
 import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams.FhirMemberID
-import org.medtroniclabs.uhis.common.DefinedParams.MemberID
+import org.medtroniclabs.uhis.common.DefinedParams.MEMBER_ID
 import org.medtroniclabs.uhis.common.DefinedParams.VillageId
 import org.medtroniclabs.uhis.common.DefinedParams.isCreateHouseholdForPhu
 import org.medtroniclabs.uhis.common.SecuredPreference
@@ -28,7 +28,7 @@ import org.medtroniclabs.uhis.databinding.FragmentPhuLinkedHosueHoldListBinding
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.household.ConsentFormActivity
-import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.isPhuWalkInsFlow
+import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.IS_PHU_WALK_INS_FLOW
 import org.medtroniclabs.uhis.ui.phuwalkins.adapter.PhuHouseHoldListAdapter
 import org.medtroniclabs.uhis.ui.phuwalkins.listener.PhuLinkCallback
 import org.medtroniclabs.uhis.ui.phuwalkins.viewmodel.PhuWalkInsViewModel
@@ -162,9 +162,9 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
                 withLocationCheck({
                     val intent = Intent(requireContext(), ConsentFormActivity::class.java)
                     intent.putExtra(VillageId, patientLinkedDetails.villageId)
-                    intent.putExtra(isPhuWalkInsFlow, true)
+                    intent.putExtra(IS_PHU_WALK_INS_FLOW, true)
                     intent.putExtra(isCreateHouseholdForPhu, true)
-                    intent.putExtra(MemberID, patientLinkedDetails.lMemberId.toLongOrNull())
+                    intent.putExtra(MEMBER_ID, patientLinkedDetails.lMemberId.toLongOrNull())
                     intent.putExtra(FhirMemberID, patientLinkedDetails.memberId.toLongOrNull())
                     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
                     startActivity(intent)

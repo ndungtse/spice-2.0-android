@@ -4,6 +4,9 @@ import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.data.AboveFiveYearsSummaryRequest
@@ -17,9 +20,6 @@ import org.medtroniclabs.uhis.repo.MedicalReviewSummaryRepository
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.medicalreview.familyplan.FamilyPlanningRepository
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

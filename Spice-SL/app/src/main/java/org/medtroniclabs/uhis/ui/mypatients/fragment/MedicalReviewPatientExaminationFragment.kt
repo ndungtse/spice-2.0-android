@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.databinding.FragmentMedicalReviewPatientExaminationBinding
 import org.medtroniclabs.uhis.ui.TagListCustomView
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.MedicalReviewBaseViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
 @AndroidEntryPoint

@@ -5,12 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-import org.medtroniclabs.uhis.data.ExaminationModel
-import org.medtroniclabs.uhis.di.IoDispatcher
-import org.medtroniclabs.uhis.repo.ExaminationsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import org.medtroniclabs.uhis.data.ExaminationModel
+import org.medtroniclabs.uhis.di.IoDispatcher
+import org.medtroniclabs.uhis.repo.ExaminationsRepository
 import javax.inject.Inject
 
 @HiltViewModel

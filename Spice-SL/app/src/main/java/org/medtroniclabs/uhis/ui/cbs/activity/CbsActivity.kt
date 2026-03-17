@@ -7,6 +7,8 @@ import androidx.activity.viewModels
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
 import com.google.gson.reflect.TypeToken
+import dagger.hilt.android.AndroidEntryPoint
+import org.json.JSONObject
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.postError
@@ -31,8 +33,6 @@ import org.medtroniclabs.uhis.ui.cbs.fragment.CbsSummaryFragment
 import org.medtroniclabs.uhis.ui.household.HouseholdSearchActivity
 import org.medtroniclabs.uhis.ui.landing.LandingActivity
 import org.medtroniclabs.uhis.ui.landing.OnDialogDismissListener
-import dagger.hilt.android.AndroidEntryPoint
-import org.json.JSONObject
 
 @AndroidEntryPoint
 class CbsActivity : BaseActivity(), OnDialogDismissListener {
@@ -397,7 +397,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
         }
 
     private fun loadFragment() {
-        viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MemberID, -1L)
+        viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MEMBER_ID, -1L)
         viewModel.menuId = intent.getStringExtra(DefinedParams.MenuId)
         viewModel.workflowName = intent.getStringExtra(MenuConstants.WORKFLOW_NAME)
         viewModel.motherID = intent.getLongExtra(DefinedParams.MOTHER_ID, -1L)

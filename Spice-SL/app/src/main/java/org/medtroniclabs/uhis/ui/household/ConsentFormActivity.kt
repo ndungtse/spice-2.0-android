@@ -15,13 +15,14 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.DefinedParams.FhirMemberID
 import org.medtroniclabs.uhis.common.DefinedParams.HIV
 import org.medtroniclabs.uhis.common.DefinedParams.ID
-import org.medtroniclabs.uhis.common.DefinedParams.MemberID
+import org.medtroniclabs.uhis.common.DefinedParams.MEMBER_ID
 import org.medtroniclabs.uhis.common.DefinedParams.PatientId
 import org.medtroniclabs.uhis.common.DefinedParams.VillageId
 import org.medtroniclabs.uhis.common.DefinedParams.isCreateHouseholdForPhu
@@ -31,11 +32,10 @@ import org.medtroniclabs.uhis.common.DefinedParams.villageId
 import org.medtroniclabs.uhis.databinding.ActivityConsentFormBinding
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.ui.BaseActivity
-import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.isPhuWalkInsFlow
+import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.IS_PHU_WALK_INS_FLOW
 import org.medtroniclabs.uhis.ui.household.fragment.ConsentSignatureDialogFragment
 import org.medtroniclabs.uhis.ui.household.viewmodel.ConsentFormViewModel
 import org.medtroniclabs.uhis.ui.medicalreview.hiv.activity.HivMedicalReviewBaseActivity
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ConsentFormActivity : BaseActivity(), View.OnClickListener {
@@ -89,10 +89,10 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
             val dialog = ConsentSignatureDialogFragment().apply {
                 arguments = Bundle().apply {
                     putLong(VillageId, intent.getLongExtra(VillageId, -1L))
-                    putBoolean(isPhuWalkInsFlow, intent.getBooleanExtra(isPhuWalkInsFlow, false))
+                    putBoolean(IS_PHU_WALK_INS_FLOW, intent.getBooleanExtra(IS_PHU_WALK_INS_FLOW, false))
                     putBoolean(isCreateHouseholdForPhu, intent.getBooleanExtra(isCreateHouseholdForPhu, false))
                     putBoolean(isHouseHold, intent.getBooleanExtra(isHouseHold, false))
-                    putLong(MemberID, intent.getLongExtra(MemberID, -1L))
+                    putLong(MEMBER_ID, intent.getLongExtra(MEMBER_ID, -1L))
                     putLong(FhirMemberID, intent.getLongExtra(FhirMemberID, -1L))
                     putBoolean(
                         isMemberRegistration,
@@ -195,9 +195,9 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
                     val intent = Intent(this, HouseholdActivity::class.java)
                     intent.putExtra(VillageId, intent.getLongExtra(VillageId, -1L))
                     intent.putExtra(FhirMemberID, intent.getLongExtra(FhirMemberID, -1L))
-                    intent.putExtra(isPhuWalkInsFlow, intent.getBooleanExtra(isPhuWalkInsFlow, false))
+                    intent.putExtra(IS_PHU_WALK_INS_FLOW, intent.getBooleanExtra(IS_PHU_WALK_INS_FLOW, false))
                     intent.putExtra(isCreateHouseholdForPhu, intent.getBooleanExtra(isCreateHouseholdForPhu, false))
-                    intent.putExtra(MemberID, intent.getLongExtra(MemberID, -1L))
+                    intent.putExtra(MEMBER_ID, intent.getLongExtra(MEMBER_ID, -1L))
                     finish()
                     startActivity(intent)
                 } else {
@@ -205,7 +205,7 @@ class ConsentFormActivity : BaseActivity(), View.OnClickListener {
                         putExtra(PatientId, intent.getStringExtra(PatientId))
                         putExtra(HIV, viewModel.isHivFlow)
                         putExtra(ID, intent.getStringExtra(ID))
-                        putExtra(MemberID, intent.getStringExtra(MemberID))
+                        putExtra(MEMBER_ID, intent.getStringExtra(MEMBER_ID))
                         putExtra(villageId, intent.getStringExtra(villageId))
                     }
                     launcher.launch(intent)

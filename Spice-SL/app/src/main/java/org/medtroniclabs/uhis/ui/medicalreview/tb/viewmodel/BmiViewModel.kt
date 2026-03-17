@@ -3,6 +3,9 @@ package org.medtroniclabs.uhis.ui.medicalreview.tb.viewmodel
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.data.model.BpAndWeightRequestModel
 import org.medtroniclabs.uhis.data.model.BpAndWeightResponse
@@ -11,9 +14,6 @@ import org.medtroniclabs.uhis.di.IoDispatcher
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.ui.BaseViewModel
 import org.medtroniclabs.uhis.ui.medicalreview.tb.repo.TbMedicalReviewRepo
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

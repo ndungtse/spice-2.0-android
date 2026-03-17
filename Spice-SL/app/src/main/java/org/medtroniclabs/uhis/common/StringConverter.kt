@@ -6,10 +6,10 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.ToNumberPolicy
 import com.google.gson.reflect.TypeToken
+import okhttp3.ResponseBody
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.data.ErrorResponse
 import org.medtroniclabs.uhis.mappingkey.Screening
-import okhttp3.ResponseBody
 import java.lang.reflect.Type
 
 object StringConverter {

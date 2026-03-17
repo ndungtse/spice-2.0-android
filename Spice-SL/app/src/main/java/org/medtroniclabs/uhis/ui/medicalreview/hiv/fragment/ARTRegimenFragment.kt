@@ -34,15 +34,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DefinedParams
-import org.medtroniclabs.uhis.common.DefinedParams.MemberID
 import org.medtroniclabs.uhis.model.ARTLoadRecord
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.medicalreview.hiv.viewmodel.HivViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ARTRegimenFragment : BaseFragment() {
@@ -73,7 +72,7 @@ class ARTRegimenFragment : BaseFragment() {
             limit = 5,
             category = DefinedParams.HIV,
             isActive = true,
-            memberId = arguments?.getString(MemberID),
+            memberId = arguments?.getString(DefinedParams.MEMBER_ID),
         )
         setupObserver()
     }
@@ -281,7 +280,7 @@ class ARTRegimenFragment : BaseFragment() {
             limit = 5,
             category = DefinedParams.HIV,
             isActive = true,
-            memberId = arguments?.getString(MemberID),
+            memberId = arguments?.getString(DefinedParams.MEMBER_ID),
         )
     }
 }

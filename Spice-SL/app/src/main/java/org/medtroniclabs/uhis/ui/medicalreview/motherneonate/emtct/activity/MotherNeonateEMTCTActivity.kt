@@ -7,6 +7,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.takeIfNotNull
@@ -57,7 +58,6 @@ import org.medtroniclabs.uhis.ui.mypatients.viewmodel.MotherNeonateBpWeightViewM
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PregnancyDetailsViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.ReferPatientViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MotherNeonateEMTCTActivity :
@@ -123,7 +123,7 @@ class MotherNeonateEMTCTActivity :
         (supportFragmentManager.findFragmentById(R.id.viralLoadResultContainer) as? ViralLoadFragment)?.apply {
             refreshFragment(
                 intent.getStringExtra(DefinedParams.ID),
-                intent.getStringExtra(DefinedParams.MemberID),
+                intent.getStringExtra(DefinedParams.MEMBER_ID),
             )
         }
     }
@@ -514,7 +514,7 @@ class MotherNeonateEMTCTActivity :
             bundle = Bundle().apply {
                 putString(DefinedParams.PatientId, intent.getStringExtra(DefinedParams.PatientId))
                 putString(DefinedParams.ID, intent.getStringExtra(DefinedParams.ID))
-                putString(DefinedParams.MemberID, patientViewModel.getPatientMemberId())
+                putString(DefinedParams.MEMBER_ID, patientViewModel.getPatientMemberId())
             },
             tag = ARTRegimenFragment.TAG,
         )
@@ -525,7 +525,7 @@ class MotherNeonateEMTCTActivity :
                 putString(DefinedParams.PatientReference, intent.getStringExtra(DefinedParams.ID))
                 putString(
                     DefinedParams.MemberReference,
-                    intent.getStringExtra(DefinedParams.MemberID),
+                    intent.getStringExtra(DefinedParams.MEMBER_ID),
                 )
             },
             tag = ViralLoadFragment.TAG,

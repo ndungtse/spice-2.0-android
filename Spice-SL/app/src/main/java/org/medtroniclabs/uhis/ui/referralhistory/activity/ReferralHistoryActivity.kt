@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.getLocalDate
@@ -34,7 +35,6 @@ import org.medtroniclabs.uhis.ui.referralhistory.fragment.MotherPncVisitSummaryH
 import org.medtroniclabs.uhis.ui.referralhistory.fragment.PrescriptionHistoryFragment
 import org.medtroniclabs.uhis.ui.referralhistory.fragment.ReferralTicketFragment
 import org.medtroniclabs.uhis.ui.referralhistory.viewmodel.ReferralHistoryViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 
 @AndroidEntryPoint
@@ -214,7 +214,7 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             ID,
             patientDetailViewModel.patientDetailsId,
         )
-        intent.putExtra(DefinedParams.MemberID, patientDetailViewModel.getPatientMemberId())
+        intent.putExtra(DefinedParams.MEMBER_ID, patientDetailViewModel.getPatientMemberId())
         intent.putExtra(
             DefinedParams.Gender,
             this.intent.getStringExtra(DefinedParams.Gender),

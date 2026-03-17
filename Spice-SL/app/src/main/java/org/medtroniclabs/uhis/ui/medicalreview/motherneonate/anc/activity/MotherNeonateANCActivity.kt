@@ -7,6 +7,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -56,7 +57,6 @@ import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PregnancyDetailsViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PregnancyPastObstetricHistoryViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.ReferPatientViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MotherNeonateANCActivity :

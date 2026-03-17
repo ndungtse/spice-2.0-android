@@ -176,6 +176,12 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
+            android:name=".ui.household.summary.MemberSummaryActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".ui.household.HouseholdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"

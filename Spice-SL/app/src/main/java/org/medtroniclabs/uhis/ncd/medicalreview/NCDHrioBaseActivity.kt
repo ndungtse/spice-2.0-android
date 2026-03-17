@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DateUtils
@@ -29,7 +30,6 @@ import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
 import org.medtroniclabs.uhis.ui.patientDelete.NCDDeleteConfirmationDialog
 import org.medtroniclabs.uhis.ui.patientDelete.viewModel.NCDPatientDeleteViewModel
 import org.medtroniclabs.uhis.ui.patientEdit.NCDPatientEditActivity
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDHrioBaseActivity : BaseActivity() {

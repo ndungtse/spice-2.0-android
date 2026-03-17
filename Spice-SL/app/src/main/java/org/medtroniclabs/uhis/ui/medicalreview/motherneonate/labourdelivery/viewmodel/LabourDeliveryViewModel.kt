@@ -5,6 +5,9 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.common.DateUtils
@@ -37,9 +40,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams
 import org.medtroniclabs.uhis.ui.mypatients.enumType.AgparColumnIdentifierType
 import org.medtroniclabs.uhis.ui.mypatients.enumType.AgparItemViewType
 import org.medtroniclabs.uhis.ui.mypatients.enumType.AgparRowIdentifierType
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime

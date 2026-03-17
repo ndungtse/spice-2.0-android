@@ -9,6 +9,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.SecuredPreference
@@ -23,7 +24,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.familyplan.activity.FamilyPlanMed
 import org.medtroniclabs.uhis.ui.medicalreview.familyplan.viewmodel.ContraceptivesViewModel
 import org.medtroniclabs.uhis.ui.medicalreview.familyplan.viewmodel.FamilyPlanViewModel
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class FamilyPlanningMRSummaryFragment : BaseFragment(), View.OnClickListener {

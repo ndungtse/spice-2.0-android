@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <baseline version="1.0">
-    <file name="src/main/java/com/medtroniclabs/spice/appextensions/ContextExtension.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/appextensions/ContextExtension.kt">
         <error line="31" column="11" source="standard:property-naming" />
         <error line="32" column="19" source="standard:property-naming" />
         <error line="33" column="19" source="standard:property-naming" />
@@ -9,10 +9,10 @@
         <error line="37" column="11" source="standard:property-naming" />
         <error line="38" column="11" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/common/BaseUrlProvider.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/common/BaseUrlProvider.kt">
         <error line="15" column="23" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/common/DateUtils.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/common/DateUtils.kt">
         <error line="31" column="15" source="standard:property-naming" />
         <error line="32" column="15" source="standard:property-naming" />
         <error line="33" column="15" source="standard:property-naming" />
@@ -25,14 +25,13 @@
         <error line="44" column="15" source="standard:property-naming" />
         <error line="45" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/common/DefinedParams.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/common/DefinedParams.kt">
         <error line="9" column="15" source="standard:property-naming" />
         <error line="10" column="15" source="standard:property-naming" />
         <error line="11" column="15" source="standard:property-naming" />
         <error line="13" column="15" source="standard:property-naming" />
         <error line="14" column="15" source="standard:property-naming" />
         <error line="15" column="15" source="standard:property-naming" />
-        <error line="16" column="15" source="standard:property-naming" />
         <error line="17" column="15" source="standard:property-naming" />
         <error line="19" column="15" source="standard:property-naming" />
         <error line="21" column="15" source="standard:property-naming" />
@@ -230,7 +229,6 @@
         <error line="317" column="15" source="standard:property-naming" />
         <error line="318" column="15" source="standard:property-naming" />
         <error line="319" column="15" source="standard:property-naming" />
-        <error line="320" column="15" source="standard:property-naming" />
         <error line="322" column="15" source="standard:property-naming" />
         <error line="323" column="15" source="standard:property-naming" />
         <error line="324" column="15" source="standard:property-naming" />
@@ -276,21 +274,21 @@
         <error line="385" column="15" source="standard:property-naming" />
         <error line="386" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/common/MeasurementDefinedParams.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/common/MeasurementDefinedParams.kt">
         <error line="4" column="15" source="standard:property-naming" />
         <error line="5" column="15" source="standard:property-naming" />
         <error line="6" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/common/RegexConstants.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/common/RegexConstants.kt">
         <error line="4" column="15" source="standard:property-naming" />
         <error line="5" column="15" source="standard:property-naming" />
         <error line="6" column="15" source="standard:property-naming" />
         <error line="7" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/data/DispenseUpdateRequest.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/data/DispenseUpdateRequest.kt">
         <error line="3" column="160" source="standard:max-line-length" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/data/MedicationResponse.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/data/MedicationResponse.kt">
         <error line="49" column="9" source="standard:property-naming" />
         <error line="50" column="9" source="standard:property-naming" />
         <error line="51" column="9" source="standard:property-naming" />
@@ -299,22 +297,22 @@
         <error line="54" column="9" source="standard:property-naming" />
         <error line="55" column="9" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/data/resource/labourDeliverySummaryRequest.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/data/resource/labourDeliverySummaryRequest.kt">
         <error line="1" column="1" source="standard:filename" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/db/SpiceDataBase.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/db/SpiceDataBase.kt">
         <error line="92" column="161" source="standard:max-line-length" />
         <error line="97" column="161" source="standard:max-line-length" />
         <error line="98" column="161" source="standard:max-line-length" />
         <error line="159" column="21" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/db/entity/BaseEntity.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/db/entity/BaseEntity.kt">
         <error line="14" column="9" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/db/entity/EntitiesName.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/db/entity/EntitiesName.kt">
         <error line="10" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/formgeneration/FormGenerator.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/FormGenerator.kt">
         <error line="4061" column="1" source="standard:if-else-wrapping" />
         <error line="4062" column="1" source="standard:if-else-wrapping" />
         <error line="4063" column="1" source="standard:if-else-wrapping" />
@@ -330,7 +328,7 @@
         <error line="4073" column="1" source="standard:if-else-wrapping" />
         <error line="4074" column="1" source="standard:if-else-wrapping" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/formgeneration/config/DefinedParams.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/config/DefinedParams.kt">
         <error line="6" column="15" source="standard:property-naming" />
         <error line="7" column="15" source="standard:property-naming" />
         <error line="8" column="15" source="standard:property-naming" />
@@ -353,17 +351,17 @@
         <error line="44" column="15" source="standard:property-naming" />
         <error line="45" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/formgeneration/extension/SafePopupMenuClickListener.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/extension/SafePopupMenuClickListener.kt">
         <error line="6" column="160" source="standard:max-line-length" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/formgeneration/ui/FormResultComposer.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/ui/FormResultComposer.kt">
         <error line="168" column="161" source="standard:max-line-length" />
         <error line="172" column="161" source="standard:max-line-length" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/formgeneration/utility/CheckboxDialogAdapter.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/utility/CheckboxDialogAdapter.kt">
         <error line="35" column="13" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/mappingkey/CommunityDetails.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/mappingkey/CommunityDetails.kt">
         <error line="4" column="15" source="standard:property-naming" />
         <error line="5" column="15" source="standard:property-naming" />
         <error line="6" column="15" source="standard:property-naming" />
@@ -397,7 +395,7 @@
         <error line="35" column="15" source="standard:property-naming" />
         <error line="36" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/mappingkey/HouseHoldRegistration.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/mappingkey/HouseHoldRegistration.kt">
         <error line="4" column="15" source="standard:property-naming" />
         <error line="5" column="15" source="standard:property-naming" />
         <error line="6" column="15" source="standard:property-naming" />
@@ -413,7 +411,7 @@
         <error line="24" column="15" source="standard:property-naming" />
         <error line="25" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/mappingkey/MemberRegistration.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/mappingkey/MemberRegistration.kt">
         <error line="11" column="15" source="standard:property-naming" />
         <error line="12" column="15" source="standard:property-naming" />
         <error line="13" column="15" source="standard:property-naming" />
@@ -432,7 +430,7 @@
         <error line="27" column="15" source="standard:property-naming" />
         <error line="28" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/mappingkey/RxBuddy.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/mappingkey/RxBuddy.kt">
         <error line="4" column="15" source="standard:property-naming" />
         <error line="5" column="15" source="standard:property-naming" />
         <error line="6" column="15" source="standard:property-naming" />
@@ -446,7 +444,7 @@
         <error line="15" column="15" source="standard:property-naming" />
         <error line="16" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/mappingkey/Screening.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/mappingkey/Screening.kt">
         <error line="6" column="15" source="standard:property-naming" />
         <error line="7" column="15" source="standard:property-naming" />
         <error line="9" column="15" source="standard:property-naming" />
@@ -617,7 +615,7 @@
         <error line="204" column="15" source="standard:property-naming" />
         <error line="206" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/mappingkey/UnderFiveYearExaminationKeyMapping.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/mappingkey/UnderFiveYearExaminationKeyMapping.kt">
         <error line="5" column="19" source="standard:property-naming" />
         <error line="6" column="19" source="standard:property-naming" />
         <error line="7" column="19" source="standard:property-naming" />
@@ -651,7 +649,7 @@
         <error line="56" column="19" source="standard:property-naming" />
         <error line="57" column="19" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/mappingkey/UnderTwoExaminationKeyMapping.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/mappingkey/UnderTwoExaminationKeyMapping.kt">
         <error line="5" column="19" source="standard:property-naming" />
         <error line="6" column="19" source="standard:property-naming" />
         <error line="7" column="19" source="standard:property-naming" />
@@ -702,20 +700,20 @@
         <error line="70" column="19" source="standard:property-naming" />
         <error line="71" column="19" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ncd/counseling/activity/NCDCounselingDialog.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ncd/counseling/activity/NCDCounselingDialog.kt">
         <error line="40" column="19" source="standard:property-naming" />
         <error line="41" column="19" source="standard:property-naming" />
         <error line="42" column="19" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ncd/counseling/activity/NCDLifestyleDialog.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ncd/counseling/activity/NCDLifestyleDialog.kt">
         <error line="44" column="19" source="standard:property-naming" />
         <error line="45" column="19" source="standard:property-naming" />
         <error line="46" column="19" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ncd/data/ValidatePatientModel.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ncd/data/ValidatePatientModel.kt">
         <error line="1" column="1" source="standard:no-empty-file" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ncd/followup/NCDFollowUpUtils.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ncd/followup/NCDFollowUpUtils.kt">
         <error line="26" column="15" source="standard:property-naming" />
         <error line="27" column="15" source="standard:property-naming" />
         <error line="28" column="15" source="standard:property-naming" />
@@ -728,17 +726,17 @@
         <error line="35" column="15" source="standard:property-naming" />
         <error line="37" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ncd/followup/fragment/NCDCallResultBottomDialog.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ncd/followup/fragment/NCDCallResultBottomDialog.kt">
         <error line="569" column="160" source="standard:max-line-length" />
         <error line="569" column="163" source="standard:property-wrapping" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ncd/followup/repo/NCDFollowUpRepo.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ncd/followup/repo/NCDFollowUpRepo.kt">
         <error line="103" column="9" source="standard:no-consecutive-comments" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ncd/landing/dialog/NCDSupportDialogFragment.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ncd/landing/dialog/NCDSupportDialogFragment.kt">
         <error line="25" column="17" source="standard:backing-property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ncd/medicalreview/NCDMRUtil.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ncd/medicalreview/NCDMRUtil.kt">
         <error line="23" column="15" source="standard:property-naming" />
         <error line="24" column="15" source="standard:property-naming" />
         <error line="25" column="15" source="standard:property-naming" />
@@ -803,23 +801,23 @@
         <error line="117" column="15" source="standard:property-naming" />
         <error line="118" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ncd/medicalreview/dialog/NCDMentalHealthFragment.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ncd/medicalreview/dialog/NCDMentalHealthFragment.kt">
         <error line="609" column="19" source="standard:property-naming" />
         <error line="610" column="19" source="standard:property-naming" />
         <error line="613" column="19" source="standard:property-naming" />
         <error line="614" column="19" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ncd/medicalreview/dialog/NCDMentalHealthQuestionDialog.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ncd/medicalreview/dialog/NCDMentalHealthQuestionDialog.kt">
         <error line="301" column="19" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ncd/medicalreview/dialog/NCDPatientHistoryDialog.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ncd/medicalreview/dialog/NCDPatientHistoryDialog.kt">
         <error line="91" column="19" source="standard:property-naming" />
         <error line="92" column="19" source="standard:property-naming" />
         <error line="94" column="19" source="standard:property-naming" />
         <error line="95" column="19" source="standard:property-naming" />
         <error line="96" column="19" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ncd/medicalreview/prescription/dialog/PrescriptionResultDialogFragment.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ncd/medicalreview/prescription/dialog/PrescriptionResultDialogFragment.kt">
         <error line="111" column="9" source="standard:function-naming" />
         <error line="141" column="9" source="standard:function-naming" />
         <error line="188" column="17" source="standard:function-naming" />
@@ -830,39 +828,39 @@
         <error line="380" column="9" source="standard:function-naming" />
         <error line="401" column="9" source="standard:function-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ncd/medicalreview/prescription/viewmodel/NCDPrescriptionViewModel.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ncd/medicalreview/prescription/viewmodel/NCDPrescriptionViewModel.kt">
         <error line="54" column="9" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ncd/screening/utils/ReferredReason.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ncd/screening/utils/ReferredReason.kt">
         <error line="4" column="15" source="standard:property-naming" />
         <error line="6" column="15" source="standard:property-naming" />
         <error line="7" column="15" source="standard:property-naming" />
         <error line="8" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/network/utils/DoesNetworkHaveInternet.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/network/utils/DoesNetworkHaveInternet.kt">
         <error line="12" column="23" source="standard:property-naming" />
         <error line="13" column="23" source="standard:property-naming" />
         <error line="14" column="23" source="standard:property-naming" />
         <error line="15" column="23" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/offlinesync/GetSyncStatusWorker.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/offlinesync/GetSyncStatusWorker.kt">
         <error line="68" column="21" source="standard:no-consecutive-comments" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/offlinesync/ScheduledSyncWork.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/offlinesync/ScheduledSyncWork.kt">
         <error line="155" column="13" source="standard:no-consecutive-comments" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/repo/OfflineSyncRepository.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/repo/OfflineSyncRepository.kt">
         <error line="277" column="13" source="standard:no-consecutive-comments" />
         <error line="847" column="9" source="standard:no-consecutive-comments" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/signature/view/SignatureView.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/signature/view/SignatureView.kt">
         <error line="58" column="17" source="standard:property-naming" />
         <error line="59" column="17" source="standard:property-naming" />
         <error line="60" column="17" source="standard:property-naming" />
         <error line="61" column="17" source="standard:property-naming" />
         <error line="62" column="17" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/AssessmentDefinedParams.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/assessment/AssessmentDefinedParams.kt">
         <error line="4" column="15" source="standard:property-naming" />
         <error line="5" column="15" source="standard:property-naming" />
         <error line="6" column="15" source="standard:property-naming" />
@@ -1039,10 +1037,10 @@
         <error line="205" column="15" source="standard:property-naming" />
         <error line="206" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/ComplianceChooseDialog.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/assessment/ComplianceChooseDialog.kt">
         <error line="1" column="1" source="standard:filename" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/fragment/AssessmentPregnancyOutcomeFragment.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/assessment/fragment/AssessmentPregnancyOutcomeFragment.kt">
         <error line="58" column="17" source="standard:property-naming" />
         <error line="59" column="17" source="standard:property-naming" />
         <error line="800" column="13" source="standard:if-else-wrapping" />
@@ -1050,7 +1048,7 @@
         <error line="883" column="13" source="standard:if-else-wrapping" />
         <error line="890" column="13" source="standard:if-else-wrapping" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/referrallogic/model/ReferralDefinedParams.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/assessment/referrallogic/model/ReferralDefinedParams.kt">
         <error line="4" column="15" source="standard:property-naming" />
         <error line="5" column="15" source="standard:property-naming" />
         <error line="6" column="15" source="standard:property-naming" />
@@ -1084,10 +1082,10 @@
         <error line="36" column="15" source="standard:property-naming" />
         <error line="37" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/referrallogic/utils/ReferralReasons.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/assessment/referrallogic/utils/ReferralReasons.kt">
         <error line="16" column="5" source="standard:enum-entry-name-case" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/assessment/rmnch/RMNCH.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/assessment/rmnch/RMNCH.kt">
         <error line="17" column="15" source="standard:property-naming" />
         <error line="18" column="15" source="standard:property-naming" />
         <error line="21" column="15" source="standard:property-naming" />
@@ -1134,16 +1132,16 @@
         <error line="71" column="15" source="standard:property-naming" />
         <error line="73" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/boarding/MenuTypeEnums.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/boarding/MenuTypeEnums.kt">
         <error line="4" column="5" source="standard:enum-entry-name-case" />
         <error line="5" column="5" source="standard:enum-entry-name-case" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/common/composeui/DialogComposeUtils.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/common/composeui/DialogComposeUtils.kt">
         <error line="29" column="9" source="standard:function-naming" />
         <error line="49" column="9" source="standard:function-naming" />
         <error line="88" column="9" source="standard:function-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/followup/FollowUpDefinedParams.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/followup/FollowUpDefinedParams.kt">
         <error line="4" column="15" source="standard:property-naming" />
         <error line="5" column="15" source="standard:property-naming" />
         <error line="6" column="15" source="standard:property-naming" />
@@ -1161,43 +1159,34 @@
         <error line="30" column="15" source="standard:property-naming" />
         <error line="31" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/household/HouseholdDefinedParams.kt">
-        <error line="4" column="15" source="standard:property-naming" />
-        <error line="5" column="15" source="standard:property-naming" />
-        <error line="8" column="15" source="standard:property-naming" />
-        <error line="9" column="15" source="standard:property-naming" />
-        <error line="10" column="15" source="standard:property-naming" />
-        <error line="12" column="15" source="standard:property-naming" />
-        <error line="13" column="15" source="standard:property-naming" />
-    </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/diagnosis/DiagnosisDialogFragment.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/diagnosis/DiagnosisDialogFragment.kt">
         <error line="481" column="161" source="standard:max-line-length" />
         <error line="497" column="161" source="standard:max-line-length" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/epi/view/VaccinationStatusNudge.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/epi/view/VaccinationStatusNudge.kt">
         <error line="24" column="19" source="standard:property-naming" />
         <error line="25" column="19" source="standard:property-naming" />
         <error line="26" column="19" source="standard:property-naming" />
         <error line="27" column="19" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/hiv/fragment/ARTRegimenFragment.kt">
-        <error line="128" column="9" source="standard:function-naming" />
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/hiv/fragment/ARTRegimenFragment.kt">
+        <error line="127" column="9" source="standard:function-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/hiv/fragment/HivTestFragment.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/hiv/fragment/HivTestFragment.kt">
         <error line="261" column="17" source="standard:property-naming" />
         <error line="267" column="17" source="standard:property-naming" />
         <error line="273" column="17" source="standard:property-naming" />
         <error line="292" column="17" source="standard:property-naming" />
         <error line="310" column="17" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/hiv/fragment/ViralLoadFragment.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/hiv/fragment/ViralLoadFragment.kt">
         <error line="145" column="9" source="standard:function-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/investigation/InvestigationGenerator.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/investigation/InvestigationGenerator.kt">
         <error line="72" column="17" source="standard:property-naming" />
         <error line="209" column="161" source="standard:max-line-length" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/investigation/dialog/HBA1CNudgesDialog.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/investigation/dialog/HBA1CNudgesDialog.kt">
         <error line="81" column="17" source="standard:function-naming" />
         <error line="120" column="17" source="standard:function-naming" />
         <error line="149" column="17" source="standard:function-naming" />
@@ -1208,7 +1197,7 @@
         <error line="311" column="9" source="standard:function-naming" />
         <error line="321" column="9" source="standard:function-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/investigation/dialog/LipidsNudgesDialog.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/investigation/dialog/LipidsNudgesDialog.kt">
         <error line="92" column="17" source="standard:function-naming" />
         <error line="126" column="17" source="standard:function-naming" />
         <error line="178" column="17" source="standard:function-naming" />
@@ -1221,23 +1210,23 @@
         <error line="456" column="17" source="standard:function-naming" />
         <error line="475" column="9" source="standard:function-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/motherneonate/anc/MotherNeonateUtil.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/motherneonate/anc/MotherNeonateUtil.kt">
         <error line="21" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/motherneonate/anc/viewmodel/MotherNeonateAncSummaryViewModel.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/motherneonate/anc/viewmodel/MotherNeonateAncSummaryViewModel.kt">
         <error line="1" column="1" source="standard:filename" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/motherneonate/labourdelivery/fragment/LabourOrDeliveryFragment.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/motherneonate/labourdelivery/fragment/LabourOrDeliveryFragment.kt">
         <error line="279" column="160" source="standard:max-line-length" />
         <error line="279" column="163" source="standard:property-wrapping" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/motherneonate/labourdelivery/viewmodel/LabourDeliveryViewModel.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/motherneonate/labourdelivery/viewmodel/LabourDeliveryViewModel.kt">
         <error line="92" column="17" source="standard:backing-property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/underfiveyears/UnderFiveYearsClinicalSummarryViewModel.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/underfiveyears/UnderFiveYearsClinicalSummarryViewModel.kt">
         <error line="1" column="1" source="standard:filename" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/utils/MedicalReviewDefinedParams.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/utils/MedicalReviewDefinedParams.kt">
         <error line="9" column="15" source="standard:property-naming" />
         <error line="18" column="15" source="standard:property-naming" />
         <error line="21" column="15" source="standard:property-naming" />
@@ -1282,7 +1271,7 @@
         <error line="78" column="15" source="standard:property-naming" />
         <error line="79" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/medicalreview/utils/MedicalReviewTypeEnums.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/medicalreview/utils/MedicalReviewTypeEnums.kt">
         <error line="6" column="5" source="standard:enum-entry-name-case" />
         <error line="7" column="5" source="standard:enum-entry-name-case" />
         <error line="8" column="5" source="standard:enum-entry-name-case" />
@@ -1324,24 +1313,24 @@
         <error line="80" column="5" source="standard:enum-entry-name-case" />
         <error line="82" column="5" source="standard:enum-entry-name-case" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/mypatients/fragment/AddPresumptiveTBNoDialog.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/mypatients/fragment/AddPresumptiveTBNoDialog.kt">
         <error line="38" column="19" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/mypatients/fragment/PatientInfoFragment.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/mypatients/fragment/PatientInfoFragment.kt">
         <error line="528" column="17" source="standard:no-consecutive-comments" />
         <error line="602" column="17" source="standard:no-consecutive-comments" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/mypatients/fragment/ReferPatientFragment.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/mypatients/fragment/ReferPatientFragment.kt">
         <error line="316" column="161" source="standard:max-line-length" />
         <error line="317" column="161" source="standard:max-line-length" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/mypatients/repo/NCDMedicalReviewRepo.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/mypatients/repo/NCDMedicalReviewRepo.kt">
         <error line="1" column="1" source="standard:no-empty-file" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/mypatients/viewmodel/ReferralTicketViewModel.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/mypatients/viewmodel/ReferralTicketViewModel.kt">
         <error line="1" column="1" source="standard:no-empty-file" />
     </file>
-    <file name="src/main/java/com/medtroniclabs/spice/ui/peersupervisor/PerformanceMonitoringViewModel.kt">
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/peersupervisor/PerformanceMonitoringViewModel.kt">
         <error line="64" column="17" source="standard:backing-property-naming" />
     </file>
 </baseline>

@@ -8,6 +8,7 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.loadAsGif
@@ -23,7 +24,6 @@ import org.medtroniclabs.uhis.ncd.medicalreview.NCDMRUtil
 import org.medtroniclabs.uhis.ncd.medicalreview.viewmodel.HrioViewModel
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.network.utils.ConnectivityManager
-import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint

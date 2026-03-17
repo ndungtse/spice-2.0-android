@@ -6,6 +6,9 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.postLoading
@@ -36,9 +39,6 @@ import org.medtroniclabs.uhis.network.ApiHelper
 import org.medtroniclabs.uhis.network.SingleLiveEvent
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.ui.BaseViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import javax.inject.Inject

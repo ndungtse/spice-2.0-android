@@ -2,14 +2,14 @@ package org.medtroniclabs.uhis.ui.household.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.di.IoDispatcher
 import org.medtroniclabs.uhis.repo.HouseHoldRepository
 import org.medtroniclabs.uhis.ui.BaseViewModel
 import org.medtroniclabs.uhis.ui.medicalreview.hiv.repo.HivMedicalReviewRepo
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

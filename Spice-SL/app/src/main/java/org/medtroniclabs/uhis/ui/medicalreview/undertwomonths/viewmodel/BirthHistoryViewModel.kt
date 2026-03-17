@@ -3,15 +3,15 @@ package org.medtroniclabs.uhis.ui.medicalreview.undertwomonths.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.data.BirthHistoryRequest
 import org.medtroniclabs.uhis.data.BirthHistoryResponse
 import org.medtroniclabs.uhis.di.IoDispatcher
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.repo.UnderTwoMonthsRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

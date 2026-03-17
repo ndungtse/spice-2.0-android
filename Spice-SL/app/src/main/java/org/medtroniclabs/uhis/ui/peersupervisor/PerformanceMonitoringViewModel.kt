@@ -9,6 +9,9 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.appextensions.toString
 import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_yyyyMMdd
@@ -29,9 +32,6 @@ import org.medtroniclabs.uhis.network.utils.ConnectivityManager
 import org.medtroniclabs.uhis.repo.PerformanceMonitoringRepository
 import org.medtroniclabs.uhis.ui.BaseViewModel
 import org.medtroniclabs.uhis.ui.peersupervisor.adapter.PerformanceReportDataSource
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import java.text.DateFormatSymbols
 import java.util.Calendar
 import javax.inject.Inject

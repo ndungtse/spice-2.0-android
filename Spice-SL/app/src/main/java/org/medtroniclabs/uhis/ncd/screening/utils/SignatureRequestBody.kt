@@ -3,12 +3,12 @@ package org.medtroniclabs.uhis.ncd.screening.utils
 import android.content.Context
 import android.graphics.Bitmap
 import com.google.gson.Gson
-import org.medtroniclabs.uhis.common.CommonUtils
-import org.medtroniclabs.uhis.mappingkey.Screening
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import org.medtroniclabs.uhis.common.CommonUtils
+import org.medtroniclabs.uhis.mappingkey.Screening
 import java.io.File
 import java.io.FileOutputStream
 

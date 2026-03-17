@@ -9,6 +9,7 @@ import android.view.Window
 import android.widget.RadioButton
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.invisible
@@ -26,7 +27,6 @@ import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.landing.OnDialogDismissListener
 import org.medtroniclabs.uhis.ui.landing.viewmodel.LanguagePreferenceViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LanguagePreferenceDialog(private val listener: OnDialogDismissListener) :

@@ -9,6 +9,7 @@ import android.view.Window
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.appextensions.setDialogPercent
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.databinding.DialogESignatureBinding
@@ -16,7 +17,6 @@ import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.ncd.registration.viewmodel.TermsAndConditionsViewModel
 import org.medtroniclabs.uhis.ncd.screening.utils.SignatureInterface
 import org.medtroniclabs.uhis.signature.view.SignatureView
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ESignatureDialog(private val signatureInterface: SignatureInterface) :

@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
+import org.json.JSONObject
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -48,10 +50,9 @@ import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.deathOfBaby
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import org.medtroniclabs.uhis.ui.cbs.activity.CbsActivity
 import org.medtroniclabs.uhis.ui.followup.FollowUpMyPatientActivity
+import org.medtroniclabs.uhis.ui.home.AssessmentToolsActivity
 import org.medtroniclabs.uhis.ui.household.HouseholdSearchActivity
 import org.medtroniclabs.uhis.ui.landing.LandingActivity
-import dagger.hilt.android.AndroidEntryPoint
-import org.json.JSONObject
 
 @AndroidEntryPoint
 class AssessmentActivity : BaseActivity() {
@@ -373,7 +374,7 @@ class AssessmentActivity : BaseActivity() {
 
             MenuConstants.TB_MENU_ID -> {
                 bundle.putBoolean(DefinedParams.CONTACT_TRACING, intent.getBooleanExtra(DefinedParams.CONTACT_TRACING, false))
-                bundle.putLong(DefinedParams.HouseholdId, viewModel.selectedHouseholdId)
+                bundle.putLong(DefinedParams.HOUSEHOLD_ID, viewModel.selectedHouseholdId)
                 bundle.putBoolean(DefinedParams.isTbPatient, true)
                 setTitle(MenuConstants.TB_MENU_ID.uppercase())
                 replaceFragmentInId<AssessmentTBFragment>(
@@ -634,7 +635,7 @@ class AssessmentActivity : BaseActivity() {
         motherId: Long? = null,
     ) {
         val intent = Intent(this, CbsActivity::class.java).apply {
-            putExtra(DefinedParams.MemberID, memberId)
+            putExtra(DefinedParams.MEMBER_ID, memberId)
             putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
             putExtra(MenuConstants.WORKFLOW_NAME, workFlowName)
             putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
@@ -650,7 +651,20 @@ class AssessmentActivity : BaseActivity() {
         val intent = if (viewModel.followUpId != null) {
             Intent(this, FollowUpMyPatientActivity::class.java)
         } else {
-            Intent(this, HouseholdSearchActivity::class.java)
+            // For pregnant women after click done navigate user to tools screen
+            if (viewModel.menuId == MenuConstants.PREGNANT_WOMEN_PROFILE) {
+                Intent(this, AssessmentToolsActivity::class.java).apply {
+                    putExtra(DefinedParams.HOUSEHOLD_ID, viewModel.selectedHouseholdId)
+                    putExtra(DefinedParams.MEMBER_ID, viewModel.selectedHouseholdMemberId)
+                    putExtra(DefinedParams.FollowUpId, viewModel.followUpId)
+                    putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
+                    putExtra(DefinedParams.FhirId, viewModel.memberFhirId)
+                    putExtra(DefinedParams.ORIGIN, this@AssessmentActivity.intent.getStringExtra(DefinedParams.ORIGIN))
+                    putExtra(MenuConstants.FOLLOW_UP, this@AssessmentActivity.intent.getBooleanExtra(MenuConstants.FOLLOW_UP, false))
+                }
+            } else {
+                Intent(this, HouseholdSearchActivity::class.java)
+            }
         }
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -659,12 +673,12 @@ class AssessmentActivity : BaseActivity() {
     }
 
     private fun getIntentValue() {
-        viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MemberID, -1L)
+        viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MEMBER_ID, -1L)
         viewModel.menuId = intent.getStringExtra(DefinedParams.MenuId)
         viewModel.workflowName = intent.getStringExtra(MenuConstants.WORKFLOW_NAME)
         viewModel.memberFhirId = intent.getStringExtra(DefinedParams.FhirId)
         viewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
-        viewModel.selectedHouseholdId = intent.getLongExtra(DefinedParams.HouseholdId, -1L)
+        viewModel.selectedHouseholdId = intent.getLongExtra(DefinedParams.HOUSEHOLD_ID, -1L)
         val followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1L)
         if (followUpId != -1L) {
             viewModel.followUpId = followUpId

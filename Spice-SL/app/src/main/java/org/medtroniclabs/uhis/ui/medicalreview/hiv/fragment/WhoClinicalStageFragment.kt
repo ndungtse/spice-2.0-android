@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.setDialogPercent
@@ -27,7 +28,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.hiv.viewmodel.WhoClinicalStageVie
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.DialogDismissListenerForTb
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class WhoClinicalStageFragment : DialogFragment(), View.OnClickListener {

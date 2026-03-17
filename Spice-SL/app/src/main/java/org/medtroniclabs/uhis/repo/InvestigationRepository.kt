@@ -1,6 +1,7 @@
 package org.medtroniclabs.uhis.repo
 
 import com.google.gson.Gson
+import okhttp3.ResponseBody
 import org.medtroniclabs.uhis.data.APIResponse
 import org.medtroniclabs.uhis.data.ErrorResponse
 import org.medtroniclabs.uhis.db.local.RoomHelper
@@ -14,7 +15,6 @@ import org.medtroniclabs.uhis.ncd.data.PredictionRequest
 import org.medtroniclabs.uhis.network.ApiHelper
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.network.resource.ResourceState
-import okhttp3.ResponseBody
 import javax.inject.Inject
 
 class InvestigationRepository @Inject constructor(

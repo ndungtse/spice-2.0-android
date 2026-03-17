@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
@@ -30,7 +31,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUt
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.PATIENT_TYPE_HYPHEN
 import org.medtroniclabs.uhis.ui.medicalreview.tb.viewmodel.PatientTypeViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PatientTypeFragment : DialogFragment(), View.OnClickListener {

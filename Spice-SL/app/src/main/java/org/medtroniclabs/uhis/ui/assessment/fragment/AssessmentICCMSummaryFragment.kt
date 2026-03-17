@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
+import org.json.JSONObject
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
@@ -88,7 +89,6 @@ import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.otherSigns
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import org.medtroniclabs.uhis.ui.cbs.fragment.CbsCallResultFragment
 import org.medtroniclabs.uhis.ui.household.HouseholdSearchActivity
-import org.json.JSONObject
 
 class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private val viewModel: AssessmentViewModel by activityViewModels()

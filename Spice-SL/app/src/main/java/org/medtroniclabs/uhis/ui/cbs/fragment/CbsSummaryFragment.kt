@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
@@ -33,7 +34,6 @@ import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PNCNeonatal
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import org.medtroniclabs.uhis.ui.dialog.SuccessDialogFragment
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CbsSummaryFragment : BaseFragment(), View.OnClickListener {

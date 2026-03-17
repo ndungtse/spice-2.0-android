@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat.getColor
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.invisible
 import org.medtroniclabs.uhis.appextensions.isVisible
@@ -48,7 +49,6 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.dialog.GeneralSuccessDialog
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDMedicalReviewDiagnosisCardFragment :

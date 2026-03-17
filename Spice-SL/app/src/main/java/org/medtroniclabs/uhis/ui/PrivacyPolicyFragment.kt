@@ -10,6 +10,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.BuildConfig
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.loadAsGif
@@ -18,7 +19,6 @@ import org.medtroniclabs.uhis.databinding.FragmentPrivacyPolicyBinding
 import org.medtroniclabs.uhis.network.NetworkConstants.PRIVACY_POLICY
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.landing.viewmodel.LandingViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
 @AndroidEntryPoint

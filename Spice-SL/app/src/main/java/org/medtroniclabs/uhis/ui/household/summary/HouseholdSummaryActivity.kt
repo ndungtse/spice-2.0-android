@@ -13,7 +13,6 @@ import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.isVisible
 import org.medtroniclabs.uhis.common.DefinedParams
-import org.medtroniclabs.uhis.common.DefinedParams.MemberID
 import org.medtroniclabs.uhis.common.DefinedParams.TB
 import org.medtroniclabs.uhis.common.DefinedParams.isMemberRegistration
 import org.medtroniclabs.uhis.data.offlinesync.model.HouseholdMemberWithTb
@@ -26,9 +25,7 @@ import org.medtroniclabs.uhis.ui.dialog.LinkPatientDialogFragment
 import org.medtroniclabs.uhis.ui.dialog.SuccessDialogFragment
 import org.medtroniclabs.uhis.ui.home.AssessmentToolsActivity
 import org.medtroniclabs.uhis.ui.household.HouseholdActivity
-import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.ID
-import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.isFromHouseHoldRegistration
-import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.isPhuWalkInsFlow
+import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams
 import org.medtroniclabs.uhis.ui.household.MemberSelectionListener
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseHoldSummaryViewModel
 import org.medtroniclabs.uhis.ui.landing.LandingActivity
@@ -73,7 +70,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
 
         householdSummaryViewModel.householdMembersLiveData.observe(this) { data ->
             initializeAdapter(data)
-            if (!intent.getBooleanExtra(isPhuWalkInsFlow, false)) {
+            if (!intent.getBooleanExtra(HouseholdDefinedParams.IS_PHU_WALK_INS_FLOW, false)) {
                 if (householdSummaryViewModel.previousCount != 0 && (householdSummaryViewModel.previousCount < data.size)) {
                     data.last().id?.let {
                         val existingFragment =
@@ -105,13 +102,13 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
 
     private fun initializeView() {
         initializePhuLinkFlow()
-        val householdId = intent.getLongExtra(ID, -1)
+        val householdId = intent.getLongExtra(DefinedParams.householdId, -1)
         linkHouseholdId = householdId
-        linkMemberId = intent.getLongExtra(MemberID, -1)
+        linkMemberId = intent.getLongExtra(DefinedParams.MEMBER_ID, -1)
         linkFhirMemberId = intent.getLongExtra(DefinedParams.FhirMemberID, -1)
         householdSummaryViewModel.setHouseholdId(householdId)
         householdSummaryViewModel.isFromHouseHoldRegistration = intent.getBooleanExtra(
-            isFromHouseHoldRegistration,
+            HouseholdDefinedParams.IS_FROM_HOUSEHOLD_REGISTRATION,
             false,
         )
         supportFragmentManager
@@ -122,7 +119,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     }
 
     private fun initializePhuLinkFlow() {
-        householdSummaryViewModel.isPhuWalkInsFlow = intent.getBooleanExtra(isPhuWalkInsFlow, false)
+        householdSummaryViewModel.isPhuWalkInsFlow = intent.getBooleanExtra(HouseholdDefinedParams.IS_PHU_WALK_INS_FLOW, false)
         if (householdSummaryViewModel.isPhuWalkInsFlow) {
             changeBottomConstraint()
             onHomeClick { onBackNav() }
@@ -198,14 +195,17 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                     R.id.addNewMember -> {
                         addNewMember()
                     }
+
                     R.id.editHousehold -> {
                         editHouseholdDetails()
                     }
+
                     R.id.editMember -> {
                         MemberEditDialogFragment
                             .newInstance(this@HouseholdSummaryActivity)
                             .show(supportFragmentManager, MemberEditDialogFragment.TAG)
                     }
+
                     R.id.memberDeceased -> {
                         MemberDeceasedDialogFragment
                             .newInstance(this@HouseholdSummaryActivity)
@@ -228,7 +228,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     ) {
         if (isContactTrace) {
             val intent = Intent(this, AssessmentActivity::class.java)
-            intent.putExtra(DefinedParams.MemberID, item)
+            intent.putExtra(DefinedParams.MEMBER_ID, item)
             intent.putExtra(DefinedParams.DOB, dateOfBirth)
             intent.putExtra(DefinedParams.MenuId, TB)
             intent.putExtra(DefinedParams.FhirId, linkFhirMemberId)
@@ -237,13 +237,13 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         } else {
             if (isEdit) {
                 val intent = Intent(this, HouseholdActivity::class.java)
-                intent.putExtra(DefinedParams.MemberID, item)
-                intent.putExtra(ID, householdSummaryViewModel.houseHoldId)
+                intent.putExtra(DefinedParams.MEMBER_ID, item)
+                intent.putExtra(DefinedParams.householdId, householdSummaryViewModel.houseHoldId)
                 startActivity(intent)
             } else {
                 val intent = Intent(this, AssessmentToolsActivity::class.java)
-                intent.putExtra(DefinedParams.HouseholdId, houseHoldId)
-                intent.putExtra(DefinedParams.MemberID, item)
+                intent.putExtra(DefinedParams.HOUSEHOLD_ID, houseHoldId)
+                intent.putExtra(DefinedParams.MEMBER_ID, item)
                 intent.putExtra(DefinedParams.DOB, dateOfBirth)
                 startActivity(intent)
             }
@@ -268,6 +268,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             R.id.btnAddNewMember -> {
                 withLocationCheck(::addNewMember)
             }
+
             R.id.btnLinkPatient -> {
                 withLocationCheck(::linkPatient)
             }
@@ -299,8 +300,8 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        linkHouseholdId = intent.getLongExtra(ID, -1)
-        linkMemberId = intent.getLongExtra(MemberID, -1)
+        linkHouseholdId = intent.getLongExtra(DefinedParams.householdId, -1)
+        linkMemberId = intent.getLongExtra(DefinedParams.MEMBER_ID, -1)
         linkFhirMemberId = intent.getLongExtra(DefinedParams.FhirMemberID, -1)
     }
 
@@ -309,7 +310,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             val intent =
                 Intent(this@HouseholdSummaryActivity, HouseholdActivity::class.java)
             intent.putExtra(isMemberRegistration, true)
-            intent.putExtra(ID, householdSummaryViewModel.houseHoldId)
+            intent.putExtra(DefinedParams.householdId, householdSummaryViewModel.houseHoldId)
             startActivity(intent)
         }
     }
@@ -319,7 +320,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             val intent =
                 Intent(this@HouseholdSummaryActivity, HouseholdActivity::class.java)
             intent.putExtra(isMemberRegistration, false)
-            intent.putExtra(ID, householdSummaryViewModel.houseHoldId)
+            intent.putExtra(DefinedParams.householdId, householdSummaryViewModel.houseHoldId)
             startActivity(intent)
         }
     }

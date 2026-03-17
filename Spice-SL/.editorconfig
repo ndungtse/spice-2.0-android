@@ -19,6 +19,6 @@ ktlint_standard_annotation = disabled
 # Prevents forcing the 'if' to the next line after '='
 ktlint_standard_multiline-expression-wrapping = disabled
 
-[app/src/main/java/com/medtroniclabs/spice/db/dao/**.kt]
+[app/src/main/java/org/medtroniclabs/uhis/db/dao/**.kt]
 # Disable max-line-length for dao files
 ktlint_standard_max-line-length = disabled

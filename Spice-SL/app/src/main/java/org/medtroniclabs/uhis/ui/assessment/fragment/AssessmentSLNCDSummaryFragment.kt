@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
+import org.json.JSONObject
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
@@ -38,8 +40,6 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.signsAndSymp
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.symptomsDTO
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
-import dagger.hilt.android.AndroidEntryPoint
-import org.json.JSONObject
 
 @AndroidEntryPoint
 class AssessmentSLNCDSummaryFragment : BaseFragment(), View.OnClickListener {

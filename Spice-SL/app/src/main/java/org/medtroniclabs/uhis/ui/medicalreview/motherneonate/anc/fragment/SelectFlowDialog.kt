@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.invisible
@@ -18,9 +19,8 @@ import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.EMTCT
 import org.medtroniclabs.uhis.common.DefinedParams.HIV
 import org.medtroniclabs.uhis.common.DefinedParams.ID
-import org.medtroniclabs.uhis.common.DefinedParams.MemberID
+import org.medtroniclabs.uhis.common.DefinedParams.MEMBER_ID
 import org.medtroniclabs.uhis.common.DefinedParams.PatientId
-import org.medtroniclabs.uhis.common.DefinedParams.isPregnant
 import org.medtroniclabs.uhis.common.DefinedParams.villageId
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.databinding.FragmentSelectFlowDialogBinding
@@ -37,7 +37,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.labourdelivery.acti
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.pnc.activity.MotherNeonatePncActivity
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -87,7 +86,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             bundle.putString(DefinedParams.ChildPatientId, childPatientId)
             bundle.putString(DefinedParams.DateOfDelivery, dateOfDelivery)
             bundle.putString(DefinedParams.NeonateOutcome, neonateOutcome)
-            bundle.putString(MemberID, memberId)
+            bundle.putString(MEMBER_ID, memberId)
             bundle.putBoolean(DefinedParams.EMTCT, isEMTCTFlow == true)
             bundle.putBoolean(DefinedParams.hivTestedPositive, hivTestedPositive == true)
             bundle.putBoolean(DefinedParams.isMenutypeHiv, isMenutypeHiv == true)
@@ -109,7 +108,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             bundle.putString(ID, id)
             bundle.putBoolean(HIV, isHIV)
             bundle.putBoolean(DefinedParams.isPregnant, isPregnant)
-            bundle.putString(MemberID, memberId)
+            bundle.putString(MEMBER_ID, memberId)
             bundle.putString(DefinedParams.villageId, village)
             fragment.arguments = bundle
             return fragment
@@ -170,13 +169,13 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                 ) {
                     val patientId = arguments?.getString(DefinedParams.PatientId, "")
                     val id = arguments?.getString(DefinedParams.ID, "")
-                    val memberId = arguments?.getString(MemberID, "")
+                    val memberId = arguments?.getString(MEMBER_ID, "")
                     val intent =
                         Intent(requireContext(), MotherNeonateEMTCTActivity::class.java)
                     if (patientId?.isNotBlank() == true) {
                         intent.putExtra(PatientId, patientId)
                         intent.putExtra(ID, id)
-                        intent.putExtra(MemberID, memberId)
+                        intent.putExtra(MEMBER_ID, memberId)
                         intent.putExtra(EMTCT, true)
                         intent.putExtra(PatientId, patientId)
                         intent.putExtra(ID, id)
@@ -265,13 +264,13 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                 if (viewModel.isEMTCT) {
                     val patientId = arguments?.getString(DefinedParams.PatientId, "")
                     val id = arguments?.getString(DefinedParams.ID, "")
-                    val memberId = arguments?.getString(MemberID, "")
+                    val memberId = arguments?.getString(MEMBER_ID, "")
                     val intent =
                         Intent(requireContext(), MotherNeonateEMTCTActivity::class.java)
                     if (patientId?.isNotBlank() == true) {
                         intent.putExtra(PatientId, patientId)
                         intent.putExtra(ID, id)
-                        intent.putExtra(MemberID, memberId)
+                        intent.putExtra(MEMBER_ID, memberId)
                         intent.putExtra(EMTCT, true)
                         intent.putExtra(PatientId, patientId)
                         intent.putExtra(ID, id)
@@ -306,7 +305,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                         putExtra(HIV, arguments?.getBoolean(HIV, false))
                         putExtra(EMTCT, true)
                         putExtra(ID, arguments?.getString(ID))
-                        putExtra(MemberID, arguments?.getString(MemberID))
+                        putExtra(MEMBER_ID, arguments?.getString(MEMBER_ID))
                         putExtra(villageId, arguments?.getString(villageId))
                     }
                     startActivity(intent)

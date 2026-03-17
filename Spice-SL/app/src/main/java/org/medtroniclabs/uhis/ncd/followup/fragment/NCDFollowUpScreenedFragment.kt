@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.data.offlinesync.model.ProvanceDto
@@ -18,7 +19,6 @@ import org.medtroniclabs.uhis.ncd.followup.viewmodel.NCDFollowUpScreenedViewMode
 import org.medtroniclabs.uhis.ncd.followup.viewmodel.NCDFollowUpViewModel
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.mypatients.PatientSelectionListenerForFollowUp
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDFollowUpScreenedFragment : BaseFragment(), PatientSelectionListenerForFollowUp {

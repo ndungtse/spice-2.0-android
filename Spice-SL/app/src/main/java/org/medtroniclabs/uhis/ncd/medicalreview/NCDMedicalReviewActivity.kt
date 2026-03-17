@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
@@ -93,7 +94,6 @@ import org.medtroniclabs.uhis.ui.patientDelete.viewModel.NCDPatientDeleteViewMod
 import org.medtroniclabs.uhis.ui.patientEdit.NCDPatientEditActivity
 import org.medtroniclabs.uhis.ui.patientTransfer.dialog.NCDTransferArchiveDialog
 import org.medtroniclabs.uhis.ui.patientTransfer.viewModel.NCDPatientTransferViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDMedicalReviewActivity :

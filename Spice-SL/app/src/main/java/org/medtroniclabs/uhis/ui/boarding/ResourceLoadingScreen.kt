@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.triggerOneTimeWorker
 import org.medtroniclabs.uhis.common.AppConstants
@@ -17,7 +18,6 @@ import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.boarding.viewmodel.ResourceLoadingViewModel
 import org.medtroniclabs.uhis.ui.landing.LandingActivity
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ResourceLoadingScreen : BaseActivity() {

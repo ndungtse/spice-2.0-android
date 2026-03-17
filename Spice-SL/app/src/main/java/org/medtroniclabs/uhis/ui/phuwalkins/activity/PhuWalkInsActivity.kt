@@ -139,19 +139,19 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
         } else if (patientLinkedDetails is HouseHoldEntityWithLastActivity) {
             val intent = Intent(this, HouseholdSummaryActivity::class.java)
             intent.putExtra(
-                HouseholdDefinedParams.ID,
+                DefinedParams.householdId,
                 patientLinkedDetails.id,
             )
             intent.putExtra(
-                DefinedParams.MemberID,
+                DefinedParams.MEMBER_ID,
                 viewModel.memberID,
             )
             intent.putExtra(
                 DefinedParams.FhirMemberID,
                 viewModel.fhirMemberID,
             )
-            intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, false)
-            intent.putExtra(HouseholdDefinedParams.isPhuWalkInsFlow, true)
+            intent.putExtra(HouseholdDefinedParams.IS_FROM_HOUSEHOLD_REGISTRATION, false)
+            intent.putExtra(HouseholdDefinedParams.IS_PHU_WALK_INS_FLOW, true)
             startActivity(intent)
             viewModel.setUserJourney(PHUWALKINSCREENLINKBUTTON)
         }

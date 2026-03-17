@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -54,7 +55,6 @@ import org.medtroniclabs.uhis.ui.mypatients.fragment.ReferPatientFragment
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.ReferPatientViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MotherNeonatePncActivity :
@@ -242,7 +242,7 @@ class MotherNeonatePncActivity :
                 intent.getStringExtra(DefinedParams.PatientId),
             )
             putString(
-                DefinedParams.MemberID,
+                DefinedParams.MEMBER_ID,
                 viewModel.memberId,
             )
             putString(

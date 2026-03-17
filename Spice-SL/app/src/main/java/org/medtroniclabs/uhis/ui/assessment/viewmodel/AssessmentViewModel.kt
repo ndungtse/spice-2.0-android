@@ -10,6 +10,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -123,9 +126,6 @@ import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.otherChildhoodVisitSigns
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.otherSigns
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.pncChildSigns
 import org.medtroniclabs.uhis.ui.boarding.repo.MetaRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import java.time.LocalDate
 import java.util.Locale

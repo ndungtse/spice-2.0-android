@@ -13,6 +13,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -50,9 +53,6 @@ import org.medtroniclabs.uhis.ui.mypatients.PatientSelectionListener
 import org.medtroniclabs.uhis.ui.mypatients.PatientsListAdapter
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientListViewModel
 import org.medtroniclabs.uhis.ui.referralhistory.activity.ReferralHistoryActivity
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnClickListener {

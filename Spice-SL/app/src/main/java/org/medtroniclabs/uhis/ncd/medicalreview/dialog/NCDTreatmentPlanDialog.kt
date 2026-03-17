@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.invisible
@@ -33,7 +34,6 @@ import org.medtroniclabs.uhis.ncd.data.NCDTreatmentPlanModelDetails
 import org.medtroniclabs.uhis.ncd.medicalreview.NCDMRUtil
 import org.medtroniclabs.uhis.ncd.medicalreview.viewmodel.NCDTreatmentPlanViewModel
 import org.medtroniclabs.uhis.network.resource.ResourceState
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, message: String) -> Unit)) :

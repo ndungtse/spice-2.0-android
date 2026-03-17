@@ -1,14 +1,9 @@
 package org.medtroniclabs.uhis.ui.household
 
 object HouseholdDefinedParams {
-    const val Pending = "Pending"
-    const val Finished = "Finished"
     const val REGISTRATION = "household_registration"
-    const val ID = "house_hold_id"
-    const val isFromHouseHoldRegistration = "isFromHouseHoldRegistration"
-    const val HouseholdNo = "householdID"
-    const val isPhuWalkInsFlow = "isPhuWalkInsFlow"
-
-    const val IsHousehold = "IsHousehold"
-    const val IsHouseholdMember = "IsHouseholdMember"
+    const val IS_FROM_HOUSEHOLD_REGISTRATION = "isFromHouseHoldRegistration"
+    const val IS_PHU_WALK_INS_FLOW = "isPhuWalkInsFlow"
+    const val IS_HOUSEHOLD = "IsHousehold"
+    const val IS_HOUSEHOLD_MEMBER = "IsHouseholdMember"
 }

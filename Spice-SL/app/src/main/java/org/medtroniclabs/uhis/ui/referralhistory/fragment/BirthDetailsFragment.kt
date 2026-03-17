@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
@@ -17,7 +18,6 @@ import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.referralhistory.adapter.ReferralHistoryAdapter
 import org.medtroniclabs.uhis.ui.referralhistory.viewmodel.ReferralHistoryViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class BirthDetailsFragment : BaseFragment(), View.OnClickListener {
@@ -45,14 +45,14 @@ class BirthDetailsFragment : BaseFragment(), View.OnClickListener {
         ): BirthDetailsFragment {
             val fragment = BirthDetailsFragment()
             val bundle = Bundle()
-            bundle.putString(DefinedParams.MemberID, memberId)
+            bundle.putString(DefinedParams.MEMBER_ID, memberId)
             bundle.putString(DefinedParams.PatientReference, patientReference)
             fragment.arguments = bundle
             return fragment
         }
     }
 
-    private fun getMemberId(): String? = arguments?.getString(DefinedParams.MemberID, "")
+    private fun getMemberId(): String? = arguments?.getString(DefinedParams.MEMBER_ID, "")
 
     private fun getPatientReference(): String? = arguments?.getString(DefinedParams.PatientReference, null)
 

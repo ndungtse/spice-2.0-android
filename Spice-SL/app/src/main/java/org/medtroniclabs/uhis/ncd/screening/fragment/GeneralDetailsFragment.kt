@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.fragment.app.activityViewModels
+import io.github.mrherintsoahasina.flextools.FlexRadioGroup
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.isVisible
@@ -28,7 +29,6 @@ import org.medtroniclabs.uhis.mappingkey.Screening.outpatient
 import org.medtroniclabs.uhis.ncd.screening.viewmodel.GeneralDetailsViewModel
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
-import io.github.mrherintsoahasina.flextools.FlexRadioGroup
 
 // --- FIX 1: Remove the conflicting listener interfaces from the class declaration ---
 class GeneralDetailsFragment : BaseFragment(), View.OnClickListener {

@@ -6,6 +6,9 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import kotlinx.coroutines.delay
 import org.medtroniclabs.uhis.appextensions.hideNotification
 import org.medtroniclabs.uhis.appextensions.showNotification
 import org.medtroniclabs.uhis.appextensions.startBackgroundOfflineSync
@@ -21,9 +24,6 @@ import org.medtroniclabs.uhis.network.utils.ConnectivityManager
 import org.medtroniclabs.uhis.repo.AssessmentRepository
 import org.medtroniclabs.uhis.repo.OfflineSyncRepository
 import org.medtroniclabs.uhis.repo.RxBuddyRepository
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @HiltWorker

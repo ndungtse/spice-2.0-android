@@ -10,12 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.setDialogPercent
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.databinding.FragmentRecommendedInvestigationsDialogBinding
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class RecommendedInvestigationsDialog : DialogFragment(), View.OnClickListener {

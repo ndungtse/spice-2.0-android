@@ -11,6 +11,8 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.GridLayoutManager
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.databinding.FragmentFollowUpSearchBinding
@@ -18,8 +20,6 @@ import org.medtroniclabs.uhis.databinding.FragmentNcdFollowUpOfflineSearchBindin
 import org.medtroniclabs.uhis.ncd.followup.adapter.NCDFollowUpOfflineListAdapter
 import org.medtroniclabs.uhis.ncd.followup.adapter.NCDPatientFollowUPListAdapter
 import org.medtroniclabs.uhis.ncd.followup.viewmodel.NCDFollowUpViewModel
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 object NCDFollowUpUtils {
     const val SCREENED = "SCREENED"

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/CardView_Style"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardUseCompatPadding="true"
+    tools:context="com.medtroniclabs.spice.ui.household.summary.HouseholdDetailsFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:id="@+id/viewDetailsBG"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_0dp"
+            android:background="@color/card_background"
+            app:layout_constraintBottom_toBottomOf="@id/tvMemberDetailsTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvMemberDetailsTitle"
+            style="@style/Form_Header_Style"
+            android:layout_width="@dimen/_0dp"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/_10sdp"
+            android:paddingVertical="@dimen/_10sdp"
+            android:text="@string/bio_data"
+            android:textColor="@color/primary_medium_blue"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintEnd_toEndOf="@id/viewDetailsBG"
+            app:layout_constraintStart_toStartOf="@id/viewDetailsBG"
+            app:layout_constraintTop_toTopOf="@id/viewDetailsBG" />
+
+        <TextView
+            android:id="@+id/tv_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_16sdp"
+            android:drawablePadding="@dimen/_8sdp"
+            android:text="@string/edit"
+            android:textColor="@color/primary_medium_blue"
+            android:textSize="@dimen/_14ssp"
+            app:drawableStartCompat="@drawable/ic_edit_menu"
+            app:layout_constraintBottom_toBottomOf="@id/tvMemberDetailsTitle"
+            app:layout_constraintEnd_toEndOf="@id/tvMemberDetailsTitle"
+            app:layout_constraintTop_toTopOf="@id/tvMemberDetailsTitle" />
+
+        <LinearLayout
+            android:id="@+id/llDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp"
+            app:layout_constraintTop_toBottomOf="@id/tvMemberDetailsTitle" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

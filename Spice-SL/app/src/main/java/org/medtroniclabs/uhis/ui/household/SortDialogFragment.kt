@@ -8,6 +8,7 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
@@ -15,7 +16,6 @@ import org.medtroniclabs.uhis.databinding.FragmentSortingDialogBinding
 import org.medtroniclabs.uhis.db.dao.HouseholdSortOrder
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseholdListViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Sorting dialog for household search screen

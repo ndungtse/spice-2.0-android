@@ -9,6 +9,7 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.textOrHyphen
@@ -23,7 +24,6 @@ import org.medtroniclabs.uhis.ncd.data.NCDPatientTransferNotificationCountReques
 import org.medtroniclabs.uhis.ncd.data.PatientTransfer
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.landing.viewmodel.LandingViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

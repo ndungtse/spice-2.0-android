@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.isGone
@@ -44,7 +45,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUt
 import org.medtroniclabs.uhis.ui.medicalreview.tb.viewmodel.TbConfirmDiagnosisAndSiteOfDiseaseViewModel
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint

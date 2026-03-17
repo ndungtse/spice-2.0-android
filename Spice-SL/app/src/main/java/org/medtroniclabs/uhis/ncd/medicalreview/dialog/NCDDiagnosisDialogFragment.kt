@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.invisible
@@ -36,7 +37,6 @@ import org.medtroniclabs.uhis.ncd.medicalreview.viewmodel.NCDMedicalReviewViewMo
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.TagListCustomView
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
@@ -73,7 +73,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
         ) = NCDDiagnosisDialogFragment().apply {
             arguments = Bundle().apply {
                 putString(DefinedParams.PatientId, patientId)
-                putString(DefinedParams.MemberID, memberId)
+                putString(DefinedParams.MEMBER_ID, memberId)
                 putStringArrayList(CONFIRM_DIAGNOSIS_TYPE, types)
                 putStringArrayList(CONFIRM_DIAGNOSIS_TYPE_GET, getTypes)
                 putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
@@ -102,7 +102,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
 
     fun getPatientId(): String? = arguments?.getString(DefinedParams.PatientId)
 
-    fun getMemberId(): String? = arguments?.getString(DefinedParams.MemberID)
+    fun getMemberId(): String? = arguments?.getString(DefinedParams.MEMBER_ID)
 
     private fun getTypeForRequest(): String? = NCDMRUtil.requestTypeForConfirmDiagnoses(arguments?.getString(Screening.Type))
 

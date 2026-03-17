@@ -14,6 +14,7 @@ import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.hideKeyboard
@@ -48,7 +49,6 @@ import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.medicalreview.SignatureDialogFragment
 import org.medtroniclabs.uhis.ui.medicalreview.SignatureListener
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDPrescriptionActivity :

@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.Group
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.invisible
@@ -46,7 +47,6 @@ import org.medtroniclabs.uhis.ncd.medicalreview.viewmodel.NCDMedicalReviewViewMo
 import org.medtroniclabs.uhis.ncd.medicalreview.viewmodel.NCDMentalHealthViewModel
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {

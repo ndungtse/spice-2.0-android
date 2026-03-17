@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
-import org.medtroniclabs.uhis.di.IoDispatcher
-import org.medtroniclabs.uhis.ncd.registration.repo.RegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import org.medtroniclabs.uhis.di.IoDispatcher
+import org.medtroniclabs.uhis.ncd.registration.repo.RegistrationRepository
 import javax.inject.Inject
 
 @HiltViewModel

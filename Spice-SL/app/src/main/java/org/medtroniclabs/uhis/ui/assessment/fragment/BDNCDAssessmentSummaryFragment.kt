@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import org.json.JSONArray
+import org.json.JSONObject
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
@@ -36,8 +38,6 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.WEIGHT
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.hba1c
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
-import org.json.JSONArray
-import org.json.JSONObject
 
 class BDNCDAssessmentSummaryFragment : BaseFragment() {
     private val viewModel: AssessmentViewModel by activityViewModels()

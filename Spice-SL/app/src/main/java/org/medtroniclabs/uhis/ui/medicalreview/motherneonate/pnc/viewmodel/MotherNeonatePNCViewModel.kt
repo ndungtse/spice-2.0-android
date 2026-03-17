@@ -3,6 +3,9 @@ package org.medtroniclabs.uhis.ui.medicalreview.motherneonate.pnc.viewmodel
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.data.MedicalReviewSummarySubmitRequest
@@ -29,9 +32,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.viewmodel.GeneralExaminationViewM
 import org.medtroniclabs.uhis.ui.medicalreview.viewmodel.PhysicalExaminationViewModel
 import org.medtroniclabs.uhis.ui.mypatients.repo.PatientRepository
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

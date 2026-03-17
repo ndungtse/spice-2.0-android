@@ -119,7 +119,7 @@ class FollowUpPatientListFragment : BaseFragment(), FollowUpDialogFragment.Follo
         viewModel.selectedFollowUpDetail?.let { data ->
             if (data.householdId != null && data.householdId != 0L) {
                 val intent = Intent(requireContext(), AssessmentToolsActivity::class.java)
-                intent.putExtra(DefinedParams.MemberID, data.localPatientId)
+                intent.putExtra(DefinedParams.MEMBER_ID, data.localPatientId)
                 intent.putExtra(DefinedParams.FollowUpId, data.id)
                 intent.putExtra(MenuConstants.FOLLOW_UP, true)
                 intent.putExtra(DefinedParams.DOB, data.dateOfBirth)

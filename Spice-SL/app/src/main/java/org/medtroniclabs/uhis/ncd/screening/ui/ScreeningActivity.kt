@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -23,7 +24,6 @@ import org.medtroniclabs.uhis.ncd.screening.fragment.ScreeningSummaryFragment
 import org.medtroniclabs.uhis.ncd.screening.fragment.StatsFragment
 import org.medtroniclabs.uhis.ncd.screening.viewmodel.ScreeningFormBuilderViewModel
 import org.medtroniclabs.uhis.ui.BaseActivity
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ScreeningActivity : BaseActivity() {

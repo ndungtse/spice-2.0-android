@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
@@ -25,7 +26,6 @@ import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ANC
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
 import org.medtroniclabs.uhis.ui.medicalreview.viewmodel.GeneralExaminationViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class GeneralExaminationFragment : BaseFragment() {

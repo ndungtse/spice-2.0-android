@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -45,7 +46,6 @@ import org.medtroniclabs.uhis.ncd.followup.viewmodel.NCDCallResultViewModel
 import org.medtroniclabs.uhis.ncd.followup.viewmodel.NCDFollowUpViewModel
 import org.medtroniclabs.uhis.ui.TagListCustomView
 import org.medtroniclabs.uhis.ui.followup.fragment.CallResultDialogFragment
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListener {

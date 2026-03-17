@@ -51,8 +51,8 @@ class LinkPatientDialogFragment : DialogFragment(), View.OnClickListener {
             fhirMemberId: Long,
         ): LinkPatientDialogFragment {
             val bundle = Bundle().apply {
-                putLong(HouseholdDefinedParams.ID, houseHoldID)
-                putLong(DefinedParams.MemberID, memberID)
+                putLong(DefinedParams.householdId, houseHoldID)
+                putLong(DefinedParams.MEMBER_ID, memberID)
                 putLong(DefinedParams.FhirMemberID, fhirMemberId)
             } // Assuming memberID is passed as argument}
             val fragment = LinkPatientDialogFragment()
@@ -89,14 +89,14 @@ class LinkPatientDialogFragment : DialogFragment(), View.OnClickListener {
                 householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.LINKPATIENT)
                 val intent = Intent(requireActivity(), HouseholdActivity::class.java)
                 intent.putExtra(
-                    HouseholdDefinedParams.isPhuWalkInsFlow,
+                    HouseholdDefinedParams.IS_PHU_WALK_INS_FLOW,
                     true,
                 )
-                intent.putExtra(DefinedParams.MemberID, arguments?.getLong(DefinedParams.MemberID, -1L))
+                intent.putExtra(DefinedParams.MEMBER_ID, arguments?.getLong(DefinedParams.MEMBER_ID, -1L))
                 intent.putExtra(DefinedParams.FhirMemberID, arguments?.getLong(DefinedParams.FhirMemberID, -1L))
                 intent.putExtra(
-                    HouseholdDefinedParams.ID,
-                    arguments?.getLong(HouseholdDefinedParams.ID, -1L),
+                    DefinedParams.householdId,
+                    arguments?.getLong(DefinedParams.householdId, -1L),
                 )
                 startActivity(intent)
                 dismiss()

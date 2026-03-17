@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.databinding.FragmentExaminationCardBinding
 import org.medtroniclabs.uhis.formgeneration.ExaminationGenerator
@@ -12,7 +13,6 @@ import org.medtroniclabs.uhis.formgeneration.ExaminationListener
 import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.utility.CheckBoxDialog
 import org.medtroniclabs.uhis.ui.BaseFragment
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ExaminationCardFragment : BaseFragment(), ExaminationListener {

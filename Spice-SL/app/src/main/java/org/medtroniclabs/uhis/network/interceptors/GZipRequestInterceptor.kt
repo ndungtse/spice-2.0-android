@@ -1,6 +1,5 @@
 package org.medtroniclabs.uhis.network.interceptors
 
-import org.medtroniclabs.uhis.network.NetworkConstants
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.RequestBody
@@ -8,6 +7,7 @@ import okhttp3.Response
 import okio.BufferedSink
 import okio.GzipSink
 import okio.buffer
+import org.medtroniclabs.uhis.network.NetworkConstants
 
 class GZipRequestInterceptor : Interceptor {
     private val gZIPHeaderKey = "Content-Encoding"

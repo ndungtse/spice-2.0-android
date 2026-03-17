@@ -16,6 +16,10 @@ import androidx.core.widget.addTextChangedListener
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams.COUNTER_REFERRAL_TAB
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams.HH_VISIT_TAB
@@ -43,10 +47,6 @@ import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.followup.adapter.FollowUpPatientListAdapter
 import org.medtroniclabs.uhis.ui.followup.viewmodel.FollowUpViewModel
 import org.medtroniclabs.uhis.ui.phuwalkins.activity.PhuWalkInsActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class FollowUpMyPatientActivity : BaseActivity() {

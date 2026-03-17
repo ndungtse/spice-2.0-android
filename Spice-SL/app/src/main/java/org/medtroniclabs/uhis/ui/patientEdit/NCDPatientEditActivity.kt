@@ -5,6 +5,7 @@ import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.databinding.ActivityNcdPatientEditBinding
@@ -13,7 +14,6 @@ import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
 import org.medtroniclabs.uhis.ui.patientEdit.fragment.NCDPatientEditFragment
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDPatientEditActivity : BaseActivity() {

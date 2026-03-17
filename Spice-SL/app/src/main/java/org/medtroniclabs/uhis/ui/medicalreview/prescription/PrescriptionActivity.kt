@@ -9,6 +9,7 @@ import android.widget.AdapterView
 import androidx.activity.viewModels
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
@@ -40,7 +41,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.SignatureDialogFragment
 import org.medtroniclabs.uhis.ui.medicalreview.SignatureListener
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PrescriptionActivity :

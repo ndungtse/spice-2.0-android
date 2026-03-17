@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.databinding.FragmentStatsBinding
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
@@ -12,7 +13,6 @@ import org.medtroniclabs.uhis.ncd.registration.fragment.TermsAndConditionsFragme
 import org.medtroniclabs.uhis.ncd.screening.viewmodel.GeneralDetailsViewModel
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.BaseFragment
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class StatsFragment : BaseFragment(), View.OnClickListener {

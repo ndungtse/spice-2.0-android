@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
@@ -20,7 +21,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.abovefiveyears.PresentingComplain
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams.CHIP_ITEMS
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams.PC_ITEM
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 open class PresentingComplaintsFragment : BaseFragment() {

@@ -3,6 +3,9 @@ package org.medtroniclabs.uhis.ncd.medicalreview.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.data.history.HistoryEntity
 import org.medtroniclabs.uhis.data.history.NCDMedicalReviewHistory
@@ -13,9 +16,6 @@ import org.medtroniclabs.uhis.ncd.data.LifeStyleRequest
 import org.medtroniclabs.uhis.ncd.data.LifeStyleResponse
 import org.medtroniclabs.uhis.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import org.medtroniclabs.uhis.network.resource.Resource
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

@@ -3,6 +3,7 @@ package org.medtroniclabs.uhis.ui.home
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams
@@ -10,7 +11,6 @@ import org.medtroniclabs.uhis.databinding.ActivityMedicalReviewToolsBinding
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.landing.LandingActivity
 import org.medtroniclabs.uhis.ui.mypatients.fragment.PatientMenuFragment
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MedicalReviewToolsActivity : BaseActivity() {
@@ -49,7 +49,7 @@ class MedicalReviewToolsActivity : BaseActivity() {
             fragment = PatientMenuFragment.newInstance(
                 intent.getStringExtra(DefinedParams.PatientId),
                 intent.getStringExtra(DefinedParams.ID),
-                intent.getStringExtra(DefinedParams.MemberID),
+                intent.getStringExtra(DefinedParams.MEMBER_ID),
                 intent.getStringExtra(DefinedParams.Gender),
                 intent.getStringExtra(DefinedParams.DOB),
                 childPatientId = intent.getStringExtra(DefinedParams.ChildPatientId),

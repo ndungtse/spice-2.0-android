@@ -12,6 +12,7 @@ import androidx.core.text.color
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.postError
 import org.medtroniclabs.uhis.appextensions.triggerOneTimeWorker
@@ -44,7 +45,6 @@ import org.medtroniclabs.uhis.ncd.screening.viewmodel.ScreeningFormBuilderViewMo
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.BaseFragment
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {

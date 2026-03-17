@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.setVisible
@@ -22,7 +23,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.tb.activity.TBMedicalReviewActivi
 import org.medtroniclabs.uhis.ui.medicalreview.tb.viewmodel.TbPatientHistoryAndPresumptiveViewModel
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PresumptiveTreatmentAndHistoryFragment : BaseFragment(), View.OnClickListener {

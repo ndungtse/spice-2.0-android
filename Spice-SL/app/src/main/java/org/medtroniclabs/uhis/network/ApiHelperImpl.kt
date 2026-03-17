@@ -2,6 +2,10 @@ package org.medtroniclabs.uhis.network
 
 import android.content.Context
 import com.google.gson.JsonObject
+import dagger.hilt.android.qualifiers.ApplicationContext
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import org.medtroniclabs.uhis.data.APIResponse
 import org.medtroniclabs.uhis.data.AboveFiveYearsMetaResponse
 import org.medtroniclabs.uhis.data.AboveFiveYearsSummaryDetails
@@ -178,10 +182,6 @@ import org.medtroniclabs.uhis.ncd.data.PrescriptionNudgeResponse
 import org.medtroniclabs.uhis.ncd.data.RegionSiteResponse
 import org.medtroniclabs.uhis.ncd.data.RegisterCallResponse
 import org.medtroniclabs.uhis.ncd.data.TermsAndConditionsModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.Response
 import javax.inject.Inject
 

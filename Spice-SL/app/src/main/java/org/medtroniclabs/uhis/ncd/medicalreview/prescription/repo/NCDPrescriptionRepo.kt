@@ -1,5 +1,6 @@
 package org.medtroniclabs.uhis.ncd.medicalreview.prescription.repo
 
+import okhttp3.RequestBody
 import org.medtroniclabs.uhis.data.MedicationResponse
 import org.medtroniclabs.uhis.data.MedicationSearchRequest
 import org.medtroniclabs.uhis.data.Prescription
@@ -10,7 +11,6 @@ import org.medtroniclabs.uhis.ncd.data.PredictionRequest
 import org.medtroniclabs.uhis.network.ApiHelper
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.network.resource.ResourceState
-import okhttp3.RequestBody
 import javax.inject.Inject
 
 class NCDPrescriptionRepo @Inject constructor(

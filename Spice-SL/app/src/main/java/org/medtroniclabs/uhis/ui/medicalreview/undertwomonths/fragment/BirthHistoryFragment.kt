@@ -45,7 +45,7 @@ class BirthHistoryFragment : BaseFragment() {
 
     private fun getBirthHistory() {
         val patientId = arguments?.getString(DefinedParams.PatientId, "")
-        val memberId = arguments?.getString(DefinedParams.MemberID, "")
+        val memberId = arguments?.getString(DefinedParams.MEMBER_ID, "")
         viewModel.getBirthHistoryDetails(patientId, memberId)
     }
 

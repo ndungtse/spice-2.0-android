@@ -14,6 +14,7 @@ import android.view.WindowManager
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.hideKeyboard
@@ -37,7 +38,6 @@ import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
 import org.medtroniclabs.uhis.ui.patientTransfer.adapter.NCDRoleUserAutoCompleteAdapter
 import org.medtroniclabs.uhis.ui.patientTransfer.adapter.NCDSiteAutoCompleteAdapter
 import org.medtroniclabs.uhis.ui.patientTransfer.viewModel.NCDPatientTransferViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint

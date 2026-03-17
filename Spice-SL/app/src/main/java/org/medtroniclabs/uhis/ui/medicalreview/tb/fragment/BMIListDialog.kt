@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
@@ -24,7 +25,6 @@ import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.network.utils.ConnectivityManager
 import org.medtroniclabs.uhis.ui.medicalreview.tb.BmiListAdapter
 import org.medtroniclabs.uhis.ui.medicalreview.tb.viewmodel.BmiViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -54,7 +54,7 @@ class BMIListDialog : DialogFragment(), View.OnClickListener {
         fun newInstance(memberID: String?) =
             BMIListDialog().apply {
                 this.arguments = Bundle().apply {
-                    putString(DefinedParams.MemberID, memberID)
+                    putString(DefinedParams.MEMBER_ID, memberID)
                 }
             }
     }
@@ -81,7 +81,7 @@ class BMIListDialog : DialogFragment(), View.OnClickListener {
         }
     }
 
-    private fun getMemberId(): String = arguments?.getString(DefinedParams.MemberID, "") ?: ""
+    private fun getMemberId(): String = arguments?.getString(DefinedParams.MEMBER_ID, "") ?: ""
 
     fun attachObserver() {
         viewModel.getBmiList.observe(viewLifecycleOwner) { resourceState ->

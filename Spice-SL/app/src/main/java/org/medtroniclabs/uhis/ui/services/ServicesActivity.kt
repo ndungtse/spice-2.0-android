@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
@@ -23,7 +24,6 @@ import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.home.AssessmentToolsActivity
 import org.medtroniclabs.uhis.ui.household.MemberSelectionListener
 import org.medtroniclabs.uhis.ui.services.viewmodel.ServicesViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.common.DefinedParams as CommonDefinedParams
 
 /**
@@ -211,8 +211,8 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
         houseHoldId: Long?,
     ) {
         val intent = Intent(this, AssessmentToolsActivity::class.java)
-        intent.putExtra(CommonDefinedParams.HouseholdId, houseHoldId)
-        intent.putExtra(CommonDefinedParams.MemberID, item)
+        intent.putExtra(CommonDefinedParams.HOUSEHOLD_ID, houseHoldId)
+        intent.putExtra(CommonDefinedParams.MEMBER_ID, item)
         intent.putExtra(CommonDefinedParams.DOB, dateOfBirth)
         startActivity(intent)
     }

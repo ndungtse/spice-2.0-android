@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.data.model.ChipViewItemModel
 import org.medtroniclabs.uhis.databinding.FragmentHivGeneralAndSystemicExaminationBinding
 import org.medtroniclabs.uhis.databinding.HivGeneralSystemicItemLayoutBinding
@@ -17,7 +18,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.hiv.viewmodel.HivGeneralAndSystem
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HivGeneralAndSystemicExaminationFragment : BaseFragment() {

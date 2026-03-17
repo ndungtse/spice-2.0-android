@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams.HOUSEHOLDLISTSEARCHTRIGGERED
@@ -20,12 +21,10 @@ import org.medtroniclabs.uhis.db.dao.HouseholdSortOrder
 import org.medtroniclabs.uhis.db.response.HouseHoldEntityWithLastActivity
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.ui.BaseActivity
-import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.ID
-import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.isFromHouseHoldRegistration
+import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.IS_FROM_HOUSEHOLD_REGISTRATION
 import org.medtroniclabs.uhis.ui.household.adapter.HouseholdListAdapter
 import org.medtroniclabs.uhis.ui.household.summary.HouseholdSummaryActivity
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseholdListViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
@@ -69,8 +68,8 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
 
         householdListAdapter = HouseholdListAdapter {
             val intent = Intent(this@HouseholdSearchActivity, HouseholdSummaryActivity::class.java)
-            intent.putExtra(ID, it)
-            intent.putExtra(isFromHouseHoldRegistration, false)
+            intent.putExtra(DefinedParams.householdId, it)
+            intent.putExtra(IS_FROM_HOUSEHOLD_REGISTRATION, false)
             startActivity(intent)
         }
 

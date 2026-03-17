@@ -3,6 +3,9 @@ package org.medtroniclabs.uhis.ui.medicalreview.diagnosis.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.data.DiagnosisDiseaseModel
 import org.medtroniclabs.uhis.data.DiagnosisSaveUpdateRequest
@@ -18,9 +21,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.hiv.repo.HivMedicalReviewRepo
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams.cd4_percentage
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams.emtctVisitStatus
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

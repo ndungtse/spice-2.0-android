@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.postError
@@ -30,7 +31,6 @@ import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.DialogDismissListener
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isValidInput
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.viewmodel.AddWeightViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -58,7 +58,7 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
                 putString(DefinedParams.PatientId, patientId)
                 putString(DefinedParams.villageId, villageId)
                 putString(DefinedParams.householdId, householdId)
-                putString(DefinedParams.MemberID, memberId)
+                putString(DefinedParams.MEMBER_ID, memberId)
             }
             return fragment
         }
@@ -191,7 +191,7 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
                 endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
                 villageId = arguments?.getString(DefinedParams.villageId),
                 householdId = arguments?.getString(DefinedParams.householdId),
-                memberId = arguments?.getString(DefinedParams.MemberID, ""),
+                memberId = arguments?.getString(DefinedParams.MEMBER_ID, ""),
             ),
         )
 

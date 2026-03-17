@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
@@ -28,7 +29,6 @@ import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.mypatients.adapter.DateListAdapter
 import org.medtroniclabs.uhis.ui.referralhistory.adapter.ReferralHistoryAdapter
 import org.medtroniclabs.uhis.ui.referralhistory.viewmodel.ReferralHistoryViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {

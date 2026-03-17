@@ -13,7 +13,7 @@ object DefinedParams {
     const val span_count_1 = 1
     const val span_count_3 = 3
     const val isMemberRegistration = "isMemberRegistration"
-    const val MemberID = "memberID"
+    const val MEMBER_ID = "memberID"
     const val MenuId = "MenuId"
     const val NAME = "name"
     const val cultureValue = "cultureValue"
@@ -317,7 +317,7 @@ object DefinedParams {
     const val villageId = "VILLAGE_ID"
     const val Referred_NCD = "NCD"
     const val isTbPatient = "isTbPatient"
-    const val HouseholdId = "HouseholdId"
+    const val HOUSEHOLD_ID = "HouseholdId"
 
     const val TbType = "TbType"
     const val RxBuddyId = "rxBuddyId"

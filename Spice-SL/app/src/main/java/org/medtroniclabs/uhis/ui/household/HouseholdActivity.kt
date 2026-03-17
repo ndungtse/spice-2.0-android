@@ -4,13 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.startBackgroundOfflineSync
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.FhirMemberID
-import org.medtroniclabs.uhis.common.DefinedParams.MemberID
 import org.medtroniclabs.uhis.common.DefinedParams.VillageId
 import org.medtroniclabs.uhis.common.DefinedParams.isCreateHouseholdForPhu
 import org.medtroniclabs.uhis.common.DefinedParams.isMemberRegistration
@@ -18,13 +18,11 @@ import org.medtroniclabs.uhis.common.SpiceLocationManager
 import org.medtroniclabs.uhis.databinding.ActivityHouseholdRegistrationBinding
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
-import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.isPhuWalkInsFlow
 import org.medtroniclabs.uhis.ui.household.fragment.HouseHoldRegistrationFragment
 import org.medtroniclabs.uhis.ui.household.summary.HouseholdSummaryActivity
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseRegistrationViewModel
 import org.medtroniclabs.uhis.ui.landing.OnDialogDismissListener
 import org.medtroniclabs.uhis.ui.member.MemberRegistrationFragment
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
@@ -104,12 +102,12 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
     }
 
     private fun initializeView() {
-        val householdId = intent.getLongExtra(HouseholdDefinedParams.ID, -1L)
+        val householdId = intent.getLongExtra(DefinedParams.householdId, -1L)
         val isMemberRegistration = intent.getBooleanExtra(isMemberRegistration, false)
-        val memberId = intent.getLongExtra(MemberID, -1L)
+        val memberId = intent.getLongExtra(DefinedParams.MEMBER_ID, -1L)
         val memberFhirId = intent.getLongExtra(FhirMemberID, -1L)
         val isCreateHouseholdForPhu = intent.getBooleanExtra(isCreateHouseholdForPhu, false)
-        val isPhuWalkInsFlow = intent.getBooleanExtra(isPhuWalkInsFlow, false)
+        val isPhuWalkInsFlow = intent.getBooleanExtra(HouseholdDefinedParams.IS_PHU_WALK_INS_FLOW, false)
 
         householdRegistrationViewModel.isMemberRegistration = isMemberRegistration
         householdRegistrationViewModel.householdId = householdId
@@ -127,8 +125,8 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
         } else if (isMemberRegistration || memberId != -1L) {
             val arguments = Bundle().apply {
                 putBoolean(AnalyticsDefinedParams.AddNewMember, true)
-                putBoolean(HouseholdDefinedParams.isPhuWalkInsFlow, isPhuWalkInsFlow)
-                putLong(MemberID, memberId)
+                putBoolean(HouseholdDefinedParams.IS_PHU_WALK_INS_FLOW, isPhuWalkInsFlow)
+                putLong(DefinedParams.MEMBER_ID, memberId)
                 putLong(FhirMemberID, memberFhirId)
                 putString(
                     AnalyticsDefinedParams.StartDate,
@@ -162,10 +160,10 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
     private fun launchHouseholdSummaryPage() {
         val intent = Intent(this, HouseholdSummaryActivity::class.java)
         intent.putExtra(
-            HouseholdDefinedParams.ID,
+            DefinedParams.householdId,
             householdRegistrationViewModel.householdId,
         )
-        intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, false)
+        intent.putExtra(HouseholdDefinedParams.IS_FROM_HOUSEHOLD_REGISTRATION, false)
         startActivity(intent)
         finish()
     }
@@ -182,13 +180,13 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
                     if (householdRegistrationViewModel.householdId != -1L) {
                         launchHouseholdSummaryPage()
                     } else {
-                        val memberId = intent.getLongExtra(MemberID, -1L)
+                        val memberId = intent.getLongExtra(DefinedParams.MEMBER_ID, -1L)
                         val memberFhirId = intent.getLongExtra(FhirMemberID, -1L)
-                        val isPhuWalkInsFlow = intent.getBooleanExtra(isPhuWalkInsFlow, false)
+                        val isPhuWalkInsFlow = intent.getBooleanExtra(HouseholdDefinedParams.IS_PHU_WALK_INS_FLOW, false)
                         val arguments = Bundle().apply {
                             putBoolean(AnalyticsDefinedParams.AddNewMember, true)
-                            putBoolean(HouseholdDefinedParams.isPhuWalkInsFlow, isPhuWalkInsFlow)
-                            putLong(MemberID, memberId)
+                            putBoolean(HouseholdDefinedParams.IS_PHU_WALK_INS_FLOW, isPhuWalkInsFlow)
+                            putLong(DefinedParams.MEMBER_ID, memberId)
                             putLong(FhirMemberID, memberFhirId)
                             putString(
                                 AnalyticsDefinedParams.StartDate,

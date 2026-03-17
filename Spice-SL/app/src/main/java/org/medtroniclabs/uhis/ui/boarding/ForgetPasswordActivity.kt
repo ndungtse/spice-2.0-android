@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.appextensions.cancelAllWorker
@@ -16,7 +17,6 @@ import org.medtroniclabs.uhis.ui.boarding.fragment.ConfirmPasswordFragment
 import org.medtroniclabs.uhis.ui.boarding.fragment.ResetPasswordFragment
 import org.medtroniclabs.uhis.ui.boarding.viewmodel.ForgotPasswordViewModel
 import org.medtroniclabs.uhis.ui.landing.LandingActivity
-import dagger.hilt.android.AndroidEntryPoint
 import java.util.UUID
 
 @AndroidEntryPoint

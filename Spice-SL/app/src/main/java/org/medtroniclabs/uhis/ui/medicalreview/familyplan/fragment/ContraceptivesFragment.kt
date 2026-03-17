@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.isVisible
 import org.medtroniclabs.uhis.appextensions.visible
@@ -48,7 +49,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams.
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams.ProgestinOnlyOrals
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ContraceptivesFragment : BaseFragment() {

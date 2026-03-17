@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.getLocalDate
 import org.medtroniclabs.uhis.common.CommonUtils
@@ -50,7 +51,6 @@ import org.medtroniclabs.uhis.ui.common.GeneralInfoDialog
 import org.medtroniclabs.uhis.ui.dialog.GeneralSuccessDialog
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint

@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import org.medtroniclabs.uhis.BuildConfig
 import org.medtroniclabs.uhis.data.CulturesEntity
 import org.medtroniclabs.uhis.data.DiseaseCategoryItems
@@ -83,7 +84,6 @@ import org.medtroniclabs.uhis.db.entity.TreatmentPlanEntity
 import org.medtroniclabs.uhis.db.entity.UserProfileEntity
 import org.medtroniclabs.uhis.db.entity.VillageEntity
 import org.medtroniclabs.uhis.ui.assessment.AssessmentNCDEntity
-import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 
 @Database(
     entities = [

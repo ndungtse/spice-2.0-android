@@ -1657,4 +1657,5 @@
     <string name="not_taken">Not Taken</string>
     <string name="referred_for_nfurther_assessment_cc">Refer to the nearest community clinic for further assessment</string>
     <string name="referred_for_nfurther_assessment_Upazila">Refer to the nearest Upazila Health complex for further assessment</string>
+    <string name="services">Services</string>
 </resources>

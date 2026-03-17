@@ -13,6 +13,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
@@ -35,7 +36,6 @@ import org.medtroniclabs.uhis.ncd.followup.viewmodel.NCDFollowUpScreenedViewMode
 import org.medtroniclabs.uhis.ncd.followup.viewmodel.NCDFollowUpViewModel
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDFollowUpActivity : BaseActivity() {

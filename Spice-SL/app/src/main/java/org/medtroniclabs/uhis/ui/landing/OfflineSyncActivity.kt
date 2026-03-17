@@ -9,6 +9,7 @@ import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
@@ -21,7 +22,6 @@ import org.medtroniclabs.uhis.offlinesync.GetSyncStatusWorker
 import org.medtroniclabs.uhis.ui.SpiceRootActivity
 import org.medtroniclabs.uhis.ui.landing.adapter.OfflineSyncEntitiesAdapter
 import org.medtroniclabs.uhis.ui.landing.viewmodel.OfflineSyncViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint

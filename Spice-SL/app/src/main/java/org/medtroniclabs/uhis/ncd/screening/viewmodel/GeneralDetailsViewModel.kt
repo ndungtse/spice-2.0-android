@@ -4,12 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
+import dagger.hilt.android.lifecycle.HiltViewModel
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.db.entity.HealthFacilityEntity
 import org.medtroniclabs.uhis.ncd.data.SiteDetails
 import org.medtroniclabs.uhis.ncd.screening.repo.ScreeningRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel

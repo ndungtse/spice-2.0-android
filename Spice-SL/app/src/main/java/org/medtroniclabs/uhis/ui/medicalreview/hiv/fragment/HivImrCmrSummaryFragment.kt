@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.invisible
 import org.medtroniclabs.uhis.appextensions.setExpandableText
@@ -33,7 +34,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.hiv.viewmodel.HivImrCmrSummaryVie
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.emtct.activity.MotherNeonateEMTCTActivity
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HivImrCmrSummaryFragment : BaseFragment(), View.OnClickListener {

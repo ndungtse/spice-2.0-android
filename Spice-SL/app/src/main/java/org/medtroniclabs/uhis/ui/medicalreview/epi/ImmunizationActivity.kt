@@ -2,6 +2,7 @@ package org.medtroniclabs.uhis.ui.medicalreview.epi
 
 import android.os.Bundle
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
@@ -20,7 +21,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.epi.fragment.MissedImmunisationDi
 import org.medtroniclabs.uhis.ui.medicalreview.epi.viewmodel.ImmunisationViewModel
 import org.medtroniclabs.uhis.ui.mypatients.fragment.PatientInfoFragment
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ImmunizationActivity : BaseActivity(), OnDialogDismissListener {
@@ -112,7 +112,7 @@ class ImmunizationActivity : BaseActivity(), OnDialogDismissListener {
             ImmunisationDetailFragment.newInstance(
                 intent.getStringExtra(DefinedParams.ID),
                 intent.getStringExtra(DefinedParams.PatientId),
-                intent.getStringExtra(DefinedParams.MemberID),
+                intent.getStringExtra(DefinedParams.MEMBER_ID),
                 intent.getStringExtra(DefinedParams.DOB),
             )
         supportFragmentManager
@@ -150,7 +150,7 @@ class ImmunizationActivity : BaseActivity(), OnDialogDismissListener {
             } else {
                 val id = intent.getStringExtra(DefinedParams.ID)
                 val patientId = intent.getStringExtra(DefinedParams.PatientId)
-                val memberId = intent.getStringExtra(DefinedParams.MemberID)
+                val memberId = intent.getStringExtra(DefinedParams.MEMBER_ID)
                 val villageId = intent.getStringExtra(DefinedParams.villageId)
                 val householdId = intent.getStringExtra(DefinedParams.householdId)
                 viewModel.postVaccinationChanges(id, memberId, patientId, it.second, villageId = villageId, householdId = householdId)

@@ -9,6 +9,7 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -20,7 +21,6 @@ import org.medtroniclabs.uhis.databinding.FragmentNcdOfflineDataDialogBinding
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.ncd.landing.viewmodel.NCDOfflineDataViewModel
 import org.medtroniclabs.uhis.ui.landing.OnDialogDismissListener
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {

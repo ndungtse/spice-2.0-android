@@ -1,8 +1,8 @@
 package org.medtroniclabs.uhis.app.analytics.network
 
-import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

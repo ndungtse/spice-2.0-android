@@ -3,6 +3,9 @@ package org.medtroniclabs.uhis.ui.medicalreview.undertwomonths.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.MeasurementDefinedParams
@@ -15,9 +18,6 @@ import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.repo.UnderTwoMonthsRepository
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

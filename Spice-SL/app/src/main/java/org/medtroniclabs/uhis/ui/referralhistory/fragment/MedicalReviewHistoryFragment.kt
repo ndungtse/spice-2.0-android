@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.internal.LinkedTreeMap
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.changePatientStatus
 import org.medtroniclabs.uhis.appextensions.gone
@@ -52,7 +53,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
 import org.medtroniclabs.uhis.ui.mypatients.adapter.DateListAdapter
 import org.medtroniclabs.uhis.ui.referralhistory.adapter.ReferralHistoryAdapter
 import org.medtroniclabs.uhis.ui.referralhistory.viewmodel.ReferralHistoryViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 

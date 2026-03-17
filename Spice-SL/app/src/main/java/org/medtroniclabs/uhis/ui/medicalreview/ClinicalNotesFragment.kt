@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.databinding.FragmentClinicalNotesBinding
@@ -15,7 +16,6 @@ import org.medtroniclabs.uhis.formgeneration.extension.markMandatory
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ClinicalNotesFragment : BaseFragment() {

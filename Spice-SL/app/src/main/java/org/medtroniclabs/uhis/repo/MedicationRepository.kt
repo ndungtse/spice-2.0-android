@@ -1,5 +1,6 @@
 package org.medtroniclabs.uhis.repo
 
+import okhttp3.RequestBody
 import org.medtroniclabs.uhis.data.MedicalReviewMetaItems
 import org.medtroniclabs.uhis.data.MedicationGroupSearchRequest
 import org.medtroniclabs.uhis.data.MedicationResponse
@@ -12,7 +13,6 @@ import org.medtroniclabs.uhis.db.local.RoomHelper
 import org.medtroniclabs.uhis.network.ApiHelper
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.network.resource.ResourceState
-import okhttp3.RequestBody
 import javax.inject.Inject
 
 class MedicationRepository @Inject constructor(

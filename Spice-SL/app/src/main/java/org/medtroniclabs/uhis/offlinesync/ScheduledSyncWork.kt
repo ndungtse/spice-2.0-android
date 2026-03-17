@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import kotlinx.coroutines.delay
 import org.medtroniclabs.uhis.appextensions.hideNotification
 import org.medtroniclabs.uhis.appextensions.showNotification
 import org.medtroniclabs.uhis.common.CommonUtils
@@ -13,9 +16,6 @@ import org.medtroniclabs.uhis.db.local.RoomHelper
 import org.medtroniclabs.uhis.ncd.followup.repo.NCDFollowUpRepo
 import org.medtroniclabs.uhis.repo.OfflineSyncRepository
 import org.medtroniclabs.uhis.repo.RxBuddyRepository
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import kotlinx.coroutines.delay
 
 @HiltWorker
 class ScheduledSyncWork @AssistedInject constructor(

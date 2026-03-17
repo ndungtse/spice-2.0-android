@@ -3,6 +3,9 @@ package org.medtroniclabs.uhis.ui.medicalreview.familyplan.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.data.MedicalReviewMetaItems
 import org.medtroniclabs.uhis.data.model.ChipViewItemModel
@@ -15,9 +18,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams.
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherInjectableComments
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherPermanentMethodComments
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewDefinedParams.OtherProgestinOnlyOralsComments
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

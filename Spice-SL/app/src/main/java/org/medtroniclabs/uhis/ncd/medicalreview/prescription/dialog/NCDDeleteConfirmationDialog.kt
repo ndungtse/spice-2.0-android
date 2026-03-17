@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.setWidth
@@ -15,7 +16,6 @@ import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.databinding.FragmentNcdDeleteConfirmationDialogBinding
 import org.medtroniclabs.uhis.formgeneration.extension.markMandatory
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {

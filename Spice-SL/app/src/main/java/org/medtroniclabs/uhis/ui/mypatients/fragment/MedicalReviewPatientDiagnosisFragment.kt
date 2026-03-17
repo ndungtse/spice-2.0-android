@@ -12,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.changePatientStatus
 import org.medtroniclabs.uhis.appextensions.gone
@@ -53,7 +54,6 @@ import org.medtroniclabs.uhis.ui.medicalreview.viewmodel.PatientStatusViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PatientDetailViewModel
 import org.medtroniclabs.uhis.ui.mypatients.viewmodel.PregnancyDetailsViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MedicalReviewPatientDiagnosisFragment :
@@ -91,7 +91,7 @@ class MedicalReviewPatientDiagnosisFragment :
                 putBoolean(DefinedParams.TB, isTB)
                 putBoolean(DefinedParams.HIV_IMR_CMR, isHivImrCmr)
                 putString(DefinedParams.PatientId, patientId)
-                putString(DefinedParams.MemberID, memberID)
+                putString(DefinedParams.MEMBER_ID, memberID)
                 putString(DefinedParams.ID, id)
                 putBoolean(DefinedParams.FP, isFp)
             }
@@ -1052,7 +1052,7 @@ class MedicalReviewPatientDiagnosisFragment :
         }
     }
 
-    private fun getMemberId(): String = arguments?.getString(DefinedParams.MemberID, "") ?: ""
+    private fun getMemberId(): String = arguments?.getString(DefinedParams.MEMBER_ID, "") ?: ""
 
     override fun onDialogDismissed(
         isBp: Boolean,
