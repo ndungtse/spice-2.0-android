@@ -21,13 +21,29 @@ pipelines:
             allowed-values:
               - debug
               - release
+
       - step:
           name: Build Android App
+          oidc: true
           size: 2x
           caches:
             - gradle
             - gradle-wrapper
+
           script:
+            - apt-get update
+            - apt-get install -y awscli
+
+            # OIDC Authentication
+            - echo "$BITBUCKET_STEP_OIDC_TOKEN" > /tmp/web-identity-token
+            - export AWS_ROLE_ARN=arn:aws:iam::006250192066:role/bitbucket-spice-mobile-s3-role
+            - export AWS_WEB_IDENTITY_TOKEN_FILE=/tmp/web-identity-token
+            - export AWS_DEFAULT_REGION=ap-south-1
+
+            # Verify AWS role
+            - aws sts get-caller-identity
+
+            # Build APK
             - |
               cd Spice-SL
               echo "Generating environment.properties from Bitbucket variables..."
@@ -42,5 +58,13 @@ pipelines:
               ./gradlew --no-daemon --stacktrace --info --max-workers=2 "$TASK_NAME"
               mkdir -p ../artifacts
               find app/build/outputs/apk -type f -name "*.apk" -print -exec cp {} ../artifacts/ \;
+
+            # Upload to S3 by flavor and build type
+            - echo "Uploading build ${BITBUCKET_BUILD_NUMBER} - ${FLAVOR}/${BUILD_TYPE}"
+            - aws s3 cp ../artifacts s3://spice-mobile-apk-bitbucket/${FLAVOR}/${BUILD_TYPE}/build-${BITBUCKET_BUILD_NUMBER}/ --recursive
+
+            # Overwrite latest so there's always a stable URL for the most recent build
+            - aws s3 cp ../artifacts s3://spice-mobile-apk-bitbucket/${FLAVOR}/${BUILD_TYPE}/latest/ --recursive
+
           artifacts:
             - artifacts/*.apk
