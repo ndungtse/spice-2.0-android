@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "vscjava.vscode-java-pack",
+    "fwcd.kotlin",
+    "vscjava.vscode-gradle",
+    "csantiago132.intellij-ish-darcula-theme"
+  ],
+  "unwantedRecommendations": []
+}

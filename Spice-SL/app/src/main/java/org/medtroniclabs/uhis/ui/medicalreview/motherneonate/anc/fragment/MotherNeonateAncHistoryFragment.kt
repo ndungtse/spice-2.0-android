@@ -1,0 +1,183 @@
+package org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.fragment
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import org.medtroniclabs.uhis.R
+import org.medtroniclabs.uhis.appextensions.setExpandableText
+import org.medtroniclabs.uhis.common.CommonUtils
+import org.medtroniclabs.uhis.common.CommonUtils.combineText
+import org.medtroniclabs.uhis.common.CommonUtils.createInvestigation
+import org.medtroniclabs.uhis.common.CommonUtils.createPrescription
+import org.medtroniclabs.uhis.common.DateUtils
+import org.medtroniclabs.uhis.common.DefinedParams.FhirId
+import org.medtroniclabs.uhis.common.DefinedParams.PatientId
+import org.medtroniclabs.uhis.data.MotherNeonateAncSummaryModel
+import org.medtroniclabs.uhis.databinding.FragmentMotherNeonateAncHistoryBinding
+import org.medtroniclabs.uhis.network.resource.ResourceState
+import org.medtroniclabs.uhis.ui.BaseActivity
+import org.medtroniclabs.uhis.ui.BaseFragment
+import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.calculateBp
+import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertBeatsPerMinute
+import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertCMS
+import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertNullableDoubleToString
+import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertNullableStringToString
+import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.viewmodel.MedicalReviewAncHistoryViewModel
+
+class MotherNeonateAncHistoryFragment : BaseFragment() {
+    private lateinit var binding: FragmentMotherNeonateAncHistoryBinding
+    private val viewModel: MedicalReviewAncHistoryViewModel by activityViewModels()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        // Inflate the layout for this fragment
+        binding = FragmentMotherNeonateAncHistoryBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
+        super.onViewCreated(view, savedInstanceState)
+        initView()
+        attachObservers()
+    }
+
+    private fun attachObservers() {
+        viewModel.motherNeonateAncSummary.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resourceState.data?.let {
+                        autoPopulate(it)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+    }
+
+    private fun autoPopulate(motherNeonateSummaryModel: MotherNeonateAncSummaryModel) {
+        motherNeonateSummaryModel.let {
+            with(binding) {
+                tvDateOfReviewValue.text = it.dateOfReview
+                    ?.let {
+                        DateUtils.convertDateFormat(
+                            it,
+                            DateUtils.DATE_FORMAT_yyyyMMdd,
+                            DateUtils.DATE_ddMMyyyy,
+                        )
+                    }.let {
+                        convertNullableStringToString(
+                            it,
+                            requireContext(),
+                        )
+                    }
+                tvAncVisitLabelValue.text = it.visitNumber ?: getString(R.string.hyphen_symbol)
+                tvPrescriptionValue.text = createPrescription(it.prescriptions, requireContext())
+                    ?: getString(R.string.hyphen_symbol)
+                tvInvestigationValue.text = createInvestigation(it.investigations, requireContext())
+                    ?: requireContext().getString(R.string.hyphen_symbol)
+                tvBpValue.text = if (it.systolic == null && it.diastolic == null) {
+                    getString(R.string.hyphen_symbol)
+                } else {
+                    calculateBp(it.systolic, it.diastolic, requireContext())
+                }
+                tvAncVisitLabelValue.text =
+                    convertNullableStringToString(it.visitNumber, requireContext())
+                tvBmiValue.text = if (it.bmi != null) {
+                    convertNullableDoubleToString(it.bmi, requireContext())
+                } else {
+                    if (it.height != null && it.weight != null) {
+                        CommonUtils.getBMI(it.height, it.weight, requireContext())
+                    } else {
+                        getString(R.string.hyphen_symbol)
+                    }
+                }
+                // tvWeightValue.text = convertNullableDoubleToString(it.weight, requireContext())
+                if (it.weight != null && it.weight != 0.0) {
+                    tvWeightValue.text = "${CommonUtils.getDecimalFormatted(
+                        it.weight,
+                    )} ${getString(R.string.kg)}"
+                } else {
+                    tvWeightValue.text = getString(R.string.hyphen_symbol)
+                }
+                tvFetalHeartRateValue.text =
+                    convertBeatsPerMinute(it.fetalHeartRate, requireContext())
+                tvFundalHeightValue.text =
+                    convertCMS(it.fundalHeight, requireContext())
+                tvClinicalNotesValue.setExpandableText(
+                    convertNullableStringToString(
+                        it.clinicalNotes,
+                        requireContext(),
+                    ),
+                    title = tvClinicalNotesLabel.text.toString(),
+                    maxLength = 70,
+                    activity = (requireActivity() as BaseActivity),
+                )
+                tvPresentingComplaintsValue.setExpandableText(
+                    combineText(
+                        it.presentingComplaints,
+                        it.presentingComplaintsNotes,
+                        getString(
+                            R.string.hyphen_symbol,
+                        ),
+                    ),
+                    title = tvPresentingComplaintsLabel.text.toString(),
+                    maxLength = 35,
+                    activity = (requireActivity() as BaseActivity),
+                )
+                tvObstetricsExaminationValue.setExpandableText(
+                    combineText(
+                        it.obstetricExaminations,
+                        it.obstetricExaminationNotes,
+                        getString(
+                            R.string.hyphen_symbol,
+                        ),
+                    ),
+                    title = tvObstetricsExaminationLabel.text.toString(),
+                    maxLength = 35,
+                    activity = (requireActivity() as BaseActivity),
+                )
+            }
+        }
+    }
+
+    private fun initView() {
+        viewModel.getMedicalReviewAncHistory(
+            arguments?.getString(PatientId),
+            arguments?.getString(FhirId),
+        )
+    }
+
+    companion object {
+        const val TAG = "MedicalReviewAncHistoryFragment"
+
+        fun newInstance(): MotherNeonateAncHistoryFragment = MotherNeonateAncHistoryFragment()
+
+        fun newInstance(
+            patientId: String?,
+            fhirId: String?,
+        ): MotherNeonateAncHistoryFragment {
+            val fragment = MotherNeonateAncHistoryFragment()
+            fragment.arguments = Bundle().apply {
+                putString(PatientId, patientId)
+                putString(FhirId, fhirId)
+            }
+            return fragment
+        }
+    }
+}

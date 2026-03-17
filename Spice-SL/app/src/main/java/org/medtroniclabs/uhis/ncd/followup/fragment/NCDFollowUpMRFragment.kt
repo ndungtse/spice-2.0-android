@@ -1,0 +1,144 @@
+package org.medtroniclabs.uhis.ncd.followup.fragment
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import org.medtroniclabs.uhis.appextensions.gone
+import org.medtroniclabs.uhis.appextensions.visible
+import org.medtroniclabs.uhis.data.offlinesync.model.ProvanceDto
+import org.medtroniclabs.uhis.databinding.FragmentFollowUpSearchBinding
+import org.medtroniclabs.uhis.mappingkey.Screening
+import org.medtroniclabs.uhis.ncd.data.FollowUpUpdateRequest
+import org.medtroniclabs.uhis.ncd.data.PatientFollowUpEntity
+import org.medtroniclabs.uhis.ncd.followup.NCDFollowUpUtils
+import org.medtroniclabs.uhis.ncd.followup.adapter.NCDPatientFollowUPListAdapter
+import org.medtroniclabs.uhis.ncd.followup.viewmodel.NCDFollowUpMRViewModel
+import org.medtroniclabs.uhis.ncd.followup.viewmodel.NCDFollowUpViewModel
+import org.medtroniclabs.uhis.ui.BaseFragment
+import org.medtroniclabs.uhis.ui.mypatients.PatientSelectionListenerForFollowUp
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class NCDFollowUpMRFragment : BaseFragment(), PatientSelectionListenerForFollowUp {
+    companion object {
+        const val TAG = "NCDFollowUpMRFragment"
+
+        fun newInstance(type: String) =
+            NCDFollowUpMRFragment().apply {
+                arguments = Bundle().apply {
+                    putString(Screening.type, type)
+                }
+            }
+    }
+
+    private lateinit var binding: FragmentFollowUpSearchBinding
+    private val followUpAdapter: NCDPatientFollowUPListAdapter by lazy {
+        NCDPatientFollowUPListAdapter(
+            this,
+        )
+    }
+
+    private val viewModel: NCDFollowUpViewModel by activityViewModels()
+    private val followUpViewModel: NCDFollowUpMRViewModel by activityViewModels()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        // Inflate the layout for this fragment
+        binding = FragmentFollowUpSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
+        super.onViewCreated(view, savedInstanceState)
+        initView()
+        attachObservers()
+        setAdapterViews()
+    }
+
+    private fun attachObservers() {
+        followUpViewModel.searchLiveData.observe(viewLifecycleOwner) {
+            getPatientList()
+        }
+        followUpViewModel.triggerGetStatus.observe(viewLifecycleOwner) {
+            getPatientList()
+        }
+    }
+
+    private fun initView() {
+        NCDFollowUpUtils.setOrientationAndSpanCountForOffline(
+            requireActivity(),
+            resources,
+            viewModel,
+            binding = binding,
+            context = requireContext(),
+            followUpAdapter = followUpAdapter,
+        )
+    }
+
+    private fun setAdapterViews() {
+        NCDFollowUpUtils.setupAdapterLoadStateListener(
+            adapter = followUpAdapter,
+            requireContext(),
+            showProgress = { showProgress() },
+            hideProgress = { hideProgress() },
+            showPageProgress = { binding.pageProgress.visible() },
+            hidePageProgress = { binding.pageProgress.gone() },
+            showError = { title, message ->
+                showErrorDialog(title = title, message = message)
+            },
+            postError = { viewModel.totalPatientCount.postValue(null) },
+        )
+    }
+
+    override fun onSelectedPatientForCall(item: PatientFollowUpEntity) {
+        if (NCDFollowUpUtils.hasTelephonyFeature(requireContext())) {
+            item.id?.let { id ->
+                val request = FollowUpUpdateRequest(
+                    id = id,
+                    patientId = item.patientId,
+                    attempts = null,
+                    type = viewModel.type,
+                    referredSiteId = item.referredSiteId,
+                    villageId = item.villageId,
+                    memberId = item.memberId,
+                    isInitiated = true,
+                    phoneNumber = item.phoneNumber,
+                    provenance = ProvanceDto(),
+                )
+                withNetworkAvailability(online = {
+                    viewModel.updatePatientCallRegister(request)
+                })
+            }
+        } else {
+            showCallDialError()
+        }
+    }
+
+    override fun onSelectedPatientForAssessment(item: PatientFollowUpEntity) {
+        withNetworkAvailability(online = {
+            launchAssessment(item, requireContext())
+        })
+    }
+
+    override fun onSelectedPatientCard(item: PatientFollowUpEntity) {
+        viewModel.selectedPatient = item
+        launchPatientDetailsDialog(this)
+    }
+
+    private fun getPatientList() {
+        NCDFollowUpUtils.submitEmptyList(followUpAdapter, viewLifecycleOwner)
+        NCDFollowUpUtils.collectPagedData(
+            lifecycleOwner = viewLifecycleOwner,
+            pagingDataFlow = viewModel.patientsDataSource,
+            adapter = followUpAdapter,
+        )
+    }
+}

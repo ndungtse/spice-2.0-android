@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.medtroniclabs.spice.app.analytics"
+    namespace = "org.medtroniclabs.uhis.app.analytics"
     compileSdk = 36
 
     defaultConfig {

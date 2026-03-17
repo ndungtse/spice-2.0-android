@@ -35,7 +35,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+                <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                     android:id="@+id/immunisationDetailFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

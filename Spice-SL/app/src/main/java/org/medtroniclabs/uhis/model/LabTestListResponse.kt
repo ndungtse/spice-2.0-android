@@ -1,0 +1,18 @@
+package org.medtroniclabs.uhis.model
+
+import org.medtroniclabs.uhis.model.medicalreview.SearchLabTestResponse
+
+data class LabTestListResponse(
+    val id: String,
+    val testName: String,
+    val recommendedBy: String,
+    val recommendedOn: String,
+    val recommendedName: String,
+    val labTestResults: ArrayList<LabTestResultObject>,
+    val labTestCustomization: SearchLabTestResponse,
+    val testedOn: String? = null,
+    val isReview: Boolean? = null,
+    val components: ArrayList<Map<String, Any?>>? = null,
+    val comments: String? = null,
+    val descriptiveResult: String? = null,
+)

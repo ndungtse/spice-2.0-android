@@ -8,7 +8,7 @@
     android:background="@color/white"
     android:fillViewport="true"
     android:id="@+id/main"
-    tools:context="com.medtroniclabs.spice.ui.boarding.LoginActivity">
+    tools:context="org.medtroniclabs.uhis.ui.boarding.LoginActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

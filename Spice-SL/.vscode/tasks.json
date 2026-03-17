@@ -1,0 +1,57 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Open in Android Studio",
+      "type": "shell",
+      "command": "open -a 'Android Studio' '${workspaceFolder}'",
+      "group": "none",
+      "presentation": { "reveal": "silent" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Gradle: assembleDebug",
+      "type": "shell",
+      "command": "./gradlew assembleDebug",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": "$gradle"
+    },
+    {
+      "label": "Gradle: compileDebugKotlin",
+      "type": "shell",
+      "command": "./gradlew :app:compileDebugKotlin",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": "$gradle"
+    },
+    {
+      "label": "Gradle: test (unit)",
+      "type": "shell",
+      "command": "./gradlew testDebugUnitTest",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": "$gradle"
+    },
+    {
+      "label": "Gradle: clean",
+      "type": "shell",
+      "command": "./gradlew clean",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

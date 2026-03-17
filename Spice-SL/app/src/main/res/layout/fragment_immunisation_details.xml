@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <com.medtroniclabs.spice.ui.medicalreview.epi.view.EpiProgressIndicatorView
+            <org.medtroniclabs.uhis.ui.medicalreview.epi.view.EpiProgressIndicatorView
                 android:id="@+id/epiProgressIndicatorView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

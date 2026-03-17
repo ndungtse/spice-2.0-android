@@ -1,0 +1,13 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.import.gradle.enabled": true,
+  "java.import.gradle.wrapper.enabled": true,
+  "java.project.importOnFirstTimeStartup": "automatic",
+  "java.project.referencedLibraries": [],
+  "editor.semanticHighlighting.enabled": true,
+  "kotlin.languageServer.enabled": true,
+  "kotlin.languageServer.path": "",
+  "files.associations": {
+    "*.kt": "kotlin"
+  }
+}

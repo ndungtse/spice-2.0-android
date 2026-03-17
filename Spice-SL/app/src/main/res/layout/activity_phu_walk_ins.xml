@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.phuwalkins.activity.PhuWalkInsActivity">
 
-    <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+    <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
         android:id="@+id/phuListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

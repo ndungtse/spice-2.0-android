@@ -127,7 +127,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+    <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
         android:id="@+id/frameBaseLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_0dp"

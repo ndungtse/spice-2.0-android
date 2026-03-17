@@ -1,242 +1,48 @@
 {
-  "project_info": {
-    "project_number": "141742997357",
-    "project_id": "spice-prod-cd346",
-    "storage_bucket": "spice-prod-cd346.firebasestorage.app"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:141742997357:android:972a7ff168c3cc600ae464",
-        "android_client_info": {
-          "package_name": "com.medtroniclabs.spice"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD6UmtFIHRZIVNARu5IJaXsTQINWhj8yLo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
+    "project_info": {
+        "project_number": "142060141576",
+        "project_id": "uhis-499cb",
+        "storage_bucket": "uhis-499cb.firebasestorage.app"
     },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:141742997357:android:6bdf397920ecccda0ae464",
-        "android_client_info": {
-          "package_name": "com.medtroniclabs.spice.bd"
-        }
-      },
-      "oauth_client": [
+    "client": [
         {
-          "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD6UmtFIHRZIVNARu5IJaXsTQINWhj8yLo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-              "client_type": 3
+            "client_info": {
+                "mobilesdk_app_id": "1:142060141576:android:684689c73a0c29992b65bd",
+                "android_client_info": {
+                    "package_name": "org.medtroniclabs.uhis"
+                }
+            },
+            "oauth_client": [],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyDOscFmFewTw20KR3enzzoEnisROnznWrI"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": []
+                }
             }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:141742997357:android:0113d5c8f2b2f40b0ae464",
-        "android_client_info": {
-          "package_name": "com.medtroniclabs.spice.ke"
-        }
-      },
-      "oauth_client": [
+        },
         {
-          "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD6UmtFIHRZIVNARu5IJaXsTQINWhj8yLo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-              "client_type": 3
+            "client_info": {
+                "mobilesdk_app_id": "1:142060141576:android:3d4f1dcffd10bd142b65bd",
+                "android_client_info": {
+                    "package_name": "org.medtroniclabs.uhis.staging"
+                }
+            },
+            "oauth_client": [],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyDOscFmFewTw20KR3enzzoEnisROnznWrI"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": []
+                }
             }
-          ]
         }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:141742997357:android:65bbf908b3dabcb30ae464",
-        "android_client_info": {
-          "package_name": "com.medtroniclabs.spice.sl"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD6UmtFIHRZIVNARu5IJaXsTQINWhj8yLo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:141742997357:android:a33b00d5b539c6740ae464",
-        "android_client_info": {
-          "package_name": "com.medtroniclabs.spice.ss"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD6UmtFIHRZIVNARu5IJaXsTQINWhj8yLo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:141742997357:android:0b9a66ae6e2f5d1f0ae464",
-        "android_client_info": {
-          "package_name": "com.medtroniclabs.spice.tiberbu"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD6UmtFIHRZIVNARu5IJaXsTQINWhj8yLo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:141742997357:android:bc16eeb85041b56c0ae464",
-        "android_client_info": {
-          "package_name": "com.medtroniclabs.spice.us"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD6UmtFIHRZIVNARu5IJaXsTQINWhj8yLo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:141742997357:android:d983d6f8f55ef6440ae464",
-        "android_client_info": {
-          "package_name": "com.medtroniclabs.spice.us.work"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD6UmtFIHRZIVNARu5IJaXsTQINWhj8yLo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    }
-  ],
-  "configuration_version": "1"
+    ],
+    "configuration_version": "1"
 }

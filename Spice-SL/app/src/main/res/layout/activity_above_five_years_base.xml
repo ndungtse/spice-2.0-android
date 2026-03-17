@@ -248,19 +248,19 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/patientDetailFragment" />
 
-                    <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+                    <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                         android:id="@+id/presentingComplaintsContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintTop_toBottomOf="@+id/patientDiagnosisContainer" />
 
-                    <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+                    <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                         android:id="@+id/systemicExaminationsContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintTop_toBottomOf="@+id/presentingComplaintsContainer" />
 
-                    <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+                    <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                         android:id="@+id/clinicalNotesContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

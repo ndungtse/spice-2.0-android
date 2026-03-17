@@ -137,7 +137,7 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+    <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
         android:id="@+id/systemicExamContainer"
         android:layout_width="match_parent"
         android:visibility="gone"

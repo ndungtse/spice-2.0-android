@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.app.analytics
+package org.medtroniclabs.uhis.app.analytics
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

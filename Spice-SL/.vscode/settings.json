@@ -1,0 +1,84 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.import.gradle.enabled": true,
+  "java.import.gradle.wrapper.enabled": true,
+  "java.project.importOnFirstTimeStartup": "automatic",
+  "java.project.referencedLibraries": [],
+  "editor.semanticHighlighting.enabled": true,
+  "files.associations": {
+    "*.kt": "java"
+  },
+
+  "workbench.colorTheme": "Default Light Modern",
+  "workbench.colorCustomizations": {
+    "editor.background": "#ffffff"
+  },
+  "editor.fontFamily": "JetBrains Mono, 'Fira Code', Menlo, Monaco, monospace",
+  "editor.fontSize": 13,
+  "editor.lineHeight": 1.5,
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.rulers": [120],
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "workbench.sideBar.location": "left",
+  "explorer.sortOrder": "type",
+
+  "editor.semanticTokenColorCustomizations": {
+    "rules": {
+      "class": "#6fb3d0",
+      "class.declaration": "#6fb3d0",
+      "type": "#6fb3d0",
+      "type.declaration": "#6fb3d0",
+      "interface": "#6fb3d0",
+      "interface.declaration": "#6fb3d0",
+      "enum": "#6fb3d0",
+      "enum.declaration": "#6fb3d0",
+      "function": "#ffc66d",
+      "function.declaration": "#ffc66d",
+      "method": "#ffc66d",
+      "method.declaration": "#ffc66d",
+      "constructor": "#ffc66d",
+      "variable": "#a9b7c6",
+      "variable.declaration": "#a9b7c6",
+      "parameter": "#9876aa",
+      "parameter.declaration": "#9876aa",
+      "property": "#9876aa",
+      "property.declaration": "#9876aa"
+    }
+  },
+
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": [
+          "entity.name.type.class",
+          "entity.name.type",
+          "support.class",
+          "storage.type"
+        ],
+        "settings": { "foreground": "#6fb3d0", "fontStyle": "" }
+      },
+      {
+        "scope": [
+          "entity.name.function",
+          "support.function",
+          "meta.function entity.name.function"
+        ],
+        "settings": { "foreground": "#ffc66d", "fontStyle": "" }
+      },
+      {
+        "scope": [
+          "variable.parameter",
+          "variable.other.readwrite",
+          "variable.other"
+        ],
+        "settings": { "foreground": "#9876aa", "fontStyle": "" }
+      },
+      {
+        "scope": ["variable.language.this", "variable.language.super"],
+        "settings": { "foreground": "#9876aa", "fontStyle": "italic" }
+      }
+    ]
+  }
+}

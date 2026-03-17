@@ -20,7 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keepclassmembers class com.medtroniclabs.spice.app.analytics.** {*;}
+-keepclassmembers class org.medtroniclabs.uhis.app.analytics.** {*;}
 
 
 # OkHttp platform used only on JVM and when Conscrypt and other security providers are available.

@@ -209,7 +209,7 @@
                 app:layout_constraintStart_toStartOf="@+id/startGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvGeneralSystemicExaminationLabel" />
 
-            <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+            <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                 android:id="@+id/flExaminationContainer"
                 android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"
@@ -235,7 +235,7 @@
                     android:text="@string/empty__"
                     android:textSize="@dimen/_16ssp"
                     android:visibility="visible" />
-            </com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout>
+            </org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvClinicalNotesLabel"

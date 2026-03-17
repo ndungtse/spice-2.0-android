@@ -9,7 +9,7 @@
     tools:context=".ui.household.HouseholdActivity">
 
 
-    <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+    <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"

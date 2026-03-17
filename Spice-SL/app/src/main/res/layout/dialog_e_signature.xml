@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <com.medtroniclabs.spice.ui.DialogTitleFrameLayout
+            <org.medtroniclabs.uhis.ui.DialogTitleFrameLayout
                 android:id="@+id/clTitleCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/dividerTop" />
 
-            <com.medtroniclabs.spice.signature.view.SignatureView
+            <org.medtroniclabs.uhis.signature.view.SignatureView
                 android:id="@+id/signatureView"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_0dp"

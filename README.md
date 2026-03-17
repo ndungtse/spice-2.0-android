@@ -95,10 +95,14 @@ ls -la
 
 ### Step 2: Open in Android Studio
 
+You can open the project from either the repository root or the Spice-SL folder:
+
 1. Launch Android Studio
-2. Select "Open an existing Android Studio project"
-3. Navigate to the cloned `Spice-SL` directory
-4. Click "OK" to open the project
+2. Select **File** → **Open** (or "Open an existing Android Studio project")
+3. Navigate to your clone and choose:
+   - **Repository root** (`spice_mobile`) – recommended; Gradle is configured so the app and analytics modules are included from `Spice-SL/`
+   - Or the **Spice-SL** directory if you prefer to open only that subfolder
+4. Click **OK** and let Gradle sync
 
 ### Step 3: Configure Java Version
 

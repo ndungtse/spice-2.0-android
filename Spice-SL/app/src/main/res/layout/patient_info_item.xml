@@ -89,7 +89,7 @@
         app:layout_constraintStart_toEndOf="@id/etValue"
         app:layout_constraintTop_toTopOf="@id/tvLabel" />
 
-    <com.medtroniclabs.spice.toggle.LabeledSwitch
+    <org.medtroniclabs.uhis.toggle.LabeledSwitch
         android:id="@+id/smHighRisk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

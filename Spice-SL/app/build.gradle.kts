@@ -1,4 +1,4 @@
-﻿import java.util.Properties
+import java.util.Properties
 
 val envProperties = Properties()
 val envFile = rootProject.file("environment.properties")
@@ -10,7 +10,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
-    id("dagger.hilt.android.plugin")
+    id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("kotlin-parcelize")
@@ -19,15 +19,15 @@ plugins {
 
 android {
 
-    namespace = "com.medtroniclabs.spice"
+    namespace = "org.medtroniclabs.uhis"
     compileSdk = 36
     ndkVersion = "26.1.10909125"
 
     defaultConfig {
-        applicationId = "com.medtroniclabs.spice"
+        applicationId = "org.medtroniclabs.uhis"
         minSdk = 23
         targetSdk = 36
-        versionCode = 10
+        versionCode = 15
         versionName = "2.0.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
@@ -75,17 +75,19 @@ android {
     productFlavors {
         create("dev") {
             dimension = "version"
-            applicationIdSuffix = ".dev"
-            resValue("string", "app_name", "Spice")
+//            applicationIdSuffix = ".dev"
+            resValue("string", "app_name", "UHIS Dev")
         }
         create("qa") {
-            applicationIdSuffix = ".dev"
+//            applicationIdSuffix = ".dev"
             dimension = "version"
+            resValue("string", "app_name", "UHIS QA")
         }
         create("staging") {
             dimension = "version"
             applicationIdSuffix = ".staging"
             signingConfig = signingConfigs.getByName("staging")
+            resValue("string", "app_name", "UHIS Training")
         }
         create("production") {
             dimension = "version"

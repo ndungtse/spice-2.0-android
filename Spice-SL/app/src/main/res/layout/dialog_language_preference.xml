@@ -29,7 +29,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <com.medtroniclabs.spice.ui.DialogTitleFrameLayout
+                <org.medtroniclabs.uhis.ui.DialogTitleFrameLayout
                     android:id="@+id/labelHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

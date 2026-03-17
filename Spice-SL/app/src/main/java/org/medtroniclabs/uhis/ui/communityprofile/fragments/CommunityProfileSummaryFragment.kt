@@ -1,0 +1,366 @@
+package org.medtroniclabs.uhis.ui.communityprofile.fragments
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import com.google.gson.internal.LinkedTreeMap
+import org.medtroniclabs.uhis.R
+import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
+import org.medtroniclabs.uhis.common.CommonUtils
+import org.medtroniclabs.uhis.common.DateUtils
+import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_ddMMMyyyy
+import org.medtroniclabs.uhis.common.DefinedParams
+import org.medtroniclabs.uhis.common.StringConverter
+import org.medtroniclabs.uhis.data.community.CommunityPopulationStatistics
+import org.medtroniclabs.uhis.data.community.CommunitySummaryListItem
+import org.medtroniclabs.uhis.databinding.FragmentCommunityProfileSummaryBinding
+import org.medtroniclabs.uhis.db.entity.CommunityProfile
+import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
+import org.medtroniclabs.uhis.mappingkey.CommunityDetails.AccessRoadToPhu
+import org.medtroniclabs.uhis.mappingkey.CommunityDetails.ChwHouseInCommunity
+import org.medtroniclabs.uhis.mappingkey.CommunityDetails.DescribeLocation
+import org.medtroniclabs.uhis.mappingkey.CommunityDetails.EmergencyManagementPlan
+import org.medtroniclabs.uhis.mappingkey.CommunityDetails.False
+import org.medtroniclabs.uhis.mappingkey.CommunityDetails.Infrastructure
+import org.medtroniclabs.uhis.mappingkey.CommunityDetails.MarketDays
+import org.medtroniclabs.uhis.mappingkey.CommunityDetails.MobileNetworkCoverage
+import org.medtroniclabs.uhis.mappingkey.CommunityDetails.NearestPhu
+import org.medtroniclabs.uhis.mappingkey.CommunityDetails.OtherNetwork
+import org.medtroniclabs.uhis.mappingkey.CommunityDetails.SelectedNetwork
+import org.medtroniclabs.uhis.mappingkey.CommunityDetails.True
+import org.medtroniclabs.uhis.mappingkey.CommunityDetails.WaterAndSanitationFacilities
+import org.medtroniclabs.uhis.ui.BaseFragment
+import org.medtroniclabs.uhis.ui.communityprofile.adapter.CommunitySummaryAdapter
+import org.medtroniclabs.uhis.ui.communityprofile.viewmodel.CommunityProfileViewModel
+
+class CommunityProfileSummaryFragment : BaseFragment(), View.OnClickListener {
+    private lateinit var binding: FragmentCommunityProfileSummaryBinding
+    private lateinit var communitySummaryAdapter: CommunitySummaryAdapter
+    private val viewModel: CommunityProfileViewModel by activityViewModels()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View? {
+        // Inflate the layout for this fragment
+        binding = FragmentCommunityProfileSummaryBinding.inflate(
+            layoutInflater,
+            container,
+            false,
+        )
+        return binding.root
+    }
+
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
+        super.onViewCreated(view, savedInstanceState)
+        initViews()
+        addObservers()
+    }
+
+    private fun addObservers() {
+        viewModel.combinedLiveData.observe(viewLifecycleOwner) { (stats, details) ->
+            if (stats?.data != null && details?.data != null) {
+                setData(stats.data, details.data)
+            }
+        }
+    }
+
+    private fun initViews() {
+        showHomeIcon()
+        communitySummaryAdapter = CommunitySummaryAdapter()
+        binding.rvCommunityProfileSummary.apply {
+            adapter = communitySummaryAdapter
+        }
+        arguments?.getLong(DefinedParams.COMMUNITY_ID)?.let { villageId ->
+            viewModel.getCommunityDetailsLocal(villageId = villageId)
+            viewModel.getPopulationStatistics(villageId = villageId)
+        }
+        binding.btnDone.safeClickListener(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.setUserJourney(AnalyticsDefinedParams.COMMUNITYPROFILEDETAILSCREEN)
+    }
+
+    private fun setData(
+        statistics: CommunityPopulationStatistics?,
+        details: CommunityProfile?,
+    ) {
+        val communityList = mutableListOf<CommunitySummaryListItem>()
+        communityList.add(CommunitySummaryListItem.TitleItem(getString(R.string.profile_details)))
+        communityList.add(
+            CommunitySummaryListItem.ProfileItem(
+                arguments?.getString(DefinedParams.COMMUNITY_NAME),
+                details?.communityDescription,
+                DateUtils.convertUTCString(details?.registeredDate, DATE_FORMAT_ddMMMyyyy),
+            ),
+        )
+        communityList.add(
+            CommunitySummaryListItem.TitleItem(
+                getString(
+                    R.string.community_population_statistics,
+                ),
+            ),
+        )
+        communityList.add(
+            CommunitySummaryListItem.OtherItem(
+                getString(R.string.total_population),
+                statistics?.populationCount.toString(),
+            ),
+        )
+        communityList.add(
+            CommunitySummaryListItem.OtherItem(
+                getString(R.string.no_of_household_families),
+                statistics?.householdCount.toString(),
+            ),
+        )
+        communityList.add(
+            CommunitySummaryListItem.OtherItem(
+                getString(R.string.no_of_women_of_child_bearing_age),
+                statistics?.childBearingAgeOfWomen.toString(),
+            ),
+        )
+        communityList.add(
+            CommunitySummaryListItem.OtherItem(
+                getString(R.string.no_of_pregnant_women),
+                statistics?.pregnantCount.toString(),
+            ),
+        )
+        communityList.add(
+            CommunitySummaryListItem.OtherItem(
+                getString(R.string.no_of_child_under_one_year),
+                statistics?.belowOneYearCount.toString(),
+            ),
+        )
+        communityList.add(
+            CommunitySummaryListItem.OtherItem(
+                getString(R.string.no_of_children_under_five_years),
+                statistics?.belowFiveYearCount.toString(),
+            ),
+        )
+
+        details?.payload?.let { payloadString ->
+            val payload = StringConverter.stringToMap(payloadString)
+        }
+
+        details?.payload?.let { payload ->
+            val forms = viewModel.formLayoutLiveData.value
+                ?.data
+                ?.formLayout
+                ?.filter { it.isSummary == true }
+            val dataMap = StringConverter.stringToMap(payload)
+
+            // Water and sanitation
+            val waterAndSanitation = dataMap[WaterAndSanitationFacilities] as LinkedTreeMap<*, *>
+            val waterAndSanitationForms = forms?.filter { it.family == WaterAndSanitationFacilities }
+            communityList.add(
+                CommunitySummaryListItem.TitleItem(
+                    getString(
+                        R.string.water_and_sanitation_facilities,
+                    ),
+                ),
+            )
+            waterAndSanitationForms?.forEach { form ->
+                val value = waterAndSanitation[form.id]
+                communityList.add(
+                    CommunitySummaryListItem.OtherItem(
+                        form.title,
+                        value.toString(),
+                    ),
+                )
+            }
+
+            // Infrastructure
+            val infrastructure = dataMap[Infrastructure] as LinkedTreeMap<*, *>
+            val infrastructureForms = forms?.filter { it.family == Infrastructure }
+            communityList.add(
+                CommunitySummaryListItem.TitleItem(
+                    getString(R.string.infrastructure_facilities),
+                ),
+            )
+
+            infrastructureForms?.forEach { form ->
+                when (form.id) {
+                    MarketDays -> {
+                        val marketDays = infrastructure[form.id] as? ArrayList<String>
+                        val size = marketDays?.size ?: 0
+                        if (size > 0) {
+                            communityList.add(
+                                CommunitySummaryListItem.OtherItemText(
+                                    getString(R.string.market_days),
+                                    marketDays?.joinToString(",") { it.take(3) ?: "" },
+                                ),
+                            )
+                        }
+                    }
+                    MobileNetworkCoverage -> {
+                        val value = infrastructure[form.id]
+                        when (value.toString()) {
+                            True -> {
+                                viewModel.isNetworkCoverage = true
+                                viewModel.networkName = form.title
+                            }
+                            False -> {
+                                communityList.add(
+                                    CommunitySummaryListItem.OtherItem(
+                                        form.title,
+                                        value.toString(),
+                                        isText = false,
+                                    ),
+                                )
+                            }
+                        }
+                    }
+
+                    SelectedNetwork -> {
+                        val value = infrastructure[form.id] as? ArrayList<String>
+                        val size = value?.size ?: 0
+                        if (viewModel.isNetworkCoverage && size > 0) {
+                            if (!value.isNullOrEmpty()) {
+                                val valueList = value.let { CommonUtils.convertListToString(it) }
+                                if (value.contains(getString(R.string.other)) &&
+                                    infrastructure.containsKey(
+                                        OtherNetwork,
+                                    )
+                                ) {
+                                    viewModel.otherNetwork =
+                                        infrastructure[OtherNetwork] as? String ?: ""
+                                    communityList.add(
+                                        CommunitySummaryListItem.OtherItemText(
+                                            viewModel.networkName,
+                                            "$valueList - ${viewModel.otherNetwork}",
+                                        ),
+                                    )
+                                } else {
+                                    communityList.add(
+                                        CommunitySummaryListItem.OtherItemText(
+                                            viewModel.networkName,
+                                            valueList,
+                                        ),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    ChwHouseInCommunity -> {
+                        val value = infrastructure[form.id]
+                        when (value.toString()) {
+                            True -> {
+                                viewModel.isChwHome = true
+                                viewModel.chwHome = form.title
+                            }
+                            False -> {
+                                communityList.add(
+                                    CommunitySummaryListItem.OtherItem(
+                                        form.title,
+                                        value.toString(),
+                                        isText = false,
+                                    ),
+                                )
+                            }
+                        }
+                    }
+                    DescribeLocation -> {
+                        val value = infrastructure[form.id]
+                        if (viewModel.isChwHome) {
+                            communityList.add(
+                                CommunitySummaryListItem.OtherItemText(
+                                    viewModel.chwHome,
+                                    value.toString(),
+                                ),
+                            )
+                            viewModel.isChwHome = false
+                            viewModel.chwHome = ""
+                        }
+                    }
+                    else -> {
+                        val value = infrastructure[form.id]
+                        communityList.add(
+                            CommunitySummaryListItem.OtherItem(
+                                form.title,
+                                value.toString(),
+                                isText = (value is String),
+                            ),
+                        )
+                    }
+                }
+            }
+
+            // EmergencyManagementPlan
+            val emergency = dataMap[EmergencyManagementPlan] as LinkedTreeMap<*, *>
+            val emergencyForms = forms?.filter { it.family == EmergencyManagementPlan }
+            communityList.add(
+                CommunitySummaryListItem.TitleItem(
+                    getString(R.string.emergency_management_plan),
+                ),
+            )
+            val emergencyMap = mutableMapOf<String, String>()
+            emergencyForms?.forEach { form ->
+                val value = emergency[form.id]
+                when (form.id) {
+                    NearestPhu -> {
+                        viewModel.nearestPhu = value.toString()
+                    }
+                    AccessRoadToPhu -> {
+                        when (value.toString()) {
+                            True -> emergencyMap[form.title] = getString(R.string.yes)
+                            False -> emergencyMap[form.title] = getString(R.string.no)
+                        }
+                    }
+                    else -> {
+                        emergencyMap[form.title] = value.toString()
+                    }
+                }
+            }
+
+            communityList.add(
+                CommunitySummaryListItem.EmergencyItem(
+                    viewModel.nearestPhu,
+                    emergencyMap,
+                ),
+            )
+        }
+
+        communitySummaryAdapter.updateList(communityList)
+    }
+
+    fun navigateToEditScreen() {
+        arguments?.getLong(DefinedParams.COMMUNITY_ID)?.let {
+            val bundle = Bundle().apply {
+                putLong(DefinedParams.COMMUNITY_ID, it)
+                putString(
+                    DefinedParams.COMMUNITY_NAME,
+                    arguments?.getString(DefinedParams.COMMUNITY_NAME),
+                )
+                arguments?.getBoolean(DefinedParams.COMMUNITY_REGISTERED)?.let {
+                    putBoolean(
+                        DefinedParams.COMMUNITY_REGISTERED,
+                        it,
+                    )
+                }
+            }
+            viewModel.updateCurrentFragment(2, bundle)
+        }
+    }
+
+    companion object {
+        const val TAG = "CommunityProfileSummaryFragment"
+    }
+
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            R.id.btnDone -> {
+                // viewModel.updateCurrentFragment(1)
+                requireActivity().finish()
+                viewModel.setUserJourney(AnalyticsDefinedParams.DONEBUTTONTRIGGERED)
+            }
+        }
+    }
+}

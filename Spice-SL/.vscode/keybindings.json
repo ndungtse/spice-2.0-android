@@ -1,0 +1,22 @@
+[
+  {
+    "key": "cmd+click",
+    "command": "editor.action.revealDefinition",
+    "when": "editorTextFocus && (editorLangId == 'java' || editorLangId == 'kotlin')"
+  },
+  {
+    "key": "f12",
+    "command": "editor.action.revealDefinition",
+    "when": "editorTextFocus && (editorLangId == 'java' || editorLangId == 'kotlin')"
+  },
+  {
+    "key": "alt+f12",
+    "command": "editor.action.peekDefinition",
+    "when": "editorTextFocus && (editorLangId == 'java' || editorLangId == 'kotlin')"
+  },
+  {
+    "key": "cmd+shift+g",
+    "command": "workbench.action.findInFiles",
+    "when": "editorTextFocus && (editorLangId == 'java' || editorLangId == 'kotlin')"
+  }
+]

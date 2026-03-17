@@ -47,37 +47,37 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/patientDetailFragment" />
 
-                <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+                <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                     android:id="@+id/birthHistoryContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@+id/patientDiagnosisContainer" />
 
-                <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+                <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                     android:id="@+id/clinicalSummaryContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@+id/birthHistoryContainer" />
 
-                <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+                <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                     android:id="@+id/presentingComplaintsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@+id/clinicalSummaryContainer" />
 
-                <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+                <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                     android:id="@+id/examinationsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@+id/presentingComplaintsContainer" />
 
-                <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+                <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                     android:id="@+id/clinicalNotesContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@+id/examinationsContainer" />
 
-                <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+                <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                     android:id="@+id/underTwoSummaryContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+    <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
         android:id="@+id/bottomViewContainer"
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
@@ -246,7 +246,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_16sdp"
             android:visibility="gone" />
-    </com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout>
+    </org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

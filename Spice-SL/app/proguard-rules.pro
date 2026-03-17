@@ -20,14 +20,14 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keepclassmembers class com.medtroniclabs.spice.app.analytics.** {*;}
+-keepclassmembers class org.medtroniclabs.uhis.app.analytics.** {*;}
 
 
--keepclassmembers class com.medtroniclabs.spice.data.** {*;}
--keepclassmembers class com.medtroniclabs.spice.ncd.data.** {*;}
--keepclassmembers class com.medtroniclabs.spice.model.** {*;}
--keepclassmembers class com.medtroniclabs.spice.db.** {*;}
--keepclassmembers class com.medtroniclabs.spice.formgeneration.** {*;}
+-keepclassmembers class org.medtroniclabs.uhis.data.** {*;}
+-keepclassmembers class org.medtroniclabs.uhis.ncd.data.** {*;}
+-keepclassmembers class org.medtroniclabs.uhis.model.** {*;}
+-keepclassmembers class org.medtroniclabs.uhis.db.** {*;}
+-keepclassmembers class org.medtroniclabs.uhis.formgeneration.** {*;}
 -keepattributes InnerClasses -keep class **.R -keep class **.R$* { <fields>; }
 
 
@@ -71,7 +71,7 @@
 -keep public class com.robertlevonyan.views.** { public *;}
 -keep public class com.robertlevonyan.chip.** { public *;}
 
--keepclassmembers class com.medtroniclabs.spice.db.tables.** {*;}
+-keepclassmembers class org.medtroniclabs.uhis.db.tables.** {*;}
 -keepclasseswithmembernames class com.google.gson.** {*;}
 -keep class com.google.gson.reflect.TypeToken { *; }
 -keep class * extends com.google.gson.reflect.TypeToken
@@ -150,8 +150,8 @@
 -keepclassmembers,allowobfuscation class * {
  @com.google.gson.annotations.SerializedName <fields>;
 }
--dontwarn com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
--dontwarn com.medtroniclabs.spice.app.analytics.model.ScreenDetails
--dontwarn com.medtroniclabs.spice.app.analytics.model.UserDetail
--dontwarn com.medtroniclabs.spice.app.analytics.model.UserJourneyAnalytics
--dontwarn com.medtroniclabs.spice.app.analytics.utils.CommonUtils
+-dontwarn org.medtroniclabs.uhis.app.analytics.db.AnalyticsRepository
+-dontwarn org.medtroniclabs.uhis.app.analytics.model.ScreenDetails
+-dontwarn org.medtroniclabs.uhis.app.analytics.model.UserDetail
+-dontwarn org.medtroniclabs.uhis.app.analytics.model.UserJourneyAnalytics
+-dontwarn org.medtroniclabs.uhis.app.analytics.utils.CommonUtils

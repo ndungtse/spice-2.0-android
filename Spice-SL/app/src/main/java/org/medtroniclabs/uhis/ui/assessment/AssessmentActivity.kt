@@ -1,0 +1,700 @@
+package org.medtroniclabs.uhis.ui.assessment
+
+import android.content.Intent
+import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
+import org.medtroniclabs.uhis.R
+import org.medtroniclabs.uhis.app.analytics.model.UserDetail
+import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
+import org.medtroniclabs.uhis.appextensions.startBackgroundOfflineSync
+import org.medtroniclabs.uhis.common.CommonUtils
+import org.medtroniclabs.uhis.common.DefinedParams
+import org.medtroniclabs.uhis.common.SpiceLocationManager
+import org.medtroniclabs.uhis.databinding.ActivityAssessmentBinding
+import org.medtroniclabs.uhis.formgeneration.extension.capitalizeFirstChar
+import org.medtroniclabs.uhis.mappingkey.Screening
+import org.medtroniclabs.uhis.network.resource.ResourceState
+import org.medtroniclabs.uhis.ui.BaseActivity
+import org.medtroniclabs.uhis.ui.MenuConstants
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.OtherSymptoms
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.Summary
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentFamilyPlanningFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentFamilyPlanningSummaryFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentICCMFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentICCMSummaryFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentNCDFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentNCDSummaryFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentOtherSymptomSummaryFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentOtherSymptomsFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentPregnancyOutcomeFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentPregnancyOutcomeSummaryFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentPregnantWomenRegistrationFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentPregnantWomenRegistrationSummaryFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentRMNCHFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentRMNCHSummaryFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentSLNCDFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentSLNCDSummaryFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentTBFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentTBSummaryFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.BDNCDAssessmentFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.BDNCDAssessmentSummaryFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.RxBuddySummaryFragment
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ChildHoodVisit
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DeathOfMother
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PNC
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.deathOfBaby
+import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
+import org.medtroniclabs.uhis.ui.cbs.activity.CbsActivity
+import org.medtroniclabs.uhis.ui.followup.FollowUpMyPatientActivity
+import org.medtroniclabs.uhis.ui.household.HouseholdSearchActivity
+import org.medtroniclabs.uhis.ui.landing.LandingActivity
+import dagger.hilt.android.AndroidEntryPoint
+import org.json.JSONObject
+
+@AndroidEntryPoint
+class AssessmentActivity : BaseActivity() {
+    private lateinit var binding: ActivityAssessmentBinding
+    private val viewModel: AssessmentViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        binding = ActivityAssessmentBinding.inflate(layoutInflater)
+        setMainContentView(
+            binding.root,
+            isToolbarVisible = true,
+            title = getString(R.string.assessment),
+            homeAndBackVisibility = Pair(true, true),
+            callback = {
+                backNavigation(false)
+            },
+            callbackHome = {
+                viewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
+                backNavigation(true)
+            },
+        )
+        getIntentValue()
+        loadFragment()
+        attachObservers()
+    }
+
+    private fun getCurrentLocation() {
+        val locationManager = SpiceLocationManager(this)
+        locationManager.getCurrentLocation {
+            viewModel.setCurrentLocation(it)
+        }
+    }
+
+    private fun backNavigation(isHome: Boolean) {
+        val backButtonStatus = getBackButtonStatus()
+        if (backButtonStatus.first) {
+            showErrorDialogue(
+                getString(R.string.alert),
+                getString(R.string.exit_reason),
+                isNegativeButtonNeed = true,
+            ) { isPositive ->
+                if (isPositive) {
+                    viewModel.isAssessmentCancelLiveData.value = true
+                    navigationHandling(isHome, backButtonStatus.second)
+                }
+            }
+        } else {
+            navigationHandling(isHome, backButtonStatus.second)
+        }
+    }
+
+    /**
+     * First boolean - Changes in page
+     * Second boolean - Summary page or not
+     */
+    private fun getBackButtonStatus(): Pair<Boolean, Boolean> {
+        when (val fragment = supportFragmentManager.findFragmentById(R.id.formsFragmentContainer)) {
+            is AssessmentRMNCHFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentICCMFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentOtherSymptomsFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentICCMSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentOtherSymptomSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentRMNCHSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentNCDFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentTBFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentTBSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentNCDSummaryFragment -> {
+                return Pair(false, false)
+            }
+
+            is AssessmentSLNCDFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentSLNCDSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentFamilyPlanningFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentFamilyPlanningSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is AssessmentPregnantWomenRegistrationFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentPregnantWomenRegistrationSummaryFragment -> {
+                return Pair(false, true)
+            }
+
+            is AssessmentPregnancyOutcomeFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is AssessmentPregnancyOutcomeSummaryFragment -> {
+                return Pair(false, true)
+            }
+
+            else -> return Pair(false, false)
+        }
+    }
+
+    private fun navigationHandling(
+        isHome: Boolean,
+        isFromSummary: Boolean,
+    ) {
+        if (isFromSummary && !CommonUtils.isNonCommunity()) {
+            startBackgroundOfflineSync()
+        }
+
+        if (isHome) {
+            setupAnalytic(AnalyticsDefinedParams.HomeButtonClicked)
+            val intent = Intent(this, LandingActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            startActivity(intent)
+            finish()
+        } else {
+            setupAnalytic(AnalyticsDefinedParams.BackButtonClicked)
+            when (supportFragmentManager.findFragmentById(R.id.fragmentContainer)) {
+                is AssessmentICCMSummaryFragment,
+                is AssessmentRMNCHSummaryFragment,
+                is AssessmentOtherSymptomSummaryFragment,
+                -> {
+                    finishSuccessFlow()
+                }
+                is AssessmentNCDSummaryFragment -> {
+                    val intent = Intent(this, LandingActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    startActivity(intent)
+                    finish()
+                }
+                else -> {
+                    this@AssessmentActivity.finish()
+                }
+            }
+        }
+    }
+
+    private fun setupAnalytic(btnClickType: String) {
+        val type = when (supportFragmentManager.findFragmentById(R.id.formsFragmentContainer)) {
+            is AssessmentICCMFragment -> {
+                AnalyticsDefinedParams.ICCMAssessment
+            }
+            is AssessmentRMNCHFragment -> {
+                viewModel.workflowName.plus(AnalyticsDefinedParams.RMNCHAssessment)
+            }
+            is AssessmentOtherSymptomsFragment -> {
+                AnalyticsDefinedParams.OtherSymptoms
+            }
+            is AssessmentPregnantWomenRegistrationFragment -> {
+                AnalyticsDefinedParams.PREGNANT_WOMEN_PROFILE
+            }
+            is AssessmentPregnancyOutcomeFragment -> {
+                AnalyticsDefinedParams.PREGNANCY_OUTCOME
+            }
+            else -> {
+                ""
+            }
+        }
+        viewModel.setAnalyticsData(
+            UserDetail.startDateTime,
+            eventType = type,
+            exitReason = btnClickType,
+            eventName = AnalyticsDefinedParams.AssessmentCreation,
+            isCompleted = false,
+        )
+    }
+
+    private fun loadSummaryFragment() {
+        val bundle = Bundle()
+        bundle.putString(MenuConstants.WORKFLOW_NAME, viewModel.workflowName)
+        when (viewModel.menuId) {
+            MenuConstants.ICCM_MENU_ID -> {
+                setTitle(Summary.capitalizeFirstChar())
+                hideBackButton()
+                replaceFragmentInId<AssessmentICCMSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentICCMSummaryFragment.TAG,
+                )
+            }
+
+            MenuConstants.TB_MENU_ID -> {
+                setTitle(Summary.capitalizeFirstChar())
+                hideBackButton()
+                replaceFragmentInId<AssessmentTBSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentTBSummaryFragment.TAG,
+                )
+            }
+
+            MenuConstants.OTHER_SYMPTOMS -> {
+                setTitle(Summary.capitalizeFirstChar())
+                hideBackButton()
+                replaceFragmentInId<AssessmentOtherSymptomSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentOtherSymptomSummaryFragment::class.simpleName,
+                )
+            }
+
+            MenuConstants.RMNCH_MENU_ID -> {
+                setTitle(Summary.capitalizeFirstChar())
+                hideBackButton()
+                replaceFragmentInId<AssessmentRMNCHSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    bundle = bundle,
+                    tag = AssessmentRMNCHSummaryFragment.TAG,
+                )
+            }
+
+            MenuConstants.NCD_MENU_ID -> {
+                if (CommonUtils.isNonCommunity()) {
+                    setTitle(getString(R.string.assessment_summary))
+                    showBackButton()
+                    replaceFragmentInId<AssessmentNCDSummaryFragment>(
+                        binding.formsFragmentContainer.id,
+                        tag = AssessmentNCDSummaryFragment.TAG,
+                    )
+                } else {
+                    setTitle(Summary.capitalizeFirstChar())
+                    hideBackButton()
+                    replaceFragmentInId<BDNCDAssessmentSummaryFragment>(
+                        binding.formsFragmentContainer.id,
+                        tag = BDNCDAssessmentSummaryFragment.TAG,
+                    )
+                }
+            }
+
+            MenuConstants.MATERNAL_HEALTH -> {
+                setTitle(getString(R.string.assessment_summary))
+                showBackButton()
+                replaceFragmentInId<AssessmentNCDSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentNCDSummaryFragment.TAG,
+                )
+            }
+
+            MenuConstants.MENTAL_HEALTH -> {
+                setTitle(getString(R.string.assessment_summary))
+                showBackButton()
+                replaceFragmentInId<AssessmentNCDSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentNCDSummaryFragment.TAG,
+                )
+            }
+
+            MenuConstants.FP_MENU_ID -> {
+                setTitle(Summary.capitalizeFirstChar())
+                hideBackButton()
+                replaceFragmentInId<AssessmentFamilyPlanningSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentFamilyPlanningSummaryFragment::class.simpleName,
+                )
+            }
+            MenuConstants.PREGNANT_WOMEN_PROFILE -> {
+                setTitle(getString(R.string.summary))
+                hideBackButton()
+                replaceFragmentInId<AssessmentPregnantWomenRegistrationSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentPregnantWomenRegistrationSummaryFragment.TAG,
+                )
+            }
+            MenuConstants.PREGNANCY_OUTCOME -> {
+                setTitle(Summary.capitalizeFirstChar())
+                hideBackButton()
+                replaceFragmentInId<AssessmentPregnancyOutcomeSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentPregnancyOutcomeSummaryFragment.TAG,
+                )
+            }
+        }
+    }
+
+    private fun loadFragment() {
+        val bundle = Bundle()
+        bundle.putString(DefinedParams.FhirId, intent.getStringExtra(DefinedParams.FhirId))
+        bundle.putString(DefinedParams.ORIGIN, intent.getStringExtra(DefinedParams.ORIGIN))
+        bundle.putBoolean(MenuConstants.FOLLOW_UP, intent.getBooleanExtra(MenuConstants.FOLLOW_UP, false))
+        when (viewModel.menuId) {
+            MenuConstants.ICCM_MENU_ID -> {
+                setTitle(MenuConstants.ICCM_MENU_ID.uppercase())
+                replaceFragmentInId<AssessmentICCMFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentICCMFragment.TAG,
+                )
+            }
+
+            MenuConstants.TB_MENU_ID -> {
+                bundle.putBoolean(DefinedParams.CONTACT_TRACING, intent.getBooleanExtra(DefinedParams.CONTACT_TRACING, false))
+                bundle.putLong(DefinedParams.HouseholdId, viewModel.selectedHouseholdId)
+                bundle.putBoolean(DefinedParams.isTbPatient, true)
+                setTitle(MenuConstants.TB_MENU_ID.uppercase())
+                replaceFragmentInId<AssessmentTBFragment>(
+                    binding.formsFragmentContainer.id,
+                    bundle = bundle,
+                    tag = AssessmentTBFragment.TAG,
+                )
+            }
+
+            MenuConstants.RMNCH_MENU_ID -> {
+                setTitle(MenuConstants.RMNCH_MENU_ID.uppercase())
+                replaceFragmentInId<AssessmentRMNCHFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentRMNCHFragment.TAG,
+                )
+            }
+
+            MenuConstants.OTHER_SYMPTOMS -> {
+                setTitle(OtherSymptoms)
+                replaceFragmentInId<AssessmentOtherSymptomsFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentOtherSymptomsFragment::class.simpleName,
+                )
+            }
+
+            MenuConstants.NCD_MENU_ID -> {
+                if (CommonUtils.isNonCommunity()) {
+                    setTitle(AssessmentDefinedParams.ncd.uppercase())
+                    bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
+                    showLoading()
+                    replaceFragmentInId<AssessmentNCDFragment>(
+                        binding.formsFragmentContainer.id,
+                        bundle = bundle,
+                        tag = AssessmentNCDFragment.TAG,
+                    )
+                } else {
+                    setTitle(AssessmentDefinedParams.ncd.uppercase())
+                    bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
+                    showLoading()
+                    replaceFragmentInId<BDNCDAssessmentFragment>(
+                        binding.formsFragmentContainer.id,
+                        bundle = bundle,
+                        tag = BDNCDAssessmentFragment.TAG,
+                    )
+                }
+            }
+
+            MenuConstants.EYE_CARE_MENU_ID -> {
+                /*setTitle(AssessmentDefinedParams.ncd.uppercase())
+                bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
+                showLoading()
+                replaceFragmentInId<BDEyeCareAssessmentFragment>(
+                    binding.formsFragmentContainer.id,
+                    bundle = bundle,
+                    tag = BDEyeCareAssessmentFragment.TAG,
+                )*/
+            }
+
+            MenuConstants.CATARACT_MENU_ID -> {
+                /*setTitle(AssessmentDefinedParams.ncd.uppercase())
+                bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
+                showLoading()
+                replaceFragmentInId<BDCataractAssessmentFragment>(
+                    binding.formsFragmentContainer.id,
+                    bundle = bundle,
+                    tag = BDCataractAssessmentFragment.TAG,
+                )*/
+            }
+
+            MenuConstants.MATERNAL_HEALTH -> {
+                setTitle(AssessmentDefinedParams.MaternalHealth)
+                bundle.putString(Screening.type, MenuConstants.MATERNAL_HEALTH)
+                showLoading()
+                replaceFragmentInId<AssessmentNCDFragment>(
+                    binding.formsFragmentContainer.id,
+                    bundle = bundle,
+                    tag = AssessmentNCDFragment.TAG,
+                )
+            }
+
+            MenuConstants.MENTAL_HEALTH -> {
+                setTitle(this.getString(R.string.mental_health))
+                bundle.putString(Screening.type, MenuConstants.MENTAL_HEALTH)
+                showLoading()
+                replaceFragmentInId<AssessmentNCDFragment>(
+                    binding.formsFragmentContainer.id,
+                    bundle = bundle,
+                    tag = AssessmentNCDFragment.TAG,
+                )
+            }
+
+            MenuConstants.FP_MENU_ID -> {
+                setTitle(getString(R.string.family_planning).uppercase())
+                replaceFragmentInId<AssessmentFamilyPlanningFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentFamilyPlanningFragment.TAG,
+                )
+            }
+
+            MenuConstants.PREGNANT_WOMEN_PROFILE -> {
+                setTitle(getString(R.string.pregnant_women_profile))
+                replaceFragmentInId<AssessmentPregnantWomenRegistrationFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentPregnantWomenRegistrationFragment.TAG,
+                )
+            }
+            MenuConstants.PREGNANCY_OUTCOME -> {
+                setTitle(getString(R.string.pregnancy_outcome))
+                replaceFragmentInId<AssessmentPregnancyOutcomeFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentPregnancyOutcomeFragment.TAG,
+                )
+            }
+        }
+    }
+
+    private fun attachObservers() {
+        viewModel.assessmentSaveLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resource.data?.let { data ->
+                        val assessment = data.second
+                        val detailsJson = JSONObject(assessment.assessmentDetails)
+                        val ancObject = detailsJson.optJSONObject(RMNCH.ANC)
+                        val isDeathOfMother = ancObject?.optBoolean(DeathOfMother, false) == true
+
+                        val childHoodObject = detailsJson.optJSONObject(ChildHoodVisit)
+                        val isDeathOfNeonate = childHoodObject?.optBoolean(deathOfBaby, false) == true
+                        if (CommonUtils.isCommunity() && (isDeathOfMother || isDeathOfNeonate)) {
+                            viewModel.workflowName?.let {
+                                startCbsActivity(
+                                    workFlowName = it,
+                                    memberId = viewModel.selectedHouseholdMemberId,
+                                    assessmentId = assessment.id,
+                                    deathOfMother = isDeathOfMother,
+                                    deathOfNewborn = isDeathOfNeonate,
+                                )
+                            }
+                        } else {
+                            loadSummaryFragment()
+                        }
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
+
+        viewModel.assessmentUpdateLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    finishSuccessFlow()
+                    if (!CommonUtils.isNonCommunity()) {
+                        startBackgroundOfflineSync()
+                    }
+                }
+
+                else -> {}
+            }
+        }
+
+        viewModel.assessmentSaveResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let {
+                        showErrorDialogue(
+                            getString(R.string.error),
+                            it,
+                            isNegativeButtonNeed = false,
+                        ) {}
+                    }
+                }
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    loadSummaryFragment()
+                }
+            }
+        }
+
+        viewModel.saveRxBuddyDetails.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let {
+                        showErrorDialogue(
+                            getString(R.string.error),
+                            it,
+                            isNegativeButtonNeed = false,
+                        ) {}
+                    }
+                }
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    setTitle(Summary.capitalizeFirstChar())
+                    hideBackButton()
+                    replaceFragmentInId<RxBuddySummaryFragment>(
+                        binding.formsFragmentContainer.id,
+                        tag = RxBuddySummaryFragment.TAG,
+                    )
+                }
+            }
+        }
+
+        viewModel.saveRxBuddyFollowUpLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let {
+                        showErrorDialogue(
+                            getString(R.string.error),
+                            it,
+                            isNegativeButtonNeed = false,
+                        ) {}
+                    }
+                }
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    val bundle = Bundle().apply {
+                        putBoolean(DefinedParams.isRxBuddyFollowUp, true)
+                        putBoolean(MenuConstants.FOLLOW_UP, intent.getBooleanExtra(MenuConstants.FOLLOW_UP, false))
+                    }
+                    setTitle(Summary.capitalizeFirstChar())
+                    hideBackButton()
+                    replaceFragmentInId<RxBuddySummaryFragment>(
+                        binding.formsFragmentContainer.id,
+                        bundle = bundle,
+                        tag = RxBuddySummaryFragment.TAG,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun startCbsActivity(
+        workFlowName: String,
+        memberId: Long?,
+        assessmentId: Long?,
+        deathOfMother: Boolean = false,
+        deathOfNewborn: Boolean = false,
+        motherId: Long? = null,
+    ) {
+        val intent = Intent(this, CbsActivity::class.java).apply {
+            putExtra(DefinedParams.MemberID, memberId)
+            putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
+            putExtra(MenuConstants.WORKFLOW_NAME, workFlowName)
+            putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
+            putExtra(DefinedParams.MOTHER_ID, motherId)
+            if (assessmentId != null) putExtra(DefinedParams.AssessmentId, assessmentId)
+            if (deathOfMother) putExtra(DeathOfMother, true)
+            if (deathOfNewborn) putExtra(RMNCH.deathOfNewborn, true)
+        }
+        startActivity(intent)
+    }
+
+    private fun finishSuccessFlow() {
+        val intent = if (viewModel.followUpId != null) {
+            Intent(this, FollowUpMyPatientActivity::class.java)
+        } else {
+            Intent(this, HouseholdSearchActivity::class.java)
+        }
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun getIntentValue() {
+        viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MemberID, -1L)
+        viewModel.menuId = intent.getStringExtra(DefinedParams.MenuId)
+        viewModel.workflowName = intent.getStringExtra(MenuConstants.WORKFLOW_NAME)
+        viewModel.memberFhirId = intent.getStringExtra(DefinedParams.FhirId)
+        viewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
+        viewModel.selectedHouseholdId = intent.getLongExtra(DefinedParams.HouseholdId, -1L)
+        val followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1L)
+        if (followUpId != -1L) {
+            viewModel.followUpId = followUpId
+        } else {
+            viewModel.followUpId = null
+        }
+
+        viewModel.workflowName?.let {
+            viewModel.setUserJourney(getUserJourneyName(it))
+        }
+    }
+
+    private fun getUserJourneyName(it: String): String =
+        if (it == PNC) {
+            AnalyticsDefinedParams.PNCMOTHERASSESSMENT
+        } else if (it == ChildHoodVisit) {
+            AnalyticsDefinedParams.RMNCHCHILDASSESSMENT
+        } else {
+            it.plus(getString(R.string.assessment))
+        }
+
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                backNavigation(false)
+            }
+        }
+
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation()
+    }
+}

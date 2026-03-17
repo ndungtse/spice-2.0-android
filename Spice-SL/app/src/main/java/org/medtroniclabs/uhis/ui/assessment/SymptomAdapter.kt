@@ -1,0 +1,105 @@
+package org.medtroniclabs.uhis.ui.assessment
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import org.medtroniclabs.uhis.data.model.SymptomModel
+import org.medtroniclabs.uhis.databinding.LayoutSymptomAdapterBinding
+import org.medtroniclabs.uhis.databinding.LayoutSymptomTitleBinding
+import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
+
+class SymptomAdapter(val list: ArrayList<SymptomModel>, val translationToggle: Boolean) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    class SymptomViewHolder(val binding: LayoutSymptomAdapterBinding) :
+        RecyclerView.ViewHolder(binding.root)
+
+    class SymptomTitleViewHolder(val binding: LayoutSymptomTitleBinding) :
+        RecyclerView.ViewHolder(binding.root)
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): RecyclerView.ViewHolder {
+        if (viewType == 0) {
+            val binding = LayoutSymptomAdapterBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false,
+            )
+            return SymptomViewHolder(binding)
+        } else {
+            val binding = LayoutSymptomTitleBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false,
+            )
+            return SymptomTitleViewHolder(binding)
+        }
+    }
+
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+    ) {
+        val symptom = list[position]
+        if (holder is SymptomViewHolder) {
+            holder.binding.checkSymptom.isChecked = symptom.isSelected
+            if (translationToggle) {
+                holder.binding.checkSymptom.text = symptom.cultureValue ?: symptom.symptom
+            } else {
+                holder.binding.checkSymptom.text = symptom.symptom
+            }
+            holder.binding.root.safeClickListener {
+                if (symptom.symptom.startsWith(AssessmentDefinedParams.NoSymptoms, true)) {
+                    if (!symptom.isSelected) {
+                        resetSelection(symptom.type, list)
+                        symptom.isSelected = !symptom.isSelected
+                        notifyDataSetChanged()
+                    } else {
+                        symptom.isSelected = !symptom.isSelected
+                        notifyItemChanged(position)
+                    }
+                } else {
+                    val filteredModel = list.filter {
+                        it.symptom.startsWith(AssessmentDefinedParams.NoSymptoms, true) &&
+                            it.isSelected &&
+                            it.type == symptom.type
+                    }
+                    updateSelection(position, symptom, filteredModel)
+                }
+            }
+        } else if (holder is SymptomTitleViewHolder) {
+            holder.binding.SymptomTitle.text = symptom.type
+        }
+    }
+
+    private fun updateSelection(
+        position: Int,
+        symptom: SymptomModel,
+        filteredModel: List<SymptomModel>,
+    ) {
+        if (filteredModel.isNotEmpty()) {
+            resetSelection(symptom.type, list)
+            symptom.isSelected = !symptom.isSelected
+            notifyDataSetChanged()
+        } else {
+            symptom.isSelected = !symptom.isSelected
+            notifyItemChanged(position)
+        }
+    }
+
+    private fun resetSelection(
+        type: String?,
+        list: ArrayList<SymptomModel>,
+    ) {
+        list.filter { it.type == type }.forEach {
+            it.isSelected = false
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int = list[position].viewType
+
+    override fun getItemCount(): Int = list.size
+
+    fun getSelectedSymptomList(): List<SymptomModel> = list.filter { it.isSelected }
+}

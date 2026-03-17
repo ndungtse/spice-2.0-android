@@ -24,22 +24,22 @@
             android:animateLayoutChanges="true"
             android:orientation="vertical">
 
-            <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+            <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                 android:id="@+id/bio_data_fragment_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+            <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                 android:id="@+id/treatmentDetailsFragmentContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+            <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                 android:id="@+id/rxBuddyDetailsFragmentContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+            <org.medtroniclabs.uhis.ui.common.FloatingDetectorFrameLayout
                 android:id="@+id/rxBuddyFollowUpFragmentContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
