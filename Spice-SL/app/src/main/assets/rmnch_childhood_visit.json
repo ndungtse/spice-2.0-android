@@ -16,7 +16,6 @@
             "condition":
             [],
             "orderId": 2,
-            "isBooleanAnswer": true,
             "isEnabled": true,
             "isMandatory": true,
             "isNeededDefault": true,
@@ -26,12 +25,12 @@
             "optionsList":
             [
                 {
-                    "id": true,
+                    "id": "yes",
                     "name": "Yes",
                     "cultureValue": "হ্যাঁ"
                 },
                 {
-                    "id": false,
+                    "id": "no",
                     "name": "No",
                     "cultureValue": "না"
                 }
@@ -164,7 +163,6 @@
             "id": "childBreastFeeding",
             "fieldName": "Breast feeding",
             "orderId": 8,
-            "isBooleanAnswer": true,
             "isEnabled": true,
             "isMandatory": true,
             "isNeededDefault": true,
@@ -174,12 +172,12 @@
             "optionsList":
             [
                 {
-                    "id": true,
+                    "id": "yes",
                     "name": "Yes",
                     "cultureValue": "হ্যাঁ"
                 },
                 {
-                    "id": false,
+                    "id": "no",
                     "name": "No",
                     "cultureValue": "না"
                 }
@@ -195,7 +193,6 @@
             "id": "additionalFood24Hrs",
             "fieldName": "Additional Food in 24 Hrs",
             "orderId": 9,
-            "isBooleanAnswer": true,
             "isEnabled": true,
             "isMandatory": true,
             "isNeededDefault": true,
@@ -205,12 +202,12 @@
             "optionsList":
             [
                 {
-                    "id": true,
+                    "id": "yes",
                     "name": "Yes",
                     "cultureValue": "হ্যাঁ"
                 },
                 {
-                    "id": false,
+                    "id": "no",
                     "name": "No",
                     "cultureValue": "না"
                 }
@@ -226,7 +223,6 @@
             "id": "receivedVaccine",
             "fieldName": "Received vaccines",
             "orderId": 10,
-            "isBooleanAnswer": true,
             "isEnabled": true,
             "isMandatory": true,
             "isNeededDefault": true,
@@ -236,12 +232,12 @@
             "optionsList":
             [
                 {
-                    "id": true,
+                    "id": "yes",
                     "name": "Yes",
                     "cultureValue": "হ্যাঁ"
                 },
                 {
-                    "id": false,
+                    "id": "no",
                     "name": "No",
                     "cultureValue": "না"
                 }
@@ -257,7 +253,6 @@
             "id": "dewormingMedicine",
             "fieldName": "Deworming medication",
             "orderId": 11,
-            "isBooleanAnswer": true,
             "isEnabled": true,
             "isMandatory": true,
             "isNeededDefault": true,
@@ -267,12 +262,12 @@
             "optionsList":
             [
                 {
-                    "id": true,
+                    "id": "yes",
                     "name": "Yes",
                     "cultureValue": "হ্যাঁ"
                 },
                 {
-                    "id": false,
+                    "id": "no",
                     "name": "No",
                     "cultureValue": "না"
                 }
@@ -293,10 +288,19 @@
                     "eq": "yes",
                     "targetId": "childIllnessType",
                     "visibility": "visible"
+                },
+                {
+                    "eq": "yes",
+                    "targetId": "childReferral",
+                    "visibility": "visible"
+                },
+                {
+                    "eq": "no",
+                    "targetId": "childReferralFacilityType",
+                    "visibility": "gone"
                 }
             ],
             "orderId": 12,
-            "isBooleanAnswer": true,
             "isEnabled": true,
             "isMandatory": true,
             "isNeededDefault": true,
@@ -354,7 +358,6 @@
                 }
             ],
             "orderId": 14,
-            "isBooleanAnswer": true,
             "isEnabled": true,
             "isMandatory": true,
             "isNeededDefault": true,
@@ -378,7 +381,7 @@
             "readOnly": true,
             "title": "Has referral been made?",
             "titleCulture": "রেফারেল করা হয়েছে কিনা?",
-            "visibility": "visible"
+            "visibility": "gone"
         },
         {
             "condition":

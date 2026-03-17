@@ -221,6 +221,15 @@ data class FormLayout(
         }
         return title ?: defaultValue
     }
+
+    fun getSummaryTitle(translate: Boolean): String? =
+        if (!titleSummary.isNullOrBlank()) {
+            titleSummary
+        } else if (translate && !titleCulture.isNullOrBlank()) {
+            titleCulture
+        } else {
+            title
+        }
 }
 
 data class RangeModel(

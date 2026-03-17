@@ -6,9 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import com.google.gson.Gson
 import com.google.gson.JsonParser
-import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.getLongTime
 import com.medtroniclabs.spice.common.DateUtils
@@ -19,6 +17,7 @@ import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.common.DateUtils.formatGestationalAge
 import com.medtroniclabs.spice.common.DateUtils.getLastMenstrualDate
 import com.medtroniclabs.spice.common.DateUtils.getV2YearMonthAndWeek
+import com.medtroniclabs.spice.common.parseJsonStringToList
 import com.medtroniclabs.spice.databinding.FragmentPregnancyDetailsRmnchBinding
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -27,7 +26,6 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.PNCAssessmentEvaluator
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
-import java.lang.reflect.Type
 
 class PregnancyDetailsRMNCHFragment : BaseFragment() {
     private lateinit var binding: FragmentPregnancyDetailsRmnchBinding
@@ -201,7 +199,7 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
             if (visitCount > 1) {
                 // High risk pregnant woman
                 pregnancyDetail?.highRiskPregnantWoman?.let { highRiskJson ->
-                    val highRiskList = parseJsonStringToList(highRiskJson)
+                    val highRiskList: List<String> = parseJsonStringToList(highRiskJson)
                     if (highRiskList.isNotEmpty()) {
                         val highRiskDisplay = highRiskList.joinToString(", ")
                         createSummary(
@@ -213,7 +211,7 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
 
                 // Gaps in ANC
                 pregnancyDetail?.gapsInAnc?.let { gapsJson ->
-                    val gapsList = parseJsonStringToList(gapsJson)
+                    val gapsList: List<String> = parseJsonStringToList(gapsJson)
                     if (gapsList.isNotEmpty()) {
                         val gapsDisplay = gapsList.joinToString(", ")
                         createSummary(
@@ -287,17 +285,6 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
             }
         }
     }
-
-    /**
-     * Parses a JSON string to a List<String>
-     */
-    private fun parseJsonStringToList(jsonString: String): List<String> =
-        try {
-            val type: Type = object : TypeToken<List<String>>() {}.type
-            Gson().fromJson(jsonString, type) ?: emptyList()
-        } catch (e: Exception) {
-            emptyList()
-        }
 
     private fun getVisitCount(visitCount: Long?): Long =
         if (visitCount == null) {

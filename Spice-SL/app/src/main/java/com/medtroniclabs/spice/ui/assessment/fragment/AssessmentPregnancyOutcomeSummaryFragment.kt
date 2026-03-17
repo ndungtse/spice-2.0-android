@@ -8,13 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import androidx.core.text.color
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
-import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
@@ -22,8 +20,8 @@ import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.FragmentAssessmentPregnancyOutcomeSummaryBinding
 import com.medtroniclabs.spice.databinding.InstructionLayoutBinding
 import com.medtroniclabs.spice.formgeneration.FormSupport.translateTitle
-import com.medtroniclabs.spice.formgeneration.utility.InformationLayoutFragment
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.formgeneration.utility.InformationLayoutFragment
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
@@ -140,11 +138,10 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
             ?.formLayout
             ?.filter {
                 it.isSummary == true || it.id in additionalSummaryFieldIds
-            }
-            ?.mapNotNull { formLayout ->
+            }?.mapNotNull { formLayout ->
                 val dataMap = data.replaceFirst(
                     MenuConstants.PREGNANCY_OUTCOME,
-                    MenuConstants.PREGNANCY_OUTCOME.lowercase()
+                    MenuConstants.PREGNANCY_OUTCOME.lowercase(),
                 )
 
                 val value = AssessmentCommonUtils.getValueOfKeyFromMap(
@@ -163,8 +160,7 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
                 } else {
                     null
                 }
-            }
-            ?.toMutableList()
+            }?.toMutableList()
 
     private fun createSummaryView(
         listSummaryData: MutableList<AssessmentSummaryModel>?,
@@ -483,16 +479,18 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
         value?.let { result ->
             // If value is a SpannableString/Spanned, don't pass valueTextColor to avoid overriding colors
             val summaryLayout = if (result is android.text.SpannableString || result is android.text.Spanned) {
-                AssessmentCommonUtils.addViewSummaryLayout(
-                    title,
-                    result.toString(),
-                    null, // Don't set valueTextColor for SpannableString
-                    requireContext(),
-                ).apply {
-                    // Set the SpannableString directly to preserve formatting
-                    val summaryBinding = com.medtroniclabs.spice.databinding.AssessmentSummaryLayoutBinding.bind(this)
-                    summaryBinding.tvValue.text = result
-                }
+                AssessmentCommonUtils
+                    .addViewSummaryLayout(
+                        title,
+                        result.toString(),
+                        null, // Don't set valueTextColor for SpannableString
+                        requireContext(),
+                    ).apply {
+                        // Set the SpannableString directly to preserve formatting
+                        val summaryBinding = com.medtroniclabs.spice.databinding.AssessmentSummaryLayoutBinding
+                            .bind(this)
+                        summaryBinding.tvValue.text = result
+                    }
             } else {
                 AssessmentCommonUtils.addViewSummaryLayout(
                     title,
@@ -585,7 +583,9 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
             return
         }
 
-        val formLayouts = viewModel.formLayoutsLiveData.value?.data?.formLayout ?: return
+        val formLayouts = viewModel.formLayoutsLiveData.value
+            ?.data
+            ?.formLayout ?: return
         val isTranslationEnabled = SecuredPreference.getIsTranslationEnabled()
 
         // Get counselling card layout for title
@@ -594,13 +594,16 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
         }
 
         // Get only the new counselling items (filter out old ones)
-        val counsellingItems = formLayouts.filter {
-            it.family == AssessmentDefinedParams.COUNSELLING_ADVERSE_EVENT &&
-            it.viewType == "Instruction" &&
-            it.isSummary == true &&
-            (it.id == AssessmentDefinedParams.COUNSELLING_EMOTIONAL_SUPPORT ||
-             it.id == AssessmentDefinedParams.COUNSELLING_FUTURE_PREGNANCY_PLANNING)
-        }.sortedBy { it.orderId ?: Int.MAX_VALUE }
+        val counsellingItems = formLayouts
+            .filter {
+                it.family == AssessmentDefinedParams.COUNSELLING_ADVERSE_EVENT &&
+                    it.viewType == "Instruction" &&
+                    it.isSummary == true &&
+                    (
+                        it.id == AssessmentDefinedParams.COUNSELLING_EMOTIONAL_SUPPORT ||
+                            it.id == AssessmentDefinedParams.COUNSELLING_FUTURE_PREGNANCY_PLANNING
+                    )
+            }.sortedBy { it.orderId ?: Int.MAX_VALUE }
 
         // If no counselling items found, don't show card
         if (counsellingItems.isEmpty()) {
@@ -615,7 +618,7 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
             counsellingCardBinding.cardTitle.text = translateTitle(
                 cardLayout.titleCulture,
                 cardLayout.title,
-                isTranslationEnabled
+                isTranslationEnabled,
             )
         } ?: run {
             // Fallback title if cardLayout not found
@@ -631,21 +634,22 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
         val scrollViewContent = binding.scrollView.getChildAt(0) as? androidx.constraintlayout.widget.ConstraintLayout
         scrollViewContent?.let { content ->
             // Set layout parameters with constraints
-            val layoutParams = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams(
-                androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.MATCH_PARENT,
-                androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                // Set margins to match resultCardView
-                marginStart = resources.getDimensionPixelSize(R.dimen._6sdp)
-                marginEnd = resources.getDimensionPixelSize(R.dimen._6sdp)
-                topMargin = resources.getDimensionPixelSize(R.dimen._6sdp)
-                bottomMargin = resources.getDimensionPixelSize(R.dimen._6sdp)
+            val layoutParams = androidx.constraintlayout.widget.ConstraintLayout
+                .LayoutParams(
+                    androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.MATCH_PARENT,
+                    androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ).apply {
+                    // Set margins to match resultCardView
+                    marginStart = resources.getDimensionPixelSize(R.dimen._6sdp)
+                    marginEnd = resources.getDimensionPixelSize(R.dimen._6sdp)
+                    topMargin = resources.getDimensionPixelSize(R.dimen._6sdp)
+                    bottomMargin = resources.getDimensionPixelSize(R.dimen._6sdp)
 
-                // Set constraints: below resultCardView, start/end to parent
-                startToStart = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
-                endToEnd = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
-                topToBottom = binding.resultCardView.id
-            }
+                    // Set constraints: below resultCardView, start/end to parent
+                    startToStart = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+                    endToEnd = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+                    topToBottom = binding.resultCardView.id
+                }
 
             counsellingCardBinding.root.layoutParams = layoutParams
 

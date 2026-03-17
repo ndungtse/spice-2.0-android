@@ -42,6 +42,7 @@ import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.common.LocaleHelper
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityBaseBinding
 import com.medtroniclabs.spice.databinding.ErrorLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -57,14 +58,21 @@ import kotlin.math.abs
 open class BaseActivity : SpiceRootActivity() {
     private lateinit var binding: ActivityBaseBinding
 
-    private val viewModel: BaseViewModel by viewModels()
+    private val baseViewModel: BaseViewModel by viewModels()
 
     private var downX: Int = 0
+
+    /**
+     * Boolean variable holding whether translation is enabled or not for the app.
+     * If it is true that means user is using the app in second language (other than english)
+     */
+    protected var isTranslationEnabled: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        isTranslationEnabled = SecuredPreference.getIsTranslationEnabled()
         CommonUtils.applyInsets(
             this,
             binding.root,
@@ -137,7 +145,7 @@ open class BaseActivity : SpiceRootActivity() {
     private fun checkVisibility(isVisible: Boolean): Int = if (isVisible) View.VISIBLE else View.INVISIBLE
 
     fun redirectToHome() {
-        viewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
+        baseViewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
         startAsNewActivity(Intent(this, LandingActivity::class.java))
     }
 

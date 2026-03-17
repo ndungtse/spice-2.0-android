@@ -47,6 +47,7 @@
     <string name="confirm_diagnoses">নির্ণয় নিশ্চিত করুন</string>
     <string name="edit_diagnosis">নির্ণয় সম্পাদনা করুন</string>
     <string name="patient_status">রোগীর অবস্থা</string>
+    <string name="child_status">শিশুর অবস্থা</string>
     <string name="referred">রেফার করা হয়েছে</string>
     <string name="edit_diagnoses">নির্ণয় সম্পাদনা করুন</string>
     <string name="edit_status">অবস্থা সম্পাদনা করুন</string>
@@ -1550,7 +1551,7 @@
     <string name="pregnancy_too_early_access_title">⚠️ গর্ভাবস্থা মূল্যায়নের জন্য খুব প্রাথমিক পর্যায়</string>
     <string name="pregnancy_too_early_access_desc_1">এলএমপি থেকে ৬ সপ্তাহ পরেই কেবল গর্ভাবস্থা মূল্যায়ন করা সম্ভব।</string>
     <string name="pregnancy_too_early_access_desc_2">সম্পূর্ণ গর্ভাবস্থা প্রোফাইল মূল্যায়নের জন্য দয়া করে ৬ সপ্তাহ পরে আবার আসুন।</string>
-    <string name="the_following_risk_factors_identified">⚠️ নিম্নলিখিত ঝুঁকির কারণগুলি শনাক্ত করা হয়েছে:</string>
+    <string name="risk_factors_identified">⚠️ শনাক্তকৃত ঝুঁকির কারণসমূহ</string>
 
     <string name="last_visit_date">সর্বশেষ পরিদর্শনের তারিখ</string>
     <string name="recent_service">সাম্প্রতিক সেবা</string>
@@ -1569,11 +1570,15 @@
         <item quantity="one">%d সদস্য</item>
         <item quantity="other">%d সদস্যগণ</item>
     </plurals>
-    <string name="counselling_message">পরামর্শ বার্তা</string>
     <string name="short_acting_message">স্বল্পমেয়াদি পদ্ধতি – (পিল, কনডম, ইনজেকশন)</string>
     <string name="long_acting_message">দীর্ঘমেয়াদি পদ্ধতি – (আইইউসিডি/কপার-টি, ইমপ্লান্ট)</string>
     <string name="permanent_acting_message">স্থায়ী পদ্ধতি – (স্থায়ী বন্ধ্যাকরণ/স্টেরিলাইজেশন)</string>
-
+    <string name="recommended_method">পরামর্শকৃত পদ্ধতি</string>
+    <string name="referral_health_facility">রেফারেল স্বাস্থ্য কেন্দ্র</string>
+    <string name="place_of_referral">রেফারেলের স্থান</string>
+    <string name="vaccination">টিকাদান</string>
+    <string name="taken">গৃহীত</string>
+    <string name="not_taken">গৃহীত হয়নি</string>
     <string name="referred_for_nfurther_assessment_cc">আরও মূল্যায়নের জন্য নিকটস্থ কমিউনিটি ক্লিনিকে রেফার করুন</string>
     <string name="referred_for_nfurther_assessment_Upazila">আরও মূল্যায়নের জন্য নিকটস্থ উপজেলা স্বাস্থ্য কমপ্লেক্সে রেফার করুণ</string>
 </resources>

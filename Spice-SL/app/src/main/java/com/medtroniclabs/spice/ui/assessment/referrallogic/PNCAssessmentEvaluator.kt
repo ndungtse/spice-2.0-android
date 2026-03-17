@@ -98,7 +98,7 @@ object PNCAssessmentEvaluator {
 
             // 11. Abnormal Pulse - If >90 or <60
             val pulse = CommonUtils.getInteger(maternalAssessment[RMNCH.ID_PULSE])
-            if (pulse > 0 && pulse !in 60..90) {
+            if (pulse > 0 && pulse !in AssessmentDefinedParams.PULSE_LOW_THRESHOLD.toInt()..AssessmentDefinedParams.PULSE_HIGH_THRESHOLD.toInt()) {
                 urgentReferral.add(PNCUrgentReferrals.ABNORMAL_PULSE.value)
             }
 
@@ -269,12 +269,16 @@ object PNCAssessmentEvaluator {
         var level = AnemiaLevel.None
         (resultMap[RMNCH.ID_MATERNAL_HEALTH_ASSESSMENT] as? Map<*, *>)?.let { maternalAssessment ->
             CommonUtils.getDoubleOrNull(maternalAssessment[RMNCH.ID_HEMOGLOBIN])?.takeIf { it > 0 }?.let { hb ->
-                if (hb < 8) {
-                    level = AnemiaLevel.Severe
-                } else if (hb < 10) {
-                    level = AnemiaLevel.Moderate
-                } else if (hb < 11) {
-                    level = AnemiaLevel.Mild
+                when {
+                    hb < AssessmentDefinedParams.HEMOGLOBIN_SEVERE_ANEMIA_THRESHOLD -> {
+                        level = AnemiaLevel.Severe
+                    }
+                    hb <= AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD -> {
+                        level = AnemiaLevel.Moderate
+                    }
+                    hb < AssessmentDefinedParams.HEMOGLOBIN_MILD_ANEMIA_THRESHOLD -> {
+                        level = AnemiaLevel.Mild
+                    }
                 }
             }
         }

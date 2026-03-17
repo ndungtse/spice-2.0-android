@@ -23,8 +23,6 @@ import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.common.DateUtils.calculateAgeInMonths
-import com.medtroniclabs.spice.common.DateUtils.getDateStringFromDate
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.AssessmentId
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -33,16 +31,16 @@ import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.FragmentRmnchSummaryBinding
 import com.medtroniclabs.spice.databinding.InstructionLayoutBinding
-import com.medtroniclabs.spice.databinding.TextLabelLayoutBinding
 import com.medtroniclabs.spice.formgeneration.FormSupport.translateTitle
 import com.medtroniclabs.spice.formgeneration.config.ViewType
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustomLayout
 import com.medtroniclabs.spice.formgeneration.utility.InformationLayoutFragment
-import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.PNCAssessmentEvaluator
@@ -51,7 +49,6 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.childHoodVisitMaxMonth
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getValueFromMap
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
@@ -129,10 +126,8 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
                 binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
-                if (viewModel.workflowName != ChildHoodVisit) {
-                    binding.etPhuChange.visible()
-                    binding.labelPhuReferred.visible()
-                }
+                binding.etPhuChange.visible()
+                binding.labelPhuReferred.visible()
             }
 
             ReferralStatus.OnTreatment.name -> {
@@ -162,90 +157,29 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         viewModel.assessmentStringLiveData.value?.let { mapString ->
             val map = StringConverter.stringToMap(mapString)
             binding.parentLayout.removeAllViews()
-            // Hide patient status for ANC workflow
-            if (viewModel.workflowName != RMNCH.ANC) {
+            if (viewModel.workflowName == RMNCH.PNC) {
                 bindRmnchSummaryView(
                     getString(R.string.patient_status),
+                    getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen),
+                )
+            } else if (viewModel.workflowName == RMNCH.ChildHoodVisit) {
+                bindRmnchSummaryView(
+                    getString(R.string.child_status),
                     getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen),
                 )
             }
 
             when (viewModel.workflowName) {
                 RMNCH.PNC -> {
-                    bindPNCSummary(map, viewModel.workflowName)
+                    bindPNCSummary(map)
                 }
 
                 RMNCH.ANC -> {
-                    bindAncSummary(map, viewModel.workflowName)
+                    bindAncSummary(map)
                 }
 
                 else -> {
-                    // Skip default summary views for ANC - only show specific isSummary fields
-                    addDefaultSummaryView(map)
-                    // Hide referred to field
-                    binding.labelPhuReferred.gone()
-                    binding.etPhuChange.gone()
-
-                    // For other workflows (ChildHoodVisit), use existing logic
-                    viewModel.formLayoutsLiveData.value
-                        ?.data
-                        ?.formLayout
-                        ?.filter { it.isSummary == true }
-                        ?.filter {
-                            map.entries.any { map -> map.key != ChildHoodVisit } ||
-                                (map[ChildHoodVisit] as? Map<String, Any>)?.containsKey(
-                                    it.id,
-                                ) == true
-                        }?.forEach { data ->
-                            with(data) {
-                                updateStatusBar()
-                                val title = if (titleSummary != null) {
-                                    titleSummary
-                                } else {
-                                    if (SecuredPreference.getIsTranslationEnabled() && !titleCulture.isNullOrBlank()) {
-                                        titleCulture
-                                    } else {
-                                        this.title
-                                    }
-                                }
-                                binding.parentLayout.addView(
-                                    addViewSummaryLayout(
-                                        title ?: "",
-                                        getValueFromMap(
-                                            map,
-                                            id,
-                                            viewType,
-                                            viewModel.workflowName,
-                                            isBooleanAnswer,
-                                            Triple(
-                                                getString(R.string.yes),
-                                                getString(R.string.no),
-                                                getString(R.string.hyphen_symbol),
-                                            ),
-                                            requireContext(),
-                                        ),
-                                        null,
-                                        requireContext(),
-                                    ),
-                                )
-                            }
-                        }
-                }
-            }
-        }
-
-        viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    showProgress()
-                }
-
-                ResourceState.SUCCESS -> {
-                    hideProgress()
-                }
-
-                ResourceState.ERROR -> {
-                    hideProgress()
+                    bindChildHoodSummary(map)
                 }
             }
         }
@@ -254,10 +188,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     /**
      * Binds summary for ANC
      */
-    private fun bindAncSummary(
-        map: HashMap<String, Any>,
-        workflowName: String?,
-    ) {
+    private fun bindAncSummary(map: HashMap<String, Any>) {
         // For ANC, show Next Follow-up Date with label "Follow up Visit"
         binding.etNextFollowUpDate.visible()
         binding.tvNextFollowupDateTitle.visible()
@@ -274,7 +205,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         // For ANC workflow, render Result section with only highRiskPregnantWoman and gapsInAnc
         // (Counselling fields will be rendered separately after this block)
         // First, read values to check if referral facility should be shown
-        val ancMap = map[workflowName] as? Map<*, *>
+        val ancMap = map[RMNCH.ANC] as? Map<*, *>
         val summaryGroup = ancMap?.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<*, *>
         val highRiskList = (summaryGroup?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) as? List<*>)?.filterIsInstance<String>() ?: emptyList()
         val gapsList = (summaryGroup?.get(AssessmentDefinedParams.GAPS_IN_ANC) as? List<*>)?.filterIsInstance<String>() ?: emptyList()
@@ -306,7 +237,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     if (id == AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) {
                         // Display heading only
                         val displayTitle = title
-                        with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                        with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                             with(tvTitle) {
                                 text = displayTitle
                                 setTypeface(null, Typeface.BOLD)
@@ -317,9 +248,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         // Display all high risk conditions as list items
                         if (highRiskList.isNotEmpty()) {
                             highRiskList.forEach { condition ->
-                                with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                                with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                                     with(tvTitle) {
-                                        text = "    • $condition" // Use bigger bullet (•)
+                                        text = "  • $condition" // Use bigger bullet (•)
                                         setTextColor(Color.RED)
                                     }
                                     binding.parentLayout.addView(root)
@@ -327,7 +258,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                             }
                         } else {
                             // Show hyphen if no high risk conditions
-                            with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                            with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                                 with(tvTitle) {
                                     text = getString(R.string.no_risk_identified)
                                 }
@@ -337,7 +268,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     } else if (id == AssessmentDefinedParams.GAPS_IN_ANC) {
                         // Display heading only
                         val displayTitle = title
-                        with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                        with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                             with(tvTitle) {
                                 text = displayTitle
                                 setTypeface(null, Typeface.BOLD)
@@ -348,16 +279,16 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         // Add gaps as list items
                         if (gapsList.isNotEmpty()) {
                             gapsList.forEach { gap ->
-                                with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                                with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                                     with(tvTitle) {
-                                        text = "    • $gap" // Use bigger bullet (•)
+                                        text = "  • $gap" // Use bigger bullet (•)
                                     }
                                     binding.parentLayout.addView(root)
                                 }
                             }
                         } else {
                             // Show hyphen if no gaps
-                            with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                            with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                                 with(tvTitle) {
                                     text = getString(R.string.no_gaps_found)
                                 }
@@ -369,7 +300,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                             map,
                             id,
                             viewType,
-                            workflowName,
+                            RMNCH.ANC,
                             isBooleanAnswer,
                             Triple(
                                 getString(R.string.yes),
@@ -378,13 +309,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                             ),
                             requireContext(),
                         )
-                        binding.parentLayout.addView(
-                            addViewSummaryLayout(
-                                titleSummary ?: (titleCulture ?: title),
-                                displayValue,
-                                null,
-                                requireContext(),
-                            ),
+                        bindRmnchSummaryView(
+                            titleSummary ?: (titleCulture ?: title),
+                            displayValue,
                         )
                     }
                 }
@@ -436,19 +363,19 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 val medicalHistoryPhysicalExaminationMap = ancMap?.get(AssessmentDefinedParams.GROUP_MEDICAL_HISTORY_PHYSICAL_EXAMINATION) as? Map<*, *>
                 val bmi = CommonUtils.getDouble(medicalHistoryPhysicalExaminationMap?.get(AssessmentDefinedParams.BMI)).takeIf { it > 0 }
                 bmi?.let {
-                    if (bmi < 18.5) {
+                    if (bmi < AssessmentDefinedParams.BMI_NORMAL_WEIGHT_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "underWeight" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
                         }
-                    } else if (bmi in 18.5..<25.0) {
+                    } else if (bmi < AssessmentDefinedParams.BMI_OVER_WEIGHT_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "normalWeight" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
                         }
-                    } else if (bmi in 25.0..<30.0) {
+                    } else if (bmi < AssessmentDefinedParams.BMI_OBSESS_WEIGHT_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "overWeight" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
@@ -465,19 +392,19 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 val pointOfCareInvestigationMap = ancMap?.get(AssessmentDefinedParams.GROUP_POINT_OF_CARE_INVESTIGATIONS) as? Map<*, *>
                 val hb = CommonUtils.getDouble(pointOfCareInvestigationMap?.get(AssessmentDefinedParams.HEMOGLOBIN)).takeIf { it > 0 }
                 hb?.let {
-                    if (hb < 7) {
+                    if (hb < AssessmentDefinedParams.HEMOGLOBIN_SEVERE_ANEMIA_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "severeAnemia" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
                         }
-                    } else if (hb < 10) {
+                    } else if (hb <= AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "moderateAnemia" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
                         }
-                    } else if (hb < 11) {
+                    } else if (hb < AssessmentDefinedParams.HEMOGLOBIN_MILD_ANEMIA_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "mildAnemia" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
@@ -489,7 +416,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 }
                 val fastingSugar = CommonUtils.getDouble(pointOfCareInvestigationMap?.get(AssessmentDefinedParams.BLOOD_SUGAR_FASTING)).takeIf { it > 0 }
                 val randomSugar = CommonUtils.getDouble(pointOfCareInvestigationMap?.get(AssessmentDefinedParams.BLOOD_SUGAR_RANDOM)).takeIf { it > 0 }
-                if ((fastingSugar != null && fastingSugar < 4) || (randomSugar != null && randomSugar < 4)) {
+                if ((fastingSugar != null && fastingSugar < AssessmentDefinedParams.LOW_SUGAR_THRESHOLD) ||
+                    (randomSugar != null && randomSugar < AssessmentDefinedParams.LOW_SUGAR_THRESHOLD)
+                ) {
                     val option = options.firstOrNull { it[DefinedParams.id] == "lowSugar" }
                     option?.let {
                         instructions.add(option[DefinedParams.name] as? String ?: "")
@@ -576,15 +505,13 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     /**
      * Binds summary for PNC
      */
-    private fun bindPNCSummary(
-        map: HashMap<String, Any>,
-        workflowName: String?,
-    ) {
+    private fun bindPNCSummary(map: HashMap<String, Any>) {
         updateStatusBar()
+        binding.labelPhuReferred.setText(R.string.referral_health_facility)
         binding.etNextFollowUpDate.visible()
         binding.tvNextFollowupDateTitle.visible()
         binding.tvNextFollowupDateTitle.text = AssessmentDefinedParams.LABEL_FOLLOW_UP_VISIT
-        val pncMap = map[workflowName] as? Map<String, Any> ?: emptyMap()
+        val pncMap = map[RMNCH.PNC] as? Map<String, Any> ?: emptyMap()
         val maternalHealth = pncMap[RMNCH.ID_MATERNAL_HEALTH_ASSESSMENT] as? Map<*, *>
         val daysSinceDelivery = CommonUtils.getInteger(maternalHealth?.get(RMNCH.ID_DAYS_SINCE_DELIVERY))
         // Load Referral Facility spinner options from JSON
@@ -615,7 +542,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         updateFollowUpDate(followUpDate ?: "")
 
         // Risk
-        with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+        with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
             with(tvTitle) {
                 setText(R.string.high_risk_mother)
                 setTypeface(null, Typeface.BOLD)
@@ -625,9 +552,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         val risks = PNCAssessmentEvaluator.getRisks(pncMap[RMNCH.ID_MOTHER_RISKS] as? String)
         if (risks?.first == PNCReferralType.URGENT && !risks.second.isEmpty) {
             risks.second.forEach { condition ->
-                with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                     with(tvTitle) {
-                        text = "    • ${condition.asString}" // Use bigger bullet (•)
+                        text = "  • ${condition.asString}" // Use bigger bullet (•)
                         setTextColor(Color.RED)
                     }
                     binding.parentLayout.addView(root)
@@ -635,15 +562,15 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             }
         } else if (risks?.first == PNCReferralType.NON_URGENT && !risks.second.isEmpty) {
             risks.second.forEach { condition ->
-                with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                     with(tvTitle) {
-                        text = "    • ${condition.asString}" // Use bigger bullet (•)
+                        text = "  • ${condition.asString}" // Use bigger bullet (•)
                     }
                     binding.parentLayout.addView(root)
                 }
             }
         } else {
-            with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+            with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                 with(tvTitle) {
                     setText(R.string.separator_double_hyphen)
                 }
@@ -651,7 +578,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             }
         }
 
-        with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+        with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
             with(tvTitle) {
                 setText(R.string.gaps_in_pnc)
                 setTypeface(null, Typeface.BOLD)
@@ -665,15 +592,15 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         }
         if (gaps != null && !gaps.isEmpty) {
             gaps.forEach { condition ->
-                with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                     with(tvTitle) {
-                        text = "    • ${condition.asString}" // Use bigger bullet (•)
+                        text = "  • ${condition.asString}" // Use bigger bullet (•)
                     }
                     binding.parentLayout.addView(root)
                 }
             }
         } else {
-            with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+            with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                 with(tvTitle) {
                     setText(R.string.separator_double_hyphen)
                 }
@@ -723,7 +650,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
 
             // Add instructions title
             instructionsTitle?.let {
-                with(TextLabelLayoutBinding.inflate(LayoutInflater.from(requireContext()))) {
+                with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                     tvTitle.text = translateTitle(instructionsTitle.titleCulture, instructionsTitle.title, isTranslationEnabled)
                     counsellingCardBinding.llFamilyRoot.addView(root)
                 }
@@ -748,6 +675,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
+    /**
+     * Gets referral facilities from form layout response
+     */
     private fun loadReferralFacilityOptions() {
         val referralFacilityField = viewModel.formLayoutsLiveData.value
             ?.data
@@ -796,44 +726,42 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             }
     }
 
-    private fun addDefaultSummaryView(map: HashMap<String, Any>) {
-        val title: String = when (viewModel.workflowName) {
-            ChildHoodVisit -> getString(R.string.child_hood_visit)
-            else -> getString(R.string.hyphen_symbol)
-        }
+    /**
+     * Binds summary for child-hood visit
+     */
+    private fun bindChildHoodSummary(map: HashMap<String, Any>) {
+        val pncChildMap = map[ChildHoodVisit] as Map<*, *>
+        updateStatusBar()
+        // Hide referral
+        binding.etPhuChange.gone()
+        binding.labelPhuReferred.gone()
+        // Hide next follow-up date
+        binding.tvNextFollowupDateTitle.gone()
+        binding.etNextFollowUpDate.gone()
 
-        if (viewModel.workflowName == ChildHoodVisit) {
-            viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let {
-                calculateAgeInMonths(it)?.let { pair ->
-                    if (pair.first <= childHoodVisitMaxMonth) {
-                        RMNCH
-                            .calculateNextChildHoodVisitDate(
-                                age = pair.first,
-                                birthDate = pair.second,
-                            )?.let { visitDate ->
-                                binding.etNextFollowUpDate.text = getDateStringFromDate(
-                                    visitDate,
-                                    DateUtils.DATE_ddMMyyyy,
-                                )
-                                updateFollowUpDate(
-                                    getDateStringFromDate(
-                                        visitDate,
-                                        DateUtils.DATE_ddMMyyyy,
-                                    ),
-                                )
-                            }
-                    }
-                }
-            }
-        }
-
-        binding.parentLayout.addView(
-            addViewSummaryLayout(
-                title,
+        bindRmnchSummaryView(
+            getString(R.string.child_hood_visit),
+            getValueFromMap(
+                map,
+                RMNCH.visitNo,
+                ViewType.VIEW_TYPE_FORM_EDITTEXT,
+                viewModel.workflowName,
+                false,
+                Triple(
+                    getString(R.string.yes),
+                    getString(R.string.no),
+                    getString(R.string.hyphen_symbol),
+                ),
+                requireContext(),
+            ),
+        )
+        if (pncChildMap.containsKey(AssessmentDefinedParams.ID_CHILD_ILLNESS_TYPE)) {
+            bindRmnchSummaryView(
+                getString(R.string.referral_reason),
                 getValueFromMap(
                     map,
-                    RMNCH.visitNo,
-                    ViewType.VIEW_TYPE_FORM_EDITTEXT,
+                    AssessmentDefinedParams.ID_CHILD_ILLNESS_TYPE,
+                    ViewType.VIEW_TYPE_DIALOG_CHECKBOX,
                     viewModel.workflowName,
                     false,
                     Triple(
@@ -843,10 +771,51 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     ),
                     requireContext(),
                 ),
-                null,
-                requireContext(),
-            ),
-        )
+            )
+        }
+        if (pncChildMap.containsKey(AssessmentDefinedParams.ID_CHILD_REFERRAL_FACILITY_TYPE)) {
+            val referralFacilityId = pncChildMap[AssessmentDefinedParams.ID_CHILD_REFERRAL_FACILITY_TYPE]
+            // Place of referral
+            val referralFacilityForm =
+                viewModel.formLayoutsLiveData.value
+                    ?.data
+                    ?.formLayout
+                    ?.firstOrNull { it.id.equals(AssessmentDefinedParams.ID_CHILD_REFERRAL_FACILITY_TYPE, true) }
+            referralFacilityForm?.let {
+                val option = referralFacilityForm.optionsList?.firstOrNull { it[DefinedParams.ID] == referralFacilityId }
+                bindRmnchSummaryView(
+                    getString(R.string.place_of_referral),
+                    (if (isTranslationEnabled) option?.get(DefinedParams.CULTURE_VALUE) else option?.get(DefinedParams.NAME)) as? String,
+                )
+            }
+        }
+        if (DefinedParams.yes.equals(pncChildMap[AssessmentDefinedParams.ID_CONGENITAL_DEFECT] as String?, true)) {
+            // Congenital defect
+            val congenitalDefectForm =
+                viewModel.formLayoutsLiveData.value
+                    ?.data
+                    ?.formLayout
+                    ?.firstOrNull { it.id.equals(AssessmentDefinedParams.ID_CONGENITAL_DEFECT, true) }
+            congenitalDefectForm?.let {
+                bindRmnchSummaryView(
+                    congenitalDefectForm.getSummaryTitle(isTranslationEnabled),
+                    pncChildMap[AssessmentDefinedParams.ID_CONGENITAL_DEFECT].toString().capitalizeFirstChar(),
+                )
+            }
+        }
+        if (pncChildMap.containsKey(AssessmentDefinedParams.ID_RECEIVED_VACCINE)) {
+            val vaccinationStatus = pncChildMap[AssessmentDefinedParams.ID_RECEIVED_VACCINE]
+            val vaccinationStatusDisplay = if (DefinedParams.yes.equals(vaccinationStatus as String?, true)) {
+                getString(R.string.taken)
+            } else {
+                getString(R.string.not_taken)
+            }
+            bindRmnchSummaryView(
+                getString(R.string.vaccination),
+                vaccinationStatusDisplay,
+            )
+        }
+        binding.btnDone.isEnabled = true
     }
 
     companion object {
