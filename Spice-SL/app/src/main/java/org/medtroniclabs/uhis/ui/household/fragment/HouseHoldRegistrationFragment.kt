@@ -132,7 +132,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
 
                         // Show village/union field if we have more than 1
                         if (data.response is List<*> && data.response.size > 1) {
-                            formGenerator.getViewByTag(HouseHoldRegistration.villageId)?.visible()
+                            formGenerator.getViewByTag(HouseHoldRegistration.villageId + formGenerator.rootSuffix)?.visible()
                         }
                     }
                 }
