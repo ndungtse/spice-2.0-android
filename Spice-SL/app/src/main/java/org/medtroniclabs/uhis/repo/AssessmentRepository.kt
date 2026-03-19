@@ -4,7 +4,6 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,7 +17,6 @@ import org.medtroniclabs.uhis.db.entity.MedicalComplianceEntity
 import org.medtroniclabs.uhis.db.entity.MentalHealthEntity
 import org.medtroniclabs.uhis.db.entity.SignsAndSymptomsEntity
 import org.medtroniclabs.uhis.db.local.RoomHelper
-import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.model.FormResponse
 import org.medtroniclabs.uhis.model.assessment.AssessmentMemberDetails
 import org.medtroniclabs.uhis.network.ApiHelper
@@ -28,7 +26,6 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.TBContactTra
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.TBScreening
 import org.medtroniclabs.uhis.ui.assessment.AssessmentNCDEntity
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import java.util.Locale
 import javax.inject.Inject
 
@@ -36,72 +33,6 @@ class AssessmentRepository @Inject constructor(
     private var roomHelper: RoomHelper,
     private var apiHelper: ApiHelper,
 ) {
-    suspend fun savePNCAssessment(
-        formLayouts: List<FormLayout>?,
-        motherAssessmentString: String,
-        memberDetail: AssessmentMemberDetails,
-        referralResult: Pair<String?, ArrayList<String>>,
-        lastLocation: Location?,
-        otherDetails: HashMap<String, Any>?,
-        followUpId: Long? = null,
-    ): Resource<Pair<List<FormLayout>?, AssessmentEntity>> =
-        try {
-            val motherAsstDetail = JsonParser.parseString(motherAssessmentString)
-
-            val motherAssessmentEntity = getAssessmentEntity(
-                memberDetail,
-                motherAsstDetail.toString(),
-                otherDetails,
-                referralResult,
-                lastLocation,
-                RMNCH.pnc_mother_key,
-                followUpId = followUpId,
-            )
-            motherAssessmentEntity.id = roomHelper.saveAssessment(motherAssessmentEntity)
-
-            Resource(
-                state = ResourceState.SUCCESS,
-                data = Pair(formLayouts, motherAssessmentEntity),
-            )
-        } catch (_: Exception) {
-            Resource(state = ResourceState.ERROR)
-        }
-
-    private fun getAssessmentEntity(
-        memberDetail: AssessmentMemberDetails,
-        second: String,
-        otherDetails: HashMap<String, Any>?,
-        referralResult: Pair<String?, ArrayList<String>>,
-        lastLocation: Location?,
-        menuId: String,
-        followUpId: Long?,
-    ): AssessmentEntity {
-        val assessmentEntity = AssessmentEntity(
-            householdMemberLocalId = memberDetail.id,
-            memberId = memberDetail.memberId,
-            householdId = memberDetail.householdId,
-            patientId = memberDetail.patientId,
-            villageId = memberDetail.villageId,
-            assessmentType = menuId,
-            assessmentDetails = second,
-            otherDetails = if (otherDetails != null) {
-                StringConverter.convertGivenMapToString(
-                    otherDetails,
-                )
-            } else {
-                null
-            },
-            isReferred = getReferralStatus(referralResult.first),
-            referralStatus = getReferralResult(referralResult.first),
-            referredReason = referralResult.second,
-            followUpId = followUpId,
-            latitude = lastLocation?.latitude ?: 0.0,
-            longitude = lastLocation?.longitude ?: 0.0,
-        )
-
-        return assessmentEntity
-    }
-
     suspend fun saveAssessment(
         resultData: String,
         memberDetails: AssessmentMemberDetails,
@@ -125,7 +56,7 @@ class AssessmentRepository @Inject constructor(
                     memberId = memberDetails.memberId,
                     householdId = memberDetails.householdId,
                     patientId = memberDetails.patientId,
-                    villageId = memberDetails.villageId,
+                    villageId = memberDetails.subVillageId,
                     assessmentType = menu.uppercase(Locale.getDefault()),
                     assessmentDetails = resultData,
                     otherDetails = if (otherDetails != null) {
@@ -135,8 +66,8 @@ class AssessmentRepository @Inject constructor(
                     } else {
                         null
                     },
-                    isReferred = getReferralStatus(referralResult?.first),
-                    referralStatus = getReferralResult(referralResult?.first),
+                    isReferred = isReferred(referralResult?.first),
+                    referralStatus = getReferralStatus(referralResult?.first),
                     referredReason = referralResult?.second,
                     followUpId = followUpId,
                     latitude = latitude,
@@ -164,7 +95,7 @@ class AssessmentRepository @Inject constructor(
         return Resource(ResourceState.SUCCESS, data)
     }
 
-    private fun getReferralResult(result: String?): ReferralStatus =
+    private fun getReferralStatus(result: String?): ReferralStatus =
         when (result) {
             ReferralStatus.Referred.name -> {
                 ReferralStatus.Referred
@@ -179,7 +110,7 @@ class AssessmentRepository @Inject constructor(
             }
         }
 
-    private fun getReferralStatus(value: String?): Boolean = value != null && value == ReferralStatus.Referred.name
+    private fun isReferred(value: String?): Boolean = value == ReferralStatus.Referred.name
 
     suspend fun updateOtherAssessmentDetails(
         assessmentEntity: AssessmentEntity?,
@@ -198,7 +129,7 @@ class AssessmentRepository @Inject constructor(
                     roomHelper.updateOtherAssessmentDetails(assessmentEntity)
                 }
                 Resource(state = ResourceState.SUCCESS)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 Resource(state = ResourceState.ERROR)
             }
         }

@@ -2,6 +2,7 @@ package org.medtroniclabs.uhis.ui.assessment.utils
 
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.formgeneration.model.BPModel
+import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.AVG_BLOOD_PRESSURE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.AVG_DIASTOLIC
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.AVG_SYSTOLIC
@@ -18,9 +19,8 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.MMOLL
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.NAME
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.NCD_SYMPTOMS
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.SYMPTOMS_LOG
-import kotlin.String
-import kotlin.collections.HashMap
-import kotlin.collections.set
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
+import java.util.Locale
 import kotlin.math.roundToInt
 
 object AssessmentUtil {
@@ -109,4 +109,22 @@ object AssessmentUtil {
 
         return list
     }
+
+    /**
+     * Maps given service to respective service name, if no mapping found then returns upper case of service
+     *
+     * e.g, pwProfile -> Pregnant Women Registration
+     */
+    fun mapServiceToServiceName(service: String): String =
+        when (service.lowercase()) {
+            MenuConstants.PREGNANT_WOMEN_PROFILE.lowercase() -> "Pregnant Women Registration"
+            MenuConstants.FP_MENU_ID.lowercase() -> "Family Planning"
+            MenuConstants.EYE_CARE_MENU_ID.lowercase() -> "Eye Care"
+            MenuConstants.CATARACT_MENU_ID.lowercase() -> "Cataract"
+            MenuConstants.PREGNANCY_OUTCOME.lowercase() -> "Pregnancy Outcome"
+            RMNCH.ANC.lowercase() -> "ANC"
+            RMNCH.pnc_mother_key.lowercase() -> "PNC"
+            RMNCH.ChildHoodVisit.lowercase() -> "Child Visit"
+            else -> service.uppercase(Locale.ENGLISH)
+        }
 }

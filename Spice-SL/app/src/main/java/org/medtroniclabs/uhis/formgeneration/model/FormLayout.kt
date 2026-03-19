@@ -102,6 +102,7 @@ import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
  * @param customizedWorkflowId TODO
  * @param infoTitle Info title for view types **EditText**, **NoOfDaysView**, **SingleSelectionView**, **Spinner**. If [isInfo] is not given then this field is of no use.
  * @param infoTitleCulture Info title in second language for view types **EditText**, **NoOfDaysView**, **SingleSelectionView**, **Spinner**. If [isInfo] is not given then this field is of no use.
+ * @param hideDob Boolean for whether to hide date picker for view type **AgeYMD**.
  */
 data class FormLayout(
     override val viewType: String,

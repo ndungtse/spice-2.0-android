@@ -5,7 +5,6 @@ import android.location.Location
 import android.text.SpannableStringBuilder
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.text.color
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
@@ -192,26 +191,12 @@ class AssessmentViewModel @Inject constructor(
     val patientHealthFacility = MutableLiveData<Resource<List<HealthFacilityEntity>>>()
     val callResultSaveLiveData = MutableLiveData<Resource<Pair<List<FormLayout>?, AssessmentEntity>>>()
     val getAssessmentDetails = MutableLiveData<Resource<AssessmentEntity>>()
-    var isCbs = false
     var motherID: Long? = null
     val otherHouseholdMemberLiveData = MutableLiveData<Resource<ArrayList<Map<String, Any>>>>()
     val saveRxBuddyDetails = MutableLiveData<Resource<Long>>()
     val treatmentDetailsLiveData = MutableLiveData<TreatmentDetailsEntity>()
     val rxBuddyDetailsLiveData = MutableLiveData<RxBuddyDetails>()
     val saveRxBuddyFollowUpLiveData = MutableLiveData<Resource<Long>>()
-    val childhoodVisitConditionLiveData = MediatorLiveData<String>().apply {
-        addSource(ageInMonth) { age ->
-            if (formRenderedLiveData.value == true && age != null) {
-                value = age
-            }
-        }
-
-        addSource(formRenderedLiveData) { rendered ->
-            if (rendered == true && ageInMonth.value != null) {
-                value = ageInMonth.value
-            }
-        }
-    }
 
     var dangerSingsKey: String? = null
 
@@ -708,45 +693,6 @@ class AssessmentViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             getAssessmentDetails.postValue(assessmentRepository.getAssessmentById(assessmentId))
         }
-    }
-
-    private fun calculatePNCOtherDetails(
-        assessmentMap: HashMap<Any, Any>,
-        referralStatus: String?,
-    ): HashMap<String, Any>? {
-        val otherDetails = HashMap<String, Any>()
-        if (referralStatus != null && referralStatus == ReferralStatus.Referred.name) {
-            otherDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
-                SecuredPreference.getString(SecuredPreference.EnvironmentKey.DEFAULT_SITE_ID.name)
-                    ?: "-1"
-        }
-        if (assessmentMap.containsKey(RMNCH.PNC)) {
-            val map = assessmentMap[RMNCH.PNC] as Map<*, *>
-            if (map.containsKey(RMNCH.DateOfDelivery)) {
-                val dateOfDelivery = map[RMNCH.DateOfDelivery] as String
-                if (dateOfDelivery != null && dateOfDelivery.isNotEmpty()) {
-                    DateUtils
-                        .convertStringToDate(
-                            dateOfDelivery,
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        )?.let { deliveryDate ->
-                            RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
-                                otherDetails[AssessmentDefinedParams.NextFollowupDate] =
-                                    DateUtils.convertDateTimeToDate(
-                                        DateUtils.getDateStringFromDate(
-                                            visitDate,
-                                            DateUtils.DATE_ddMMyyyy,
-                                        ),
-                                        DateUtils.DATE_ddMMyyyy,
-                                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                    )
-                            }
-                        }
-                }
-            }
-        }
-
-        return if (otherDetails.isEmpty()) null else otherDetails
     }
 
     private fun calculateOtherDetails(
@@ -1525,16 +1471,20 @@ class AssessmentViewModel @Inject constructor(
             referralStatus = motherReferralResult.first
             referralReason = motherReferralResult.second
             assessmentStringLiveData.postValue(assessmentDetail.first)
+            val assessmentResult = assessmentRepository.saveAssessment(
+                assessmentDetail.second,
+                memberDetail,
+                RMNCH.pnc_mother_key,
+                motherReferralResult,
+                null,
+                followUpId,
+            )
             assessmentSaveLiveData.postValue(
-                assessmentRepository.savePNCAssessment(
-                    serverData,
-                    assessmentDetail.second,
-                    memberDetail,
-                    motherReferralResult,
-                    getCurrentLocation(),
-                    null,
-                    followUpId,
-                ),
+                when (assessmentResult.state) {
+                    ResourceState.ERROR -> Resource(state = ResourceState.ERROR)
+                    ResourceState.LOADING -> Resource(state = ResourceState.LOADING)
+                    ResourceState.SUCCESS -> Resource(state = assessmentResult.state, data = Pair(serverData, assessmentResult.data!!))
+                },
             )
         }
     }

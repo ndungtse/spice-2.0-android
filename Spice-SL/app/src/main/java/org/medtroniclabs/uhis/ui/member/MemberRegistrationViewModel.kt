@@ -149,8 +149,6 @@ class MemberRegistrationViewModel @Inject constructor(
                     map,
                     householdId,
                     memberDetailsLiveData.value?.data,
-                    initial = initial,
-                    signature = signature,
                     isPhuWalkInFlow = isPhuWalkInsFlow,
                     location = location,
                 )

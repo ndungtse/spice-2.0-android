@@ -21,8 +21,8 @@ import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.formgeneration.utility.CustomSpinnerAdapter
 import org.medtroniclabs.uhis.model.services.ServiceStaticFilter
 import org.medtroniclabs.uhis.ui.BaseActivity
-import org.medtroniclabs.uhis.ui.home.AssessmentToolsActivity
 import org.medtroniclabs.uhis.ui.household.MemberSelectionListener
+import org.medtroniclabs.uhis.ui.household.summary.MemberSummaryActivity
 import org.medtroniclabs.uhis.ui.services.viewmodel.ServicesViewModel
 import org.medtroniclabs.uhis.common.DefinedParams as CommonDefinedParams
 
@@ -210,7 +210,7 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
         isContactTrace: Boolean,
         houseHoldId: Long?,
     ) {
-        val intent = Intent(this, AssessmentToolsActivity::class.java)
+        val intent = Intent(this, MemberSummaryActivity::class.java)
         intent.putExtra(CommonDefinedParams.HOUSEHOLD_ID, houseHoldId)
         intent.putExtra(CommonDefinedParams.MEMBER_ID, item)
         intent.putExtra(CommonDefinedParams.DOB, dateOfBirth)

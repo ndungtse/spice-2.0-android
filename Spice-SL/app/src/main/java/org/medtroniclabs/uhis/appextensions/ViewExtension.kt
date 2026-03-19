@@ -29,6 +29,8 @@ import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import org.medtroniclabs.uhis.R
@@ -270,3 +272,29 @@ fun Context.isTablet(): Boolean =
         resources.configuration.screenLayout and
             Configuration.SCREENLAYOUT_SIZE_MASK
     ) >= Configuration.SCREENLAYOUT_SIZE_LARGE
+
+/**
+ * Scrolls to previous available item
+ */
+fun RecyclerView.navigateToPrevious(): Int {
+    val layoutManager = layoutManager as? LinearLayoutManager ?: return RecyclerView.NO_POSITION
+    val currentPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
+    if (currentPosition != RecyclerView.NO_POSITION && currentPosition > 0) {
+        smoothScrollToPosition(currentPosition - 1)
+        return currentPosition - 1
+    }
+    return RecyclerView.NO_POSITION
+}
+
+/**
+ * Scrolls to next available item
+ */
+fun RecyclerView.navigateToNext(): Int {
+    val layoutManager = layoutManager as? LinearLayoutManager ?: return RecyclerView.NO_POSITION
+    val currentPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
+    if (currentPosition != RecyclerView.NO_POSITION && currentPosition < layoutManager.itemCount - 1) {
+        smoothScrollToPosition(currentPosition + 1)
+        return currentPosition + 1
+    }
+    return RecyclerView.NO_POSITION
+}

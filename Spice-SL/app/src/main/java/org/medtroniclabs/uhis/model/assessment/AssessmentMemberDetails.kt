@@ -8,6 +8,7 @@ package org.medtroniclabs.uhis.model.assessment
  * @param dateOfBirth Date of birth of household member
  * @param patientId Patient id of household member
  * @param villageId Village id of household to which household member belongs to
+ * @param subVillageId Sub village id of household to which household member belongs to
  * @param memberId FHIR id of household member
  * @param householdNo Number of household to which the household member belongs to
  * @param householdId FHIR id of household
@@ -21,6 +22,7 @@ data class AssessmentMemberDetails(
     val dateOfBirth: String,
     val patientId: String? = null,
     val villageId: String,
+    val subVillageId: String,
     val memberId: String? = null,
     val householdNo: Long? = null,
     val householdId: String? = null,

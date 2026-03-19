@@ -20,9 +20,7 @@ open class BaseEntity {
     var updatedAt: Long = System.currentTimeMillis()
 
     @ColumnInfo("created_at")
-    val createdAt: Long = System.currentTimeMillis()
+    var createdAt: Long = System.currentTimeMillis()
 
     fun setCreatedBy(id: Long) {}
-
-    fun setCreatedAt(id: Long) {}
 }

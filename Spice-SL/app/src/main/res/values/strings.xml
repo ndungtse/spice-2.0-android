@@ -1658,4 +1658,10 @@
     <string name="referred_for_nfurther_assessment_cc">Refer to the nearest community clinic for further assessment</string>
     <string name="referred_for_nfurther_assessment_Upazila">Refer to the nearest Upazila Health complex for further assessment</string>
     <string name="services">Services</string>
+    <string name="services_provided">Services Provided</string>
+    <string name="recent_status">Recent Status</string>
+    <string name="service_history">Service History</string>
+    <string name="service_history_not_found">There are no service history</string>
+    <string name="service_name">Service Name</string>
+    <string name="service_date">Service Date</string>
 </resources>

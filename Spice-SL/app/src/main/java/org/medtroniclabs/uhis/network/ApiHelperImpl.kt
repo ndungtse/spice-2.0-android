@@ -99,6 +99,7 @@ import org.medtroniclabs.uhis.data.resource.CD4DetailsRequest
 import org.medtroniclabs.uhis.data.resource.CD4DetailsResponse
 import org.medtroniclabs.uhis.data.resource.LabourDeliverySummaryRequest
 import org.medtroniclabs.uhis.data.resource.RequestAllEntities
+import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
 import org.medtroniclabs.uhis.model.ARTResponse
 import org.medtroniclabs.uhis.model.ArtRequest
 import org.medtroniclabs.uhis.model.CultureLocaleModel
@@ -213,6 +214,9 @@ class ApiHelperImpl @Inject constructor(
     override suspend fun getOfflineSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse> = apiService.getOfflineSyncStatus(request)
 
     override suspend fun fetchSyncedData(request: RequestAllEntities): Response<ResponseBody> = apiService.fetchSyncedData(request)
+
+    override suspend fun fetchMemberAssessmentHistory(request: RequestAllEntities): Response<List<MemberAssessmentHistoryEntity>> =
+        apiService.fetchMemberAssessmentHistory(request)
 
     override suspend fun getHouseholdAndMembers(request: RequestAllEntities): Response<APIResponse<List<HouseHold>>> = apiService.getHouseholdDetails(request)
 

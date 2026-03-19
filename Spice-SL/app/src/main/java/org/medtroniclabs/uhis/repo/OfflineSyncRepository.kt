@@ -57,6 +57,7 @@ import org.medtroniclabs.uhis.db.entity.CommunityProfile
 import org.medtroniclabs.uhis.db.entity.EntitiesName
 import org.medtroniclabs.uhis.db.entity.EntitiesName.COMMUNITY_PROFILE
 import org.medtroniclabs.uhis.db.entity.LinkHouseholdMember
+import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
 import org.medtroniclabs.uhis.db.entity.RxBuddyDetails
 import org.medtroniclabs.uhis.db.entity.TreatmentDetailsEntity
 import org.medtroniclabs.uhis.db.local.RoomHelper
@@ -268,15 +269,16 @@ class OfflineSyncRepository @Inject constructor(
             roomHelper.deleteAllCommunityProfiles()
             roomHelper.deleteAllRxBuddyDetails()
             roomHelper.deleteAllRxBuddyFollowUp()
+            roomHelper.deleteAllMemberAssessmentHistory()
 
             val villageIds = roomHelper.getAllVillageIds()
             // Fetch Synced Data
             val isInitialDataSuccess = fetchSyncedData(villageIds, null)
 
             // Need to check this to be added for downloading error and inprogress data
-            /* if (!fetchUnSyncedData()) {
-                 liveData.postError("Something went wrong")
-             }*/
+            // if (!fetchUnSyncedData()) {
+            //  liveData.postError("Something went wrong")
+            // }
 
             if (isInitialDataSuccess) {
                 liveData.postSuccess(true)
@@ -293,7 +295,8 @@ class OfflineSyncRepository @Inject constructor(
         serverLastSyncedAt: String? = null,
     ): Boolean {
         val syncedResponse = getSyncedEntities(villageIds, serverLastSyncedAt)
-        if (syncedResponse.isSuccessful) {
+        val assessmentHistoryResponse = fetchMemberAssessmentHistory(villageIds)
+        if (syncedResponse.isSuccessful && assessmentHistoryResponse.isSuccessful) {
             val response = syncedResponse.body()?.string()
             response?.let {
                 try {
@@ -303,7 +306,7 @@ class OfflineSyncRepository @Inject constructor(
                     if (responseInitialDownload == null) {
                         return false
                     } else {
-                        saveRequestInitialDownload(responseInitialDownload)
+                        saveRequestInitialDownload(responseInitialDownload, assessmentHistoryResponse.body() ?: emptyList())
                         return true
                     }
                 } catch (e: Exception) {
@@ -317,7 +320,10 @@ class OfflineSyncRepository @Inject constructor(
         return false
     }
 
-    private suspend fun saveRequestInitialDownload(requestInitialDownload: ResponseInitialDownload) {
+    private suspend fun saveRequestInitialDownload(
+        requestInitialDownload: ResponseInitialDownload,
+        assessmentHistory: List<MemberAssessmentHistoryEntity>,
+    ) {
         val hhMapping = insertHouseholds(requestInitialDownload.households)
         insertHouseholdMembers(requestInitialDownload.members, hhMapping)
 
@@ -395,6 +401,27 @@ class OfflineSyncRepository @Inject constructor(
         } ?: kotlin.run {
             val followUpCriteria = FollowUpCriteria(3, 5, 3, 7, 7, 2, 2, 2, 2, 5, 5, 5, 5)
             SecuredPreference.putFollowUpCriteria(followUpCriteria)
+        }
+        if (assessmentHistory.isNotEmpty()) {
+            // Set member assessment history
+            val updatedHistoryList = assessmentHistory.map { history ->
+                val memberId = roomHelper.getHouseholdMemberIdByFhirId(history.memberFhirId)
+
+                // Uniqueness check: Member (FHIR ID or Local ID), Visit Date, Service Provided
+                val existingHistory = roomHelper.getMemberAssessmentHistory(
+                    history.memberFhirId,
+                    memberId,
+                    history.visitDate,
+                    history.serviceProvided,
+                )
+
+                if (existingHistory != null) {
+                    history.copy(id = existingHistory.id, memberId = memberId)
+                } else {
+                    history.copy(memberId = memberId)
+                }
+            }
+            roomHelper.insertMemberAssessmentHistory(updatedHistoryList)
         }
 
         SecuredPreference.putString(
@@ -617,6 +644,11 @@ class OfflineSyncRepository @Inject constructor(
         // Getting village name only. For mapping I have used following code
         val request = RequestAllEntities(villageList, lastSyncedAt)
         return apiHelper.fetchSyncedData(request)
+    }
+
+    private suspend fun fetchMemberAssessmentHistory(villageList: List<Long>): Response<List<MemberAssessmentHistoryEntity>> {
+        val request = RequestAllEntities(villageList)
+        return apiHelper.fetchMemberAssessmentHistory(request)
     }
 
     private suspend fun getUnSyncedEntities(): Response<SyncResponse> {
@@ -844,11 +876,9 @@ class OfflineSyncRepository @Inject constructor(
         rxBuddyFollowUpIds: MutableList<Long>,
     ): List<RxBuddy> {
         // Construct Rx Buddy details
-        /*
-         * 1. Get Un Synced Rx Buddy Register
-         * 2. Construct Register object with member id / new rx buddy details
-         * 3. Get Un Synced Rx Buddy Followup with Rx Buddy Id
-         * */
+        // 1. Get Un Synced Rx Buddy Register
+        // 2. Construct Register object with member id / new rx buddy details
+        // 3. Get Un Synced Rx Buddy Followup with Rx Buddy Id
         val rxBuddies = mutableListOf<RxBuddy>()
         val rxBuddyRegisters = roomHelper.getAllUnSyncedRxBuddyRegister()
         for (rx in rxBuddyRegisters) {
@@ -1007,7 +1037,7 @@ class OfflineSyncRepository @Inject constructor(
         request[OfflineConstant.COMMUNITY_PROFILES] = communityProfilesRequests
         request[OfflineConstant.RX_BUDDIES] = rxBuddies
 
-        var data = Gson().toJson(request)
+        val data = Gson().toJson(request)
         Log.d(" post data here", data)
 
         try {

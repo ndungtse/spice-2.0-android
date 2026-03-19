@@ -40,6 +40,7 @@ import org.medtroniclabs.uhis.db.dao.HivMetaDataDAO
 import org.medtroniclabs.uhis.db.dao.HouseholdDAO
 import org.medtroniclabs.uhis.db.dao.LabourDeliveryDAO
 import org.medtroniclabs.uhis.db.dao.LinkHouseholdMemberDao
+import org.medtroniclabs.uhis.db.dao.MemberAssessmentHistoryDao
 import org.medtroniclabs.uhis.db.dao.MemberDAO
 import org.medtroniclabs.uhis.db.dao.MetaDataDAO
 import org.medtroniclabs.uhis.db.dao.NCDFollowUpDao
@@ -312,6 +313,10 @@ object AppModule {
     @Singleton
     @Provides
     fun provideHivMetaDataDAO(db: SpiceDataBase): HivMetaDataDAO = db.hivMetaDataDAO()
+
+    @Singleton
+    @Provides
+    fun provideMemberAssessmentHistoryDao(db: SpiceDataBase): MemberAssessmentHistoryDao = db.memberAssessmentHistoryDao()
 }
 
 @Retention(AnnotationRetention.BINARY)

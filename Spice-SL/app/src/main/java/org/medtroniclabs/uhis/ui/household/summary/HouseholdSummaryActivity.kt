@@ -23,7 +23,6 @@ import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.assessment.AssessmentActivity
 import org.medtroniclabs.uhis.ui.dialog.LinkPatientDialogFragment
 import org.medtroniclabs.uhis.ui.dialog.SuccessDialogFragment
-import org.medtroniclabs.uhis.ui.home.AssessmentToolsActivity
 import org.medtroniclabs.uhis.ui.household.HouseholdActivity
 import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams
 import org.medtroniclabs.uhis.ui.household.MemberSelectionListener
@@ -241,7 +240,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                 intent.putExtra(DefinedParams.householdId, householdSummaryViewModel.houseHoldId)
                 startActivity(intent)
             } else {
-                val intent = Intent(this, AssessmentToolsActivity::class.java)
+                val intent = Intent(this, MemberSummaryActivity::class.java)
                 intent.putExtra(DefinedParams.HOUSEHOLD_ID, houseHoldId)
                 intent.putExtra(DefinedParams.MEMBER_ID, item)
                 intent.putExtra(DefinedParams.DOB, dateOfBirth)
@@ -254,9 +253,6 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         binding.btnAddNewMember.setOnClickListener(this)
         binding.btnFinishRegistration.setOnClickListener(this)
         binding.btnLinkPatient.setOnClickListener(this)
-        /*onBackPressedDispatcher.addCallback(this) {
-            onHouseHoldSummaryActivity()
-        }*/
     }
 
     override fun onClick(v: View?) {

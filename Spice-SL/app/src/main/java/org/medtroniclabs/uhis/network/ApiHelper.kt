@@ -97,6 +97,7 @@ import org.medtroniclabs.uhis.data.resource.CD4DetailsRequest
 import org.medtroniclabs.uhis.data.resource.CD4DetailsResponse
 import org.medtroniclabs.uhis.data.resource.LabourDeliverySummaryRequest
 import org.medtroniclabs.uhis.data.resource.RequestAllEntities
+import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
 import org.medtroniclabs.uhis.model.ARTResponse
 import org.medtroniclabs.uhis.model.ArtRequest
 import org.medtroniclabs.uhis.model.CultureLocaleModel
@@ -198,6 +199,8 @@ interface ApiHelper {
     suspend fun getHouseholdAndMembers(request: RequestAllEntities): Response<APIResponse<List<HouseHold>>>
 
     suspend fun fetchSyncedData(request: RequestAllEntities): Response<ResponseBody>
+
+    suspend fun fetchMemberAssessmentHistory(request: RequestAllEntities): Response<List<MemberAssessmentHistoryEntity>>
 
     suspend fun getPatients(request: PatientsDataModel): APIResponse<SearchAndListResponse>
 

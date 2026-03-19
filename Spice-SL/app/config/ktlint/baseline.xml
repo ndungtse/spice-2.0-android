@@ -301,16 +301,13 @@
         <error line="1" column="1" source="standard:filename" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/db/SpiceDataBase.kt">
-        <error line="92" column="161" source="standard:max-line-length" />
-        <error line="97" column="161" source="standard:max-line-length" />
-        <error line="98" column="161" source="standard:max-line-length" />
-        <error line="159" column="21" source="standard:property-naming" />
+        <error line="94" column="161" source="standard:max-line-length" />
+        <error line="99" column="161" source="standard:max-line-length" />
+        <error line="100" column="161" source="standard:max-line-length" />
+        <error line="164" column="21" source="standard:property-naming" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/db/entity/BaseEntity.kt">
         <error line="14" column="9" source="standard:property-naming" />
-    </file>
-    <file name="src/main/java/org/medtroniclabs/uhis/db/entity/EntitiesName.kt">
-        <error line="10" column="15" source="standard:property-naming" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/FormGenerator.kt">
         <error line="4061" column="1" source="standard:if-else-wrapping" />
@@ -849,10 +846,6 @@
     <file name="src/main/java/org/medtroniclabs/uhis/offlinesync/ScheduledSyncWork.kt">
         <error line="155" column="13" source="standard:no-consecutive-comments" />
     </file>
-    <file name="src/main/java/org/medtroniclabs/uhis/repo/OfflineSyncRepository.kt">
-        <error line="277" column="13" source="standard:no-consecutive-comments" />
-        <error line="847" column="9" source="standard:no-consecutive-comments" />
-    </file>
     <file name="src/main/java/org/medtroniclabs/uhis/signature/view/SignatureView.kt">
         <error line="58" column="17" source="standard:property-naming" />
         <error line="59" column="17" source="standard:property-naming" />
@@ -1087,12 +1080,13 @@
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/ui/assessment/rmnch/RMNCH.kt">
         <error line="17" column="15" source="standard:property-naming" />
-        <error line="18" column="15" source="standard:property-naming" />
+        <error line="20" column="15" source="standard:property-naming" />
         <error line="21" column="15" source="standard:property-naming" />
         <error line="22" column="15" source="standard:property-naming" />
         <error line="23" column="15" source="standard:property-naming" />
         <error line="24" column="15" source="standard:property-naming" />
-        <error line="25" column="15" source="standard:property-naming" />
+        <error line="26" column="15" source="standard:property-naming" />
+        <error line="27" column="15" source="standard:property-naming" />
         <error line="28" column="15" source="standard:property-naming" />
         <error line="29" column="15" source="standard:property-naming" />
         <error line="30" column="15" source="standard:property-naming" />
@@ -1110,27 +1104,19 @@
         <error line="42" column="15" source="standard:property-naming" />
         <error line="43" column="15" source="standard:property-naming" />
         <error line="44" column="15" source="standard:property-naming" />
-        <error line="45" column="15" source="standard:property-naming" />
-        <error line="46" column="15" source="standard:property-naming" />
         <error line="47" column="15" source="standard:property-naming" />
         <error line="48" column="15" source="standard:property-naming" />
         <error line="49" column="15" source="standard:property-naming" />
         <error line="50" column="15" source="standard:property-naming" />
-        <error line="55" column="15" source="standard:property-naming" />
+        <error line="52" column="15" source="standard:property-naming" />
+        <error line="53" column="15" source="standard:property-naming" />
+        <error line="54" column="15" source="standard:property-naming" />
         <error line="56" column="15" source="standard:property-naming" />
         <error line="57" column="15" source="standard:property-naming" />
         <error line="58" column="15" source="standard:property-naming" />
-        <error line="60" column="15" source="standard:property-naming" />
+        <error line="59" column="15" source="standard:property-naming" />
         <error line="61" column="15" source="standard:property-naming" />
-        <error line="62" column="15" source="standard:property-naming" />
-        <error line="64" column="15" source="standard:property-naming" />
-        <error line="65" column="15" source="standard:property-naming" />
-        <error line="66" column="15" source="standard:property-naming" />
-        <error line="67" column="15" source="standard:property-naming" />
-        <error line="68" column="15" source="standard:property-naming" />
-        <error line="69" column="15" source="standard:property-naming" />
-        <error line="71" column="15" source="standard:property-naming" />
-        <error line="73" column="15" source="standard:property-naming" />
+        <error line="63" column="15" source="standard:property-naming" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/ui/boarding/MenuTypeEnums.kt">
         <error line="4" column="5" source="standard:enum-entry-name-case" />

@@ -1,0 +1,15 @@
+package org.medtroniclabs.uhis.db.response
+
+import org.medtroniclabs.uhis.db.entity.HouseholdMemberEntity
+import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
+
+/**
+ * Data class representing a member along with their assessment history.
+ *
+ * @property member The member entity details.
+ * @property history A list of assessment history records associated with the member.
+ */
+data class MemberAssessmentHistoryResponse(
+    val member: HouseholdMemberEntity,
+    val history: List<MemberAssessmentHistoryEntity>,
+)

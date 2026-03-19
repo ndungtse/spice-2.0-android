@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0dfe0d90f2b4a64a515e8455d48a9372",
+    "identityHash": "3536898fa6394e020da57be96dbe618b",
     "entities": [
       {
         "tableName": "Household",
@@ -3734,12 +3734,114 @@
           }
         ],
         "foreignKeys": []
+      },
+      {
+        "tableName": "MemberAssessmentHistory",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `memberFhirId` TEXT, `memberId` INTEGER, `visitDate` TEXT NOT NULL, `serviceProvided` TEXT NOT NULL, `encounterId` TEXT, `currentStatus` TEXT, `latestVisit` INTEGER NOT NULL, `referralStatus` TEXT, `referralReason` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberFhirId",
+            "columnName": "memberFhirId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "memberId",
+            "columnName": "memberId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "visitDate",
+            "columnName": "visitDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "serviceProvided",
+            "columnName": "serviceProvided",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encounterId",
+            "columnName": "encounterId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "currentStatus",
+            "columnName": "currentStatus",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "latestVisit",
+            "columnName": "latestVisit",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "referralStatus",
+            "columnName": "referralStatus",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "referralReason",
+            "columnName": "referralReason",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "idx_member_assessment_history_visit_date",
+            "unique": false,
+            "columnNames": [
+              "visitDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_member_assessment_history_visit_date` ON `${TABLE_NAME}` (`visitDate`)"
+          },
+          {
+            "name": "idx_member_assessment_history_member_id",
+            "unique": false,
+            "columnNames": [
+              "memberId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_member_assessment_history_member_id` ON `${TABLE_NAME}` (`memberId`)"
+          },
+          {
+            "name": "idx_member_assessment_history_service_provided",
+            "unique": false,
+            "columnNames": [
+              "serviceProvided"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_member_assessment_history_service_provided` ON `${TABLE_NAME}` (`serviceProvided`)"
+          }
+        ],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0dfe0d90f2b4a64a515e8455d48a9372')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3536898fa6394e020da57be96dbe618b')"
     ]
   }
 }

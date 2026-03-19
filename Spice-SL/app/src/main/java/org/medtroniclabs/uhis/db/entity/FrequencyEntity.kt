@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-@Entity(tableName = EntitiesName.FrequencyEntity)
+@Entity(tableName = EntitiesName.FREQUENCY_ENTITY)
 data class FrequencyEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,

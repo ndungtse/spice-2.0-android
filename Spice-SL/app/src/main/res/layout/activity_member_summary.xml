@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:padding="@dimen/_10sdp">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/fragmentContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_height="@dimen/_300sdp" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/CardView_Style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintTop_toBottomOf="@id/fragmentContainer">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <View
+                        android:id="@+id/viewDetailsBG"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_0dp"
+                        android:background="@color/card_background"
+                        app:layout_constraintBottom_toBottomOf="@id/tvServiceHistoryTitle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvServiceHistoryTitle"
+                        style="@style/Form_Header_Style"
+                        android:layout_width="@dimen/_0dp"
+                        android:gravity="center"
+                        android:paddingHorizontal="@dimen/_10sdp"
+                        android:paddingVertical="@dimen/_10sdp"
+                        android:text="@string/service_history"
+                        android:textColor="@color/primary_medium_blue"
+                        android:textSize="@dimen/_16ssp"
+                        app:layout_constraintEnd_toEndOf="@id/viewDetailsBG"
+                        app:layout_constraintStart_toStartOf="@id/viewDetailsBG"
+                        app:layout_constraintTop_toTopOf="@id/viewDetailsBG" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivLeftArrow"
+                        android:layout_width="@dimen/_24sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:layout_marginEnd="@dimen/_6sdp"
+                        android:background="@drawable/bg_member_summary_arrow"
+                        android:enabled="false"
+                        android:padding="@dimen/_6sdp"
+                        android:rotation="180"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@id/tvServiceHistoryTitle"
+                        app:layout_constraintEnd_toStartOf="@id/ivDate"
+                        app:layout_constraintTop_toTopOf="@id/tvServiceHistoryTitle"
+                        app:srcCompat="@drawable/selector_member_summary_arrow"
+                        tools:visibility="visible" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivDate"
+                        android:layout_width="@dimen/_24sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:layout_marginEnd="@dimen/_6sdp"
+                        android:background="@drawable/bg_member_summary_arrow"
+                        android:padding="@dimen/_6sdp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@id/tvServiceHistoryTitle"
+                        app:layout_constraintEnd_toStartOf="@id/ivRightArrow"
+                        app:layout_constraintTop_toTopOf="@id/tvServiceHistoryTitle"
+                        app:srcCompat="@drawable/ic_epi_upcoming"
+                        app:tint="@color/primary_medium_blue"
+                        tools:visibility="visible" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivRightArrow"
+                        android:layout_width="@dimen/_24sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:layout_marginEnd="@dimen/_16sdp"
+                        android:background="@drawable/bg_member_summary_arrow"
+                        android:padding="@dimen/_6sdp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@id/tvServiceHistoryTitle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvServiceHistoryTitle"
+                        app:srcCompat="@drawable/selector_member_summary_arrow"
+                        tools:visibility="visible" />
+
+                    <org.medtroniclabs.uhis.ui.household.summary.NoScrollRecyclerView
+                        android:id="@+id/rvServiceHistory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:layout_constraintTop_toBottomOf="@id/tvServiceHistoryTitle" />
+
+                    <TextView
+                        android:id="@+id/emptyErrorMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:paddingVertical="@dimen/_32sdp"
+                        android:text="@string/service_history_not_found"
+                        android:textColor="@color/red_risk"
+                        android:textSize="@dimen/_16ssp"
+                        android:visibility="visible"
+                        app:layout_constraintTop_toBottomOf="@id/tvServiceHistoryTitle" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabServices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/services"
+        android:text="@string/services"
+        android:textColor="@color/white"
+        app:icon="@drawable/ic_epi_upcoming"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:useCompatPadding="true" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

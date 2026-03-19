@@ -36,15 +36,13 @@ class HouseholdMemberRepository @Inject constructor(
         householdId: Long,
         entity: HouseholdMemberEntity? = null,
         parentReferenceId: Long? = null,
-        initial: String? = null,
-        signature: String? = null,
         isPhuWalkInFlow: Boolean? = null,
         location: Location?,
-    ): Long? {
-        val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentReferenceId, initial, signature, location)
-        /* if (memberEntity.patientId == null) {
-             return  null
-         }*/
+    ): Long {
+        val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentReferenceId, location)
+//         if (memberEntity.patientId == null) {
+//             return  null
+//         }
 
         // If updating a member and isHouseholdHead is not explicitly set in the map, preserve the old value
         if (entity != null && !map.containsKey(MemberRegistration.isHouseholdHead)) {
@@ -93,7 +91,7 @@ class HouseholdMemberRepository @Inject constructor(
         map: HashMap<String, Any>,
     ) {
         val isHouseholdHead = map[MemberRegistration.isHouseholdHead]
-        if (CommonUtils.getIsBooleanFromString(isHouseholdHead) == true) {
+        if (CommonUtils.getIsBooleanFromString(isHouseholdHead)) {
             // Updating in HouseHoldMEMBER
             roomHelper.updatePhoneNumberForHouseholdHead(
                 householdId,
@@ -108,8 +106,6 @@ class HouseholdMemberRepository @Inject constructor(
         householdId: Long,
         entity: HouseholdMemberEntity? = null,
         parentReferenceId: Long?,
-        initial: String? = null,
-        signature: String? = null,
         location: Location?,
     ): HouseholdMemberEntity {
         val householdMemberEntity = entity ?: HouseholdMemberEntity()
@@ -171,13 +167,16 @@ class HouseholdMemberRepository @Inject constructor(
             householdMemberEntity.guardianFhirId = getMemberDetailsByID(guardianId).data?.fhirId
         }
 
+        val currentTime = System.currentTimeMillis()
+
         if (entity == null) {
             val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
             householdMemberEntity.villageId = householdDetails.villageId
+            householdMemberEntity.createdAt = currentTime
         } else {
-            householdMemberEntity.updatedAt = System.currentTimeMillis()
             householdMemberEntity.sync_status = OfflineSyncStatus.NotSynced
         }
+        householdMemberEntity.updatedAt = currentTime
         location?.let {
             householdMemberEntity.latitude = it.latitude
             householdMemberEntity.longitude = it.longitude

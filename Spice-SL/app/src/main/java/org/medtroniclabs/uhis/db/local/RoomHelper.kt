@@ -46,6 +46,7 @@ import org.medtroniclabs.uhis.db.entity.LifestyleEntity
 import org.medtroniclabs.uhis.db.entity.LinkHouseholdMember
 import org.medtroniclabs.uhis.db.entity.LinkedVillageEntity
 import org.medtroniclabs.uhis.db.entity.MedicalComplianceEntity
+import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
 import org.medtroniclabs.uhis.db.entity.MemberClinicalEntity
 import org.medtroniclabs.uhis.db.entity.MentalHealthEntity
 import org.medtroniclabs.uhis.db.entity.MenuEntity
@@ -70,6 +71,7 @@ import org.medtroniclabs.uhis.db.entity.UserProfileEntity
 import org.medtroniclabs.uhis.db.entity.VillageEntity
 import org.medtroniclabs.uhis.db.response.HouseHoldEntityWithLastActivity
 import org.medtroniclabs.uhis.db.response.HouseholdMemberCount
+import org.medtroniclabs.uhis.db.response.MemberAssessmentHistoryResponse
 import org.medtroniclabs.uhis.model.MemberDobGenderModel
 import org.medtroniclabs.uhis.model.assessment.AssessmentDetails
 import org.medtroniclabs.uhis.model.assessment.AssessmentMemberDetails
@@ -866,4 +868,17 @@ interface RoomHelper {
         filterBySubVillages: List<Long> = emptyList(),
         staticFilter: ServiceStaticFilter,
     ): LiveData<List<HouseholdMemberWithTb>>
+
+    suspend fun getMemberAssessmentHistory(
+        memberFhirId: String?,
+        memberId: Long?,
+        visitDate: String,
+        serviceProvided: String,
+    ): MemberAssessmentHistoryEntity?
+
+    suspend fun insertMemberAssessmentHistory(historyList: List<MemberAssessmentHistoryEntity>)
+
+    suspend fun deleteAllMemberAssessmentHistory()
+
+    suspend fun getMemberWithAssessmentHistory(memberId: Long): MemberAssessmentHistoryResponse?
 }

@@ -32,6 +32,7 @@ import org.medtroniclabs.uhis.db.dao.HivMetaDataDAO
 import org.medtroniclabs.uhis.db.dao.HouseholdDAO
 import org.medtroniclabs.uhis.db.dao.LabourDeliveryDAO
 import org.medtroniclabs.uhis.db.dao.LinkHouseholdMemberDao
+import org.medtroniclabs.uhis.db.dao.MemberAssessmentHistoryDao
 import org.medtroniclabs.uhis.db.dao.MemberDAO
 import org.medtroniclabs.uhis.db.dao.MetaDataDAO
 import org.medtroniclabs.uhis.db.dao.NCDFollowUpDao
@@ -63,6 +64,7 @@ import org.medtroniclabs.uhis.db.entity.LifestyleEntity
 import org.medtroniclabs.uhis.db.entity.LinkHouseholdMember
 import org.medtroniclabs.uhis.db.entity.LinkedVillageEntity
 import org.medtroniclabs.uhis.db.entity.MedicalComplianceEntity
+import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
 import org.medtroniclabs.uhis.db.entity.MentalHealthEntity
 import org.medtroniclabs.uhis.db.entity.MenuEntity
 import org.medtroniclabs.uhis.db.entity.NCDCallDetails
@@ -97,6 +99,7 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentNCDEntity
         DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class, DosageDurationEntity::class, NCDFollowUp::class,
         LinkedVillageEntity::class, NCDCallDetails::class, NCDPatientDetailsEntity::class, CommunityProfile::class, RxBuddyDetails::class, TreatmentDetailsEntity::class, RxBuddyFollowUpEntity::class,
         SubVillageEntity::class, ShasthyaShebikaEntity::class, ShasthyaShebikaLinkedVillageEntity::class,
+        MemberAssessmentHistoryEntity::class,
     ],
     version = 1,
 )
@@ -151,6 +154,8 @@ abstract class SpiceDataBase : RoomDatabase() {
     abstract fun rxBuddyFollowUpDao(): RxBuddyFollowUpDAO
 
     abstract fun hivMetaDataDAO(): HivMetaDataDAO
+
+    abstract fun memberAssessmentHistoryDao(): MemberAssessmentHistoryDao
 
     companion object {
         private const val DATABASE_NAME = "SpiceDataBase"

@@ -45,6 +45,7 @@ import org.medtroniclabs.uhis.db.dao.HouseholdDAO
 import org.medtroniclabs.uhis.db.dao.HouseholdSortOrder
 import org.medtroniclabs.uhis.db.dao.LabourDeliveryDAO
 import org.medtroniclabs.uhis.db.dao.LinkHouseholdMemberDao
+import org.medtroniclabs.uhis.db.dao.MemberAssessmentHistoryDao
 import org.medtroniclabs.uhis.db.dao.MemberDAO
 import org.medtroniclabs.uhis.db.dao.MetaDataDAO
 import org.medtroniclabs.uhis.db.dao.NCDFollowUpDao
@@ -77,6 +78,7 @@ import org.medtroniclabs.uhis.db.entity.LifestyleEntity
 import org.medtroniclabs.uhis.db.entity.LinkHouseholdMember
 import org.medtroniclabs.uhis.db.entity.LinkedVillageEntity
 import org.medtroniclabs.uhis.db.entity.MedicalComplianceEntity
+import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
 import org.medtroniclabs.uhis.db.entity.MemberClinicalEntity
 import org.medtroniclabs.uhis.db.entity.MentalHealthEntity
 import org.medtroniclabs.uhis.db.entity.MenuEntity
@@ -101,6 +103,7 @@ import org.medtroniclabs.uhis.db.entity.UserProfileEntity
 import org.medtroniclabs.uhis.db.entity.VillageEntity
 import org.medtroniclabs.uhis.db.response.HouseHoldEntityWithLastActivity
 import org.medtroniclabs.uhis.db.response.HouseholdMemberCount
+import org.medtroniclabs.uhis.db.response.MemberAssessmentHistoryResponse
 import org.medtroniclabs.uhis.model.MemberDobGenderModel
 import org.medtroniclabs.uhis.model.assessment.AssessmentDetails
 import org.medtroniclabs.uhis.model.assessment.AssessmentMemberDetails
@@ -138,6 +141,7 @@ class RoomHelperImpl @Inject constructor(
     private val treatmentDetailsDAO: TreatmentDetailsDAO,
     private val rxBuddyFollowUpDAO: RxBuddyFollowUpDAO,
     private val hivMetaDataDAO: HivMetaDataDAO,
+    private val memberAssessmentHistoryDao: MemberAssessmentHistoryDao,
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long = householdDAO.insertHouseHold(householdEntity)
 
@@ -1224,4 +1228,26 @@ class RoomHelperImpl @Inject constructor(
         filterBySubVillages: List<Long>,
         staticFilter: ServiceStaticFilter,
     ) = memberDAO.getServiceMembers(searchInput, filterBySs, filterBySubVillages, staticFilter)
+
+    override suspend fun getMemberAssessmentHistory(
+        memberFhirId: String?,
+        memberId: Long?,
+        visitDate: String,
+        serviceProvided: String,
+    ): MemberAssessmentHistoryEntity? = memberAssessmentHistoryDao.getAssessmentHistory(memberFhirId, memberId, visitDate, serviceProvided)
+
+    override suspend fun insertMemberAssessmentHistory(historyList: List<MemberAssessmentHistoryEntity>) =
+        memberAssessmentHistoryDao.insertMemberAssessmentHistory(historyList)
+
+    override suspend fun deleteAllMemberAssessmentHistory() = memberAssessmentHistoryDao.deleteMemberAssessmentHistory()
+
+    override suspend fun getMemberWithAssessmentHistory(memberId: Long): MemberAssessmentHistoryResponse? {
+        val result = memberDAO.getMemberWithAssessmentHistory(memberId)
+        return if (result.isNotEmpty()) {
+            val entry = result.entries.first()
+            MemberAssessmentHistoryResponse(entry.key, entry.value)
+        } else {
+            null
+        }
+    }
 }

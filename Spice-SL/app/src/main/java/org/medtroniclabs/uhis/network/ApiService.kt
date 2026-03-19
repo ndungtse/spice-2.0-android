@@ -96,6 +96,7 @@ import org.medtroniclabs.uhis.data.resource.CD4DetailsRequest
 import org.medtroniclabs.uhis.data.resource.CD4DetailsResponse
 import org.medtroniclabs.uhis.data.resource.LabourDeliverySummaryRequest
 import org.medtroniclabs.uhis.data.resource.RequestAllEntities
+import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
 import org.medtroniclabs.uhis.model.ARTResponse
 import org.medtroniclabs.uhis.model.ArtRequest
 import org.medtroniclabs.uhis.model.CultureLocaleModel
@@ -225,6 +226,11 @@ interface ApiService {
     suspend fun fetchSyncedData(
         @Body request: RequestAllEntities,
     ): Response<ResponseBody>
+
+    @POST("/offline-service/offline-sync/member-assessment-history")
+    suspend fun fetchMemberAssessmentHistory(
+        @Body request: RequestAllEntities,
+    ): Response<List<MemberAssessmentHistoryEntity>>
 
     @POST("spice-service/patient/list")
     suspend fun getPatients(

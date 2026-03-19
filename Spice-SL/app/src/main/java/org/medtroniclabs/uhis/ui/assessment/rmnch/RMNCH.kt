@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
 object RMNCH {
-    const val RMNCHChildHoodVisit = "RMNCHChildHoodVisit"
     const val PlaceOfDelivery = "placeOfDelivery"
     const val ANC = "anc"
     const val PNC = "pncMother"
@@ -23,10 +22,8 @@ object RMNCH {
     const val lastMenstrualPeriod = "lastMenstrualPeriod"
     const val estimatedDeliveryDate = "estimatedDeliveryDate"
     const val visitNo = "visitNo"
-    const val PNC_MENU = "pnc"
     const val CHILD_MENU = "ChildHood_Visit"
     const val DateOfDelivery = "dateOfDelivery"
-    const val NoOfNeonate = "noOfNeonates"
     const val gestationalAge = "gestationalAge"
     const val Miscarriage = "miscarriage"
     const val DeathOfMother = "deathOfMother"
@@ -38,11 +35,8 @@ object RMNCH {
     const val ancSigns = "ancSigns"
     const val ancSignsLabel = "ANC Signs"
     const val otherAncSigns = "otherAncSigns"
-    const val pncNeonateSigns = "pncNeonateSigns"
     const val pncNeonateSignsLabel = "PNC Neonate Signs"
-    const val pncNeonatalSigns = "pncNeonatalSigns"
     const val otherPncNeonateSigns = "otherPncNeonateSigns"
-    const val pncMotherSigns = "pncMotherSigns"
     const val NeonatePatientId = "neonatePatientId"
     const val NeonateOutcome = "neonateOutcome"
     const val NeonatePatientReferenceId = "neonatePatientReferenceId"
@@ -50,8 +44,6 @@ object RMNCH {
     const val otherPncMotherSigns = "otherPncMotherSigns"
     const val PREGNANCY_MIN_AGE = 10
     const val PREGNANCY_MAX_AGE = 49
-    const val PNCMOTHER = "PNC-Mother"
-    const val PNCNEONATE = "PNC-Baby"
     const val pnc_mother_key = "PNC_MOTHER"
     const val pnc_neonate_key = "PNC_NEONATE"
     const val muac = "muac"
@@ -62,8 +54,6 @@ object RMNCH {
     const val ChildHoodVisitNo = "Childhood Visit "
 
     const val deathOfNewborn = "deathOfNewborn"
-    const val newbornReferredToSBCU = "newbornReferredToSBCU"
-    const val lowBirthWeight = "lowBirthWeight"
     const val deathOfBaby = "deathOfBaby"
     const val isDeceased = "isDeceased"
     const val deceasedReason = "deceasedReason"
@@ -465,7 +455,7 @@ object RMNCH {
         when (workflowName) {
             ANC -> return ANC.uppercase(Locale.getDefault())
             ChildHoodVisit -> return CHILD_MENU.uppercase(Locale.getDefault())
-            PNC -> return PNC_MENU.uppercase(Locale.getDefault())
+            PNC -> return pnc_mother_key.uppercase(Locale.getDefault())
         }
         return MenuConstants.RMNCH_MENU_ID.uppercase(Locale.getDefault())
     }

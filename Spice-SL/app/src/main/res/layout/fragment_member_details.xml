@@ -5,8 +5,7 @@
     style="@style/CardView_Style"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardUseCompatPadding="true"
-    tools:context="com.medtroniclabs.spice.ui.household.summary.HouseholdDetailsFragment">
+    app:cardUseCompatPadding="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -46,10 +45,12 @@
             android:text="@string/edit"
             android:textColor="@color/primary_medium_blue"
             android:textSize="@dimen/_14ssp"
+            android:visibility="gone"
             app:drawableStartCompat="@drawable/ic_edit_menu"
             app:layout_constraintBottom_toBottomOf="@id/tvMemberDetailsTitle"
             app:layout_constraintEnd_toEndOf="@id/tvMemberDetailsTitle"
-            app:layout_constraintTop_toTopOf="@id/tvMemberDetailsTitle" />
+            app:layout_constraintTop_toTopOf="@id/tvMemberDetailsTitle"
+            tools:visibility="visible" />
 
         <LinearLayout
             android:id="@+id/llDetails"

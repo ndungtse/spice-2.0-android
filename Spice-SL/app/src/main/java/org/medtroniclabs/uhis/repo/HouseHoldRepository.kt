@@ -135,8 +135,9 @@ class HouseHoldRepository @Inject constructor(
         val otherOccupation = map[HouseHoldRegistration.otherOccupation]
         householdEntity.otherOccupation = CommonUtils.getStringOrEmptyString(otherOccupation).takeIf { it.isNotEmpty() }
 
+        val currentTime = System.currentTimeMillis()
+
         if (entity != null) {
-            householdEntity.updatedAt = System.currentTimeMillis()
             householdEntity.sync_status = OfflineSyncStatus.NotSynced
 
             val noOfPeople = map[HouseHoldRegistration.noOfPeople] ?: map[HouseHoldRegistration.totalMembers]
@@ -146,6 +147,7 @@ class HouseHoldRepository @Inject constructor(
             householdEntity.disabilityPersonsCount =
                 checkHeadCountOfHouseHold(CommonUtils.getIntegerOrNull(disabilityPersonsCount) ?: 0, getDisabilityMembersCountPerHousehold(entity.id))
         } else {
+            householdEntity.createdAt = currentTime
             // Use household number from form if provided, otherwise generate new one
             val householdNumberFromForm = map[HouseHoldRegistration.householdNumber]
             householdEntity.householdNo = householdNumberFromForm as? String
@@ -157,6 +159,7 @@ class HouseHoldRepository @Inject constructor(
             val disabilityPersonsCount = map[HouseHoldRegistration.ID_DISABILITY_PERSONS_COUNT]
             householdEntity.disabilityPersonsCount = CommonUtils.getIntegerOrNull(disabilityPersonsCount) ?: 0
         }
+        householdEntity.updatedAt = currentTime
         return householdEntity
     }
 
