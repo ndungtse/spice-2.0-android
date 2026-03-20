@@ -25,6 +25,11 @@
             android:title="@string/language_preference" />
 
         <item
+            android:id="@+id/external_member"
+            android:icon="@drawable/ic_my_patient"
+            android:title="@string/external_member" />
+
+        <item
             android:id="@+id/offline_sync"
             android:icon="@drawable/ic_offline_sync_image"
             android:title="@string/offline_sync"

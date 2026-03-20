@@ -31,6 +31,10 @@ data class HouseholdMemberEntity(
     var householdId: Long? = null,
     @ColumnInfo("villageId")
     var villageId: Long? = null,
+    @ColumnInfo("shasthya_shebika_id")
+    var shasthyaShebikaId: Long? = null,
+    @ColumnInfo("sub_village_id")
+    var subVillageId: Long? = null,
     @ColumnInfo("patient_id")
     var patientId: String? = null,
     var isActive: Boolean = true,

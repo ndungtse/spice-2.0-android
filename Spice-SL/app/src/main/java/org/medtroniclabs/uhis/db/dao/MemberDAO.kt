@@ -110,7 +110,7 @@ interface MemberDAO {
     @Query("SELECT id FROM HouseholdMember WHERE fhir_id =:fhirId")
     suspend fun getHouseholdMemberIdByFhirId(fhirId: String): Long?
 
-    @Query("SELECT hhm.name, hhm.gender, hhm.date_of_birth AS dateOfBirth, hhm.patient_id AS patientId, hh.village_id as villageId, hh.sub_village_id as subVillageId, hhm.fhir_id AS memberId, hh.household_no as householdNo, hh.fhir_id AS householdId, hhm.id AS id,hhm.household_id AS householdLocalId, NULL AS contactTracingStatus, NULL AS isPregnant, hhm.phone_number AS phoneNumber FROM HouseholdMember AS hhm INNER JOIN Household AS hh ON hh.id = hhm.household_id WHERE hhm.id=:id")
+    @Query("SELECT hhm.name, hhm.gender, hhm.date_of_birth AS dateOfBirth, hhm.patient_id AS patientId,hh.sub_village_id as subVillageId, CASE WHEN hh.village_id IS NOT NULL THEN CAST(hh.village_id AS TEXT) WHEN hhm.villageId IS NOT NULL THEN CAST(hhm.villageId AS TEXT) ELSE '0' END as villageId, hhm.fhir_id AS memberId, hh.household_no as householdNo, hh.fhir_id AS householdId, hhm.id AS id, COALESCE(hh.id, 0) AS householdLocalId, NULL AS contactTracingStatus, NULL AS isPregnant, hhm.phone_number AS phoneNumber FROM HouseholdMember AS hhm LEFT JOIN Household AS hh ON hh.id = hhm.household_id WHERE hhm.id=:id")
     suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails
 
     @Query("DELETE FROM HouseholdMember")
@@ -286,6 +286,9 @@ interface MemberDAO {
     ): LiveData<List<HouseholdMemberWithTb>> {
         val args = mutableListOf<Any>()
         val conditions = mutableListOf<String>()
+        
+        // Check if this is external member filter
+        val isExternalMember = staticFilter == ServiceStaticFilter.EXTERNAL_MEMBERS
 
         if (searchInput.isNotBlank()) {
             conditions += "(hhm.name LIKE ? OR hhm.phone_number LIKE ?)"
@@ -294,13 +297,23 @@ interface MemberDAO {
             args += pattern
         }
 
+        // Apply SS filter - for external members, use hhm.shasthya_shebika_id; for regular members, use hh.shasthya_shebika_id
         if (filterBySs.isNotEmpty()) {
-            conditions += "hh.shasthya_shebika_id IN (${filterBySs.joinToString(",") { "?" }})"
+            if (isExternalMember) {
+                conditions += "hhm.shasthya_shebika_id IN (${filterBySs.joinToString(",") { "?" }})"
+            } else {
+                conditions += "hh.shasthya_shebika_id IN (${filterBySs.joinToString(",") { "?" }})"
+            }
             args.addAll(filterBySs)
         }
 
+        // Apply SubVillage filter - for external members, use hhm.sub_village_id; for regular members, use hh.sub_village_id
         if (filterBySubVillages.isNotEmpty()) {
-            conditions += "hh.sub_village_id IN (${filterBySubVillages.joinToString(",") { "?" }})"
+            if (isExternalMember) {
+                conditions += "hhm.sub_village_id IN (${filterBySubVillages.joinToString(",") { "?" }})"
+            } else {
+                conditions += "hh.sub_village_id IN (${filterBySubVillages.joinToString(",") { "?" }})"
+            }
             args.addAll(filterBySubVillages)
         }
 
@@ -423,6 +436,10 @@ interface MemberDAO {
                     """.trimIndent()
             }
 
+            ServiceStaticFilter.EXTERNAL_MEMBERS -> {
+                conditions += "hhm.household_id IS NULL"
+            }
+
             else -> {}
         }
 
@@ -432,22 +449,41 @@ interface MemberDAO {
             "WHERE ${conditions.joinToString(" AND ")}"
         }
 
+        // For external members, use LEFT JOIN since household_id is NULL
+        val householdJoin = if (isExternalMember) {
+            "LEFT JOIN Household AS hh ON hh.id = hhm.household_id"
+        } else {
+            "INNER JOIN Household AS hh ON hh.id = hhm.household_id"
+        }
+        
+        val ssJoin = if (isExternalMember) {
+            "LEFT JOIN ShasthyaShebikaEntity AS ss ON hhm.shasthya_shebika_id = ss.id"
+        } else {
+            "INNER JOIN ShasthyaShebikaEntity AS ss ON hh.shasthya_shebika_id = ss.id"
+        }
+        
+        val svJoin = if (isExternalMember) {
+            "LEFT JOIN SubVillageEntity AS sv ON hhm.sub_village_id = sv.id"
+        } else {
+            "INNER JOIN SubVillageEntity AS sv ON hh.sub_village_id = sv.id"
+        }
+
         val query =
             """
             SELECT
                 hhm.*, td.diagnoses,
                 a.assessmentType AS recent_service,
                 a.updated_at AS recent_service_date,
-                ss.name AS shasthya_shebika_name,
-                ss.ssId AS shasthya_shebika_ssId,
-                sv.name AS sub_village_name
+                COALESCE(ss.name, '') AS shasthya_shebika_name,
+                COALESCE(ss.ssId, '') AS shasthya_shebika_ssId,
+                COALESCE(sv.name, '') AS sub_village_name
             FROM householdmember AS hhm
 
-            INNER JOIN Household AS hh ON hh.id = hhm.household_id
+            $householdJoin
 
-            INNER JOIN ShasthyaShebikaEntity AS ss ON hh.shasthya_shebika_id = ss.id
+            $ssJoin
 
-            INNER JOIN SubVillageEntity AS sv ON hh.sub_village_id = sv.id
+            $svJoin
 
             LEFT JOIN TreatmentDetailsEntity AS td
                 ON hhm.fhir_id = td.memberId

@@ -1,0 +1,289 @@
+{
+  "formLayout": [
+    {
+      "familyOrder": 0,
+      "id": "locationInformation",
+      "title": "Location Information",
+      "titleCulture": "অবস্থান তথ্য",
+      "viewType": "CardView"
+    },
+    {
+      "condition": [],
+      "defaultValue": null,
+      "errorMessage": "Please select Union",
+      "cultureErrorMessage": "অনুগ্রহ করে ইউনিয়ন নির্বাচন করুন",
+      "family": "locationInformation",
+      "fieldName": "Union",
+      "titleCulture": "ইউনিয়ন",
+      "id": "village_id",
+      "isEditable": true,
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "localDataCache": "village_id",
+      "title": "Union",
+      "orderId": 0,
+      "viewType": "Spinner",
+      "visibility": "gone"
+    },
+    {
+      "condition": [],
+      "defaultValue": null,
+      "errorMessage": "Please select SS",
+      "cultureErrorMessage": "অনুগ্রহ করে স্বাস্থ্য সেবিকা নির্বাচন করুন",
+      "family": "locationInformation",
+      "fieldName": "SS Name",
+      "id": "shasthya_shebika_id",
+      "isEditable": true,
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "localDataCache": "shasthya_shebika_id",
+      "dependentID": "sub_village_id",
+      "title": "SS Name",
+      "titleCulture": "স্বাস্থ্য সেবিকার নামঃ",
+      "orderId": 1,
+      "viewType": "Spinner",
+      "visibility": "visible"
+    },
+    {
+      "condition": [],
+      "defaultValue": null,
+      "errorMessage": "Please select Village",
+      "cultureErrorMessage": "অনুগ্রহ করে গ্রাম নির্বাচন করুন",
+      "family": "locationInformation",
+      "fieldName": "Village",
+      "id": "sub_village_id",
+      "isEditable": true,
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "localDataCache": "sub_village_id",
+      "title": "Village",
+      "titleCulture": "গ্রাম",
+      "orderId": 2,
+      "viewType": "Spinner",
+      "visibility": "visible"
+    },
+    {
+      "familyOrder": 1,
+      "id": "bioData",
+      "title": "Bio Data",
+      "titleCulture": "ব্যক্তিগত তথ্য",
+      "viewType": "CardView"
+    },
+    {
+      "condition": [
+        {
+          "eqList": [
+            "nid","brn"
+          ],
+          "targetId": "national_id",
+          "visibility": "visible"
+        }
+      ],
+      "defaultValue": null,
+      "errorMessage": "Please select ID Type",
+      "cultureErrorMessage": "অনুগ্রহ করে আইডির ধরন নির্বাচন করুন",
+      "family": "bioData",
+      "fieldName": "idType",
+      "id": "id_type",
+      "isEditable": true,
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "optionsList": [
+        {
+          "id": "nid",
+          "name": "National ID",
+          "cultureValue": "জাতীয় পরিচয়পত্র (NID) (≥১৮ বছর)"
+        },
+        {
+          "id": "brn",
+          "name": "BRN",
+          "cultureValue": "জন্ম নিবন্ধন আইডি (Birth Reg ID) (<১৮ বছর)"
+        },
+        {
+          "id": "na",
+          "name": "Not Available",
+          "cultureValue": "জন্ম নিবন্ধন নম্বর"
+        }
+      ],
+      "title": "ID Type",
+      "titleCulture": "আইডির ধরন",
+      "orderId": 1,
+      "viewType": "Spinner",
+      "visibility": "visible"
+    },
+    {
+      "family": "bioData",
+      "fieldName": "National ID",
+      "hint": "Enter National ID",
+      "hintCulture": "জাতীয় পরিচয়পত্র নম্বর লিখুন",
+      "id": "national_id",
+      "inputType": 96,
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "orderId": 2,
+      "title": "National ID",
+      "titleCulture": "জাতীয় পরিচয়পত্র (NID) (≥১৮ বছর)",
+      "viewType": "EditText",
+      "visibility": "gone"
+    },
+    {
+      "family": "bioData",
+      "fieldName": "Name",
+      "hint": "Enter Name",
+      "hintCulture": "নাম লিখুন",
+      "id": "name",
+      "inputType": 96,
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "orderId": 3,
+      "title": "Name",
+      "titleCulture": "নাম",
+      "viewType": "EditText",
+      "visibility": "visible"
+    },
+    {
+      "family": "bioData",
+      "fieldName": "Mobile Number",
+      "hint": "Enter Mobile Number",
+      "hintCulture": "মোবাইল নম্বর লিখুন",
+      "id": "phone_number",
+      "inputType": 3,
+      "isEnabled": true,
+      "maxLength": 11,
+      "minLength": 1,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "orderId": 9,
+      "title": "Mobile Number",
+      "titleCulture": "মোবাইল নম্বর",
+      "viewType": "EditText",
+      "visibility": "visible",
+      "optionType": "phoneNumberWithoutCountryCode",
+      "startsWith": ["01"]
+    },
+    {
+      "disableFutureDate": true,
+      "family": "bioData",
+      "fieldName": "Age",
+      "id": "date_of_birth",
+      "isEnabled": true,
+      "maxAge": 130,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "isSummary": true,
+      "title": "Date of Birth",
+      "titleCulture": "জন্ম তারিখ",
+      "hint": "DD/MM/YYYY",
+      "hintCulture": "দিন/মাস/বছর",
+      "viewType": "AgeOrDob",
+      "orderId": 4,
+      "visibility": "visible"
+    },
+    {
+      "errorMessage": "Please select a valid option",
+      "cultureErrorMessage": "অনুগ্রহ করে একটি সঠিক অপশন নির্বাচন করুন",
+      "family": "bioData",
+      "fieldName": "Gender",
+      "id": "gender",
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "isSummary": true,
+      "orderId": 5,
+      "optionsList": [
+        {
+          "name": "Male",
+          "cultureValue": "পুরুষ",
+          "id": "male"
+        },
+        {
+          "name": "Female",
+          "cultureValue": "মহিলা",
+          "id": "female"
+        },
+        {
+          "id": "Other",
+          "name": "Other",
+          "cultureValue": "অন্যান্য"
+        }
+      ],
+      "title": "Gender",
+      "titleCulture": "লিঙ্গ",
+      "viewType": "SingleSelectionView",
+      "visibility": "visible"
+    },
+    {
+      "errorMessage": "Please select a valid option",
+      "cultureErrorMessage": "অনুগ্রহ করে একটি সঠিক অপশন নির্বাচন করুন",
+      "family": "bioData",
+      "fieldName": "Marital Status",
+      "id": "maritalStatus",
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "isSummary": true,
+      "orderId": 7,
+      "optionsList": [
+          {
+              "name": "Married",
+              "cultureValue": "বিবাহিত",
+              "id": "married"
+          },
+          {
+              "name": "Single",
+              "cultureValue": "একক (বিচ্ছিন্ন/বিবাহবিচ্ছেদ/সঙ্গী মৃত)",
+              "id": "single"
+          },
+          {
+              "id": "unmarried",
+              "name": "Unmarried",
+              "cultureValue": "অবিবাহিত"
+          }
+      ],
+      "title": "Marital Status",
+      "titleCulture": "বৈবাহিক অবস্থা",
+      "viewType": "SingleSelectionView",
+      "visibility": "visible",
+      "isInfo": "visible",
+      "infoTitle": "Select single if (Separated/Divorced/Partner deceased)",
+      "infoTitleCulture": "একক (বিচ্ছিন্ন/বিবাহবিচ্ছেদ/সঙ্গী মৃত) হলে 'একক' নির্বাচন করুন"
+    },
+    {
+      "errorMessage": "Please select a valid option",
+      "cultureErrorMessage": "অনুগ্রহ করে একটি সঠিক অপশন নির্বাচন করুন",
+      "family": "bioData",
+      "fieldName": "Disability",
+      "id": "disability",
+      "isEnabled": true,
+      "isMandatory": true,
+      "isNeededDefault": true,
+      "isSummary": true,
+      "orderId": 8,
+      "optionsList": [
+          {
+              "name": "Present",
+              "cultureValue": "Present",
+              "id": "present"
+          },
+          {
+              "name": "Absent",
+              "cultureValue": "Absent",
+              "id": "absent"
+          }
+      ],
+      "title": "Disability",
+      "titleCulture": "বিকলাঙ্গতা",
+      "viewType": "SingleSelectionView",
+      "visibility": "visible",
+      "isInfo": "visible",
+      "infoTitle": "Who has great difficulty or cannot see, hear, walk, climb, do things independently",
+      "infoTitleCulture": "যার খুব অসুবিধা হয় অথবা সে স্বাধীনভাবে দেখতে, শুনতে, হাঁটতে, আরোহণ করতে, কিছু করতে পারে না"
+    }
+  ]
+}

@@ -5,7 +5,8 @@
     style="@style/CardView_Style"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardUseCompatPadding="true">
+    app:cardUseCompatPadding="true"
+    tools:context="org.medtroniclabs.uhis.ui.household.summary.HouseholdDetailsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

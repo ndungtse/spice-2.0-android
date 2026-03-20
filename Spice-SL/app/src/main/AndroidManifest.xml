@@ -273,6 +273,13 @@
             android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
+            android:name=".ui.externalmember.ExternalMemberRegistrationActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustPan"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".ui.medicalreview.epi.ImmunizationActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape"

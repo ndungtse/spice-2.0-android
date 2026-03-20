@@ -24,6 +24,7 @@ import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.household.MemberSelectionListener
 import org.medtroniclabs.uhis.ui.household.summary.MemberSummaryActivity
 import org.medtroniclabs.uhis.ui.services.viewmodel.ServicesViewModel
+import org.medtroniclabs.uhis.ui.externalmember.ExternalMemberRegistrationActivity
 import org.medtroniclabs.uhis.common.DefinedParams as CommonDefinedParams
 
 /**
@@ -42,13 +43,28 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
      */
     private var isFirstSelection = true
 
+    /**
+     * Flag to indicate if this is external member mode
+     */
+    private var isExternalMember = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityServicesBinding.inflate(layoutInflater)
+        
+        // Check if this is external member mode
+        isExternalMember = intent.getBooleanExtra("isExternalMember", false)
+        
+        val title = if (isExternalMember) {
+            getString(R.string.external_member)
+        } else {
+            getString(R.string.service_recipient_list)
+        }
+        
         setMainContentView(
             binding.root,
             isToolbarVisible = true,
-            title = getString(R.string.service_recipient_list),
+            title = title,
         )
         initViews()
         setListeners()
@@ -62,13 +78,33 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
 
     private fun initViews() {
         binding.llFilter.btnFilter.text = getString(R.string.filter)
-        binding.llExactSearch.etSearchTerm.hint = getString(R.string.household_name_or_no)
+        
+        // Update search hint for external members
+        val searchHint = if (isExternalMember) {
+            getString(R.string.member_name_or_phone)
+        } else {
+            getString(R.string.household_name_or_no)
+        }
+        binding.llExactSearch.etSearchTerm.hint = searchHint
+        
         adapter = ServiceMembersAdapter(this)
 
         binding.rvMembersList.apply {
             adapter = this@ServicesActivity.adapter
         }
-        setDropdown()
+        
+        // Show/hide button and dropdown for external members
+        if (isExternalMember) {
+            binding.tvMemberTypes.gone()
+            binding.viewMemberTypes.gone()
+            binding.bottomNavigationView.visible()
+            binding.btnAddExternalMember.safeClickListener(this)
+            // Set external member filter directly
+            servicesViewModel.setFilterLiveData(staticFilter = ServiceStaticFilter.EXTERNAL_MEMBERS)
+        } else {
+            binding.bottomNavigationView.gone()
+            setDropdown()
+        }
         showLoading()
     }
 
@@ -198,6 +234,14 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
                     val searchTerm = binding.llExactSearch.etSearchTerm.text
                         .toString()
                     servicesViewModel.setFilterLiveData(search = searchTerm)
+                })
+            }
+
+            R.id.btnAddExternalMember -> {
+                withLocationCheck({
+                    servicesViewModel.setUserJourney("ADD_EXTERNAL_MEMBER_BUTTON_TRIGGERED")
+                    val intent = Intent(this, ExternalMemberRegistrationActivity::class.java)
+                    startActivity(intent)
                 })
             }
         }

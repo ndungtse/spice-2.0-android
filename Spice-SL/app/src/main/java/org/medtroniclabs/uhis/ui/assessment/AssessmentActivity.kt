@@ -53,6 +53,7 @@ import org.medtroniclabs.uhis.ui.followup.FollowUpMyPatientActivity
 import org.medtroniclabs.uhis.ui.home.AssessmentToolsActivity
 import org.medtroniclabs.uhis.ui.household.HouseholdSearchActivity
 import org.medtroniclabs.uhis.ui.landing.LandingActivity
+import org.medtroniclabs.uhis.ui.services.ServicesActivity
 
 @AndroidEntryPoint
 class AssessmentActivity : BaseActivity() {
@@ -651,19 +652,29 @@ class AssessmentActivity : BaseActivity() {
         val intent = if (viewModel.followUpId != null) {
             Intent(this, FollowUpMyPatientActivity::class.java)
         } else {
-            // For pregnant women after click done navigate user to tools screen
-            if (viewModel.menuId == MenuConstants.PREGNANT_WOMEN_PROFILE) {
-                Intent(this, AssessmentToolsActivity::class.java).apply {
-                    putExtra(DefinedParams.HOUSEHOLD_ID, viewModel.selectedHouseholdId)
-                    putExtra(DefinedParams.MEMBER_ID, viewModel.selectedHouseholdMemberId)
-                    putExtra(DefinedParams.FollowUpId, viewModel.followUpId)
-                    putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
-                    putExtra(DefinedParams.FhirId, viewModel.memberFhirId)
-                    putExtra(DefinedParams.ORIGIN, this@AssessmentActivity.intent.getStringExtra(DefinedParams.ORIGIN))
-                    putExtra(MenuConstants.FOLLOW_UP, this@AssessmentActivity.intent.getBooleanExtra(MenuConstants.FOLLOW_UP, false))
+            // Check if member is external (householdId is null or householdLocalId is 0)
+            val isExternalMember = viewModel.memberDetailsLiveData.value?.data?.householdId == null 
+                || viewModel.memberDetailsLiveData.value?.data?.householdLocalId == 0L
+            
+            if (isExternalMember) {
+                Intent(this, ServicesActivity::class.java).apply {
+                    putExtra("isExternalMember", true)
                 }
             } else {
-                Intent(this, HouseholdSearchActivity::class.java)
+                // For pregnant women after click done navigate user to tools screen
+                if (viewModel.menuId == MenuConstants.PREGNANT_WOMEN_PROFILE) {
+                    Intent(this, AssessmentToolsActivity::class.java).apply {
+                        putExtra(DefinedParams.HOUSEHOLD_ID, viewModel.selectedHouseholdId)
+                        putExtra(DefinedParams.MEMBER_ID, viewModel.selectedHouseholdMemberId)
+                        putExtra(DefinedParams.FollowUpId, viewModel.followUpId)
+                        putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
+                        putExtra(DefinedParams.FhirId, viewModel.memberFhirId)
+                        putExtra(DefinedParams.ORIGIN, this@AssessmentActivity.intent.getStringExtra(DefinedParams.ORIGIN))
+                        putExtra(MenuConstants.FOLLOW_UP, this@AssessmentActivity.intent.getBooleanExtra(MenuConstants.FOLLOW_UP, false))
+                    }
+                } else {
+                    Intent(this, HouseholdSearchActivity::class.java)
+                }
             }
         }
 

@@ -18,6 +18,7 @@ import org.medtroniclabs.uhis.db.entity.HouseholdMemberEntity
 import org.medtroniclabs.uhis.db.entity.MemberClinicalEntity
 import org.medtroniclabs.uhis.db.entity.PregnancyDetail
 import org.medtroniclabs.uhis.db.local.RoomHelper
+import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration.ID_MARITAL_STATUS
 import org.medtroniclabs.uhis.model.assessment.AssessmentMemberDetails
@@ -33,7 +34,7 @@ class HouseholdMemberRepository @Inject constructor(
 ) {
     suspend fun registerMember(
         map: HashMap<String, Any>,
-        householdId: Long,
+        householdId: Long?,
         entity: HouseholdMemberEntity? = null,
         parentReferenceId: Long? = null,
         isPhuWalkInFlow: Boolean? = null,
@@ -52,36 +53,39 @@ class HouseholdMemberRepository @Inject constructor(
 
         val memberId = roomHelper.registerMember(memberEntity)
 
-        // If updating a member who is household head, update household name with member's name
-        if (entity != null && memberEntity.isHouseholdHead && memberEntity.name.isNotEmpty()) {
-            val householdEntity = roomHelper.getHouseHoldDetailsById(householdId)
-            householdEntity.name = memberEntity.name
-            householdEntity.updatedAt = System.currentTimeMillis()
-            householdEntity.sync_status = OfflineSyncStatus.NotSynced
-            roomHelper.updateHousehold(householdEntity)
-        }
+        // Only perform household-related operations if householdId is not null
+        if (householdId != null) {
+            // If updating a member who is household head, update household name with member's name
+            if (entity != null && memberEntity.isHouseholdHead && memberEntity.name.isNotEmpty()) {
+                val householdEntity = roomHelper.getHouseHoldDetailsById(householdId)
+                householdEntity.name = memberEntity.name
+                householdEntity.updatedAt = System.currentTimeMillis()
+                householdEntity.sync_status = OfflineSyncStatus.NotSynced
+                roomHelper.updateHousehold(householdEntity)
+            }
 
-        // Assign same household for Parent or Child
-//        if (isPhuWalkInFlow == true) {
-//            val fhirIds = if (memberEntity.parentId != null) {
-//                roomHelper.getUnAssignedParentFhirId(memberEntity.parentId!!)
-//            } else {
-//                roomHelper.getUnAssignedChildFhirIds(memberEntity.patientId!!)
-//            }
+            // Assign same household for Parent or Child
+//            if (isPhuWalkInFlow == true) {
+//                val fhirIds = if (memberEntity.parentId != null) {
+//                    roomHelper.getUnAssignedParentFhirId(memberEntity.parentId!!)
+//                } else {
+//                    roomHelper.getUnAssignedChildFhirIds(memberEntity.patientId!!)
+//                }
 //
-//            if (fhirIds.isNotEmpty()) {
-//                memberEntity.fhirId?.let {
-//                    updateMemberAsAssigned(fhirIds, householdId, it)
+//                if (fhirIds.isNotEmpty()) {
+//                    memberEntity.fhirId?.let {
+//                        updateMemberAsAssigned(fhirIds, householdId, it)
+//                    }
 //                }
 //            }
-//        }
 
-        // Update Member count in household only in insert case
-        if (entity == null || isPhuWalkInFlow == true) {
-            roomHelper.updateHeadCountIfUnderCounted(householdId)
+            // Update Member count in household only in insert case
+            if (entity == null || isPhuWalkInFlow == true) {
+                roomHelper.updateHeadCountIfUnderCounted(householdId)
+            }
+
+            roomHelper.updateDisabilityPersonsCountIfUnderCounted(householdId)
         }
-
-        roomHelper.updateDisabilityPersonsCountIfUnderCounted(householdId)
 
         return memberId
     }
@@ -103,7 +107,7 @@ class HouseholdMemberRepository @Inject constructor(
 
     private suspend fun createOrUpdateHouseHoldMemberEntity(
         map: HashMap<String, Any>,
-        householdId: Long,
+        householdId: Long?,
         entity: HouseholdMemberEntity? = null,
         parentReferenceId: Long?,
         location: Location?,
@@ -170,9 +174,28 @@ class HouseholdMemberRepository @Inject constructor(
         val currentTime = System.currentTimeMillis()
 
         if (entity == null) {
-            val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
-            householdMemberEntity.villageId = householdDetails.villageId
-            householdMemberEntity.createdAt = currentTime
+            // If householdId is null, get location fields from form map
+            if (householdId == null) {
+                val villageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.villageId])
+                if (villageIdFromMap != null) {
+                    householdMemberEntity.villageId = villageIdFromMap
+                }
+                
+                val shasthyaShebikaIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.shasthyaShebikaId])
+                if (shasthyaShebikaIdFromMap != null) {
+                    householdMemberEntity.shasthyaShebikaId = shasthyaShebikaIdFromMap
+                }
+                
+                val subVillageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.subVillageId])
+                if (subVillageIdFromMap != null) {
+                    householdMemberEntity.subVillageId = subVillageIdFromMap
+                }
+            } else {
+                // For regular members, get villageId from household
+                val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
+                householdMemberEntity.villageId = householdDetails.villageId
+                householdMemberEntity.createdAt = currentTime
+            }
         } else {
             householdMemberEntity.sync_status = OfflineSyncStatus.NotSynced
         }

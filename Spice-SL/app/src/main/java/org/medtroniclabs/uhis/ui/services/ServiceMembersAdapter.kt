@@ -61,7 +61,17 @@ class ServiceMembersAdapter(
 
         holder.binding.tvDiagnosis.setText(R.string.ss_name)
         holder.binding.tvDiagnosisStatus.setTextColor(ContextCompat.getColor(holder.binding.root.context, R.color.grey_black))
-        val shasthyaShebika = item.shasthyaShebikaNameSsId + " - " + item.shasthyaShebikaName
+        val shasthyaShebika = when {
+            !item.shasthyaShebikaNameSsId.isNullOrBlank() && !item.shasthyaShebikaName.isNullOrBlank() -> {
+                "${item.shasthyaShebikaNameSsId} - ${item.shasthyaShebikaName}"
+            }
+            !item.shasthyaShebikaName.isNullOrBlank() -> {
+                item.shasthyaShebikaName
+            }
+            else -> {
+                context.getString(R.string.separator_double_hyphen)
+            }
+        }
         holder.binding.tvDiagnosisStatus.text = shasthyaShebika
 
         if (item.isActive) {

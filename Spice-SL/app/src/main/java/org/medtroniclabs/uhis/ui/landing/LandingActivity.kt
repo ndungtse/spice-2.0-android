@@ -754,6 +754,14 @@ class LandingActivity :
                 return true
             }
 
+            R.id.external_member -> {
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+                val intent = Intent(this, org.medtroniclabs.uhis.ui.services.ServicesActivity::class.java)
+                intent.putExtra("isExternalMember", true)
+                startActivity(intent)
+                return true
+            }
+
             R.id.support -> {
                 // TODO : Handle the tiberbu
                 launchSupportDialogFragment()
