@@ -834,9 +834,13 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         }
         if (viewModel.otherAssessmentDetails.isEmpty()) {
             // Check if member is external (householdId is null or householdLocalId is 0)
-            val isExternalMember = viewModel.memberDetailsLiveData.value?.data?.householdId == null 
-                || viewModel.memberDetailsLiveData.value?.data?.householdLocalId == 0L
-            
+            val isExternalMember = viewModel.memberDetailsLiveData.value
+                ?.data
+                ?.householdId == null ||
+                viewModel.memberDetailsLiveData.value
+                    ?.data
+                    ?.householdLocalId == 0L
+
             val intent = if (isExternalMember) {
                 Intent(requireActivity(), ServicesActivity::class.java).apply {
                     putExtra("isExternalMember", true)

@@ -653,9 +653,13 @@ class AssessmentActivity : BaseActivity() {
             Intent(this, FollowUpMyPatientActivity::class.java)
         } else {
             // Check if member is external (householdId is null or householdLocalId is 0)
-            val isExternalMember = viewModel.memberDetailsLiveData.value?.data?.householdId == null 
-                || viewModel.memberDetailsLiveData.value?.data?.householdLocalId == 0L
-            
+            val isExternalMember = viewModel.memberDetailsLiveData.value
+                ?.data
+                ?.householdId == null ||
+                viewModel.memberDetailsLiveData.value
+                    ?.data
+                    ?.householdLocalId == 0L
+
             if (isExternalMember) {
                 Intent(this, ServicesActivity::class.java).apply {
                     putExtra("isExternalMember", true)

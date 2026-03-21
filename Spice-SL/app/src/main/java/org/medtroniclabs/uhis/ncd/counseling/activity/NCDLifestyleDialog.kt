@@ -208,7 +208,7 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
         binding.apply {
             loadingProgress.visibility = View.VISIBLE
             loaderImage.apply {
-                loadAsGif(R.drawable.loader_spice)
+                loadAsGif(R.drawable.ic_rotating_uhis_logo)
             }
             btnSave.visibility = View.INVISIBLE
             btnCancel.visibility = View.INVISIBLE

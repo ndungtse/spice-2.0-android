@@ -89,7 +89,7 @@ class BMIListDialog : DialogFragment(), View.OnClickListener {
                 ResourceState.LOADING -> {
                     binding.loadingProgress.visible()
                     binding.loaderImage.apply {
-                        loadAsGif(R.drawable.loader_spice)
+                        loadAsGif(R.drawable.ic_rotating_uhis_logo)
                     }
                 }
 

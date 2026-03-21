@@ -3,14 +3,14 @@ package org.medtroniclabs.uhis.ui.externalmember
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.common.SpiceLocationManager
 import org.medtroniclabs.uhis.databinding.ActivityExternalMemberRegistrationBinding
 import org.medtroniclabs.uhis.ui.BaseActivity
-import org.medtroniclabs.uhis.ui.landing.OnDialogDismissListener
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseRegistrationViewModel
-import dagger.hilt.android.AndroidEntryPoint
+import org.medtroniclabs.uhis.ui.landing.OnDialogDismissListener
 
 @AndroidEntryPoint
 class ExternalMemberRegistrationActivity : BaseActivity(), OnDialogDismissListener {

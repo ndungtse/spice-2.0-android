@@ -180,12 +180,12 @@ class HouseholdMemberRepository @Inject constructor(
                 if (villageIdFromMap != null) {
                     householdMemberEntity.villageId = villageIdFromMap
                 }
-                
+
                 val shasthyaShebikaIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.shasthyaShebikaId])
                 if (shasthyaShebikaIdFromMap != null) {
                     householdMemberEntity.shasthyaShebikaId = shasthyaShebikaIdFromMap
                 }
-                
+
                 val subVillageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.subVillageId])
                 if (subVillageIdFromMap != null) {
                     householdMemberEntity.subVillageId = subVillageIdFromMap

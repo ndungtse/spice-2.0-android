@@ -487,7 +487,7 @@
     <style name="TextStyle_Regular_16_Size" parent="TextStyle_Regular_12">
         <item name="android:textSize">@dimen/_16ssp</item>
     </style>
-    
+
     <style name="StylePerformanceMonitorHeaderText">
         <item name="android:layout_width">@dimen/_0dp</item>
         <item name="android:layout_height">@dimen/_0dp</item>
@@ -588,13 +588,13 @@
     </style>
 
     <style name="AppLogo">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">@dimen/_160sdp</item>
+        <item name="android:layout_height">@dimen/_160sdp</item>
     </style>
 
     <style name="HamburgAppLogo">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">@dimen/_100sdp</item>
     </style>
 
     <style name="Single_Selection_Button" parent="Widget.MaterialComponents.Button.OutlinedButton">

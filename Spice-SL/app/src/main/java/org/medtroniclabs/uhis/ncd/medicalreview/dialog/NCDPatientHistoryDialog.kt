@@ -500,7 +500,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
     private fun showLoading() {
         binding.loadingProgress.visibility = View.VISIBLE
         binding.loaderImage.apply {
-            loadAsGif(R.drawable.loader_spice)
+            loadAsGif(R.drawable.ic_rotating_uhis_logo)
         }
     }
 

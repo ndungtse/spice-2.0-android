@@ -19,7 +19,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/blue"
+            android:background="@color/toolbar_color"
             android:padding="0dp"
             app:contentInsetStart="0dp"
             app:contentInsetEnd="0dp"
@@ -31,7 +31,7 @@
                 android:id="@+id/insideView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/blue"
+                android:background="@color/toolbar_color"
                 android:paddingHorizontal="@dimen/_16sdp">
 
                 <androidx.appcompat.widget.AppCompatTextView

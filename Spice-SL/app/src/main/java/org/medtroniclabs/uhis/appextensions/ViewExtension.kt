@@ -219,7 +219,7 @@ fun ImageView.loadAsGif(drawable: Int) {
     Glide
         .with(this)
         .asGif()
-        .placeholder(R.drawable.ic_spice_logo)
+        .placeholder(R.drawable.ic_uhis_logo)
         .load(drawable)
         .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache all versions of the image
         .into(this)

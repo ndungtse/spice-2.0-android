@@ -32,6 +32,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
         missingDimensionStrategy("version", "production")
+        resValue("color", "toolbar_color", "#2514BE")
     }
 
     // Make exported Room schemas available to tests
@@ -88,6 +89,7 @@ android {
             applicationIdSuffix = ".staging"
             signingConfig = signingConfigs.getByName("staging")
             resValue("string", "app_name", "UHIS Training")
+            resValue("color", "toolbar_color", "#f1b192")
         }
         create("production") {
             dimension = "version"

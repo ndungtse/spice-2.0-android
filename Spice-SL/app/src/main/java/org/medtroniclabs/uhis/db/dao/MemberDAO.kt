@@ -286,7 +286,7 @@ interface MemberDAO {
     ): LiveData<List<HouseholdMemberWithTb>> {
         val args = mutableListOf<Any>()
         val conditions = mutableListOf<String>()
-        
+
         // Check if this is external member filter
         val isExternalMember = staticFilter == ServiceStaticFilter.EXTERNAL_MEMBERS
 
@@ -455,13 +455,13 @@ interface MemberDAO {
         } else {
             "INNER JOIN Household AS hh ON hh.id = hhm.household_id"
         }
-        
+
         val ssJoin = if (isExternalMember) {
             "LEFT JOIN ShasthyaShebikaEntity AS ss ON hhm.shasthya_shebika_id = ss.id"
         } else {
             "INNER JOIN ShasthyaShebikaEntity AS ss ON hh.shasthya_shebika_id = ss.id"
         }
-        
+
         val svJoin = if (isExternalMember) {
             "LEFT JOIN SubVillageEntity AS sv ON hhm.sub_village_id = sv.id"
         } else {

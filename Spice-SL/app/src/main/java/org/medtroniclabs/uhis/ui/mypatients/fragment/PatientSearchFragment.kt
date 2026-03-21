@@ -577,7 +577,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     private fun showLoading() {
         binding.loadingProgress.visible()
         binding.loaderImage.apply {
-            loadAsGif(R.drawable.loader_spice)
+            loadAsGif(R.drawable.ic_rotating_uhis_logo)
         }
     }
 

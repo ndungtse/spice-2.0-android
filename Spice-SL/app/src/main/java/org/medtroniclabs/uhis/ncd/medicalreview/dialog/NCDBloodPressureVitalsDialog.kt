@@ -157,7 +157,7 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
             btnCancel.invisible()
             loadingProgress.visible()
             loaderImage.apply {
-                loadAsGif(R.drawable.loader_spice)
+                loadAsGif(R.drawable.ic_rotating_uhis_logo)
             }
         }
     }

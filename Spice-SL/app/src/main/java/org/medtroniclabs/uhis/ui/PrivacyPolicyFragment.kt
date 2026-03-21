@@ -17,7 +17,6 @@ import org.medtroniclabs.uhis.appextensions.loadAsGif
 import org.medtroniclabs.uhis.appextensions.resetImageView
 import org.medtroniclabs.uhis.databinding.FragmentPrivacyPolicyBinding
 import org.medtroniclabs.uhis.network.NetworkConstants.PRIVACY_POLICY
-import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.landing.viewmodel.LandingViewModel
 import timber.log.Timber
 
@@ -120,7 +119,7 @@ class PrivacyPolicyFragment : BaseFragment() {
     private fun showLoading() {
         binding.loadingProgress.visibility = View.VISIBLE
         binding.loaderImage.apply {
-            loadAsGif(R.drawable.loader_spice)
+            loadAsGif(R.drawable.ic_rotating_uhis_logo)
         }
     }
 

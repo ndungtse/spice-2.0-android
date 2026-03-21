@@ -106,7 +106,7 @@ class NCDScheduleDialog : DialogFragment(), View.OnClickListener {
     fun showLoading() {
         binding.loadingProgress.visible()
         binding.loaderImage.apply {
-            loadAsGif(R.drawable.loader_spice)
+            loadAsGif(R.drawable.ic_rotating_uhis_logo)
         }
     }
 

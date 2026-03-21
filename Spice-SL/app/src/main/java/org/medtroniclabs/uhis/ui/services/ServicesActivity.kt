@@ -21,10 +21,10 @@ import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.formgeneration.utility.CustomSpinnerAdapter
 import org.medtroniclabs.uhis.model.services.ServiceStaticFilter
 import org.medtroniclabs.uhis.ui.BaseActivity
+import org.medtroniclabs.uhis.ui.externalmember.ExternalMemberRegistrationActivity
 import org.medtroniclabs.uhis.ui.household.MemberSelectionListener
 import org.medtroniclabs.uhis.ui.household.summary.MemberSummaryActivity
 import org.medtroniclabs.uhis.ui.services.viewmodel.ServicesViewModel
-import org.medtroniclabs.uhis.ui.externalmember.ExternalMemberRegistrationActivity
 import org.medtroniclabs.uhis.common.DefinedParams as CommonDefinedParams
 
 /**
@@ -51,16 +51,16 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityServicesBinding.inflate(layoutInflater)
-        
+
         // Check if this is external member mode
         isExternalMember = intent.getBooleanExtra("isExternalMember", false)
-        
+
         val title = if (isExternalMember) {
             getString(R.string.external_member)
         } else {
             getString(R.string.service_recipient_list)
         }
-        
+
         setMainContentView(
             binding.root,
             isToolbarVisible = true,
@@ -78,7 +78,7 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
 
     private fun initViews() {
         binding.llFilter.btnFilter.text = getString(R.string.filter)
-        
+
         // Update search hint for external members
         val searchHint = if (isExternalMember) {
             getString(R.string.member_name_or_phone)
@@ -86,13 +86,13 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
             getString(R.string.household_name_or_no)
         }
         binding.llExactSearch.etSearchTerm.hint = searchHint
-        
+
         adapter = ServiceMembersAdapter(this)
 
         binding.rvMembersList.apply {
             adapter = this@ServicesActivity.adapter
         }
-        
+
         // Show/hide button and dropdown for external members
         if (isExternalMember) {
             binding.tvMemberTypes.gone()
