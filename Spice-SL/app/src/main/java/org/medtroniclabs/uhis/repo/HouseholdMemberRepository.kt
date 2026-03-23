@@ -176,24 +176,21 @@ class HouseholdMemberRepository @Inject constructor(
         if (entity == null) {
             // If householdId is null, get location fields from form map
             if (householdId == null) {
-                val villageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.villageId])
-                if (villageIdFromMap != null) {
-                    householdMemberEntity.villageId = villageIdFromMap
-                }
-
-                val shasthyaShebikaIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.shasthyaShebikaId])
-                if (shasthyaShebikaIdFromMap != null) {
-                    householdMemberEntity.shasthyaShebikaId = shasthyaShebikaIdFromMap
-                }
-
-                val subVillageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.subVillageId])
-                if (subVillageIdFromMap != null) {
-                    householdMemberEntity.subVillageId = subVillageIdFromMap
-                }
+                applyLocationFromMap(householdMemberEntity, map)
             } else {
                 // For regular members, get villageId from household
-                val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
-                householdMemberEntity.villageId = householdDetails.villageId
+                val householdDetails =
+                    try {
+                        roomHelper.getHouseHoldDetailsById(householdId)
+                    } catch (_: Exception) {
+                        null
+                    }
+                if (householdDetails != null) {
+                    householdMemberEntity.villageId = householdDetails.villageId
+                } else {
+                    // Defensive fallback for stale/invalid household references.
+                    applyLocationFromMap(householdMemberEntity, map)
+                }
                 householdMemberEntity.createdAt = currentTime
             }
         } else {
@@ -206,6 +203,26 @@ class HouseholdMemberRepository @Inject constructor(
         }
 
         return householdMemberEntity
+    }
+
+    private fun applyLocationFromMap(
+        householdMemberEntity: HouseholdMemberEntity,
+        map: HashMap<String, Any>,
+    ) {
+        val villageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.villageId])
+        if (villageIdFromMap != null) {
+            householdMemberEntity.villageId = villageIdFromMap
+        }
+
+        val shasthyaShebikaIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.shasthyaShebikaId])
+        if (shasthyaShebikaIdFromMap != null) {
+            householdMemberEntity.shasthyaShebikaId = shasthyaShebikaIdFromMap
+        }
+
+        val subVillageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.subVillageId])
+        if (subVillageIdFromMap != null) {
+            householdMemberEntity.subVillageId = subVillageIdFromMap
+        }
     }
 
     private suspend fun getNextPatientId(villageId: Long): String? {

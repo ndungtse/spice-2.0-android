@@ -90,7 +90,7 @@ interface MemberDAO {
         ),
     ): List<HouseHoldMember>
 
-    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name, hh.sub_village_id as sub_village_id, sv.name as sub_village_name, CASE WHEN lhhm.memberId IS NOT NULL AND lhhm.syncStatus IN (:status) THEN 1 ELSE NULL END AS assignHousehold FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id LEFT JOIN SubVillageEntity AS sv ON hh.sub_village_id = sv.id LEFT JOIN LinkHouseholdMember AS lhhm ON lhhm.memberId = hhm.fhir_id WHERE hhm.id NOT IN (:memberIds) AND hh.fhir_id IS NOT NULL AND hhm.sync_status IN (:status)")
+    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, COALESCE(hh.village_id, hhm.villageId) as village_id, ve.name as village_name, COALESCE(hh.sub_village_id, hhm.sub_village_id) as sub_village_id, sv.name as sub_village_name, CASE WHEN lhhm.memberId IS NOT NULL AND lhhm.syncStatus IN (:status) THEN 1 ELSE NULL END AS assignHousehold FROM HouseHoldMember AS hhm LEFT JOIN Household as hh ON hh.id = hhm.household_id LEFT JOIN VillageEntity AS ve ON ve.id = COALESCE(hh.village_id, hhm.villageId) LEFT JOIN SubVillageEntity AS sv ON sv.id = COALESCE(hh.sub_village_id, hhm.sub_village_id) LEFT JOIN LinkHouseholdMember AS lhhm ON lhhm.memberId = hhm.fhir_id WHERE hhm.id NOT IN (:memberIds) AND (hh.id IS NULL OR hh.fhir_id IS NOT NULL) AND hhm.sync_status IN (:status)")
     suspend fun getOtherHouseholdMembers(
         memberIds: List<String>,
         status: List<String> = listOf(
@@ -110,7 +110,7 @@ interface MemberDAO {
     @Query("SELECT id FROM HouseholdMember WHERE fhir_id =:fhirId")
     suspend fun getHouseholdMemberIdByFhirId(fhirId: String): Long?
 
-    @Query("SELECT hhm.name, hhm.gender, hhm.date_of_birth AS dateOfBirth, hhm.patient_id AS patientId,hh.sub_village_id as subVillageId, CASE WHEN hh.village_id IS NOT NULL THEN CAST(hh.village_id AS TEXT) WHEN hhm.villageId IS NOT NULL THEN CAST(hhm.villageId AS TEXT) ELSE '0' END as villageId, hhm.fhir_id AS memberId, hh.household_no as householdNo, hh.fhir_id AS householdId, hhm.id AS id, COALESCE(hh.id, 0) AS householdLocalId, NULL AS contactTracingStatus, NULL AS isPregnant, hhm.phone_number AS phoneNumber FROM HouseholdMember AS hhm LEFT JOIN Household AS hh ON hh.id = hhm.household_id WHERE hhm.id=:id")
+    @Query("SELECT hhm.name, hhm.gender, hhm.date_of_birth AS dateOfBirth, hhm.patient_id AS patientId, CASE WHEN hh.sub_village_id IS NOT NULL THEN CAST(hh.sub_village_id AS TEXT) WHEN hhm.sub_village_id IS NOT NULL THEN CAST(hhm.sub_village_id AS TEXT) ELSE '0' END as subVillageId, CASE WHEN hh.village_id IS NOT NULL THEN CAST(hh.village_id AS TEXT) WHEN hhm.villageId IS NOT NULL THEN CAST(hhm.villageId AS TEXT) ELSE '0' END as villageId, hhm.fhir_id AS memberId, hh.household_no as householdNo, hh.fhir_id AS householdId, hhm.id AS id, COALESCE(hh.id, 0) AS householdLocalId, NULL AS contactTracingStatus, NULL AS isPregnant, hhm.phone_number AS phoneNumber FROM HouseholdMember AS hhm LEFT JOIN Household AS hh ON hh.id = hhm.household_id WHERE hhm.id=:id")
     suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails
 
     @Query("DELETE FROM HouseholdMember")

@@ -41,8 +41,8 @@ interface AssessmentDAO {
 
     @Query(
         "SELECT a.id, a.householdMemberLocalId, a.villageId, a.assessmentType, a.assessmentDetails, hhm.patient_id as patientId, a.referralStatus, a.referredReason, a.otherDetails, a.callResult, hhm.fhir_id as memberId, hh.fhir_id as householdId, a.isReferred, a.created_at AS createdAt, a.followUpId, a.latitude, a.longitude, pd.neonatePatientId as neonatePatientId, pd.neonateHouseholdMemberLocalId as neonatePatientReferenceId " +
-            "FROM Assessment AS a LEFT JOIN PregnancyDetail AS pd ON a.householdMemberLocalId = pd.householdMemberLocalId INNER JOIN HouseholdMember AS hhm ON a.householdMemberLocalId = hhm.id INNER JOIN Household AS hh ON hhm.household_id = hh.id " +
-            "WHERE a.id NOT IN (:addedAssessmentIds) AND hhm.fhir_id IS NOT NULL AND a.sync_status IN (:status)",
+            "FROM Assessment AS a LEFT JOIN PregnancyDetail AS pd ON a.householdMemberLocalId = pd.householdMemberLocalId INNER JOIN HouseholdMember AS hhm ON a.householdMemberLocalId = hhm.id LEFT JOIN Household AS hh ON hhm.household_id = hh.id " +
+            "WHERE a.id NOT IN (:addedAssessmentIds) AND hhm.fhir_id IS NOT NULL AND (hh.id IS NULL OR hh.fhir_id IS NOT NULL) AND a.sync_status IN (:status)",
     )
     suspend fun getOtherUnSyncedAssessments(
         addedAssessmentIds: List<String>,

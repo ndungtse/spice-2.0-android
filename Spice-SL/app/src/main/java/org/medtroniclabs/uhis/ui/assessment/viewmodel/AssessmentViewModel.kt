@@ -60,6 +60,7 @@ import org.medtroniclabs.uhis.formgeneration.FormGenerator
 import org.medtroniclabs.uhis.formgeneration.config.ViewType
 import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.model.FormResponse
+import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration
 import org.medtroniclabs.uhis.mappingkey.PregnantWomen
 import org.medtroniclabs.uhis.mappingkey.RxBuddy.hasCough
@@ -494,6 +495,8 @@ class AssessmentViewModel @Inject constructor(
         val dateOfDelivery = deliveryOutcomes?.get("dateOfDelivery") as? String
         val newbornDetailsList = findNewbornDetailsFromMap(pregnancyOutcomeMap)
         var firstBabyMemberId: Long? = null
+        val motherMember = memberRegistrationRepository.getMemberDetails(details.id)
+        val isExternalMother = details.householdLocalId <= 0L
 
         if (newbornDetailsList != null && !dateOfDelivery.isNullOrBlank()) {
             newbornDetailsList.forEachIndexed { index, babyData ->
@@ -509,9 +512,16 @@ class AssessmentViewModel @Inject constructor(
                         babyMap[MemberRegistration.isHouseholdHead] = false
                         babyMap[MemberRegistration.ID_GUARDIAN] = details.id
 
+                        // For external mothers, carry location from mother member itself.
+                        if (isExternalMother) {
+                            motherMember.villageId?.let { babyMap[HouseHoldRegistration.villageId] = it }
+                            motherMember.shasthyaShebikaId?.let { babyMap[HouseHoldRegistration.shasthyaShebikaId] = it }
+                            motherMember.subVillageId?.let { babyMap[HouseHoldRegistration.subVillageId] = it }
+                        }
+
                         val memberId = memberRegistrationRepository.registerMember(
                             map = babyMap,
-                            householdId = details.householdLocalId,
+                            householdId = if (isExternalMother) null else details.householdLocalId,
                             parentReferenceId = details.id,
                             location = lastLocation,
                         )

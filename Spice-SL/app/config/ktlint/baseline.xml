@@ -307,9 +307,9 @@
         <error line="164" column="21" source="standard:property-naming" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/db/dao/MemberDAO.kt">
-        <error line="288" column="1" source="standard:no-trailing-spaces" />
-        <error line="457" column="1" source="standard:no-trailing-spaces" />
-        <error line="463" column="1" source="standard:no-trailing-spaces" />
+        <error line="289" column="1" source="standard:no-trailing-spaces" />
+        <error line="458" column="1" source="standard:no-trailing-spaces" />
+        <error line="464" column="1" source="standard:no-trailing-spaces" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/db/entity/BaseEntity.kt">
         <error line="14" column="9" source="standard:property-naming" />
@@ -852,12 +852,8 @@
         <error line="155" column="13" source="standard:no-consecutive-comments" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/repo/HouseholdMemberRepository.kt">
-        <error line="185" column="1" source="standard:no-trailing-spaces" />
-        <error line="190" column="1" source="standard:no-trailing-spaces" />
-    </file>
-    <file name="src/main/java/org/medtroniclabs/uhis/repo/OfflineSyncRepository.kt">
-        <error line="277" column="13" source="standard:no-consecutive-comments" />
-        <error line="847" column="9" source="standard:no-consecutive-comments" />
+        <error line="183" column="1" source="standard:no-trailing-spaces" />
+        <error line="188" column="1" source="standard:no-trailing-spaces" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/signature/view/SignatureView.kt">
         <error line="58" column="17" source="standard:property-naming" />
