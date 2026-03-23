@@ -295,7 +295,7 @@ class OfflineSyncRepository @Inject constructor(
         serverLastSyncedAt: String? = null,
     ): Boolean {
         val syncedResponse = getSyncedEntities(villageIds, serverLastSyncedAt)
-        val assessmentHistoryResponse = fetchMemberAssessmentHistory(villageIds)
+        val assessmentHistoryResponse = fetchMemberAssessmentHistory(villageIds, serverLastSyncedAt)
         if (syncedResponse.isSuccessful && assessmentHistoryResponse.isSuccessful) {
             val response = syncedResponse.body()?.string()
             response?.let {
@@ -646,8 +646,11 @@ class OfflineSyncRepository @Inject constructor(
         return apiHelper.fetchSyncedData(request)
     }
 
-    private suspend fun fetchMemberAssessmentHistory(villageList: List<Long>): Response<List<MemberAssessmentHistoryEntity>> {
-        val request = RequestAllEntities(villageList)
+    private suspend fun fetchMemberAssessmentHistory(
+        villageList: List<Long>,
+        lastSyncedAt: String? = null,
+    ): Response<List<MemberAssessmentHistoryEntity>> {
+        val request = RequestAllEntities(villageList, lastSyncedAt)
         return apiHelper.fetchMemberAssessmentHistory(request)
     }
 

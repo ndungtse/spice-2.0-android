@@ -3,7 +3,6 @@ package org.medtroniclabs.uhis.data
 import androidx.room.ColumnInfo
 import com.google.gson.annotations.SerializedName
 import org.medtroniclabs.uhis.data.model.ShasthyaShebika
-import org.medtroniclabs.uhis.data.model.SubVillage
 import org.medtroniclabs.uhis.db.entity.ChiefDomEntity
 import org.medtroniclabs.uhis.db.entity.DistrictEntity
 import org.medtroniclabs.uhis.db.entity.FrequencyEntity
@@ -31,7 +30,6 @@ data class MetaDataResponse(
     val remainingAttemptsCount: Int? = null,
     val consentForm: ConsentFormResponse? = null,
     val medicationInstructions: List<String>? = null,
-    val subVillages: List<SubVillage>? = null,
     val shasthyaShebikas: List<ShasthyaShebika>? = null,
 )
 

@@ -119,8 +119,8 @@ class MetaRepository @Inject constructor(
                             )
                             deleteAllVillages()
                             saveVillage(modifiedVillages(villages, userProfile.villages))
-                            // Save SubVillages
-                            saveSubVillages(subVillages)
+                            // Save SubVillages which are linked to shasthya shebikas
+                            saveSubVillages(shasthyaShebikas?.flatMap { it.subVillages ?: emptyList() })
                             // Save ShasthyaShebikas (includes saving linked subVillages)
                             saveShasthyaShebikas(shasthyaShebikas)
                             deleteAllFrequencyList()
