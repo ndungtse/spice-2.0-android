@@ -19,8 +19,8 @@ data class AssessmentEntity(
     val householdMemberLocalId: Long = 0,
     val memberId: String?, // Member -FHIR id
     val householdId: String?, // Household - FHIR id
-    val patientId: String?, // member - patient Id
-    val villageId: String, // Village Id of household
+    val patientId: String?, // member - patient id
+    val villageId: String, // Sub-Village id of household
     val assessmentType: String,
     var assessmentDetails: String,
     var otherDetails: String? = null,
@@ -29,6 +29,7 @@ data class AssessmentEntity(
     val referralStatus: ReferralStatus,
     val referredReason: ArrayList<String>? = null,
     val followUpId: Long? = null,
+    val status: ArrayList<String>? = null,
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
 ) : BaseEntity()

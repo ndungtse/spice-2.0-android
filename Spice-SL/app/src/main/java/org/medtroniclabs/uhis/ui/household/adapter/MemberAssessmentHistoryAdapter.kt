@@ -3,11 +3,13 @@ package org.medtroniclabs.uhis.ui.household.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.view.setPadding
 import androidx.recyclerview.widget.RecyclerView
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.databinding.SummaryListItemBinding
 import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
+import org.medtroniclabs.uhis.formgeneration.extension.px
 import org.medtroniclabs.uhis.ui.assessment.utils.AssessmentUtil
 
 /**
@@ -27,6 +29,7 @@ class MemberAssessmentHistoryAdapter(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                 )
+                setPadding(10.px)
             },
         )
 
@@ -44,12 +47,37 @@ class MemberAssessmentHistoryAdapter(
             val context = view.context
             addSummaryView(
                 context.getString(R.string.service_name),
-                AssessmentUtil.mapServiceToServiceName(history.serviceProvided),
+                AssessmentUtil.mapServiceToServiceName(history.serviceProvided ?: ""),
             )
-            val visitDateMillis = DateUtils.getLastMenstrualDate(history.visitDate).timeInMillis
+            val visitDateMillis = DateUtils.getLastMenstrualDate(history.visitDate ?: "").timeInMillis
             addSummaryView(
                 context.getString(R.string.service_date),
                 DateUtils.formatDateToDisplayFormat(visitDateMillis) ?: "",
+            )
+            val currentStatus = history.customStatus?.joinToString {
+                AssessmentUtil.mapAssessmentStatus(it)
+            } ?: context.getString(R.string.separator_double_hyphen)
+            addSummaryView(
+                context.getString(R.string.current_status),
+                currentStatus,
+            )
+            val referralStatus = AssessmentUtil.getReferralStatus(
+                context,
+                history.serviceProvided ?: "",
+                history.referralStatus,
+            )
+            addSummaryView(
+                context.getString(R.string.referral_status),
+                referralStatus,
+            )
+            val nextFollowUpDate = AssessmentUtil.getNextFollowUpDate(
+                context,
+                history.serviceProvided ?: "",
+                history.nextFollowUpDate,
+            )
+            addSummaryView(
+                context.getString(R.string.next_follow_up_date),
+                nextFollowUpDate,
             )
         }
 

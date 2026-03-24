@@ -2073,11 +2073,15 @@ class AssessmentRMNCHFragment :
         combinedHighRiskList.addAll(nonEmergencyConditions)
 
         // Add to summary group
-        summaryGroup[AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN] = combinedHighRiskList
+        if (combinedHighRiskList.isNotEmpty()) {
+            summaryGroup[AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN] = combinedHighRiskList
+        }
 
         // Evaluate gapsInAnc
         val gapsList = evaluateGapsInANC(ancHashMap, resultMap)
-        summaryGroup[AssessmentDefinedParams.GAPS_IN_ANC] = gapsList
+        if (gapsList.isNotEmpty()) {
+            summaryGroup[AssessmentDefinedParams.GAPS_IN_ANC] = gapsList
+        }
     }
 
     /**

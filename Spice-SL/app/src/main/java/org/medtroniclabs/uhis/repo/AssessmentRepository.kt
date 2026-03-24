@@ -14,6 +14,7 @@ import org.medtroniclabs.uhis.data.LocalSpinnerResponse
 import org.medtroniclabs.uhis.db.entity.AssessmentEntity
 import org.medtroniclabs.uhis.db.entity.HealthFacilityEntity
 import org.medtroniclabs.uhis.db.entity.MedicalComplianceEntity
+import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
 import org.medtroniclabs.uhis.db.entity.MentalHealthEntity
 import org.medtroniclabs.uhis.db.entity.SignsAndSymptomsEntity
 import org.medtroniclabs.uhis.db.local.RoomHelper
@@ -40,6 +41,7 @@ class AssessmentRepository @Inject constructor(
         referralResult: Pair<String?, ArrayList<String>>?,
         otherDetails: HashMap<String, Any>? = null,
         followUpId: Long? = null,
+        status: ArrayList<String>? = null,
     ): Resource<AssessmentEntity> {
         val latitude = SecuredPreference.getDouble(
             SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name,
@@ -70,6 +72,7 @@ class AssessmentRepository @Inject constructor(
                     referralStatus = getReferralStatus(referralResult?.first),
                     referredReason = referralResult?.second,
                     followUpId = followUpId,
+                    status = status,
                     latitude = latitude,
                     longitude = longitude,
                 )
@@ -248,4 +251,27 @@ class AssessmentRepository @Inject constructor(
         } catch (_: Exception) {
             listOf()
         }
+
+    suspend fun saveAssessmentHistory(history: MemberAssessmentHistoryEntity): Resource<MemberAssessmentHistoryEntity> =
+        try {
+            history.apply {
+                id = roomHelper.insertMemberAssessmentHistory(history)
+            }
+            Resource(state = ResourceState.SUCCESS, history)
+        } catch (_: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+
+    suspend fun updateAssessmentHistory(
+        history: MemberAssessmentHistoryEntity?,
+        followUpDate: String,
+    ) {
+        try {
+            history?.let {
+                it.nextFollowUpDate = followUpDate
+                roomHelper.updateMemberAssessmentHistory(history)
+            }
+        } catch (_: Exception) {
+        }
+    }
 }

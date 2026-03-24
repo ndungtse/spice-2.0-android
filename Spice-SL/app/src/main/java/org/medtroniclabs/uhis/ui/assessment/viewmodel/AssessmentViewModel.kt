@@ -36,7 +36,6 @@ import org.medtroniclabs.uhis.common.DefinedParams.OtherNotifiableConditionsForF
 import org.medtroniclabs.uhis.common.DefinedParams.RmnchNotifiableCondition
 import org.medtroniclabs.uhis.common.DefinedParams.RxBuddyId
 import org.medtroniclabs.uhis.common.DefinedParams.TB
-import org.medtroniclabs.uhis.common.DefinedParams.familyPlanning
 import org.medtroniclabs.uhis.common.DefinedParams.surveillanceDetails
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.common.SpiceLocationManager
@@ -49,6 +48,7 @@ import org.medtroniclabs.uhis.data.offlinesync.utils.OfflineConstant
 import org.medtroniclabs.uhis.db.entity.AssessmentEntity
 import org.medtroniclabs.uhis.db.entity.HealthFacilityEntity
 import org.medtroniclabs.uhis.db.entity.MedicalComplianceEntity
+import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
 import org.medtroniclabs.uhis.db.entity.MemberClinicalEntity
 import org.medtroniclabs.uhis.db.entity.PregnancyDetail
 import org.medtroniclabs.uhis.db.entity.RiskClassificationModel
@@ -125,6 +125,8 @@ import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.otherAncSigns
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.otherChildhoodVisitSigns
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.otherSigns
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.pncChildSigns
+import org.medtroniclabs.uhis.ui.assessment.statuslogic.AssessmentStatusGenerator
+import org.medtroniclabs.uhis.ui.assessment.utils.AssessmentUtil
 import org.medtroniclabs.uhis.ui.boarding.repo.MetaRepository
 import java.lang.reflect.Type
 import java.time.LocalDate
@@ -147,6 +149,7 @@ class AssessmentViewModel @Inject constructor(
     var selectedHouseholdId = -1L
     var followUpId: Long? = null
     val assessmentSaveLiveData = MutableLiveData<Resource<Pair<List<FormLayout>?, AssessmentEntity>>>()
+    val assessmentHistoryResultLiveData = MutableLiveData<Resource<MemberAssessmentHistoryEntity>>()
     val assessmentStringLiveData = MutableLiveData<String?>()
     val assessmentUpdateLiveData = MutableLiveData<Resource<String>>()
     val memberDetailsLiveData = MutableLiveData<Resource<AssessmentMemberDetails>>()
@@ -328,6 +331,7 @@ class AssessmentViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             memberDetailsLiveData.value?.data?.let { details ->
                 referralStatus = referralResult?.first
+                val status = AssessmentStatusGenerator.evaluateStatus(assessmentMap, details)
                 val assessmentDetail =
                     getAssessmentDetails(serverData, assessmentMap as HashMap<Any, Any>)
                 assessmentStringLiveData.postValue(assessmentDetail.first)
@@ -344,7 +348,24 @@ class AssessmentViewModel @Inject constructor(
                     referralResult,
                     otherDetails,
                     followUpId = followUpId,
+                    status = status,
                 )
+
+                assessmentResult.data?.let {
+                    val history = MemberAssessmentHistoryEntity(
+                        memberFhirId = details.memberId,
+                        memberId = details.id,
+                        visitDate = DateUtils.formatDate(
+                            it.createdAt,
+                        ),
+                        serviceProvided = menuId,
+                        customStatus = status,
+                        latestVisit = true,
+                        referralStatus = referralStatus,
+                        referralReason = referralReason.toString(),
+                    )
+                    assessmentHistoryResultLiveData.postValue(assessmentRepository.saveAssessmentHistory(history))
+                }
 
                 if (menuId == PREGNANT_WOMEN_PROFILE &&
                     assessmentResult.isSuccess()
@@ -467,13 +488,13 @@ class AssessmentViewModel @Inject constructor(
         )
 
         // Extract fields from deliveryOutcomes section
-        val deliveryOutcomes = pregnancyOutcomeMap["deliveryOutcomes"] as? Map<String, Any?>
+        val deliveryOutcomes = pregnancyOutcomeMap[AssessmentDefinedParams.ID_DELIVERY_OUTCOMES] as? Map<String, Any?>
         deliveryOutcomes?.let { delivery ->
             pregnancyDetail.dateOfDelivery = delivery["dateOfDelivery"] as? String
             pregnancyDetail.complicationsDuringDelivery = delivery["complicationsDuringDelivery"] as? String
 
             // liveBirthNumbers → noOfNeonates (Int)
-            val liveBirthNumbers = delivery["liveBirthNumbers"]
+            val liveBirthNumbers = delivery[AssessmentDefinedParams.ID_LIVE_BIRTH_NUMBERS]
             pregnancyDetail.noOfNeonates = when (liveBirthNumbers) {
                 is Number -> liveBirthNumbers.toInt()
                 is String -> liveBirthNumbers.toIntOrNull()
@@ -486,14 +507,14 @@ class AssessmentViewModel @Inject constructor(
         }
 
         // Extract typeOfAbortion from abortion section
-        val abortionMap = pregnancyOutcomeMap["abortion"] as? Map<String, Any?>
+        val abortionMap = pregnancyOutcomeMap[AssessmentDefinedParams.ID_ABORTION] as? Map<String, Any?>
         abortionMap?.let { abortion ->
             pregnancyDetail.typeOfAbortion = abortion["typeOfAbortion"] as? String
         }
 
         // Create household members for live babies
         val dateOfDelivery = deliveryOutcomes?.get("dateOfDelivery") as? String
-        val newbornDetailsList = findNewbornDetailsFromMap(pregnancyOutcomeMap)
+        val newbornDetailsList = AssessmentUtil.findNewbornDetailsFromMap(pregnancyOutcomeMap)
         var firstBabyMemberId: Long? = null
         val motherMember = memberRegistrationRepository.getMemberDetails(details.id)
         val isExternalMother = details.householdLocalId <= 0L
@@ -501,9 +522,9 @@ class AssessmentViewModel @Inject constructor(
         if (newbornDetailsList != null && !dateOfDelivery.isNullOrBlank()) {
             newbornDetailsList.forEachIndexed { index, babyData ->
                 if (babyData is Map<*, *>) {
-                    val isBabyAlive = babyData["isBabyAlive"]?.toString()
+                    val isBabyAlive = babyData[AssessmentDefinedParams.IS_BABY_ALIVE]?.toString()
                     // Only create members for live babies
-                    if (isBabyAlive.equals("Yes", ignoreCase = true)) {
+                    if (isBabyAlive.equals(DefinedParams.yes, ignoreCase = true)) {
                         val babyNumber = index + 1
                         val babyMap = HashMap<String, Any>()
                         babyMap[MemberRegistration.name] = "Baby $babyNumber of ${details.name}"
@@ -547,24 +568,6 @@ class AssessmentViewModel @Inject constructor(
     }
 
     /**
-     * Finds newborn details list from the pregnancy outcome map.
-     * Searches both at the top level and within nested family maps.
-     */
-    private fun findNewbornDetailsFromMap(map: Map<String, Any?>): List<*>? {
-        val directList = map["newbornDetails"]
-        if (directList is List<*>) return directList
-
-        for (entry in map.entries) {
-            if (entry.value is Map<*, *>) {
-                val nestedMap = entry.value as Map<*, *>
-                val nestedList = nestedMap["newbornDetails"]
-                if (nestedList is List<*>) return nestedList
-            }
-        }
-        return null
-    }
-
-    /**
      * Saves ANC assessment fields to PregnancyDetail table.
      * Updates the existing record if one exists, otherwise creates a new one.
      */
@@ -600,7 +603,7 @@ class AssessmentViewModel @Inject constructor(
             pregnancyDetail.pregnantWomanOnTreatment = convertListToString(onTreatment)
 
             // Extract and save highRiskPregnantWoman (list of strings -> JSON)
-            val summary = ancMap.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<String, Any>
+            val summary = ancMap[AssessmentDefinedParams.GROUP_SUMMARY] as? Map<String, Any>
             val highRisk = summary?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN)
             pregnancyDetail.highRiskPregnantWoman = convertListToString(highRisk)
 
@@ -964,12 +967,12 @@ class AssessmentViewModel @Inject constructor(
         }
 
         // Request modification for Family Planning
-        if (map.containsKey(familyPlanning.lowercase())) {
-            val familyPlanning = (map[familyPlanning] as? Map<String, Any>)
+        if (map.containsKey(MenuConstants.FP_MENU_ID.lowercase())) {
+            val familyPlanning = (map[MenuConstants.FP_MENU_ID] as? Map<String, Any>)
             if (familyPlanning != null && familyPlanning.containsKey(FamilyPlanningDetails)) {
                 val result = familyPlanning[FamilyPlanningDetails] as? HashMap<String, Any>
                 result?.let {
-                    map.remove(DefinedParams.familyPlanning)
+                    map.remove(MenuConstants.FP_MENU_ID)
                     map[FamilyPlanning] = it
                 }
             }
@@ -1012,6 +1015,12 @@ class AssessmentViewModel @Inject constructor(
                     lastLocation,
                 ),
             )
+            (otherAssessmentDetails[AssessmentDefinedParams.NextFollowupDate] as? String)?.let {
+                assessmentRepository.updateAssessmentHistory(
+                    assessmentHistoryResultLiveData.value?.data,
+                    it,
+                )
+            }
         }
     }
 
@@ -1476,6 +1485,7 @@ class AssessmentViewModel @Inject constructor(
 
             val motherReferralResult =
                 ReferralResultGenerator().calculateRMNCHReferralResult(assessmentMap)
+            val status = AssessmentStatusGenerator.evaluateStatus(assessmentMap, memberDetail)
             val assessmentDetail =
                 getAssessmentDetails(serverData, assessmentMap as HashMap<Any, Any>)
             referralStatus = motherReferralResult.first
@@ -1488,7 +1498,23 @@ class AssessmentViewModel @Inject constructor(
                 motherReferralResult,
                 null,
                 followUpId,
+                status = status,
             )
+            assessmentResult.data?.let {
+                val history = MemberAssessmentHistoryEntity(
+                    memberFhirId = memberDetail.memberId,
+                    memberId = memberDetail.id,
+                    visitDate = DateUtils.formatDate(
+                        it.createdAt,
+                    ),
+                    serviceProvided = RMNCH.pnc_mother_key,
+                    customStatus = status,
+                    latestVisit = true,
+                    referralStatus = referralStatus,
+                    referralReason = referralReason.toString(),
+                )
+                assessmentHistoryResultLiveData.postValue(assessmentRepository.saveAssessmentHistory(history))
+            }
             assessmentSaveLiveData.postValue(
                 when (assessmentResult.state) {
                     ResourceState.ERROR -> Resource(state = ResourceState.ERROR)

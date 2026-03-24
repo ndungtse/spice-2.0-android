@@ -44,7 +44,7 @@ class MemberDetailsFragment : Fragment(), View.OnClickListener {
         memberSummaryViewModel.memberDetails.observe(viewLifecycleOwner) { memberDetails ->
             memberDetails ?: return@observe
             val recentHistoryDate = memberDetails.history.firstOrNull()?.let {
-                DateUtils.getLastMenstrualDate(it.visitDate).timeInMillis
+                DateUtils.getLastMenstrualDate(it.visitDate ?: "").timeInMillis
             } ?: 0
             val lastUpdated = memberDetails.member.lastUpdated?.let {
                 DateUtils.getLastMenstrualDate(it).timeInMillis
@@ -65,7 +65,9 @@ class MemberDetailsFragment : Fragment(), View.OnClickListener {
 
             val registeredAt = DateUtils.formatDateToDisplayFormat(memberDetails.member.createdAt)
             val servicesProvided = if (memberDetails.history.isNotEmpty()) {
-                memberDetails.history.joinToString { AssessmentUtil.mapServiceToServiceName(it.serviceProvided) }
+                memberDetails.history.distinctBy { it.serviceProvided }.joinToString {
+                    AssessmentUtil.mapServiceToServiceName(it.serviceProvided ?: "")
+                }
             } else {
                 getString(R.string.separator_double_hyphen)
             }
@@ -77,7 +79,7 @@ class MemberDetailsFragment : Fragment(), View.OnClickListener {
             addSummaryView(
                 getString(R.string.recent_status),
                 memberDetails.history.firstOrNull()?.let {
-                    AssessmentUtil.mapServiceToServiceName(it.serviceProvided)
+                    AssessmentUtil.mapServiceToServiceName(it.serviceProvided ?: "")
                 } ?: getString(R.string.separator_double_hyphen),
             )
             if (memberDetails.member.isActive) {

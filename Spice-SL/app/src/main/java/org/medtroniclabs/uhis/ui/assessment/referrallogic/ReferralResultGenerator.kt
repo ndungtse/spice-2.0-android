@@ -6,7 +6,6 @@ import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DefinedParams.CBS_Referral
 import org.medtroniclabs.uhis.common.DefinedParams.Referred_NCD
-import org.medtroniclabs.uhis.formgeneration.config.DefinedParams
 import org.medtroniclabs.uhis.formgeneration.config.DefinedParams.NoSymptoms
 import org.medtroniclabs.uhis.mappingkey.Screening
 import org.medtroniclabs.uhis.model.assessment.AssessmentMemberDetails
@@ -84,16 +83,11 @@ import org.medtroniclabs.uhis.ui.assessment.referrallogic.model.ReferralDefinedP
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralReasons
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DeathOfMother
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.Miscarriage
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.getDeathStatus
 import org.medtroniclabs.uhis.common.DefinedParams as CommonDefinedParams
 
 class ReferralResultGenerator {
     private var patientStatus = HashMap<String, Any>()
     private val referralReason = arrayListOf<String>()
-
-    val muac = "muac"
 
     fun calculateIccmReferralResult(
         map: HashMap<String, Any>,
@@ -109,65 +103,49 @@ class ReferralResultGenerator {
 
     fun calculateRMNCHReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
         if (map.containsKey(RMNCH.ANC)) {
-            val deathOfMother = getDeathStatus(map, RMNCH.ANC, DeathOfMother)
-            if (!deathOfMother) {
-                if (checkMiscarrageStatus(map, RMNCH.ANC, Miscarriage)) {
-                    addResultMap(ReferralReasons.Miscarriage.name, ReferralStatus.Referred.name)
-                    addReferralReason(referralReason, ReferralReasons.Miscarriage.name)
-                }
-                findSignListByWorkflow(
-                    RMNCH.ANC,
-                    map,
-                    RMNCH.ancSigns,
-                    ReferralReasons.aliasOf(ReferralReasons.ANCSigns),
+            // Check for highRiskPregnantWoman or gapsInAnc in summary group
+            val ancMap = map[RMNCH.ANC] as? Map<*, *>
+            val summaryGroup = ancMap?.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<*, *>
+            val highRiskList = summaryGroup?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) as? List<*>
+            val gapsList = summaryGroup?.get(AssessmentDefinedParams.GAPS_IN_ANC) as? List<*>
+
+            // If highRiskPregnantWoman has values, add referral reason
+            if (!highRiskList.isNullOrEmpty()) {
+                addResultMap(
+                    AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN,
+                    ReferralStatus.Referred.name,
                 )
-
-                // Check for highRiskPregnantWoman or gapsInAnc in summary group
-                val ancMap = map[RMNCH.ANC] as? Map<*, *>
-                val summaryGroup = ancMap?.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<*, *>
-                val highRiskList = summaryGroup?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) as? List<*>
-                val gapsList = summaryGroup?.get(AssessmentDefinedParams.GAPS_IN_ANC) as? List<*>
-
-                // If highRiskPregnantWoman has values, add referral reason
-                if (highRiskList != null && highRiskList.isNotEmpty()) {
-                    addResultMap(
-                        AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN,
-                        ReferralStatus.Referred.name,
-                    )
-                    addReferralReason(
-                        referralReason,
-                        AssessmentDefinedParams.LABEL_HIGH_RISK_PREGNANT_WOMAN,
-                    )
-                }
-
-                // If gapsInAnc has values, add referral reason
-                if (gapsList != null && gapsList.isNotEmpty()) {
-                    addResultMap(
-                        AssessmentDefinedParams.GAPS_IN_ANC,
-                        ReferralStatus.Referred.name,
-                    )
-                    addReferralReason(
-                        referralReason,
-                        AssessmentDefinedParams.LABEL_GAPS_IN_ANC,
-                    )
-                }
-
-                updateVisitCount(map, RMNCH.ANC)
+                addReferralReason(
+                    AssessmentDefinedParams.LABEL_HIGH_RISK_PREGNANT_WOMAN,
+                )
             }
+
+            // If gapsInAnc has values, add referral reason
+            if (!gapsList.isNullOrEmpty()) {
+                addResultMap(
+                    AssessmentDefinedParams.GAPS_IN_ANC,
+                    ReferralStatus.Referred.name,
+                )
+                addReferralReason(
+                    AssessmentDefinedParams.LABEL_GAPS_IN_ANC,
+                )
+            }
+
+            updateVisitCount(map, RMNCH.ANC)
         } else if (map.containsKey(RMNCH.ChildHoodVisit)) {
             val childVisitMap = map[RMNCH.ChildHoodVisit] as Map<String, Any>
             if (CommonDefinedParams.yes
                     .equals(childVisitMap[AssessmentDefinedParams.ID_CHILD_REFERRAL] as? String, true)
             ) {
                 addResultMap(ReferralReasons.aliasOf(ReferralReasons.childhoodVisitSigns), ReferralStatus.Referred.name)
-                addReferralReason(referralReason, ReferralReasons.aliasOf(ReferralReasons.childhoodVisitSigns))
+                addReferralReason(ReferralReasons.aliasOf(ReferralReasons.childhoodVisitSigns))
             }
             updateVisitCount(map, RMNCH.ChildHoodVisit)
         } else {
             val pncMap = map[RMNCH.PNC] as Map<String, Any>
             if (pncMap.containsKey(RMNCH.ID_MOTHER_RISKS)) {
                 addResultMap(ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns), ReferralStatus.Referred.name)
-                addReferralReason(referralReason, ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns))
+                addReferralReason(ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns))
             }
             updateVisitCount(map, RMNCH.PNC)
         }
@@ -202,22 +180,6 @@ class ReferralResultGenerator {
         }
 
         referralReason.add(visitInfo)
-
-        /* if (referralReason.isNotEmpty()) {
-             var lastReason = referralReason[referralReason.size - 1]
-             val workflowMap = map[workFlow]
-             if (workflowMap is Map<*, *> && workflowMap.containsKey(RMNCH.visitNo)) {
-                 val visitNo = workflowMap[RMNCH.visitNo]
-                 if (visitNo is Long) {
-                     if (lastReason.trim().isNotEmpty()) {
-                         lastReason = "$lastReason - ${getVisitLabel(workFlow)} $visitNo"
-                     } else {
-                         lastReason = "${getVisitLabel(workFlow)} $visitNo"
-                     }
-                     referralReason[referralReason.size - 1] = lastReason
-                 }
-             }
-         }*/
     }
 
     private fun getVisitLabel(workFlow: String): String {
@@ -238,69 +200,6 @@ class ReferralResultGenerator {
         return "Visit No: "
     }
 
-    private fun checkMUACReferralStatus(
-        map: HashMap<String, Any>,
-        workflow: String,
-        key: String,
-    ): Boolean {
-        val workflowMap = map[workflow]
-        if (workflowMap is Map<*, *> && workflowMap.containsKey(key)) {
-            val value = workflowMap[key]
-            if (value is String) {
-                if (value.equals(Red, true) || value.equals(Yellow, true)) {
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
-    private fun checkMiscarrageStatus(
-        map: HashMap<String, Any>,
-        workflow: String,
-        key: String,
-    ): Boolean {
-        val workflowMap = map[workflow]
-        if (workflowMap is Map<*, *> && workflowMap.containsKey(key)) {
-            val value = workflowMap[key]
-            if (value is Boolean) {
-                return value
-            }
-        }
-        return false
-    }
-
-    private fun findSignListByWorkflow(
-        workflow: String,
-        map: HashMap<String, Any>,
-        signType: String,
-        referralReasonName: String,
-    ) {
-        val workflowMap = map[workflow]
-        if (workflowMap is Map<*, *> && workflowMap.containsKey(signType)) {
-            val ancList = workflowMap[signType]
-            if (ancList is ArrayList<*> && ancList.isNotEmpty()) {
-                if (!(ancList.any { (it as Map<*, *>)[DefinedParams.NAME] == NoSymptoms })) {
-                    addResultMap(referralReasonName, ReferralStatus.Referred.name)
-                    addReferralReason(referralReason, referralReasonName)
-                }
-            }
-        }
-    }
-
-    private fun formatDiarrhoeaSigns(map: HashMap<String, Any>) {
-        if (map.containsKey(DiarrhoeaSigns) && map[DiarrhoeaSigns] is List<*>) {
-            val signsList = mutableListOf<String>()
-            val list = map[DiarrhoeaSigns] as List<*>
-            list.forEach { it ->
-                if (it is HashMap<*, *>) {
-                    signsList.add(it["name"] as String)
-                }
-            }
-            map[DiarrhoeaSigns] = signsList
-        }
-    }
-
     fun calculateOtherSymptomsReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
         calculateSymptomsStatus(map, otherSymptoms, ReferralReasons.Symptoms.name, ReferralReasons.Symptoms.name.lowercase())
         calculateFeverStatus(map, ReferralReasons.Fever.name)
@@ -319,7 +218,7 @@ class ReferralResultGenerator {
                 (map[SleepLocation] is String && map[SleepLocation] != "")
             ) {
                 addResultMap("TB Symptoms", ReferralStatus.Referred.name)
-                addReferralReason(referralReason, "TB Symptoms")
+                addReferralReason("TB Symptoms")
             }
         }
         return Pair(checkStatus(), referralReason)
@@ -327,21 +226,8 @@ class ReferralResultGenerator {
 
     fun calculateCBSReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
         addResultMap(CBS_Referral, ReferralStatus.Referred.name)
-        addReferralReason(referralReason, CBS_Referral)
+        addReferralReason(CBS_Referral)
         return Pair(checkStatus(), referralReason)
-    }
-
-    private fun formatSignsAndSymptoms(map: HashMap<String, Any>) {
-        if (map.containsKey(otherSymptoms) && map[otherSymptoms] is List<*>) {
-            val signsList = mutableListOf<String>()
-            val list = map[otherSymptoms] as List<*>
-            list.forEach { it ->
-                if (it is HashMap<*, *>) {
-                    signsList.add(it["name"] as String)
-                }
-            }
-            map[otherSymptoms] = signsList
-        }
     }
 
     private fun addResultMap(
@@ -367,7 +253,6 @@ class ReferralResultGenerator {
                     ReferralStatus.Referred.name,
                 )
                 addReferralReason(
-                    referralReason,
                     ReferralReasons.aliasOf(ReferralReasons.GeneralDangerSigns),
                 )
                 break
@@ -385,7 +270,7 @@ class ReferralResultGenerator {
             val muacCodeValue = map[muacCode]
             if (muacCodeValue is String && (muacCodeValue.lowercase() == Red.lowercase() || muacCodeValue.lowercase() == Yellow.lowercase())) {
                 addResultMap(ReferralReasons.MUAC.name.lowercase(), ReferralStatus.Referred.name)
-                addReferralReason(referralReason, ReferralReasons.MUAC.name)
+                addReferralReason(ReferralReasons.MUAC.name)
             }
         }
         if (map.containsKey(hasOedemaOfBothFeet) &&
@@ -395,7 +280,7 @@ class ReferralResultGenerator {
             )
         ) {
             addResultMap(ReferralReasons.MUAC.name.lowercase(), ReferralStatus.Referred.name)
-            addReferralReason(referralReason, ReferralReasons.MUAC.name)
+            addReferralReason(ReferralReasons.MUAC.name)
         }
     }
 
@@ -425,7 +310,6 @@ class ReferralResultGenerator {
                                         getMedicationStatus(map, Amoxicillin),
                                     )
                                     addReferralReason(
-                                        referralReason,
                                         ReferralReasons.Pneumonia.name,
                                     )
                                     return
@@ -435,7 +319,6 @@ class ReferralResultGenerator {
                                         getMedicationStatus(map, Amoxicillin),
                                     )
                                     addReferralReason(
-                                        referralReason,
                                         ReferralReasons.Pneumonia.name,
                                     )
                                     return
@@ -453,7 +336,7 @@ class ReferralResultGenerator {
                             ReferralReasons.Pneumonia.name.lowercase(),
                             ReferralStatus.Referred.name,
                         )
-                        addReferralReason(referralReason, ReferralReasons.Cough.name)
+                        addReferralReason(ReferralReasons.Cough.name)
                         return
                     }
                 }
@@ -466,7 +349,7 @@ class ReferralResultGenerator {
                         ReferralReasons.Pneumonia.name.lowercase(),
                         ReferralStatus.Referred.name,
                     )
-                    addReferralReason(referralReason, ReferralReasons.Cough.name)
+                    addReferralReason(ReferralReasons.Cough.name)
                     return
                 }
             }
@@ -499,10 +382,10 @@ class ReferralResultGenerator {
                     } else {
                         if (map.containsKey(RdtTest) && map[RdtTest] == RdtPositive) {
                             addResultMap(referralKey.lowercase(), getMedicationStatus(map, ACT))
-                            addReferralReason(referralReason, ReferralReasons.Malaria.name)
+                            addReferralReason(ReferralReasons.Malaria.name)
                         } else if (map.containsKey(RdtTest) && (map[RdtTest] == RdtNegative || map[RdtTest] == NA)) {
                             addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
-                            addReferralReason(referralReason, referralKey)
+                            addReferralReason(referralKey)
                         }
                     }
                 }
@@ -515,9 +398,9 @@ class ReferralResultGenerator {
         referralKey: String,
     ) {
         if (map.containsKey(RdtTest) && map[RdtTest] == RdtPositive) {
-            addReferralReason(referralReason, ReferralReasons.Malaria.name)
+            addReferralReason(ReferralReasons.Malaria.name)
         } else {
-            addReferralReason(referralReason, referralKey)
+            addReferralReason(referralKey)
         }
     }
 
@@ -543,7 +426,7 @@ class ReferralResultGenerator {
                         ReferralReasons.Diarrhoea.name.lowercase(),
                         ReferralStatus.Referred.name,
                     )
-                    addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
+                    addReferralReason(ReferralReasons.Diarrhoea.name)
                 } else if (map.containsKey(NoOfDaysOfDiarrhoea) && map[NoOfDaysOfDiarrhoea] is Int) {
                     val noOfDays = map[NoOfDaysOfDiarrhoea] as Int
                     if (noOfDays >= MaxDaysOfDiarrhoea) {
@@ -551,7 +434,7 @@ class ReferralResultGenerator {
                             ReferralReasons.Diarrhoea.name.lowercase(),
                             ReferralStatus.Referred.name,
                         )
-                        addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
+                        addReferralReason(ReferralReasons.Diarrhoea.name)
                     } else {
                         if ((map.containsKey(DiarrhoeaSigns) && map[DiarrhoeaSigns] is ArrayList<*>) &&
                             (
@@ -566,7 +449,6 @@ class ReferralResultGenerator {
                             )
                             if (patientStatus.containsKey(Diarrhoea) && patientStatus[Diarrhoea] == ReferralStatus.Referred.name) {
                                 addReferralReason(
-                                    referralReason,
                                     ReferralReasons.Diarrhoea.name,
                                 )
                             }
@@ -582,7 +464,7 @@ class ReferralResultGenerator {
                                 ReferralReasons.Diarrhoea.name.lowercase(),
                                 ReferralStatus.Referred.name,
                             )
-                            addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
+                            addReferralReason(ReferralReasons.Diarrhoea.name)
                         } else if ((map.containsKey(OrsDispensedStatus) && map[OrsDispensedStatus] == Dispensed) &&
                             (
                                 map.containsKey(
@@ -595,7 +477,7 @@ class ReferralResultGenerator {
                                 ReferralReasons.Diarrhoea.name.lowercase(),
                                 ReferralStatus.OnTreatment.name,
                             )
-                            addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
+                            addReferralReason(ReferralReasons.Diarrhoea.name)
                         }
                     }
                 }
@@ -631,10 +513,7 @@ class ReferralResultGenerator {
         return status
     }
 
-    private fun addReferralReason(
-        referralReason: ArrayList<String>,
-        key: String,
-    ) {
+    private fun addReferralReason(key: String) {
         if (!referralReason.contains(key)) referralReason.add(key)
     }
 
@@ -678,7 +557,7 @@ class ReferralResultGenerator {
         }
         if (!selectedSignsList.contains(NoSymptoms.lowercase())) {
             addResultMap(referralKey, ReferralStatus.Referred.name)
-            addReferralReason(referralReason, referedReason)
+            addReferralReason(referedReason)
         }
     }
 
@@ -691,15 +570,9 @@ class ReferralResultGenerator {
         return null
     }
 
-    fun calculateFamilyPlanningStatus(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
-        addResultMap("Family Planning", ReferralStatus.Recovered.name)
-        addReferralReason(referralReason, "Family Planning Consult")
-        return Pair(checkStatus(), referralReason)
-    }
-
     fun calculatePregnancyOutcomeStatus(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
         addResultMap("Family Planning", ReferralStatus.Recovered.name)
-        addReferralReason(referralReason, "Family Planning Consult")
+        addReferralReason("Family Planning Consult")
         return Pair(checkStatus(), referralReason)
     }
 
@@ -716,7 +589,7 @@ class ReferralResultGenerator {
         calculateSymptomsStatus(map, symptomsDTO, Referred_NCD, NCD_MENU_ID)
         if ((!patientStatus.containsKey(NCD_MENU_ID)) && (diagnosedWithDiabetes || regularSmoker || alcoholConsumption || bmiReferral)) {
             addResultMap(NCD_MENU_ID, ReferralStatus.Referred.name)
-            addReferralReason(referralReason, Referred_NCD)
+            addReferralReason(Referred_NCD)
         }
         return Pair(checkStatus(), referralReason)
     }

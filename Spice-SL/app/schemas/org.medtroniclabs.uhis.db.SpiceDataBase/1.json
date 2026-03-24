@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "3536898fa6394e020da57be96dbe618b",
+    "identityHash": "adf3ccc8edb3d5fb2d41f81ae57919bc",
     "entities": [
       {
         "tableName": "Household",
@@ -494,7 +494,7 @@
       },
       {
         "tableName": "Assessment",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `householdMemberLocalId` INTEGER NOT NULL, `memberId` TEXT, `householdId` TEXT, `patientId` TEXT, `villageId` TEXT NOT NULL, `assessmentType` TEXT NOT NULL, `assessmentDetails` TEXT NOT NULL, `otherDetails` TEXT, `callResult` TEXT, `isReferred` INTEGER NOT NULL, `referralStatus` TEXT NOT NULL, `referredReason` TEXT, `followUpId` INTEGER, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `fhir_id` TEXT, `sync_status` TEXT NOT NULL, `created_by` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `created_at` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `householdMemberLocalId` INTEGER NOT NULL, `memberId` TEXT, `householdId` TEXT, `patientId` TEXT, `villageId` TEXT NOT NULL, `assessmentType` TEXT NOT NULL, `assessmentDetails` TEXT NOT NULL, `otherDetails` TEXT, `callResult` TEXT, `isReferred` INTEGER NOT NULL, `referralStatus` TEXT NOT NULL, `referredReason` TEXT, `followUpId` INTEGER, `status` TEXT, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `fhir_id` TEXT, `sync_status` TEXT NOT NULL, `created_by` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `created_at` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -578,6 +578,12 @@
             "fieldPath": "followUpId",
             "columnName": "followUpId",
             "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
             "notNull": false
           },
           {
@@ -3749,7 +3755,7 @@
       },
       {
         "tableName": "MemberAssessmentHistory",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `memberFhirId` TEXT, `memberId` INTEGER, `visitDate` TEXT NOT NULL, `serviceProvided` TEXT NOT NULL, `encounterId` TEXT, `currentStatus` TEXT, `latestVisit` INTEGER NOT NULL, `referralStatus` TEXT, `referralReason` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `memberFhirId` TEXT, `memberId` INTEGER, `visitDate` TEXT, `serviceProvided` TEXT, `encounterId` TEXT, `customStatus` TEXT, `latestVisit` INTEGER NOT NULL, `referralStatus` TEXT, `referralReason` TEXT, `nextFollowUpDate` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -3773,13 +3779,13 @@
             "fieldPath": "visitDate",
             "columnName": "visitDate",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "serviceProvided",
             "columnName": "serviceProvided",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "encounterId",
@@ -3788,8 +3794,8 @@
             "notNull": false
           },
           {
-            "fieldPath": "currentStatus",
-            "columnName": "currentStatus",
+            "fieldPath": "customStatus",
+            "columnName": "customStatus",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -3808,6 +3814,12 @@
           {
             "fieldPath": "referralReason",
             "columnName": "referralReason",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nextFollowUpDate",
+            "columnName": "nextFollowUpDate",
             "affinity": "TEXT",
             "notNull": false
           }
@@ -3853,7 +3865,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3536898fa6394e020da57be96dbe618b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'adf3ccc8edb3d5fb2d41f81ae57919bc')"
     ]
   }
 }

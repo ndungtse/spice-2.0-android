@@ -3,10 +3,8 @@ package org.medtroniclabs.uhis.db.entity
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import org.medtroniclabs.uhis.db.entity.EntitiesName.MEMBER_ASSESSMENT_HISTORY_ENTITY
-import org.medtroniclabs.uhis.di.JsonToStringDeserializer
 
 /**
  * Member assessment history entity to store history of assessments
@@ -21,16 +19,16 @@ import org.medtroniclabs.uhis.di.JsonToStringDeserializer
 )
 data class MemberAssessmentHistoryEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    var id: Long = 0,
     @SerializedName("householdMemberId")
     val memberFhirId: String? = null,
     val memberId: Long? = null,
-    val visitDate: String,
-    val serviceProvided: String,
+    val visitDate: String?,
+    val serviceProvided: String?,
     val encounterId: String? = null,
-    @JsonAdapter(JsonToStringDeserializer::class)
-    val currentStatus: String?,
+    val customStatus: ArrayList<String>? = null,
     val latestVisit: Boolean,
     val referralStatus: String?,
     val referralReason: String?,
+    var nextFollowUpDate: String? = null,
 )

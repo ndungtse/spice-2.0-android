@@ -1232,8 +1232,8 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun getMemberAssessmentHistory(
         memberFhirId: String?,
         memberId: Long?,
-        visitDate: String,
-        serviceProvided: String,
+        visitDate: String?,
+        serviceProvided: String?,
     ): MemberAssessmentHistoryEntity? = memberAssessmentHistoryDao.getAssessmentHistory(memberFhirId, memberId, visitDate, serviceProvided)
 
     override suspend fun insertMemberAssessmentHistory(historyList: List<MemberAssessmentHistoryEntity>) =
@@ -1250,4 +1250,10 @@ class RoomHelperImpl @Inject constructor(
             null
         }
     }
+
+    override suspend fun insertMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity) =
+        memberAssessmentHistoryDao.insertMemberAssessmentHistory(assessmentHistory)
+
+    override suspend fun updateMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity) =
+        memberAssessmentHistoryDao.updateAssessmentHistory(assessmentHistory)
 }

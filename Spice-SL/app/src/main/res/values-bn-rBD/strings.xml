@@ -1588,4 +1588,5 @@
     <string name="service_history_not_found">সেবার কোনো ইতিহাস নেই</string>
     <string name="service_name">সেবা</string>
     <string name="service_date">সেবার তারিখ</string>
+    <string name="referral_status">রেফারেলের অবস্থা</string>
 </resources>

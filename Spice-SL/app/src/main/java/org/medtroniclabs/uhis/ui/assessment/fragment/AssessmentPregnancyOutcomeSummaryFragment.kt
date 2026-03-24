@@ -530,7 +530,7 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
         if (mapData == null) return false
 
         // Check for abortion
-        val abortionMap = mapData["abortion"] as? Map<*, *>
+        val abortionMap = mapData[AssessmentDefinedParams.ID_ABORTION] as? Map<*, *>
         abortionMap?.let { abortion ->
             val gestationMonth = abortion[AssessmentDefinedParams.GESTATION_MONTH_AT_ABORTION]
             val typeOfAbortion = abortion[AssessmentDefinedParams.TYPE_OF_ABORTION]
@@ -542,7 +542,7 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
         }
 
         // Check for stillbirth
-        val deliveryOutcomes = mapData["deliveryOutcomes"] as? Map<*, *>
+        val deliveryOutcomes = mapData[AssessmentDefinedParams.ID_DELIVERY_OUTCOMES] as? Map<*, *>
         deliveryOutcomes?.let { delivery ->
             val stillbirthNumbers = delivery[AssessmentDefinedParams.STILLBIRTH_NUMBERS]
             val stillbirthCount = when (stillbirthNumbers) {

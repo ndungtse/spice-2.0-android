@@ -8,7 +8,6 @@ import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
-import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
 import org.medtroniclabs.uhis.databinding.FragmentAssessmentBinding
@@ -20,6 +19,7 @@ import org.medtroniclabs.uhis.formgeneration.ui.FormResultComposer
 import org.medtroniclabs.uhis.formgeneration.utility.InformationLayoutFragment
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseFragment
+import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.Contraceptive
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
@@ -134,7 +134,7 @@ class AssessmentFamilyPlanningFragment : BaseFragment(), FormEventListener, View
                 FormResultComposer().groupValues(
                     serverData = it,
                     details,
-                    DefinedParams.familyPlanning.lowercase(),
+                    MenuConstants.FP_MENU_ID.lowercase(),
                 )
             }
             result?.second?.let {

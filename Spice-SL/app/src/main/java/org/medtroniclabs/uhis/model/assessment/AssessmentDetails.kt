@@ -18,6 +18,7 @@ data class AssessmentDetails(
     val followUpId: Long? = null,
     val neonatePatientId: String? = null,
     val neonatePatientReferenceId: Long? = null,
+    val status: ArrayList<String>? = null,
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
 )

@@ -18,7 +18,6 @@ import org.medtroniclabs.uhis.common.DateUtils.formatGestationalAge
 import org.medtroniclabs.uhis.common.StringConverter
 import org.medtroniclabs.uhis.databinding.FragmentAssessmentPregnantWomenRegistrationSummaryBinding
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
-import org.medtroniclabs.uhis.mappingkey.MemberRegistration
 import org.medtroniclabs.uhis.mappingkey.PregnantWomen
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.MenuConstants
@@ -81,20 +80,11 @@ class AssessmentPregnantWomenRegistrationSummaryFragment : BaseFragment(), View.
         binding.parentLayout.visibility = View.VISIBLE
         binding.parentLayout.removeAllViews()
 
-        val mapData = convertedMap[MenuConstants.PREGNANT_WOMEN_PROFILE] as Map<*, *>
-        val mapFlatData = hashMapOf<String, Any?>()
-        mapFlatData[MemberRegistration.dateOfBirth] = viewModel.memberDetailsLiveData.value
-            ?.data
-            ?.dateOfBirth ?: ""
-        (mapData[PregnantWomen.ID_PREGNANCY_DETAILS_AND_HISTORY] as? Map<String, Any?>)?.let {
-            mapFlatData.putAll(it)
-        }
-        (mapData[PregnantWomen.ID_HEALTH_RISK_SCREENING] as? Map<String, Any?>)?.let {
-            mapFlatData.putAll(it)
-        }
+        val mapData = convertedMap[MenuConstants.PREGNANT_WOMEN_PROFILE] as Map<String, Any>
+        val pregnancyHistory = mapData[PregnantWomen.ID_PREGNANCY_DETAILS_AND_HISTORY] as Map<String, Any>
 
         // LMP
-        val lastMenstrualDateString = mapFlatData[PregnantWomen.ID_LMP] as String
+        val lastMenstrualDateString = pregnancyHistory[PregnantWomen.ID_LMP] as String
         val lastMenstrualDate =
             DateUtils.getLastMenstrualDate(lastMenstrualDateString)
         val lastMenstrualDateDisplayString = convertDateFormat(
@@ -136,7 +126,12 @@ class AssessmentPregnantWomenRegistrationSummaryFragment : BaseFragment(), View.
             )
 
             // Risk factors
-            val riskFactors = PregnantWomen.computeRiskFactors(mapFlatData)
+            val riskFactors = PregnantWomen.computeRiskFactors(
+                mapData,
+                viewModel.memberDetailsLiveData.value
+                    ?.data
+                    ?.dateOfBirth ?: "",
+            )
             if (riskFactors.isNotEmpty()) {
                 with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                     with(tvTitle) {

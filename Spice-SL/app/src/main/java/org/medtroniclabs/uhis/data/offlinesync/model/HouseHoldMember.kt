@@ -108,5 +108,7 @@ data class HouseHoldMember(
         ).apply {
             fhirId = this@HouseHoldMember.id.toString()
             sync_status = status
+            createdAt = this@HouseHoldMember.createdAt
+            updatedAt = this@HouseHoldMember.updatedAt
         }
 }

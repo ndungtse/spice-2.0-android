@@ -133,6 +133,7 @@ class OfflineSyncRepository @Inject constructor(
                     provenance = ProvanceDto(modifiedDate = entity.createdAt.convertToUtcDateTime()),
                     latitude = entity.latitude,
                     longitude = entity.longitude,
+                    customStatus = entity.status?.filter { it.isNotBlank() },
                     visitNumber = getVisitNumber(entity.assessmentType, assessmentDetail, entity.neonatePatientId, entity.neonatePatientReferenceId),
                     pregnancyEpisodeId = getPregnancyEpisodeId(entity),
                 ),

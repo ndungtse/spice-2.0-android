@@ -161,8 +161,8 @@ class AssessmentPregnancyOutcomeFragment :
             binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled(),
             callback = { resultMap, changedFieldId ->
-                if (changedFieldId == AssessmentDefinedParams.LIVE_BIRTH_NUMBERS) {
-                    val count = (resultMap[AssessmentDefinedParams.LIVE_BIRTH_NUMBERS] as? Number)?.toInt() ?: 0
+                if (changedFieldId == AssessmentDefinedParams.ID_LIVE_BIRTH_NUMBERS) {
+                    val count = (resultMap[AssessmentDefinedParams.ID_LIVE_BIRTH_NUMBERS] as? Number)?.toInt() ?: 0
                     updateBabySections(count)
                 }
                 if (changedFieldId == AssessmentDefinedParams.DATE_OF_DELIVERY) {

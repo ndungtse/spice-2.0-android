@@ -501,8 +501,6 @@ object AssessmentDefinedParams {
     const val UPAZILA_UPPER_LIMIT_SYSTOLIC = 160
     const val UPAZILA_UPPER_LIMIT_DIASTOLIC = 100
 
-    // Pregnancy Outcome Additional Field IDs
-    const val LIVE_BIRTH_NUMBERS = "liveBirthNumbers"
     const val COUNSELLING_ADVERSE_EVENT = "counsellingAdverseEvent"
 
     // Pregnancy Outcome Cause of Death Option IDs
@@ -541,4 +539,35 @@ object AssessmentDefinedParams {
 
     const val FP_METHOD_STERILIZATION_MALE = "sterilizationMale"
     const val FP_METHOD_STERILIZATION_FEMALE = "sterilizationFemale"
+
+    /**
+     * CardView : Abortion
+     */
+    const val ID_ABORTION = "abortion"
+
+    /**
+     * CardView : Delivery Outcomes
+     */
+    const val ID_DELIVERY_OUTCOMES = "deliveryOutcomes"
+
+    /**
+     * EditText : Live Birth
+     */
+    const val ID_LIVE_BIRTH_NUMBERS = "liveBirthNumbers"
+
+    /**
+     * EditText : Stillbirth Numbers
+     */
+    const val ID_STILL_BIRTH_NUMBERS = "stillbirthNumbers"
+
+    /**
+     * SingleSelectionView : Mode of Delivery
+     */
+    const val ID_MODE_OF_DELIVERY = "modeOfDelivery"
+
+    enum class ModeOfDelivery(val value: String) {
+        NORMAL_DELIVERY("normalDelivery"),
+        ASSISTED_DELIVERY("assistedDelivery"),
+        CESAREAN_SECTION("cesareanSection"),
+    }
 }

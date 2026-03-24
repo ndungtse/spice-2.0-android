@@ -1,6 +1,10 @@
 package org.medtroniclabs.uhis.ui.assessment.utils
 
+import android.content.Context
+import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.DateUtils
+import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+import org.medtroniclabs.uhis.common.DateUtils.DATE_ddMMyyyy
 import org.medtroniclabs.uhis.formgeneration.model.BPModel
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.AVG_BLOOD_PRESSURE
@@ -20,6 +24,7 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.NAME
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.NCD_SYMPTOMS
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.SYMPTOMS_LOG
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
+import org.medtroniclabs.uhis.ui.assessment.statuslogic.AssessmentStatus
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -127,4 +132,139 @@ object AssessmentUtil {
             RMNCH.ChildHoodVisit.lowercase() -> "Child Visit"
             else -> service.uppercase(Locale.ENGLISH)
         }
+
+    /**
+     * Returns referral status based on service
+     */
+    fun getReferralStatus(
+        context: Context,
+        service: String,
+        referralStatus: String?,
+    ): String =
+        when (service.lowercase()) {
+            RMNCH.ANC.lowercase(),
+            RMNCH.pnc_mother_key.lowercase(),
+            -> {
+                referralStatus?.uppercase(Locale.ENGLISH)
+            }
+
+            else -> context.getString(R.string.na)
+        } ?: run { context.getString(R.string.separator_double_hyphen) }
+
+    /**
+     * Returns display follow-up date based on service
+     */
+    fun getNextFollowUpDate(
+        context: Context,
+        service: String,
+        followUpDate: String?,
+    ): String =
+        when (service.lowercase()) {
+            RMNCH.ANC.lowercase(),
+            RMNCH.pnc_mother_key.lowercase(),
+            -> {
+                followUpDate?.let {
+                    DateUtils.convertDateFormat(
+                        it,
+                        DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        DATE_ddMMyyyy,
+                    )
+                }
+            }
+
+            else -> context.getString(R.string.na)
+        } ?: run { context.getString(R.string.separator_double_hyphen) }
+
+    /**
+     * Maps corresponding status to display value
+     */
+    fun mapAssessmentStatus(status: String): String {
+        val assessmentStatus = try {
+            AssessmentStatus.valueOf(status)
+        } catch (_: Exception) {
+            AssessmentStatus.DEFAULT
+        }
+        return when (assessmentStatus) {
+            AssessmentStatus.NORMAL_PREGNANCY -> {
+                "Normal Pregnancy"
+            }
+
+            AssessmentStatus.HIGH_RISK_PW -> {
+                "High Risk PW"
+            }
+
+            AssessmentStatus.USING_MODERN_FP -> {
+                "Using modern family planning methods"
+            }
+
+            AssessmentStatus.NOT_USING_MODERN_FP -> {
+                "Not using modern family planning methods"
+            }
+
+            AssessmentStatus.GAPS_IN_ANC -> {
+                "Gaps IN ANC"
+            }
+
+            AssessmentStatus.C_SECTION -> {
+                "C-Section"
+            }
+
+            AssessmentStatus.ASSISTED_DELIVERY -> {
+                "Assisted Delivery"
+            }
+
+            AssessmentStatus.NORMAL_DELIVERY -> {
+                "Normal Delivery"
+            }
+
+            AssessmentStatus.NEONATAL_DEATH -> {
+                "Neonatal Death"
+            }
+
+            AssessmentStatus.ABORTION -> {
+                "Abortion"
+            }
+
+            AssessmentStatus.STILL_BIRTH -> {
+                "Still Birth"
+            }
+
+            AssessmentStatus.LIVE_BIRTH -> {
+                "Live Birth"
+            }
+
+            AssessmentStatus.HIGH_RISK_PNC -> {
+                "High Risk PNC"
+            }
+
+            AssessmentStatus.NORMAL_PNC -> {
+                "Normal PNC"
+            }
+
+            AssessmentStatus.GAPS_IN_PNC -> {
+                "Gaps IN PNC"
+            }
+
+            AssessmentStatus.DEFAULT -> {
+                status.uppercase(Locale.ENGLISH)
+            }
+        }
+    }
+
+    /**
+     * Returns newborn details from the map as list
+     */
+    fun findNewbornDetailsFromMap(map: Map<String, Any?>): List<*>? {
+        val directList = map["newbornDetails"]
+        if (directList is List<*>) return directList
+
+        for (entry in map.entries) {
+            if (entry.value is Map<*, *>) {
+                val nestedMap = entry.value as Map<*, *>
+                val nestedList = nestedMap["newbornDetails"]
+                if (nestedList is List<*>) return nestedList
+            }
+        }
+        return null
+    }
 }

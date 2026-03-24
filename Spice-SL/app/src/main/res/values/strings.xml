@@ -1668,4 +1668,5 @@
     <string name="service_history_not_found">There are no service history</string>
     <string name="service_name">Service Name</string>
     <string name="service_date">Service Date</string>
+    <string name="referral_status">Referral Status</string>
 </resources>

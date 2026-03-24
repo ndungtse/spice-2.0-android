@@ -1118,4 +1118,21 @@ object DateUtils {
             null
         }
     }
+
+    fun formatDate(date: Long): String? {
+        return try {
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = date
+            return SimpleDateFormat(
+                DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                Locale.ENGLISH,
+            ).apply {
+                getUTCFormat()?.let {
+                    timeZone = it
+                }
+            }.format(calendar.time)
+        } catch (_: Exception) {
+            null
+        }
+    }
 }

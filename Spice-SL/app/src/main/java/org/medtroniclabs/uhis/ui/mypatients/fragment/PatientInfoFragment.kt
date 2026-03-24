@@ -29,8 +29,6 @@ import org.medtroniclabs.uhis.common.DefinedParams.MaritalStatus
 import org.medtroniclabs.uhis.common.DefinedParams.Occupation
 import org.medtroniclabs.uhis.common.DefinedParams.OtherNotes
 import org.medtroniclabs.uhis.common.DefinedParams.TB
-import org.medtroniclabs.uhis.common.DefinedParams.entryPoint
-import org.medtroniclabs.uhis.common.DefinedParams.familyPlanning
 import org.medtroniclabs.uhis.common.DefinedParams.isFamilyPlanSummary
 import org.medtroniclabs.uhis.common.StringConverter
 import org.medtroniclabs.uhis.data.offlinesync.model.ProvanceDto
@@ -45,6 +43,7 @@ import org.medtroniclabs.uhis.ncd.medicalreview.dialog.NCDPatientHistoryDialog
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.BaseFragment
+import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ANC
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PNC
 import org.medtroniclabs.uhis.ui.common.GeneralInfoDialog
@@ -86,7 +85,7 @@ class PatientInfoFragment : BaseFragment() {
             bundle.putBoolean(TB, isTb)
             bundle.putBoolean(HIV_IMR_CMR, isHivImrCmr)
             bundle.putBoolean(IsReferredScreen, isReferredScreen)
-            bundle.putBoolean(familyPlanning, isFamilyPlan)
+            bundle.putBoolean(MenuConstants.FP_MENU_ID, isFamilyPlan)
             bundle.putBoolean(isFamilyPlanSummary, isFPSummary)
             fragment.arguments = bundle
             return fragment
@@ -230,7 +229,7 @@ class PatientInfoFragment : BaseFragment() {
 
     private fun isReferredScreen(): Boolean? = arguments?.getBoolean(IsReferredScreen, false)
 
-    private fun isFamilyPlan(): Boolean? = arguments?.getBoolean(familyPlanning, false)
+    private fun isFamilyPlan(): Boolean? = arguments?.getBoolean(MenuConstants.FP_MENU_ID, false)
 
     private fun isFamilyPlanSummary(): Boolean? = arguments?.getBoolean(isFamilyPlanSummary, false)
 

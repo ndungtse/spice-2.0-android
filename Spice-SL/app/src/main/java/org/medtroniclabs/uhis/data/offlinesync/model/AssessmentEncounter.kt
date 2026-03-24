@@ -13,6 +13,7 @@ data class AssessmentEncounter(
     val visitNumber: Long? = null,
     val neonatePatientId: String? = null,
     val pregnancyEpisodeId: String? = null,
+    val customStatus: List<String>? = null,
     val startTime: String = System.currentTimeMillis().convertToUtcDateTime(),
     val endTime: String = System.currentTimeMillis().convertToUtcDateTime(),
 )

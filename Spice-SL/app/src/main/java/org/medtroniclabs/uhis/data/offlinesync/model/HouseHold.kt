@@ -77,6 +77,8 @@ data class HouseHold(
         ).apply {
             fhirId = this@HouseHold.id.toString()
             sync_status = status
+            createdAt = this@HouseHold.createdAt
+            updatedAt = this@HouseHold.updatedAt
         }
 
     private fun toRegularCase(sentence: String?): String =

@@ -1,5 +1,6 @@
 package org.medtroniclabs.uhis.mappingkey
 
+import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DefinedParams
 
@@ -99,10 +100,14 @@ object PregnantWomen {
      * like age related risks, short term births, multi para
      * and medical conditions and complications
      */
-    fun computeRiskFactors(input: Map<String, Any?>): List<String> {
+    fun computeRiskFactors(
+        input: Map<String, Any?>,
+        dateOfBirth: String,
+    ): List<String> {
+        val pregnancyHistory = input[ID_PREGNANCY_DETAILS_AND_HISTORY] as Map<String, Any>
+        val riskScreening = input[ID_HEALTH_RISK_SCREENING] as? Map<String, Any>
         val riskFactors = arrayListOf<String>()
-        val lastMenstrualDateString = input[ID_LMP] as String
-        val dateOfBirth = input[MemberRegistration.dateOfBirth] as String
+        val lastMenstrualDateString = pregnancyHistory[ID_LMP] as String
         val calculatedAge = DateUtils.calculateAgeToDate(dateOfBirth, lastMenstrualDateString)
         // Age related risk factors
         if (calculatedAge < 18) {
@@ -110,42 +115,42 @@ object PregnantWomen {
         } else if (calculatedAge > 35) {
             riskFactors.add("Age >35 years")
         }
-        val livingChildren = (input[ID_LIVING_CHILDREN] as? Double) ?: 0.0
+        val livingChildren = CommonUtils.getDouble(pregnancyHistory[ID_LIVING_CHILDREN])
         if (livingChildren >= 1) {
-            val ageOfLastChild = input[ID_AGE_OF_LAST_CHILD] as String
+            val ageOfLastChild = pregnancyHistory[ID_AGE_OF_LAST_CHILD] as String
             val calculatedAgeOfLastChild = DateUtils.calculateAge(ageOfLastChild)
             // Short term birth
             if (calculatedAgeOfLastChild < 2) {
                 riskFactors.add("Short birth spacing <2 year")
             }
         }
-        val parity = (input[ID_PARITY] as? Double) ?: 0.0
+        val parity = CommonUtils.getDouble(pregnancyHistory[ID_PARITY])
         // Multi para
         if (parity > 3) {
             riskFactors.add("Multipara >3")
         }
         val obstetricComplications = mutableListOf<String>()
-        (input[ID_OBSTETRIC_COMPLICATIONS] as? List<Map<String, Any>>)?.let {
+        (riskScreening?.get(ID_OBSTETRIC_COMPLICATIONS) as? List<Map<String, Any>>)?.let {
             it.forEach { complicationMap ->
                 obstetricComplications.add(complicationMap[DefinedParams.Value] as String)
             }
-        } ?: (input[ID_OBSTETRIC_COMPLICATIONS] as? List<String>)?.let {
+        } ?: (riskScreening?.get(ID_OBSTETRIC_COMPLICATIONS) as? List<String>)?.let {
             obstetricComplications.addAll(it)
         }
         val medicalComplications = mutableListOf<String>()
-        (input[ID_MEDICAL_COMPLICATIONS] as? List<Map<String, Any>>)?.let {
+        (riskScreening?.get(ID_MEDICAL_COMPLICATIONS) as? List<Map<String, Any>>)?.let {
             it.forEach { complicationMap ->
                 medicalComplications.add(complicationMap[DefinedParams.Value] as String)
             }
-        } ?: (input[ID_MEDICAL_COMPLICATIONS] as? List<String>)?.let {
+        } ?: (riskScreening?.get(ID_MEDICAL_COMPLICATIONS) as? List<String>)?.let {
             medicalComplications.addAll(it)
         }
         val medicalConditions = mutableListOf<String>()
-        (input[ID_CURRENT_MEDICAL_CONDITIONS] as? List<Map<String, Any>>)?.let {
+        (riskScreening?.get(ID_CURRENT_MEDICAL_CONDITIONS) as? List<Map<String, Any>>)?.let {
             it.forEach { conditionsMap ->
                 medicalConditions.add(conditionsMap[DefinedParams.Value] as String)
             }
-        } ?: (input[ID_CURRENT_MEDICAL_CONDITIONS] as? List<String>)?.let {
+        } ?: (riskScreening?.get(ID_CURRENT_MEDICAL_CONDITIONS) as? List<String>)?.let {
             medicalConditions.addAll(it)
         }
         if (obstetricComplications.contains("previousCSection")) {

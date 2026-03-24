@@ -872,8 +872,8 @@ interface RoomHelper {
     suspend fun getMemberAssessmentHistory(
         memberFhirId: String?,
         memberId: Long?,
-        visitDate: String,
-        serviceProvided: String,
+        visitDate: String?,
+        serviceProvided: String?,
     ): MemberAssessmentHistoryEntity?
 
     suspend fun insertMemberAssessmentHistory(historyList: List<MemberAssessmentHistoryEntity>)
@@ -881,4 +881,8 @@ interface RoomHelper {
     suspend fun deleteAllMemberAssessmentHistory()
 
     suspend fun getMemberWithAssessmentHistory(memberId: Long): MemberAssessmentHistoryResponse?
+
+    suspend fun insertMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity): Long
+
+    suspend fun updateMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity)
 }

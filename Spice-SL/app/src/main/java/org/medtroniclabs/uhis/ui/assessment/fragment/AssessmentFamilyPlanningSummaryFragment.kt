@@ -14,6 +14,7 @@ import org.medtroniclabs.uhis.common.StringConverter
 import org.medtroniclabs.uhis.databinding.FragmentAssessmentFamilyPlanningSummaryBinding
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.ui.BaseFragment
+import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
@@ -69,7 +70,7 @@ class AssessmentFamilyPlanningSummaryFragment : BaseFragment(), View.OnClickList
             showErrorInSummary()
         } else {
             binding.emptyErrorMessage.gone()
-            val fpMap = convertedMap[DefinedParams.familyPlanning.lowercase()] as Map<*, *>
+            val fpMap = convertedMap[MenuConstants.FP_MENU_ID.lowercase()] as Map<*, *>
             val assessmentMap = fpMap[AssessmentDefinedParams.FamilyPlanningDetails] as Map<*, *>
             val noOfChildren = CommonUtils.getInteger(assessmentMap[AssessmentDefinedParams.NumberOfLivingChildren])
             val desireForChildren = assessmentMap[AssessmentDefinedParams.DesireForChildrenInFuture] as? String
