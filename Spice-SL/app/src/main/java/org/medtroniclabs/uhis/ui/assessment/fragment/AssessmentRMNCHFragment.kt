@@ -1457,7 +1457,8 @@ class AssessmentRMNCHFragment :
     ): Pair<String?, String?>? {
         // Check if there's existing HTN illness first
         val hasHTN = RMNCHAssessmentEvaluator.hasExistingHTNIllness(resultMap)
-        val systolic = (value as? String)?.toDouble() ?: return null
+        val systolic = CommonUtils.getDoubleOrNull(value) ?: return null
+        if (systolic == 0.0) return null
         if (hasHTN) {
             return Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         }
@@ -1479,7 +1480,8 @@ class AssessmentRMNCHFragment :
         resultMap: HashMap<String, Any>,
     ): Pair<String?, String?>? {
         // Check if there's existing HTN illness first
-        val diastolic = (value as? String)?.toDouble() ?: return null
+        val diastolic = CommonUtils.getDoubleOrNull(value) ?: return null
+        if (diastolic == 0.0) return null
         val hasHTN = RMNCHAssessmentEvaluator.hasExistingHTNIllness(resultMap)
         if (hasHTN) {
             return Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
@@ -1532,6 +1534,7 @@ class AssessmentRMNCHFragment :
      */
     private fun evaluateTemperatureStatus(value: Any?): Pair<String?, String?>? {
         val temp = (value as? Number)?.toDouble() ?: return null
+        if (temp == 0.0) return null
 
         return when {
             temp >= AssessmentDefinedParams.TEMP_HIGH_FEVER_THRESHOLD -> Pair(AssessmentDefinedParams.STATUS_HIGH_FEVER, null)
@@ -1549,6 +1552,7 @@ class AssessmentRMNCHFragment :
      */
     private fun evaluatePulseStatus(value: Any?): Pair<String?, String?>? {
         val pulse = (value as? Number)?.toDouble() ?: return null
+        if (pulse == 0.0) return null
 
         return if (pulse > AssessmentDefinedParams.PULSE_HIGH_THRESHOLD || pulse < AssessmentDefinedParams.PULSE_LOW_THRESHOLD) {
             Pair(AssessmentDefinedParams.STATUS_ABNORMAL, null)
@@ -1562,6 +1566,7 @@ class AssessmentRMNCHFragment :
      */
     private fun evaluateFundalHeightStatus(value: Any?): Pair<String?, String?>? {
         val fundalHeight = (value as? Number)?.toDouble() ?: return null
+        if (fundalHeight == 0.0) return null
         val gestationalAgeWeeks = calculateGestationalAgeInWeeks() ?: return null
 
         // Expected fundal height = gestational age in weeks ± 2 cm
@@ -1580,6 +1585,7 @@ class AssessmentRMNCHFragment :
      */
     private fun evaluateHemoglobinStatus(value: Any?): Pair<String?, String?>? {
         val hb = (value as? Number)?.toDouble() ?: return null
+        if (hb == 0.0) return null
 
         return when {
             hb < AssessmentDefinedParams.HEMOGLOBIN_SEVERE_ANEMIA_THRESHOLD -> Pair(AssessmentDefinedParams.STATUS_SEVERE_ANEMIA, null)
@@ -1733,7 +1739,8 @@ class AssessmentRMNCHFragment :
     ): Pair<String?, String?>? {
         // Check if there's existing DM illness first
         val hasDM = RMNCHAssessmentEvaluator.hasExistingDMIllness(resultMap)
-        val fastingValue = value as? Double
+        val fastingValue = (value as? Number)?.toDouble()
+        if (fastingValue == null || fastingValue == 0.0) return null
         if (fastingValue != null && hasDM) {
             return Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         }
@@ -1755,7 +1762,8 @@ class AssessmentRMNCHFragment :
     ): Pair<String?, String?>? {
         // Check if there's existing DM illness first
         val hasDM = RMNCHAssessmentEvaluator.hasExistingDMIllness(resultMap)
-        val randomValue = value as? Double
+        val randomValue = (value as? Number)?.toDouble()
+        if (randomValue == null || randomValue == 0.0) return null
         if (randomValue != null && hasDM) {
             return Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         }

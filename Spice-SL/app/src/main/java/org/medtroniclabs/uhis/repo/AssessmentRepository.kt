@@ -26,10 +26,12 @@ import org.medtroniclabs.uhis.model.assessment.AssessmentMemberDetails
 import org.medtroniclabs.uhis.network.ApiHelper
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.network.resource.ResourceState
+import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.TBContactTracing
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.TBScreening
 import org.medtroniclabs.uhis.ui.assessment.AssessmentNCDEntity
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import java.util.Locale
 import javax.inject.Inject
@@ -155,8 +157,12 @@ class AssessmentRepository @Inject constructor(
     ): Resource<FormResponse> =
         try {
             val response =
-                if (formType == AssessmentDefinedParams.Family_Planning) {
-                    CommonUtils.getStringFromAssets("family_planning_form.json", context.assets)
+                if (formType == MenuConstants.FP_MENU_ID) {
+                    CommonUtils.getStringFromAssets(AssessmentDefinedParams.FAMILY_PLANNING_FORM+".json", context.assets)
+                } else if (formType == MenuConstants.PREGNANT_WOMEN_PROFILE) {
+                    CommonUtils.getStringFromAssets(AssessmentDefinedParams.PREGNANT_WOMEN_PROFILE_FORM+".json", context.assets)
+                } else if (formType == RMNCH.ANC) {
+                    CommonUtils.getStringFromAssets(AssessmentDefinedParams.RMNCH_ANC_FORM+".json", context.assets)
                 } else {
                     roomHelper.getFormData(formType)
                 }

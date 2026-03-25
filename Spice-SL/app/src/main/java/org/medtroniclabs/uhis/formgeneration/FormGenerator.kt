@@ -2093,9 +2093,6 @@ class FormGenerator(
 
             if (isMandatory) {
                 binding.tvTitle.markMandatory()
-                binding.tvYear.markMandatory()
-                binding.tvMonths.markMandatory()
-                binding.tvDays.markMandatory()
                 if (!hideDob) {
                     binding.tvDateOfBirth.markMandatory()
                 }

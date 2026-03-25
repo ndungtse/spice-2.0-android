@@ -570,4 +570,9 @@ object AssessmentDefinedParams {
         ASSISTED_DELIVERY("assistedDelivery"),
         CESAREAN_SECTION("cesareanSection"),
     }
+
+    const val FAMILY_PLANNING_FORM = "family_planning_form"
+    const val PREGNANT_WOMEN_PROFILE = "pwProfile"
+    const val PREGNANT_WOMEN_PROFILE_FORM = "pregnancy_woman_profile"
+    const val RMNCH_ANC_FORM = "rmnch_anc_visit"
 }

@@ -9,6 +9,7 @@
         },
         {
             "disableFutureDate": true,
+            "minDays": 294,
             "errorMessage": "This field is required",
             "family": "pregnancyDetailsAndHistory",
             "hint": "DD-MM-YYYY",
@@ -208,7 +209,7 @@
             "family": "pregnancyDetailsAndHistory",
             "id": "ageOfLastChild",
             "isEnabled": true,
-            "isMandatory": false,
+            "isMandatory": true,
             "orderId": 11,
             "hideDob": true,
             "title": "Age of last child",
