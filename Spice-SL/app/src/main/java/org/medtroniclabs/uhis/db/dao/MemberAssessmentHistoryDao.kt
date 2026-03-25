@@ -6,6 +6,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
+import org.medtroniclabs.uhis.db.response.DashboardCountsRow
+import org.medtroniclabs.uhis.db.response.MaternalDashboardCountsRow
 
 @Dao
 interface MemberAssessmentHistoryDao {
@@ -28,4 +30,122 @@ interface MemberAssessmentHistoryDao {
 
     @Query("DELETE FROM memberassessmenthistory")
     suspend fun deleteMemberAssessmentHistory()
+
+    @Query(
+        """
+        SELECT
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('screened') THEN 1 ELSE 0 END) AS screened,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('referred','referral') THEN 1 ELSE 0 END) AS referred,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('registration','pwprofile') THEN 1 ELSE 0 END) AS registered,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('assessment','generalassessment','followupassessment','anc','pncmother','pncchild','childvisit','tb') THEN 1 ELSE 0 END) AS assessed,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('dispensed','pharmacydispense') THEN 1 ELSE 0 END) AS dispensed,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('investigation','labinvestigation','labtest') THEN 1 ELSE 0 END) AS investigated,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('lifestylereview','nutritionistlifestyle','lifestylecounselling') THEN 1 ELSE 0 END) AS nutritionistLifestyleCount,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('psychologicalcounselling','psychologicalnotes') THEN 1 ELSE 0 END) AS psychologicalNotesCount,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('family_planning','familyplanning') THEN 1 ELSE 0 END) AS familyPlanningCount,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('pwprofile') THEN 1 ELSE 0 END) AS pregnantWomenRegistrationCount,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('pregnancyoutcome') THEN 1 ELSE 0 END) AS pregnancyOutcomeCount,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('anc') THEN 1 ELSE 0 END) AS ancCount,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('pncmother','pnc', 'pnc_mother') THEN 1 ELSE 0 END) AS pncCount,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('pncchild','childvisit', 'childhood_visit') THEN 1 ELSE 0 END) AS childVisitCount,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('tb') THEN 1 ELSE 0 END) AS tbAssessmentCount,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('tbcontacttracing') THEN 1 ELSE 0 END) AS tbContactTracingCount,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('eye_care','eyecare') THEN 1 ELSE 0 END) AS eyeCareCount,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('cataract') THEN 1 ELSE 0 END) AS cataractCount,
+            SUM(CASE WHEN LOWER(h.serviceProvided) IN ('household_registration','householdregistration') THEN 1 ELSE 0 END) AS householdRegisteredCount,
+            0 AS pwIdentifiedFirst4MonthsWithAncCount,
+            0 AS anc3PlusCount,
+            0 AS highRiskPregnantWomenCount
+        FROM memberassessmenthistory AS h
+        LEFT JOIN householdmember AS hm ON hm.id = h.memberId
+        LEFT JOIN household AS hh ON hh.id = hm.household_id
+        WHERE (:startDate IS NULL OR substr(h.visitDate,1,10) >= :startDate)
+          AND (:endDate IS NULL OR substr(h.visitDate,1,10) <= :endDate)
+          AND (:ssIdsSize = 0 OR COALESCE(hm.shasthya_shebika_id, hh.shasthya_shebika_id) IN (:ssIds))
+          AND (:subVillageIdsSize = 0 OR COALESCE(hm.sub_village_id, hh.sub_village_id) IN (:subVillageIds))
+        """,
+    )
+    suspend fun getDashboardCounts(
+        startDate: String?,
+        endDate: String?,
+        ssIds: List<Long>,
+        ssIdsSize: Int,
+        subVillageIds: List<Long>,
+        subVillageIdsSize: Int,
+    ): DashboardCountsRow?
+
+    @Query(
+        """
+        WITH latest_pregnancy AS (
+            SELECT pd.*
+            FROM PregnancyDetail AS pd
+            INNER JOIN (
+                SELECT householdMemberLocalId, MAX(id) AS maxId
+                FROM PregnancyDetail
+                GROUP BY householdMemberLocalId
+            ) AS latest
+                ON latest.householdMemberLocalId = pd.householdMemberLocalId
+               AND latest.maxId = pd.id
+        ),
+        filtered_members AS (
+            SELECT
+                hm.id AS memberId,
+                COALESCE(hm.shasthya_shebika_id, hh.shasthya_shebika_id) AS ssId,
+                COALESCE(hm.sub_village_id, hh.sub_village_id) AS subVillageId
+            FROM HouseholdMember AS hm
+            LEFT JOIN Household AS hh ON hh.id = hm.household_id
+        )
+        SELECT
+            SUM(
+                CASE
+                    WHEN EXISTS (
+                        SELECT 1
+                        FROM MemberAssessmentHistory AS h
+                        WHERE h.memberId = lp.householdMemberLocalId
+                          AND LOWER(h.serviceProvided) = 'anc'
+                          AND (:startDate IS NULL OR substr(h.visitDate, 1, 10) >= :startDate)
+                          AND (:endDate IS NULL OR substr(h.visitDate, 1, 10) <= :endDate)
+                          AND substr(h.visitDate, 1, 10) >= substr(lp.lastMenstrualPeriod, 1, 10)
+                          AND substr(h.visitDate, 1, 10) <= date(substr(lp.lastMenstrualPeriod, 1, 10), '+4 months')
+                    )
+                    THEN 1 ELSE 0
+                END
+            ) AS pwIdentifiedFirst4MonthsWithAncCount,
+            SUM(
+                CASE
+                    WHEN (
+                        SELECT COUNT(1)
+                        FROM MemberAssessmentHistory AS h
+                        WHERE h.memberId = lp.householdMemberLocalId
+                          AND LOWER(h.serviceProvided) = 'anc'
+                          AND (:startDate IS NULL OR substr(h.visitDate, 1, 10) >= :startDate)
+                          AND (:endDate IS NULL OR substr(h.visitDate, 1, 10) <= :endDate)
+                    ) >= 3
+                    THEN 1 ELSE 0
+                END
+            ) AS anc3PlusCount,
+            SUM(
+                CASE
+                    WHEN (lp.highRiskPregnantWoman IS NOT NULL AND lp.highRiskPregnantWoman != '')
+                    THEN 1 ELSE 0
+                END
+            ) AS highRiskPregnantWomenCount
+        FROM latest_pregnancy AS lp
+        INNER JOIN filtered_members AS fm ON fm.memberId = lp.householdMemberLocalId
+        WHERE (lp.dateOfDelivery IS NULL OR lp.dateOfDelivery = '')
+          AND (lp.lastMenstrualPeriod IS NOT NULL AND lp.lastMenstrualPeriod != '')
+          AND (lp.estimatedDeliveryDate IS NULL OR substr(lp.estimatedDeliveryDate, 1, 10) >= date('now', '-45 days'))
+          AND (:ssIdsSize = 0 OR fm.ssId IN (:ssIds))
+          AND (:subVillageIdsSize = 0 OR fm.subVillageId IN (:subVillageIds))
+        """,
+    )
+    suspend fun getMaternalDashboardCounts(
+        startDate: String?,
+        endDate: String?,
+        ssIds: List<Long>,
+        ssIdsSize: Int,
+        subVillageIds: List<Long>,
+        subVillageIdsSize: Int,
+    ): MaternalDashboardCountsRow?
+
 }

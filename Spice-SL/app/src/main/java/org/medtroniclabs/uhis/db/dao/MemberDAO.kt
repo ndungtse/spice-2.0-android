@@ -287,8 +287,10 @@ interface MemberDAO {
         val args = mutableListOf<Any>()
         val conditions = mutableListOf<String>()
 
-        // Check if this is external member filter
-        val isExternalMember = staticFilter == ServiceStaticFilter.EXTERNAL_MEMBERS
+        // Check if this is an external-members scoped filter
+        val isExternalMember =
+            staticFilter == ServiceStaticFilter.EXTERNAL_MEMBERS ||
+                staticFilter == ServiceStaticFilter.EXTERNAL_PREGNANT_WOMEN
 
         if (searchInput.isNotBlank()) {
             conditions += "(hhm.name LIKE ? OR hhm.phone_number LIKE ?)"
@@ -438,6 +440,26 @@ interface MemberDAO {
 
             ServiceStaticFilter.EXTERNAL_MEMBERS -> {
                 conditions += "hhm.household_id IS NULL"
+            }
+
+            ServiceStaticFilter.EXTERNAL_PREGNANT_WOMEN -> {
+                conditions += "hhm.household_id IS NULL"
+                conditions += "hhm.isActive = 1"
+                conditions +=
+                    """
+                    EXISTS (
+                        SELECT 1 FROM (
+                            SELECT pd.dateOfDelivery, pd.lastMenstrualPeriod, pd.estimatedDeliveryDate
+                            FROM PregnancyDetail AS pd
+                            WHERE pd.householdMemberLocalId = hhm.id
+                            ORDER BY pd.id DESC
+                            LIMIT 1
+                        ) AS latest_pregnancy
+                        WHERE (latest_pregnancy.dateOfDelivery IS NULL OR latest_pregnancy.dateOfDelivery = '')
+                        AND (latest_pregnancy.lastMenstrualPeriod IS NOT NULL AND latest_pregnancy.lastMenstrualPeriod != '')
+                        AND (latest_pregnancy.estimatedDeliveryDate IS NULL OR substr(latest_pregnancy.estimatedDeliveryDate, 1, 10) >= date('now', '-45 days'))
+                    )
+                    """.trimIndent()
             }
 
             else -> {}

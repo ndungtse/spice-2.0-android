@@ -69,6 +69,7 @@ import org.medtroniclabs.uhis.db.entity.TreatmentDetailsEntity
 import org.medtroniclabs.uhis.db.entity.TreatmentPlanEntity
 import org.medtroniclabs.uhis.db.entity.UserProfileEntity
 import org.medtroniclabs.uhis.db.entity.VillageEntity
+import org.medtroniclabs.uhis.db.response.DashboardCountsRow
 import org.medtroniclabs.uhis.db.response.HouseHoldEntityWithLastActivity
 import org.medtroniclabs.uhis.db.response.HouseholdMemberCount
 import org.medtroniclabs.uhis.db.response.MemberAssessmentHistoryResponse
@@ -882,6 +883,12 @@ interface RoomHelper {
 
     suspend fun getMemberWithAssessmentHistory(memberId: Long): MemberAssessmentHistoryResponse?
 
+    suspend fun getDashboardCounts(
+        startDate: String?,
+        endDate: String?,
+        ssIds: List<Long>,
+        subVillageIds: List<Long>,
+    ): DashboardCountsRow?
     suspend fun insertMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity): Long
 
     suspend fun updateMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity)

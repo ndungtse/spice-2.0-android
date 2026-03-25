@@ -101,6 +101,7 @@ import org.medtroniclabs.uhis.db.entity.TreatmentDetailsEntity
 import org.medtroniclabs.uhis.db.entity.TreatmentPlanEntity
 import org.medtroniclabs.uhis.db.entity.UserProfileEntity
 import org.medtroniclabs.uhis.db.entity.VillageEntity
+import org.medtroniclabs.uhis.db.response.DashboardCountsRow
 import org.medtroniclabs.uhis.db.response.HouseHoldEntityWithLastActivity
 import org.medtroniclabs.uhis.db.response.HouseholdMemberCount
 import org.medtroniclabs.uhis.db.response.MemberAssessmentHistoryResponse
@@ -1251,6 +1252,70 @@ class RoomHelperImpl @Inject constructor(
         }
     }
 
+    override suspend fun getDashboardCounts(
+        startDate: String?,
+        endDate: String?,
+        ssIds: List<Long>,
+        subVillageIds: List<Long>,
+    ): org.medtroniclabs.uhis.db.response.DashboardCountsRow? {
+        val base = memberAssessmentHistoryDao.getDashboardCounts(
+            startDate,
+            endDate,
+            ssIds,
+            ssIds.size,
+            subVillageIds,
+            subVillageIds.size,
+        )
+        val hhCount = householdDAO.getHouseholdRegisteredCount(
+            startDate,
+            endDate,
+            ssIds,
+            ssIds.size,
+            subVillageIds,
+            subVillageIds.size,
+        ) ?: 0
+        val maternal = memberAssessmentHistoryDao.getMaternalDashboardCounts(
+            startDate,
+            endDate,
+            ssIds,
+            ssIds.size,
+            subVillageIds,
+            subVillageIds.size,
+        )
+        return if (base != null) {
+            base.copy(
+                householdRegisteredCount = hhCount,
+                pwIdentifiedFirst4MonthsWithAncCount = maternal?.pwIdentifiedFirst4MonthsWithAncCount ?: 0,
+                anc3PlusCount = maternal?.anc3PlusCount ?: 0,
+                highRiskPregnantWomenCount = maternal?.highRiskPregnantWomenCount ?: 0,
+            )
+        } else {
+            DashboardCountsRow(
+                screened = 0,
+                referred = 0,
+                registered = 0,
+                assessed = 0,
+                dispensed = 0,
+                investigated = 0,
+                nutritionistLifestyleCount = 0,
+                psychologicalNotesCount = 0,
+                familyPlanningCount = 0,
+                pregnantWomenRegistrationCount = 0,
+                pregnancyOutcomeCount = 0,
+                ancCount = 0,
+                pncCount = 0,
+                childVisitCount = 0,
+                tbAssessmentCount = 0,
+                tbContactTracingCount = 0,
+                eyeCareCount = 0,
+                cataractCount = 0,
+                householdRegisteredCount = hhCount,
+                pwIdentifiedFirst4MonthsWithAncCount = maternal?.pwIdentifiedFirst4MonthsWithAncCount ?: 0,
+                anc3PlusCount = maternal?.anc3PlusCount ?: 0,
+                highRiskPregnantWomenCount = maternal?.highRiskPregnantWomenCount ?: 0,
+            )
+        }
+    }
     override suspend fun insertMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity) =
         memberAssessmentHistoryDao.insertMemberAssessmentHistory(assessmentHistory)
 

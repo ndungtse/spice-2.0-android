@@ -1,12 +1,15 @@
 package org.medtroniclabs.uhis.repo
 
+import android.content.Context
 import android.location.Location
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.common.StringConverter
@@ -23,6 +26,7 @@ import org.medtroniclabs.uhis.model.assessment.AssessmentMemberDetails
 import org.medtroniclabs.uhis.network.ApiHelper
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.network.resource.ResourceState
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.TBContactTracing
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.TBScreening
 import org.medtroniclabs.uhis.ui.assessment.AssessmentNCDEntity
@@ -31,6 +35,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 class AssessmentRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private var roomHelper: RoomHelper,
     private var apiHelper: ApiHelper,
 ) {
@@ -149,7 +154,12 @@ class AssessmentRepository @Inject constructor(
         tbType: String? = null,
     ): Resource<FormResponse> =
         try {
-            val response = roomHelper.getFormData(formType)
+            val response =
+                if (formType == AssessmentDefinedParams.Family_Planning) {
+                    CommonUtils.getStringFromAssets("family_planning_form.json", context.assets)
+                } else {
+                    roomHelper.getFormData(formType)
+                }
             val formFieldsType = object : TypeToken<FormResponse>() {}.type
             val formFields: FormResponse = Gson().fromJson(response, formFieldsType)
             if (tbType != null) {

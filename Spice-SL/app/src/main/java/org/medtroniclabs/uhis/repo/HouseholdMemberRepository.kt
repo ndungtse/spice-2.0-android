@@ -178,7 +178,7 @@ class HouseholdMemberRepository @Inject constructor(
             if (householdId == null) {
                 applyLocationFromMap(householdMemberEntity, map)
             } else {
-                // For regular members, get villageId from household
+                // For regular members, derive full location hierarchy from household.
                 val householdDetails =
                     try {
                         roomHelper.getHouseHoldDetailsById(householdId)
@@ -187,6 +187,8 @@ class HouseholdMemberRepository @Inject constructor(
                     }
                 if (householdDetails != null) {
                     householdMemberEntity.villageId = householdDetails.villageId
+                    householdMemberEntity.shasthyaShebikaId = householdDetails.shasthyaShebikaId
+                    householdMemberEntity.subVillageId = householdDetails.subVillageId
                 } else {
                     // Defensive fallback for stale/invalid household references.
                     applyLocationFromMap(householdMemberEntity, map)

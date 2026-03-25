@@ -24,6 +24,7 @@ import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.externalmember.ExternalMemberRegistrationActivity
 import org.medtroniclabs.uhis.ui.household.MemberSelectionListener
 import org.medtroniclabs.uhis.ui.household.summary.MemberSummaryActivity
+import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants
 import org.medtroniclabs.uhis.ui.services.viewmodel.ServicesViewModel
 import org.medtroniclabs.uhis.common.DefinedParams as CommonDefinedParams
 
@@ -47,6 +48,9 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
      * Flag to indicate if this is external member mode
      */
     private var isExternalMember = false
+    private var preSelectedSsIds: LongArray = longArrayOf()
+    private var preSelectedSubVillageIds: LongArray = longArrayOf()
+    private var preSelectedStaticFilter: ServiceStaticFilter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +58,11 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
 
         // Check if this is external member mode
         isExternalMember = intent.getBooleanExtra("isExternalMember", false)
+        preSelectedSsIds = intent.getLongArrayExtra(DashboardConstants.EXTRA_DASHBOARD_SS_IDS) ?: longArrayOf()
+        preSelectedSubVillageIds = intent.getLongArrayExtra(DashboardConstants.EXTRA_DASHBOARD_SUB_VILLAGE_IDS) ?: longArrayOf()
+        preSelectedStaticFilter = intent.getStringExtra(DashboardConstants.EXTRA_DASHBOARD_STATIC_FILTER)?.let {
+            runCatching { ServiceStaticFilter.valueOf(it) }.getOrNull()
+        }
 
         val title = if (isExternalMember) {
             getString(R.string.external_member)
@@ -105,7 +114,23 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
             binding.bottomNavigationView.gone()
             setDropdown()
         }
+        applyPrefiltersFromDashboard()
         showLoading()
+    }
+
+    private fun applyPrefiltersFromDashboard() {
+        if (preSelectedSsIds.isEmpty() && preSelectedSubVillageIds.isEmpty() && preSelectedStaticFilter == null) return
+        val ssFilters = preSelectedSsIds.map {
+            org.medtroniclabs.uhis.data.model.ChipViewItemModel(id = it, name = "")
+        }
+        val subVillageFilters = preSelectedSubVillageIds.map {
+            org.medtroniclabs.uhis.data.model.ChipViewItemModel(id = it, name = "")
+        }
+        servicesViewModel.setFilterLiveData(
+            ssFilter = ssFilters,
+            subVillagesFilter = subVillageFilters,
+            staticFilter = preSelectedStaticFilter,
+        )
     }
 
     private fun setDropdown() {
@@ -117,6 +142,14 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
 
         adapter.setData(dropDownList)
         binding.tvMemberTypes.adapter = adapter
+
+        // When opened from Dashboard, make the spinner reflect the same static filter explicitly.
+        val initialFilter = preSelectedStaticFilter ?: ServiceStaticFilter.ALL_MEMBERS
+        val initialPosition = dropDownList.indexOfFirst { item ->
+            (item[DefinedParams.ID] as? ServiceStaticFilter) == initialFilter
+        }.takeIf { it >= 0 } ?: 0
+        binding.tvMemberTypes.setSelection(initialPosition, false)
+
         binding.tvMemberTypes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 adapterView: AdapterView<*>?,
@@ -153,6 +186,8 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
             ServiceStaticFilter.CHILDREN_UNDER_TWO_YEARS,
             ServiceStaticFilter.EXPECTED_DELIVERIES,
             ServiceStaticFilter.PENDING_DELIVERIES,
+            ServiceStaticFilter.EXTERNAL_MEMBERS,
+            ServiceStaticFilter.EXTERNAL_PREGNANT_WOMEN
         )
         staticFilters.forEach {
             dropdownList.add(

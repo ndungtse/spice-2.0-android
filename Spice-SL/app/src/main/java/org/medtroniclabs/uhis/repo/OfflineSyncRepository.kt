@@ -781,16 +781,15 @@ class OfflineSyncRepository @Inject constructor(
         motherIds.forEach { motherId ->
             val children = input.filter { it.motherReferenceId == motherId && it.id == null }
             val mother = input.find { it.referenceId == motherId }
-            if (!children.isNullOrEmpty()) {
+            if (children.isNotEmpty()) {
                 if (mother != null) {
                     mother.children = children
+                    // Remove only children that are explicitly nested under mother.
+                    childIds.addAll(children.map { it.referenceId!! })
                 } else {
-                    children.forEach {
-                        // Un mapped child
-                        memberIds.remove(it.referenceId!!)
-                    }
+                    // Child can be created in a later stage than mother.
+                    // Keep these as top-level members so they sync independently.
                 }
-                childIds.addAll(children.map { it.referenceId!! })
             }
         }
 

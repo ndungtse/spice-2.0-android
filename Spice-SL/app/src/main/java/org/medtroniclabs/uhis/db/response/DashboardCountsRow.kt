@@ -1,0 +1,26 @@
+package org.medtroniclabs.uhis.db.response
+
+data class DashboardCountsRow(
+    val screened: Int?,
+    val referred: Int?,
+    val registered: Int?,
+    val assessed: Int?,
+    val dispensed: Int?,
+    val investigated: Int?,
+    val nutritionistLifestyleCount: Int?,
+    val psychologicalNotesCount: Int?,
+    val familyPlanningCount: Int?,
+    val pregnantWomenRegistrationCount: Int?,
+    val pregnancyOutcomeCount: Int?,
+    val ancCount: Int?,
+    val pncCount: Int?,
+    val childVisitCount: Int?,
+    val tbAssessmentCount: Int?,
+    val tbContactTracingCount: Int?,
+    val eyeCareCount: Int?,
+    val cataractCount: Int?,
+    val householdRegisteredCount: Int?,
+    val pwIdentifiedFirst4MonthsWithAncCount: Int?,
+    val anc3PlusCount: Int?,
+    val highRiskPregnantWomenCount: Int?,
+)

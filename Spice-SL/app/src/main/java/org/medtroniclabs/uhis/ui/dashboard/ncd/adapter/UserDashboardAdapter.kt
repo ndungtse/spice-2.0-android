@@ -10,7 +10,18 @@ import org.medtroniclabs.uhis.appextensions.isTablet
 import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.databinding.ListItemUserDashboardBinding
 
-class UserDashboardAdapter(private val customize: Boolean, private val userDashboardLists: ArrayList<Triple<String, Int, Int>>) :
+data class DashboardCardItem(
+    val key: String,
+    val title: String,
+    val count: Int,
+    val iconRes: Int,
+)
+
+class UserDashboardAdapter(
+    private val customize: Boolean,
+    private val userDashboardLists: ArrayList<DashboardCardItem>,
+    private val onCardClick: (DashboardCardItem) -> Unit,
+) :
     RecyclerView.Adapter<UserDashboardAdapter.UserDashboardViewHolder>() {
     inner class UserDashboardViewHolder(val binding: ListItemUserDashboardBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -32,8 +43,11 @@ class UserDashboardAdapter(private val customize: Boolean, private val userDashb
         userDashboardLists[position].let { dashboard ->
             val context = holder.binding.root.context
             holder.binding.apply {
-                tvKey.text = dashboard.first.uppercase()
-                tvValue.text = if (customize) "0" else dashboard.second.toString()
+                tvKey.text = dashboard.title.uppercase()
+                tvValue.text = if (customize) "0" else dashboard.count.toString()
+                root.setOnClickListener {
+                    onCardClick(dashboard)
+                }
 
                 if (context.isTablet()) {
                     ivActivity.apply {
@@ -41,7 +55,7 @@ class UserDashboardAdapter(private val customize: Boolean, private val userDashb
                         setImageDrawable(
                             ContextCompat.getDrawable(
                                 root.context,
-                                dashboard.third,
+                                dashboard.iconRes,
                             ),
                         )
                     }

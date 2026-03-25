@@ -98,6 +98,35 @@ interface HouseholdDAO {
     @Query("DELETE FROM Household")
     suspend fun deleteAllHouseholds()
 
+    /**
+     * Returns count of households registered within optional date range and filtered by SS/Sub-village.
+     * Date comparisons are based on household creation time only.
+     */
+    @Query(
+        """
+        SELECT COUNT(hh.id)
+        FROM Household AS hh
+        WHERE (
+            :startDate IS NULL OR
+            date(datetime(hh.created_at / 1000, 'unixepoch', 'localtime')) >= :startDate
+        )
+          AND (
+            :endDate IS NULL OR
+            date(datetime(hh.created_at / 1000, 'unixepoch', 'localtime')) <= :endDate
+          )
+          AND (:ssIdsSize = 0 OR hh.shasthya_shebika_id IN (:ssIds))
+          AND (:subVillageIdsSize = 0 OR hh.sub_village_id IN (:subVillageIds))
+        """,
+    )
+    suspend fun getHouseholdRegisteredCount(
+        startDate: String?,
+        endDate: String?,
+        ssIds: List<Long>,
+        ssIdsSize: Int,
+        subVillageIds: List<Long>,
+        subVillageIdsSize: Int,
+    ): Int?
+
     @Query(
         "SELECT hh.id, hh.name, hh.household_no AS householdNo, ve.name AS villageName, hh.no_of_people AS memberRegistered, COUNT(hhm.id) AS memberAdded " +
             "FROM Household as hh INNER JOIN VillageEntity as ve ON hh.village_id = ve.id LEFT JOIN HouseholdMember as hhm ON hhm.household_id = hh.id  WHERE hh.id =:id",

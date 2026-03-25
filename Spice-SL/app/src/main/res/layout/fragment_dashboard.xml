@@ -86,6 +86,16 @@
         app:layout_constraintStart_toStartOf="@+id/centerGuideline"
         app:layout_constraintTop_toBottomOf="@+id/tvTo" />
 
+    <!-- Dashboard filter row (below date range, above cards) -->
+    <include
+        android:id="@+id/llFilter"
+        layout="@layout/filter_btn_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_12sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etToDate" />
+
     <androidx.constraintlayout.widget.Group
         android:id="@+id/clDateRange"
         android:layout_width="0dp"
@@ -101,6 +111,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etToDate" />
+        app:layout_constraintTop_toBottomOf="@+id/llFilter" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

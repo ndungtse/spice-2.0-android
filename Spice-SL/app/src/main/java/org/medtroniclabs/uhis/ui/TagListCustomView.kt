@@ -137,12 +137,18 @@ class TagListCustomView(
         chip: Chip,
     ) {
         selectedChipItemList?.let { chipItemList ->
-            val dataValue = getChipText(data)
-            dataValue?.second?.let { chipItem ->
-                val isAlreadySelected = chipItemList.any { it.name == chipItem }
-                if (isAlreadySelected) {
-                    chip.isChecked = true
-                }
+            val chipModel = data as? ChipViewItemModel
+            // Prefer matching by id when available; fall back to name match
+            val matchById = chipModel?.id != null && chipItemList.any { it.id == chipModel.id }
+            val matchByName = if (!matchById) {
+                val dataValue = getChipText(data)
+                val chipItemName = dataValue?.second
+                chipItemName != null && chipItemList.any { it.name == chipItemName }
+            } else {
+                false
+            }
+            if (matchById || matchByName) {
+                chip.isChecked = true
             }
         }
     }

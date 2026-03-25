@@ -25,12 +25,15 @@ import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.IS_FROM_HOUSEH
 import org.medtroniclabs.uhis.ui.household.adapter.HouseholdListAdapter
 import org.medtroniclabs.uhis.ui.household.summary.HouseholdSummaryActivity
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseholdListViewModel
+import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants
 
 @AndroidEntryPoint
 class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
     private lateinit var binding: ActivityHouseholdSearchBinding
     private val householdListViewModel: HouseholdListViewModel by viewModels()
     private lateinit var householdListAdapter: HouseholdListAdapter
+    private var preSelectedSsIds: LongArray = longArrayOf()
+    private var preSelectedSubVillageIds: LongArray = longArrayOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,9 +44,22 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
             title = getString(R.string.households),
         )
         showLoading()
+        preSelectedSsIds = intent.getLongArrayExtra(DashboardConstants.EXTRA_DASHBOARD_SS_IDS) ?: longArrayOf()
+        preSelectedSubVillageIds = intent.getLongArrayExtra(DashboardConstants.EXTRA_DASHBOARD_SUB_VILLAGE_IDS) ?: longArrayOf()
         initViews()
+        applyPrefiltersFromDashboard()
         setListeners()
         attachObserver()
+    }
+
+    private fun applyPrefiltersFromDashboard() {
+        if (preSelectedSsIds.isEmpty() && preSelectedSubVillageIds.isEmpty()) return
+        val ssFilters = preSelectedSsIds.map { org.medtroniclabs.uhis.data.model.ChipViewItemModel(id = it, name = "") }
+        val subVillageFilters = preSelectedSubVillageIds.map { org.medtroniclabs.uhis.data.model.ChipViewItemModel(id = it, name = "") }
+        householdListViewModel.setFilterLiveData(
+            ssFilter = ssFilters,
+            subVillagesFilter = subVillageFilters,
+        )
     }
 
     override fun onResume() {

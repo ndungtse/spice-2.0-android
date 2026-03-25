@@ -37,6 +37,8 @@ data class HouseHoldMember(
     val subVillage: String? = null,
     @ColumnInfo(name = "sub_village_id")
     val subVillageId: Long? = null,
+    @ColumnInfo(name = "shasthya_shebika_id")
+    val shasthyaShebikaId: Long? = null,
     val motherReferenceId: String? = null,
     val isActive: Boolean = true,
     val version: String? = null,
@@ -90,6 +92,8 @@ data class HouseHoldMember(
             householdId = hhId,
             patientId = this.patientId,
             villageId = this.villageId,
+            shasthyaShebikaId = this.shasthyaShebikaId,
+            subVillageId = this.subVillageId,
             isActive = this.isActive,
             version = this.version,
             lastUpdated = this.lastUpdated,

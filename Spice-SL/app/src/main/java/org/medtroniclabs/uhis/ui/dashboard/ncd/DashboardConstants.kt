@@ -1,0 +1,30 @@
+package org.medtroniclabs.uhis.ui.dashboard.ncd
+
+object DashboardConstants {
+    const val EXTRA_DASHBOARD_SS_IDS = "dashboard_ss_ids"
+    const val EXTRA_DASHBOARD_SUB_VILLAGE_IDS = "dashboard_sub_village_ids"
+    const val EXTRA_DASHBOARD_STATIC_FILTER = "dashboard_static_filter"
+
+    const val CARD_FAMILY_PLANNING = "family_planning"
+    const val CARD_PREGNANT_WOMEN_REGISTRATION = "pregnant_women_registration"
+    const val CARD_PREGNANCY_OUTCOME = "pregnancy_outcome"
+    const val CARD_ANC = "anc"
+    const val CARD_PW_IDENTIFIED_4_MONTHS_ANC = "pw_identified_first4months_anc"
+    const val CARD_ANC_3_PLUS = "anc_3_plus"
+    const val CARD_HIGH_RISK_PREGNANT_WOMEN = "high_risk_pregnant_women"
+    const val CARD_PNC = "pnc"
+    const val CARD_CHILD_VISIT = "child_visit"
+    const val CARD_HOUSEHOLD_REGISTERED = "household_registered"
+    const val CARD_TB_ASSESSMENT = "tb_assessment"
+    const val CARD_TB_CONTACT_TRACING = "tb_contact_tracing"
+    const val CARD_EYE_CARE = "eye_care"
+    const val CARD_CATARACT = "cataract"
+    const val CARD_SCREENED = "screened"
+    const val CARD_REFERRED = "referred"
+    const val CARD_REGISTERED = "registered"
+    const val CARD_ASSESSED = "assessed"
+    const val CARD_DISPENSED = "dispensed"
+    const val CARD_INVESTIGATED = "investigated"
+    const val CARD_LIFESTYLE = "lifestyle"
+    const val CARD_PSYCHOLOGICAL = "psychological"
+}
