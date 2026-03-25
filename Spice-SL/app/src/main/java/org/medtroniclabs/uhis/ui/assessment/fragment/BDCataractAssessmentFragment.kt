@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
+import org.medtroniclabs.uhis.common.CVDRiskCalculator
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
 import org.medtroniclabs.uhis.databinding.FragmentAssessmentBinding
@@ -19,9 +20,10 @@ import org.medtroniclabs.uhis.mappingkey.Screening
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.MenuConstants
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.CATARACT
+import org.medtroniclabs.uhis.ui.assessment.referrallogic.ReferralResultGenerator
+import org.medtroniclabs.uhis.ui.assessment.utils.AssessmentUtil
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
-import kotlin.getValue
 
 @AndroidEntryPoint
 class BDCataractAssessmentFragment() : BaseFragment(), FormEventListener {
@@ -58,7 +60,8 @@ class BDCataractAssessmentFragment() : BaseFragment(), FormEventListener {
 
     private fun getFormDataForWorkflow() {
         viewModel.getFormData(MenuConstants.CATARACT_MENU_ID)
-        // viewModel.getNearestHealthFacility()
+        viewModel.getRiskEntityList()
+        viewModel.getNearestHealthFacility()
     }
 
     private fun initView() {
@@ -143,12 +146,24 @@ class BDCataractAssessmentFragment() : BaseFragment(), FormEventListener {
                 FormResultComposer().groupValues(
                     serverData = it,
                     details,
-                    AssessmentDefinedParams.ncd,
+                    MenuConstants.CATARACT_MENU_ID,
                 )
             }
-            result?.second?.let { map ->
-                viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
-                // viewModel.saveAssessment(map, null, viewModel.menuId)
+
+            viewModel.memberDetailsLiveData.value?.data?.let { memberDetail ->
+                result?.second?.let {
+                    val ncdMap = it[CATARACT] as HashMap<String, Any>
+                    val bpResult = AssessmentUtil.calculateAverageBloodPressure(ncdMap)
+                    val bgResult = AssessmentUtil.addDateAndTimeForGlucose(ncdMap)
+
+                    // Compute Referral Logic
+                    val referralResult = ReferralResultGenerator().computeReferralResultForBDNCD(ncdMap, bpResult, bgResult, listOf())
+
+                    // Compute CVD Risk
+                    CVDRiskCalculator.calculateCVDRiskFactor(ncdMap, viewModel.riskClassificationModels, memberDetail.dateOfBirth, memberDetail.gender)
+                    viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
+                    viewModel.saveAssessment(serverData, it, referralResult, viewModel.menuId)
+                }
             }
         }
     }

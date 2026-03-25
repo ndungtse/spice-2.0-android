@@ -17,7 +17,7 @@ object CVDRiskCalculator {
         val bpLogs = map[BP_LOG] as HashMap<*, *>
         val bmiValue = bpLogs[BMI]?.let { it as Double }
         val systolicAverage = bpLogs[AVG_SYSTOLIC]?.let { it as Int }
-        val isSmoker = bpLogs[IS_REGULAR_SMOKER]?.let { it as Boolean }
+        val isSmoker = bpLogs[IS_REGULAR_SMOKER]?.let { getSmokerType(it) }
 
         val age = DateUtils.getV2YearMonthAndWeek(dob).years.toDouble()
 
@@ -37,6 +37,13 @@ object CVDRiskCalculator {
                 result[DefinedParams.CVD_RISK_SCORE_DISPLAY] as String
         }
     }
+
+    private fun getSmokerType(value: Any): Boolean =
+        when (value) {
+            is String -> value == DefinedParams.Yes
+            is Boolean -> value
+            else -> false
+        }
 
     private fun calculateRiskFactor(
         list: ArrayList<RiskClassificationModel>,

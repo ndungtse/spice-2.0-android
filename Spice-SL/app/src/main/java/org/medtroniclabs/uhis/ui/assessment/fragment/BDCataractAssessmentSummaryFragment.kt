@@ -34,7 +34,6 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.GLUCOSE_UNIT
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.HBA1CUnit
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.HEIGHT
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.MMHG
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.NCD_SYMPTOM
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.NCD_SYMPTOMS
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.REFERRAL_FACILITY_TYPE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
@@ -42,15 +41,18 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.WEIGHT
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.hba1c
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
+import kotlin.collections.forEach
+import kotlin.collections.set
+import kotlin.getValue
 
-class BDNCDAssessmentSummaryFragment : BaseFragment() {
+class BDCataractAssessmentSummaryFragment : BaseFragment() {
     private val viewModel: AssessmentViewModel by activityViewModels()
     lateinit var binding: FragmentBdNcdSummaryBinding
 
     companion object {
-        const val TAG = "BDNCDAssessmentSummaryFragment"
+        const val TAG = "BDCataractAssessmentSummaryFragment"
 
-        fun newInstance(): BDNCDAssessmentSummaryFragment = BDNCDAssessmentSummaryFragment()
+        fun newInstance(): BDCataractAssessmentSummaryFragment = BDCataractAssessmentSummaryFragment()
     }
 
     override fun onCreateView(
@@ -169,7 +171,7 @@ class BDNCDAssessmentSummaryFragment : BaseFragment() {
         jsonObject: JSONObject,
     ): String? {
         return when (id) {
-            NCD_SYMPTOMS, NCD_SYMPTOM -> {
+            NCD_SYMPTOMS -> {
                 val list = mutableListOf<String>()
                 findValueByKey(jsonObject, id)?.let {
                     val jsonArray = it as JSONArray
@@ -182,7 +184,7 @@ class BDNCDAssessmentSummaryFragment : BaseFragment() {
                         }
                     }
 
-                    return list.joinToString(", ")
+                    return list.joinToString(",")
                 }
             }
 
@@ -209,6 +211,11 @@ class BDNCDAssessmentSummaryFragment : BaseFragment() {
                 }
             }
 
+            BP_LOG_DETAILS -> {
+                val bp = findValueByKey(jsonObject, AVG_BLOOD_PRESSURE) as? String
+                return "$bp $MMHG"
+            }
+
             BMI -> {
                 val bmi = findValueByKey(jsonObject, id)
                 val bmiCategory = findValueByKey(jsonObject, BMI_CATEGORY)
@@ -219,12 +226,19 @@ class BDNCDAssessmentSummaryFragment : BaseFragment() {
                 }
             }
 
-            BP_LOG_DETAILS -> {
-                val bp = findValueByKey(jsonObject, AVG_BLOOD_PRESSURE) as? String
-                return "$bp $MMHG"
+            else -> {
+                val value = findValueByKey(jsonObject, id)
+                if (value is JSONArray) {
+                    val list = mutableListOf<String>()
+                    for (i in 0 until value.length()) {
+                        val sign = value.getString(i)
+                        list.add(sign)
+                    }
+                    return list.joinToString(", ")
+                } else {
+                    return value as? String
+                }
             }
-
-            else -> findValueByKey(jsonObject, id)?.toString()
         }
     }
 

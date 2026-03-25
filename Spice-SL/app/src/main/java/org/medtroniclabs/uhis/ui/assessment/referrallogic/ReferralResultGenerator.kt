@@ -621,7 +621,7 @@ class ReferralResultGenerator {
     fun computeReferralResultForBDNCD(
         map: HashMap<String, Any>,
         bpResult: Pair<Int, Int>,
-        bgResult: Triple<String, String, Double>,
+        bgResult: Triple<String?, String?, Double?>,
         symptomList: List<String>,
     ): Pair<String, ArrayList<String>>? {
         val referredReasonList = ArrayList<String>()
@@ -639,17 +639,18 @@ class ReferralResultGenerator {
         }
 
         // Referral Logic for BG
-        if (bgResult.first == MGDL &&
-            (bgResult.third > RBS_MAXIMUM_MGDL_VALUE || bgResult.third > FBS_MAXIMUM_MGDL_VALUE)
-        ) {
-            referredReasonList.add(ReferredReason.bloodGlucose)
-        } else {
-            if (bgResult.third > RBS_MAXIMUM_VALUE_BD || bgResult.third > FBS_MAXIMUM_VALUE_BD) {
-                if (bgResult.third >= UPAZILA_FBS_RBS_MAXIMUM_VALUE_BD) {
+        bgResult.first?.let { unit ->
+            bgResult.third?.let { bgValue ->
+                if (unit == MGDL &&
+                    (bgValue > RBS_MAXIMUM_MGDL_VALUE || bgValue > FBS_MAXIMUM_MGDL_VALUE)
+                ) {
+                    referredReasonList.add(ReferredReason.bloodGlucose)
                 } else {
+                    if (bgValue > RBS_MAXIMUM_VALUE_BD || bgValue > FBS_MAXIMUM_VALUE_BD) {
+                        referredReasonList.add(ReferredReason.bloodGlucose)
+                    } else {
+                    }
                 }
-
-                referredReasonList.add(ReferredReason.bloodGlucose)
             }
         }
 
@@ -686,5 +687,5 @@ class ReferralResultGenerator {
         avgSys >= UPAZILA_UPPER_LIMIT_SYSTOLIC ||
             avgDia >= UPAZILA_UPPER_LIMIT_DIASTOLIC
 
-    private fun isBGReferredForUpazila(bg: Double): Boolean = bg >= UPAZILA_FBS_RBS_MAXIMUM_VALUE_BD
+    private fun isBGReferredForUpazila(bg: Double?): Boolean = bg != null && bg >= UPAZILA_FBS_RBS_MAXIMUM_VALUE_BD
 }

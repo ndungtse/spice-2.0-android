@@ -39,6 +39,10 @@ import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentSLNCDFragment
 import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentSLNCDSummaryFragment
 import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentTBFragment
 import org.medtroniclabs.uhis.ui.assessment.fragment.AssessmentTBSummaryFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.BDCataractAssessmentFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.BDCataractAssessmentSummaryFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.BDEyeCareAssessmentFragment
+import org.medtroniclabs.uhis.ui.assessment.fragment.BDEyeCareAssessmentSummaryFragment
 import org.medtroniclabs.uhis.ui.assessment.fragment.BDNCDAssessmentFragment
 import org.medtroniclabs.uhis.ui.assessment.fragment.BDNCDAssessmentSummaryFragment
 import org.medtroniclabs.uhis.ui.assessment.fragment.RxBuddySummaryFragment
@@ -356,6 +360,24 @@ class AssessmentActivity : BaseActivity() {
                     tag = AssessmentPregnancyOutcomeSummaryFragment.TAG,
                 )
             }
+
+            MenuConstants.EYE_CARE_MENU_ID -> {
+                setTitle(Summary.capitalizeFirstChar())
+                hideBackButton()
+                replaceFragmentInId<BDEyeCareAssessmentSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = BDEyeCareAssessmentSummaryFragment.TAG,
+                )
+            }
+
+            MenuConstants.CATARACT_MENU_ID -> {
+                setTitle(Summary.capitalizeFirstChar())
+                hideBackButton()
+                replaceFragmentInId<BDCataractAssessmentSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = BDCataractAssessmentSummaryFragment.TAG,
+                )
+            }
         }
     }
 
@@ -403,7 +425,7 @@ class AssessmentActivity : BaseActivity() {
 
             MenuConstants.NCD_MENU_ID -> {
                 if (CommonUtils.isNonCommunity()) {
-                    setTitle(AssessmentDefinedParams.ncd.uppercase())
+                    setTitle(getString(R.string.ncd))
                     bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
                     showLoading()
                     replaceFragmentInId<AssessmentNCDFragment>(
@@ -412,7 +434,7 @@ class AssessmentActivity : BaseActivity() {
                         tag = AssessmentNCDFragment.TAG,
                     )
                 } else {
-                    setTitle(AssessmentDefinedParams.ncd.uppercase())
+                    setTitle(getString(R.string.ncd))
                     bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
                     showLoading()
                     replaceFragmentInId<BDNCDAssessmentFragment>(
@@ -424,25 +446,25 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.EYE_CARE_MENU_ID -> {
-                /*setTitle(AssessmentDefinedParams.ncd.uppercase())
-                bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
+                setTitle(getString(R.string.eye_care))
+                bundle.putString(Screening.type, MenuConstants.EYE_CARE_MENU_ID)
                 showLoading()
                 replaceFragmentInId<BDEyeCareAssessmentFragment>(
                     binding.formsFragmentContainer.id,
                     bundle = bundle,
                     tag = BDEyeCareAssessmentFragment.TAG,
-                )*/
+                )
             }
 
             MenuConstants.CATARACT_MENU_ID -> {
-                /*setTitle(AssessmentDefinedParams.ncd.uppercase())
-                bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
+                setTitle(getString(R.string.cataract))
+                bundle.putString(Screening.type, MenuConstants.CATARACT_MENU_ID)
                 showLoading()
                 replaceFragmentInId<BDCataractAssessmentFragment>(
                     binding.formsFragmentContainer.id,
                     bundle = bundle,
                     tag = BDCataractAssessmentFragment.TAG,
-                )*/
+                )
             }
 
             MenuConstants.MATERNAL_HEALTH -> {

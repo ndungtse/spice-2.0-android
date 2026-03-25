@@ -87,12 +87,14 @@ import org.medtroniclabs.uhis.repo.RxBuddyRepository
 import org.medtroniclabs.uhis.repo.TreatmentDetailsRepository
 import org.medtroniclabs.uhis.ui.BaseViewModel
 import org.medtroniclabs.uhis.ui.MenuConstants
+import org.medtroniclabs.uhis.ui.MenuConstants.EYE_CARE_MENU_ID
 import org.medtroniclabs.uhis.ui.MenuConstants.ICCM_MENU_ID
 import org.medtroniclabs.uhis.ui.MenuConstants.OTHER_SYMPTOMS
 import org.medtroniclabs.uhis.ui.MenuConstants.PREGNANCY_OUTCOME
 import org.medtroniclabs.uhis.ui.MenuConstants.PREGNANT_WOMEN_PROFILE
 import org.medtroniclabs.uhis.ui.MenuConstants.TB_MENU_ID
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.EYE_CARE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FamilyPlanning
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FamilyPlanningDetails
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.IsClinicTaken
@@ -896,6 +898,12 @@ class AssessmentViewModel @Inject constructor(
             if (ncdMap.containsKey(BMI_CATEGORY)) {
                 ncdMap.remove(BMI_CATEGORY)
             }
+        }
+
+        // Request modification for syncing NCD Symptoms to Backend
+        (map[EYE_CARE_MENU_ID] as? HashMap<*, *>)?.get(EYE_CARE)?.let { eyeCare ->
+            map[EYE_CARE] = eyeCare
+            map.remove(EYE_CARE_MENU_ID)
         }
 
         // Request modification for syncing RMNCH Childhood Visit to Backend

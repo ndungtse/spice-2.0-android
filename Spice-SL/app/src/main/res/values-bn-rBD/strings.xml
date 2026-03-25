@@ -845,7 +845,7 @@
     <string name="no_of_fetuses_pregnancy">গর্ভাবস্থায় ভ্রূণের সংখ্যা</string>
     <string name="enter_number">সংখ্যা লিখুন</string>
     <string name="maternal_outcomes">মাতৃ ফলাফল</string>
-    <string name="ncd">NCD</string>
+    <string name="ncd">এনসিডি</string>
     <string name="pregnancy_diagnosis">আপনার কি কখনও নিম্নলিখিত কোনটির সাথে নির্ণয় করা হয়েছে?</string>
     <string name="eclampsia">এক্লাম্পসিয়া</string>
     <string name="pre_eclampsia">প্রি-এক্লাম্পসিয়া</string>
@@ -1582,6 +1582,9 @@
     <string name="referred_for_nfurther_assessment_cc">আরও মূল্যায়নের জন্য নিকটস্থ কমিউনিটি ক্লিনিকে রেফার করুন</string>
     <string name="referred_for_nfurther_assessment_Upazila">আরও মূল্যায়নের জন্য নিকটস্থ উপজেলা স্বাস্থ্য কমপ্লেক্সে রেফার করুণ</string>
     <string name="services">সেবাসমূহ</string>
+
+    <string name="eye_care">চোখের যত্ন</string>
+    <string name="cataract">ছানি</string>
     <string name="services_provided">প্রদত্ত সেবাসমূহ</string>
     <string name="recent_status">সাম্প্রতিক অবস্থা</string>
     <string name="service_history">সেবার ইতিহাস</string>

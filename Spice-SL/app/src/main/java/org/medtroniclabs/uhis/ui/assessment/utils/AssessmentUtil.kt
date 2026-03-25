@@ -70,31 +70,34 @@ object AssessmentUtil {
 
     private fun getDiastolicValue(map: Any?): Double = (map as? BPModel)?.diastolic ?: 0.0
 
-    fun addDateAndTimeForGlucose(resultMap: HashMap<String, Any>): Triple<String, String, Double> {
-        val glucoseLogs = resultMap[GLUCOSE_LOG] as HashMap<String, Any>
+    fun addDateAndTimeForGlucose(resultMap: HashMap<String, Any>): Triple<String?, String?, Double?> {
+        if (resultMap.containsKey(GLUCOSE_LOG)) {
+            val glucoseLogs = resultMap[GLUCOSE_LOG] as HashMap<String, Any>
 
-        var unitType = MMOLL // Default unit type
-        glucoseLogs[GLUCOSE_UNIT]?.let {
-            unitType = it as String
+            var unitType = MMOLL // Default unit type
+            glucoseLogs[GLUCOSE_UNIT]?.let {
+                unitType = it as String
+            }
+
+            var bgType = FBS // Default bg type
+            glucoseLogs[GLUCOSE_TYPE]?.let {
+                bgType = it as String
+            }
+
+            var bgValue = 0.0 // Default bg value
+            glucoseLogs[GLUCOSE]?.let {
+                bgValue = it as Double
+            }
+
+            val dateTime = DateUtils.getTodayDateDDMMYYYY()
+            glucoseLogs[Glucose_Date_Time] = dateTime
+            glucoseLogs[HBA1C_DATE_TIME] = dateTime
+
+            resultMap[GLUCOSE_LOG] = glucoseLogs
+
+            return Triple(unitType, bgType, bgValue)
         }
-
-        var bgType = FBS // Default bg type
-        glucoseLogs[GLUCOSE_TYPE]?.let {
-            bgType = it as String
-        }
-
-        var bgValue = 0.0 // Default bg value
-        glucoseLogs[GLUCOSE]?.let {
-            bgValue = it as Double
-        }
-
-        val dateTime = DateUtils.getTodayDateDDMMYYYY()
-        glucoseLogs[Glucose_Date_Time] = dateTime
-        glucoseLogs[HBA1C_DATE_TIME] = dateTime
-
-        resultMap[GLUCOSE_LOG] = glucoseLogs
-
-        return Triple(unitType, bgType, bgValue)
+        return Triple(null, null, null)
     }
 
     fun getSymptomsList(resultMap: HashMap<String, Any>): List<String> {

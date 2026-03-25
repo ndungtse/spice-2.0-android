@@ -176,6 +176,20 @@ class HouseholdMemberRepository @Inject constructor(
         if (entity == null) {
             // If householdId is null, get location fields from form map
             if (householdId == null) {
+                val villageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.villageId])
+                if (villageIdFromMap != null) {
+                    householdMemberEntity.villageId = villageIdFromMap
+                }
+
+                val shasthyaShebikaIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.shasthyaShebikaId])
+                if (shasthyaShebikaIdFromMap != null) {
+                    householdMemberEntity.shasthyaShebikaId = shasthyaShebikaIdFromMap
+                }
+
+                val subVillageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.subVillageId])
+                if (subVillageIdFromMap != null) {
+                    householdMemberEntity.subVillageId = subVillageIdFromMap
+                }
                 applyLocationFromMap(householdMemberEntity, map)
             } else {
                 // For regular members, derive full location hierarchy from household.

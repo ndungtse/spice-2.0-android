@@ -474,6 +474,7 @@ object AssessmentDefinedParams {
     const val GLUCOSE_UNIT = "glucoseUnit"
     const val GLUCOSE_TYPE = "glucoseType"
     const val GLUCOSE = "glucose"
+    const val BMI_CATEGORY = "bmiCategory"
     const val MMHG = "mmHg"
     const val MMOLL = "mmol/L"
     const val MGDL = "mg/dL"
@@ -575,4 +576,8 @@ object AssessmentDefinedParams {
     const val PREGNANT_WOMEN_PROFILE = "pwProfile"
     const val PREGNANT_WOMEN_PROFILE_FORM = "pregnancy_woman_profile"
     const val RMNCH_ANC_FORM = "rmnch_anc_visit"
+
+    const val EYE_CARE = "eyeCare"
+
+    const val CATARACT = "cataract"
 }

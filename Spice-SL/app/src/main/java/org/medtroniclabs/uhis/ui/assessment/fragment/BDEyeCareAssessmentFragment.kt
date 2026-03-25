@@ -1,7 +1,6 @@
 package org.medtroniclabs.uhis.ui.assessment.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +18,6 @@ import org.medtroniclabs.uhis.mappingkey.Screening
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.MenuConstants
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import kotlin.getValue
 
@@ -143,18 +141,17 @@ class BDEyeCareAssessmentFragment() : BaseFragment(), FormEventListener {
                 FormResultComposer().groupValues(
                     serverData = it,
                     details,
-                    AssessmentDefinedParams.ncd,
+                    MenuConstants.EYE_CARE_MENU_ID,
                 )
             }
             result?.second?.let { map ->
                 viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
-                // viewModel.saveAssessment(map, null, viewModel.menuId)
+                viewModel.saveAssessment(serverData, map, null, viewModel.menuId)
             }
         }
     }
 
     override fun onRenderingComplete() {
-        Log.e("TEST", "Rendering Completed")
     }
 
     override fun onUpdateInstruction(

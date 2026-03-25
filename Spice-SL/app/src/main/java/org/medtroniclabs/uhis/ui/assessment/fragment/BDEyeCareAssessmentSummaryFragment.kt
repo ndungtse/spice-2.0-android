@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import org.json.JSONArray
 import org.json.JSONObject
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -22,35 +21,20 @@ import org.medtroniclabs.uhis.model.AssessmentSummaryModel
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils.findValueByKey
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.AVG_BLOOD_PRESSURE
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BMI
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BMI_CATEGORY
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BP_LOG_DETAILS
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.CULTURE_VALUE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FACILITY_TYPE_UPAZILA
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.GLUCOSE
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.GLUCOSE_TYPE
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.GLUCOSE_UNIT
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.HBA1CUnit
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.HEIGHT
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.MMHG
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.NCD_SYMPTOM
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.NCD_SYMPTOMS
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.REFERRAL_FACILITY_TYPE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.WEIGHT
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.hba1c
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 
-class BDNCDAssessmentSummaryFragment : BaseFragment() {
+class BDEyeCareAssessmentSummaryFragment : BaseFragment() {
     private val viewModel: AssessmentViewModel by activityViewModels()
-    lateinit var binding: FragmentBdNcdSummaryBinding
+    private lateinit var binding: FragmentBdNcdSummaryBinding
 
     companion object {
-        const val TAG = "BDNCDAssessmentSummaryFragment"
+        const val TAG = "BDEyeCareAssessmentSummaryFragment"
 
-        fun newInstance(): BDNCDAssessmentSummaryFragment = BDNCDAssessmentSummaryFragment()
+        fun newInstance(): BDEyeCareAssessmentSummaryFragment = BDEyeCareAssessmentSummaryFragment()
     }
 
     override fun onCreateView(
@@ -167,66 +151,7 @@ class BDNCDAssessmentSummaryFragment : BaseFragment() {
     private fun getValueFromJson(
         id: String,
         jsonObject: JSONObject,
-    ): String? {
-        return when (id) {
-            NCD_SYMPTOMS, NCD_SYMPTOM -> {
-                val list = mutableListOf<String>()
-                findValueByKey(jsonObject, id)?.let {
-                    val jsonArray = it as JSONArray
-
-                    for (i in 0 until jsonArray.length()) {
-                        val sign = jsonArray.getJSONObject(i)
-
-                        sign.optString(CULTURE_VALUE).let { value ->
-                            list.add(value)
-                        }
-                    }
-
-                    return list.joinToString(", ")
-                }
-            }
-
-            HEIGHT, WEIGHT -> findValueByKey(jsonObject, id)?.toString()
-
-            GLUCOSE -> {
-                val glucoseValue = findValueByKey(jsonObject, id)
-                val unit = findValueByKey(jsonObject, GLUCOSE_UNIT)
-                val type = findValueByKey(jsonObject, GLUCOSE_TYPE)
-                return if (unit != null && type != null && glucoseValue != null) {
-                    "${glucoseValue as Double} ${unit as String} (${type as String})"
-                } else {
-                    null
-                }
-            }
-
-            hba1c -> {
-                val hba1 = findValueByKey(jsonObject, id)
-                val unit = findValueByKey(jsonObject, HBA1CUnit)
-                return if (unit != null && hba1 != null) {
-                    "${hba1 as Double} ${unit as String}"
-                } else {
-                    null
-                }
-            }
-
-            BMI -> {
-                val bmi = findValueByKey(jsonObject, id)
-                val bmiCategory = findValueByKey(jsonObject, BMI_CATEGORY)
-                return if (bmiCategory != null && bmi != null) {
-                    "${bmi as Double} (${bmiCategory as String})"
-                } else {
-                    null
-                }
-            }
-
-            BP_LOG_DETAILS -> {
-                val bp = findValueByKey(jsonObject, AVG_BLOOD_PRESSURE) as? String
-                return "$bp $MMHG"
-            }
-
-            else -> findValueByKey(jsonObject, id)?.toString()
-        }
-    }
+    ): String? = findValueByKey(jsonObject, id)?.toString()
 
     private fun loadPhuSitesList(healthFacilityList: ArrayList<Map<String, Any>>) {
         val adapter = CustomSpinnerAdapter(requireContext())
@@ -266,15 +191,13 @@ class BDNCDAssessmentSummaryFragment : BaseFragment() {
         value: String?,
         valueTextColor: Int? = null,
     ) {
-        if (title != null && value != null) {
-            binding.parentLayout.addView(
-                AssessmentCommonUtils.addViewSummaryLayout(
-                    title,
-                    value,
-                    valueTextColor,
-                    requireContext(),
-                ),
-            )
-        }
+        binding.parentLayout.addView(
+            AssessmentCommonUtils.addViewSummaryLayout(
+                title,
+                value,
+                valueTextColor,
+                requireContext(),
+            ),
+        )
     }
 }
