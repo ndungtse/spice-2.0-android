@@ -34,6 +34,7 @@ object DefinedParams {
         "${ContactsContract.Directory.PACKAGE_NAME}.action.SL_SESSION_EXPIRED"
     const val SL_SESSION = "sl_session"
     const val HOUSEHOLD_MEMBER_REGISTRATION = "household_member_registration"
+    const val HOUSEHOLD_MEMBER_REGISTRATION_FORM = "member_registration"
     const val EXTERNAL_MEMBER_REGISTRATION = "external_member_registration"
     const val DefaultSelectID = -1L
     const val DefaultID = "-1"

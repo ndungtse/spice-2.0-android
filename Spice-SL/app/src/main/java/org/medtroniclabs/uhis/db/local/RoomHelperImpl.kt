@@ -1316,6 +1316,7 @@ class RoomHelperImpl @Inject constructor(
             )
         }
     }
+
     override suspend fun insertMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity) =
         memberAssessmentHistoryDao.insertMemberAssessmentHistory(assessmentHistory)
 

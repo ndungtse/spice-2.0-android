@@ -12,7 +12,6 @@ import org.medtroniclabs.uhis.appextensions.postError
 import org.medtroniclabs.uhis.appextensions.postLoading
 import org.medtroniclabs.uhis.appextensions.postSuccess
 import org.medtroniclabs.uhis.common.CommonUtils
-import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.HouseholdHead
 import org.medtroniclabs.uhis.data.offlinesync.model.HouseholdMemberWithTb
 import org.medtroniclabs.uhis.data.offlinesync.model.ProvanceDto
@@ -25,7 +24,6 @@ import org.medtroniclabs.uhis.formgeneration.config.DefinedParams.HouseholdHeadR
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration
 import org.medtroniclabs.uhis.model.medicalreview.AddMemberRegRequest
 import org.medtroniclabs.uhis.network.resource.Resource
-import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.repo.HouseHoldRepository
 import org.medtroniclabs.uhis.repo.HouseholdMemberRepository
 import org.medtroniclabs.uhis.ui.BaseViewModel
@@ -67,26 +65,7 @@ class MemberRegistrationViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             // First, try to load from database (FormEntity table)
             val dbResult = houseHoldRepository.getFormData(formType)
-
-            if (dbResult.state == ResourceState.SUCCESS && dbResult.data != null) {
-                // Form found in database, use it
-                formLayoutsLiveData.postValue(dbResult)
-            } else {
-                // Form not found in database, try to load from assets
-                val assetFileName = DefinedParams.EXTERNAL_MEMBER_REGISTRATION + ".json"
-                if (assetFileName != null) {
-                    try {
-                        val jsonString = CommonUtils.getStringFromAssets(assetFileName, context.assets)
-                        formLayoutsLiveData.postValue(Resource(state = ResourceState.SUCCESS, data = jsonString))
-                    } catch (e: Exception) {
-                        // Asset file also not found, return error
-                        formLayoutsLiveData.postValue(Resource(state = ResourceState.ERROR))
-                    }
-                } else {
-                    // No asset file mapping for this form type, return error
-                    formLayoutsLiveData.postValue(Resource(state = ResourceState.ERROR))
-                }
-            }
+            formLayoutsLiveData.postValue(dbResult)
         }
     }
 

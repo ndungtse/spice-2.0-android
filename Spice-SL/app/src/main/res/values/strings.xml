@@ -1679,4 +1679,5 @@
     <string name="service_name">Service Name</string>
     <string name="service_date">Service Date</string>
     <string name="referral_status">Referral Status</string>
+    <string name="error_person_name">Please enter valid name</string>
 </resources>

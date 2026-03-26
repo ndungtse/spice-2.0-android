@@ -1,6 +1,8 @@
 package org.medtroniclabs.uhis.repo
 
+import android.content.Context
 import androidx.lifecycle.LiveData
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.ConsentFormType
 import org.medtroniclabs.uhis.common.DefinedParams
@@ -27,6 +29,7 @@ import org.medtroniclabs.uhis.network.resource.ResourceState
 import javax.inject.Inject
 
 class HouseHoldRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private var apiHelper: ApiHelper,
     private var roomHelper: RoomHelper,
 ) {
@@ -77,7 +80,23 @@ class HouseHoldRepository @Inject constructor(
 
     suspend fun getFormData(formType: String): Resource<String> =
         try {
-            val response = roomHelper.getFormData(formType)
+            val response = when (formType) {
+                DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION -> {
+                    CommonUtils.getStringFromAssets(
+                        DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION_FORM + ".json",
+                        context.assets,
+                    )
+                }
+                DefinedParams.EXTERNAL_MEMBER_REGISTRATION -> {
+                    CommonUtils.getStringFromAssets(
+                        DefinedParams.EXTERNAL_MEMBER_REGISTRATION + ".json",
+                        context.assets,
+                    )
+                }
+                else -> {
+                    roomHelper.getFormData(formType)
+                }
+            }
             Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)

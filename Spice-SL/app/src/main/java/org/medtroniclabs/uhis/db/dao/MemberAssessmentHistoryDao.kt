@@ -147,5 +147,4 @@ interface MemberAssessmentHistoryDao {
         subVillageIds: List<Long>,
         subVillageIdsSize: Int,
     ): MaternalDashboardCountsRow?
-
 }

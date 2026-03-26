@@ -21,10 +21,10 @@ import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.formgeneration.utility.CustomSpinnerAdapter
 import org.medtroniclabs.uhis.model.services.ServiceStaticFilter
 import org.medtroniclabs.uhis.ui.BaseActivity
+import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants
 import org.medtroniclabs.uhis.ui.externalmember.ExternalMemberRegistrationActivity
 import org.medtroniclabs.uhis.ui.household.MemberSelectionListener
 import org.medtroniclabs.uhis.ui.household.summary.MemberSummaryActivity
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants
 import org.medtroniclabs.uhis.ui.services.viewmodel.ServicesViewModel
 import org.medtroniclabs.uhis.common.DefinedParams as CommonDefinedParams
 
@@ -121,10 +121,12 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
     private fun applyPrefiltersFromDashboard() {
         if (preSelectedSsIds.isEmpty() && preSelectedSubVillageIds.isEmpty() && preSelectedStaticFilter == null) return
         val ssFilters = preSelectedSsIds.map {
-            org.medtroniclabs.uhis.data.model.ChipViewItemModel(id = it, name = "")
+            org.medtroniclabs.uhis.data.model
+                .ChipViewItemModel(id = it, name = "")
         }
         val subVillageFilters = preSelectedSubVillageIds.map {
-            org.medtroniclabs.uhis.data.model.ChipViewItemModel(id = it, name = "")
+            org.medtroniclabs.uhis.data.model
+                .ChipViewItemModel(id = it, name = "")
         }
         servicesViewModel.setFilterLiveData(
             ssFilter = ssFilters,
@@ -145,9 +147,10 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
 
         // When opened from Dashboard, make the spinner reflect the same static filter explicitly.
         val initialFilter = preSelectedStaticFilter ?: ServiceStaticFilter.ALL_MEMBERS
-        val initialPosition = dropDownList.indexOfFirst { item ->
-            (item[DefinedParams.ID] as? ServiceStaticFilter) == initialFilter
-        }.takeIf { it >= 0 } ?: 0
+        val initialPosition = dropDownList
+            .indexOfFirst { item ->
+                (item[DefinedParams.ID] as? ServiceStaticFilter) == initialFilter
+            }.takeIf { it >= 0 } ?: 0
         binding.tvMemberTypes.setSelection(initialPosition, false)
 
         binding.tvMemberTypes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -187,7 +190,7 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
             ServiceStaticFilter.EXPECTED_DELIVERIES,
             ServiceStaticFilter.PENDING_DELIVERIES,
             ServiceStaticFilter.EXTERNAL_MEMBERS,
-            ServiceStaticFilter.EXTERNAL_PREGNANT_WOMEN
+            ServiceStaticFilter.EXTERNAL_PREGNANT_WOMEN,
         )
         staticFilters.forEach {
             dropdownList.add(

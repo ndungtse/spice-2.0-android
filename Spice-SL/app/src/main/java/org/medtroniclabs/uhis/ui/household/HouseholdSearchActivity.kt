@@ -21,11 +21,11 @@ import org.medtroniclabs.uhis.db.dao.HouseholdSortOrder
 import org.medtroniclabs.uhis.db.response.HouseHoldEntityWithLastActivity
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.ui.BaseActivity
+import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants
 import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.IS_FROM_HOUSEHOLD_REGISTRATION
 import org.medtroniclabs.uhis.ui.household.adapter.HouseholdListAdapter
 import org.medtroniclabs.uhis.ui.household.summary.HouseholdSummaryActivity
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseholdListViewModel
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants
 
 @AndroidEntryPoint
 class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
@@ -54,8 +54,14 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
 
     private fun applyPrefiltersFromDashboard() {
         if (preSelectedSsIds.isEmpty() && preSelectedSubVillageIds.isEmpty()) return
-        val ssFilters = preSelectedSsIds.map { org.medtroniclabs.uhis.data.model.ChipViewItemModel(id = it, name = "") }
-        val subVillageFilters = preSelectedSubVillageIds.map { org.medtroniclabs.uhis.data.model.ChipViewItemModel(id = it, name = "") }
+        val ssFilters = preSelectedSsIds.map {
+            org.medtroniclabs.uhis.data.model
+                .ChipViewItemModel(id = it, name = "")
+        }
+        val subVillageFilters = preSelectedSubVillageIds.map {
+            org.medtroniclabs.uhis.data.model
+                .ChipViewItemModel(id = it, name = "")
+        }
         householdListViewModel.setFilterLiveData(
             ssFilter = ssFilters,
             subVillagesFilter = subVillageFilters,

@@ -1592,4 +1592,5 @@
     <string name="service_name">সেবা</string>
     <string name="service_date">সেবার তারিখ</string>
     <string name="referral_status">রেফারেলের অবস্থা</string>
+    <string name="error_person_name">অনুগ্রহ করে সঠিক নাম লিখুন</string>
 </resources>

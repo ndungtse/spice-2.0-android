@@ -1,7 +1,7 @@
 package org.medtroniclabs.uhis.ui.dashboard.ncd
 
-import android.content.Intent
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,17 +24,11 @@ import org.medtroniclabs.uhis.data.NCDUserDashboardResponse
 import org.medtroniclabs.uhis.data.model.ChipViewItemModel
 import org.medtroniclabs.uhis.databinding.FragmentDashboardBinding
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
+import org.medtroniclabs.uhis.model.services.ServiceStaticFilter
 import org.medtroniclabs.uhis.ncd.medicalreview.CommonEnums
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseFragment
-import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.TagListCustomView
-import org.medtroniclabs.uhis.ui.dashboard.ncd.adapter.DashboardCardItem
-import org.medtroniclabs.uhis.ui.dashboard.ncd.adapter.UserDashboardAdapter
-import org.medtroniclabs.uhis.ui.dashboard.ncd.viewmodel.NCDDashBoardViewModel
-import org.medtroniclabs.uhis.ui.household.HouseholdSearchActivity
-import org.medtroniclabs.uhis.model.services.ServiceStaticFilter
-import org.medtroniclabs.uhis.ui.services.ServicesActivity
 import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_ANC
 import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_ANC_3_PLUS
 import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_ASSESSED
@@ -60,6 +54,11 @@ import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_TB_CONTAC
 import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.EXTRA_DASHBOARD_SS_IDS
 import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.EXTRA_DASHBOARD_STATIC_FILTER
 import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.EXTRA_DASHBOARD_SUB_VILLAGE_IDS
+import org.medtroniclabs.uhis.ui.dashboard.ncd.adapter.DashboardCardItem
+import org.medtroniclabs.uhis.ui.dashboard.ncd.adapter.UserDashboardAdapter
+import org.medtroniclabs.uhis.ui.dashboard.ncd.viewmodel.NCDDashBoardViewModel
+import org.medtroniclabs.uhis.ui.household.HouseholdSearchActivity
+import org.medtroniclabs.uhis.ui.services.ServicesActivity
 
 @AndroidEntryPoint
 class DashboardFragment : BaseFragment(), View.OnClickListener {
@@ -222,7 +221,14 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         val userDashboardList = ArrayList<DashboardCardItem>()
         entity.let {
             // Dedicated flow indicators
-            userDashboardList.add(DashboardCardItem(CARD_PREGNANT_WOMEN_REGISTRATION, getString(R.string.pregnant_women_registration), it.pregnantWomenRegistrationCount ?: 0, R.drawable.ic_rmnch_tool))
+            userDashboardList.add(
+                DashboardCardItem(
+                    CARD_PREGNANT_WOMEN_REGISTRATION,
+                    getString(R.string.pregnant_women_registration),
+                    it.pregnantWomenRegistrationCount ?: 0,
+                    R.drawable.ic_rmnch_tool,
+                ),
+            )
             userDashboardList.add(DashboardCardItem(CARD_ANC, getString(R.string.anc), it.ancCount ?: 0, R.drawable.ic_rmnch_tool))
             userDashboardList.add(
                 DashboardCardItem(
@@ -240,7 +246,9 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                     R.drawable.ic_rmnch_tool,
                 ),
             )
-            userDashboardList.add(DashboardCardItem(CARD_PREGNANCY_OUTCOME, getString(R.string.pregnancy_outcome), it.pregnancyOutcomeCount ?: 0, R.drawable.ic_rmnch_tool))
+            userDashboardList.add(
+                DashboardCardItem(CARD_PREGNANCY_OUTCOME, getString(R.string.pregnancy_outcome), it.pregnancyOutcomeCount ?: 0, R.drawable.ic_rmnch_tool),
+            )
             userDashboardList.add(DashboardCardItem(CARD_PNC, getString(R.string.pnc), it.pncCount ?: 0, R.drawable.ic_rmnch_tool))
             userDashboardList.add(
                 DashboardCardItem(
@@ -251,7 +259,14 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                 ),
             )
             userDashboardList.add(DashboardCardItem(CARD_CHILD_VISIT, getString(R.string.child_visit), it.childVisitCount ?: 0, R.drawable.ic_rmnch_tool))
-            userDashboardList.add(DashboardCardItem(CARD_HOUSEHOLD_REGISTERED, getString(R.string.household_registered), it.householdRegisteredCount ?: 0, R.drawable.ic_registration))
+            userDashboardList.add(
+                DashboardCardItem(
+                    CARD_HOUSEHOLD_REGISTERED,
+                    getString(R.string.household_registered),
+                    it.householdRegisteredCount ?: 0,
+                    R.drawable.ic_registration,
+                ),
+            )
             userDashboardList.add(
                 DashboardCardItem(
                     CARD_FAMILY_PLANNING,
@@ -300,8 +315,16 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun navigateFromDashboardCard(cardKey: String) {
-        val ssIds = viewModel.getFilterLiveData().value?.filterBySs?.mapNotNull { it.id } ?: emptyList()
-        val subVillageIds = viewModel.getFilterLiveData().value?.filterBySubVillages?.mapNotNull { it.id } ?: emptyList()
+        val ssIds = viewModel
+            .getFilterLiveData()
+            .value
+            ?.filterBySs
+            ?.mapNotNull { it.id } ?: emptyList()
+        val subVillageIds = viewModel
+            .getFilterLiveData()
+            .value
+            ?.filterBySubVillages
+            ?.mapNotNull { it.id } ?: emptyList()
         val intent = if (cardKey == CARD_HOUSEHOLD_REGISTERED) {
             Intent(requireActivity(), HouseholdSearchActivity::class.java).apply {
                 putExtra(EXTRA_DASHBOARD_SS_IDS, ssIds.toLongArray())
@@ -317,8 +340,8 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         startActivity(intent)
     }
 
-    private fun mapCardKeyToStaticFilter(cardKey: String): ServiceStaticFilter {
-        return when (cardKey) {
+    private fun mapCardKeyToStaticFilter(cardKey: String): ServiceStaticFilter =
+        when (cardKey) {
             CARD_FAMILY_PLANNING -> ServiceStaticFilter.FAMILY_PLANNING_COUNSELLING_ELIGIBLE
             CARD_PREGNANT_WOMEN_REGISTRATION -> ServiceStaticFilter.PREGNANT_WOMEN
             CARD_ANC, CARD_PW_IDENTIFIED_4_MONTHS_ANC, CARD_ANC_3_PLUS -> ServiceStaticFilter.PREGNANT_WOMEN
@@ -332,7 +355,6 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
             -> ServiceStaticFilter.ALL_MEMBERS
             else -> ServiceStaticFilter.ALL_MEMBERS
         }
-    }
 
     private fun showDatePickerDialog(
         isFromDate: Boolean,
@@ -399,8 +421,16 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                         val request = NCDUserDashboardRequest(
                             sortField = model.value,
                             userId = SecuredPreference.getUserFhirId(),
-                            filterBySs = viewModel.getFilterLiveData().value?.filterBySs?.mapNotNull { it.id },
-                            filterBySubVillages = viewModel.getFilterLiveData().value?.filterBySubVillages?.mapNotNull { it.id },
+                            filterBySs = viewModel
+                                .getFilterLiveData()
+                                .value
+                                ?.filterBySs
+                                ?.mapNotNull { it.id },
+                            filterBySubVillages = viewModel
+                                .getFilterLiveData()
+                                .value
+                                ?.filterBySubVillages
+                                ?.mapNotNull { it.id },
                         )
                         constructRequest(request)
                     }
@@ -424,8 +454,16 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                     ),
                 ),
                 userId = SecuredPreference.getUserFhirId(),
-                filterBySs = viewModel.getFilterLiveData().value?.filterBySs?.mapNotNull { it.id },
-                filterBySubVillages = viewModel.getFilterLiveData().value?.filterBySubVillages?.mapNotNull { it.id },
+                filterBySs = viewModel
+                    .getFilterLiveData()
+                    .value
+                    ?.filterBySs
+                    ?.mapNotNull { it.id },
+                filterBySubVillages = viewModel
+                    .getFilterLiveData()
+                    .value
+                    ?.filterBySubVillages
+                    ?.mapNotNull { it.id },
             )
             constructRequest(request)
         }

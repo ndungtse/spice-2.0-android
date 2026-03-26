@@ -889,6 +889,7 @@ interface RoomHelper {
         ssIds: List<Long>,
         subVillageIds: List<Long>,
     ): DashboardCountsRow?
+
     suspend fun insertMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity): Long
 
     suspend fun updateMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity)

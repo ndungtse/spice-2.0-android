@@ -136,6 +136,7 @@ import org.medtroniclabs.uhis.formgeneration.utility.CustomSpinnerAdapterCustomL
 import org.medtroniclabs.uhis.formgeneration.utility.DecimalInputFilter
 import org.medtroniclabs.uhis.formgeneration.utility.DigitsInputFilter
 import org.medtroniclabs.uhis.formgeneration.utility.FormFieldValidator
+import org.medtroniclabs.uhis.formgeneration.utility.PersonNameFilter
 import org.medtroniclabs.uhis.mappingkey.CommunityDetails
 import org.medtroniclabs.uhis.mappingkey.CommunityDetails.SelectedNetwork
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration
@@ -443,6 +444,10 @@ class FormGenerator(
                 inputFilter.add(DecimalInputFilter())
             }
 
+            if (optionType == EditTextOptionType.PERSON_NAME) {
+                inputFilter.add(PersonNameFilter())
+            }
+
             if (inputFilter.isNotEmpty()) {
                 try {
                     binding.etUserInput.filters = inputFilter.toTypedArray()
@@ -465,6 +470,10 @@ class FormGenerator(
                     InputType.TYPE_NUMBER_FLAG_DECIMAL ->
                         binding.etUserInput.inputType =
                             InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+
+                    InputType.TYPE_TEXT_VARIATION_PERSON_NAME ->
+                        binding.etUserInput.inputType =
+                            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS or InputType.TYPE_TEXT_VARIATION_PERSON_NAME
 
                     else -> {
                         binding.etUserInput.inputType = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
@@ -3645,9 +3654,7 @@ class FormGenerator(
                         )
                     ) {
                         val actualValue = resultHashMap[id]
-                        if (actualValue is String && actualValue.isEmpty() && !isMandatory) {
-                            hideValidationField(data)
-                        } else if (id == Screening.NoOfNeonates && resultHashMap[id].toString().toIntOrNull() == 0) {
+                        if (id == Screening.NoOfNeonates && resultHashMap[id].toString().toIntOrNull() == 0) {
                             isValid = false
                             requestFocusView(data)
                         } else {
@@ -3662,6 +3669,14 @@ class FormGenerator(
                                     isValid,
                                     data,
                                 )
+                            } else if (isValid && data.optionType == EditTextOptionType.PERSON_NAME) {
+                                val validationRegex = Regex(PersonNameFilter.VALIDATION_PATTERN)
+                                isValid = validationRegex.matches((resultHashMap[id] as? String) ?: "")
+                                if (isValid) {
+                                    hideValidationField(data)
+                                } else {
+                                    requestFocusView(data, context.getString(R.string.error_person_name))
+                                }
                             }
                         }
                     } else {

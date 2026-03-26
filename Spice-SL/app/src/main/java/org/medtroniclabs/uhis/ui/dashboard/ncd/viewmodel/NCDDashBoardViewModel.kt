@@ -18,8 +18,8 @@ import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.repo.HouseHoldRepository
 import org.medtroniclabs.uhis.ui.BaseViewModel
 import org.medtroniclabs.uhis.ui.boarding.repo.MetaRepository
-import org.medtroniclabs.uhis.ui.dashboard.ncd.repository.NCDDashBoardRepository
 import org.medtroniclabs.uhis.ui.dashboard.ncd.repository.DashboardLocalRepository
+import org.medtroniclabs.uhis.ui.dashboard.ncd.repository.NCDDashBoardRepository
 import javax.inject.Inject
 
 @HiltViewModel
