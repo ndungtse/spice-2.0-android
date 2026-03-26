@@ -1651,6 +1651,7 @@
     <string name="age_of_last_child">Age of Last Child</string>
     <string name="days_since_delivery">Days Since Delivery</string>
     <string name="high_risk_mother">High Risk Mother</string>
+    <string name="gaps_in_anc">Gaps in ANC</string>
     <string name="gaps_in_pnc">Gaps in PNC</string>
     <string name="counseling_education"><![CDATA[COUNSELING & EDUCATION]]></string>
     <string name="service_recipient_list"><![CDATA[Service Recipient List]]></string>
@@ -1680,4 +1681,7 @@
     <string name="service_date">Service Date</string>
     <string name="referral_status">Referral Status</string>
     <string name="error_person_name">Please enter valid name</string>
+    <string name="high_risk_indicators">⚠️ High risk indicators</string>
+    <string name="non_emergency_referral">ⓘ Non-Emergency referral</string>
+    <string name="assessment_result">Assessment Result</string>
 </resources>

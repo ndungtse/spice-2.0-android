@@ -47,14 +47,14 @@
             android:background="@drawable/purple_bg"
             android:clickable="true"
             android:focusable="true"
-            android:visibility="gone"
             android:fontFamily="@font/inter_bold"
             android:paddingHorizontal="@dimen/_24sdp"
             android:paddingVertical="@dimen/_12sdp"
             android:text="@string/call_peer_supervisor"
             android:textAlignment="center"
             android:textAllCaps="true"
-            android:textColor="@color/blue" />
+            android:textColor="@color/blue"
+            android:visibility="gone" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnDone"
@@ -62,10 +62,10 @@
             android:layout_width="match_parent"
             android:layout_gravity="center"
             android:layout_margin="@dimen/_8sdp"
+            android:layout_weight="1"
             android:background="@drawable/button_selector_cobalt"
             android:enabled="false"
             android:text="@string/done"
-            android:layout_weight="1"
             android:textAllCaps="true"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent" />
@@ -116,12 +116,11 @@
                         android:id="@+id/parentLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:divider="@drawable/divider_transparent_12"
                         android:orientation="vertical"
-                        android:paddingHorizontal="@dimen/_16sdp"
-                        android:paddingVertical="@dimen/_10sdp"
+                        android:padding="@dimen/_12sdp"
+                        android:showDividers="middle"
                         android:visibility="visible" />
-
-
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -142,10 +141,11 @@
                 style="@style/Form_Spinner_Style"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="@dimen/_4sdp"
+                android:layout_marginHorizontal="@dimen/_14sdp"
                 android:layout_marginVertical="@dimen/_8sdp"
-                android:layout_marginHorizontal="@dimen/_14sdp"                android:layout_marginTop="@dimen/_8sdp"
-                android:minHeight="@dimen/_40sdp" />
+                android:layout_marginTop="@dimen/_8sdp"
+                android:minHeight="@dimen/_40sdp"
+                android:paddingHorizontal="@dimen/_4sdp" />
 
             <TextView
                 android:id="@+id/tvNextFollowupDateTitle"

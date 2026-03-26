@@ -22,25 +22,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/riskResultLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_16sdp"
-                android:background="@drawable/curved_rectangle_background"
-                android:backgroundTint="@color/summary_assessment_color_selector"
-                android:fontFamily="@font/inter_bold"
-                android:padding="@dimen/_10sdp"
-                android:text="@string/referred_for_further_assessment"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_16ssp"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/resultCardView"
                 style="@style/CardView_Style"

@@ -1562,6 +1562,7 @@
     <string name="age_of_last_child">সবচেয়ে ছোট সন্তানের বয়স কত?</string>
     <string name="days_since_delivery">প্রসবের পর কততম দিন হয়েছে?</string>
     <string name="high_risk_mother">উচ্চ ঝুঁকিপূর্ণ মা-  রেফারালের কারণ</string>
+    <string name="gaps_in_anc">প্রসবপূর্ব সেবায় ঘাটতি</string>
     <string name="gaps_in_pnc">পিএনসি সময়ে / প্রসবের পর মায়ের জন্য প্রয়োজনীয় সেবায় ঘাটতি</string>
     <string name="counseling_education"><![CDATA[পরামর্শ]]></string>
     <string name="service_recipient_list"><![CDATA[সেবা গ্রহণকারীর তালিকা]]></string>
@@ -1593,4 +1594,7 @@
     <string name="service_date">সেবার তারিখ</string>
     <string name="referral_status">রেফারেলের অবস্থা</string>
     <string name="error_person_name">অনুগ্রহ করে সঠিক নাম লিখুন</string>
+    <string name="high_risk_indicators">⚠️ উচ্চ ঝুঁকির নির্দেশকসমূহ</string>
+    <string name="non_emergency_referral">ⓘ জরুরি নয় এমন রেফারেল</string>
+    <string name="assessment_result">মূল্যায়নের ফলাফল</string>
 </resources>

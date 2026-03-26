@@ -106,11 +106,9 @@ class ReferralResultGenerator {
             // Check for highRiskPregnantWoman or gapsInAnc in summary group
             val ancMap = map[RMNCH.ANC] as? Map<*, *>
             val summaryGroup = ancMap?.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<*, *>
-            val highRiskList = summaryGroup?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) as? List<*>
-            val gapsList = summaryGroup?.get(AssessmentDefinedParams.GAPS_IN_ANC) as? List<*>
 
             // If highRiskPregnantWoman has values, add referral reason
-            if (!highRiskList.isNullOrEmpty()) {
+            if (summaryGroup?.containsKey(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) == true) {
                 addResultMap(
                     AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN,
                     ReferralStatus.Referred.name,
@@ -121,7 +119,7 @@ class ReferralResultGenerator {
             }
 
             // If gapsInAnc has values, add referral reason
-            if (!gapsList.isNullOrEmpty()) {
+            if (summaryGroup?.containsKey(AssessmentDefinedParams.GAPS_IN_ANC) == true) {
                 addResultMap(
                     AssessmentDefinedParams.GAPS_IN_ANC,
                     ReferralStatus.Referred.name,
@@ -144,9 +142,21 @@ class ReferralResultGenerator {
         } else {
             val pncMap = map[RMNCH.PNC] as Map<String, Any>
             if (pncMap.containsKey(RMNCH.ID_MOTHER_RISKS)) {
-                addResultMap(ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns), ReferralStatus.Referred.name)
-                addReferralReason(ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns))
+                addResultMap(
+                    RMNCH.ID_MOTHER_RISKS,
+                    ReferralStatus.Referred.name,
+                )
+                addReferralReason(AssessmentDefinedParams.LABEL_HIGH_RISK_MOTHER)
             }
+
+            if (pncMap.containsKey(RMNCH.ID_PNC_GAPS)) {
+                addResultMap(
+                    RMNCH.ID_PNC_GAPS,
+                    ReferralStatus.Referred.name,
+                )
+                addReferralReason(AssessmentDefinedParams.LABEL_GAPS_IN_PNC)
+            }
+
             updateVisitCount(map, RMNCH.PNC)
         }
         return Pair(checkStatus(), referralReason)
@@ -185,15 +195,15 @@ class ReferralResultGenerator {
     private fun getVisitLabel(workFlow: String): String {
         when (workFlow) {
             RMNCH.ANC -> {
-                return RMNCH.ANCVisitNo
+                return RMNCH.ANC_VISIT_NO
             }
 
             RMNCH.ChildHoodVisit -> {
-                return RMNCH.ChildHoodVisitNo
+                return RMNCH.CHILDHOOD_VISIT_NO
             }
 
             RMNCH.PNC -> {
-                return RMNCH.PNCVisitNo
+                return RMNCH.PNC_VISIT_NO
             }
         }
 

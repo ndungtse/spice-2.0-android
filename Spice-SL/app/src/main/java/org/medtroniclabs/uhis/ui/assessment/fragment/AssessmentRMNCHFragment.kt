@@ -15,8 +15,6 @@ import androidx.core.text.color
 import androidx.core.view.children
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
@@ -32,8 +30,7 @@ import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import org.medtroniclabs.uhis.common.DateUtils.calculateAgeInMonths
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.EntityMapper
-import org.medtroniclabs.uhis.common.SecuredPreference
-import org.medtroniclabs.uhis.common.parseJsonStringToList
+import org.medtroniclabs.uhis.common.StringConverter
 import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
 import org.medtroniclabs.uhis.databinding.FragmentAssessmentRmnchBinding
 import org.medtroniclabs.uhis.db.entity.PregnancyDetail
@@ -59,10 +56,10 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.summaryKey
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.AnemiaLevel
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCAssessmentEvaluator
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCAssessmentEvaluator.isSelectionPresent
-import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCReferralType
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.PostpartumDangerSigns
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.ReferralResultGenerator
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.AncPncReferralType
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCHAssessmentEvaluator
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import java.text.SimpleDateFormat
@@ -258,7 +255,7 @@ class AssessmentRMNCHFragment :
             binding.llForm,
             this,
             binding.scrollView,
-            translate = SecuredPreference.getIsTranslationEnabled(),
+            translate = isTranslationEnabled,
             callback = { map, id ->
                 when (viewModel.workflowName) {
                     RMNCH.PNC -> {
@@ -686,42 +683,37 @@ class AssessmentRMNCHFragment :
      */
     private fun evaluateAndAddPncSummaryData(assessmentMap: HashMap<String, Any>) {
         val pncMap = assessmentMap[RMNCH.PNC] as? HashMap<String, Any> ?: return
-        val gson = Gson()
         // Update days since delivery
         getDaysSinceDelivery()?.let { days ->
             pncMap[RMNCH.ID_DAYS_SINCE_DELIVERY] = days
         }
         val gapsInPnc = PNCAssessmentEvaluator.getPncGaps(pncMap)
         if (gapsInPnc.isNotEmpty()) {
-            val gapsJson = gson.toJson(gapsInPnc)
-            pncMap[RMNCH.ID_PNC_GAPS] = gapsJson
+            pncMap[RMNCH.ID_PNC_GAPS] = gapsInPnc
         }
         val urgentReferrals = PNCAssessmentEvaluator.getUrgentReferral(pncMap)
         val nonUrgentReferrals = PNCAssessmentEvaluator.getNonUrgentReferral(pncMap)
-        val finalReferrals = urgentReferrals + nonUrgentReferrals
-        if (finalReferrals.isNotEmpty()) {
-            val referralType = if (urgentReferrals.isNotEmpty()) {
-                PNCReferralType.URGENT
-            } else {
-                PNCReferralType.NON_URGENT
-            }
-            val motherRisks = JsonObject()
-            val referralsJson = gson.toJsonTree(finalReferrals)
-            motherRisks.addProperty(RMNCH.KEY_REFERRAL_TYPE, referralType.name)
-            motherRisks.add(RMNCH.KEY_REFERRAL_VALUE, referralsJson)
-            pncMap[RMNCH.ID_MOTHER_RISKS] = motherRisks.toString()
+        val motherRisks = hashMapOf<String, Any>()
+        if (urgentReferrals.isNotEmpty()) {
+            motherRisks[AncPncReferralType.URGENT.name] = urgentReferrals
         }
-        val pncIllness = JsonObject()
+        if (nonUrgentReferrals.isNotEmpty()) {
+            motherRisks[AncPncReferralType.NON_URGENT.name] = nonUrgentReferrals
+        }
+        if (motherRisks.isNotEmpty()) {
+            pncMap[RMNCH.ID_MOTHER_RISKS] = motherRisks
+        }
+        val pncIllness = hashMapOf<String, Any?>()
         (pncMap[RMNCH.ID_MATERNAL_HEALTH_ASSESSMENT] as? Map<*, *>)?.let { maternalAssessment ->
             val anemiaLevel = PNCAssessmentEvaluator.getAnemiaLevel(pncMap)
-            pncIllness.addProperty(RMNCH.ID_DM_PATIENT, maternalAssessment[RMNCH.ID_DM_PATIENT] as? String)
-            pncIllness.addProperty(RMNCH.ID_GDM_PATIENT, maternalAssessment[RMNCH.ID_GDM_PATIENT] as? String)
-            pncIllness.addProperty(RMNCH.ID_KNOWN_HTN, maternalAssessment[RMNCH.ID_KNOWN_HTN] as? String)
-            pncIllness.addProperty(RMNCH.ID_ECLAMPSIA, maternalAssessment[RMNCH.ID_ECLAMPSIA] as? String)
-            pncIllness.addProperty(RMNCH.ID_ANEMIA, anemiaLevel.name)
-            pncIllness.addProperty(RMNCH.ID_BLOOD_SUGAR, PNCAssessmentEvaluator.isHighBloodSugar(pncMap))
+            pncIllness[RMNCH.ID_DM_PATIENT] = maternalAssessment[RMNCH.ID_DM_PATIENT] as? String
+            pncIllness[RMNCH.ID_GDM_PATIENT] = maternalAssessment[RMNCH.ID_GDM_PATIENT] as? String
+            pncIllness[RMNCH.ID_KNOWN_HTN] = maternalAssessment[RMNCH.ID_KNOWN_HTN] as? String
+            pncIllness[RMNCH.ID_ECLAMPSIA] = maternalAssessment[RMNCH.ID_ECLAMPSIA] as? String
+            pncIllness[RMNCH.ID_ANEMIA] = anemiaLevel.name
+            pncIllness[RMNCH.ID_BLOOD_SUGAR] = PNCAssessmentEvaluator.isHighBloodSugar(pncMap)
         }
-        pncMap[RMNCH.ID_PNC_ILLNESS] = pncIllness.toString()
+        pncMap[RMNCH.ID_PNC_ILLNESS] = pncIllness
     }
 
     private fun calculateGestationalAge(
@@ -1118,7 +1110,7 @@ class AssessmentRMNCHFragment :
         // Pre-fill existing illness from last visit
         if (visitNumber > 1) {
             viewModel.pregnancyDetailLiveData.value?.pregnantWomanExistingIllness?.let { existingIllness ->
-                val existingIllnessList = parseJsonStringToList<String>(existingIllness)
+                val existingIllnessList = StringConverter.convertStringToList<String>(existingIllness)
                 val existingIllnessValue: ArrayList<HashMap<String, Any>> = ArrayList(existingIllnessList.map { hashMapOf(DefinedParams.Value to it) })
                 formGenerator.getFormLayout(AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS)?.let { formLayout ->
                     formGenerator.validateCheckboxDialogue(AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS, formLayout, existingIllnessValue)
@@ -1901,8 +1893,7 @@ class AssessmentRMNCHFragment :
 
             // Build title with status
             if (statusText != null && statusText.isNotEmpty()) {
-                val translate = SecuredPreference.getIsTranslationEnabled()
-                val displayStatus = if (translate && !statusTextCulture.isNullOrBlank()) {
+                val displayStatus = if (isTranslationEnabled && !statusTextCulture.isNullOrBlank()) {
                     statusTextCulture
                 } else {
                     statusText
@@ -2055,7 +2046,7 @@ class AssessmentRMNCHFragment :
 
         // Evaluate highRiskPregnantWoman
         val (dangerSignsList, hasOtherSelected) = getDangerSignsValues(ancHashMap, AssessmentDefinedParams.GROUP_DANGER_SIGNS_RISK_IDENTIFICATION)
-        val emergencyConditions = evaluateEmergencyReferralConditions(ancHashMap)
+        val emergencyConditions = evaluateEmergencyReferralConditions(ancHashMap).toMutableList()
         val nonEmergencyConditions = evaluateNonEmergencyReferralConditions(
             ancHashMap,
             viewModel.memberDetailsLiveData.value
@@ -2064,8 +2055,7 @@ class AssessmentRMNCHFragment :
             hasOtherSelected,
         )
 
-        // Combine all high risk conditions
-        val combinedHighRiskList = mutableListOf<String>()
+        val highRiskMap = hashMapOf<String, Any>()
         dangerSignsList.forEach { dangerSign ->
             // Split by comma, trim, and filter out "None" (defensive check)
             val individualSigns = dangerSign
@@ -2075,14 +2065,19 @@ class AssessmentRMNCHFragment :
                     it.isNotEmpty() &&
                         !it.equals(DefinedParams.None, ignoreCase = true)
                 }
-            combinedHighRiskList.addAll(individualSigns)
+            emergencyConditions.addAll(individualSigns)
         }
-        combinedHighRiskList.addAll(emergencyConditions)
-        combinedHighRiskList.addAll(nonEmergencyConditions)
+        // Combine all high risk conditions
+        if (emergencyConditions.isNotEmpty()) {
+            highRiskMap[AncPncReferralType.URGENT.name] = emergencyConditions
+        }
+        if (nonEmergencyConditions.isNotEmpty()) {
+            highRiskMap[AncPncReferralType.NON_URGENT.name] = nonEmergencyConditions
+        }
 
         // Add to summary group
-        if (combinedHighRiskList.isNotEmpty()) {
-            summaryGroup[AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN] = combinedHighRiskList
+        if (highRiskMap.isNotEmpty()) {
+            summaryGroup[AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN] = highRiskMap
         }
 
         // Evaluate gapsInAnc

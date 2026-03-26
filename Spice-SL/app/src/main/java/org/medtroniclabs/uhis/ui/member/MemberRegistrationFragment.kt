@@ -350,12 +350,16 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                     resource.data?.let { data ->
                         val resultMap = getResultSpinnerMapList(data)
                         resultMap.add(
-                            mapOf(
+                            0,
+                            formGenerator.createDefaultMap(),
+                        )
+                        resultMap.add(
+                            hashMapOf(
                                 DefinedParams.ID to MemberRegistration.ADD_GUARDIAN_ID,
                                 DefinedParams.NAME to getString(R.string.add_guardian),
                             ),
                         )
-                        formGenerator.spinnerDataInjection(data, resultMap)
+                        formGenerator.spinnerDataInjection(data, resultMap, false)
 
                         // Set guardian ID if available (for edit mode)
                         pendingGuardianId?.let { guardianId ->

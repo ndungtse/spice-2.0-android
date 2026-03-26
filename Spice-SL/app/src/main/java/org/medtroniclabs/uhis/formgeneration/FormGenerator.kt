@@ -1491,7 +1491,6 @@ class FormGenerator(
                                 dependentID,
                                 formLayout,
                             )
-                            onPopulateCondition(condition)
                         }
 
                         override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -1524,7 +1523,6 @@ class FormGenerator(
                                 formLayout,
                             )
                             callback?.invoke(resultHashMap, id)
-                            onPopulateCondition(condition)
                         }
 
                         override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -1575,7 +1573,7 @@ class FormGenerator(
         selectedItem?.let {
             val selectedId = it[DefinedParams.ID]
             val selectedName = it[DefinedParams.NAME]
-            if ((selectedId is String && selectedId == "-1")) {
+            if (selectedId is String && selectedId == "-1") {
                 if (resultHashMap.containsKey(id)) {
                     handleId(id)
                     dependentID?.let { deptId ->
@@ -1625,15 +1623,6 @@ class FormGenerator(
             setConditionalVisibility(formLayout, selectedId)
         } else if (selectedId is Long && selectedName is String) {
             setConditionalVisibility(formLayout, selectedName)
-        }
-    }
-
-    private fun onPopulateCondition(condition: java.util.ArrayList<ConditionalModel>?) {
-        if (!condition.isNullOrEmpty()) {
-            val id = condition[0].targetId
-            if (!id.isNullOrBlank()) {
-                listener.onPopulate(id)
-            }
         }
     }
 
@@ -4192,14 +4181,19 @@ class FormGenerator(
         }
     }
 
+    /**
+     * Injects data to **Spinner** view with
+     * adding default option if [shouldAddDefault] is true && either not mandatory or list > 1
+     */
     fun spinnerDataInjection(
         data: LocalSpinnerResponse,
         mapList: ArrayList<Map<String, Any>>,
+        shouldAddDefault: Boolean = true,
     ) {
         val spinner = getViewByTag(data.tag) as? AppCompatSpinner ?: return
         val mandatory = serverData?.find { it.id == data.tag }?.isMandatory ?: false
         if (spinner.adapter is CustomSpinnerAdapter) {
-            if (!mandatory || mapList.size != 1) {
+            if (shouldAddDefault && (!mandatory || mapList.size != 1)) {
                 mapList.add(0, createDefaultMap())
             }
             (spinner.adapter as CustomSpinnerAdapter).setData(mapList)
@@ -4212,7 +4206,10 @@ class FormGenerator(
         }
     }
 
-    private fun createDefaultMap(): Map<String, Any> =
+    /**
+     * Creates a default item for spinner
+     */
+    fun createDefaultMap(): Map<String, Any> =
         hashMapOf(
             DefinedParams.NAME to getString(R.string.please_select),
             DefinedParams.ID to DefaultID,

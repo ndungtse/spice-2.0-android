@@ -77,6 +77,7 @@
 
     <color name="very_low_risk_color">#00A944</color>
     <color name="low_risk_color">#F6BB36</color>
+    <color name="low_risk_color_alpha_30">#30F6BB36</color>
     <color name="medium_risk_color">#FD8A31</color>
     <color name="medium_high_risk_color">#E31B28</color>
     <color name="high_risk_color">#4B0007</color>
@@ -88,6 +89,7 @@
     <color name="divider">#888B8D</color>
     <color name="notification_red">#D0342C</color>
     <color name="red_risk">#994242</color>
+    <color name="red_risk_alpha_30">#30994242</color>
     <color name="red_risk_moderate">#EB956A</color>
     <color name="red_risk_safe">#54CC90</color>
     <color name="graph_marker_bg">#FAFAFA</color>
@@ -126,4 +128,5 @@
     <color name="bg_community_statics">#E1E2FC</color>
     <color name="background_job_aid_">#1AEB956A</color>
     <color name="bg_peer_notification_card">#EFEDFF</color>
+    <color name="bg_gaps_color">#F5F5FF</color>
 </resources>

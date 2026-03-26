@@ -23,6 +23,7 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.MMOLL
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.NAME
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.NCD_SYMPTOMS
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.SYMPTOMS_LOG
+import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.statuslogic.AssessmentStatus
 import java.util.Locale
@@ -131,8 +132,8 @@ object AssessmentUtil {
             MenuConstants.CATARACT_MENU_ID.lowercase() -> "Cataract"
             MenuConstants.PREGNANCY_OUTCOME.lowercase() -> "Pregnancy Outcome"
             RMNCH.ANC.lowercase() -> "ANC"
-            RMNCH.pnc_mother_key.lowercase() -> "PNC"
-            RMNCH.ChildHoodVisit.lowercase() -> "Child Visit"
+            RMNCH.PNC_MOTHER_MENU.lowercase() -> "PNC"
+            RMNCH.CHILD_MENU.lowercase() -> "Child Visit"
             else -> service.uppercase(Locale.ENGLISH)
         }
 
@@ -146,9 +147,14 @@ object AssessmentUtil {
     ): String =
         when (service.lowercase()) {
             RMNCH.ANC.lowercase(),
-            RMNCH.pnc_mother_key.lowercase(),
+            RMNCH.PNC_MOTHER_MENU.lowercase(),
+            RMNCH.CHILD_MENU.lowercase(),
             -> {
-                referralStatus?.uppercase(Locale.ENGLISH)
+                if (ReferralStatus.Referred.name.equals(referralStatus, true)) {
+                    referralStatus?.uppercase(Locale.ENGLISH)
+                } else {
+                    context.getString(R.string.na)
+                }
             }
 
             else -> context.getString(R.string.na)
@@ -164,7 +170,7 @@ object AssessmentUtil {
     ): String =
         when (service.lowercase()) {
             RMNCH.ANC.lowercase(),
-            RMNCH.pnc_mother_key.lowercase(),
+            RMNCH.PNC_MOTHER_MENU.lowercase(),
             -> {
                 followUpDate?.let {
                     DateUtils.convertDateFormat(

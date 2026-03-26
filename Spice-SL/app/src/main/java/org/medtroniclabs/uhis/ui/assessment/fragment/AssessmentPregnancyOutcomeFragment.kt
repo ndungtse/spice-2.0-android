@@ -20,7 +20,6 @@ import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsUtils
 import org.medtroniclabs.uhis.common.DefinedParams
-import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
 import org.medtroniclabs.uhis.databinding.CardLayoutBinding
 import org.medtroniclabs.uhis.databinding.CheckboxDialogSpinnerLayoutBinding
@@ -159,7 +158,7 @@ class AssessmentPregnancyOutcomeFragment :
             binding.llForm,
             this,
             binding.scrollView,
-            translate = SecuredPreference.getIsTranslationEnabled(),
+            translate = isTranslationEnabled,
             callback = { resultMap, changedFieldId ->
                 if (changedFieldId == AssessmentDefinedParams.ID_LIVE_BIRTH_NUMBERS) {
                     val count = (resultMap[AssessmentDefinedParams.ID_LIVE_BIRTH_NUMBERS] as? Number)?.toInt() ?: 0
@@ -212,15 +211,13 @@ class AssessmentPregnancyOutcomeFragment :
             )
         }
 
-        val translate = SecuredPreference.getIsTranslationEnabled()
-
         for (babyIndex in 1..effectiveCount) {
             // Ensure baby data map exists for this baby
             if (!babyDataMap.containsKey(babyIndex)) {
                 babyDataMap[babyIndex] = HashMap()
             }
 
-            val babyCard = createBabyCard(babyIndex, translate)
+            val babyCard = createBabyCard(babyIndex, isTranslationEnabled)
             container.addView(babyCard)
         }
 

@@ -1,7 +1,5 @@
 package org.medtroniclabs.uhis.ui.assessment.referrallogic
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonParser
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
@@ -324,18 +322,4 @@ object PNCAssessmentEvaluator {
         value: Any?,
         target: String = "present",
     ): Boolean = (value as? String)?.equals(target, ignoreCase = true) == true
-
-    /**
-     * Returns risks from risks string
-     */
-    fun getRisks(risks: String?): Pair<PNCReferralType, JsonArray>? {
-        if (risks.isNullOrBlank()) return null
-        val motherRisk = JsonParser.parseString(risks).asJsonObject
-        val referralType = try {
-            PNCReferralType.valueOf(motherRisk.get(RMNCH.KEY_REFERRAL_TYPE).asString)
-        } catch (_: Exception) {
-            PNCReferralType.NONE
-        }
-        return referralType to motherRisk.get(RMNCH.KEY_REFERRAL_VALUE).asJsonArray
-    }
 }

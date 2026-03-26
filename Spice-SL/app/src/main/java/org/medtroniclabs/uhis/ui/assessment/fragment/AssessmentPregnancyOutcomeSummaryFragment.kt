@@ -8,19 +8,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import androidx.core.text.color
+import androidx.core.view.setPadding
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.common.DateUtils
-import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.common.StringConverter
 import org.medtroniclabs.uhis.databinding.CardLayoutBinding
 import org.medtroniclabs.uhis.databinding.FragmentAssessmentPregnancyOutcomeSummaryBinding
 import org.medtroniclabs.uhis.databinding.InstructionLayoutBinding
 import org.medtroniclabs.uhis.formgeneration.FormSupport.translateTitle
+import org.medtroniclabs.uhis.formgeneration.config.ViewType
+import org.medtroniclabs.uhis.formgeneration.extension.px
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.formgeneration.utility.InformationLayoutFragment
 import org.medtroniclabs.uhis.model.AssessmentSummaryModel
@@ -83,7 +86,6 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
     }
 
     private fun attachObservers() {
-        updateStatusBar()
         // Load pregnancy details to get EDD for preterm calculation
         viewModel.getPregnancyDetailInformation()
         viewModel.pregnancyDetailLiveData.observe(viewLifecycleOwner) {
@@ -95,11 +97,6 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
         viewModel.assessmentStringLiveData.value?.let {
             renderSummaryData(it)
         }
-    }
-
-    private fun updateStatusBar() {
-        // Status bar removed for pregnancy outcome - hide it
-        binding.riskResultLayout.visibility = View.GONE
     }
 
     /**
@@ -180,7 +177,6 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
     }
 
     private fun composeSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        val isTranslationEnabled = SecuredPreference.getIsTranslationEnabled()
         listSummaryData.forEach { item ->
             val isOldCounselling = item.id == AssessmentDefinedParams.COUNSELLING_ABORTION ||
                 item.id == AssessmentDefinedParams.COUNSELLING_STILL_BIRTH ||
@@ -319,7 +315,6 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
     }
 
     private fun formatCauseOfDeath(value: Any?): String {
-        val isTranslationEnabled = SecuredPreference.getIsTranslationEnabled()
         if (value is List<*>) {
             val names = value.mapNotNull { item ->
                 when (item) {
@@ -586,7 +581,6 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
         val formLayouts = viewModel.formLayoutsLiveData.value
             ?.data
             ?.formLayout ?: return
-        val isTranslationEnabled = SecuredPreference.getIsTranslationEnabled()
 
         // Get counselling card layout for title
         val counsellingCardLayout = formLayouts.firstOrNull {
@@ -597,7 +591,7 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
         val counsellingItems = formLayouts
             .filter {
                 it.family == AssessmentDefinedParams.COUNSELLING_ADVERSE_EVENT &&
-                    it.viewType == "Instruction" &&
+                    it.viewType == ViewType.VIEW_TYPE_INSTRUCTION &&
                     it.isSummary == true &&
                     (
                         it.id == AssessmentDefinedParams.COUNSELLING_EMOTIONAL_SUPPORT ||
@@ -612,6 +606,9 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
 
         // Create Counselling CardView using CardLayoutBinding
         val counsellingCardBinding = CardLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+        counsellingCardBinding.llFamilyRoot.showDividers = LinearLayout.SHOW_DIVIDER_MIDDLE
+        counsellingCardBinding.llFamilyRoot.setPadding(12.px)
+        counsellingCardBinding.llFamilyRoot.dividerDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.divider_transparent_12)
 
         // Set card title
         counsellingCardLayout?.let { cardLayout ->
@@ -668,6 +665,7 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
     ) {
         with(formLayout) {
             val instructionBinding = InstructionLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+            instructionBinding.root.setBackgroundResource(R.drawable.bg_red_risk_orange)
             instructionBinding.tvTitle.text = translateTitle(titleCulture, title, isTranslationEnabled)
             instructionBinding.tvTitle.visibility = View.VISIBLE
             instructionBinding.tvTitle.setTextColor(Color.BLACK)

@@ -67,15 +67,19 @@ object StringConverter {
             in 0..3 -> {
                 context.getString(R.string.phq4_normal, score)
             }
+
             in 4..5 -> {
                 context.getString(R.string.phq4_mild, score)
             }
+
             in 6..8 -> {
                 context.getString(R.string.phq4_moderate, score)
             }
+
             in 9..12 -> {
                 context.getString(R.string.phq4_severe, score)
             }
+
             else -> score.toString()
         }
 
@@ -161,5 +165,42 @@ object StringConverter {
             returnMap
         } catch (e: Exception) {
             null
+        }
+
+    /**
+     * Converts a list/array to JSON string for database storage
+     */
+    fun convertListToString(value: Any?): String? =
+        when (value) {
+            is List<*> -> {
+                val stringList = value.filterIsInstance<String>()
+                if (stringList.isNotEmpty()) {
+                    Gson().toJson(stringList)
+                } else {
+                    null
+                }
+            }
+
+            is Array<*> -> {
+                val stringList = value.filterIsInstance<String>()
+                if (stringList.isNotEmpty()) {
+                    Gson().toJson(stringList.toList())
+                } else {
+                    null
+                }
+            }
+
+            else -> null
+        }
+
+    /**
+     * Parses a JSON string to a List
+     */
+    fun <T> convertStringToList(jsonString: String): List<T> =
+        try {
+            val type: Type = object : TypeToken<List<T>>() {}.type
+            Gson().fromJson(jsonString, type) ?: emptyList()
+        } catch (_: Exception) {
+            emptyList()
         }
 }

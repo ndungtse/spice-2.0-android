@@ -84,6 +84,7 @@ import retrofit2.Response
 import timber.log.Timber
 import java.io.File
 import java.lang.reflect.Type
+import java.util.Locale
 import javax.inject.Inject
 
 class OfflineSyncRepository @Inject constructor(
@@ -134,7 +135,7 @@ class OfflineSyncRepository @Inject constructor(
                     latitude = entity.latitude,
                     longitude = entity.longitude,
                     customStatus = entity.status?.filter { it.isNotBlank() },
-                    visitNumber = getVisitNumber(entity.assessmentType, assessmentDetail, entity.neonatePatientId, entity.neonatePatientReferenceId),
+                    visitNumber = getVisitNumber(entity.assessmentType, assessmentDetail),
                     pregnancyEpisodeId = getPregnancyEpisodeId(entity),
                 ),
                 followUpId = entity.followUpId,
@@ -173,7 +174,7 @@ class OfflineSyncRepository @Inject constructor(
 //        }
 
         // CBS changes for PNC Neonate
-        if (assessmentType == RMNCH.pnc_neonate_key.lowercase()) {
+        if (assessmentType == RMNCH.PNC_NEONATE_KEY.lowercase()) {
             updateCbsForRMNCH(assessmentDetails, followUpDetails, PNCNeonatal)
         }
 
@@ -206,21 +207,14 @@ class OfflineSyncRepository @Inject constructor(
     private fun getVisitNumber(
         assessmentType: String,
         assessmentDetails: JsonElement,
-        neonatePatientId: String?,
-        neonatePatientReferenceId: Long?,
-    ): Long? {
+    ): Long? =
         when (assessmentType.lowercase()) {
-            RMNCH.ANC.lowercase() -> return getRMNCHVisitNumber(ANC, assessmentDetails)
-            RMNCH.pnc_mother_key.lowercase() -> return getRMNCHPNCVisitNumber(PNC, assessmentDetails, neonatePatientId, neonatePatientReferenceId)
-            RMNCH.pnc_neonate_key.lowercase() -> return getRMNCHVisitNumber(PNCNeonatal, assessmentDetails)
-            RMNCH.CHILD_MENU.lowercase() -> return getRMNCHVisitNumber(
-                ChildHoodVisit,
-                assessmentDetails,
-            )
-
-            else -> return null
+            RMNCH.ANC.lowercase() -> getRMNCHVisitNumber(ANC, assessmentDetails)
+            RMNCH.PNC_MOTHER_MENU.lowercase() -> getRMNCHVisitNumber(PNC, assessmentDetails)
+            RMNCH.PNC_NEONATE_KEY.lowercase() -> getRMNCHVisitNumber(PNCNeonatal, assessmentDetails)
+            RMNCH.CHILD_MENU.lowercase() -> getRMNCHVisitNumber(ChildHoodVisit, assessmentDetails)
+            else -> null
         }
-    }
 
     private fun getRMNCHVisitNumber(
         key: String,
@@ -413,7 +407,7 @@ class OfflineSyncRepository @Inject constructor(
                     history.memberFhirId,
                     memberId,
                     history.visitDate,
-                    history.serviceProvided,
+                    history.serviceProvided?.uppercase(Locale.ENGLISH),
                 )
 
                 if (existingHistory != null) {

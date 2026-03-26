@@ -12,9 +12,10 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.setPadding
+import androidx.core.view.updateMarginsRelative
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
-import com.google.gson.JsonParser
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams.DONEBUTTONTRIGGERED
@@ -34,6 +35,7 @@ import org.medtroniclabs.uhis.databinding.InstructionLayoutBinding
 import org.medtroniclabs.uhis.formgeneration.FormSupport.translateTitle
 import org.medtroniclabs.uhis.formgeneration.config.ViewType
 import org.medtroniclabs.uhis.formgeneration.extension.capitalizeFirstChar
+import org.medtroniclabs.uhis.formgeneration.extension.px
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.utility.CustomSpinnerAdapterCustomLayout
@@ -43,8 +45,6 @@ import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
-import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCAssessmentEvaluator
-import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCReferralType
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ChildHoodVisit
@@ -55,6 +55,7 @@ import org.medtroniclabs.uhis.ui.cbs.activity.CbsActivity
 import org.medtroniclabs.uhis.ui.household.HouseholdSearchActivity
 import org.medtroniclabs.uhis.ui.services.ServicesActivity
 import java.util.Calendar
+import kotlin.collections.get
 
 class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     lateinit var binding: FragmentRmnchSummaryBinding
@@ -113,15 +114,6 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun updateStatusBar() {
-        // For ANC workflow, referral facility visibility is handled in initSummaryViewByWorkFlowName
-        // based on highRiskPregnantWoman and gapsInAnc values
-        if (viewModel.workflowName == RMNCH.ANC) {
-            // Visibility is already set in initSummaryViewByWorkFlowName, just update status
-            if (binding.labelPhuReferred.visibility == View.VISIBLE) {
-                viewModel.referralStatus = ReferralStatus.Referred.name
-            }
-        }
-
         when (viewModel.referralStatus) {
             ReferralStatus.Referred.name -> {
                 binding.riskResultLayout.backgroundTintList =
@@ -158,12 +150,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         viewModel.assessmentStringLiveData.value?.let { mapString ->
             val map = StringConverter.stringToMap(mapString)
             binding.parentLayout.removeAllViews()
-            if (viewModel.workflowName == RMNCH.PNC) {
-                bindRmnchSummaryView(
-                    getString(R.string.patient_status),
-                    getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen),
-                )
-            } else if (viewModel.workflowName == RMNCH.ChildHoodVisit) {
+            if (viewModel.workflowName == RMNCH.ChildHoodVisit) {
                 bindRmnchSummaryView(
                     getString(R.string.child_status),
                     getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen),
@@ -190,6 +177,13 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
      * Binds summary for ANC
      */
     private fun bindAncSummary(map: HashMap<String, Any>) {
+        // Find the index right after resultCardView to insert gaps card & counselling card
+        val resultCardIndex = binding.scrollViewLL.indexOfChild(binding.resultCardView)
+        var insertIndex = if (resultCardIndex >= 0) resultCardIndex + 1 else -1
+
+        updateStatusBar()
+        binding.tvTitle.setText(R.string.assessment_result)
+        binding.labelPhuReferred.setText(R.string.referral_health_facility)
         // For ANC, show Next Follow-up Date with label "Follow up Visit"
         binding.etNextFollowUpDate.visible()
         binding.tvNextFollowupDateTitle.visible()
@@ -208,126 +202,93 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         // First, read values to check if referral facility should be shown
         val ancMap = map[RMNCH.ANC] as? Map<*, *>
         val summaryGroup = ancMap?.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<*, *>
-        val highRiskList = (summaryGroup?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) as? List<*>)?.filterIsInstance<String>() ?: emptyList()
-        val gapsList = (summaryGroup?.get(AssessmentDefinedParams.GAPS_IN_ANC) as? List<*>)?.filterIsInstance<String>() ?: emptyList()
-
-        // Show referral facility only if highRiskPregnantWoman or gapsInAnc has values
-        val hasHighRiskOrGaps = highRiskList.isNotEmpty() || gapsList.isNotEmpty()
-        if (hasHighRiskOrGaps) {
-            viewModel.referralStatus = ReferralStatus.Referred.name
-            binding.labelPhuReferred.text = AssessmentDefinedParams.LABEL_REFERRAL_FACILITY
-            binding.labelPhuReferred.visible()
-            binding.etPhuChange.visible()
-        } else {
-            binding.labelPhuReferred.gone()
-            binding.etPhuChange.gone()
-        }
-
-        viewModel.formLayoutsLiveData.value
-            ?.data
-            ?.formLayout
-            ?.filter { it.isSummary == true }
-            ?.filter {
-                it.id == AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN ||
-                    it.id == AssessmentDefinedParams.GAPS_IN_ANC
-            }?.sortedBy { it.orderId ?: Int.MAX_VALUE }
-            ?.forEach { data ->
-                with(data) {
-                    updateStatusBar()
-                    // For High Risk pregnant woman and Gaps in ANC, read from result map
-                    if (id == AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) {
-                        // Display heading only
-                        val displayTitle = title
-                        with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
-                            with(tvTitle) {
-                                text = displayTitle
-                                setTypeface(null, Typeface.BOLD)
-                            }
-                            binding.parentLayout.addView(root)
+        val highRiskList = (summaryGroup?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) as? Map<*, *>)
+        if (!highRiskList.isNullOrEmpty()) {
+            val urgentReferralList = highRiskList[RMNCH.AncPncReferralType.URGENT.name] as? List<String>
+            val nonUrgentReferralList = highRiskList[RMNCH.AncPncReferralType.NON_URGENT.name] as? List<String>
+            if (!urgentReferralList.isNullOrEmpty()) {
+                with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
+                    root.setPadding(0)
+                    with(tvTitle) {
+                        setText(R.string.high_risk_indicators)
+                        setTypeface(null, Typeface.BOLD)
+                    }
+                    binding.parentLayout.addView(root)
+                }
+                urgentReferralList.forEach { condition ->
+                    with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
+                        root.setPadding(0)
+                        with(tvTitle) {
+                            setPadding(8.px)
+                            text = "  • $condition" // Use bigger bullet (•)
+                            setTextColor(ContextCompat.getColor(requireContext(), R.color.red_risk))
+                            setBackgroundResource(R.drawable.bg_high_risk)
                         }
-
-                        // Display all high risk conditions as list items
-                        if (highRiskList.isNotEmpty()) {
-                            highRiskList.forEach { condition ->
-                                with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
-                                    with(tvTitle) {
-                                        text = "  • $condition" // Use bigger bullet (•)
-                                        setTextColor(Color.RED)
-                                    }
-                                    binding.parentLayout.addView(root)
-                                }
-                            }
-                        } else {
-                            // Show hyphen if no high risk conditions
-                            with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
-                                with(tvTitle) {
-                                    text = getString(R.string.no_risk_identified)
-                                }
-                                binding.parentLayout.addView(root)
-                            }
-                        }
-                    } else if (id == AssessmentDefinedParams.GAPS_IN_ANC) {
-                        // Display heading only
-                        val displayTitle = title
-                        with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
-                            with(tvTitle) {
-                                text = displayTitle
-                                setTypeface(null, Typeface.BOLD)
-                            }
-                            binding.parentLayout.addView(root)
-                        }
-
-                        // Add gaps as list items
-                        if (gapsList.isNotEmpty()) {
-                            gapsList.forEach { gap ->
-                                with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
-                                    with(tvTitle) {
-                                        text = "  • $gap" // Use bigger bullet (•)
-                                    }
-                                    binding.parentLayout.addView(root)
-                                }
-                            }
-                        } else {
-                            // Show hyphen if no gaps
-                            with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
-                                with(tvTitle) {
-                                    text = getString(R.string.no_gaps_found)
-                                }
-                                binding.parentLayout.addView(root)
-                            }
-                        }
-                    } else {
-                        val displayValue = getValueFromMap(
-                            map,
-                            id,
-                            viewType,
-                            RMNCH.ANC,
-                            isBooleanAnswer,
-                            Triple(
-                                getString(R.string.yes),
-                                getString(R.string.no),
-                                getString(R.string.hyphen_symbol),
-                            ),
-                            requireContext(),
-                        )
-                        bindRmnchSummaryView(
-                            titleSummary ?: (titleCulture ?: title),
-                            displayValue,
-                        )
+                        binding.parentLayout.addView(root)
                     }
                 }
             }
-        bindAncInstructions(ancMap)
+            if (!nonUrgentReferralList.isNullOrEmpty()) {
+                with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
+                    root.setPadding(0)
+                    with(tvTitle) {
+                        setText(R.string.non_emergency_referral)
+                        setTypeface(null, Typeface.BOLD)
+                    }
+                    binding.parentLayout.addView(root)
+                }
+                nonUrgentReferralList.forEach { condition ->
+                    with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
+                        root.setPadding(0)
+                        with(tvTitle) {
+                            setPadding(8.px)
+                            text = "  • $condition" // Use bigger bullet (•)
+                            setTextColor(ContextCompat.getColor(requireContext(), R.color.low_risk_color))
+                            setBackgroundResource(R.drawable.bg_low_risk)
+                        }
+                        binding.parentLayout.addView(root)
+                    }
+                }
+            }
+        } else {
+            binding.resultCardView.gone()
+        }
+        val gapsList = (summaryGroup?.get(AssessmentDefinedParams.GAPS_IN_ANC) as? List<String>)
+        if (!gapsList.isNullOrEmpty()) {
+            val gapsCardBinding = getCounsellingCardBinding()
+            gapsCardBinding.cardTitle.setText(R.string.gaps_in_anc)
+            gapsList.forEach { condition ->
+                with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
+                    root.setPadding(0)
+                    with(tvTitle) {
+                        setPadding(8.px)
+                        text = "  • $condition" // Use bigger bullet (•)
+                        setBackgroundResource(R.drawable.bg_gaps)
+                    }
+                    gapsCardBinding.llFamilyRoot.addView(root)
+                }
+            }
+            val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            layoutParams.updateMarginsRelative(start = 6.px, end = 6.px)
+            // Insert gaps card
+            if (insertIndex >= 0) {
+                binding.scrollViewLL.addView(gapsCardBinding.root, insertIndex, layoutParams)
+            } else {
+                // Fallback: add to end
+                binding.scrollViewLL.addView(gapsCardBinding.root, layoutParams)
+            }
+            insertIndex += 1
+        }
+        bindAncInstructions(ancMap, insertIndex)
     }
 
     /**
      * Binds instructions card for PNC
      */
-    private fun bindAncInstructions(ancMap: Map<*, *>?) {
-        // Find the index right after resultCardView to insert counselling card
-        val resultCardIndex = binding.scrollViewLL.indexOfChild(binding.resultCardView)
-        val insertIndex = if (resultCardIndex >= 0) resultCardIndex + 1 else -1
-
+    private fun bindAncInstructions(
+        ancMap: Map<*, *>?,
+        insertIndex: Int,
+    ) {
         // Get counselling card layout info for title
         val counsellingCardLayout = viewModel.formLayoutsLiveData.value
             ?.data
@@ -438,7 +399,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         // Only create counselling card if there are items to display
         if (!counsellingItems.isNullOrEmpty()) {
             // Create Counselling CardView using CardLayoutBinding
-            val counsellingCardBinding = CardLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+            val counsellingCardBinding = getCounsellingCardBinding()
 
             // Set card title
             counsellingCardLayout?.let { cardLayout ->
@@ -460,12 +421,14 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 addInstructionsCard(data, counsellingCardBinding.llFamilyRoot)
             }
 
-            // Insert counselling card after result card
+            val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            layoutParams.updateMarginsRelative(start = 6.px, end = 6.px)
+            // Insert counselling card
             if (insertIndex >= 0) {
-                binding.scrollViewLL.addView(counsellingCardBinding.root, insertIndex)
+                binding.scrollViewLL.addView(counsellingCardBinding.root, insertIndex, layoutParams)
             } else {
                 // Fallback: add to end
-                binding.scrollViewLL.addView(counsellingCardBinding.root)
+                binding.scrollViewLL.addView(counsellingCardBinding.root, layoutParams)
             }
         }
     }
@@ -479,7 +442,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     ) {
         with(data) {
             val instructionBinding = InstructionLayoutBinding.inflate(LayoutInflater.from(requireContext()))
-            val isTranslationEnabled = SecuredPreference.getIsTranslationEnabled()
+            instructionBinding.root.setBackgroundResource(R.drawable.bg_red_risk_orange)
             instructionBinding.tvTitle.text = translateTitle(titleCulture, title, isTranslationEnabled)
             instructionBinding.tvTitle.visibility = View.VISIBLE
             instructionBinding.tvTitle.setTextColor(Color.BLACK)
@@ -507,13 +470,18 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
      * Binds summary for PNC
      */
     private fun bindPNCSummary(map: HashMap<String, Any>) {
+        // Find the index right after resultCardView to insert gaps card & counselling card
+        val resultCardIndex = binding.scrollViewLL.indexOfChild(binding.resultCardView)
+        var insertIndex = if (resultCardIndex >= 0) resultCardIndex + 1 else -1
+
         updateStatusBar()
+        binding.tvTitle.setText(R.string.assessment_result)
         binding.labelPhuReferred.setText(R.string.referral_health_facility)
         binding.etNextFollowUpDate.visible()
         binding.tvNextFollowupDateTitle.visible()
         binding.tvNextFollowupDateTitle.text = AssessmentDefinedParams.LABEL_FOLLOW_UP_VISIT
-        val pncMap = map[RMNCH.PNC] as? Map<String, Any> ?: emptyMap()
-        val maternalHealth = pncMap[RMNCH.ID_MATERNAL_HEALTH_ASSESSMENT] as? Map<*, *>
+        val pncMap = map[RMNCH.PNC] as? Map<String, Any>
+        val maternalHealth = pncMap?.get(RMNCH.ID_MATERNAL_HEALTH_ASSESSMENT) as? Map<*, *>
         val daysSinceDelivery = CommonUtils.getInteger(maternalHealth?.get(RMNCH.ID_DAYS_SINCE_DELIVERY))
         // Load Referral Facility spinner options from JSON
         loadReferralFacilityOptions()
@@ -542,80 +510,90 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         binding.etNextFollowUpDate.text = followUpDate
         updateFollowUpDate(followUpDate ?: "")
 
-        // Risk
-        with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
-            with(tvTitle) {
-                setText(R.string.high_risk_mother)
-                setTypeface(null, Typeface.BOLD)
-            }
-            binding.parentLayout.addView(root)
-        }
-        val risks = PNCAssessmentEvaluator.getRisks(pncMap[RMNCH.ID_MOTHER_RISKS] as? String)
-        if (risks?.first == PNCReferralType.URGENT && !risks.second.isEmpty) {
-            risks.second.forEach { condition ->
+        val highRiskList = (pncMap?.get(RMNCH.ID_MOTHER_RISKS) as? Map<*, *>)
+        if (!highRiskList.isNullOrEmpty()) {
+            val urgentReferralList = highRiskList[RMNCH.AncPncReferralType.URGENT.name] as? List<String>
+            val nonUrgentReferralList = highRiskList[RMNCH.AncPncReferralType.NON_URGENT.name] as? List<String>
+            if (!urgentReferralList.isNullOrEmpty()) {
                 with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
+                    root.setPadding(0)
                     with(tvTitle) {
-                        text = "  • ${condition.asString}" // Use bigger bullet (•)
-                        setTextColor(Color.RED)
+                        setText(R.string.high_risk_indicators)
+                        setTypeface(null, Typeface.BOLD)
                     }
                     binding.parentLayout.addView(root)
                 }
+                urgentReferralList.forEach { condition ->
+                    with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
+                        root.setPadding(0)
+                        with(tvTitle) {
+                            setPadding(8.px)
+                            text = "  • $condition" // Use bigger bullet (•)
+                            setTextColor(ContextCompat.getColor(requireContext(), R.color.red_risk))
+                            setBackgroundResource(R.drawable.bg_high_risk)
+                        }
+                        binding.parentLayout.addView(root)
+                    }
+                }
             }
-        } else if (risks?.first == PNCReferralType.NON_URGENT && !risks.second.isEmpty) {
-            risks.second.forEach { condition ->
+            if (!nonUrgentReferralList.isNullOrEmpty()) {
                 with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
+                    root.setPadding(0)
                     with(tvTitle) {
-                        text = "  • ${condition.asString}" // Use bigger bullet (•)
+                        setText(R.string.non_emergency_referral)
+                        setTypeface(null, Typeface.BOLD)
                     }
                     binding.parentLayout.addView(root)
                 }
-            }
-        } else {
-            with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
-                with(tvTitle) {
-                    setText(R.string.separator_double_hyphen)
-                }
-                binding.parentLayout.addView(root)
-            }
-        }
-
-        with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
-            with(tvTitle) {
-                setText(R.string.gaps_in_pnc)
-                setTypeface(null, Typeface.BOLD)
-            }
-            binding.parentLayout.addView(root)
-        }
-        val gaps = if (pncMap.containsKey(RMNCH.ID_PNC_GAPS)) {
-            JsonParser.parseString(pncMap[RMNCH.ID_PNC_GAPS] as String).asJsonArray
-        } else {
-            null
-        }
-        if (gaps != null && !gaps.isEmpty) {
-            gaps.forEach { condition ->
-                with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
-                    with(tvTitle) {
-                        text = "  • ${condition.asString}" // Use bigger bullet (•)
+                nonUrgentReferralList.forEach { condition ->
+                    with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
+                        root.setPadding(0)
+                        with(tvTitle) {
+                            setPadding(8.px)
+                            text = "  • $condition" // Use bigger bullet (•)
+                            setTextColor(ContextCompat.getColor(requireContext(), R.color.low_risk_color))
+                            setBackgroundResource(R.drawable.bg_low_risk)
+                        }
+                        binding.parentLayout.addView(root)
                     }
-                    binding.parentLayout.addView(root)
                 }
             }
         } else {
-            with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
-                with(tvTitle) {
-                    setText(R.string.separator_double_hyphen)
-                }
-                binding.parentLayout.addView(root)
-            }
+            binding.resultCardView.gone()
         }
-
-        bindPNCInstructions()
+        val gapsList = (pncMap?.get(RMNCH.ID_PNC_GAPS) as? List<String>)
+        if (!gapsList.isNullOrEmpty()) {
+            val gapsCardBinding = getCounsellingCardBinding()
+            gapsCardBinding.cardTitle.setText(R.string.gaps_in_anc)
+            gapsList.forEach { condition ->
+                with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
+                    root.setPadding(0)
+                    with(tvTitle) {
+                        setPadding(8.px)
+                        text = "  • $condition" // Use bigger bullet (•)
+                        setBackgroundResource(R.drawable.bg_gaps)
+                    }
+                    gapsCardBinding.llFamilyRoot.addView(root)
+                }
+            }
+            val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            layoutParams.updateMarginsRelative(start = 6.px, end = 6.px)
+            // Insert gaps card
+            if (insertIndex >= 0) {
+                binding.scrollViewLL.addView(gapsCardBinding.root, insertIndex, layoutParams)
+            } else {
+                // Fallback: add to end
+                binding.scrollViewLL.addView(gapsCardBinding.root, layoutParams)
+            }
+            insertIndex += 1
+        }
+        bindPNCInstructions(insertIndex)
     }
 
     /**
      * Binds instructions card for PNC
      */
-    private fun bindPNCInstructions() {
+    private fun bindPNCInstructions(insertIndex: Int) {
         val formLayouts = viewModel.formLayoutsLiveData.value
             ?.data
             ?.formLayout ?: return
@@ -639,7 +617,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         // Only create counseling card if there are items to display
         if (counselingItems.isNotEmpty()) {
             // Create Counselling CardView using CardLayoutBinding
-            val counsellingCardBinding = CardLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+            val counsellingCardBinding = getCounsellingCardBinding()
 
             // Set card title
             counselingCardLayout?.let { cardLayout ->
@@ -662,16 +640,14 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 addInstructionsCard(data, counsellingCardBinding.llFamilyRoot)
             }
 
-            // Find the index right after resultCardView to insert counseling card
-            val resultCardIndex = binding.scrollViewLL.indexOfChild(binding.resultCardView)
-            val insertIndex = if (resultCardIndex >= 0) resultCardIndex + 1 else -1
-
-            // Insert counseling card after result card
+            val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            layoutParams.updateMarginsRelative(start = 6.px, end = 6.px)
+            // Insert counseling card
             if (insertIndex >= 0) {
-                binding.scrollViewLL.addView(counsellingCardBinding.root, insertIndex)
+                binding.scrollViewLL.addView(counsellingCardBinding.root, insertIndex, layoutParams)
             } else {
                 // Fallback: add to end
-                binding.scrollViewLL.addView(counsellingCardBinding.root)
+                binding.scrollViewLL.addView(counsellingCardBinding.root, layoutParams)
             }
         }
     }
@@ -725,6 +701,17 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                      */
                 }
             }
+    }
+
+    /**
+     * @return Returns counselling card layout binding
+     */
+    fun getCounsellingCardBinding(): CardLayoutBinding {
+        val counsellingCardBinding = CardLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+        counsellingCardBinding.llFamilyRoot.showDividers = LinearLayout.SHOW_DIVIDER_MIDDLE
+        counsellingCardBinding.llFamilyRoot.setPadding(12.px)
+        counsellingCardBinding.llFamilyRoot.dividerDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.divider_transparent_12)
+        return counsellingCardBinding
     }
 
     /**

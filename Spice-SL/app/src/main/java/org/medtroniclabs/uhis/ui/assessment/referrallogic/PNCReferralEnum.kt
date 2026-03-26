@@ -66,15 +66,6 @@ enum class PNCSupplementation(val value: String) {
 }
 
 /**
- * PNC referral type
- */
-enum class PNCReferralType {
-    URGENT,
-    NON_URGENT,
-    NONE,
-}
-
-/**
  * Anemia level
  */
 enum class AnemiaLevel {

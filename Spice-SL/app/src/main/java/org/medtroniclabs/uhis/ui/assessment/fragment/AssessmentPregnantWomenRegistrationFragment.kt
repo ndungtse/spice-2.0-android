@@ -16,7 +16,6 @@ import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DateUtils.formatGestationalAge
 import org.medtroniclabs.uhis.common.EntityMapper
-import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
 import org.medtroniclabs.uhis.databinding.FragmentAssessmentBinding
 import org.medtroniclabs.uhis.formgeneration.FormGenerator
@@ -109,7 +108,7 @@ class AssessmentPregnantWomenRegistrationFragment :
             binding.llForm,
             this,
             binding.scrollView,
-            translate = SecuredPreference.getIsTranslationEnabled(),
+            translate = isTranslationEnabled,
             callback = { resultHashMap, id ->
                 when (id.lowercase(Locale.ENGLISH)) {
                     PregnantWomen.ID_LMP -> {

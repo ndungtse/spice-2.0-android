@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import com.google.gson.JsonParser
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.getLongTime
 import org.medtroniclabs.uhis.common.DateUtils
@@ -17,13 +16,12 @@ import org.medtroniclabs.uhis.common.DateUtils.calculateGestationalAge
 import org.medtroniclabs.uhis.common.DateUtils.formatGestationalAge
 import org.medtroniclabs.uhis.common.DateUtils.getLastMenstrualDate
 import org.medtroniclabs.uhis.common.DateUtils.getV2YearMonthAndWeek
-import org.medtroniclabs.uhis.common.parseJsonStringToList
+import org.medtroniclabs.uhis.common.StringConverter
 import org.medtroniclabs.uhis.databinding.FragmentPregnancyDetailsRmnchBinding
 import org.medtroniclabs.uhis.db.entity.PregnancyDetail
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
-import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCAssessmentEvaluator
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 
@@ -198,27 +196,44 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
             // Display these BEFORE Date of Visit (only for ANC workflow)
             if (visitCount > 1) {
                 // High risk pregnant woman
+                val highRiskList = arrayListOf<String>()
                 pregnancyDetail?.highRiskPregnantWoman?.let { highRiskJson ->
-                    val highRiskList: List<String> = parseJsonStringToList(highRiskJson)
-                    if (highRiskList.isNotEmpty()) {
-                        val highRiskDisplay = highRiskList.joinToString(", ")
-                        createSummary(
-                            AssessmentDefinedParams.LABEL_HIGH_RISK_PREGNANT_WOMAN,
-                            highRiskDisplay,
-                        )
+                    val highRisk = StringConverter.convertStringToMap(highRiskJson)
+                    highRisk?.forEach { (_, value) ->
+                        (value as? List<String>)?.let {
+                            highRiskList.addAll(it)
+                        }
                     }
+                }
+                if (highRiskList.isNotEmpty()) {
+                    val highRiskDisplay = highRiskList.joinToString()
+                    createSummary(
+                        AssessmentDefinedParams.LABEL_HIGH_RISK_PREGNANT_WOMAN,
+                        highRiskDisplay,
+                    )
+                } else {
+                    createSummary(
+                        AssessmentDefinedParams.LABEL_HIGH_RISK_PREGNANT_WOMAN,
+                        getString(R.string.na),
+                    )
                 }
 
                 // Gaps in ANC
+                val gapsList = arrayListOf<String>()
                 pregnancyDetail?.gapsInAnc?.let { gapsJson ->
-                    val gapsList: List<String> = parseJsonStringToList(gapsJson)
-                    if (gapsList.isNotEmpty()) {
-                        val gapsDisplay = gapsList.joinToString(", ")
-                        createSummary(
-                            AssessmentDefinedParams.LABEL_GAPS_IN_ANC,
-                            gapsDisplay,
-                        )
-                    }
+                    gapsList.addAll(StringConverter.convertStringToList(gapsJson))
+                }
+                if (gapsList.isNotEmpty()) {
+                    val gapsDisplay = gapsList.joinToString()
+                    createSummary(
+                        AssessmentDefinedParams.LABEL_GAPS_IN_ANC,
+                        gapsDisplay,
+                    )
+                } else {
+                    createSummary(
+                        AssessmentDefinedParams.LABEL_GAPS_IN_ANC,
+                        getString(R.string.na),
+                    )
                 }
             }
 
@@ -247,31 +262,42 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
             if (visitCount > 1) {
                 val gapsInPnc = pregnancyDetail?.gapsInPnc
                 val highRiskMother = pregnancyDetail?.highRiskMother
-                val risks = PNCAssessmentEvaluator.getRisks(highRiskMother)
-                if (risks != null && !risks.second.isEmpty) {
-                    val risksArray = mutableListOf<String>()
-                    risks.second.forEach {
-                        risksArray.add(it.asString)
+                val highRiskList = arrayListOf<String>()
+                if (!highRiskMother.isNullOrBlank()) {
+                    val highRisk = StringConverter.convertStringToMap(highRiskMother)
+                    highRisk?.forEach { (_, value) ->
+                        (value as? List<String>)?.let {
+                            highRiskList.addAll(it)
+                        }
                     }
-                    val risksString = risksArray.joinToString(", ")
+                }
+                if (highRiskList.isNotEmpty()) {
+                    val risksString = highRiskList.joinToString()
                     createSummary(
                         getString(R.string.high_risk_mother),
                         risksString,
                     )
+                } else {
+                    createSummary(
+                        getString(R.string.high_risk_mother),
+                        getString(R.string.na),
+                    )
                 }
+                val gapsList = arrayListOf<String>()
                 if (!gapsInPnc.isNullOrBlank()) {
-                    val gapsJsonArray = JsonParser.parseString(gapsInPnc).asJsonArray
-                    if (!gapsJsonArray.isEmpty) {
-                        val gapsArray = mutableListOf<String>()
-                        gapsJsonArray.forEach {
-                            gapsArray.add(it.asString)
-                        }
-                        val gapsString = gapsArray.joinToString(", ")
-                        createSummary(
-                            getString(R.string.gaps_in_pnc),
-                            gapsString,
-                        )
-                    }
+                    gapsList.addAll(StringConverter.convertStringToList(gapsInPnc))
+                }
+                if (gapsList.isNotEmpty()) {
+                    val gapsString = gapsList.joinToString()
+                    createSummary(
+                        getString(R.string.gaps_in_pnc),
+                        gapsString,
+                    )
+                } else {
+                    createSummary(
+                        getString(R.string.gaps_in_pnc),
+                        getString(R.string.na),
+                    )
                 }
             }
             pregnancyDetail?.dateOfDelivery?.let { clinicalDate ->

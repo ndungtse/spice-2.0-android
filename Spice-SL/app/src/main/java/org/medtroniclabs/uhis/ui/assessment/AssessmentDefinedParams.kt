@@ -368,11 +368,16 @@ object AssessmentDefinedParams {
 
     const val ANC_VISIT_DATE = "ancVisitDate"
 
-    // RMNCH Summary Labels
-    const val LABEL_REFERRAL_FACILITY = "Referral Facility"
-    const val LABEL_FOLLOW_UP_VISIT = "Follow up Visit"
     const val LABEL_HIGH_RISK_PREGNANT_WOMAN = "High risk pregnant woman"
+
     const val LABEL_GAPS_IN_ANC = "Gaps in ANC"
+
+    const val LABEL_HIGH_RISK_MOTHER = "High risk mother"
+
+    const val LABEL_GAPS_IN_PNC = "Gaps in PNC"
+
+    // RMNCH Summary Labels
+    const val LABEL_FOLLOW_UP_VISIT = "Follow up Visit"
 
     // Facility Identified For Delivery option IDs
     const val FACILITY_NOT_IDENTIFIED = "notIdentified"
@@ -573,7 +578,6 @@ object AssessmentDefinedParams {
     }
 
     const val FAMILY_PLANNING_FORM = "family_planning_form"
-    const val PREGNANT_WOMEN_PROFILE = "pwProfile"
     const val PREGNANT_WOMEN_PROFILE_FORM = "pregnancy_woman_profile"
     const val RMNCH_ANC_FORM = "rmnch_anc_visit"
 

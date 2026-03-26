@@ -10,7 +10,7 @@ import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.utils.AssessmentUtil
 
 /**
- * Object class to calculate status for different work flows
+ * Object class to evaluate status for different work flows
  */
 object AssessmentStatusGenerator {
     fun evaluateStatus(

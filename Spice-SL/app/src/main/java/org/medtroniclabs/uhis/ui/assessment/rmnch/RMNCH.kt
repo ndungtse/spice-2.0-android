@@ -32,7 +32,6 @@ object RMNCH {
     const val pncChildSigns = "pncChildSigns"
     const val otherChildhoodVisitSigns = "otherChildhoodVisitSigns"
     const val otherSigns = "otherSigns"
-    const val ancSigns = "ancSigns"
     const val ancSignsLabel = "ANC Signs"
     const val otherAncSigns = "otherAncSigns"
     const val pncNeonateSignsLabel = "PNC Neonate Signs"
@@ -44,14 +43,13 @@ object RMNCH {
     const val otherPncMotherSigns = "otherPncMotherSigns"
     const val PREGNANCY_MIN_AGE = 10
     const val PREGNANCY_MAX_AGE = 49
-    const val pnc_mother_key = "PNC_MOTHER"
-    const val pnc_neonate_key = "PNC_NEONATE"
-    const val muac = "muac"
-    const val Pregnancy = "Pregnant, "
+    const val PNC_MOTHER_MENU = "PNC_MOTHER"
+    const val PNC_NEONATE_KEY = "PNC_NEONATE"
+    const val MUAC = "muac"
 
-    const val ANCVisitNo = "ANC Visit "
-    const val PNCVisitNo = "PNC Visit "
-    const val ChildHoodVisitNo = "Childhood Visit "
+    const val ANC_VISIT_NO = "ANC Visit "
+    const val PNC_VISIT_NO = "PNC Visit "
+    const val CHILDHOOD_VISIT_NO = "Childhood Visit "
 
     const val deathOfNewborn = "deathOfNewborn"
     const val deathOfBaby = "deathOfBaby"
@@ -227,9 +225,6 @@ object RMNCH {
      */
     const val ID_ANEMIA = "anemia"
 
-    const val KEY_REFERRAL_TYPE = "referralType"
-    const val KEY_REFERRAL_VALUE = "referralValue"
-
     fun getValueFromMap(
         resultMap: HashMap<String, Any>,
         id: String,
@@ -254,7 +249,7 @@ object RMNCH {
                 } else {
                     when (value) {
                         is String -> {
-                            return if (id == muac) {
+                            return if (id == MUAC) {
                                 context.getString(
                                     R.string.nutrition_summary,
                                     value,
@@ -455,7 +450,7 @@ object RMNCH {
         when (workflowName) {
             ANC -> return ANC.uppercase(Locale.getDefault())
             ChildHoodVisit -> return CHILD_MENU.uppercase(Locale.getDefault())
-            PNC -> return pnc_mother_key.uppercase(Locale.getDefault())
+            PNC -> return PNC_MOTHER_MENU.uppercase(Locale.getDefault())
         }
         return MenuConstants.RMNCH_MENU_ID.uppercase(Locale.getDefault())
     }
@@ -473,5 +468,13 @@ object RMNCH {
             }
         }
         return deathOfMother
+    }
+
+    /**
+     * ANC/PNC referral type
+     */
+    enum class AncPncReferralType {
+        URGENT,
+        NON_URGENT,
     }
 }

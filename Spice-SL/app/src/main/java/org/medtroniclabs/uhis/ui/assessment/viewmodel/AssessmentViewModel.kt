@@ -360,7 +360,7 @@ class AssessmentViewModel @Inject constructor(
                         visitDate = DateUtils.formatDate(
                             it.createdAt,
                         ),
-                        serviceProvided = menuId,
+                        serviceProvided = menuId?.uppercase(Locale.ENGLISH),
                         customStatus = status,
                         latestVisit = true,
                         referralStatus = referralStatus,
@@ -473,6 +473,7 @@ class AssessmentViewModel @Inject constructor(
                     ?: timeOfDeath[DefinedParams.id]?.toString()
                 !timeOfDeathId.isNullOrBlank()
             }
+
             else -> false
         }
 
@@ -594,24 +595,25 @@ class AssessmentViewModel @Inject constructor(
             // Extract and save previousPregnancyComplications (string)
             val medicalExaminationData = ancMap.get(AssessmentDefinedParams.GROUP_MEDICAL_HISTORY_PHYSICAL_EXAMINATION) as? Map<String, Any>
             val complications = medicalExaminationData?.get(AssessmentDefinedParams.PREVIOUS_PREGNANCY_COMPLICATIONS)
-            pregnancyDetail.previousPregnancyComplications = convertListToString(complications)
+            pregnancyDetail.previousPregnancyComplications = StringConverter.convertListToString(complications)
 
             // Extract and save pregnantWomanExistingIllness (list of strings -> JSON)
             val existingIllness = medicalExaminationData?.get(AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS)
-            pregnancyDetail.pregnantWomanExistingIllness = convertListToString(existingIllness)
+            pregnancyDetail.pregnantWomanExistingIllness = StringConverter.convertListToString(existingIllness)
 
             // Extract and save pregnantWomanOnTreatment (list of strings -> JSON)
             val onTreatment = medicalExaminationData?.get(AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT)
-            pregnancyDetail.pregnantWomanOnTreatment = convertListToString(onTreatment)
+            pregnancyDetail.pregnantWomanOnTreatment = StringConverter.convertListToString(onTreatment)
 
             // Extract and save highRiskPregnantWoman (list of strings -> JSON)
             val summary = ancMap[AssessmentDefinedParams.GROUP_SUMMARY] as? Map<String, Any>
-            val highRisk = summary?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN)
-            pregnancyDetail.highRiskPregnantWoman = convertListToString(highRisk)
+            val highRisk = summary?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) as? HashMap<*, *>
+            val highRiskString = highRisk?.let { StringConverter.convertGivenMapToString(highRisk) }
+            pregnancyDetail.highRiskPregnantWoman = highRiskString
 
             // Extract and save gapsInAnc (list of strings -> JSON)
             val gapsInAnc = summary?.get(AssessmentDefinedParams.GAPS_IN_ANC)
-            pregnancyDetail.gapsInAnc = convertListToString(gapsInAnc)
+            pregnancyDetail.gapsInAnc = StringConverter.convertListToString(gapsInAnc)
 
             // Weight during visit
             val weight = CommonUtils.getDouble(medicalExaminationData?.get(Screening.Weight)).takeIf { it > 0 }
@@ -636,32 +638,6 @@ class AssessmentViewModel @Inject constructor(
             getPatientVisitCountByType(ANC, details.id)
         }
     }
-
-    /**
-     * Converts a list/array to JSON string for database storage
-     */
-    private fun convertListToString(value: Any?): String? =
-        when (value) {
-            is List<*> -> {
-                val stringList = value.filterIsInstance<String>()
-                if (stringList.isNotEmpty()) {
-                    Gson().toJson(stringList)
-                } else {
-                    null
-                }
-            }
-
-            is Array<*> -> {
-                val stringList = value.filterIsInstance<String>()
-                if (stringList.isNotEmpty()) {
-                    Gson().toJson(stringList.toList())
-                } else {
-                    null
-                }
-            }
-
-            else -> null
-        }
 
     fun saveCallResult(
         serverData: List<FormLayout>?,
@@ -1245,24 +1221,6 @@ class AssessmentViewModel @Inject constructor(
         memberDetail: AssessmentMemberDetails,
     ) {
         when (workflowName) {
-            ANC -> {
-                pregnancyDetail.ancVisitNo =
-                    getVisitNumber(pregnancyDetail.ancVisitNo)
-                pregnancyDetail.lastMenstrualPeriod = getClinicalDate(
-                    pregnancyDetail.lastMenstrualPeriod,
-                    details[lastMenstrualPeriod],
-                )
-                details[RMNCH.visitNo] = pregnancyDetail.ancVisitNo ?: 0L
-                details[lastMenstrualPeriod] = pregnancyDetail.lastMenstrualPeriod ?: ""
-                pregnancyDetail.pncVisitNo = 0
-                pregnancyDetail.dateOfDelivery = null
-                pregnancyDetail.noOfNeonates = null
-                pregnancyDetail.neonatePatientId = null
-                pregnancyDetail.isDeliveryAtHome = null
-                pregnancyDetail.neonateHouseholdMemberLocalId = null
-                pregnancyDetail.isNeonateDeathRecordedByPHU = null
-            }
-
             RMNCH.PNC -> {
                 val visitNo = getVisitNumber(pregnancyDetail.pncVisitNo)
                 pregnancyDetail.pncVisitNo = visitNo
@@ -1282,14 +1240,14 @@ class AssessmentViewModel @Inject constructor(
                 pregnancyDetail.ancVisitNo = 0
                 pregnancyDetail.lastMenstrualPeriod = null
                 pregnancyDetail.estimatedDeliveryDate = null
-                (details[RMNCH.ID_PNC_GAPS] as? String)?.let {
-                    pregnancyDetail.gapsInPnc = it
+                (details[RMNCH.ID_PNC_GAPS] as? List<*>)?.let {
+                    pregnancyDetail.gapsInPnc = StringConverter.convertListToString(it)
                 }
-                (details[RMNCH.ID_MOTHER_RISKS] as? String)?.let {
-                    pregnancyDetail.highRiskMother = it
+                (details[RMNCH.ID_MOTHER_RISKS] as? HashMap<*, *>)?.let {
+                    pregnancyDetail.highRiskMother = StringConverter.convertGivenMapToString(it)
                 }
-                (details[RMNCH.ID_PNC_ILLNESS] as? String)?.let {
-                    pregnancyDetail.pncIllness = it
+                (details[RMNCH.ID_PNC_ILLNESS] as? HashMap<*, *>)?.let {
+                    pregnancyDetail.pncIllness = StringConverter.convertGivenMapToString(it)
                 }
                 updatePregnantStatus(memberDetail.id, false)
             }
@@ -1502,7 +1460,7 @@ class AssessmentViewModel @Inject constructor(
             val assessmentResult = assessmentRepository.saveAssessment(
                 assessmentDetail.second,
                 memberDetail,
-                RMNCH.pnc_mother_key,
+                RMNCH.PNC_MOTHER_MENU,
                 motherReferralResult,
                 null,
                 followUpId,
@@ -1515,7 +1473,7 @@ class AssessmentViewModel @Inject constructor(
                     visitDate = DateUtils.formatDate(
                         it.createdAt,
                     ),
-                    serviceProvided = RMNCH.pnc_mother_key,
+                    serviceProvided = RMNCH.PNC_MOTHER_MENU.uppercase(Locale.ENGLISH),
                     customStatus = status,
                     latestVisit = true,
                     referralStatus = referralStatus,

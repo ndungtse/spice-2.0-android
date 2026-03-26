@@ -307,20 +307,20 @@
         <error line="14" column="9" source="standard:property-naming" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/FormGenerator.kt">
+        <error line="4062" column="1" source="standard:if-else-wrapping" />
+        <error line="4063" column="1" source="standard:if-else-wrapping" />
+        <error line="4064" column="1" source="standard:if-else-wrapping" />
+        <error line="4065" column="1" source="standard:if-else-wrapping" />
+        <error line="4066" column="1" source="standard:if-else-wrapping" />
+        <error line="4067" column="1" source="standard:if-else-wrapping" />
+        <error line="4068" column="1" source="standard:if-else-wrapping" />
+        <error line="4069" column="1" source="standard:if-else-wrapping" />
+        <error line="4070" column="1" source="standard:if-else-wrapping" />
+        <error line="4071" column="1" source="standard:if-else-wrapping" />
+        <error line="4072" column="1" source="standard:if-else-wrapping" />
         <error line="4073" column="1" source="standard:if-else-wrapping" />
         <error line="4074" column="1" source="standard:if-else-wrapping" />
         <error line="4075" column="1" source="standard:if-else-wrapping" />
-        <error line="4076" column="1" source="standard:if-else-wrapping" />
-        <error line="4077" column="1" source="standard:if-else-wrapping" />
-        <error line="4078" column="1" source="standard:if-else-wrapping" />
-        <error line="4079" column="1" source="standard:if-else-wrapping" />
-        <error line="4080" column="1" source="standard:if-else-wrapping" />
-        <error line="4081" column="1" source="standard:if-else-wrapping" />
-        <error line="4082" column="1" source="standard:if-else-wrapping" />
-        <error line="4083" column="1" source="standard:if-else-wrapping" />
-        <error line="4084" column="1" source="standard:if-else-wrapping" />
-        <error line="4085" column="1" source="standard:if-else-wrapping" />
-        <error line="4086" column="1" source="standard:if-else-wrapping" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/config/DefinedParams.kt">
         <error line="6" column="15" source="standard:property-naming" />
@@ -1031,12 +1031,12 @@
         <error line="1" column="1" source="standard:filename" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/ui/assessment/fragment/AssessmentPregnancyOutcomeFragment.kt">
+        <error line="57" column="17" source="standard:property-naming" />
         <error line="58" column="17" source="standard:property-naming" />
-        <error line="59" column="17" source="standard:property-naming" />
-        <error line="800" column="13" source="standard:if-else-wrapping" />
-        <error line="808" column="13" source="standard:if-else-wrapping" />
-        <error line="883" column="13" source="standard:if-else-wrapping" />
-        <error line="890" column="13" source="standard:if-else-wrapping" />
+        <error line="797" column="13" source="standard:if-else-wrapping" />
+        <error line="805" column="13" source="standard:if-else-wrapping" />
+        <error line="880" column="13" source="standard:if-else-wrapping" />
+        <error line="887" column="13" source="standard:if-else-wrapping" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/ui/assessment/referrallogic/model/ReferralDefinedParams.kt">
         <error line="4" column="15" source="standard:property-naming" />
@@ -1100,20 +1100,12 @@
         <error line="41" column="15" source="standard:property-naming" />
         <error line="42" column="15" source="standard:property-naming" />
         <error line="43" column="15" source="standard:property-naming" />
-        <error line="44" column="15" source="standard:property-naming" />
-        <error line="47" column="15" source="standard:property-naming" />
-        <error line="48" column="15" source="standard:property-naming" />
-        <error line="49" column="15" source="standard:property-naming" />
-        <error line="50" column="15" source="standard:property-naming" />
-        <error line="52" column="15" source="standard:property-naming" />
-        <error line="53" column="15" source="standard:property-naming" />
         <error line="54" column="15" source="standard:property-naming" />
+        <error line="55" column="15" source="standard:property-naming" />
         <error line="56" column="15" source="standard:property-naming" />
         <error line="57" column="15" source="standard:property-naming" />
-        <error line="58" column="15" source="standard:property-naming" />
         <error line="59" column="15" source="standard:property-naming" />
         <error line="61" column="15" source="standard:property-naming" />
-        <error line="63" column="15" source="standard:property-naming" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/ui/boarding/MenuTypeEnums.kt">
         <error line="4" column="5" source="standard:enum-entry-name-case" />

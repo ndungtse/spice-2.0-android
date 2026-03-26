@@ -45,14 +45,14 @@ data class PregnancyDetail(
     var previousPregnancyComplications: String? = null,
     var pregnantWomanExistingIllness: String? = null, // JSON string of list
     var pregnantWomanOnTreatment: String? = null, // JSON string of list
-    var highRiskPregnantWoman: String? = null, // JSON string of list
+    var highRiskPregnantWoman: String? = null, // JSON string of map
     var gapsInAnc: String? = null, // JSON string of list
     var ancWeight: Double? = null,
     var ancVisitDate: String? = null,
     // Pnc Detail
     var pncVisitNo: Long? = null,
     var pncIllness: String? = null,
-    var highRiskMother: String? = null,
+    var highRiskMother: String? = null, // JSON string of map
     var gapsInPnc: String? = null,
     // Pregnancy outcome
     var dateOfDelivery: String? = null,
