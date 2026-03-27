@@ -148,6 +148,7 @@
             "inputType": 2,
             "isEnabled": true,
             "isMandatory": true,
+            "minValue": 1,
             "orderId": 8,
             "maxLength": 2,
             "maxValue": 30,

@@ -535,7 +535,7 @@ class AssessmentRMNCHFragment :
             val illnessSelectionsValues = illnessSelections
                 .map {
                     it[DefinedParams.Value]?.toString()?.lowercase(Locale.ENGLISH) ?: ""
-                }.filterNot { it.equals(DefinedParams.Value, true) }
+                }.filterNot { it.equals(DefinedParams.None, true) }
 
             // Filter selected illness sections
             val filteredSelections = illnessOptions.filter { illnessItem ->

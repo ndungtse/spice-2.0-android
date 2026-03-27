@@ -32,7 +32,6 @@ import org.medtroniclabs.uhis.databinding.FragmentExternalMemberRegistrationBind
 import org.medtroniclabs.uhis.db.entity.HouseholdMemberEntity
 import org.medtroniclabs.uhis.db.entity.VillageEntity
 import org.medtroniclabs.uhis.formgeneration.FormGenerator
-import org.medtroniclabs.uhis.formgeneration.config.DefinedParams as FormDefinedParams
 import org.medtroniclabs.uhis.formgeneration.listener.FormEventListener
 import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.model.FormResponse
@@ -51,6 +50,7 @@ import org.medtroniclabs.uhis.ui.dialog.SuccessDialogFragment
 import org.medtroniclabs.uhis.ui.home.AssessmentToolsActivity
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseRegistrationViewModel
 import org.medtroniclabs.uhis.ui.member.MemberRegistrationViewModel
+import org.medtroniclabs.uhis.formgeneration.config.DefinedParams as FormDefinedParams
 
 @AndroidEntryPoint
 class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnClickListener {
@@ -370,7 +370,10 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
         disableLocationFieldsInEditMode()
     }
 
-    private fun singleSelectValueOption(value: String, key: String) {
+    private fun singleSelectValueOption(
+        value: String,
+        key: String,
+    ) {
         formGenerator.getViewByTag("${value}_$key")?.let { view ->
             view.isSelected = true
             view.performClick()
@@ -392,8 +395,10 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                         // Ignore the case where spinner only has the placeholder item.
                         val hasOnlyDefaultOption =
                             adapterCount == 1 &&
-                                (it.getData(0)?.get(FormDefinedParams.ID) == DefinedParams.DefaultID ||
-                                    it.getData(0)?.get(FormDefinedParams.ID) == "-1")
+                                (
+                                    it.getData(0)?.get(FormDefinedParams.ID) == DefinedParams.DefaultID ||
+                                        it.getData(0)?.get(FormDefinedParams.ID) == "-1"
+                                )
                         if (hasOnlyDefaultOption) return
                         view.post {
                             formGenerator.setValueForView(pendingId, view)

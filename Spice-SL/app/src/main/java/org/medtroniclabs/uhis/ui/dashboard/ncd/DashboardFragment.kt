@@ -1,7 +1,6 @@
 package org.medtroniclabs.uhis.ui.dashboard.ncd
 
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,14 +23,10 @@ import org.medtroniclabs.uhis.data.NCDUserDashboardResponse
 import org.medtroniclabs.uhis.data.model.ChipViewItemModel
 import org.medtroniclabs.uhis.databinding.FragmentDashboardBinding
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
-import org.medtroniclabs.uhis.model.services.ServiceStaticFilter
 import org.medtroniclabs.uhis.ncd.medicalreview.CommonEnums
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.TagListCustomView
-import org.medtroniclabs.uhis.ui.dashboard.ncd.adapter.DashboardCardItem
-import org.medtroniclabs.uhis.ui.dashboard.ncd.adapter.UserDashboardAdapter
-import org.medtroniclabs.uhis.ui.dashboard.ncd.viewmodel.NCDDashBoardViewModel
 import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_ANC
 import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_ANC_3_PLUS
 import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_CHILD_VISIT
@@ -42,6 +37,9 @@ import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_PNC
 import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_PREGNANCY_OUTCOME
 import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_PREGNANT_WOMEN_REGISTRATION
 import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_PW_IDENTIFIED_4_MONTHS_ANC
+import org.medtroniclabs.uhis.ui.dashboard.ncd.adapter.DashboardCardItem
+import org.medtroniclabs.uhis.ui.dashboard.ncd.adapter.UserDashboardAdapter
+import org.medtroniclabs.uhis.ui.dashboard.ncd.viewmodel.NCDDashBoardViewModel
 
 @AndroidEntryPoint
 class DashboardFragment : BaseFragment(), View.OnClickListener {
@@ -204,7 +202,14 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         val userDashboardList = ArrayList<DashboardCardItem>()
         entity.let {
             // Dedicated flow indicators
-            userDashboardList.add(DashboardCardItem(CARD_PREGNANT_WOMEN_REGISTRATION, getString(R.string.pregnant_women_registration), it.pregnantWomenRegistrationCount ?: 0, R.drawable.ic_rmnch_tool))
+            userDashboardList.add(
+                DashboardCardItem(
+                    CARD_PREGNANT_WOMEN_REGISTRATION,
+                    getString(R.string.pregnant_women_registration),
+                    it.pregnantWomenRegistrationCount ?: 0,
+                    R.drawable.ic_rmnch_tool,
+                ),
+            )
             userDashboardList.add(DashboardCardItem(CARD_ANC, getString(R.string.anc_dashboard), it.ancCount ?: 0, R.drawable.ic_rmnch_tool))
             userDashboardList.add(
                 DashboardCardItem(
@@ -222,7 +227,14 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                     R.drawable.ic_rmnch_tool,
                 ),
             )
-            userDashboardList.add(DashboardCardItem(CARD_PREGNANCY_OUTCOME, getString(R.string.pregnancy_outcome_dashboard), it.pregnancyOutcomeCount ?: 0, R.drawable.ic_rmnch_tool))
+            userDashboardList.add(
+                DashboardCardItem(
+                    CARD_PREGNANCY_OUTCOME,
+                    getString(R.string.pregnancy_outcome_dashboard),
+                    it.pregnancyOutcomeCount ?: 0,
+                    R.drawable.ic_rmnch_tool,
+                ),
+            )
             userDashboardList.add(DashboardCardItem(CARD_PNC, getString(R.string.pnc_dashboard), it.pncCount ?: 0, R.drawable.ic_rmnch_tool))
             userDashboardList.add(
                 DashboardCardItem(
@@ -287,6 +299,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
             }
         }
     }
+
     private fun showDatePickerDialog(
         isFromDate: Boolean,
         text: String?,
