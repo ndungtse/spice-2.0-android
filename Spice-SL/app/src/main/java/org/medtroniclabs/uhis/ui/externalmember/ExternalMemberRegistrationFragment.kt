@@ -18,15 +18,21 @@ import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsUtils
 import org.medtroniclabs.uhis.appextensions.startBackgroundOfflineSync
 import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.CommonUtils
+import org.medtroniclabs.uhis.common.DateUtils
+import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+import org.medtroniclabs.uhis.common.DateUtils.DATE_ddMMyyyy
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.DOB
 import org.medtroniclabs.uhis.common.DefinedParams.EXTERNAL_MEMBER_REGISTRATION
 import org.medtroniclabs.uhis.common.DefinedParams.MEMBER_ID
 import org.medtroniclabs.uhis.common.EntityMapper.getResultSpinnerMapList
 import org.medtroniclabs.uhis.common.SecuredPreference
+import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
 import org.medtroniclabs.uhis.databinding.FragmentExternalMemberRegistrationBinding
+import org.medtroniclabs.uhis.db.entity.HouseholdMemberEntity
 import org.medtroniclabs.uhis.db.entity.VillageEntity
 import org.medtroniclabs.uhis.formgeneration.FormGenerator
+import org.medtroniclabs.uhis.formgeneration.config.DefinedParams as FormDefinedParams
 import org.medtroniclabs.uhis.formgeneration.listener.FormEventListener
 import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.model.FormResponse
@@ -34,6 +40,7 @@ import org.medtroniclabs.uhis.formgeneration.utility.CustomSpinnerAdapter
 import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.shasthyaShebikaId
 import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.subVillageId
 import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.villageId
+import org.medtroniclabs.uhis.mappingkey.MemberRegistration
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration.name
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
@@ -51,6 +58,10 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
     private lateinit var formGenerator: FormGenerator
     private val memberRegistrationViewModel: MemberRegistrationViewModel by activityViewModels()
     private val householdRegistrationViewModel: HouseRegistrationViewModel by activityViewModels()
+    private var editMemberId: Long = -1L
+    private var pendingVillageId: Long? = null
+    private var pendingSsId: Long? = null
+    private var pendingSubVillageId: Long? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,7 +99,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
             this,
             binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled(),
-        ) { map, id ->
+        ) { _, id ->
             if (id == DateOfBirth) {
                 // This is AgeOrDob component - hide error (validation handled elsewhere)
                 formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
@@ -99,6 +110,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
     }
 
     private fun initializeFlow() {
+        editMemberId = requireActivity().intent.getLongExtra(MEMBER_ID, -1L)
         memberRegistrationViewModel.getFormData(EXTERNAL_MEMBER_REGISTRATION)
     }
 
@@ -139,6 +151,11 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                                 }
                             }
 
+                            // If we have a pending village ID from edit-mode, apply it now
+                            applyPendingSelectionIfReady(villageId, pendingVillageId) {
+                                pendingVillageId = null
+                            }
+
                             // Auto-select if single village - use ID from mapList (same as household registration)
                             if (data.response is List<*> && data.response.size == 1) {
                                 val singleItem = data.response[0]
@@ -175,6 +192,10 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                 ResourceState.SUCCESS -> {
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
+                        // Apply pending SS selection after data injection
+                        applyPendingSelectionIfReady(shasthyaShebikaId, pendingSsId) {
+                            pendingSsId = null
+                        }
                     }
                 }
                 else -> {
@@ -188,6 +209,10 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                 ResourceState.SUCCESS -> {
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
+                        // Apply pending Sub-village selection after data injection
+                        applyPendingSelectionIfReady(subVillageId, pendingSubVillageId) {
+                            pendingSubVillageId = null
+                        }
                     }
                 }
                 else -> {
@@ -230,6 +255,9 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                             object : TypeToken<FormResponse>() {}.type,
                         )
                         formGenerator.populateViews(formLayout.formLayout)
+                        if (editMemberId != -1L) {
+                            memberRegistrationViewModel.getMemberDetailsByID(editMemberId)
+                        }
                     }
                 }
 
@@ -242,6 +270,146 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                 }
             }
         }
+
+        memberRegistrationViewModel.memberDetailsLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.SUCCESS -> {
+                    resourceState.data?.let { data ->
+                        autoPopulateDetails(data)
+                    }
+                }
+                else -> {
+                    // no-op
+                }
+            }
+        }
+    }
+
+    private fun autoPopulateDetails(details: HouseholdMemberEntity) {
+        // Simple fields
+        formGenerator.getViewByTag(name)?.let { view ->
+            formGenerator.setValueForView(details.name, view)
+        }
+        formGenerator.getViewByTag(MemberRegistration.phoneNumber)?.let { view ->
+            formGenerator.setValueForView(details.phoneNumber, view)
+        }
+        formGenerator.getViewByTag(MemberRegistration.idType)?.let { view ->
+            formGenerator.setValueForView(details.idType, view)
+        }
+        formGenerator.getViewByTag(MemberRegistration.nationalId)?.let { view ->
+            formGenerator.setValueForView(details.nationalId, view)
+            view.isEnabled = details.idType.isNotEmpty()
+        }
+
+        // Gender: select then disable like normal edit
+        details.gender.let { gender ->
+            formGenerator.getViewByTag("${gender}_${MemberRegistration.gender}")?.performClick()
+            if (!gender.isNullOrBlank()) {
+                formGenerator.disableSingleSelection(MemberRegistration.gender)
+            }
+        }
+
+        // DOB handling like member edit: set formatted value and disable field
+        val originalDobUtc = details.dateOfBirth
+        val dateOfBirth =
+            DateUtils.convertDateFormat(
+                originalDobUtc,
+                DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                DATE_ddMMyyyy,
+            )
+        val dateDob =
+            DateUtils.convertStringToDate(
+                originalDobUtc,
+                DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+            )
+
+        formGenerator.getViewByTag(MemberRegistration.dateOfBirth)?.let { view ->
+            if (!dateOfBirth.isNullOrBlank()) {
+                formGenerator.disableView(view)
+            }
+            formGenerator.setDobValueForAgeOrDob(
+                MemberRegistration.dateOfBirth,
+                originalDobUtc,
+                dateOfBirth,
+                view,
+            )
+        }
+        dateDob?.let { dob ->
+            formGenerator.fillDetailsOnDatePickerSet(dob, false)
+        }
+        formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
+            visibility = View.GONE
+        }
+        memberRegistrationViewModel.memberDob = originalDobUtc
+
+        // Marital status & disability
+        details.maritalStatus?.let { m ->
+            singleSelectValueOption(m, MemberRegistration.ID_MARITAL_STATUS)
+        }
+        details.disability?.let { d ->
+            singleSelectValueOption(d, MemberRegistration.ID_DISABILITY)
+        }
+
+        // Defer spinner cascade selections until data injection observers
+        pendingVillageId = details.villageId
+        pendingSsId = details.shasthyaShebikaId
+        pendingSubVillageId = details.subVillageId
+
+        // If dropdown data already loaded before member-details response, apply immediately
+        applyPendingSelectionIfReady(villageId, pendingVillageId) {
+            pendingVillageId = null
+        }
+        applyPendingSelectionIfReady(shasthyaShebikaId, pendingSsId) {
+            pendingSsId = null
+        }
+        applyPendingSelectionIfReady(subVillageId, pendingSubVillageId) {
+            pendingSubVillageId = null
+        }
+
+        // Lock location selections for external-member edit mode.
+        disableLocationFieldsInEditMode()
+    }
+
+    private fun singleSelectValueOption(value: String, key: String) {
+        formGenerator.getViewByTag("${value}_$key")?.let { view ->
+            view.isSelected = true
+            view.performClick()
+        }
+    }
+
+    private fun applyPendingSelectionIfReady(
+        fieldId: String,
+        pendingId: Long?,
+        onApplied: () -> Unit,
+    ) {
+        if (pendingId == null) return
+        formGenerator.getViewByTag(fieldId)?.let { view ->
+            if (view is AppCompatSpinner) {
+                val adapter = view.adapter as? CustomSpinnerAdapter
+                adapter?.let {
+                    val adapterCount = it.count
+                    if (adapterCount > 0) {
+                        // Ignore the case where spinner only has the placeholder item.
+                        val hasOnlyDefaultOption =
+                            adapterCount == 1 &&
+                                (it.getData(0)?.get(FormDefinedParams.ID) == DefinedParams.DefaultID ||
+                                    it.getData(0)?.get(FormDefinedParams.ID) == "-1")
+                        if (hasOnlyDefaultOption) return
+                        view.post {
+                            formGenerator.setValueForView(pendingId, view)
+                            onApplied()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun disableLocationFieldsInEditMode() {
+        if (editMemberId == -1L) return
+        formGenerator.getViewByTag(villageId)?.isEnabled = false
+        formGenerator.getViewByTag(shasthyaShebikaId)?.isEnabled = false
+        formGenerator.getViewByTag(subVillageId)?.isEnabled = false
     }
 
     override fun onRenderingComplete() {
@@ -266,12 +434,14 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                         shasthyaShebikaId,
                         "",
                     )
-                    // Clear SS and Village selections
-                    formGenerator.getViewByTag(shasthyaShebikaId)?.let { view ->
-                        formGenerator.setValueForView(null, view)
-                    }
-                    formGenerator.getViewByTag(subVillageId)?.let { view ->
-                        formGenerator.setValueForView(null, view)
+                    // During edit prefill, preserve pending child values and avoid clearing.
+                    if (pendingSsId == null && pendingSubVillageId == null) {
+                        formGenerator.getViewByTag(shasthyaShebikaId)?.let { view ->
+                            formGenerator.setValueForView(null, view)
+                        }
+                        formGenerator.getViewByTag(subVillageId)?.let { view ->
+                            formGenerator.setValueForView(null, view)
+                        }
                     }
                 }
             }
@@ -284,9 +454,11 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                         "",
                         shasthyaShebikaIdLong,
                     )
-                    // Clear Village selection
-                    formGenerator.getViewByTag(subVillageId)?.let { view ->
-                        formGenerator.setValueForView(null, view)
+                    // During edit prefill, preserve pending sub-village and avoid clearing.
+                    if (pendingSubVillageId == null) {
+                        formGenerator.getViewByTag(subVillageId)?.let { view ->
+                            formGenerator.setValueForView(null, view)
+                        }
                     }
                 }
             }
@@ -330,7 +502,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
         title: String,
         informationList: ArrayList<String>?,
         description: String?,
-        dosageListModel: ArrayList<org.medtroniclabs.uhis.data.model.RecommendedDosageListModel>?,
+        dosageListModel: ArrayList<RecommendedDosageListModel>?,
     ) {
     }
 
@@ -428,4 +600,8 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
     }
 
     fun getEnteredInputs(): Boolean = formGenerator.getResultMap().isNotEmpty()
+
+    companion object {
+        const val ARG_IS_EDIT_MODE = "isEditMode"
+    }
 }

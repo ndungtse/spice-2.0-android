@@ -29,36 +29,19 @@ import org.medtroniclabs.uhis.ncd.medicalreview.CommonEnums
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.TagListCustomView
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_ANC
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_ANC_3_PLUS
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_ASSESSED
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_CATARACT
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_CHILD_VISIT
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_DISPENSED
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_EYE_CARE
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_FAMILY_PLANNING
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_HIGH_RISK_PREGNANT_WOMEN
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_HOUSEHOLD_REGISTERED
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_INVESTIGATED
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_LIFESTYLE
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_PNC
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_PREGNANCY_OUTCOME
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_PREGNANT_WOMEN_REGISTRATION
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_PSYCHOLOGICAL
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_PW_IDENTIFIED_4_MONTHS_ANC
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_REFERRED
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_REGISTERED
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_SCREENED
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_TB_ASSESSMENT
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_TB_CONTACT_TRACING
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.EXTRA_DASHBOARD_SS_IDS
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.EXTRA_DASHBOARD_STATIC_FILTER
-import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.EXTRA_DASHBOARD_SUB_VILLAGE_IDS
 import org.medtroniclabs.uhis.ui.dashboard.ncd.adapter.DashboardCardItem
 import org.medtroniclabs.uhis.ui.dashboard.ncd.adapter.UserDashboardAdapter
 import org.medtroniclabs.uhis.ui.dashboard.ncd.viewmodel.NCDDashBoardViewModel
-import org.medtroniclabs.uhis.ui.household.HouseholdSearchActivity
-import org.medtroniclabs.uhis.ui.services.ServicesActivity
+import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_ANC
+import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_ANC_3_PLUS
+import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_CHILD_VISIT
+import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_FAMILY_PLANNING
+import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_HIGH_RISK_PREGNANT_WOMEN
+import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_HOUSEHOLD_REGISTERED
+import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_PNC
+import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_PREGNANCY_OUTCOME
+import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_PREGNANT_WOMEN_REGISTRATION
+import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants.CARD_PW_IDENTIFIED_4_MONTHS_ANC
 
 @AndroidEntryPoint
 class DashboardFragment : BaseFragment(), View.OnClickListener {
@@ -221,15 +204,8 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         val userDashboardList = ArrayList<DashboardCardItem>()
         entity.let {
             // Dedicated flow indicators
-            userDashboardList.add(
-                DashboardCardItem(
-                    CARD_PREGNANT_WOMEN_REGISTRATION,
-                    getString(R.string.pregnant_women_registration),
-                    it.pregnantWomenRegistrationCount ?: 0,
-                    R.drawable.ic_rmnch_tool,
-                ),
-            )
-            userDashboardList.add(DashboardCardItem(CARD_ANC, getString(R.string.anc), it.ancCount ?: 0, R.drawable.ic_rmnch_tool))
+            userDashboardList.add(DashboardCardItem(CARD_PREGNANT_WOMEN_REGISTRATION, getString(R.string.pregnant_women_registration), it.pregnantWomenRegistrationCount ?: 0, R.drawable.ic_rmnch_tool))
+            userDashboardList.add(DashboardCardItem(CARD_ANC, getString(R.string.anc_dashboard), it.ancCount ?: 0, R.drawable.ic_rmnch_tool))
             userDashboardList.add(
                 DashboardCardItem(
                     CARD_PW_IDENTIFIED_4_MONTHS_ANC,
@@ -246,10 +222,8 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                     R.drawable.ic_rmnch_tool,
                 ),
             )
-            userDashboardList.add(
-                DashboardCardItem(CARD_PREGNANCY_OUTCOME, getString(R.string.pregnancy_outcome), it.pregnancyOutcomeCount ?: 0, R.drawable.ic_rmnch_tool),
-            )
-            userDashboardList.add(DashboardCardItem(CARD_PNC, getString(R.string.pnc), it.pncCount ?: 0, R.drawable.ic_rmnch_tool))
+            userDashboardList.add(DashboardCardItem(CARD_PREGNANCY_OUTCOME, getString(R.string.pregnancy_outcome_dashboard), it.pregnancyOutcomeCount ?: 0, R.drawable.ic_rmnch_tool))
+            userDashboardList.add(DashboardCardItem(CARD_PNC, getString(R.string.pnc_dashboard), it.pncCount ?: 0, R.drawable.ic_rmnch_tool))
             userDashboardList.add(
                 DashboardCardItem(
                     CARD_HIGH_RISK_PREGNANT_WOMEN,
@@ -270,7 +244,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
             userDashboardList.add(
                 DashboardCardItem(
                     CARD_FAMILY_PLANNING,
-                    getString(R.string.family_planning),
+                    getString(R.string.family_planning_dashboard),
                     it.familyPlanningCount ?: 0,
                     R.drawable.ic_family_planning,
                 ),
@@ -308,54 +282,11 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                     requireContext(),
                     if (requireContext().isTablet()) 3 else 1,
                 )
-            adapter = UserDashboardAdapter(customize, userDashboardList) { card ->
-                navigateFromDashboardCard(card.key)
+            adapter = UserDashboardAdapter(customize, userDashboardList) {
+                // Navigation from dashboard cards is intentionally disabled.
             }
         }
     }
-
-    private fun navigateFromDashboardCard(cardKey: String) {
-        val ssIds = viewModel
-            .getFilterLiveData()
-            .value
-            ?.filterBySs
-            ?.mapNotNull { it.id } ?: emptyList()
-        val subVillageIds = viewModel
-            .getFilterLiveData()
-            .value
-            ?.filterBySubVillages
-            ?.mapNotNull { it.id } ?: emptyList()
-        val intent = if (cardKey == CARD_HOUSEHOLD_REGISTERED) {
-            Intent(requireActivity(), HouseholdSearchActivity::class.java).apply {
-                putExtra(EXTRA_DASHBOARD_SS_IDS, ssIds.toLongArray())
-                putExtra(EXTRA_DASHBOARD_SUB_VILLAGE_IDS, subVillageIds.toLongArray())
-            }
-        } else {
-            Intent(requireActivity(), ServicesActivity::class.java).apply {
-                putExtra(EXTRA_DASHBOARD_SS_IDS, ssIds.toLongArray())
-                putExtra(EXTRA_DASHBOARD_SUB_VILLAGE_IDS, subVillageIds.toLongArray())
-                putExtra(EXTRA_DASHBOARD_STATIC_FILTER, mapCardKeyToStaticFilter(cardKey).name)
-            }
-        }
-        startActivity(intent)
-    }
-
-    private fun mapCardKeyToStaticFilter(cardKey: String): ServiceStaticFilter =
-        when (cardKey) {
-            CARD_FAMILY_PLANNING -> ServiceStaticFilter.FAMILY_PLANNING_COUNSELLING_ELIGIBLE
-            CARD_PREGNANT_WOMEN_REGISTRATION -> ServiceStaticFilter.PREGNANT_WOMEN
-            CARD_ANC, CARD_PW_IDENTIFIED_4_MONTHS_ANC, CARD_ANC_3_PLUS -> ServiceStaticFilter.PREGNANT_WOMEN
-            CARD_HIGH_RISK_PREGNANT_WOMEN -> ServiceStaticFilter.HIGH_RISK_PREGNANT_WOMEN
-            CARD_PREGNANCY_OUTCOME -> ServiceStaticFilter.PENDING_DELIVERIES
-            CARD_PNC -> ServiceStaticFilter.POSTNATAL_CARE_MOTHERS
-            CARD_CHILD_VISIT -> ServiceStaticFilter.CHILDREN_UNDER_TWO_YEARS
-            CARD_TB_ASSESSMENT, CARD_TB_CONTACT_TRACING, CARD_EYE_CARE, CARD_CATARACT,
-            CARD_SCREENED, CARD_REFERRED, CARD_REGISTERED, CARD_ASSESSED, CARD_DISPENSED,
-            CARD_INVESTIGATED, CARD_LIFESTYLE, CARD_PSYCHOLOGICAL,
-            -> ServiceStaticFilter.ALL_MEMBERS
-            else -> ServiceStaticFilter.ALL_MEMBERS
-        }
-
     private fun showDatePickerDialog(
         isFromDate: Boolean,
         text: String?,

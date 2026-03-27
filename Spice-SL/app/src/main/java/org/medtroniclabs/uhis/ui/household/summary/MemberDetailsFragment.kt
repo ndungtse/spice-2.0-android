@@ -15,12 +15,15 @@ import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.databinding.FragmentMemberDetailsBinding
 import org.medtroniclabs.uhis.databinding.SummaryListItemBinding
 import org.medtroniclabs.uhis.ui.assessment.utils.AssessmentUtil
+import org.medtroniclabs.uhis.ui.externalmember.ExternalMemberRegistrationActivity
+import org.medtroniclabs.uhis.ui.externalmember.ExternalMemberRegistrationFragment
 import org.medtroniclabs.uhis.ui.household.HouseholdActivity
 import org.medtroniclabs.uhis.ui.household.viewmodel.MemberSummaryViewModel
 
 class MemberDetailsFragment : Fragment(), View.OnClickListener {
     private lateinit var binding: FragmentMemberDetailsBinding
     private val memberSummaryViewModel: MemberSummaryViewModel by activityViewModels()
+    private var isExternalMember: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,6 +46,7 @@ class MemberDetailsFragment : Fragment(), View.OnClickListener {
     private fun attachObservers() {
         memberSummaryViewModel.memberDetails.observe(viewLifecycleOwner) { memberDetails ->
             memberDetails ?: return@observe
+            isExternalMember = memberDetails.member.householdId == null
             val recentHistoryDate = memberDetails.history.firstOrNull()?.let {
                 DateUtils.getLastMenstrualDate(it.visitDate ?: "").timeInMillis
             } ?: 0
@@ -107,9 +111,17 @@ class MemberDetailsFragment : Fragment(), View.OnClickListener {
     override fun onClick(view: View) {
         when (view.id) {
             binding.tvEdit.id -> {
-                val intent = Intent(requireContext(), HouseholdActivity::class.java)
+                val intent = if (isExternalMember) {
+                    Intent(requireContext(), ExternalMemberRegistrationActivity::class.java).apply {
+                        putExtra(ExternalMemberRegistrationFragment.ARG_IS_EDIT_MODE, true)
+                    }
+                } else {
+                    Intent(requireContext(), HouseholdActivity::class.java)
+                }
                 intent.putExtra(DefinedParams.MEMBER_ID, memberSummaryViewModel.memberId)
-                intent.putExtra(DefinedParams.householdId, memberSummaryViewModel.householdId)
+                if (!isExternalMember) {
+                    intent.putExtra(DefinedParams.householdId, memberSummaryViewModel.householdId)
+                }
                 startActivity(intent)
             }
         }

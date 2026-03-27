@@ -1116,6 +1116,44 @@
         <error line="49" column="9" source="standard:function-naming" />
         <error line="88" column="9" source="standard:function-naming" />
     </file>
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/dashboard/ncd/DashboardFragment.kt">
+        <error line="3" column="1" source="standard:import-ordering" />
+        <error line="4" column="1" source="standard:no-unused-imports" />
+        <error line="27" column="1" source="standard:no-unused-imports" />
+        <error line="207" column="30" source="standard:chain-method-continuation" />
+        <error line="207" column="35" source="standard:argument-list-wrapping" />
+        <error line="207" column="53" source="standard:argument-list-wrapping" />
+        <error line="207" column="87" source="standard:argument-list-wrapping" />
+        <error line="207" column="97" source="standard:argument-list-wrapping" />
+        <error line="207" column="133" source="standard:argument-list-wrapping" />
+        <error line="207" column="136" source="standard:binary-expression-wrapping" />
+        <error line="207" column="136" source="standard:argument-list-wrapping" />
+        <error line="207" column="161" source="standard:max-line-length" />
+        <error line="207" column="170" source="standard:binary-expression-wrapping" />
+        <error line="207" column="176" source="standard:argument-list-wrapping" />
+        <error line="207" column="200" source="standard:argument-list-wrapping" />
+        <error line="207" column="201" source="standard:argument-list-wrapping" />
+        <error line="225" column="30" source="standard:chain-method-continuation" />
+        <error line="225" column="35" source="standard:argument-list-wrapping" />
+        <error line="225" column="53" source="standard:argument-list-wrapping" />
+        <error line="225" column="77" source="standard:argument-list-wrapping" />
+        <error line="225" column="87" source="standard:argument-list-wrapping" />
+        <error line="225" column="123" source="standard:argument-list-wrapping" />
+        <error line="225" column="126" source="standard:argument-list-wrapping" />
+        <error line="225" column="157" source="standard:argument-list-wrapping" />
+        <error line="225" column="161" source="standard:max-line-length" />
+        <error line="225" column="181" source="standard:argument-list-wrapping" />
+        <error line="225" column="182" source="standard:argument-list-wrapping" />
+        <error line="290" column="5" source="standard:blank-line-before-declaration" />
+    </file>
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/externalmember/ExternalMemberRegistrationFragment.kt">
+        <error line="3" column="1" source="standard:import-ordering" />
+        <error line="373" column="41" source="standard:function-signature" />
+        <error line="373" column="56" source="standard:function-signature" />
+        <error line="373" column="67" source="standard:function-signature" />
+        <error line="395" column="34" source="standard:wrapping" />
+        <error line="396" column="84" source="standard:wrapping" />
+    </file>
     <file name="src/main/java/org/medtroniclabs/uhis/ui/followup/FollowUpDefinedParams.kt">
         <error line="4" column="15" source="standard:property-naming" />
         <error line="5" column="15" source="standard:property-naming" />

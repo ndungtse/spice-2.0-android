@@ -204,6 +204,16 @@
     <string name="select_flow">ফ্লো নির্বাচন করুন</string>
     <string name="anc">প্রসবপূর্ব যত্ন</string>
     <string name="pnc">প্রসবোত্তর যত্ন</string>
+    <string name="anc_dashboard">গর্ভবতী সেবা (এএনসি)</string>
+    <string name="pnc_dashboard">PNC সেবা (ডেলিভারির পর যেকোনো সময়)</string>
+    <string name="pregnant_women_registration">গর্ভবতী রেজিস্ট্রেশন</string>
+    <string name="pw_identified_first_4_months_received_anc">প্রথম চার মাসে চিহ্নিত এবং প্রথম এএনসি সেবা</string>
+    <string name="anc_3_plus_services">গর্ভকালীন সময়ে একই মাকে ৩ অথবা ৩+ ANC সেবা</string>
+    <string name="highrisk_pregnant_women">উচ্চ ঝুঁকিপূর্ণ গর্ভবতী মায়ের সংখ্যা</string>
+    <string name="child_visit">0–24 মাস বয়সী শিশু কাউন্সেলিং</string>
+    <string name="household_registered">খানা পরিদর্শন</string>
+    <string name="pregnancy_outcome_dashboard">ডেলিভারি রেজিস্ট্রেশন</string>
+    <string name="family_planning_dashboard">পরিবার পরিকল্পনা কাউন্সেলিংয়ের সংখ্যা</string>
     <string name="child_hood_visit">শৈশব সাক্ষাৎ</string>
     <string name="other_value" translatable="false">%1$s - %2$s</string>
     <string name="gps_disabled_title">লোকেশন সেবা বন্ধ!</string>
@@ -1334,7 +1344,8 @@
     <string name="days_delay" translatable="false">%d Days Delay</string>
     <string name="day_delay" translatable="false">%d Day Delay</string>
     <string name="on_time" translatable="false">On Time</string>
-    <string name="family_planning" translatable="false">Family Planning</string>
+    <string name="family_planning">পরিবার পরিকল্পনা কাউন্সেলিংয়ের সংখ্যা</string>
+    <string name="pregnancy_outcome">ডেলিভারি রেজিস্ট্রেশন</string>
     <string name="epi_catch_up_policy" translatable="false">EPI Catch-Up Policy</string>
     <string name="vaccine" translatable="false">Vaccine</string>
     <string name="minimum_age" translatable="false">Minimum Age</string>
