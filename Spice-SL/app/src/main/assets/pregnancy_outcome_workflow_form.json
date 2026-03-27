@@ -49,7 +49,6 @@
                 {
                     "eqList":
                     [
-                        "beforeDelivery",
                         "within42DaysAfterDelivery",
                         "duringChildbirth"
                     ],
@@ -59,7 +58,6 @@
                 {
                     "eqList":
                     [
-                        "beforeDelivery",
                         "within42DaysAfterDelivery",
                         "duringChildbirth"
                     ],
@@ -69,7 +67,6 @@
                 {
                     "eqList":
                     [
-                        "beforeDelivery",
                         "within42DaysAfterDelivery",
                         "duringChildbirth"
                     ],

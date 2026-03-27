@@ -163,6 +163,8 @@ class AssessmentRepository @Inject constructor(
                     CommonUtils.getStringFromAssets(AssessmentDefinedParams.PREGNANT_WOMEN_PROFILE_FORM + ".json", context.assets)
                 } else if (formType == RMNCH.ANC) {
                     CommonUtils.getStringFromAssets(AssessmentDefinedParams.RMNCH_ANC_FORM + ".json", context.assets)
+                } else if (formType == MenuConstants.PREGNANCY_OUTCOME) {
+                    CommonUtils.getStringFromAssets(AssessmentDefinedParams.PREGNANCY_OUTCOME_FORM + ".json", context.assets)
                 } else if (formType == RMNCH.PNC) {
                     CommonUtils.getStringFromAssets(AssessmentDefinedParams.RMNCH_PNC_FORM + ".json", context.assets)
                 } else {
