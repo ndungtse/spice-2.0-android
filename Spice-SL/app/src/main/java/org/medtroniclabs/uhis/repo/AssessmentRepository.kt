@@ -167,6 +167,8 @@ class AssessmentRepository @Inject constructor(
                     CommonUtils.getStringFromAssets(AssessmentDefinedParams.PREGNANCY_OUTCOME_FORM + ".json", context.assets)
                 } else if (formType == RMNCH.PNC) {
                     CommonUtils.getStringFromAssets(AssessmentDefinedParams.RMNCH_PNC_FORM + ".json", context.assets)
+                } else if (formType == RMNCH.ChildHoodVisit) {
+                    CommonUtils.getStringFromAssets(AssessmentDefinedParams.RMNCH_CHILD_VISIT_FORM + ".json", context.assets)
                 } else {
                     roomHelper.getFormData(formType)
                 }

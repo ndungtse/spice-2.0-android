@@ -73,35 +73,7 @@
             "title": "What was the child fed in the last 24 hours?",
             "titleCulture": "গত ২৪ ঘন্টায় শিশুকে কি কি খাওয়ানো হয়েছে?",
             "visibility": "visible",
-            "isSummary": true,
-            "condition":
-            [
-                {
-                    "eq": "other",
-                    "targetId": "otherChildFeed",
-                    "visibility": "visible"
-                }
-            ]
-        },
-        {
-            "family": "pncChild",
-            "id": "otherChildFeed",
-            "fieldName": "Other Feed",
-            "errorMessage": "Please enter a valid value",
-            "hint": "Enter Other Feed",
-            "hintCulture": "",
-            "inputType": 96,
-            "isEnabled": true,
-            "isMandatory": true,
-            "isNeededDefault": true,
-            "isNotDefault": false,
-            "orderId": 5,
-            "isSummary": true,
-            "title": "Other Feed",
-            "titleCulture": "Other Feed",
-            "viewType": "EditText",
-            "isInfo": "gone",
-            "visibility": "gone"
+            "isSummary": true
         },
         {
             "family": "pncChild",

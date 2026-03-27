@@ -578,6 +578,7 @@ object AssessmentDefinedParams {
     const val RMNCH_ANC_FORM = "rmnch_anc_visit"
     const val PREGNANCY_OUTCOME_FORM = "pregnancy_outcome_workflow_form"
     const val RMNCH_PNC_FORM = "rmnch_pnc_visit"
+    const val RMNCH_CHILD_VISIT_FORM = "rmnch_childhood_visit"
 
     const val EYE_CARE = "eyeCare"
 

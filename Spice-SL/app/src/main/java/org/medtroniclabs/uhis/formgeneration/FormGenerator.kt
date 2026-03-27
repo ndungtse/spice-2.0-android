@@ -3962,8 +3962,10 @@ class FormGenerator(
                         } else if (id.contains("conditions", true)) {
                             getString(R.string.conditions_selected)
                         } else {
-                            if (formLayout.hint != null) {
-                                " ${formLayout.hint} ${getString((R.string.selected))}"
+                            if (translate && !formLayout.hintCulture.isNullOrBlank()) {
+                                "${formLayout.hintCulture} ${getString((R.string.selected))}"
+                            } else if (!formLayout.hint.isNullOrBlank()) {
+                                "${formLayout.hint} ${getString((R.string.selected))}"
                             } else {
                                 getString(R.string.symptoms_selected)
                             }
