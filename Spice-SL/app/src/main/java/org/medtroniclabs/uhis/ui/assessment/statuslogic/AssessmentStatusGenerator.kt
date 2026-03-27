@@ -35,9 +35,9 @@ object AssessmentStatusGenerator {
                 val statusList = arrayListOf<AssessmentStatus>()
                 val summaryGroup = ancMap[AssessmentDefinedParams.GROUP_SUMMARY] as? Map<*, *>
                 if (summaryGroup?.containsKey(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) == true) {
-                    statusList.add(AssessmentStatus.NORMAL_PREGNANCY)
-                } else {
                     statusList.add(AssessmentStatus.HIGH_RISK_PW)
+                } else {
+                    statusList.add(AssessmentStatus.NORMAL_PREGNANCY)
                 }
                 if (summaryGroup?.containsKey(AssessmentDefinedParams.GAPS_IN_ANC) == true) {
                     statusList.add(AssessmentStatus.GAPS_IN_ANC)

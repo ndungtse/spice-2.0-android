@@ -35,7 +35,7 @@ object RMNCHAssessmentEvaluator {
      * @return Filtered list excluding "none" entries
      */
     private fun filterOutNoneOption(illnessList: ArrayList<*>?): ArrayList<*> {
-        if (illnessList == null || illnessList.isEmpty()) {
+        if (illnessList.isNullOrEmpty()) {
             @Suppress("UNCHECKED_CAST")
             return arrayListOf<Any>() as ArrayList<*>
         }
@@ -43,11 +43,11 @@ object RMNCHAssessmentEvaluator {
         @Suppress("UNCHECKED_CAST")
         return illnessList.filter { illness ->
             val illnessMap = illness as? Map<*, *> ?: return@filter true
-            val id = illnessMap[DefinedParams.ID]?.toString()?.lowercase() ?: ""
+            val value = illnessMap[DefinedParams.Value]?.toString()?.lowercase() ?: ""
             val name = illnessMap[DefinedParams.NAME]?.toString()?.lowercase() ?: ""
 
             // Filter out if id is "none" or name is "None"
-            id != AssessmentDefinedParams.ILLNESS_NONE_ID &&
+            value != DefinedParams.None.lowercase() &&
                 name != DefinedParams.None.lowercase()
         } as ArrayList<*>
     }
@@ -60,12 +60,10 @@ object RMNCHAssessmentEvaluator {
         val filteredIllness = filterOutNoneOption(existingIllness)
         return filteredIllness.any { illness ->
             val illnessMap = illness as? Map<*, *> ?: return@any false
-            val id = illnessMap[DefinedParams.ID]?.toString() ?: ""
+            val value = illnessMap[DefinedParams.Value]?.toString() ?: ""
             val name = illnessMap[DefinedParams.name]?.toString() ?: ""
-            id.equals(AssessmentDefinedParams.ILLNESS_HTN, ignoreCase = true) ||
-                name.equals(AssessmentDefinedParams.ILLNESS_HTN, ignoreCase = true) ||
-                id.contains(AssessmentDefinedParams.ILLNESS_HYPERTENSION, ignoreCase = true) ||
-                name.contains(AssessmentDefinedParams.ILLNESS_HYPERTENSION, ignoreCase = true)
+            value.equals(AssessmentDefinedParams.ILLNESS_HTN, ignoreCase = true) ||
+                name.equals(AssessmentDefinedParams.ILLNESS_HTN, ignoreCase = true)
         }
     }
 
@@ -77,12 +75,10 @@ object RMNCHAssessmentEvaluator {
         val filteredIllness = filterOutNoneOption(existingIllness)
         return filteredIllness.any { illness ->
             val illnessMap = illness as? Map<*, *> ?: return@any false
-            val id = illnessMap[DefinedParams.ID]?.toString() ?: ""
+            val value = illnessMap[DefinedParams.Value]?.toString() ?: ""
             val name = illnessMap[DefinedParams.name]?.toString() ?: ""
-            id.equals(AssessmentDefinedParams.ILLNESS_DM, ignoreCase = true) ||
-                name.equals(AssessmentDefinedParams.ILLNESS_DM, ignoreCase = true) ||
-                id.contains(AssessmentDefinedParams.ILLNESS_DIABETES, ignoreCase = true) ||
-                name.contains(AssessmentDefinedParams.ILLNESS_DIABETES, ignoreCase = true)
+            value.equals(AssessmentDefinedParams.ILLNESS_DM, ignoreCase = true) ||
+                name.equals(AssessmentDefinedParams.ILLNESS_DM, ignoreCase = true)
         }
     }
 
@@ -97,9 +93,9 @@ object RMNCHAssessmentEvaluator {
         val filteredIllness = filterOutNoneOption(existingIllness)
         return filteredIllness.any { illness ->
             val illnessMap = illness as? Map<*, *> ?: return@any false
-            val id = illnessMap[DefinedParams.ID]?.toString() ?: ""
+            val value = illnessMap[DefinedParams.Value]?.toString() ?: ""
             val name = illnessMap[DefinedParams.name]?.toString() ?: ""
-            id.contains(illnessName, ignoreCase = true) || name.contains(illnessName, ignoreCase = true)
+            value.contains(illnessName, ignoreCase = true) || name.contains(illnessName, ignoreCase = true)
         }
     }
 
@@ -113,9 +109,9 @@ object RMNCHAssessmentEvaluator {
         val treatmentList = getValueFromNestedMap(resultMap, AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT) as? ArrayList<*> ?: return false
         return treatmentList.any { treatment ->
             val treatmentMap = treatment as? Map<*, *> ?: return@any false
-            val id = treatmentMap[DefinedParams.ID]?.toString() ?: ""
+            val value = treatmentMap[DefinedParams.Value]?.toString() ?: ""
             val name = treatmentMap[DefinedParams.name]?.toString() ?: ""
-            id.contains(illnessName, ignoreCase = true) || name.contains(illnessName, ignoreCase = true)
+            value.contains(illnessName, ignoreCase = true) || name.contains(illnessName, ignoreCase = true)
         }
     }
 
@@ -140,7 +136,6 @@ object RMNCHAssessmentEvaluator {
         // Check each chronic illness - if any exists but is not in treatment, return true
         val chronicIllnesses = listOf(
             AssessmentDefinedParams.ILLNESS_DM,
-            AssessmentDefinedParams.ILLNESS_DIABETES,
             AssessmentDefinedParams.ILLNESS_HEART_DISEASE,
             AssessmentDefinedParams.ILLNESS_TUBERCULOSIS,
             AssessmentDefinedParams.ILLNESS_TB,
@@ -163,7 +158,6 @@ object RMNCHAssessmentEvaluator {
         // Check each chronic illness - if any exists and is in treatment, return true
         val chronicIllnesses = listOf(
             AssessmentDefinedParams.ILLNESS_DM,
-            AssessmentDefinedParams.ILLNESS_DIABETES,
             AssessmentDefinedParams.ILLNESS_HEART_DISEASE,
             AssessmentDefinedParams.ILLNESS_TUBERCULOSIS,
             AssessmentDefinedParams.ILLNESS_TB,
@@ -295,10 +289,10 @@ object RMNCHAssessmentEvaluator {
             when (complication) {
                 is Map<*, *> -> {
                     // Handle map structure with id/name
-                    val id = complication[DefinedParams.ID]?.toString() ?: ""
+                    val value = complication[DefinedParams.Value]?.toString() ?: ""
                     val name = complication[DefinedParams.name]?.toString() ?: ""
                     targetComplicationIds.any { targetId ->
-                        id.equals(targetId, ignoreCase = true) || name.contains(targetId, ignoreCase = true)
+                        value.equals(targetId, ignoreCase = true) || name.contains(targetId, ignoreCase = true)
                     }
                 }
                 is String -> {

@@ -25,52 +25,62 @@
             "optionsList":
             [
                 {
-                    "id": "abortion_mr",
+                    "id": 0,
+                    "value": "abortion_mr",
                     "name": "Abortion/MR",
                     "cultureValue": "গর্ভপাত/এম আর"
                 },
                 {
-                    "id": "stillbirth",
+                    "id": 1,
+                    "value": "stillbirth",
                     "name": "Stillbirth",
                     "cultureValue": "মৃত প্রসব"
                 },
                 {
-                    "id": "caesarean_operation",
+                    "id": 2,
+                    "value": "caesarean_operation",
                     "name": "Caesarean operation",
                     "cultureValue": "সিজারিয়ান অপারেশন"
                 },
                 {
-                    "id": "convulsions",
+                    "id": 3,
+                    "value": "convulsions",
                     "name": "Convulsions",
                     "cultureValue": "খিচুনি"
                 },
                 {
-                    "id": "postpartum_hemorrhage",
+                    "id": 4,
+                    "value": "postpartum_hemorrhage",
                     "name": "Postpartum hemorrhage",
                     "cultureValue": "প্রসব পরবর্তি রক্ত ক্ষরণ"
                 },
                 {
-                    "id": "assisted_delivery",
+                    "id": 5,
+                    "value": "assisted_delivery",
                     "name": "Assisted Delivery",
                     "cultureValue": "প্রসবে সহায়তা নিয়ে প্রসব করাতে হয়েছে"
                 },
                 {
-                    "id": "preterm_birth",
+                    "id": 6,
+                    "value": "preterm_birth",
                     "name": "Preterm birth",
                     "cultureValue": "নির্ধারিত সময়ের আগেই প্রসব হয়েছে"
                 },
                 {
-                    "id": "gestational_diabetes",
+                    "id": 7,
+                    "value": "gestational_diabetes",
                     "name": "Gestational diabetes",
                     "cultureValue": "গর্ভকালীন ডায়াবেটিস"
                 },
                 {
-                    "id": "severe_anemia",
+                    "id": 8,
+                    "value": "severe_anemia",
                     "name": "Severe anemia",
                     "cultureValue": "মারাত্মক রক্তস্বল্পতা"
                 },
                 {
-                    "id": "none",
+                    "id": 9,
+                    "value": "none",
                     "name": "None",
                     "cultureValue": "না (উপরের কোনোটি নয়)"
                 }
@@ -90,7 +100,57 @@
             "titleCulture": "গর্ভবতী মায়ের আগে থেকে কোনো অসুখ আছে কি?",
             "errorMessage": "Please select a valid option",
             "visibility": "visible",
-            "localDataCache": "illness"
+            "optionsList":
+            [
+                {
+                    "id": 0,
+                    "value": "htn",
+                    "name": "HTN",
+                    "cultureValue": "উচ্চ রক্তচাপ"
+                },
+                {
+                    "id": 1,
+                    "value": "dm",
+                    "name": "DM",
+                    "cultureValue": "ডায়াবেটিস"
+                },
+                {
+                    "id": 2,
+                    "value": "heartDisease",
+                    "name": "Heart Disease",
+                    "cultureValue": "হৃদরোগ"
+                },
+                {
+                    "id": 3,
+                    "value": "tuberculosis",
+                    "name": "Tuberculosis",
+                    "cultureValue": "যক্ষ্মা"
+                },
+                {
+                    "id": 4,
+                    "value": "asthma",
+                    "name": "Asthma",
+                    "cultureValue": "হাঁপানি"
+                },
+                {
+                    "id": 5,
+                    "value": "kidneyDisease",
+                    "name": "Kidney Disease",
+                    "cultureValue": "কিডনি রোগ"
+                },
+                {
+                    "id": 6,
+                    "value": "thyroidDisease",
+                    "name": "Thyroid disease",
+                    "cultureValue": "থাইরয়েড রোগ"
+                },
+                {
+                    "id": 7,
+                    "value": "none",
+                    "name": "None",
+                    "cultureValue": "কোনো রোগ নাই"
+                }
+            ]
         },
         {
             "family": "medicalHistoryPhysicalExamination",
@@ -830,42 +890,50 @@
             "optionsList":
             [
                 {
-                    "id": "vaginalBleeding",
+                    "id": 0,
+                    "value": "vaginalBleeding",
                     "name": "Vaginal bleeding",
                     "cultureValue": "মাসিকের রাস্তা দিয়ে রক্তপাত"
                 },
                 {
-                    "id": "severeAbdominalPain",
+                    "id": 1,
+                    "value": "severeAbdominalPain",
                     "name": "Severe abdominal pain",
                     "cultureValue": "তীব্র পেট ব্যথা"
                 },
                 {
-                    "id": "severeHeadaches",
+                    "id": 2,
+                    "value": "severeHeadaches",
                     "name": "Severe headaches/blurred vision/sudden swelling of face/ hands",
                     "cultureValue": "তীব্র মাথাব্যথা / চোখে ঝাপসা দেখা / মুখ বা হাতে হঠাৎ ফুলে যাওয়া ( সম্ভাব্য প্রি-ইক্লাম্পসিয়া)"
                 },
                 {
-                    "id": "severeVomiting",
+                    "id": 3,
+                    "value": "severeVomiting",
                     "name": "Severe vomiting",
                     "cultureValue": "তীব্র বমি"
                 },
                 {
-                    "id": "highFever",
+                    "id": 4,
+                    "value": "highFever",
                     "name": "High Fever/ Pain or burining while urinating",
                     "cultureValue": "তীব্র জ্বর/ প্রস্রাবের সময় ব্যথা বা প্রস্রাবে জ্বালা-পোড়া অনুভূতি"
                 },
                 {
-                    "id": "shortnessOfBreath",
+                    "id": 5,
+                    "value": "shortnessOfBreath",
                     "name": "Shortness of breath/dizziness",
                     "cultureValue": "শ্বাস নিতে কষ্ট"
                 },
                 {
-                    "id": "none",
+                    "id": 6,
+                    "value": "none",
                     "name": "None",
                     "cultureValue": "(উপরের কোনোটি নয়)"
                 },
                 {
-                    "id": "other",
+                    "id": 7,
+                    "value": "other",
                     "name": "Other",
                     "cultureValue": "অন্যান্য"
                 }
@@ -890,47 +958,56 @@
             "optionsList":
             [
                 {
-                    "id": "vaginalBleeding",
+                    "id": 0,
+                    "value": "vaginalBleeding",
                     "name": "Vaginal bleeding",
                     "cultureValue": "মাসিকের রাস্তা দিয়ে রক্তপাত"
                 },
                 {
-                    "id": "leakingFluid",
+                    "id": 1,
+                    "value": "leakingFluid",
                     "name": "Leaking of fluid from vagina",
                     "cultureValue": "মাসিকের রাস্তা দিয়ে পানি বা তরল কিছু বের হওয়া"
                 },
                 {
-                    "id": "regularContractions",
+                    "id": 2,
+                    "value": "regularContractions",
                     "name": "Regular/painful contractions",
                     "cultureValue": "তলপেটে অতিরিক্ত ব্যাথা/ পেট শক্ত হওয়া"
                 },
                 {
-                    "id": "persistentHeadache",
+                    "id": 3,
+                    "value": "persistentHeadache",
                     "name": "Persistent headache or visual disturbances/  swelling of face/ hands",
                     "cultureValue": "দীর্ঘসময় মাথাব্যথা, চোখে ঝাপসা দেখা, বা মুখ/হাত ফুলে যাওয়া"
                 },
                 {
-                    "id": "epigastricPain",
+                    "id": 4,
+                    "value": "epigastricPain",
                     "name": "Epigastric pain (severe pain below ribs)",
                     "cultureValue": "বুকের পাঁজরের নিচে তীব্র ব্যথা"
                 },
                 {
-                    "id": "highFever",
+                    "id": 5,
+                    "value": "highFever",
                     "name": "High fever/ Pain or burining while urinating",
                     "cultureValue": "তীব্র জ্বর/ প্রস্রাবের সময় ব্যথা বা প্রস্রাবে জ্বালা-পোড়া অনুভূতি"
                 },
                 {
-                    "id": "reducedFetalMovements",
+                    "id": 6,
+                    "value": "reducedFetalMovements",
                     "name": "Reduced fetal movements",
                     "cultureValue": "বাচ্চার নড়াচড়া কমে যাওয়া"
                 },
                 {
-                    "id": "none",
+                    "id": 7,
+                    "value": "none",
                     "name": "None",
                     "cultureValue": "না (উপরের কোনোটি নয়)"
                 },
                 {
-                    "id": "other",
+                    "id": 8,
+                    "value": "other",
                     "name": "Other",
                     "cultureValue": "অন্যান্য"
                 }
@@ -955,47 +1032,56 @@
             "optionsList":
             [
                 {
-                    "id": "decreasedFetalMovements",
+                    "id": 0,
+                    "value": "decreasedFetalMovements",
                     "name": "Decreased or absent fetal movements",
                     "cultureValue": "বাচ্চার নড়াচড়া কমে যাওয়া বা বন্ধ হয়ে যাওয়া"
                 },
                 {
-                    "id": "severeAbdominalPain",
+                    "id": 1,
+                    "value": "severeAbdominalPain",
                     "name": "Severe abdominal pain or regular, painful contractions",
                     "cultureValue": "তলপেটে অতিরিক্ত ব্যাথা/ পেট শক্ত হওয়া"
                 },
                 {
-                    "id": "vaginalBleeding",
+                    "id": 2,
+                    "value": "vaginalBleeding",
                     "name": "Vaginal bleeding",
                     "cultureValue": "মাসিকের রাস্তা দিয়ে রক্তপাত"
                 },
                 {
-                    "id": "leakingFluid",
+                    "id": 3,
+                    "value": "leakingFluid",
                     "name": "Leaking of fluid from vagina",
                     "cultureValue": "মাসিকের রাস্তা দিয়ে পানি বা তরল কিছু বের হওয়া"
                 },
                 {
-                    "id": "severeHeadaches",
+                    "id": 4,
+                    "value": "severeHeadaches",
                     "name": "Severe headaches/ visual disturbances/ epigastric pain/ sudden swelling of face or hands",
                     "cultureValue": " তীব্র মাথাব্যথা/চোখে ঝাপসা/পাঁজরের নিচে ব্যথা/হঠাৎ মুখ বা হাত ফুলে যাওয়া"
                 },
                 {
-                    "id": "fever",
+                    "id": 5,
+                    "value": "fever",
                     "name": "Fever/ Foul semlling vaginal discharge",
                     "cultureValue": "জ্বর/দুর্গন্ধযুক্ত মাসিকের রাস্তা দিয়ে স্রাব বের হওয়া"
                 },
                 {
-                    "id": "fits",
+                    "id": 6,
+                    "value": "fits",
                     "name": "Fits/Convulsions",
                     "cultureValue": " খিঁচুনি"
                 },
                 {
-                    "id": "none",
+                    "id": 7,
+                    "value": "none",
                     "name": "None",
                     "cultureValue": "(উপরের কোনোটি নয়)"
                 },
                 {
-                    "id": "other",
+                    "id": 8,
+                    "value": "other",
                     "name": "Other",
                     "cultureValue": "অন্যান্য"
                 }

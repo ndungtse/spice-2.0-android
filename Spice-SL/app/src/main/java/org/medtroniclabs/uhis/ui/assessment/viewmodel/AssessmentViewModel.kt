@@ -115,18 +115,7 @@ import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralReasons
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ANC
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DeathOfMother
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.Miscarriage
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.childhoodVisitSigns
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.deathOfBaby
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.estimatedDeliveryDate
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.getDeathStatus
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.lastMenstrualPeriod
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.otherAncSigns
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.otherChildhoodVisitSigns
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.otherSigns
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.pncChildSigns
 import org.medtroniclabs.uhis.ui.assessment.statuslogic.AssessmentStatusGenerator
 import org.medtroniclabs.uhis.ui.assessment.utils.AssessmentUtil
 import org.medtroniclabs.uhis.ui.boarding.repo.MetaRepository
@@ -416,7 +405,6 @@ class AssessmentViewModel @Inject constructor(
 
         // Check if existing record exists
         val existingPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
-        val isNewRecord = existingPregnancyDetail == null
 
         val pregnancyDetail = if (existingPregnancyDetail != null) {
             // Use existing record and update fields
@@ -446,7 +434,7 @@ class AssessmentViewModel @Inject constructor(
         }
 
         // Ensure pregnancyEpisodeId and timestamps are set
-        ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail, isNewRecord)
+        ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail)
 
         memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
     }
@@ -483,7 +471,6 @@ class AssessmentViewModel @Inject constructor(
         }
 
         val existingPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
-        val isNewRecord = existingPregnancyDetail == null
         val pregnancyDetail = existingPregnancyDetail ?: PregnancyDetail(
             householdMemberLocalId = details.id,
             patientId = details.patientId,
@@ -565,7 +552,7 @@ class AssessmentViewModel @Inject constructor(
         }
 
         // Ensure pregnancyEpisodeId and timestamps are set
-        ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail, isNewRecord)
+        ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail)
 
         memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
     }
@@ -582,7 +569,6 @@ class AssessmentViewModel @Inject constructor(
         if (ancMap != null) {
             // Fetch existing record or create new
             val existingPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
-            val isNewRecord = existingPregnancyDetail == null
             val pregnancyDetail = existingPregnancyDetail ?: PregnancyDetail(
                 householdMemberLocalId = details.id,
                 patientId = details.patientId,
@@ -593,7 +579,7 @@ class AssessmentViewModel @Inject constructor(
             pregnancyDetail.ancVisitNo = getVisitNumber(pregnancyDetail.ancVisitNo)
 
             // Extract and save previousPregnancyComplications (string)
-            val medicalExaminationData = ancMap.get(AssessmentDefinedParams.GROUP_MEDICAL_HISTORY_PHYSICAL_EXAMINATION) as? Map<String, Any>
+            val medicalExaminationData = ancMap[AssessmentDefinedParams.GROUP_MEDICAL_HISTORY_PHYSICAL_EXAMINATION] as? Map<String, Any>
             val complications = medicalExaminationData?.get(AssessmentDefinedParams.PREVIOUS_PREGNANCY_COMPLICATIONS)
             pregnancyDetail.previousPregnancyComplications = StringConverter.convertListToString(complications)
 
@@ -623,7 +609,7 @@ class AssessmentViewModel @Inject constructor(
             pregnancyDetail.ancVisitDate = ancMap[AssessmentDefinedParams.ANC_VISIT_DATE] as? String
 
             // Ensure pregnancyEpisodeId and timestamps are set
-            ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail, isNewRecord)
+            ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail)
 
             // Save (updates existing record or inserts new one)
             memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
@@ -734,65 +720,25 @@ class AssessmentViewModel @Inject constructor(
             otherDetails[REFERRAL_FACILITY_TYPE] = facilityType
         }
 
-        if (menuId == ANC.uppercase(Locale.getDefault())) {
-            if (assessmentMap.containsKey(ANC)) {
-                val ancMap = assessmentMap[ANC] as Map<*, *>
-                var miscarriageValue = false
-                if (ancMap.containsKey(Miscarriage)) {
-                    val miscarriage = ancMap[Miscarriage]
-                    if (miscarriage is Boolean && miscarriage) {
-                        miscarriageValue = miscarriage
-                    }
-                }
-                val deathOfMother = getDeathStatus(assessmentMap, ANC, DeathOfMother)
-
-                if (!deathOfMother && !miscarriageValue && ancMap.containsKey(lastMenstrualPeriod)) {
-                    val lmp = ancMap[lastMenstrualPeriod] as String
-                    DateUtils
-                        .convertStringToDate(
-                            lmp,
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        )?.let { lmpDate ->
-                            RMNCH
-                                .calculateNextANCVisitDate(
-                                    lmpDate,
-                                )?.let { visitDate ->
-                                    otherDetails[AssessmentDefinedParams.NextFollowupDate] =
-                                        DateUtils.convertDateTimeToDate(
-                                            DateUtils.getDateStringFromDate(
-                                                visitDate,
-                                                DateUtils.DATE_ddMMyyyy,
-                                            ),
-                                            DateUtils.DATE_ddMMyyyy,
-                                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                        )
-                                }
-                        }
-                }
-            }
-        } else if (menuId == RMNCH.CHILD_MENU.uppercase(Locale.getDefault())) {
-            val deathOfBaby = getDeathStatus(assessmentMap, ChildHoodVisit, deathOfBaby)
-
+        if (menuId == RMNCH.CHILD_MENU.uppercase(Locale.getDefault())) {
             memberDetailsLiveData.value?.data?.dateOfBirth?.let {
-                if (!deathOfBaby) {
-                    DateUtils.calculateAgeInMonths(it)?.let { pair ->
-                        if (pair.first <= RMNCH.childHoodVisitMaxMonth) {
-                            RMNCH
-                                .calculateNextChildHoodVisitDate(
-                                    age = pair.first,
-                                    birthDate = pair.second,
-                                )?.let { visitDate ->
-                                    otherDetails[AssessmentDefinedParams.NextFollowupDate] =
-                                        DateUtils.convertDateTimeToDate(
-                                            DateUtils.getDateStringFromDate(
-                                                visitDate,
-                                                DateUtils.DATE_ddMMyyyy,
-                                            ),
+                DateUtils.calculateAgeInMonths(it)?.let { pair ->
+                    if (pair.first <= RMNCH.childHoodVisitMaxMonth) {
+                        RMNCH
+                            .calculateNextChildHoodVisitDate(
+                                age = pair.first,
+                                birthDate = pair.second,
+                            )?.let { visitDate ->
+                                otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                                    DateUtils.convertDateTimeToDate(
+                                        DateUtils.getDateStringFromDate(
+                                            visitDate,
                                             DateUtils.DATE_ddMMyyyy,
-                                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                        )
-                                }
-                        }
+                                        ),
+                                        DateUtils.DATE_ddMMyyyy,
+                                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                    )
+                            }
                     }
                 }
             }
@@ -880,37 +826,6 @@ class AssessmentViewModel @Inject constructor(
         (map[EYE_CARE_MENU_ID] as? HashMap<*, *>)?.get(EYE_CARE)?.let { eyeCare ->
             map[EYE_CARE] = eyeCare
             map.remove(EYE_CARE_MENU_ID)
-        }
-
-        // Request modification for syncing RMNCH Childhood Visit to Backend
-        if (map.containsKey(ChildHoodVisit)) {
-            val childHoodVisit = map[ChildHoodVisit] as HashMap<Any, Any>
-            childHoodVisit[childhoodVisitSigns]?.let {
-                childHoodVisit[pncChildSigns] = it
-            }
-            childHoodVisit.remove(childhoodVisitSigns)
-
-            if (childHoodVisit.containsKey(otherChildhoodVisitSigns)) {
-                val os = childHoodVisit[otherChildhoodVisitSigns] as Any
-                childHoodVisit.remove(otherChildhoodVisitSigns)
-                childHoodVisit[otherSigns] = os
-            }
-        }
-
-        // Request modification for syncing RMNCH ANC Visit to Backend
-        if (map.containsKey(ANC)) {
-            val anc = map[ANC] as HashMap<Any, Any>
-
-            if (anc.containsKey(otherAncSigns)) {
-                val os = anc[otherAncSigns] as Any
-                anc.remove(otherAncSigns)
-                anc[otherSigns] = os
-            }
-
-            if (anc.containsKey(lastMenstrualPeriod)) {
-                anc[estimatedDeliveryDate] =
-                    DateUtils.getEstDeliveryDateFromLmp(anc[lastMenstrualPeriod] as String)
-            }
         }
 
         // Request modification for syncing TB to Backend
@@ -1148,28 +1063,11 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    private fun getClinicalDateKey(): String? {
-        when (workflowName) {
-            ANC -> {
-                return lastMenstrualPeriod
-            }
-
-            RMNCH.PNC -> {
-                return RMNCH.DateOfDelivery
-            }
-        }
-        return null
-    }
-
     /**
      * Ensures pregnancyEpisodeId exists and manages startAt/endAt timestamps
      * @param pregnancyDetail The pregnancy detail entity to update
-     * @param isNewRecord Whether this is a new record (true) or existing record (false)
      */
-    private fun ensurePregnancyEpisodeIdAndTimestamps(
-        pregnancyDetail: PregnancyDetail,
-        isNewRecord: Boolean,
-    ) {
+    private fun ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail: PregnancyDetail) {
         // Generate pregnancyEpisodeId if not exists
         if (pregnancyDetail.pregnancyEpisodeId.isNullOrBlank()) {
             pregnancyDetail.pregnancyEpisodeId = UUID.randomUUID().toString()
@@ -1198,7 +1096,7 @@ class AssessmentViewModel @Inject constructor(
             }
 
             // Ensure pregnancyEpisodeId and timestamps are set
-            ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail, isNewRecord)
+            ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail)
 
             memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
         }

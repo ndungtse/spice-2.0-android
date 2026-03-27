@@ -94,6 +94,9 @@ object PregnantWomen {
 
     const val GRAVIDA_PARITY_IGNORE_DIFF = 2
 
+    const val PREGNANCY_MIN_AGE_THRESHOLD = 18
+    const val PREGNANCY_MAX_AGE_THRESHOLD = 35
+
     /**
      * Calculates risk factors based on given hashmap input
      *
@@ -110,9 +113,9 @@ object PregnantWomen {
         val lastMenstrualDateString = pregnancyHistory[ID_LMP] as String
         val calculatedAge = DateUtils.calculateAgeToDate(dateOfBirth, lastMenstrualDateString)
         // Age related risk factors
-        if (calculatedAge < 18) {
+        if (calculatedAge < PREGNANCY_MIN_AGE_THRESHOLD) {
             riskFactors.add("Age <18 years")
-        } else if (calculatedAge > 35) {
+        } else if (calculatedAge > PREGNANCY_MAX_AGE_THRESHOLD) {
             riskFactors.add("Age >35 years")
         }
         val livingChildren = CommonUtils.getDouble(pregnancyHistory[ID_LIVING_CHILDREN])

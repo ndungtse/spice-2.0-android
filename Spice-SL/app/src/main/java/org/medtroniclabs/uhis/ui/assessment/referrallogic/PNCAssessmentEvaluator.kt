@@ -61,11 +61,11 @@ object PNCAssessmentEvaluator {
             val systolic = CommonUtils.getInteger(maternalAssessment[RMNCH.ID_SYSTOLIC])
             val diastolic = CommonUtils.getInteger(maternalAssessment[RMNCH.ID_DIASTOLIC])
             val isBpHigh = isHighBp(systolic, diastolic)
-            val isKnownHtn = isSelectionPresent(maternalAssessment[RMNCH.ID_KNOWN_HTN], DefinedParams.Yes)
-            val isEclampsia = isSelectionPresent(maternalAssessment[RMNCH.ID_ECLAMPSIA], DefinedParams.Yes)
-            val isOnTreatmentHtn = isSelectionPresent(maternalAssessment[RMNCH.ID_ON_TREATMENT_HTN_ECLAMPSIA], DefinedParams.Yes)
-            val isEdemaPresent = isSelectionPresent(maternalAssessment[RMNCH.ID_EDEMA])
-            val isUrineAlbuminPresent = isSelectionPresent(maternalAssessment[RMNCH.ID_URINARY_ALBUMIN])
+            val isKnownHtn = isValueEquals(maternalAssessment[RMNCH.ID_KNOWN_HTN], DefinedParams.Yes)
+            val isEclampsia = isValueEquals(maternalAssessment[RMNCH.ID_ECLAMPSIA], DefinedParams.Yes)
+            val isOnTreatmentHtn = isValueEquals(maternalAssessment[RMNCH.ID_ON_TREATMENT_HTN_ECLAMPSIA], DefinedParams.Yes)
+            val isEdemaPresent = isValueEquals(maternalAssessment[RMNCH.ID_EDEMA])
+            val isUrineAlbuminPresent = isValueEquals(maternalAssessment[RMNCH.ID_URINARY_ALBUMIN])
 
             // 6. High BP ≥140/90
             if (isBpHigh) {
@@ -113,15 +113,15 @@ object PNCAssessmentEvaluator {
             }
 
             // 14. Known DM/GDM patient not on treatment
-            val dmPatient = isSelectionPresent(maternalAssessment[RMNCH.ID_DM_PATIENT], DefinedParams.Yes)
-            val gdmPatient = isSelectionPresent(maternalAssessment[RMNCH.ID_GDM_PATIENT], DefinedParams.Yes)
-            val isOnTreatmentDm = isSelectionPresent(maternalAssessment[RMNCH.ID_ON_TREATMENT_DM_GDM], DefinedParams.Yes)
+            val dmPatient = isValueEquals(maternalAssessment[RMNCH.ID_DM_PATIENT], DefinedParams.Yes)
+            val gdmPatient = isValueEquals(maternalAssessment[RMNCH.ID_GDM_PATIENT], DefinedParams.Yes)
+            val isOnTreatmentDm = isValueEquals(maternalAssessment[RMNCH.ID_ON_TREATMENT_DM_GDM], DefinedParams.Yes)
             if ((dmPatient || gdmPatient) && !isOnTreatmentDm) {
                 urgentReferral.add(PNCUrgentReferrals.DM_GDM_NOT_ON_TREATMENT.value)
             }
 
             // 15. Suspected Jaundice - Urinary Bilirubin-Positive
-            if (isSelectionPresent(maternalAssessment[RMNCH.ID_URINARY_BILIRUBIN])) {
+            if (isValueEquals(maternalAssessment[RMNCH.ID_URINARY_BILIRUBIN])) {
                 urgentReferral.add(PNCUrgentReferrals.SUSPECTED_JAUNDICE.value)
             }
         }
@@ -175,18 +175,18 @@ object PNCAssessmentEvaluator {
                 }
             }
 
-            val isKnownHtn = isSelectionPresent(maternalAssessment[RMNCH.ID_KNOWN_HTN], DefinedParams.Yes)
-            val isEclampsia = isSelectionPresent(maternalAssessment[RMNCH.ID_ECLAMPSIA], DefinedParams.Yes)
-            val isOnTreatmentHtn = isSelectionPresent(maternalAssessment[RMNCH.ID_ON_TREATMENT_HTN_ECLAMPSIA], DefinedParams.Yes)
+            val isKnownHtn = isValueEquals(maternalAssessment[RMNCH.ID_KNOWN_HTN], DefinedParams.Yes)
+            val isEclampsia = isValueEquals(maternalAssessment[RMNCH.ID_ECLAMPSIA], DefinedParams.Yes)
+            val isOnTreatmentHtn = isValueEquals(maternalAssessment[RMNCH.ID_ON_TREATMENT_HTN_ECLAMPSIA], DefinedParams.Yes)
 
             // 5. On treatment for HTN or Pre-eclampsia / Eclampsia
             if ((isKnownHtn || isEclampsia) && isOnTreatmentHtn) {
                 nonUrgentReferral.add(PNCNonUrgentReferral.HTN_ECLAMPSIA_ON_TREATMENT.value)
             }
 
-            val dmPatient = isSelectionPresent(maternalAssessment[RMNCH.ID_DM_PATIENT], DefinedParams.yes)
-            val gdmPatient = isSelectionPresent(maternalAssessment[RMNCH.ID_GDM_PATIENT], DefinedParams.yes)
-            val onTreatmentDmGdm = isSelectionPresent(maternalAssessment[RMNCH.ID_ON_TREATMENT_DM_GDM], DefinedParams.Yes)
+            val dmPatient = isValueEquals(maternalAssessment[RMNCH.ID_DM_PATIENT], DefinedParams.yes)
+            val gdmPatient = isValueEquals(maternalAssessment[RMNCH.ID_GDM_PATIENT], DefinedParams.yes)
+            val onTreatmentDmGdm = isValueEquals(maternalAssessment[RMNCH.ID_ON_TREATMENT_DM_GDM], DefinedParams.Yes)
 
             // 6. On treatment for DM/GDM
             if ((dmPatient || gdmPatient) && onTreatmentDmGdm) {
@@ -225,7 +225,7 @@ object PNCAssessmentEvaluator {
 
             // 1. Supplementation (Vitamin A, IFA, Calcium)
             // Vitamin A
-            if (!isSelectionPresent(maternalAssessment[RMNCH.ID_VITAMIN_A_CONSUMED], DefinedParams.Yes)) {
+            if (!isValueEquals(maternalAssessment[RMNCH.ID_VITAMIN_A_CONSUMED], DefinedParams.Yes)) {
                 supplementationGaps.add(PNCSupplementation.VITAMIN_A.value)
             }
 
@@ -252,7 +252,7 @@ object PNCAssessmentEvaluator {
 
         // 2. Not using postpartum contraception
         (resultMap[RMNCH.ID_POSTPARTUM_CONTRACEPTION] as? Map<*, *>)?.let { contraception ->
-            if (isSelectionPresent(contraception[RMNCH.ID_FAMILY_PLANNING_METHODS], DefinedParams.None)) {
+            if (isValueEquals(contraception[RMNCH.ID_FAMILY_PLANNING_METHODS], DefinedParams.None)) {
                 pncGaps.add(PNCGaps.CONTRACEPTION_GAP.value)
             }
         }
@@ -318,7 +318,7 @@ object PNCAssessmentEvaluator {
      * @param target The expected target value (defaults to "present").
      * @return True if the value matches the target (case-insensitive), false otherwise.
      */
-    fun isSelectionPresent(
+    fun isValueEquals(
         value: Any?,
         target: String = "present",
     ): Boolean = (value as? String)?.equals(target, ignoreCase = true) == true

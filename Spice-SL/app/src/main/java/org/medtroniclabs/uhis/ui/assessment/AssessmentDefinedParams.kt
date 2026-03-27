@@ -300,8 +300,6 @@ object AssessmentDefinedParams {
     // RMNCH Illness Identifiers
     const val ILLNESS_HTN = "HTN"
     const val ILLNESS_DM = "DM"
-    const val ILLNESS_HYPERTENSION = "hypertension"
-    const val ILLNESS_DIABETES = "diabetes"
 
     // RMNCH Blood Pressure Thresholds
     const val BP_SYSTOLIC_THRESHOLD = 140.0
@@ -383,14 +381,12 @@ object AssessmentDefinedParams {
     const val FACILITY_NOT_IDENTIFIED = "notIdentified"
     const val FACILITY_HOME_DELIVERY = "homeDelivery"
 
-    // Chronic Illness Identifiers
-    const val ILLNESS_NONE_ID = "none"
-    const val ILLNESS_HEART_DISEASE = "Heart Disease"
-    const val ILLNESS_TUBERCULOSIS = "Tuberculosis"
+    const val ILLNESS_HEART_DISEASE = "heartDisease"
+    const val ILLNESS_TUBERCULOSIS = "tuberculosis"
     const val ILLNESS_TB = "TB"
-    const val ILLNESS_ASTHMA = "Asthma"
-    const val ILLNESS_THYROID = "Thyroid"
-    const val ILLNESS_KIDNEY_DISEASE = "Kidney Disease"
+    const val ILLNESS_ASTHMA = "asthma"
+    const val ILLNESS_THYROID = "thyroidDisease"
+    const val ILLNESS_KIDNEY_DISEASE = "kidneyDisease"
 
     // Age Thresholds for High Risk Pregnancy
     const val AGE_MIN_THRESHOLD = 18
@@ -414,7 +410,7 @@ object AssessmentDefinedParams {
     const val CONDITION_CHRONIC_ILLNESS_WITH_TREATMENT = "PW with existing chronic illnesses with treatment"
     const val CONDITION_MILD_FEVER = "Mild Fever"
     const val CONDITION_PREGNANCY_RELATED_MEDICAL_COMPLICATIONS = "H/O Preg related medical complications"
-    const val CONDITION_ANY_OTHER = "Any Other"
+    const val CONDITION_ANY_OTHER = "Other Danger Signs"
 
     // Pregnancy Complication IDs
     const val COMPLICATION_CONVULSIONS = "convulsions"
@@ -580,6 +576,7 @@ object AssessmentDefinedParams {
     const val FAMILY_PLANNING_FORM = "family_planning_form"
     const val PREGNANT_WOMEN_PROFILE_FORM = "pregnancy_woman_profile"
     const val RMNCH_ANC_FORM = "rmnch_anc_visit"
+    const val RMNCH_PNC_FORM = "rmnch_pnc_visit"
 
     const val EYE_CARE = "eyeCare"
 

@@ -1,1 +1,856 @@
-{"formLayout":[{"familyOrder":1,"id":"pregnancyHistory","title":"Pregnancy History","titleCulture":"গর্ভাবস্থার ইতিহাস","viewType":"CardView","visibility":"gone"},{"family":"pregnancyHistory","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"gravida","inputType":2,"isEnabled":true,"isMandatory":true,"minValue":1,"orderId":0,"title":"Gravida","titleCulture":"সর্বমোট গর্ভসংখ্যা (এই গর্ভ সহ)","viewType":"EditText","visibility":"gone"},{"family":"pregnancyHistory","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"parity","infoTitle":"Includes current pregnancy outcome","infoTitleCulture":"প্রথম PNC ভিজিটের সময় ধারণকৃত","inputType":2,"isEnabled":true,"isInfo":"visible","isMandatory":true,"minValue":1,"orderId":1,"title":"Parity (Number of Total Births)","titleCulture":"জন্ম সংখ্যা (মোট সন্তান জন্মদানের সংখ্যা)","viewType":"EditText","visibility":"gone"},{"family":"pregnancyHistory","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"livingChildren","infoTitle":"Includes current pregnancy outcome-newborn","infoTitleCulture":"বর্তমান গর্ভাবস্থার ফলাফল অন্তর্ভুক্ত","inputType":2,"isEnabled":true,"isMandatory":true,"minValue":1,"orderId":2,"title":"Number of Living Children","titleCulture":"জীবিত সন্তান সংখ্যা","viewType":"EditText","visibility":"gone"},{"familyOrder":2,"id":"maternalHealthAssessment","title":"Maternal Health Assessment","titleCulture":"মাতৃস্বাস্থ্য মূল্যায়ন","viewType":"CardView","visibility":"visible"},{"applyDecimalFilter":true,"family":"maternalHealthAssessment","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"temperature","infoTitle":"0 – If temperature could not be measured","infoTitleCulture":"0 – যদি তাপমাত্রা পরিমাপ করা না যায়","inputType":8192,"isEnabled":true,"isInfo":"visible","isMandatory":true,"minValue":0,"orderId":0,"title":"Temperature","titleCulture":"তাপমাত্রা (ফারেনহাইট)","unitMeasurement":"°F","viewType":"EditText","visibility":"visible"},{"family":"maternalHealthAssessment","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"pulse","inputType":3,"isEnabled":true,"isMandatory":true,"orderId":1,"title":"Pulse","titleCulture":"নাড়ির গতি (প্রতি মিনিটে)","unitMeasurement":"per minute","viewType":"EditText","visibility":"visible"},{"applyDecimalFilter":true,"family":"maternalHealthAssessment","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"weight","infoTitle":"0 – If the weight could not be measured","infoTitleCulture":"0 – যদি ওজন পরিমাপ করা না যায়","inputType":8192,"isEnabled":true,"isInfo":"visible","isMandatory":true,"minValue":0,"orderId":2,"title":"Weight","titleCulture":"ওজন(কেজি)","unitMeasurement":"kg","viewType":"EditText","visibility":"visible"},{"family":"maternalHealthAssessment","id":"htnPatient","isEnabled":true,"isMandatory":true,"optionsList":[{"cultureValue":"হ্যাঁ","id":"yes","name":"Yes"},{"cultureValue":"না","id":"no","name":"No"}],"orderId":3,"title":"Known HTN Patient","titleCulture":"আগে থেকেই উচ্চ রক্তচাপ আছে কিনা?","viewType":"RadioGroup","visibility":"visible"},{"family":"maternalHealthAssessment","id":"eclampsia","isEnabled":true,"isMandatory":true,"optionsList":[{"cultureValue":"হ্যাঁ","id":"yes","name":"Yes"},{"cultureValue":"না","id":"no","name":"No"}],"orderId":4,"title":"Had Pre-eclampsia/ Eclampsia during current pregnancy","titleCulture":"বর্তমান গর্ভাবস্থায় প্রি-এক্ল্যাম্পসিয়া / এক্ল্যাম্পসিয়া ছিল কি না?","viewType":"RadioGroup","visibility":"visible"},{"family":"maternalHealthAssessment","id":"onTreatmentHtnEclampsia","isEnabled":true,"isMandatory":true,"optionsList":[{"cultureValue":"হ্যাঁ","id":"yes","name":"Yes"},{"cultureValue":"না","id":"no","name":"No"}],"orderId":5,"title":"On treatment for HTN/ Pre-eclampsia/ Eclampsia","titleCulture":"উচ্চ রক্তচাপের /  প্রি-এক্ল্যাম্পসিয়া / এক্ল্যাম্পসিয়া চিকিৎসা নিচ্ছেন কি না?","viewType":"RadioGroup","visibility":"visible"},{"family":"maternalHealthAssessment","id":"bloodPressure","isEnabled":true,"isMandatory":false,"orderId":6,"title":"Blood Pressure","titleCulture":"রক্তচাপ","viewType":"TextLabel","visibility":"visible"},{"family":"maternalHealthAssessment","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"systolic","infoTitle":"0 –If BP could not be measured","infoTitleCulture":"0 – যদি রক্তচাপ পরিমাপ করা না যায়","inputType":3,"isEnabled":true,"isInfo":"visible","isMandatory":true,"maxLength":3,"orderId":7,"title":"Systolic","titleCulture":"সিস্টোলিক","unitMeasurement":"mmHg","viewType":"EditText","visibility":"visible"},{"family":"maternalHealthAssessment","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"diastolic","infoTitle":"0 –If BP could not be measured","infoTitleCulture":"0 – যদি রক্তচাপ পরিমাপ করা না যায়","inputType":3,"isEnabled":true,"isInfo":"visible","isMandatory":true,"maxLength":3,"orderId":8,"title":"Diastolic","titleCulture":"ডায়াস্টোলিক","unitMeasurement":"mmHg","viewType":"EditText","visibility":"visible"},{"family":"maternalHealthAssessment","id":"edema","isEnabled":true,"isMandatory":true,"optionsList":[{"cultureValue":"হ্যাঁ","id":"present","name":"Present"},{"cultureValue":"না","id":"absent","name":"Absent"}],"orderId":9,"title":"Edema","titleCulture":"ইডিমা","viewType":"SingleSelectionView","visibility":"visible"},{"family":"maternalHealthAssessment","id":"urinaryAlbumin","isEnabled":true,"isMandatory":true,"optionsList":[{"cultureValue":"১।হ্যাঁ","id":"Present","name":"Present"},{"cultureValue":"২। না","id":"Absent","name":"Absent"},{"cultureValue":"N/A","id":"NA","name":"N/A"}],"orderId":10,"title":"Urinary Albumin","titleCulture":"প্রস্রাব পরীক্ষায় অ্যালবুমিন আছে কি না?","viewType":"SingleSelectionView","visibility":"visible"},{"family":"maternalHealthAssessment","id":"urinaryBilirubin","isEnabled":true,"isMandatory":true,"optionsList":[{"cultureValue":"হ্যাঁ","id":"present","name":"Present"},{"cultureValue":"না","id":"absent","name":"Absent"},{"cultureValue":"N/A","id":"na","name":"N/A"}],"orderId":11,"title":"Urinary Bilirubin","titleCulture":"প্রস্রাব পরীক্ষায় বিলিরুবিন আছে কি না?","viewType":"SingleSelectionView","visibility":"visible"},{"applyDecimalFilter":true,"family":"maternalHealthAssessment","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"hemoglobin","infoTitle":"0 – If Hb could not be measured","infoTitleCulture":"0 – যদি হিমোগ্লোবিন (Hb) পরিমাপ করা না যায়","inputType":8192,"isEnabled":true,"isInfo":"visible","isMandatory":false,"minValue":0,"orderId":12,"title":"Hemoglobin (Hb)","titleCulture":"হিমোগ্লোবিন (Hb)- রক্ত পরীক্ষা","unitMeasurement":"g/dL","viewType":"EditText","visibility":"visible"},{"family":"maternalHealthAssessment","id":"dmPatient","isEnabled":true,"isMandatory":true,"optionsList":[{"cultureValue":"হ্যাঁ","id":"yes","name":"Yes"},{"cultureValue":"না","id":"no","name":"No"}],"orderId":13,"title":"Known DM patient","titleCulture":"আগে থেকেই ডায়াবেটিস আছে কিনা?","viewType":"RadioGroup","visibility":"visible"},{"family":"maternalHealthAssessment","id":"gdmPatient","isEnabled":true,"isMandatory":true,"optionsList":[{"cultureValue":"হ্যাঁ","id":"yes","name":"Yes"},{"cultureValue":"না","id":"no","name":"No"}],"orderId":14,"title":"Known GDM patient","titleCulture":"গর্ভকালীন/  গর্ভাবস্থায় ডায়াবেটিস ছিল কিনা?","viewType":"RadioGroup","visibility":"visible"},{"family":"maternalHealthAssessment","id":"onTreatmentDmGdm","isEnabled":true,"isMandatory":true,"optionsList":[{"cultureValue":"হ্যাঁ","id":"yes","name":"Yes"},{"cultureValue":"না","id":"no","name":"No"}],"orderId":15,"title":"On treatment for DM/GDM","titleCulture":"ডায়াবেটিস / গর্ভকালীন ডায়াবেটিসের চিকিৎসা নিচ্ছেন কি না?","viewType":"RadioGroup","visibility":"visible"},{"condition":[{"eq":"random","targetId":"randomBloodSugar","visibility":"visible"},{"eq":"fasting","targetId":"fastingBloodSugar","visibility":"visible"}],"family":"maternalHealthAssessment","id":"bloodSugar","isEnabled":true,"isMandatory":false,"optionsList":[{"cultureValue":"ফাস্টিং","id":"fasting","name":"Fasting"},{"cultureValue":"বা র‍্যান্ডম","id":"random","name":"Random"}],"orderId":16,"title":"Blood Sugar","titleCulture":"প্রস্রাব পরীক্ষায় বিলিরুবিন আছে কি না?","viewType":"SingleSelectionView","visibility":"visible"},{"applyDecimalFilter":true,"family":"maternalHealthAssessment","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"fastingBloodSugar","infoTitle":"0 –If  Blood sugar could not be measured","infoTitleCulture":"0 – যদি রক্তের গ্লুকোজ পরিমাপ করা না যায়","inputType":8192,"isEnabled":true,"isInfo":"visible","isMandatory":false,"minValue":0,"orderId":17,"title":"Fasting","titleCulture":"ফাস্টিং","unitMeasurement":"mmol/L","viewType":"EditText","visibility":"gone"},{"applyDecimalFilter":true,"family":"maternalHealthAssessment","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"randomBloodSugar","infoTitle":"0 –If  Blood sugar could not be measured","infoTitleCulture":"0 – যদি রক্তের গ্লুকোজ পরিমাপ করা না যায়","inputType":8192,"isEnabled":true,"isInfo":"visible","isMandatory":false,"minValue":0,"orderId":18,"title":"Random","titleCulture":"বা র‍্যান্ডম","unitMeasurement":"mmol/L","viewType":"EditText","visibility":"gone"},{"family":"maternalHealthAssessment","hint":"Danger signs","hintCulture":"বিপদ চিহ্ন","id":"postpartumDangerSigns","isEnabled":true,"isMandatory":true,"optionsList":[{"cultureValue":"অতিরিক্ত রক্তক্ষরণ (৩০ মিনিটে ২টা প্যাড ভিজে যাচ্ছে )","displayOrder":1,"id":1,"name":"Heavy bleeding","type":"postpartumDangerSigns","value":"heavyBleeding"},{"cultureValue":"দুর্গন্ধযুক্ত স্রাব","displayOrder":2,"id":2,"name":"Foul-smelling discharge","type":"postpartumDangerSigns","value":"foulSmellingDischarge"},{"cultureValue":"তীব্র তল পেটের/ তল পেটের ব্যথা","displayOrder":3,"id":3,"name":"Severe abdominal pain","type":"postpartumDangerSigns","value":"severeAbdominalPain"},{"cultureValue":"তীব্র মাথাব্যথা / দৃষ্টি সমস্যা / খিঁচুনি","displayOrder":4,"id":4,"name":"Severe headache/vision/convulsions","type":"postpartumDangerSigns","value":"severeHeadacheVisionConvulsions"},{"cultureValue":"পারিনিয়াল ক্ষতের স্রাব/ পেরিনিয়াম টিয়ার/ ছেঁড়া","displayOrder":5,"id":5,"name":"Perineal wound discharge","type":"postpartumDangerSigns","value":"perinealWoundDischarge"},{"cultureValue":"স্তনের ব্যথা বা ফোলা সহ জ্বর","displayOrder":6,"id":6,"name":"Breast pain/swelling with fever","type":"postpartumDangerSigns","value":"breastPainSwellingFever"},{"cultureValue":"কোনোটিই নেই","displayOrder":7,"id":7,"name":"None","type":"postpartumDangerSigns","value":"none"},{"cultureValue":"কোনোটিই নেই","displayOrder":8,"id":8,"name":"Other","type":"postpartumDangerSigns","value":"other"}],"orderId":19,"title":"Danger Signs present","titleCulture":"প্রসবের পর কোনো জটিলতা আছে কি?","viewType":"DialogCheckbox","visibility":"visible"},{"family":"maternalHealthAssessment","id":"vitaminAConsumed","isEnabled":true,"isMandatory":true,"optionsList":[{"cultureValue":"হ্যাঁ","id":"yes","name":"Yes"},{"cultureValue":"না","id":"no","name":"No"}],"orderId":20,"title":"Vitamin A capsule consumed","titleCulture":"ভিটামিন এ ক্যাপসুল দেয়া হয়েছে কিনা?","viewType":"RadioGroup","visibility":"visible"},{"family":"maternalHealthAssessment","id":"ifaTablets","isEnabled":false,"orderId":21,"title":"IFA tables","titleCulture":"কতটি আয়রন বড়ি খেয়েছেন?","viewType":"TextLabel","visibility":"visible"},{"family":"maternalHealthAssessment","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"ifaTabletsConsumed","inputType":3,"isEnabled":true,"isMandatory":true,"minValue":0,"orderId":22,"title":"Total Consumed till now","titleCulture":"এ পর্যন্ত মোট সেবন","viewType":"EditText","visibility":"visible"},{"family":"maternalHealthAssessment","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"ifaTabletsProvided","inputType":3,"isEnabled":true,"isMandatory":true,"minValue":0,"orderId":23,"title":"Provided","titleCulture":"প্রদত্ত ঔষধ / সাপ্লিমেন্ট","viewType":"EditText","visibility":"visible"},{"family":"maternalHealthAssessment","id":"calciumTablets","isEnabled":false,"orderId":24,"title":"Calcium tablets","titleCulture":"কতটি ক্যালসিয়াম বড়ি খেয়েছেন?","viewType":"TextLabel","visibility":"visible"},{"family":"maternalHealthAssessment","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"calciumTabletsConsumed","inputType":3,"isEnabled":true,"isMandatory":true,"minValue":0,"orderId":25,"title":"Total Consumed till now","titleCulture":"এ পর্যন্ত মোট সেবন","viewType":"EditText","visibility":"visible"},{"family":"maternalHealthAssessment","hint":"[Enter number]","hintCulture":"[সংখ্যা লিখুন]","id":"calciumTabletsProvided","inputType":3,"isEnabled":true,"isMandatory":true,"minValue":0,"orderId":26,"title":"Provided","titleCulture":"প্রদত্ত ঔষধ / সাপ্লিমেন্ট","viewType":"EditText","visibility":"visible"},{"familyOrder":3,"id":"postpartumContraception","title":"Postpartum Contraception","titleCulture":"প্রসব পরবর্তী পরিবার পরিকল্পনা পদ্ধতির ব্যবহার","viewType":"CardView"},{"family":"postpartumContraception","id":"familyPlanningMethods","isEnabled":true,"isMandatory":true,"localDataCache":"familyPlanningMethods","optionsList":[{"cultureValue":"পিল","id":"pills","name":"Pills"},{"cultureValue":"ইঞ্জেকশান","id":"injectables","name":"Injectables"},{"cultureValue":"নরপ্লান্ট","id":"implant","name":"Implant"},{"cultureValue":"আই ইউ ডি  (গর্ভনিরোধক যন্ত্র)","id":"iud","name":"IUD"},{"cultureValue":"কন্ডম","id":"condoms","name":"Condoms"},{"cultureValue":"মহিলা বন্ধ্যাকরণ","id":"sterilizationFemale","name":"Sterilization (F)"},{"cultureValue":"পুরুষ বন্ধ্যাকরণ","id":"sterilizationMale","name":"Sterilization (M)"},{"cultureValue":"কোনোটি নয়","id":"none","name":"None"}],"orderId":0,"title":"Modern Family planning method being used","titleCulture":"কোন ধরনের পরিবার পরিকল্পনা পদ্ধতি ব্যবহার করছেন?","viewType":"Spinner","visibility":"visible"},{"familyOrder":4,"id":"counselling","isSummary":true,"title":"COUNSELING & EDUCATION","titleCulture":"পরামর্শ","viewType":"CardView","visibility":"gone"},{"family":"counselling","id":"counsellingMotherCare","isSummary":true,"orderId":1,"title":"Care of the Mother","titleCulture":"মায়ের যত্ন","viewType":"TextLabel","visibility":"gone"},{"family":"counselling","id":"motherCare","instructions":["Using the health worker job aid, provide counseling to the mother on postnatal care, danger signs, and family planning"],"instructionsCulture":["স্বাস্থ্যকর্মী কর্মসহায়িকা ব্যবহার করে প্রসব পরবর্তী  মায়ের যত্ন, বিপদচিহ্ন, ও পরিবার পরিকল্পনা নিয়ে পরামর্শ দিন।"],"isSummary":true,"orderId":2,"title":"Postnatal Care of the Mother","titleCulture":"সব পরবর্তী মায়ের পরিচর্যাঃ","viewType":"Instruction","visibility":"gone"},{"family":"counselling","id":"newbornCare","instructions":["Using the health worker job aid, provide counseling on essential newborn care, exclusive breastfeeding for the first 6 months, and how to recognize newborn danger signs."],"instructionsCulture":["স্বাস্থ্যকর্মী কর্মসহায়িকা ব্যবহার করে নবজাতকের প্রাথমিক যত্ন, ৬ মাস পর্যন্ত শুধুমাত্র মায়ের বুকের দুধ খাওয়ানো এবং নবজাতকের বিপদসংকেত চিনতে পরামর্শ দিন।"],"isSummary":true,"orderId":3,"title":"Newborn Care","titleCulture":"নবজাতকের যত্ন","viewType":"Instruction","visibility":"gone"},{"errorMessage":"Please select a valid option","family":"summary","fieldName":"Referral Facility","id":"referralFacility","isMandatory":false,"isSummary":true,"optionsList":[{"cultureValue":"ইউনিয়ন স্বাস্থ্য ও পরিবার কল্যাণ কেন্দ্র","id":"uhfwc","name":"UHFWC (Union health and family welfare center)"},{"cultureValue":"মাতৃ ও শিশু কল্যাণ কেন্দ্র","id":"mcwc","name":"MCWC (Mother and Child Welfare Center)"},{"cultureValue":"উপজেলা স্বাস্থ্য কমপ্লেক্স","id":"uhc","name":"UHC (Upazila Health complex)"},{"cultureValue":"জেলা সদর হাসপাতাল","id":"districtHospital","name":"District Hospital"},{"cultureValue":"মেডিকেল কলেজ হাসপাতাল","id":"medicalCollegeHospital","name":"Medical College Hospital"}],"orderId":0,"title":"Referral Facility","titleCulture":"রেফারেল স্বাস্থ্যসেবা কেন্দ্র","viewType":"Spinner","visibility":"gone"}]}
+{
+    "formLayout":
+    [
+        {
+            "familyOrder": 1,
+            "id": "pregnancyHistory",
+            "title": "Pregnancy History",
+            "titleCulture": "গর্ভাবস্থার ইতিহাস",
+            "viewType": "CardView",
+            "visibility": "gone"
+        },
+        {
+            "family": "pregnancyHistory",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "gravida",
+            "inputType": 2,
+            "isEnabled": true,
+            "isMandatory": true,
+            "minValue": 1,
+            "maxLength": 2,
+            "maxValue": 30,
+            "orderId": 0,
+            "title": "Gravida",
+            "titleCulture": "সর্বমোট গর্ভসংখ্যা (এই গর্ভ সহ)",
+            "viewType": "EditText",
+            "visibility": "gone"
+        },
+        {
+            "family": "pregnancyHistory",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "parity",
+            "infoTitle": "Includes current pregnancy outcome",
+            "infoTitleCulture": "প্রথম PNC ভিজিটের সময় ধারণকৃত",
+            "inputType": 2,
+            "isEnabled": true,
+            "isInfo": "visible",
+            "isMandatory": true,
+            "minValue": 1,
+            "maxLength": 2,
+            "maxValue": 30,
+            "orderId": 1,
+            "title": "Parity (Number of Total Births)",
+            "titleCulture": "জন্ম সংখ্যা (মোট সন্তান জন্মদানের সংখ্যা)",
+            "viewType": "EditText",
+            "visibility": "gone"
+        },
+        {
+            "family": "pregnancyHistory",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "livingChildren",
+            "infoTitle": "Includes current pregnancy outcome-newborn",
+            "infoTitleCulture": "বর্তমান গর্ভাবস্থার ফলাফল অন্তর্ভুক্ত",
+            "inputType": 2,
+            "isEnabled": true,
+            "isMandatory": true,
+            "minValue": 0,
+            "maxLength": 2,
+            "maxValue": 30,
+            "orderId": 2,
+            "title": "Number of Living Children",
+            "titleCulture": "জীবিত সন্তান সংখ্যা",
+            "viewType": "EditText",
+            "visibility": "gone"
+        },
+        {
+            "familyOrder": 2,
+            "id": "maternalHealthAssessment",
+            "title": "Maternal Health Assessment",
+            "titleCulture": "মাতৃস্বাস্থ্য মূল্যায়ন",
+            "viewType": "CardView",
+            "visibility": "visible"
+        },
+        {
+            "applyDecimalFilter": true,
+            "family": "maternalHealthAssessment",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "temperature",
+            "infoTitle": "0 – If temperature could not be measured",
+            "infoTitleCulture": "0 – যদি তাপমাত্রা পরিমাপ করা না যায়",
+            "inputType": 8192,
+            "isEnabled": true,
+            "isInfo": "visible",
+            "isMandatory": true,
+            "minValue": 0,
+            "maxLength": 5,
+            "orderId": 0,
+            "title": "Temperature",
+            "titleCulture": "তাপমাত্রা (ফারেনহাইট)",
+            "unitMeasurement": "°F",
+            "viewType": "EditText",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "pulse",
+            "inputType": 3,
+            "isEnabled": true,
+            "isMandatory": true,
+            "orderId": 1,
+            "maxLength": 3,
+            "title": "Pulse",
+            "titleCulture": "নাড়ির গতি (প্রতি মিনিটে)",
+            "unitMeasurement": "per minute",
+            "viewType": "EditText",
+            "visibility": "visible"
+        },
+        {
+            "applyDecimalFilter": true,
+            "family": "maternalHealthAssessment",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "weight",
+            "infoTitle": "0 – If the weight could not be measured",
+            "infoTitleCulture": "0 – যদি ওজন পরিমাপ করা না যায়",
+            "inputType": 8192,
+            "isEnabled": true,
+            "isInfo": "visible",
+            "isMandatory": true,
+            "minValue": 0,
+            "maxLength": 5,
+            "orderId": 2,
+            "title": "Weight",
+            "titleCulture": "ওজন(কেজি)",
+            "unitMeasurement": "kg",
+            "viewType": "EditText",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "id": "htnPatient",
+            "isEnabled": true,
+            "isMandatory": true,
+            "optionsList":
+            [
+                {
+                    "cultureValue": "হ্যাঁ",
+                    "id": "yes",
+                    "name": "Yes"
+                },
+                {
+                    "cultureValue": "না",
+                    "id": "no",
+                    "name": "No"
+                }
+            ],
+            "orderId": 3,
+            "title": "Known HTN Patient",
+            "titleCulture": "আগে থেকেই উচ্চ রক্তচাপ আছে কিনা?",
+            "viewType": "RadioGroup",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "id": "eclampsia",
+            "isEnabled": true,
+            "isMandatory": true,
+            "optionsList":
+            [
+                {
+                    "cultureValue": "হ্যাঁ",
+                    "id": "yes",
+                    "name": "Yes"
+                },
+                {
+                    "cultureValue": "না",
+                    "id": "no",
+                    "name": "No"
+                }
+            ],
+            "orderId": 4,
+            "title": "Had Pre-eclampsia/ Eclampsia during current pregnancy",
+            "titleCulture": "বর্তমান গর্ভাবস্থায় প্রি-এক্ল্যাম্পসিয়া / এক্ল্যাম্পসিয়া ছিল কি না?",
+            "viewType": "RadioGroup",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "id": "onTreatmentHtnEclampsia",
+            "isEnabled": true,
+            "isMandatory": true,
+            "optionsList":
+            [
+                {
+                    "cultureValue": "হ্যাঁ",
+                    "id": "yes",
+                    "name": "Yes"
+                },
+                {
+                    "cultureValue": "না",
+                    "id": "no",
+                    "name": "No"
+                }
+            ],
+            "orderId": 5,
+            "title": "On treatment for HTN/ Pre-eclampsia/ Eclampsia",
+            "titleCulture": "উচ্চ রক্তচাপের /  প্রি-এক্ল্যাম্পসিয়া / এক্ল্যাম্পসিয়া চিকিৎসা নিচ্ছেন কি না?",
+            "viewType": "RadioGroup",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "id": "bloodPressure",
+            "isEnabled": true,
+            "isMandatory": false,
+            "orderId": 6,
+            "title": "Blood Pressure",
+            "titleCulture": "রক্তচাপ",
+            "viewType": "TextLabel",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "systolic",
+            "infoTitle": "0 –If BP could not be measured",
+            "infoTitleCulture": "0 – যদি রক্তচাপ পরিমাপ করা না যায়",
+            "inputType": 3,
+            "isEnabled": true,
+            "isInfo": "visible",
+            "isMandatory": true,
+            "maxLength": 3,
+            "orderId": 7,
+            "title": "Systolic",
+            "titleCulture": "সিস্টোলিক",
+            "unitMeasurement": "mmHg",
+            "viewType": "EditText",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "diastolic",
+            "infoTitle": "0 –If BP could not be measured",
+            "infoTitleCulture": "0 – যদি রক্তচাপ পরিমাপ করা না যায়",
+            "inputType": 3,
+            "isEnabled": true,
+            "isInfo": "visible",
+            "isMandatory": true,
+            "maxLength": 3,
+            "orderId": 8,
+            "title": "Diastolic",
+            "titleCulture": "ডায়াস্টোলিক",
+            "unitMeasurement": "mmHg",
+            "viewType": "EditText",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "id": "edema",
+            "isEnabled": true,
+            "isMandatory": true,
+            "optionsList":
+            [
+                {
+                    "cultureValue": "হ্যাঁ",
+                    "id": "present",
+                    "name": "Present"
+                },
+                {
+                    "cultureValue": "না",
+                    "id": "absent",
+                    "name": "Absent"
+                }
+            ],
+            "orderId": 9,
+            "title": "Edema",
+            "titleCulture": "ইডিমা",
+            "viewType": "SingleSelectionView",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "id": "urinaryAlbumin",
+            "isEnabled": true,
+            "isMandatory": true,
+            "optionsList":
+            [
+                {
+                    "cultureValue": "১।হ্যাঁ",
+                    "id": "Present",
+                    "name": "Present"
+                },
+                {
+                    "cultureValue": "২। না",
+                    "id": "Absent",
+                    "name": "Absent"
+                },
+                {
+                    "cultureValue": "N/A",
+                    "id": "NA",
+                    "name": "N/A"
+                }
+            ],
+            "orderId": 10,
+            "title": "Urinary Albumin",
+            "titleCulture": "প্রস্রাব পরীক্ষায় অ্যালবুমিন আছে কি না?",
+            "viewType": "SingleSelectionView",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "id": "urinaryBilirubin",
+            "isEnabled": true,
+            "isMandatory": true,
+            "optionsList":
+            [
+                {
+                    "cultureValue": "হ্যাঁ",
+                    "id": "present",
+                    "name": "Present"
+                },
+                {
+                    "cultureValue": "না",
+                    "id": "absent",
+                    "name": "Absent"
+                },
+                {
+                    "cultureValue": "N/A",
+                    "id": "na",
+                    "name": "N/A"
+                }
+            ],
+            "orderId": 11,
+            "title": "Urinary Bilirubin",
+            "titleCulture": "প্রস্রাব পরীক্ষায় বিলিরুবিন আছে কি না?",
+            "viewType": "SingleSelectionView",
+            "visibility": "visible"
+        },
+        {
+            "applyDecimalFilter": true,
+            "family": "maternalHealthAssessment",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "hemoglobin",
+            "infoTitle": "0 – If Hb could not be measured",
+            "infoTitleCulture": "0 – যদি হিমোগ্লোবিন (Hb) পরিমাপ করা না যায়",
+            "inputType": 8192,
+            "isEnabled": true,
+            "isInfo": "visible",
+            "isMandatory": false,
+            "minValue": 0,
+            "maxLength": 5,
+            "orderId": 12,
+            "title": "Hemoglobin (Hb)",
+            "titleCulture": "হিমোগ্লোবিন (Hb)- রক্ত পরীক্ষা",
+            "unitMeasurement": "g/dL",
+            "viewType": "EditText",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "id": "dmPatient",
+            "isEnabled": true,
+            "isMandatory": true,
+            "optionsList":
+            [
+                {
+                    "cultureValue": "হ্যাঁ",
+                    "id": "yes",
+                    "name": "Yes"
+                },
+                {
+                    "cultureValue": "না",
+                    "id": "no",
+                    "name": "No"
+                }
+            ],
+            "orderId": 13,
+            "title": "Known DM patient",
+            "titleCulture": "আগে থেকেই ডায়াবেটিস আছে কিনা?",
+            "viewType": "RadioGroup",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "id": "gdmPatient",
+            "isEnabled": true,
+            "isMandatory": true,
+            "optionsList":
+            [
+                {
+                    "cultureValue": "হ্যাঁ",
+                    "id": "yes",
+                    "name": "Yes"
+                },
+                {
+                    "cultureValue": "না",
+                    "id": "no",
+                    "name": "No"
+                }
+            ],
+            "orderId": 14,
+            "title": "Known GDM patient",
+            "titleCulture": "গর্ভকালীন/  গর্ভাবস্থায় ডায়াবেটিস ছিল কিনা?",
+            "viewType": "RadioGroup",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "id": "onTreatmentDmGdm",
+            "isEnabled": true,
+            "isMandatory": true,
+            "optionsList":
+            [
+                {
+                    "cultureValue": "হ্যাঁ",
+                    "id": "yes",
+                    "name": "Yes"
+                },
+                {
+                    "cultureValue": "না",
+                    "id": "no",
+                    "name": "No"
+                }
+            ],
+            "orderId": 15,
+            "title": "On treatment for DM/GDM",
+            "titleCulture": "ডায়াবেটিস / গর্ভকালীন ডায়াবেটিসের চিকিৎসা নিচ্ছেন কি না?",
+            "viewType": "RadioGroup",
+            "visibility": "visible"
+        },
+        {
+            "condition":
+            [
+                {
+                    "eq": "random",
+                    "targetId": "randomBloodSugar",
+                    "visibility": "visible"
+                },
+                {
+                    "eq": "fasting",
+                    "targetId": "fastingBloodSugar",
+                    "visibility": "visible"
+                }
+            ],
+            "family": "maternalHealthAssessment",
+            "id": "bloodSugar",
+            "isEnabled": true,
+            "isMandatory": false,
+            "optionsList":
+            [
+                {
+                    "cultureValue": "ফাস্টিং",
+                    "id": "fasting",
+                    "name": "Fasting"
+                },
+                {
+                    "cultureValue": "বা র‍্যান্ডম",
+                    "id": "random",
+                    "name": "Random"
+                }
+            ],
+            "orderId": 16,
+            "title": "Blood Sugar",
+            "titleCulture": "প্রস্রাব পরীক্ষায় বিলিরুবিন আছে কি না?",
+            "viewType": "SingleSelectionView",
+            "visibility": "visible"
+        },
+        {
+            "applyDecimalFilter": true,
+            "family": "maternalHealthAssessment",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "fastingBloodSugar",
+            "infoTitle": "0 –If  Blood sugar could not be measured",
+            "infoTitleCulture": "0 – যদি রক্তের গ্লুকোজ পরিমাপ করা না যায়",
+            "inputType": 8192,
+            "isEnabled": true,
+            "isInfo": "visible",
+            "isMandatory": false,
+            "minValue": 0,
+            "maxLength": 5,
+            "orderId": 17,
+            "title": "Fasting",
+            "titleCulture": "ফাস্টিং",
+            "unitMeasurement": "mmol/L",
+            "viewType": "EditText",
+            "visibility": "gone"
+        },
+        {
+            "applyDecimalFilter": true,
+            "family": "maternalHealthAssessment",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "randomBloodSugar",
+            "infoTitle": "0 –If  Blood sugar could not be measured",
+            "infoTitleCulture": "0 – যদি রক্তের গ্লুকোজ পরিমাপ করা না যায়",
+            "inputType": 8192,
+            "isEnabled": true,
+            "isInfo": "visible",
+            "isMandatory": false,
+            "minValue": 0,
+            "maxLength": 5,
+            "orderId": 18,
+            "title": "Random",
+            "titleCulture": "বা র‍্যান্ডম",
+            "unitMeasurement": "mmol/L",
+            "viewType": "EditText",
+            "visibility": "gone"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "hint": "Danger signs",
+            "hintCulture": "বিপদ চিহ্ন",
+            "id": "postpartumDangerSigns",
+            "isEnabled": true,
+            "isMandatory": true,
+            "optionsList":
+            [
+                {
+                    "cultureValue": "অতিরিক্ত রক্তক্ষরণ (৩০ মিনিটে ২টা প্যাড ভিজে যাচ্ছে )",
+                    "displayOrder": 1,
+                    "id": 1,
+                    "name": "Heavy bleeding",
+                    "type": "postpartumDangerSigns",
+                    "value": "heavyBleeding"
+                },
+                {
+                    "cultureValue": "দুর্গন্ধযুক্ত স্রাব",
+                    "displayOrder": 2,
+                    "id": 2,
+                    "name": "Foul-smelling discharge",
+                    "type": "postpartumDangerSigns",
+                    "value": "foulSmellingDischarge"
+                },
+                {
+                    "cultureValue": "তীব্র তল পেটের/ তল পেটের ব্যথা",
+                    "displayOrder": 3,
+                    "id": 3,
+                    "name": "Severe abdominal pain",
+                    "type": "postpartumDangerSigns",
+                    "value": "severeAbdominalPain"
+                },
+                {
+                    "cultureValue": "তীব্র মাথাব্যথা / দৃষ্টি সমস্যা / খিঁচুনি",
+                    "displayOrder": 4,
+                    "id": 4,
+                    "name": "Severe headache/vision/convulsions",
+                    "type": "postpartumDangerSigns",
+                    "value": "severeHeadacheVisionConvulsions"
+                },
+                {
+                    "cultureValue": "পারিনিয়াল ক্ষতের স্রাব/ পেরিনিয়াম টিয়ার/ ছেঁড়া",
+                    "displayOrder": 5,
+                    "id": 5,
+                    "name": "Perineal wound discharge",
+                    "type": "postpartumDangerSigns",
+                    "value": "perinealWoundDischarge"
+                },
+                {
+                    "cultureValue": "স্তনের ব্যথা বা ফোলা সহ জ্বর",
+                    "displayOrder": 6,
+                    "id": 6,
+                    "name": "Breast pain/swelling with fever",
+                    "type": "postpartumDangerSigns",
+                    "value": "breastPainSwellingFever"
+                },
+                {
+                    "cultureValue": "কোনোটিই নেই",
+                    "displayOrder": 7,
+                    "id": 7,
+                    "name": "None",
+                    "type": "postpartumDangerSigns",
+                    "value": "none"
+                },
+                {
+                    "cultureValue": "কোনোটিই নেই",
+                    "displayOrder": 8,
+                    "id": 8,
+                    "name": "Other",
+                    "type": "postpartumDangerSigns",
+                    "value": "other"
+                }
+            ],
+            "orderId": 19,
+            "title": "Danger Signs present",
+            "titleCulture": "প্রসবের পর কোনো জটিলতা আছে কি?",
+            "viewType": "DialogCheckbox",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "id": "vitaminAConsumed",
+            "isEnabled": true,
+            "isMandatory": true,
+            "optionsList":
+            [
+                {
+                    "cultureValue": "হ্যাঁ",
+                    "id": "yes",
+                    "name": "Yes"
+                },
+                {
+                    "cultureValue": "না",
+                    "id": "no",
+                    "name": "No"
+                }
+            ],
+            "orderId": 20,
+            "title": "Vitamin A capsule consumed",
+            "titleCulture": "ভিটামিন এ ক্যাপসুল দেয়া হয়েছে কিনা?",
+            "viewType": "RadioGroup",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "id": "ifaTablets",
+            "isEnabled": false,
+            "orderId": 21,
+            "title": "IFA tables",
+            "titleCulture": "কতটি আয়রন বড়ি খেয়েছেন?",
+            "viewType": "TextLabel",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "ifaTabletsConsumed",
+            "inputType": 3,
+            "isEnabled": true,
+            "isMandatory": true,
+            "minValue": 0,
+            "maxLength": 3,
+            "orderId": 22,
+            "title": "Total Consumed till now",
+            "titleCulture": "এ পর্যন্ত মোট সেবন",
+            "viewType": "EditText",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "ifaTabletsProvided",
+            "inputType": 3,
+            "isEnabled": true,
+            "isMandatory": true,
+            "minValue": 0,
+            "maxLength": 3,
+            "orderId": 23,
+            "title": "Provided",
+            "titleCulture": "প্রদত্ত ঔষধ / সাপ্লিমেন্ট",
+            "viewType": "EditText",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "id": "calciumTablets",
+            "isEnabled": false,
+            "orderId": 24,
+            "title": "Calcium tablets",
+            "titleCulture": "কতটি ক্যালসিয়াম বড়ি খেয়েছেন?",
+            "viewType": "TextLabel",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "calciumTabletsConsumed",
+            "inputType": 3,
+            "isEnabled": true,
+            "isMandatory": true,
+            "minValue": 0,
+            "maxLength": 3,
+            "orderId": 25,
+            "title": "Total Consumed till now",
+            "titleCulture": "এ পর্যন্ত মোট সেবন",
+            "viewType": "EditText",
+            "visibility": "visible"
+        },
+        {
+            "family": "maternalHealthAssessment",
+            "hint": "[Enter number]",
+            "hintCulture": "[সংখ্যা লিখুন]",
+            "id": "calciumTabletsProvided",
+            "inputType": 3,
+            "isEnabled": true,
+            "isMandatory": true,
+            "minValue": 0,
+            "maxLength": 3,
+            "orderId": 26,
+            "title": "Provided",
+            "titleCulture": "প্রদত্ত ঔষধ / সাপ্লিমেন্ট",
+            "viewType": "EditText",
+            "visibility": "visible"
+        },
+        {
+            "familyOrder": 3,
+            "id": "postpartumContraception",
+            "title": "Postpartum Contraception",
+            "titleCulture": "প্রসব পরবর্তী পরিবার পরিকল্পনা পদ্ধতির ব্যবহার",
+            "viewType": "CardView"
+        },
+        {
+            "family": "postpartumContraception",
+            "id": "familyPlanningMethods",
+            "isEnabled": true,
+            "isMandatory": true,
+            "localDataCache": "familyPlanningMethods",
+            "optionsList":
+            [
+                {
+                    "cultureValue": "পিল",
+                    "id": "pills",
+                    "name": "Pills"
+                },
+                {
+                    "cultureValue": "ইঞ্জেকশান",
+                    "id": "injectables",
+                    "name": "Injectables"
+                },
+                {
+                    "cultureValue": "নরপ্লান্ট",
+                    "id": "implant",
+                    "name": "Implant"
+                },
+                {
+                    "cultureValue": "আই ইউ ডি  (গর্ভনিরোধক যন্ত্র)",
+                    "id": "iud",
+                    "name": "IUD"
+                },
+                {
+                    "cultureValue": "কন্ডম",
+                    "id": "condoms",
+                    "name": "Condoms"
+                },
+                {
+                    "cultureValue": "মহিলা বন্ধ্যাকরণ",
+                    "id": "sterilizationFemale",
+                    "name": "Sterilization (F)"
+                },
+                {
+                    "cultureValue": "পুরুষ বন্ধ্যাকরণ",
+                    "id": "sterilizationMale",
+                    "name": "Sterilization (M)"
+                },
+                {
+                    "cultureValue": "কোনোটি নয়",
+                    "id": "none",
+                    "name": "None"
+                }
+            ],
+            "orderId": 0,
+            "title": "Modern Family planning method being used",
+            "titleCulture": "কোন ধরনের পরিবার পরিকল্পনা পদ্ধতি ব্যবহার করছেন?",
+            "viewType": "Spinner",
+            "visibility": "visible"
+        },
+        {
+            "familyOrder": 4,
+            "id": "counselling",
+            "isSummary": true,
+            "title": "COUNSELING & EDUCATION",
+            "titleCulture": "পরামর্শ",
+            "viewType": "CardView",
+            "visibility": "gone"
+        },
+        {
+            "family": "counselling",
+            "id": "counsellingMotherCare",
+            "isSummary": true,
+            "orderId": 1,
+            "title": "Care of the Mother",
+            "titleCulture": "মায়ের যত্ন",
+            "viewType": "TextLabel",
+            "visibility": "gone"
+        },
+        {
+            "family": "counselling",
+            "id": "motherCare",
+            "instructions":
+            [
+                "Using the health worker job aid, provide counseling to the mother on postnatal care, danger signs, and family planning"
+            ],
+            "instructionsCulture":
+            [
+                "স্বাস্থ্যকর্মী কর্মসহায়িকা ব্যবহার করে প্রসব পরবর্তী  মায়ের যত্ন, বিপদচিহ্ন, ও পরিবার পরিকল্পনা নিয়ে পরামর্শ দিন।"
+            ],
+            "isSummary": true,
+            "orderId": 2,
+            "title": "Postnatal Care of the Mother",
+            "titleCulture": "সব পরবর্তী মায়ের পরিচর্যাঃ",
+            "viewType": "Instruction",
+            "visibility": "gone"
+        },
+        {
+            "family": "counselling",
+            "id": "newbornCare",
+            "instructions":
+            [
+                "Using the health worker job aid, provide counseling on essential newborn care, exclusive breastfeeding for the first 6 months, and how to recognize newborn danger signs."
+            ],
+            "instructionsCulture":
+            [
+                "স্বাস্থ্যকর্মী কর্মসহায়িকা ব্যবহার করে নবজাতকের প্রাথমিক যত্ন, ৬ মাস পর্যন্ত শুধুমাত্র মায়ের বুকের দুধ খাওয়ানো এবং নবজাতকের বিপদসংকেত চিনতে পরামর্শ দিন।"
+            ],
+            "isSummary": true,
+            "orderId": 3,
+            "title": "Newborn Care",
+            "titleCulture": "নবজাতকের যত্ন",
+            "viewType": "Instruction",
+            "visibility": "gone"
+        },
+        {
+            "errorMessage": "Please select a valid option",
+            "family": "summary",
+            "fieldName": "Referral Facility",
+            "id": "referralFacility",
+            "isMandatory": false,
+            "isSummary": true,
+            "optionsList":
+            [
+                {
+                    "cultureValue": "ইউনিয়ন স্বাস্থ্য ও পরিবার কল্যাণ কেন্দ্র",
+                    "id": "uhfwc",
+                    "name": "UHFWC (Union health and family welfare center)"
+                },
+                {
+                    "cultureValue": "মাতৃ ও শিশু কল্যাণ কেন্দ্র",
+                    "id": "mcwc",
+                    "name": "MCWC (Mother and Child Welfare Center)"
+                },
+                {
+                    "cultureValue": "উপজেলা স্বাস্থ্য কমপ্লেক্স",
+                    "id": "uhc",
+                    "name": "UHC (Upazila Health complex)"
+                },
+                {
+                    "cultureValue": "জেলা সদর হাসপাতাল",
+                    "id": "districtHospital",
+                    "name": "District Hospital"
+                },
+                {
+                    "cultureValue": "মেডিকেল কলেজ হাসপাতাল",
+                    "id": "medicalCollegeHospital",
+                    "name": "Medical College Hospital"
+                }
+            ],
+            "orderId": 0,
+            "title": "Referral Facility",
+            "titleCulture": "রেফারেল স্বাস্থ্যসেবা কেন্দ্র",
+            "viewType": "Spinner",
+            "visibility": "gone"
+        }
+    ]
+}

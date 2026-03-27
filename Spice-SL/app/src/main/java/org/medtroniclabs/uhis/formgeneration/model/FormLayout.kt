@@ -49,7 +49,7 @@ import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
  * @param pulseMinValue Minimum value validation for pulse validation for **BP** view type.
  * @param pulseMaxValue Maximum value validation for pulse validation for **BP** view type.
  * @param totalCount Total number of BP readings to take view type **BP**.
- * @param contentLength Max length for input fields for **EditText** view type. If contentLength is given it precedes maxLength.
+ * @param contentLength Max length for input fields for **EditText** view type. If contentLength is given it precedes [maxLength].
  * @param localDataCache Key for fetching options from local DB for view types **Spinner**, **MentalHealthView**, **RadioGroup**.
  * @param dependentID ID of field which is dependent on current field in case of view type is **Spinner**. E.g, Sub Villages is dependent on Swasthya Sebika.
  * @param unitMeasurement Used to display title with unit measurement like gm, cm etc. for  view types **EditText**, **Age**, **EditTextArea**, **InformationLabel**.

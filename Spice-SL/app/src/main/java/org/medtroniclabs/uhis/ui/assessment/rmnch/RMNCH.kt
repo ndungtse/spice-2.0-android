@@ -19,28 +19,21 @@ object RMNCH {
     const val PNC = "pncMother"
     const val PNCNeonatal = "pncNeonatal"
     const val ChildHoodVisit = "pncChild"
-    const val lastMenstrualPeriod = "lastMenstrualPeriod"
-    const val estimatedDeliveryDate = "estimatedDeliveryDate"
     const val visitNo = "visitNo"
     const val CHILD_MENU = "ChildHood_Visit"
     const val DateOfDelivery = "dateOfDelivery"
     const val gestationalAge = "gestationalAge"
     const val Miscarriage = "miscarriage"
     const val DeathOfMother = "deathOfMother"
-    const val childhoodVisitSigns = "childhoodVisitSigns"
     const val childhoodVisitSignsLabel = "Childhood Visit Signs"
-    const val pncChildSigns = "pncChildSigns"
-    const val otherChildhoodVisitSigns = "otherChildhoodVisitSigns"
     const val otherSigns = "otherSigns"
     const val ancSignsLabel = "ANC Signs"
-    const val otherAncSigns = "otherAncSigns"
     const val pncNeonateSignsLabel = "PNC Neonate Signs"
     const val otherPncNeonateSigns = "otherPncNeonateSigns"
     const val NeonatePatientId = "neonatePatientId"
     const val NeonateOutcome = "neonateOutcome"
     const val NeonatePatientReferenceId = "neonatePatientReferenceId"
     const val pncMotherSignsLabel = "PNC Mother Signs"
-    const val otherPncMotherSigns = "otherPncMotherSigns"
     const val PREGNANCY_MIN_AGE = 10
     const val PREGNANCY_MAX_AGE = 49
     const val PNC_MOTHER_MENU = "PNC_MOTHER"
@@ -52,7 +45,6 @@ object RMNCH {
     const val CHILDHOOD_VISIT_NO = "Childhood Visit "
 
     const val deathOfNewborn = "deathOfNewborn"
-    const val deathOfBaby = "deathOfBaby"
     const val isDeceased = "isDeceased"
     const val deceasedReason = "deceasedReason"
 
@@ -314,16 +306,7 @@ object RMNCH {
                     val key = it[DefinedParams.NAME]
                     if (key is String) {
                         if (key.equals(DefinedParams.Other, true)) {
-                            if (actualMap.containsKey(otherAncSigns)) {
-                                val otherSignValue = actualMap[otherAncSigns]
-                                result.add("$key - $otherSignValue")
-                            } else if (actualMap.containsKey(otherChildhoodVisitSigns)) {
-                                val otherSignValue = actualMap[otherChildhoodVisitSigns]
-                                result.add("$key - $otherSignValue")
-                            } else if (actualMap.containsKey(otherPncMotherSigns)) {
-                                val otherSignValue = actualMap[otherPncMotherSigns]
-                                result.add("$key - $otherSignValue")
-                            } else if (actualMap.containsKey(otherPncNeonateSigns)) {
+                            if (actualMap.containsKey(otherPncNeonateSigns)) {
                                 val otherSignValue = actualMap[otherPncNeonateSigns]
                                 result.add("$key - $otherSignValue")
                             } else {

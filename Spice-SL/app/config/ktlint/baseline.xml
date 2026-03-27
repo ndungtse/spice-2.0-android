@@ -1080,8 +1080,8 @@
         <error line="20" column="15" source="standard:property-naming" />
         <error line="21" column="15" source="standard:property-naming" />
         <error line="22" column="15" source="standard:property-naming" />
-        <error line="23" column="15" source="standard:property-naming" />
         <error line="24" column="15" source="standard:property-naming" />
+        <error line="25" column="15" source="standard:property-naming" />
         <error line="26" column="15" source="standard:property-naming" />
         <error line="27" column="15" source="standard:property-naming" />
         <error line="28" column="15" source="standard:property-naming" />
@@ -1093,19 +1093,11 @@
         <error line="34" column="15" source="standard:property-naming" />
         <error line="35" column="15" source="standard:property-naming" />
         <error line="36" column="15" source="standard:property-naming" />
-        <error line="37" column="15" source="standard:property-naming" />
-        <error line="38" column="15" source="standard:property-naming" />
-        <error line="39" column="15" source="standard:property-naming" />
-        <error line="40" column="15" source="standard:property-naming" />
-        <error line="41" column="15" source="standard:property-naming" />
-        <error line="42" column="15" source="standard:property-naming" />
-        <error line="43" column="15" source="standard:property-naming" />
-        <error line="54" column="15" source="standard:property-naming" />
-        <error line="55" column="15" source="standard:property-naming" />
-        <error line="56" column="15" source="standard:property-naming" />
-        <error line="57" column="15" source="standard:property-naming" />
-        <error line="59" column="15" source="standard:property-naming" />
-        <error line="61" column="15" source="standard:property-naming" />
+        <error line="47" column="15" source="standard:property-naming" />
+        <error line="48" column="15" source="standard:property-naming" />
+        <error line="49" column="15" source="standard:property-naming" />
+        <error line="51" column="15" source="standard:property-naming" />
+        <error line="53" column="15" source="standard:property-naming" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/ui/boarding/MenuTypeEnums.kt">
         <error line="4" column="5" source="standard:enum-entry-name-case" />

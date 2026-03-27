@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import dagger.hilt.android.AndroidEntryPoint
-import org.json.JSONObject
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -50,7 +49,6 @@ import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DeathOfMother
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PNC
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.deathOfBaby
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import org.medtroniclabs.uhis.ui.cbs.activity.CbsActivity
 import org.medtroniclabs.uhis.ui.followup.FollowUpMyPatientActivity
@@ -523,27 +521,8 @@ class AssessmentActivity : BaseActivity() {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    resource.data?.let { data ->
-                        val assessment = data.second
-                        val detailsJson = JSONObject(assessment.assessmentDetails)
-                        val ancObject = detailsJson.optJSONObject(RMNCH.ANC)
-                        val isDeathOfMother = ancObject?.optBoolean(DeathOfMother, false) == true
-
-                        val childHoodObject = detailsJson.optJSONObject(ChildHoodVisit)
-                        val isDeathOfNeonate = childHoodObject?.optBoolean(deathOfBaby, false) == true
-                        if (CommonUtils.isCommunity() && (isDeathOfMother || isDeathOfNeonate)) {
-                            viewModel.workflowName?.let {
-                                startCbsActivity(
-                                    workFlowName = it,
-                                    memberId = viewModel.selectedHouseholdMemberId,
-                                    assessmentId = assessment.id,
-                                    deathOfMother = isDeathOfMother,
-                                    deathOfNewborn = isDeathOfNeonate,
-                                )
-                            }
-                        } else {
-                            loadSummaryFragment()
-                        }
+                    resource.data?.let {
+                        loadSummaryFragment()
                     }
                 }
 

@@ -24,7 +24,6 @@ import org.medtroniclabs.uhis.appextensions.getLongTime
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.CommonUtils
-import org.medtroniclabs.uhis.common.CommonUtils.extractNumber
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import org.medtroniclabs.uhis.common.DateUtils.calculateAgeInMonths
@@ -35,14 +34,12 @@ import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
 import org.medtroniclabs.uhis.databinding.FragmentAssessmentRmnchBinding
 import org.medtroniclabs.uhis.db.entity.PregnancyDetail
 import org.medtroniclabs.uhis.formgeneration.FormGenerator
-import org.medtroniclabs.uhis.formgeneration.config.ViewType
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.formgeneration.listener.FormEventListener
 import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.ui.FormResultComposer
 import org.medtroniclabs.uhis.formgeneration.utility.CheckBoxDialog
 import org.medtroniclabs.uhis.formgeneration.utility.InformationLayoutFragment
-import org.medtroniclabs.uhis.mappingkey.PregnantWomen
 import org.medtroniclabs.uhis.mappingkey.Screening
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseFragment
@@ -55,7 +52,7 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.rootSuffix
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.summaryKey
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.AnemiaLevel
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCAssessmentEvaluator
-import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCAssessmentEvaluator.isSelectionPresent
+import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCAssessmentEvaluator.isValueEquals
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.PostpartumDangerSigns
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.ReferralResultGenerator
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
@@ -371,13 +368,21 @@ class AssessmentRMNCHFragment :
             }
 
             Screening.Weight -> {
-                viewModel.renderBMIValue(requireContext(), formGenerator, map)
+                // Calculate BMI only if visible
+                // BMI - show only if ANC visit 1 AND gestational age < 12 weeks
+                if (formGenerator.isViewVisible(AssessmentDefinedParams.BMI)) {
+                    viewModel.renderBMIValue(requireContext(), formGenerator, map)
+                }
                 // Update status for individual fields
                 handleAncFieldStatusUpdate(id)
             }
 
             Screening.Height -> {
-                viewModel.renderBMIValue(requireContext(), formGenerator, map)
+                // Calculate BMI only if visible
+                // BMI - show only if ANC visit 1 AND gestational age < 12 weeks
+                if (formGenerator.isViewVisible(AssessmentDefinedParams.BMI)) {
+                    viewModel.renderBMIValue(requireContext(), formGenerator, map)
+                }
             }
         }
     }
@@ -422,18 +427,6 @@ class AssessmentRMNCHFragment :
                     formGenerator.markMandatory(RMNCH.ID_HEMOGLOBIN, haveHeavyBleeding || mandatoryHemoglobin)
                 }
                 handlePncFieldStatusUpdate(id)
-            }
-
-            PregnantWomen.ID_GRAVIDA -> {
-                val gravida = CommonUtils.getDoubleOrNull(resultMap[id]) ?: return
-                // Parity should less than or equal gravida (as gravida includes parity + current birth)
-                formGenerator.getFormLayout(PregnantWomen.ID_PARITY)?.maxValue = gravida
-            }
-
-            PregnantWomen.ID_PARITY -> {
-                val parity = CommonUtils.getDoubleOrNull(resultMap[id]) ?: return
-                // Living children can be less than or equal to parity
-                formGenerator.getFormLayout(PregnantWomen.ID_LIVING_CHILDREN)?.maxValue = parity
             }
 
             RMNCH.ID_IFA_TABLETS_CONSUMED -> {
@@ -538,13 +531,16 @@ class AssessmentRMNCHFragment :
             // Get illness selections - these will be available as options in treatment dialog
             val illnessSelections = formGenerator.getResult(AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS)
                 as? ArrayList<HashMap<String, Any>> ?: arrayListOf()
+            val illnessOptions = formGenerator.getFormLayout(AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS)?.optionsList ?: arrayListOf()
+            val illnessSelectionsValues = illnessSelections
+                .map {
+                    it[DefinedParams.Value]?.toString()?.lowercase(Locale.ENGLISH) ?: ""
+                }.filterNot { it.equals(DefinedParams.Value, true) }
 
-            // Filter out "none" option from treatment dialog options
-            val filteredSelections = illnessSelections.filter { illnessItem ->
-                val id = illnessItem[DefinedParams.ID]?.toString()?.lowercase() ?: ""
-                val name = illnessItem[DefinedParams.NAME]?.toString()?.lowercase() ?: ""
-                id != AssessmentDefinedParams.ILLNESS_NONE_ID &&
-                    name != DefinedParams.None.lowercase()
+            // Filter selected illness sections
+            val filteredSelections = illnessOptions.filter { illnessItem ->
+                val value = illnessItem[DefinedParams.Value]?.toString()?.lowercase(Locale.ENGLISH) ?: ""
+                illnessSelectionsValues.contains(value)
             }
 
             val inputData = EntityMapper.mapToSignsAndSymptomsEntity(filteredSelections, dialogKey)
@@ -632,7 +628,6 @@ class AssessmentRMNCHFragment :
                         val clinicalMap = second[name] as HashMap<String, Any>
                         clinicalMap[RMNCH.visitNo] = getANCVisitNumber()
                     }
-                    calculateGestationalAge(second, name)
 
                     // Evaluate and add highRiskPregnantWoman and gapsInAnc to result map for ANC workflow
                     if (name == RMNCH.ANC) {
@@ -714,42 +709,6 @@ class AssessmentRMNCHFragment :
             pncIllness[RMNCH.ID_BLOOD_SUGAR] = PNCAssessmentEvaluator.isHighBloodSugar(pncMap)
         }
         pncMap[RMNCH.ID_PNC_ILLNESS] = pncIllness
-    }
-
-    private fun calculateGestationalAge(
-        details: HashMap<String, Any>,
-        name: String,
-    ) {
-        if (details.containsKey(name) && details[name] is Map<*, *>) {
-            val second = details[name] as HashMap<String, Any>
-            if (second.containsKey(RMNCH.lastMenstrualPeriod)) {
-                val lastMenstrualDate = second[RMNCH.lastMenstrualPeriod]
-                if (lastMenstrualDate is String) {
-                    val calendar = getLastMenstrualDate(lastMenstrualDate)
-                    second[RMNCH.gestationalAge] = extractNumber(
-                        DateUtils.formatGestationalAge(
-                            DateUtils
-                                .calculateGestationalAge(
-                                    calendar,
-                                ).first,
-                            requireContext(),
-                        ),
-                    )
-                }
-            }
-        }
-    }
-
-    private fun getLastMenstrualDate(clinicalDate: String): Calendar {
-        // Define the format of the input date string
-        val lastMenstrualDateString = DateUtils.convertDateFormat(
-            clinicalDate,
-            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            DateUtils.DATE_ddMMyyyy,
-        )
-        return Calendar.getInstance().apply {
-            time = getDateFormat().parse(lastMenstrualDateString)
-        }
     }
 
     private fun getDateFormat(): SimpleDateFormat =
@@ -994,7 +953,7 @@ class AssessmentRMNCHFragment :
                 (congenitalView.findViewWithTag("${DefinedParams.yes}_${AssessmentDefinedParams.ID_CONGENITAL_DEFECT}") as? View)?.isEnabled = false
                 (congenitalView.findViewWithTag("${DefinedParams.no}_${AssessmentDefinedParams.ID_CONGENITAL_DEFECT}") as? View)?.isEnabled = false
                 formGenerator.disableView(congenitalView)
-                if (isSelectionPresent(details?.childCongenitalDefect, DefinedParams.yes)) {
+                if (isValueEquals(details?.childCongenitalDefect, DefinedParams.yes)) {
                     (congenitalView.findViewWithTag("${DefinedParams.yes}_${AssessmentDefinedParams.ID_CONGENITAL_DEFECT}") as? View)?.isSelected = true
                 } else {
                     (congenitalView.findViewWithTag("${DefinedParams.no}_${AssessmentDefinedParams.ID_CONGENITAL_DEFECT}") as? View)?.isSelected = true
@@ -1076,27 +1035,16 @@ class AssessmentRMNCHFragment :
     /**
      * Calculates gestational age in weeks from LMP date
      * Returns null if LMP is not available
-     * @param fullMap Optional map to use instead of formGenerator result map
      */
-    private fun calculateGestationalAgeInWeeks(fullMap: HashMap<String, Any>? = null): Double? =
+    private fun calculateGestationalAgeInWeeks(): Double? =
         try {
-            val resultMap = fullMap ?: formGenerator.getResultMap()
-            val ancData = resultMap[RMNCH.ANC] as? HashMap<String, Any>
-            val lmpString = ancData?.get(RMNCH.lastMenstrualPeriod) as? String
-
-            if (lmpString.isNullOrBlank()) {
-                // Try to get from pregnancy detail
-                viewModel.pregnancyDetailLiveData.value?.lastMenstrualPeriod?.let { lmp ->
-                    val lmpCalendar = DateUtils.getLastMenstrualDate(lmp)
-                    val gestationalAge = DateUtils.calculateGestationalAge(lmpCalendar)
-                    gestationalAge.first.toDouble() + (gestationalAge.second / AssessmentDefinedParams.DAYS_PER_WEEK)
-                }
-            } else {
-                val lmpCalendar = DateUtils.getLastMenstrualDate(lmpString)
+            // Try to get from pregnancy detail
+            viewModel.pregnancyDetailLiveData.value?.lastMenstrualPeriod?.let { lmp ->
+                val lmpCalendar = DateUtils.getLastMenstrualDate(lmp)
                 val gestationalAge = DateUtils.calculateGestationalAge(lmpCalendar)
-                gestationalAge.first.toDouble() + (gestationalAge.second / 7.0)
+                gestationalAge.first.toDouble() + (gestationalAge.second / AssessmentDefinedParams.DAYS_PER_WEEK)
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
 
@@ -1301,7 +1249,7 @@ class AssessmentRMNCHFragment :
             }
 
             RMNCH.ID_VITAMIN_A_CONSUMED -> {
-                if (isSelectionPresent(value, DefinedParams.Yes)) {
+                if (isValueEquals(value, DefinedParams.Yes)) {
                     null
                 } else {
                     AssessmentDefinedParams.STATUS_GAP to null
@@ -1309,7 +1257,7 @@ class AssessmentRMNCHFragment :
             }
 
             RMNCH.ID_FAMILY_PLANNING_METHODS -> {
-                if (isSelectionPresent(value, DefinedParams.None)) {
+                if (isValueEquals(value, DefinedParams.None)) {
                     AssessmentDefinedParams.STATUS_GAP to null
                 } else {
                     null
@@ -1348,7 +1296,7 @@ class AssessmentRMNCHFragment :
             RMNCH.ID_GDM_PATIENT,
             RMNCH.ID_DM_PATIENT,
             -> {
-                if (isSelectionPresent(value, DefinedParams.Yes)) {
+                if (isValueEquals(value, DefinedParams.Yes)) {
                     AssessmentDefinedParams.STATUS_HIGH_RISK to null
                 } else {
                     null
@@ -1363,8 +1311,9 @@ class AssessmentRMNCHFragment :
      */
     private fun evaluatePostpartumDangerSigns(value: Any?): Pair<String, String?>? {
         val dangerSigns = value as? List<*>
-        val selectedSigns = dangerSigns?.filterIsInstance<Map<String, Any>>()?.mapNotNull { it[DefinedParams.Value] as? String }?.toSet()
-        return if (isSelectionPresent(selectedSigns.toString(), DefinedParams.None)) {
+        val selectedSigns = dangerSigns?.filterIsInstance<Map<String, Any>>()?.mapNotNull { it[DefinedParams.Value] as? String }
+        // Since we are checking with none, it is safe to take first element from the list
+        return if (isValueEquals(selectedSigns?.firstOrNull(), DefinedParams.None)) {
             null
         } else {
             AssessmentDefinedParams.STATUS_HIGH_RISK to null
@@ -1423,9 +1372,9 @@ class AssessmentRMNCHFragment :
 
         // Filter out "none" option from existing illness options for count calculation
         val filteredExistingIllnessOptions = existingIllnessOptions.filter { illnessItem ->
-            val id = illnessItem[DefinedParams.ID]?.toString()?.lowercase() ?: ""
+            val value = illnessItem[DefinedParams.Value]?.toString()?.lowercase() ?: ""
             val name = illnessItem[DefinedParams.NAME]?.toString()?.lowercase() ?: ""
-            id != AssessmentDefinedParams.ILLNESS_NONE_ID &&
+            value != DefinedParams.None.lowercase() &&
                 name != DefinedParams.None.lowercase()
         }
 
@@ -1937,13 +1886,13 @@ class AssessmentRMNCHFragment :
         val resultMap = formGenerator.getResultMap()
         val systolic = CommonUtils.getInteger(resultMap[RMNCH.ID_SYSTOLIC])
         val diastolic = CommonUtils.getInteger(resultMap[RMNCH.ID_DIASTOLIC])
-        val isKnownHtn = isSelectionPresent(resultMap[RMNCH.ID_KNOWN_HTN], DefinedParams.Yes)
+        val isKnownHtn = isValueEquals(resultMap[RMNCH.ID_KNOWN_HTN], DefinedParams.Yes)
         val edema = resultMap[RMNCH.ID_EDEMA] as? String
         val urinaryAlbumin = resultMap[RMNCH.ID_URINARY_ALBUMIN] as? String
 
         val isHighBp = PNCAssessmentEvaluator.isHighBp(systolic, diastolic)
-        val isEdemaPresent = isSelectionPresent(edema)
-        val isAlbuminPositive = isSelectionPresent(urinaryAlbumin)
+        val isEdemaPresent = isValueEquals(edema)
+        val isAlbuminPositive = isValueEquals(urinaryAlbumin)
 
         // Common high risk triggers for BP (Point 1, 2, 3)
         val bpHighRiskTrigger = isHighBp || isKnownHtn || (isEdemaPresent && isAlbuminPositive)
@@ -1984,8 +1933,8 @@ class AssessmentRMNCHFragment :
         val resultMap = formGenerator.getResultMap()
         val fastingSugar = CommonUtils.getDouble(resultMap[RMNCH.ID_FASTING_BLOOD_SUGAR])
         val randomSugar = CommonUtils.getDouble(resultMap[RMNCH.ID_RANDOM_BLOOD_SUGAR])
-        val isDmPatient = isSelectionPresent(resultMap[RMNCH.ID_DM_PATIENT], DefinedParams.Yes)
-        val isGdmPatient = isSelectionPresent(resultMap[RMNCH.ID_GDM_PATIENT], DefinedParams.Yes)
+        val isDmPatient = isValueEquals(resultMap[RMNCH.ID_DM_PATIENT], DefinedParams.Yes)
+        val isGdmPatient = isValueEquals(resultMap[RMNCH.ID_GDM_PATIENT], DefinedParams.Yes)
         val isDmOrGdm = isDmPatient || isGdmPatient
 
         // Fasting (Point 1)
@@ -2045,7 +1994,7 @@ class AssessmentRMNCHFragment :
             }
 
         // Evaluate highRiskPregnantWoman
-        val (dangerSignsList, hasOtherSelected) = getDangerSignsValues(ancHashMap, AssessmentDefinedParams.GROUP_DANGER_SIGNS_RISK_IDENTIFICATION)
+        val (dangerSignsList, hasOtherSelected) = getDangerSignsValues(ancHashMap)
         val emergencyConditions = evaluateEmergencyReferralConditions(ancHashMap).toMutableList()
         val nonEmergencyConditions = evaluateNonEmergencyReferralConditions(
             ancHashMap,
@@ -2057,15 +2006,7 @@ class AssessmentRMNCHFragment :
 
         val highRiskMap = hashMapOf<String, Any>()
         dangerSignsList.forEach { dangerSign ->
-            // Split by comma, trim, and filter out "None" (defensive check)
-            val individualSigns = dangerSign
-                .split(",")
-                .map { it.trim() }
-                .filter {
-                    it.isNotEmpty() &&
-                        !it.equals(DefinedParams.None, ignoreCase = true)
-                }
-            emergencyConditions.addAll(individualSigns)
+            emergencyConditions.add(dangerSign)
         }
         // Combine all high risk conditions
         if (emergencyConditions.isNotEmpty()) {
@@ -2227,33 +2168,14 @@ class AssessmentRMNCHFragment :
     }
 
     /**
-     * Filters out "None" from a comma-separated danger signs string
-     * @param dangerSignString Comma-separated string of danger signs
-     * @return Filtered string with "None" removed, or empty string if only "None" was present
-     */
-    private fun filterNoneFromDangerSignsString(dangerSignString: String): String {
-        val signs = dangerSignString
-            .split(",")
-            .map { it.trim() }
-            .filter {
-                it.isNotEmpty() &&
-                    !it.equals(DefinedParams.None, ignoreCase = true)
-            }
-        return signs.joinToString(", ")
-    }
-
-    /**
      * Get danger signs values from all three danger signs fields
-     * Filters out "None" option from the results
+     * Filters out "None" and Other option from the results
      * @return Pair of (filtered danger signs list, boolean indicating if "other" option is selected)
      */
-    private fun getDangerSignsValues(
-        map: HashMap<String, Any>,
-        section: String?,
-    ): Pair<List<String>, Boolean> {
+    private fun getDangerSignsValues(map: HashMap<String, Any>): Pair<List<String>, Boolean> {
         val dangerSignsList = mutableListOf<String>()
         var hasOtherSelected = false
-        val ancMap = map[section] as? Map<*, *>
+        val ancMap = map[AssessmentDefinedParams.GROUP_DANGER_SIGNS_RISK_IDENTIFICATION] as? Map<*, *>
         ancMap?.let { anc ->
             // Check all three danger signs fields
             listOf(
@@ -2267,35 +2189,16 @@ class AssessmentRMNCHFragment :
                     if (dangerSignValue is ArrayList<*>) {
                         dangerSignValue.forEach { item ->
                             if (item is Map<*, *>) {
-                                val id = item[DefinedParams.ID]?.toString()?.lowercase() ?: ""
+                                val value = item[DefinedParams.Value]?.toString()?.lowercase() ?: ""
                                 val name = item[DefinedParams.NAME]?.toString()?.lowercase() ?: ""
-                                // Check if "other" option is selected
-                                if (id == "other" || name == DefinedParams.Other.lowercase()) {
+                                // Check if "other" option is selected, then don't add other to the list
+                                if (value == DefinedParams.Other.lowercase() || name == DefinedParams.Other.lowercase()) {
                                     hasOtherSelected = true
+                                } else if (!(value == DefinedParams.None.lowercase() || name == DefinedParams.None.lowercase())) {
+                                    // Check if none option is selected, then don't add to the list
+                                    dangerSignsList.add(name)
                                 }
                             }
-                        }
-                    }
-
-                    val formattedValue = RMNCH.getValueFromMap(
-                        map,
-                        dangerSignId,
-                        ViewType.VIEW_TYPE_DIALOG_CHECKBOX,
-                        section,
-                        false,
-                        Triple(
-                            getString(R.string.yes),
-                            getString(R.string.no),
-                            getString(R.string.hyphen_symbol),
-                        ),
-                        requireContext(),
-                    )
-                    if (formattedValue != getString(R.string.hyphen_symbol)) {
-                        // Filter out "None" from the formatted value
-                        val filteredValue = filterNoneFromDangerSignsString(formattedValue)
-                        // Only add if there are signs remaining after filtering "None"
-                        if (filteredValue.isNotEmpty()) {
-                            dangerSignsList.add(filteredValue)
                         }
                     }
                 }
@@ -2321,7 +2224,7 @@ class AssessmentRMNCHFragment :
         }
 
         // Calculate gestational age for conditions that need it
-        val gestationalAgeWeeks = calculateGestationalAgeInWeeks(fullMap)
+        val gestationalAgeWeeks = calculateGestationalAgeInWeeks()
 
         // 2. USG not done >36 weeks
         val ultrasound = getValueFromNestedMap(resultMap, AssessmentDefinedParams.ULTRASOUND) as? String

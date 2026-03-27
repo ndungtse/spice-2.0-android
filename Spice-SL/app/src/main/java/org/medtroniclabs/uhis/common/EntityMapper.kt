@@ -103,7 +103,7 @@ object EntityMapper {
         optionsList.forEachIndexed { index, it ->
             outputList.add(
                 SignsAndSymptomsEntity(
-                    _id = it[DefinedParams.ID] as? Long ?: index.toLong(),
+                    _id = (it[DefinedParams.ID] as? Number)?.toLong() ?: index.toLong(),
                     symptom = it[DefinedParams.NAME] as String,
                     type = it[DefinedParams.type] as? String ?: type,
                     value = it[DefinedParams.Value] as? String,

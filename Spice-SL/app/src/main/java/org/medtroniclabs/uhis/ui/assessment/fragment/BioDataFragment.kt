@@ -1,5 +1,6 @@
 package org.medtroniclabs.uhis.ui.assessment.fragment
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,8 @@ import org.medtroniclabs.uhis.databinding.FragmentBioDataBinding
 import org.medtroniclabs.uhis.db.entity.MemberClinicalEntity
 import org.medtroniclabs.uhis.db.entity.PregnancyDetail
 import org.medtroniclabs.uhis.formgeneration.extension.capitalizeFirstChar
+import org.medtroniclabs.uhis.mappingkey.PregnantWomen.PREGNANCY_MAX_AGE_THRESHOLD
+import org.medtroniclabs.uhis.mappingkey.PregnantWomen.PREGNANCY_MIN_AGE_THRESHOLD
 import org.medtroniclabs.uhis.model.assessment.AssessmentMemberDetails
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseFragment
@@ -83,7 +86,7 @@ class BioDataFragment : BaseFragment() {
         }
 
         viewModel.pregnancyDetailLiveData.observe(viewLifecycleOwner) { pregnancyDetail ->
-            showAncServicesReceived(pregnancyDetail)
+            handlePregnancyDetail(pregnancyDetail)
         }
     }
 
@@ -199,23 +202,36 @@ class BioDataFragment : BaseFragment() {
                 ageFromDob,
                 getString(R.string.years),
             )
-        } else if (ageFromDob.isEmpty()) {
-            requireContext().getString(R.string.seperator_hyphen)
         } else {
-            ageFromDob
+            ageFromDob.ifEmpty {
+                requireContext().getString(R.string.seperator_hyphen)
+            }
         }
 
     /**
-     * Shows "Total ANC services received" field only for pregnancy outcome workflow
+     * Handles details w.r.t to pregnancy details
      */
-    private fun showAncServicesReceived(pregnancyDetail: PregnancyDetail?) {
+    private fun handlePregnancyDetail(pregnancyDetail: PregnancyDetail?) {
         if (viewModel.menuId.equals(MenuConstants.PREGNANCY_OUTCOME, ignoreCase = true)) {
+            // Shows "Total ANC services received" field only for pregnancy outcome workflow
             val ancVisitNo = pregnancyDetail?.ancVisitNo
             binding.totalAncServices.root.visible()
             binding.totalAncServices.tvKey.text = getString(R.string.total_anc_services_received)
             binding.totalAncServices.tvValue.text = ancVisitNo?.toString() ?: getString(R.string.separator_double_hyphen)
-        } else {
-            binding.totalAncServices.root.gone()
+        } else if (RMNCH.ANC.equals(viewModel.workflowName, ignoreCase = true)) {
+            //  Highlight if  1. Age <18 years 2. Age >35 years for ANC workflow
+            val dateOfBirth = viewModel.memberDetailsLiveData.value
+                ?.data
+                ?.dateOfBirth
+            val lmp = pregnancyDetail?.lastMenstrualPeriod
+            if (dateOfBirth != null && lmp != null) {
+                val calculatedAge = DateUtils.calculateAgeToDate(dateOfBirth, lmp)
+                if (calculatedAge < PREGNANCY_MIN_AGE_THRESHOLD) {
+                    binding.dobAge.tvValue.setTextColor(Color.RED)
+                } else if (calculatedAge > PREGNANCY_MAX_AGE_THRESHOLD) {
+                    binding.dobAge.tvValue.setTextColor(Color.RED)
+                }
+            }
         }
     }
 }

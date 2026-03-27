@@ -217,18 +217,10 @@ class AssessmentPregnantWomenRegistrationFragment :
 
                     PregnantWomen.ID_GRAVIDA -> {
                         fixObstetricComplications()
-                        val gravida = CommonUtils.getDoubleOrNull(resultHashMap[id]) ?: return@FormGenerator
-                        // Parity should be less than gravida (as gravida includes parity + current birth)
-                        formGenerator.getFormLayout(PregnantWomen.ID_PARITY)?.maxValue = gravida - 1
                     }
 
                     PregnantWomen.ID_PARITY -> {
                         fixObstetricComplications()
-                        val parity = CommonUtils.getDoubleOrNull(resultHashMap[id]) ?: return@FormGenerator
-                        // Living children can be less than or equal to parity
-                        formGenerator
-                            .getFormLayout(PregnantWomen.ID_LIVING_CHILDREN)
-                            ?.maxValue = parity
                     }
                 }
             },
