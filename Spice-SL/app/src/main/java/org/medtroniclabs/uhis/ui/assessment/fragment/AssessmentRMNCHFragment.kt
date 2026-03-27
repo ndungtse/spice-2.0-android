@@ -59,7 +59,6 @@ import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.AncPncReferralType
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCHAssessmentEvaluator
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.abs
@@ -711,12 +710,6 @@ class AssessmentRMNCHFragment :
         pncMap[RMNCH.ID_PNC_ILLNESS] = pncIllness
     }
 
-    private fun getDateFormat(): SimpleDateFormat =
-        SimpleDateFormat(
-            DateUtils.DATE_ddMMyyyy,
-            Locale.getDefault(),
-        )
-
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         val instructionDialog =
@@ -1221,8 +1214,8 @@ class AssessmentRMNCHFragment :
             AssessmentDefinedParams.FOLIC_ACID_TABLETS -> evaluateFolicAcidStatus(resultMap)
             AssessmentDefinedParams.IFA_TABLETS -> evaluateIFAStatus(resultMap)
             AssessmentDefinedParams.CALCIUM_TABLETS -> evaluateCalciumStatus(resultMap)
-            AssessmentDefinedParams.ANC_FROM_MEDICAL_DOCTOR -> evaluateANCFromMedicalDoctorStatus(value, resultMap)
-            AssessmentDefinedParams.ULTRASOUND -> evaluateUltrasoundStatus(value, resultMap)
+            AssessmentDefinedParams.ANC_FROM_MEDICAL_DOCTOR -> evaluateANCFromMedicalDoctorStatus(value)
+            AssessmentDefinedParams.ULTRASOUND -> evaluateUltrasoundStatus(value)
             AssessmentDefinedParams.BLOOD_SUGAR_FASTING -> evaluateBloodSugarFastingStatus(value, resultMap)
             AssessmentDefinedParams.BLOOD_SUGAR_RANDOM -> evaluateBloodSugarRandomStatus(value, resultMap)
             AssessmentDefinedParams.FACILITY_IDENTIFIED_FOR_DELIVERY -> evaluateFacilityIdentifiedForDeliveryStatus(value)
@@ -1313,7 +1306,7 @@ class AssessmentRMNCHFragment :
         val dangerSigns = value as? List<*>
         val selectedSigns = dangerSigns?.filterIsInstance<Map<String, Any>>()?.mapNotNull { it[DefinedParams.Value] as? String }
         // Since we are checking with none, it is safe to take first element from the list
-        return if (isValueEquals(selectedSigns?.firstOrNull(), DefinedParams.None)) {
+        return if (dangerSigns.isNullOrEmpty() || isValueEquals(selectedSigns?.firstOrNull(), DefinedParams.None)) {
             null
         } else {
             AssessmentDefinedParams.STATUS_HIGH_RISK to null
@@ -1321,7 +1314,7 @@ class AssessmentRMNCHFragment :
     }
 
     /**
-     * Evaluates calcium tablets status, if consumption is less than (days since delviery + 1) then gap
+     * Evaluates calcium tablets status, if consumption is less than (days since delivery + 1) then gap
      */
     private fun evaluateCalciumTabletStatus(): Pair<String, Nothing?>? {
         val daysSinceDelivery = getDaysSinceDelivery()
@@ -1340,7 +1333,7 @@ class AssessmentRMNCHFragment :
     }
 
     /**
-     * Evaluates ifa tablets status, if consumption is less than (days since delviery + 1) then gap
+     * Evaluates ifa tablets status, if consumption is less than (days since delivery + 1) then gap
      */
     private fun evaluateIfaTabletsStatus(): Pair<String, Nothing?>? {
         val daysSinceDelivery = getDaysSinceDelivery()
@@ -1367,7 +1360,7 @@ class AssessmentRMNCHFragment :
     ): Pair<String?, String?>? {
         // If user hasn't selected any treatment already, then ignore highlighting
         if (!ancSelectedTreatment) return null
-        val selectedOptions = value as? ArrayList<HashMap<String, Any>> ?: ArrayList<HashMap<String, Any>>()
+        val selectedOptions = value as? ArrayList<HashMap<String, Any>> ?: ArrayList()
         val existingIllnessOptions = resultMap[AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS] as? ArrayList<HashMap<String, Any>> ?: return null
 
         // Filter out "none" option from existing illness options for count calculation
@@ -1459,11 +1452,10 @@ class AssessmentRMNCHFragment :
         // Check urinary albumin
         val urinaryAlbumin = resultMap[AssessmentDefinedParams.URINARY_ALBUMIN] as? String
 
-        val condition1 = edemaValue == AssessmentDefinedParams.VALUE_PRESENT && isHighBP
         val condition2 = hasHTN && isNormalBP
         val condition3 = urinaryAlbumin == AssessmentDefinedParams.VALUE_PRESENT
 
-        return if (condition1 || condition2 || condition3) {
+        return if (isHighBP || condition2 || condition3) {
             Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
             null
@@ -1558,11 +1550,10 @@ class AssessmentRMNCHFragment :
         // Check edema
         val edema = resultMap[AssessmentDefinedParams.EDEMA] as? String
 
-        val condition1 = isHighBP
         val condition2 = hasHTN && isNormalBP
         val condition3 = edema == AssessmentDefinedParams.VALUE_PRESENT
 
-        return if (condition1 || condition2 || condition3) {
+        return if (isHighBP || condition2 || condition3) {
             Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
             null
@@ -1634,10 +1625,7 @@ class AssessmentRMNCHFragment :
     /**
      * 14. ANC from Medical Doctor - "gap" if value is "no" AND gestational age > 36 weeks
      */
-    private fun evaluateANCFromMedicalDoctorStatus(
-        value: Any?,
-        resultMap: HashMap<String, Any>,
-    ): Pair<String?, String?>? {
+    private fun evaluateANCFromMedicalDoctorStatus(value: Any?): Pair<String?, String?>? {
         val ancFromDoctor = value as? String ?: return null
         val gestationalAgeWeeks = calculateGestationalAgeInWeeks()
 
@@ -1654,10 +1642,7 @@ class AssessmentRMNCHFragment :
     /**
      * 15. Ultrasound - "gap" if value is "notDone" AND gestational age > 36 weeks
      */
-    private fun evaluateUltrasoundStatus(
-        value: Any?,
-        resultMap: HashMap<String, Any>,
-    ): Pair<String?, String?>? {
+    private fun evaluateUltrasoundStatus(value: Any?): Pair<String?, String?>? {
         val ultrasound = value as? String ?: return null
         val gestationalAgeWeeks = calculateGestationalAgeInWeeks()
 
@@ -1682,12 +1667,12 @@ class AssessmentRMNCHFragment :
         val hasDM = RMNCHAssessmentEvaluator.hasExistingDMIllness(resultMap)
         val fastingValue = (value as? Number)?.toDouble()
         if (fastingValue == null || fastingValue == 0.0) return null
-        if (fastingValue != null && hasDM) {
+        if (hasDM) {
             return Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         }
         // If no DM, check value threshold
 
-        return if (fastingValue != null && fastingValue >= AssessmentDefinedParams.BLOOD_SUGAR_FASTING_THRESHOLD) {
+        return if (fastingValue >= AssessmentDefinedParams.BLOOD_SUGAR_FASTING_THRESHOLD) {
             Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
             null
@@ -1705,12 +1690,12 @@ class AssessmentRMNCHFragment :
         val hasDM = RMNCHAssessmentEvaluator.hasExistingDMIllness(resultMap)
         val randomValue = (value as? Number)?.toDouble()
         if (randomValue == null || randomValue == 0.0) return null
-        if (randomValue != null && hasDM) {
+        if (hasDM) {
             return Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         }
         // If no DM, check value threshold
 
-        return if (randomValue != null && randomValue >= AssessmentDefinedParams.BLOOD_SUGAR_RANDOM_THRESHOLD) {
+        return if (randomValue >= AssessmentDefinedParams.BLOOD_SUGAR_RANDOM_THRESHOLD) {
             Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
             null
@@ -1841,7 +1826,7 @@ class AssessmentRMNCHFragment :
             }
 
             // Build title with status
-            if (statusText != null && statusText.isNotEmpty()) {
+            if (!statusText.isNullOrEmpty()) {
                 val displayStatus = if (isTranslationEnabled && !statusTextCulture.isNullOrBlank()) {
                     statusTextCulture
                 } else {
@@ -2022,7 +2007,7 @@ class AssessmentRMNCHFragment :
         }
 
         // Evaluate gapsInAnc
-        val gapsList = evaluateGapsInANC(ancHashMap, resultMap)
+        val gapsList = evaluateGapsInANC(ancHashMap)
         if (gapsList.isNotEmpty()) {
             summaryGroup[AssessmentDefinedParams.GAPS_IN_ANC] = gapsList
         }
@@ -2211,10 +2196,7 @@ class AssessmentRMNCHFragment :
      * Evaluate all gap conditions in ANC
      * Returns list of gap condition texts that match
      */
-    private fun evaluateGapsInANC(
-        resultMap: HashMap<String, Any>,
-        fullMap: HashMap<String, Any>,
-    ): List<String> {
+    private fun evaluateGapsInANC(resultMap: HashMap<String, Any>): List<String> {
         val gaps = mutableListOf<String>()
 
         // 1. TT vaccination incomplete
