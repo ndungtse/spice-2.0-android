@@ -1446,7 +1446,7 @@ class FormGenerator(
             (binding.etUserInput.background as? GradientDrawable)?.apply {
                 setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), context.getColor(R.color.edittext_stroke))
             }
-            val dropDownList = java.util.ArrayList<Map<String, Any>>()
+            val dropDownList = ArrayList<Map<String, Any>>()
             dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to getString(R.string.please_select),

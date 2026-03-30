@@ -455,11 +455,10 @@ class AssessmentViewModel @Inject constructor(
         val maternalDeath = pregnancyOutcomeMap[AssessmentDefinedParams.MATERNAL_DEATH] as? Map<String, Any?>
         val timeOfDeath = maternalDeath?.get(AssessmentDefinedParams.TIME_OF_DEATH)
         val hasTimeOfDeath = when (timeOfDeath) {
-            is String -> timeOfDeath.isNotBlank()
+            is String -> timeOfDeath.isNotBlank() && timeOfDeath != DefinedParams.DefaultID
             is Map<*, *> -> {
                 val timeOfDeathId = timeOfDeath[DefinedParams.ID]?.toString()
-                    ?: timeOfDeath[DefinedParams.id]?.toString()
-                !timeOfDeathId.isNullOrBlank()
+                !timeOfDeathId.isNullOrBlank() && timeOfDeathId != DefinedParams.DefaultID
             }
 
             else -> false

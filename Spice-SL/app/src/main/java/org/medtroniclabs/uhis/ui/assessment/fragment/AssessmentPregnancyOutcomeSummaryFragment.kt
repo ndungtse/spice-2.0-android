@@ -414,7 +414,7 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
                 DateUtils.DATE_FORMAT_yyyyMMdd,
             )
 
-            if (deliveryDateStr.isNullOrBlank() || eddDateStr.isNullOrBlank()) {
+            if (deliveryDateStr.isBlank() || eddDateStr.isBlank()) {
                 return null
             }
 
@@ -543,10 +543,9 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
         // Check for stillbirth
         val deliveryOutcomes = mapData[AssessmentDefinedParams.ID_DELIVERY_OUTCOMES] as? Map<*, *>
         deliveryOutcomes?.let { delivery ->
-            val stillbirthNumbers = delivery[AssessmentDefinedParams.STILLBIRTH_NUMBERS]
-            val stillbirthCount = when (stillbirthNumbers) {
-                is Number -> stillbirthNumbers.toInt()
-                is String -> stillbirthNumbers.toIntOrNull() ?: 0
+            val stillbirthCount = when (val stillBirthNumbers = delivery[AssessmentDefinedParams.STILLBIRTH_NUMBERS]) {
+                is Number -> stillBirthNumbers.toInt()
+                is String -> stillBirthNumbers.toIntOrNull() ?: 0
                 else -> 0
             }
             if (stillbirthCount > 0) {
@@ -558,8 +557,7 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
         val newbornDetailsList = findNewbornDetails(mapData)
         newbornDetailsList?.forEach { babyData ->
             if (babyData is Map<*, *>) {
-                val isBabyAlive = babyData[AssessmentDefinedParams.IS_BABY_ALIVE]
-                val isDead = when (isBabyAlive) {
+                val isDead = when (val isBabyAlive = babyData[AssessmentDefinedParams.IS_BABY_ALIVE]) {
                     is String -> isBabyAlive.equals(AssessmentDefinedParams.NO, ignoreCase = true)
                     is Boolean -> !isBabyAlive
                     else -> isBabyAlive?.toString()?.equals(AssessmentDefinedParams.NO, ignoreCase = true) == true
@@ -591,6 +589,19 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
             it.id == AssessmentDefinedParams.COUNSELLING_ADVERSE_EVENT
         }
 
+        // Check if timeOfDeath has any value and update member status
+        val maternalDeath = currentMapData?.get(AssessmentDefinedParams.MATERNAL_DEATH) as? Map<String, Any?>
+        val timeOfDeath = maternalDeath?.get(AssessmentDefinedParams.TIME_OF_DEATH)
+        val hasTimeOfDeath = when (timeOfDeath) {
+            is String -> timeOfDeath.isNotBlank() && timeOfDeath != DefinedParams.DefaultID
+            is Map<*, *> -> {
+                val timeOfDeathId = timeOfDeath[DefinedParams.ID]?.toString()
+                !timeOfDeathId.isNullOrBlank() && timeOfDeathId != DefinedParams.DefaultID
+            }
+
+            else -> false
+        }
+
         // Get only the new counselling items (filter out old ones)
         val counsellingItems = formLayouts
             .filter {
@@ -599,7 +610,8 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
                     it.isSummary == true &&
                     (
                         it.id == AssessmentDefinedParams.COUNSELLING_EMOTIONAL_SUPPORT ||
-                            it.id == AssessmentDefinedParams.COUNSELLING_FUTURE_PREGNANCY_PLANNING
+                            // If mother not died then add future pregnancy planning to counselling
+                            (!hasTimeOfDeath && it.id == AssessmentDefinedParams.COUNSELLING_FUTURE_PREGNANCY_PLANNING)
                     )
             }.sortedBy { it.orderId ?: Int.MAX_VALUE }
 
