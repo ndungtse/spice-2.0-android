@@ -406,7 +406,7 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.RMNCH_MENU_ID -> {
-                setTitle(MenuConstants.RMNCH_MENU_ID.uppercase())
+                setTitle(getRMNCHScreenTitle())
                 replaceFragmentInId<AssessmentRMNCHFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentRMNCHFragment.TAG,
@@ -511,6 +511,14 @@ class AssessmentActivity : BaseActivity() {
             }
         }
     }
+
+    private fun getRMNCHScreenTitle(): String =
+        when (viewModel.workflowName) {
+            RMNCH.ANC -> getString(R.string.anc)
+            RMNCH.PNC -> getString(R.string.pnc)
+            RMNCH.ChildHoodVisit -> getString(R.string.child_health)
+            else -> MenuConstants.RMNCH_MENU_ID.uppercase()
+        }
 
     private fun attachObservers() {
         viewModel.assessmentSaveLiveData.observe(this) { resource ->

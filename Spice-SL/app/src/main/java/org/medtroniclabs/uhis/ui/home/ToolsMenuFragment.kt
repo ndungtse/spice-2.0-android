@@ -117,7 +117,29 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
             val layoutManager = GridLayoutManager(context, 2)
             binding.rvActivitiesList.layoutManager = layoutManager
         }
-        binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(menus, this)
+        lifecycleScope.launch {
+            val resolvedMenus = getResolvedMenuLabels(menus)
+            binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(resolvedMenus, this@ToolsMenuFragment)
+        }
+    }
+
+    private suspend fun getResolvedMenuLabels(menus: List<MenuEntity>): List<MenuEntity> {
+        val workflowName = viewModel.getANCPNCStatus()
+        val rmnchTitle =
+            when (workflowName) {
+                RMNCH.ANC -> getString(R.string.anc)
+                RMNCH.PNC -> getString(R.string.pnc)
+                else -> getString(R.string.child_health)
+            }
+
+        // Keep a single RMNCH tile and only update its display label based on active workflow.
+        return menus.map { menu ->
+            if (menu.menuId.equals(MenuConstants.RMNCH_MENU_ID, true)) {
+                menu.copy(name = rmnchTitle, displayValue = null)
+            } else {
+                menu
+            }
+        }
     }
 
     override fun onMenuSelected(
