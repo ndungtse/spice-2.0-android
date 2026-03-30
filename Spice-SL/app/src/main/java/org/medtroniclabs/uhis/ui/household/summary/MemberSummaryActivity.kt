@@ -65,6 +65,8 @@ class MemberSummaryActivity : BaseActivity(), View.OnClickListener {
             .beginTransaction()
             .add(binding.fragmentContainer.id, MemberDetailsFragment())
             .commit()
+        helper = PagerSnapHelper()
+        helper.attachToRecyclerView(binding.rvServiceHistory)
     }
 
     private fun attachObservers() {
@@ -77,8 +79,6 @@ class MemberSummaryActivity : BaseActivity(), View.OnClickListener {
             } else {
                 binding.rvServiceHistory.visible()
                 binding.emptyErrorMessage.gone()
-                helper = PagerSnapHelper()
-                helper.attachToRecyclerView(binding.rvServiceHistory)
                 adapter = MemberAssessmentHistoryAdapter(history)
                 binding.rvServiceHistory.adapter = adapter
                 if (history.size > 1) {

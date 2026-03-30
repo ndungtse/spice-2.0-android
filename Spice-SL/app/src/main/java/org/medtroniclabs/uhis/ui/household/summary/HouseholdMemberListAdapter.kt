@@ -18,6 +18,7 @@ import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.data.offlinesync.model.HouseholdMemberWithTb
 import org.medtroniclabs.uhis.databinding.MembersSummaryListItemBinding
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
+import org.medtroniclabs.uhis.ui.assessment.utils.AssessmentUtil
 import org.medtroniclabs.uhis.ui.household.MemberSelectionListener
 
 class HouseholdMemberListAdapter(
@@ -65,7 +66,8 @@ class HouseholdMemberListAdapter(
             holder.binding.tvRecentServiceDateSeparator.visible()
             holder.binding.tvRecentServiceDateValue.visible()
 
-            holder.binding.tvRecentServiceValue.text = item.recentService ?: context.resources.getString(R.string.separator_double_hyphen)
+            holder.binding.tvRecentServiceValue.text = item.recentService?.let { recentService -> AssessmentUtil.mapServiceToServiceName(recentService) }
+                ?: context.resources.getString(R.string.separator_double_hyphen)
             holder.binding.tvRecentServiceDateValue.text = item.recentServiceDate?.let {
                 DateUtils.formatDateToDisplayFormat(it)
             } ?: context.resources.getString(R.string.separator_double_hyphen)

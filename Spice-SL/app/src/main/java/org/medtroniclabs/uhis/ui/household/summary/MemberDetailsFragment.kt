@@ -46,6 +46,7 @@ class MemberDetailsFragment : Fragment(), View.OnClickListener {
     private fun attachObservers() {
         memberSummaryViewModel.memberDetails.observe(viewLifecycleOwner) { memberDetails ->
             memberDetails ?: return@observe
+            binding.llDetails.removeAllViews()
             isExternalMember = memberDetails.member.householdId == null
             val recentHistoryDate = memberDetails.history.firstOrNull()?.let {
                 DateUtils.getLastMenstrualDate(it.visitDate ?: "").timeInMillis

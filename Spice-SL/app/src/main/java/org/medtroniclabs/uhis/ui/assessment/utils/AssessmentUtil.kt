@@ -133,7 +133,7 @@ object AssessmentUtil {
             MenuConstants.PREGNANCY_OUTCOME.lowercase() -> "Pregnancy Outcome"
             RMNCH.ANC.lowercase() -> "ANC"
             RMNCH.PNC_MOTHER_MENU.lowercase() -> "PNC"
-            RMNCH.CHILD_MENU.lowercase() -> "Child Visit"
+            RMNCH.CHILD_MENU.lowercase() -> "Child Health"
             else -> service.uppercase(Locale.ENGLISH)
         }
 

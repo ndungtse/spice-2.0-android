@@ -267,10 +267,10 @@ interface HouseholdDAO {
             LEFT JOIN (
                 SELECT
                     hm.household_id,
-                    MAX(a.updated_at) AS last_assessment_at
-                FROM Assessment a
+                    MAX(strftime('%s', mah.visitDate) * 1000) AS last_assessment_at
+                FROM MemberAssessmentHistory mah
                 INNER JOIN HouseholdMember hm
-                    ON hm.id = a.householdMemberLocalId
+                    ON hm.id = mah.memberId
                 GROUP BY hm.household_id
             ) AS assessmentAgg
                 ON assessmentAgg.household_id = hh.id

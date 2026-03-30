@@ -947,12 +947,15 @@ class AssessmentRMNCHFragment :
                 (congenitalView.findViewWithTag("${DefinedParams.no}_${AssessmentDefinedParams.ID_CONGENITAL_DEFECT}") as? View)?.isEnabled = false
                 formGenerator.disableView(congenitalView)
                 if (isValueEquals(details?.childCongenitalDefect, DefinedParams.yes)) {
+                    formGenerator.getResultMap()[AssessmentDefinedParams.ID_CONGENITAL_DEFECT] = details?.childCongenitalDefect ?: ""
                     (congenitalView.findViewWithTag("${DefinedParams.yes}_${AssessmentDefinedParams.ID_CONGENITAL_DEFECT}") as? View)?.isSelected = true
-                } else {
+                } else if (isValueEquals(details?.childCongenitalDefect, DefinedParams.no)) {
+                    formGenerator.getResultMap()[AssessmentDefinedParams.ID_CONGENITAL_DEFECT] = details?.childCongenitalDefect ?: ""
                     (congenitalView.findViewWithTag("${DefinedParams.no}_${AssessmentDefinedParams.ID_CONGENITAL_DEFECT}") as? View)?.isSelected = true
+                } else {
+                    congenitalView.gone()
                 }
             }
-            formGenerator.getResultMap()[AssessmentDefinedParams.ID_CONGENITAL_DEFECT] = details?.childCongenitalDefect ?: ""
         }
     }
 

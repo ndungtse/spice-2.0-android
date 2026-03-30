@@ -1,6 +1,7 @@
 package org.medtroniclabs.uhis.db.local
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import androidx.room.Transaction
 import androidx.sqlite.db.SimpleSQLiteQuery
 import org.medtroniclabs.uhis.common.DateUtils
@@ -1242,15 +1243,15 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun deleteAllMemberAssessmentHistory() = memberAssessmentHistoryDao.deleteMemberAssessmentHistory()
 
-    override suspend fun getMemberWithAssessmentHistory(memberId: Long): MemberAssessmentHistoryResponse? {
-        val result = memberDAO.getMemberWithAssessmentHistory(memberId)
-        return if (result.isNotEmpty()) {
-            val entry = result.entries.first()
-            MemberAssessmentHistoryResponse(entry.key, entry.value)
-        } else {
-            null
+    override fun getMemberWithAssessmentHistory(memberId: Long): LiveData<MemberAssessmentHistoryResponse?> =
+        memberDAO.getMemberWithAssessmentHistory(memberId).map { result ->
+            if (!result.isNullOrEmpty()) {
+                val entry = result.entries.first()
+                MemberAssessmentHistoryResponse(entry.key, entry.value)
+            } else {
+                null
+            }
         }
-    }
 
     override suspend fun getDashboardCounts(
         startDate: String?,

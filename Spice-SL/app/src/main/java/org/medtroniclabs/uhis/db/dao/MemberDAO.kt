@@ -35,17 +35,17 @@ interface MemberDAO {
         """
                     SELECT
                         hhm.*, td.diagnoses,
-                        a.assessmentType AS recent_service,
-                        a.updated_at AS recent_service_date
+                        mah.serviceProvided AS recent_service,
+                        (strftime('%s', mah.visitDate) * 1000) AS recent_service_date
                     FROM householdmember AS hhm
                     LEFT JOIN TreatmentDetailsEntity AS td ON hhm.fhir_id = td.memberId
 
-                    LEFT JOIN Assessment AS a
-                        ON a.householdMemberLocalId = hhm.id
-                        AND a.updated_at = (
-                            SELECT MAX(a2.updated_at)
-                            FROM Assessment AS a2
-                            WHERE a2.householdMemberLocalId = hhm.id
+                    LEFT JOIN MemberAssessmentHistory AS mah
+                        ON mah.memberId = hhm.id
+                        AND mah.visitDate = (
+                            SELECT MAX(mah2.visitDate)
+                            FROM MemberAssessmentHistory AS mah2
+                            WHERE mah2.memberId = hhm.id
                         )
 
                     WHERE hhm.household_id = :houseHoldId
@@ -494,8 +494,8 @@ interface MemberDAO {
             """
             SELECT
                 hhm.*, td.diagnoses,
-                a.assessmentType AS recent_service,
-                a.updated_at AS recent_service_date,
+                mah.serviceProvided AS recent_service,
+                (strftime('%s', mah.visitDate) * 1000) AS recent_service_date,
                 COALESCE(ss.name, '') AS shasthya_shebika_name,
                 COALESCE(ss.ssId, '') AS shasthya_shebika_ssId,
                 COALESCE(sv.name, '') AS sub_village_name
@@ -510,12 +510,12 @@ interface MemberDAO {
             LEFT JOIN TreatmentDetailsEntity AS td
                 ON hhm.fhir_id = td.memberId
 
-            LEFT JOIN Assessment AS a
-                ON a.householdMemberLocalId = hhm.id
-                AND a.updated_at = (
-                    SELECT MAX(a2.updated_at)
-                    FROM Assessment AS a2
-                    WHERE a2.householdMemberLocalId = hhm.id
+            LEFT JOIN MemberAssessmentHistory AS mah
+                ON mah.memberId = hhm.id
+                AND mah.visitDate = (
+                    SELECT MAX(mah2.visitDate)
+                    FROM MemberAssessmentHistory AS mah2
+                    WHERE mah2.memberId = hhm.id
                 )
 
             $whereClause
@@ -533,5 +533,5 @@ interface MemberDAO {
      */
     @Transaction
     @Query("SELECT * FROM HouseHoldMember AS hhm LEFT JOIN memberassessmenthistory AS mah ON hhm.id = mah.memberId WHERE hhm.id = :memberId ORDER BY mah.visitDate DESC")
-    suspend fun getMemberWithAssessmentHistory(memberId: Long): Map<HouseholdMemberEntity, List<MemberAssessmentHistoryEntity>>
+    fun getMemberWithAssessmentHistory(memberId: Long): LiveData<Map<HouseholdMemberEntity, List<MemberAssessmentHistoryEntity>>?>
 }

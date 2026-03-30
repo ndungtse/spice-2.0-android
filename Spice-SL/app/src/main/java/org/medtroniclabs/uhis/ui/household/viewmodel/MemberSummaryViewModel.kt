@@ -1,7 +1,7 @@
 package org.medtroniclabs.uhis.ui.household.viewmodel
 
 import android.content.Intent
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -25,7 +25,7 @@ class MemberSummaryViewModel @Inject constructor(
     var dateOfBirth: String = ""
         private set
 
-    val memberDetails = MutableLiveData<MemberAssessmentHistoryResponse?>()
+    val memberDetails = MediatorLiveData<MemberAssessmentHistoryResponse?>()
 
     fun initialize(intent: Intent) {
         householdId = intent.getLongExtra(DefinedParams.HOUSEHOLD_ID, -1)
@@ -39,6 +39,9 @@ class MemberSummaryViewModel @Inject constructor(
      */
     private fun fetchMemberDetails() =
         viewModelScope.launch(dispatcherIO) {
-            memberDetails.postValue(roomHelper.getMemberWithAssessmentHistory(memberId))
+            val source = roomHelper.getMemberWithAssessmentHistory(memberId)
+            memberDetails.addSource(source) { value ->
+                memberDetails.value = value
+            }
         }
 }

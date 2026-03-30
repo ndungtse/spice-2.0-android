@@ -881,7 +881,7 @@ interface RoomHelper {
 
     suspend fun deleteAllMemberAssessmentHistory()
 
-    suspend fun getMemberWithAssessmentHistory(memberId: Long): MemberAssessmentHistoryResponse?
+    fun getMemberWithAssessmentHistory(memberId: Long): LiveData<MemberAssessmentHistoryResponse?>
 
     suspend fun getDashboardCounts(
         startDate: String?,
