@@ -27,7 +27,7 @@ android {
         applicationId = "org.medtroniclabs.uhis"
         minSdk = 23
         targetSdk = 36
-        versionCode = 1
+        versionCode = 4
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
@@ -68,7 +68,7 @@ android {
             keyAlias = devKeyAlias
             keyPassword = devKeyPassword
             storePassword = devStorePassword
-            storeFile = file("spice")
+            storeFile = file("uhis_staging.jks")
         }
     }
 
