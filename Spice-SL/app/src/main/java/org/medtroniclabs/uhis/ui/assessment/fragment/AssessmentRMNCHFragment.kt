@@ -2043,7 +2043,7 @@ class AssessmentRMNCHFragment :
         }
 
         // 2. High Fever - >=102F
-        val temperature = (getValueFromNestedMap(resultMap, AssessmentDefinedParams.TEMPERATURE) as? Number)?.toDouble()
+        val temperature = (getValueFromNestedMap(resultMap, AssessmentDefinedParams.TEMPERATURE) as? Number)?.toDouble()?.takeIf { it > 0.0 }
         if (temperature != null && temperature >= AssessmentDefinedParams.TEMP_HIGH_FEVER_THRESHOLD) {
             conditions.add(AssessmentDefinedParams.CONDITION_HIGH_FEVER)
         }
@@ -2061,13 +2061,13 @@ class AssessmentRMNCHFragment :
         }
 
         // 5. Pulse - >90 or <60
-        val pulse = (getValueFromNestedMap(resultMap, AssessmentDefinedParams.PULSE) as? Number)?.toDouble()
+        val pulse = (getValueFromNestedMap(resultMap, AssessmentDefinedParams.PULSE) as? Number)?.toDouble()?.takeIf { it > 0.0 }
         if (pulse != null && (pulse > AssessmentDefinedParams.PULSE_HIGH_THRESHOLD || pulse < AssessmentDefinedParams.PULSE_LOW_THRESHOLD)) {
             conditions.add(AssessmentDefinedParams.CONDITION_ABNORMAL_PULSE)
         }
 
         // 6. Severe Anemia <8g/dl
-        val hemoglobin = (getValueFromNestedMap(resultMap, AssessmentDefinedParams.HEMOGLOBIN) as? Number)?.toDouble()
+        val hemoglobin = (getValueFromNestedMap(resultMap, AssessmentDefinedParams.HEMOGLOBIN) as? Number)?.toDouble()?.takeIf { it > 0.0 }
         if (hemoglobin != null && hemoglobin < AssessmentDefinedParams.HEMOGLOBIN_SEVERE_ANEMIA_THRESHOLD) {
             conditions.add(AssessmentDefinedParams.CONDITION_SEVERE_ANEMIA)
         }
@@ -2104,7 +2104,7 @@ class AssessmentRMNCHFragment :
         }
 
         // 2. Moderate Anemia (Hb-<10)
-        val hemoglobin = (getValueFromNestedMap(resultMap, AssessmentDefinedParams.HEMOGLOBIN) as? Number)?.toDouble()
+        val hemoglobin = (getValueFromNestedMap(resultMap, AssessmentDefinedParams.HEMOGLOBIN) as? Number)?.toDouble()?.takeIf { it > 0.0 }
         if (hemoglobin != null &&
             hemoglobin < AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD &&
             hemoglobin >= AssessmentDefinedParams.HEMOGLOBIN_SEVERE_ANEMIA_THRESHOLD
@@ -2131,7 +2131,7 @@ class AssessmentRMNCHFragment :
         }
 
         // 6. Mild Fever - 100-101.9
-        val temperature = (getValueFromNestedMap(resultMap, AssessmentDefinedParams.TEMPERATURE) as? Number)?.toDouble()
+        val temperature = (getValueFromNestedMap(resultMap, AssessmentDefinedParams.TEMPERATURE) as? Number)?.toDouble()?.takeIf { it > 0.0 }
         if (temperature != null &&
             temperature >= AssessmentDefinedParams.TEMP_FEVER_MIN_THRESHOLD &&
             temperature <= AssessmentDefinedParams.TEMP_FEVER_MAX_THRESHOLD
@@ -2199,14 +2199,19 @@ class AssessmentRMNCHFragment :
     private fun evaluateGapsInANC(resultMap: HashMap<String, Any>): List<String> {
         val gaps = mutableListOf<String>()
 
-        // 1. TT vaccination incomplete
-        val ttTdCompleted = getValueFromNestedMap(resultMap, AssessmentDefinedParams.TT_TD_COMPLETED) as? String
-        if (ttTdCompleted.isNullOrBlank() || ttTdCompleted.equals(AssessmentDefinedParams.NO, ignoreCase = true)) {
-            gaps.add(AssessmentDefinedParams.GAP_TT_VACCINATION_INCOMPLETE)
-        }
-
         // Calculate gestational age for conditions that need it
         val gestationalAgeWeeks = calculateGestationalAgeInWeeks()
+
+        // 1. TT vaccination incomplete >20 weeks
+        val ttTdCompleted = getValueFromNestedMap(resultMap, AssessmentDefinedParams.TT_TD_COMPLETED) as? String
+        if ((gestationalAgeWeeks ?: 0.0) > AssessmentDefinedParams.GESTATIONAL_AGE_WEEK_20 &&
+            (
+                ttTdCompleted.isNullOrBlank() ||
+                    ttTdCompleted.equals(AssessmentDefinedParams.NO, ignoreCase = true)
+            )
+        ) {
+            gaps.add(AssessmentDefinedParams.GAP_TT_VACCINATION_INCOMPLETE)
+        }
 
         // 2. USG not done >36 weeks
         val ultrasound = getValueFromNestedMap(resultMap, AssessmentDefinedParams.ULTRASOUND) as? String

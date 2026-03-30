@@ -40,11 +40,6 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
     private lateinit var adapter: ServiceMembersAdapter
 
     /**
-     * A boolean flag for ignoring first selection from adapter.
-     */
-    private var isFirstSelection = true
-
-    /**
      * Flag to indicate if this is external member mode
      */
     private var isExternalMember = false
@@ -160,16 +155,11 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
                 position: Int,
                 itemId: Long,
             ) {
-                // If first selection then ignore as it is triggering the data fetch 2 times
-                // once on first selection and once when viewmodel loads
-                if (!isFirstSelection) {
-                    val item = adapter.getData(position)
-                    val id = item?.get(DefinedParams.ID) as? ServiceStaticFilter
-                    if (id != null) {
-                        servicesViewModel.setFilterLiveData(staticFilter = id)
-                    }
+                val item = adapter.getData(position)
+                val id = item?.get(DefinedParams.ID) as? ServiceStaticFilter
+                if (id != null) {
+                    servicesViewModel.setFilterLiveData(staticFilter = id)
                 }
-                isFirstSelection = false
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {

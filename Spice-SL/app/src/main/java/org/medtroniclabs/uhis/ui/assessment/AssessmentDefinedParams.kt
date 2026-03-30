@@ -343,6 +343,7 @@ object AssessmentDefinedParams {
     const val GESTATIONAL_AGE_WEEK_12 = 12.0
     const val GESTATIONAL_AGE_WEEK_13 = 13.0
     const val GESTATIONAL_AGE_WEEK_24 = 24.0
+    const val GESTATIONAL_AGE_WEEK_20 = 20.0
     const val GESTATIONAL_AGE_WEEK_27 = 27.0
     const val GESTATIONAL_AGE_WEEK_28 = 28.0
     const val GESTATIONAL_AGE_WEEK_36 = 36.0
