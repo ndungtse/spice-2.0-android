@@ -361,6 +361,7 @@
     <string name="neonate_outcome" translatable="false">Neonate Outcome</string>
     <string name="male">পুরুষ</string>
     <string name="female">মহিলা</string>
+    <string name="gender_other">অন্যান্য</string>
     <string name="state_of_baby">শিশুর অবস্থা</string>
     <string name="abnormal">অস্বাভাবিক</string>
     <string name="birth_weight">জন্ম ওজন</string>

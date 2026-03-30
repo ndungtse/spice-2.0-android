@@ -18,11 +18,11 @@ import org.medtroniclabs.uhis.appextensions.setDialogPercent
 import org.medtroniclabs.uhis.appextensions.setVisible
 import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.DefinedParams
+import org.medtroniclabs.uhis.common.DefinedParams.CULTURE_VALUE
 import org.medtroniclabs.uhis.common.DefinedParams.DefaultID
 import org.medtroniclabs.uhis.common.DefinedParams.ID
 import org.medtroniclabs.uhis.common.DefinedParams.NAME
 import org.medtroniclabs.uhis.common.DefinedParams.Value
-import org.medtroniclabs.uhis.common.DefinedParams.cultureValue
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.databinding.DialogNcdTreatmentPlanBinding
 import org.medtroniclabs.uhis.db.entity.TreatmentPlanEntity
@@ -203,7 +203,7 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
                         hashMapOf(
                             NAME to item.name,
                             Value to item,
-                            cultureValue to culture,
+                            CULTURE_VALUE to culture,
                         )
                     } ?: run {
                         hashMapOf(

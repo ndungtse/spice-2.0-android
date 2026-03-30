@@ -322,7 +322,7 @@ interface MemberDAO {
         when (staticFilter) {
             ServiceStaticFilter.FAMILY_PLANNING_COUNSELLING_ELIGIBLE -> {
                 conditions += "hhm.gender = ?"
-                args += DefinedParams.female
+                args += DefinedParams.GENDER_FEMALE
                 conditions += "hhm.marital_status = ?"
                 args += MemberRegistration.MaritalStatus.MARRIED.value
                 conditions += "substr(hhm.date_of_birth, 1, 10) <= date('now', '-${MemberRegistration.MIN_AGE_PREGNANCY} years')"

@@ -88,7 +88,7 @@ object EntityMapper {
         map[DefinedParams.ID] = id
         map[DefinedParams.NAME] = name
         cultureValue?.let {
-            map[DefinedParams.cultureValue] = cultureValue
+            map[DefinedParams.CULTURE_VALUE] = cultureValue
         }
     }
 
@@ -108,7 +108,7 @@ object EntityMapper {
                     type = it[DefinedParams.type] as? String ?: type,
                     value = it[DefinedParams.Value] as? String,
                     displayOrder = it[DefinedParams.DisplayOrder] as? Int,
-                    displayValue = it[DefinedParams.cultureValue] as? String,
+                    displayValue = it[DefinedParams.CULTURE_VALUE] as? String,
                 ),
             )
         }

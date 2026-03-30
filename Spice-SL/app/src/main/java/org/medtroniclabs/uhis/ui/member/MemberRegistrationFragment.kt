@@ -32,12 +32,12 @@ import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import org.medtroniclabs.uhis.common.DateUtils.DATE_ddMMyyyy
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.DOB
+import org.medtroniclabs.uhis.common.DefinedParams.GENDER_FEMALE
+import org.medtroniclabs.uhis.common.DefinedParams.GENDER_MALE
+import org.medtroniclabs.uhis.common.DefinedParams.GENDER_OTHER
 import org.medtroniclabs.uhis.common.DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION
 import org.medtroniclabs.uhis.common.DefinedParams.MEMBER_ID
-import org.medtroniclabs.uhis.common.DefinedParams.Other
-import org.medtroniclabs.uhis.common.DefinedParams.female
 import org.medtroniclabs.uhis.common.DefinedParams.isMemberRegistration
-import org.medtroniclabs.uhis.common.DefinedParams.male
 import org.medtroniclabs.uhis.common.EntityMapper.getResultSpinnerMapList
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
@@ -450,23 +450,23 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
 
         details.gender.let {
             when (it) {
-                male -> {
+                GENDER_MALE -> {
                     singleSelectValueOption(
-                        male,
+                        GENDER_MALE,
                         gender,
                     )
                 }
 
-                female -> {
+                GENDER_FEMALE -> {
                     singleSelectValueOption(
-                        female,
+                        GENDER_FEMALE,
                         gender,
                     )
                 }
 
-                Other -> {
+                GENDER_OTHER -> {
                     singleSelectValueOption(
-                        Other,
+                        GENDER_OTHER,
                         gender,
                     )
                 }

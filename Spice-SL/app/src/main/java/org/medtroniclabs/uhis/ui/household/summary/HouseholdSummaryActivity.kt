@@ -229,7 +229,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             val intent = Intent(this, AssessmentActivity::class.java)
             intent.putExtra(DefinedParams.MEMBER_ID, item)
             intent.putExtra(DefinedParams.DOB, dateOfBirth)
-            intent.putExtra(DefinedParams.MenuId, TB)
+            intent.putExtra(DefinedParams.MENU_ID, TB)
             intent.putExtra(DefinedParams.FhirId, linkFhirMemberId)
             intent.putExtra(DefinedParams.CONTACT_TRACING, true)
             startActivity(intent)

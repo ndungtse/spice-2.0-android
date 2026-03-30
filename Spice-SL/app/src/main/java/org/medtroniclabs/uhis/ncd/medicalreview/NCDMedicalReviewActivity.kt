@@ -21,7 +21,6 @@ import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DefinedParams
-import org.medtroniclabs.uhis.common.DefinedParams.MenuId
 import org.medtroniclabs.uhis.common.DefinedParams.ORIGIN
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.data.offlinesync.model.ProvanceDto
@@ -46,7 +45,6 @@ import org.medtroniclabs.uhis.ncd.data.NCDPatientTransferValidate
 import org.medtroniclabs.uhis.ncd.medicalreview.NCDMRUtil.EncounterReference
 import org.medtroniclabs.uhis.ncd.medicalreview.NCDMRUtil.MATERNAL_HEALTH
 import org.medtroniclabs.uhis.ncd.medicalreview.NCDMRUtil.MENTAL_HEALTH
-import org.medtroniclabs.uhis.ncd.medicalreview.NCDMRUtil.MENU_ID
 import org.medtroniclabs.uhis.ncd.medicalreview.NCDMRUtil.MENU_Name
 import org.medtroniclabs.uhis.ncd.medicalreview.NCDMRUtil.NCD
 import org.medtroniclabs.uhis.ncd.medicalreview.NCDMRUtil.getConfirmDiagnoses
@@ -589,7 +587,7 @@ class NCDMedicalReviewActivity :
     private fun getMenuOrigin(): String? = intent.getStringExtra(ORIGIN)
 
     private fun getMenuId(): String? {
-        return when (intent.getStringExtra(MENU_ID)?.lowercase()) {
+        return when (intent.getStringExtra(NCDMRUtil.MENU_ID)?.lowercase()) {
             NCD.lowercase() -> {
                 return NCD.lowercase()
             }
@@ -630,7 +628,7 @@ class NCDMedicalReviewActivity :
                 patientDetailViewModel.getNCDInitialMedicalReview(),
                 patientDetailViewModel.getGenderIsFemale(),
                 getMenuId(),
-                intent.getStringExtra(MENU_ID),
+                intent.getStringExtra(NCDMRUtil.MENU_ID),
             ),
         )
         hideLoading()
@@ -713,7 +711,7 @@ class NCDMedicalReviewActivity :
         var isFemalePregnant = false
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let {
             isFemalePregnant =
-                (it.gender?.equals(DefinedParams.female, true) == true) &&
+                (it.gender?.equals(DefinedParams.GENDER_FEMALE, true) == true) &&
                 (it.isPregnant == true)
         }
         return isFemalePregnant
@@ -892,7 +890,7 @@ class NCDMedicalReviewActivity :
                 villageId = patientDetailViewModel.getPatientVillageId(),
                 provenance = ProvanceDto(),
             )
-            summaryViewModel.createNCDMRSummaryCreate(request, intent.getStringExtra(MENU_ID))
+            summaryViewModel.createNCDMRSummaryCreate(request, intent.getStringExtra(NCDMRUtil.MENU_ID))
         })
     }
 
@@ -1121,7 +1119,7 @@ class NCDMedicalReviewActivity :
             } else {
                 AnalyticsDefinedParams.NCDInitialMedicalReviewCreation
             }
-            viewModel.createNCDMedicalReview(request, intent.getStringExtra(MENU_ID), initialMr)
+            viewModel.createNCDMedicalReview(request, intent.getStringExtra(NCDMRUtil.MENU_ID), initialMr)
         })
     }
 
@@ -1419,7 +1417,7 @@ class NCDMedicalReviewActivity :
                 if (isBP) DefinedParams.BP_LOG else DefinedParams.GLUCOSE_LOG,
             )
             intent.putExtra(DefinedParams.IntentPatientDetails, detail)
-            intent.putExtra(MENU_Name, intent.getStringExtra(MENU_ID))
+            intent.putExtra(MENU_Name, intent.getStringExtra(NCDMRUtil.MENU_ID))
             getResult.launch(intent)
         }
     }
@@ -1437,7 +1435,7 @@ class NCDMedicalReviewActivity :
                     patientDetailViewModel.isPregnant(),
                     isDiagnosisMismatch = isDiagnosisMismatch,
                     getMenuId(),
-                    intent.getStringExtra(MenuId),
+                    intent.getStringExtra(DefinedParams.MENU_ID),
                 ).apply {
                     listener = this@NCDMedicalReviewActivity
                 }.show(supportFragmentManager, NCDDiagnosisDialogFragment.TAG)

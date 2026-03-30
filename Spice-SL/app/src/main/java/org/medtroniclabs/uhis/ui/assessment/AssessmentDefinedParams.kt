@@ -1,5 +1,7 @@
 package org.medtroniclabs.uhis.ui.assessment
 
+import org.medtroniclabs.uhis.common.DefinedParams
+
 object AssessmentDefinedParams {
     const val PHUSite1 = "PHU Site 1"
     const val PHUSite2 = "PHU Site 2"
@@ -489,7 +491,7 @@ object AssessmentDefinedParams {
 
     const val FACILITY_TYPE_COMMUNITY_CLINIC = "Community Clinic"
 
-    const val CULTURE_VALUE = "cultureValue"
+    const val CULTURE_VALUE = DefinedParams.CULTURE_VALUE
 
     const val IS_REGULAR_SMOKER = "isRegularSmoker"
 

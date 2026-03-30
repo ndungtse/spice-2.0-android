@@ -404,20 +404,24 @@ object CommonUtils {
         gender: String?,
         context: Context,
     ): String =
-        if (gender.equals(DefinedParams.male, true)) {
+        if (gender.equals(DefinedParams.GENDER_MALE, true)) {
             context.getString(R.string.male_prefix)
-        } else {
+        } else if (gender.equals(DefinedParams.GENDER_FEMALE, true)) {
             context.getString(R.string.female_prefix)
+        } else {
+            context.getString(R.string.gender_other_prefix)
         }
 
     fun translatedGender(
         context: Context,
         gender: String?,
     ): String =
-        if (gender.equals(DefinedParams.male, true)) {
+        if (gender.equals(DefinedParams.GENDER_MALE, true)) {
             context.getString(R.string.male)
-        } else {
+        } else if (gender.equals(DefinedParams.GENDER_FEMALE, true)) {
             context.getString(R.string.female)
+        } else {
+            context.getString(R.string.gender_other)
         }
 
     fun getBooleanAsString(value: Boolean): String = if (value) HouseHoldRegistration.yes else HouseHoldRegistration.no
@@ -1309,8 +1313,8 @@ object CommonUtils {
             (givenMap[Screening.pregnancyAnc] as Map<*, *>?)?.let { ancMap ->
                 if (ancMap.containsKey(Screening.PregnancySymptoms) && ancMap[Screening.PregnancySymptoms] is List<*>) {
                     (ancMap[Screening.PregnancySymptoms] as? ArrayList<*>)?.forEach {
-                        if (it is LinkedTreeMap<*, *> && it.contains(DefinedParams.cultureValue)) {
-                            it.remove(DefinedParams.cultureValue)
+                        if (it is LinkedTreeMap<*, *> && it.contains(DefinedParams.CULTURE_VALUE)) {
+                            it.remove(DefinedParams.CULTURE_VALUE)
                         }
                     }
                 }
@@ -1397,8 +1401,8 @@ object CommonUtils {
         }
         if (subMap.containsKey(Screening.diabetes) && subMap[Screening.diabetes] is List<*>) {
             (subMap[Screening.diabetes] as? ArrayList<*>)?.forEach {
-                if (it is LinkedTreeMap<*, *> && it.contains(DefinedParams.cultureValue)) {
-                    it.remove(DefinedParams.cultureValue)
+                if (it is LinkedTreeMap<*, *> && it.contains(DefinedParams.CULTURE_VALUE)) {
+                    it.remove(DefinedParams.CULTURE_VALUE)
                 }
             }
         }
@@ -1752,7 +1756,7 @@ object CommonUtils {
         return if (parseUserLocale() == DefinedParams.EN) {
             mapData[DefinedParams.NAME] as? String
         } else {
-            (mapData[DefinedParams.cultureValue] as? String)?.takeIf { it.isNotEmpty() }
+            (mapData[DefinedParams.CULTURE_VALUE] as? String)?.takeIf { it.isNotEmpty() }
                 ?: (mapData[DefinedParams.NAME] as? String)
         }
     }

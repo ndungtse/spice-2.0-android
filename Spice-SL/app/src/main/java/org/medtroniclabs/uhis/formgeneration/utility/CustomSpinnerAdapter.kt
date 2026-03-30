@@ -8,8 +8,8 @@ import android.widget.ArrayAdapter
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.databinding.SpinnerDropDownBinding
 import org.medtroniclabs.uhis.formgeneration.config.DefinedParams
+import org.medtroniclabs.uhis.formgeneration.config.DefinedParams.CULTURE_VALUE
 import org.medtroniclabs.uhis.formgeneration.config.DefinedParams.NAME
-import org.medtroniclabs.uhis.formgeneration.config.DefinedParams.cultureValue
 
 class CustomSpinnerAdapter(context: Context, val translate: Boolean = false) :
     ArrayAdapter<String>(context, R.layout.spinner_drop_down_item) {
@@ -27,7 +27,7 @@ class CustomSpinnerAdapter(context: Context, val translate: Boolean = false) :
 
     override fun getItem(position: Int): String =
         if (translate) {
-            (itemList[position][cultureValue] as String?) ?: (itemList[position][NAME] as String)
+            (itemList[position][CULTURE_VALUE] as String?) ?: (itemList[position][NAME] as String)
         } else {
             itemList[position][NAME] as String
         }
@@ -78,11 +78,11 @@ class CustomSpinnerAdapter(context: Context, val translate: Boolean = false) :
 
     fun getIndexOfItemByName(name: String): Int {
         itemList.forEachIndexed { index, map ->
-            if (map[DefinedParams.NAME] == name || map[DefinedParams.ID] == name || map[DefinedParams.Value] == name) {
+            if (map[DefinedParams.NAME] == name || map[DefinedParams.ID] == name || map[DefinedParams.VALUE] == name) {
                 return index
             } else if ((map[DefinedParams.NAME] as? String?)?.equals(name, true) == true ||
                 (map[DefinedParams.ID] as? String?)?.equals(name, true) == true ||
-                (map[DefinedParams.Value] as? String?)?.equals(name, true) == true
+                (map[DefinedParams.VALUE] as? String?)?.equals(name, true) == true
             ) {
                 return index
             }

@@ -30,7 +30,6 @@ object Screening {
     const val GAD7 = "GAD7"
     const val Fetch_MH_Questions = "Fetch_MH_Questions"
     const val Questions = "name"
-    const val Answer = "displayValue"
     const val ModelAnswers = "modelAnswers"
     const val Display_Order = "displayOrder"
     const val select = "select"

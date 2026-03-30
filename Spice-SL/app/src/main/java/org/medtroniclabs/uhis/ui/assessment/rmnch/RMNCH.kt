@@ -24,7 +24,7 @@ object RMNCH {
     const val DateOfDelivery = "dateOfDelivery"
     const val gestationalAge = "gestationalAge"
     const val Miscarriage = "miscarriage"
-    const val DeathOfMother = "deathOfMother"
+    const val DEATH_OF_MOTHER = "deathOfMother"
     const val childhoodVisitSignsLabel = "Childhood Visit Signs"
     const val otherSigns = "otherSigns"
     const val ancSignsLabel = "ANC Signs"
@@ -44,7 +44,7 @@ object RMNCH {
     const val PNC_VISIT_NO = "PNC Visit "
     const val CHILDHOOD_VISIT_NO = "Childhood Visit "
 
-    const val deathOfNewborn = "deathOfNewborn"
+    const val DEATH_OF_NEWBORN = "deathOfNewborn"
     const val isDeceased = "isDeceased"
     const val deceasedReason = "deceasedReason"
 

@@ -745,7 +745,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
                 .apply {
                     symptoms.id?.let { put(DefinedParams.ID, it) }
                     symptoms.name?.let { put(DefinedParams.NAME, it) }
-                    symptoms.displayValue?.let { put(DefinedParams.cultureValue, it) }
+                    symptoms.displayValue?.let { put(DefinedParams.CULTURE_VALUE, it) }
                     symptoms.value?.let { put(DefinedParams.Value, it) }
                 }.takeIf { it.isNotEmpty() }
         }

@@ -55,8 +55,8 @@ import org.medtroniclabs.uhis.common.DateUtils.convertDateFormat
 import org.medtroniclabs.uhis.common.DefinedParams.BOLD
 import org.medtroniclabs.uhis.common.DefinedParams.BOLD_ITALIC
 import org.medtroniclabs.uhis.common.DefinedParams.DefaultID
+import org.medtroniclabs.uhis.common.DefinedParams.GENDER_FEMALE
 import org.medtroniclabs.uhis.common.DefinedParams.ITALIC
-import org.medtroniclabs.uhis.common.DefinedParams.female
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.common.StringConverter
 import org.medtroniclabs.uhis.common.Validator
@@ -1400,7 +1400,7 @@ class FormGenerator(
     private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, formLayout: FormLayout, name: String?) -> Unit)? =
         { selectedId, elementID, formLayout, name ->
             saveSelectedOptionValue(elementID, selectedId, formLayout)
-            if ((selectedId as? String).equals(female, true)) {
+            if ((selectedId as? String).equals(GENDER_FEMALE, true)) {
                 listener.onAgeCheckForPregnancy()
             }
             callback?.invoke(resultHashMap, elementID.first)
@@ -2990,7 +2990,7 @@ class FormGenerator(
         var enableOrNot = status
         targetModel?.optionsList?.forEach { map ->
             if (map[DefinedParams.NAME] == targetOption) {
-                val value = map[DefinedParams.isEnabled]
+                val value = map[DefinedParams.IS_ENABLED]
                 if (value is Boolean?) {
                     enableOrNot = value
                 }
@@ -4758,7 +4758,7 @@ class FormGenerator(
 
     private fun getSpinners(selectedItems: List<Map<String, Any>>): Any =
         if (SecuredPreference.getIsTranslationEnabled()) {
-            selectedItems.map { it[DefinedParams.cultureValue] ?: it[DefinedParams.NAME] }
+            selectedItems.map { it[DefinedParams.CULTURE_VALUE] ?: it[DefinedParams.NAME] }
         } else {
             selectedItems.map { it[DefinedParams.NAME] }
         }

@@ -746,7 +746,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 map[DefinedParams.Value] = value
             }
             selectedModel.displayValue?.let { cultureValue ->
-                map[DefinedParams.cultureValue] = cultureValue
+                map[DefinedParams.CULTURE_VALUE] = cultureValue
             }
             viewModel.complianceMap?.add(map)
         } else {
@@ -758,7 +758,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 map[DefinedParams.Value] = value
             }
             selectedModel.displayValue?.let { cultureValue ->
-                map[DefinedParams.cultureValue] = cultureValue
+                map[DefinedParams.CULTURE_VALUE] = cultureValue
             }
             if (selectedModel.childExists) {
                 map[AssessmentDefinedParams.is_child_exists] = true
@@ -943,7 +943,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 map[DefinedParams.Value] = value
             }
             it.cultureValue?.let { cultureValue ->
-                map[DefinedParams.cultureValue] = cultureValue
+                map[DefinedParams.CULTURE_VALUE] = cultureValue
             }
             resultList.add(map)
         }

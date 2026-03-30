@@ -1,11 +1,13 @@
 package org.medtroniclabs.uhis.formgeneration.config
 
+import org.medtroniclabs.uhis.common.DefinedParams
+
 object DefinedParams {
     const val NAME = "name"
     const val ID = "id"
-    const val Value = "value"
-    const val cultureValue = "cultureValue"
-    const val displayValue = "displayValue"
+    const val VALUE = "value"
+    const val CULTURE_VALUE = DefinedParams.CULTURE_VALUE
+    const val DISPLAY_VALUE = "displayValue"
     const val DefaultIDLabel = "--Select--"
 
     // visibility related values
@@ -13,7 +15,7 @@ object DefinedParams {
     const val INVISIBLE = "invisible"
     const val GONE = "gone"
     const val VISIBILITY = "visibility"
-    const val isEnabled = "isEnabled"
+    const val IS_ENABLED = "isEnabled"
 
     const val NationalId = "nationalId"
     const val Year = "year"

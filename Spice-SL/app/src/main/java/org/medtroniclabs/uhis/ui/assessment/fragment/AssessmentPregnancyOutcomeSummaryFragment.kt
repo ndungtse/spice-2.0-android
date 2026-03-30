@@ -17,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.common.DateUtils
+import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.StringConverter
 import org.medtroniclabs.uhis.databinding.CardLayoutBinding
 import org.medtroniclabs.uhis.databinding.FragmentAssessmentPregnancyOutcomeSummaryBinding
@@ -189,6 +190,7 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
                 isOldCounselling || isNewCounselling -> {
                     // Skip counselling fields - they will be shown in separate card
                 }
+
                 isAdditionalField -> {
                     // Additional fields: hide if no value
                     val value = item.value
@@ -210,6 +212,7 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
                         }
                     }
                 }
+
                 else -> {
                     // Other isSummary fields: show normally
                     // Convert ID to display name for SingleSelectionView/Spinner fields
@@ -236,15 +239,15 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
 
         val optionsList = formLayout.optionsList ?: return null
         optionsList.forEach { option ->
-            val optionId = option[org.medtroniclabs.uhis.common.DefinedParams.ID] as? String
-                ?: option[org.medtroniclabs.uhis.common.DefinedParams.id] as? String
+            val optionId = option[DefinedParams.ID] as? String
+                ?: option[DefinedParams.id] as? String
             if (optionId == valueId) {
                 // Return cultureValue if translation is enabled, otherwise return name
                 return if (isTranslationEnabled) {
-                    option[org.medtroniclabs.uhis.common.DefinedParams.cultureValue] as? String
-                        ?: option[org.medtroniclabs.uhis.common.DefinedParams.NAME] as? String
+                    option[DefinedParams.CULTURE_VALUE] as? String
+                        ?: option[DefinedParams.NAME] as? String
                 } else {
-                    option[org.medtroniclabs.uhis.common.DefinedParams.NAME] as? String
+                    option[DefinedParams.NAME] as? String
                 }
             }
         }
@@ -321,14 +324,15 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
                     is Map<*, *> -> {
                         // Use cultureValue if translation is enabled, otherwise use name
                         if (isTranslationEnabled) {
-                            item[org.medtroniclabs.uhis.common.DefinedParams.cultureValue]?.toString()
-                                ?: item[org.medtroniclabs.uhis.common.DefinedParams.NAME]?.toString()
+                            item[DefinedParams.CULTURE_VALUE]?.toString()
+                                ?: item[DefinedParams.NAME]?.toString()
                                 ?: item["symptom"]?.toString()
                         } else {
-                            item[org.medtroniclabs.uhis.common.DefinedParams.NAME]?.toString()
+                            item[DefinedParams.NAME]?.toString()
                                 ?: item["symptom"]?.toString()
                         }
                     }
+
                     is String -> item
                     else -> null
                 }

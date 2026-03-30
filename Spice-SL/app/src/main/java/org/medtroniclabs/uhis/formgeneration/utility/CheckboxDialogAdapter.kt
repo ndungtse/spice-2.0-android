@@ -129,7 +129,7 @@ class CheckboxDialogAdapter(
             map[DefinedParams.ID] = it._id
             map[DefinedParams.NAME] = it.symptom
             it.displayValue?.let { cultureValue ->
-                map[DefinedParams.cultureValue] = cultureValue
+                map[DefinedParams.CULTURE_VALUE] = cultureValue
             }
             it.value?.let { value ->
                 map[DefinedParams.value] = value

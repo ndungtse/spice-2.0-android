@@ -47,7 +47,7 @@ import org.medtroniclabs.uhis.ui.assessment.fragment.BDNCDAssessmentSummaryFragm
 import org.medtroniclabs.uhis.ui.assessment.fragment.RxBuddySummaryFragment
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ChildHoodVisit
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DeathOfMother
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DEATH_OF_MOTHER
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PNC
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import org.medtroniclabs.uhis.ui.cbs.activity.CbsActivity
@@ -640,11 +640,11 @@ class AssessmentActivity : BaseActivity() {
             putExtra(DefinedParams.MEMBER_ID, memberId)
             putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
             putExtra(MenuConstants.WORKFLOW_NAME, workFlowName)
-            putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
+            putExtra(DefinedParams.MENU_ID, DefinedParams.CBS.lowercase())
             putExtra(DefinedParams.MOTHER_ID, motherId)
-            if (assessmentId != null) putExtra(DefinedParams.AssessmentId, assessmentId)
-            if (deathOfMother) putExtra(DeathOfMother, true)
-            if (deathOfNewborn) putExtra(RMNCH.deathOfNewborn, true)
+            if (assessmentId != null) putExtra(DefinedParams.ASSESSMENT_ID, assessmentId)
+            if (deathOfMother) putExtra(DEATH_OF_MOTHER, true)
+            if (deathOfNewborn) putExtra(RMNCH.DEATH_OF_NEWBORN, true)
         }
         startActivity(intent)
     }
@@ -671,7 +671,7 @@ class AssessmentActivity : BaseActivity() {
                     Intent(this, AssessmentToolsActivity::class.java).apply {
                         putExtra(DefinedParams.HOUSEHOLD_ID, viewModel.selectedHouseholdId)
                         putExtra(DefinedParams.MEMBER_ID, viewModel.selectedHouseholdMemberId)
-                        putExtra(DefinedParams.FollowUpId, viewModel.followUpId)
+                        putExtra(DefinedParams.FOLLOW_UP_ID, viewModel.followUpId)
                         putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
                         putExtra(DefinedParams.FhirId, viewModel.memberFhirId)
                         putExtra(DefinedParams.ORIGIN, this@AssessmentActivity.intent.getStringExtra(DefinedParams.ORIGIN))
@@ -690,12 +690,12 @@ class AssessmentActivity : BaseActivity() {
 
     private fun getIntentValue() {
         viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MEMBER_ID, -1L)
-        viewModel.menuId = intent.getStringExtra(DefinedParams.MenuId)
+        viewModel.menuId = intent.getStringExtra(DefinedParams.MENU_ID)
         viewModel.workflowName = intent.getStringExtra(MenuConstants.WORKFLOW_NAME)
         viewModel.memberFhirId = intent.getStringExtra(DefinedParams.FhirId)
         viewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
         viewModel.selectedHouseholdId = intent.getLongExtra(DefinedParams.HOUSEHOLD_ID, -1L)
-        val followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1L)
+        val followUpId = intent.getLongExtra(DefinedParams.FOLLOW_UP_ID, -1L)
         if (followUpId != -1L) {
             viewModel.followUpId = followUpId
         } else {

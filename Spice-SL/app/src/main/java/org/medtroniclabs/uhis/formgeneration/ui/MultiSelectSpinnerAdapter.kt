@@ -122,7 +122,7 @@ class MultiSelectSpinnerAdapter(
 
     private fun getCultureValue(map: Map<String, Any>): String =
         if (SecuredPreference.getIsTranslationEnabled()) {
-            map[DefinedParams.cultureValue] as? String ?: map[DefinedParams.NAME] as String
+            map[DefinedParams.CULTURE_VALUE] as? String ?: map[DefinedParams.NAME] as String
         } else {
             map[DefinedParams.NAME] as String
         }

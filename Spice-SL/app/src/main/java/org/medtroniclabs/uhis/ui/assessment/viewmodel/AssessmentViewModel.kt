@@ -115,7 +115,7 @@ import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralReasons
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ANC
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DeathOfMother
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DEATH_OF_MOTHER
 import org.medtroniclabs.uhis.ui.assessment.statuslogic.AssessmentStatusGenerator
 import org.medtroniclabs.uhis.ui.assessment.utils.AssessmentUtil
 import org.medtroniclabs.uhis.ui.boarding.repo.MetaRepository
@@ -852,8 +852,8 @@ class AssessmentViewModel @Inject constructor(
                     }
 
                     val cbs = it.toMutableMap()
-                    if (conditions.contains(DeathOfMother)) {
-                        cbs[DeathOfMother] = true
+                    if (conditions.contains(DEATH_OF_MOTHER)) {
+                        cbs[DEATH_OF_MOTHER] = true
                     }
 
                     cbs.remove(CbsNotifiableCondition)

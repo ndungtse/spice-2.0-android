@@ -163,7 +163,7 @@ class BioDataFragment : BaseFragment() {
                 binding.dateOfOccurrence.root.visible()
                 binding.dateOfOccurrence.tvKey.text = getString(R.string.date_of_occurrence)
                 binding.dateOfOccurrence.tvValue.text = DateUtils.getTodayDateDDMMYYYY(DATE_ddMMyyyy)
-                if (gender.equals(DefinedParams.female, true) &&
+                if (gender.equals(DefinedParams.GENDER_FEMALE, true) &&
                     doesShowPregnant(dateOfBirth)
                 ) {
                     binding.pregnancy.root.visible()

@@ -86,8 +86,8 @@ class AssessmentPregnancyOutcomeFragment :
 
     // Baby alive options
     private val babyAliveOptions: ArrayList<Map<String, Any>> = arrayListOf(
-        mapOf(DefinedParams.ID to AssessmentDefinedParams.YES, DefinedParams.NAME to AssessmentDefinedParams.YES, DefinedParams.cultureValue to "হ্যাঁ"),
-        mapOf(DefinedParams.ID to AssessmentDefinedParams.NO, DefinedParams.NAME to AssessmentDefinedParams.NO, DefinedParams.cultureValue to "না"),
+        mapOf(DefinedParams.ID to AssessmentDefinedParams.YES, DefinedParams.NAME to AssessmentDefinedParams.YES, DefinedParams.CULTURE_VALUE to "হ্যাঁ"),
+        mapOf(DefinedParams.ID to AssessmentDefinedParams.NO, DefinedParams.NAME to AssessmentDefinedParams.NO, DefinedParams.CULTURE_VALUE to "না"),
     )
 
     override fun onCreateView(
@@ -441,7 +441,7 @@ class AssessmentPregnancyOutcomeFragment :
                     symptom = name,
                     type = dialogKey,
                     value = value,
-                    displayValue = it[DefinedParams.cultureValue]?.toString(),
+                    displayValue = it[DefinedParams.CULTURE_VALUE]?.toString(),
                 ),
             )
         }
@@ -525,7 +525,7 @@ class AssessmentPregnancyOutcomeFragment :
                             symptom = name,
                             type = dialogKey,
                             value = value,
-                            displayValue = it[DefinedParams.cultureValue]?.toString(),
+                            displayValue = it[DefinedParams.CULTURE_VALUE]?.toString(),
                         ),
                     )
                 }
@@ -828,7 +828,7 @@ class AssessmentPregnancyOutcomeFragment :
                 symptom = name,
                 type = dialogKey,
                 value = value,
-                displayValue = option[DefinedParams.cultureValue]?.toString(),
+                displayValue = option[DefinedParams.CULTURE_VALUE]?.toString(),
             ),
         )
     }

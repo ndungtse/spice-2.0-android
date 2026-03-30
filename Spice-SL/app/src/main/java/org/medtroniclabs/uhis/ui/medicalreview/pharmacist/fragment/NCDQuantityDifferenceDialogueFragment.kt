@@ -255,7 +255,7 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to it.name,
                     DefinedParams.ID to it.id,
-                    DefinedParams.cultureValue to it.displayValue,
+                    DefinedParams.CULTURE_VALUE to it.displayValue,
                 ),
             )
         }

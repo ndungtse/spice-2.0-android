@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.databinding.SpinnerDropDownBinding
 import org.medtroniclabs.uhis.formgeneration.config.DefinedParams
-import org.medtroniclabs.uhis.formgeneration.config.DefinedParams.cultureValue
+import org.medtroniclabs.uhis.formgeneration.config.DefinedParams.CULTURE_VALUE
 
 class CustomSpinnerAdapterCustomLayout(context: Context, val translate: Boolean = false) :
     ArrayAdapter<String>(context, R.layout.spinner_drop_down_item_withoutbackground) {
@@ -26,7 +26,7 @@ class CustomSpinnerAdapterCustomLayout(context: Context, val translate: Boolean 
 
     override fun getItem(position: Int): String =
         if (translate) {
-            (itemList[position][cultureValue] as String?) ?: (itemList[position]["name"] as String)
+            (itemList[position][CULTURE_VALUE] as String?) ?: (itemList[position]["name"] as String)
         } else {
             itemList[position]["name"] as String
         }

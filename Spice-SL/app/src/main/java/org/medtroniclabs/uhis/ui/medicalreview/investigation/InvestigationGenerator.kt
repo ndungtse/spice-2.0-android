@@ -33,8 +33,8 @@ import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import org.medtroniclabs.uhis.common.DateUtils.DATE_TIME_EEEMMMddHHmmsszyyyy
 import org.medtroniclabs.uhis.common.DateUtils.DATE_ddMMyyyy
 import org.medtroniclabs.uhis.common.DateUtils.convertDateFormat
+import org.medtroniclabs.uhis.common.DefinedParams.BOTH
 import org.medtroniclabs.uhis.common.DefinedParams.TestedOn
-import org.medtroniclabs.uhis.common.DefinedParams.both
 import org.medtroniclabs.uhis.databinding.CustomSpinnerLayoutInvestigationBinding
 import org.medtroniclabs.uhis.databinding.DatepickerLayoutBinding
 import org.medtroniclabs.uhis.databinding.EdittextLayoutInvestigationBinding
@@ -274,7 +274,7 @@ class InvestigationGenerator(
                                     investigationResult.unit,
                                     true,
                                 ) &&
-                                    (it.gender.equals(Gender, true) || it.gender.equals(both, true))
+                                    (it.gender.equals(Gender, true) || it.gender.equals(BOTH, true))
                             }?.let { ranges ->
                                 if (ranges.isNotEmpty()) {
                                     val numberValue: Double? =

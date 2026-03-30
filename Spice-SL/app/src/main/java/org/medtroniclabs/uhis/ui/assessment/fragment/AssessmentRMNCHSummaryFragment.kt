@@ -25,7 +25,7 @@ import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DefinedParams
-import org.medtroniclabs.uhis.common.DefinedParams.AssessmentId
+import org.medtroniclabs.uhis.common.DefinedParams.ASSESSMENT_ID
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.common.StringConverter
 import org.medtroniclabs.uhis.common.ViewUtils
@@ -48,7 +48,7 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ChildHoodVisit
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DeathOfMother
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DEATH_OF_MOTHER
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.getValueFromMap
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import org.medtroniclabs.uhis.ui.cbs.activity.CbsActivity
@@ -329,25 +329,25 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         val option = options.firstOrNull { it[DefinedParams.id] == "underWeight" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
-                            instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                            instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else if (bmi < AssessmentDefinedParams.BMI_OVER_WEIGHT_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "normalWeight" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
-                            instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                            instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else if (bmi < AssessmentDefinedParams.BMI_OBSESS_WEIGHT_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "overWeight" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
-                            instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                            instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else {
                         val option = options.firstOrNull { it[DefinedParams.id] == "obsess" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
-                            instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                            instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     }
                 }
@@ -358,19 +358,19 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         val option = options.firstOrNull { it[DefinedParams.id] == "severeAnemia" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
-                            instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                            instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else if (hb <= AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "moderateAnemia" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
-                            instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                            instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else if (hb < AssessmentDefinedParams.HEMOGLOBIN_MILD_ANEMIA_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "mildAnemia" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
-                            instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                            instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else {
                         // Do nothing
@@ -384,7 +384,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     val option = options.firstOrNull { it[DefinedParams.id] == "lowSugar" }
                     option?.let {
                         instructions.add(option[DefinedParams.name] as? String ?: "")
-                        instructionsCulture.add(option[DefinedParams.cultureValue] as? String ?: "")
+                        instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                     }
                 }
             }
@@ -867,14 +867,14 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
         intent.putExtra(MenuConstants.WORKFLOW_NAME, workFlowName)
         viewModel.assessmentSaveLiveData.value?.data?.second?.id?.let {
-            intent.putExtra(AssessmentId, it)
+            intent.putExtra(ASSESSMENT_ID, it)
         }
         if (workFlowName.equals(ChildHoodVisit, true)) {
-            intent.putExtra(RMNCH.deathOfNewborn, true)
+            intent.putExtra(RMNCH.DEATH_OF_NEWBORN, true)
         } else {
-            intent.putExtra(DeathOfMother, true)
+            intent.putExtra(DEATH_OF_MOTHER, true)
         }
-        intent.putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
+        intent.putExtra(DefinedParams.MENU_ID, DefinedParams.CBS.lowercase())
         startActivity(intent)
     }
 

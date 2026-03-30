@@ -195,7 +195,7 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
         staticFilters.forEach {
             dropdownList.add(
                 mapOf(
-                    DefinedParams.cultureValue to it.culturalValue,
+                    DefinedParams.CULTURE_VALUE to it.culturalValue,
                     DefinedParams.NAME to it.value,
                     DefinedParams.ID to it,
                 ),

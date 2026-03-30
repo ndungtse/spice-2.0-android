@@ -13,7 +13,7 @@ import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.ANC_CBS
-import org.medtroniclabs.uhis.common.DefinedParams.AssessmentId
+import org.medtroniclabs.uhis.common.DefinedParams.ASSESSMENT_ID
 import org.medtroniclabs.uhis.common.DefinedParams.CBS
 import org.medtroniclabs.uhis.common.DefinedParams.CbsNotifiableCondition
 import org.medtroniclabs.uhis.common.DefinedParams.RmnchNotifiableCondition
@@ -35,9 +35,9 @@ import org.medtroniclabs.uhis.ui.assessment.referrallogic.ReferralResultGenerato
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ANC
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ChildHoodVisit
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DeathOfMother
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DEATH_OF_MOTHER
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DEATH_OF_NEWBORN
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PNCNeonatal
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.deathOfNewborn
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 
 class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
@@ -70,8 +70,8 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         initFormView()
         attachObservers()
         setListeners()
-        if (requireArguments().getLong(AssessmentId) != 0L) {
-            viewModel.getAssessmentDetailsById(requireArguments().getLong(AssessmentId))
+        if (requireArguments().getLong(ASSESSMENT_ID) != 0L) {
+            viewModel.getAssessmentDetailsById(requireArguments().getLong(ASSESSMENT_ID))
         }
         if (viewModel.motherID != null &&
             viewModel.motherID != -1L &&
@@ -110,7 +110,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                         }
                     }
                     (map[RmnchNotifiableCondition] as? ArrayList<Map<String, String>>)
-                        ?.firstOrNull { it[DefinedParams.Value].equals(deathOfNewborn, true) }
+                        ?.firstOrNull { it[DefinedParams.Value].equals(DEATH_OF_NEWBORN, true) }
                         .let { filteredValue ->
                             val isStillBirth = (map[birth] as? String).equals(DefinedParams.still_birth, true)
                             if (filteredValue == null && isStillBirth) {
@@ -134,18 +134,18 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     private fun showInCheckBox(resultMap: ArrayList<*>) {
         viewModel.symptomTypeListResponse.value
-            ?.firstOrNull { it.value.equals(deathOfNewborn, true) }
+            ?.firstOrNull { it.value.equals(DEATH_OF_NEWBORN, true) }
             ?.let { symptom ->
                 val selectedItemMap = hashMapOf<String, Any>(
                     DefinedParams.ID to symptom._id,
                     DefinedParams.NAME to symptom.symptom,
                 ).apply {
-                    symptom.displayValue?.let { put(DefinedParams.cultureValue, it) }
+                    symptom.displayValue?.let { put(DefinedParams.CULTURE_VALUE, it) }
                     symptom.value?.let { put(DefinedParams.Value, it) }
                 }
 
                 val mapList = (resultMap as? ArrayList<HashMap<String, Any>>)?.apply {
-                    if (none { (it[DefinedParams.Value] as? String).equals(deathOfNewborn, true) }) add(selectedItemMap)
+                    if (none { (it[DefinedParams.Value] as? String).equals(DEATH_OF_NEWBORN, true) }) add(selectedItemMap)
                 } ?: arrayListOf(selectedItemMap)
 
                 viewModel.formLayoutsLiveData.value
@@ -160,7 +160,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         (resultMap as? ArrayList<HashMap<String, Any>>)?.let { mapList ->
             // Remove items where the value matches 'deathOfNewborn'
             mapList.removeAll {
-                (it[DefinedParams.Value] as? String)?.equals(deathOfNewborn, true) == true
+                (it[DefinedParams.Value] as? String)?.equals(DEATH_OF_NEWBORN, true) == true
             }
             viewModel.formLayoutsLiveData.value
                 ?.data
@@ -195,13 +195,13 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     private fun attachObservers() {
         viewModel.symptomTypeListResponse.observe(viewLifecycleOwner) { list ->
-            if (requireArguments().getBoolean(DeathOfMother, false)) {
-                list.firstOrNull { it.value == DeathOfMother }?.let { symptom ->
+            if (requireArguments().getBoolean(DEATH_OF_MOTHER, false)) {
+                list.firstOrNull { it.value == DEATH_OF_MOTHER }?.let { symptom ->
                     val selectedItemMap = hashMapOf<String, Any>(
                         org.medtroniclabs.uhis.formgeneration.config.DefinedParams.ID to symptom._id,
                         org.medtroniclabs.uhis.formgeneration.config.DefinedParams.NAME to symptom.symptom,
                     ).apply {
-                        symptom.displayValue?.let { put(org.medtroniclabs.uhis.formgeneration.config.DefinedParams.cultureValue, it) }
+                        symptom.displayValue?.let { put(org.medtroniclabs.uhis.formgeneration.config.DefinedParams.CULTURE_VALUE, it) }
                         symptom.value?.let { put(org.medtroniclabs.uhis.formgeneration.config.DefinedParams.value, it) }
                     }
                     if (selectedSymptoms.isEmpty()) {
@@ -223,7 +223,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resourceState.data?.let { data ->
-                        if (arguments?.getBoolean(deathOfNewborn) == true) {
+                        if (arguments?.getBoolean(DEATH_OF_NEWBORN) == true) {
                             formGenerator.populateViews(data.formLayout.filter { it.id != birth })
                         } else {
                             formGenerator.populateViews(data.formLayout)
@@ -273,19 +273,19 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                 MenuConstants.CBS_MENU_ID,
             )
             workflowName.equals(ANC, true) -> viewModel.getFormData(ANC_CBS)
-            memberData?.gender.equals(DefinedParams.male, true) -> viewModel.getFormData(
+            memberData?.gender.equals(DefinedParams.GENDER_MALE, true) -> viewModel.getFormData(
                 MenuConstants.CBS_MENU_ID,
             )
 
             memberData?.gender.equals(
-                DefinedParams.female,
+                DefinedParams.GENDER_FEMALE,
                 true,
             ) &&
                 memberData?.isPregnant == true -> {
                 viewModel.getFormData(ANC_CBS)
             }
 
-            memberData?.gender.equals(DefinedParams.female, true) -> {
+            memberData?.gender.equals(DefinedParams.GENDER_FEMALE, true) -> {
                 viewModel.getFormData(MenuConstants.CBS_MENU_ID)
             }
         }
@@ -319,8 +319,8 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         formLayout: FormLayout,
         resultMap: Any?,
     ) {
-        val value = if (requireArguments().getBoolean(DeathOfMother, false)) {
-            listOf(Pair(DeathOfMother, false))
+        val value = if (requireArguments().getBoolean(DEATH_OF_MOTHER, false)) {
+            listOf(Pair(DEATH_OF_MOTHER, false))
         } else {
             listOf()
         }
@@ -365,7 +365,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
         resultMap: HashMap<String, Any>?,
         serverData: List<FormLayout>?,
     ) {
-        val assessmentId = requireArguments().getLong(AssessmentId)
+        val assessmentId = requireArguments().getLong(ASSESSMENT_ID)
         resultMap?.let { details ->
             val gson = Gson()
             val result = serverData?.let {
@@ -403,8 +403,8 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                                         }
 
                                         val cbs = values.toMutableMap()
-                                        if (conditions.contains(DeathOfMother)) {
-                                            cbs[DeathOfMother] = true
+                                        if (conditions.contains(DEATH_OF_MOTHER)) {
+                                            cbs[DEATH_OF_MOTHER] = true
                                         }
 
                                         cbs.remove(CbsNotifiableCondition)
@@ -449,7 +449,7 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
                             ?.get(surveillanceDetails) as? Map<String, Any>
                     )?.get(RmnchNotifiableCondition) as? List<Map<String, Any>>
                     val isDelete = rmnchList?.any {
-                        it[DefinedParams.Value]?.toString().equals(DeathOfMother, true)
+                        it[DefinedParams.Value]?.toString().equals(DEATH_OF_MOTHER, true)
                     } == true
 
                     val birth = (
@@ -511,8 +511,8 @@ class CbsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     override fun onRenderingComplete() {
         val memberData = viewModel.memberDetailsLiveData.value?.data
-        if (requireArguments().getBoolean(DeathOfMother, false) ||
-            (memberData?.gender.equals(DefinedParams.female, true) && memberData?.isPregnant == true)
+        if (requireArguments().getBoolean(DEATH_OF_MOTHER, false) ||
+            (memberData?.gender.equals(DefinedParams.GENDER_FEMALE, true) && memberData?.isPregnant == true)
         ) {
             viewModel.getSymptomListByType(RmnchNotifiableCondition)
         }

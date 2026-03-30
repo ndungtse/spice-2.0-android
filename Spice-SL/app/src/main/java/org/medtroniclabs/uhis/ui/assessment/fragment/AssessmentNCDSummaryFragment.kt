@@ -359,7 +359,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
             val symptomResponseList: ArrayList<MedicalComplianceResponse> = arrayListOf()
             linkedTreeMapList.flatten().forEach { linkedTreeMap ->
                 val name = linkedTreeMap[DefinedParams.NAME] as? String ?: getString(R.string.empty_space)
-                val culture = linkedTreeMap[DefinedParams.cultureValue] as? String
+                val culture = linkedTreeMap[DefinedParams.CULTURE_VALUE] as? String
                 val otherCompliance = linkedTreeMap[AssessmentDefinedParams.other_compliance] as? String
 
                 val complianceResponse = MedicalComplianceResponse(
@@ -385,7 +385,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
 
         linkedTreeMapList.flatten().forEach { linkedTreeMap ->
             val name = linkedTreeMap[DefinedParams.NAME] as? String ?: getString(R.string.empty_space)
-            val culture = linkedTreeMap[DefinedParams.cultureValue] as? String
+            val culture = linkedTreeMap[DefinedParams.CULTURE_VALUE] as? String
             val type = linkedTreeMap[Screening.type] as? String
             val otherSymptom = linkedTreeMap[AssessmentDefinedParams.other_symptom] as? String
 

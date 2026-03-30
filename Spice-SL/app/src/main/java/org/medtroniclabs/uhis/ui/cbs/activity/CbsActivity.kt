@@ -14,7 +14,7 @@ import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.postError
 import org.medtroniclabs.uhis.appextensions.startBackgroundOfflineSync
 import org.medtroniclabs.uhis.common.DefinedParams
-import org.medtroniclabs.uhis.common.DefinedParams.AssessmentId
+import org.medtroniclabs.uhis.common.DefinedParams.ASSESSMENT_ID
 import org.medtroniclabs.uhis.common.DefinedParams.CBS
 import org.medtroniclabs.uhis.databinding.ActivityAssessmentBinding
 import org.medtroniclabs.uhis.formgeneration.extension.capitalizeFirstChar
@@ -24,8 +24,8 @@ import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DeathOfMother
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.deathOfNewborn
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DEATH_OF_MOTHER
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DEATH_OF_NEWBORN
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import org.medtroniclabs.uhis.ui.cbs.fragment.CbsFragment
 import org.medtroniclabs.uhis.ui.cbs.fragment.CbsMemberRegistration
@@ -53,8 +53,8 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
             },
             callbackHome = {
                 viewModel.setUserJourney(AnalyticsDefinedParams.ONHOMEBUTTONTRIGGERED)
-                if (intent.getBooleanExtra(DeathOfMother, false) ||
-                    intent.getBooleanExtra(deathOfNewborn, false)
+                if (intent.getBooleanExtra(DEATH_OF_MOTHER, false) ||
+                    intent.getBooleanExtra(DEATH_OF_NEWBORN, false)
                 ) {
                     navigateAncCbs()
                 } else {
@@ -67,8 +67,8 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
     }
 
     fun handleBack() {
-        if (intent.getBooleanExtra(DeathOfMother, false) ||
-            intent.getBooleanExtra(deathOfNewborn, false)
+        if (intent.getBooleanExtra(DEATH_OF_MOTHER, false) ||
+            intent.getBooleanExtra(DEATH_OF_NEWBORN, false)
         ) {
             navigateAncCbs()
         } else {
@@ -159,12 +159,12 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
                     hideLoading()
                     resource.data?.let {
                         // insertOtherAssessmentDetails()
-                        if (intent.getBooleanExtra(deathOfNewborn, false) ||
-                            intent.getBooleanExtra(DeathOfMother, false)
+                        if (intent.getBooleanExtra(DEATH_OF_NEWBORN, false) ||
+                            intent.getBooleanExtra(DEATH_OF_MOTHER, false)
                         ) {
-                            val key = if (intent.getBooleanExtra(DeathOfMother, false)) {
+                            val key = if (intent.getBooleanExtra(DEATH_OF_MOTHER, false)) {
                                 DefinedParams.RmnchNotifiableCondition
-                            } else if (intent.getBooleanExtra(deathOfNewborn, false)) {
+                            } else if (intent.getBooleanExtra(DEATH_OF_NEWBORN, false)) {
                                 DefinedParams.CbsNotifiableCondition
                             } else {
                                 DefinedParams.CbsNotifiableCondition
@@ -398,7 +398,7 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
 
     private fun loadFragment() {
         viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MEMBER_ID, -1L)
-        viewModel.menuId = intent.getStringExtra(DefinedParams.MenuId)
+        viewModel.menuId = intent.getStringExtra(DefinedParams.MENU_ID)
         viewModel.workflowName = intent.getStringExtra(MenuConstants.WORKFLOW_NAME)
         viewModel.motherID = intent.getLongExtra(DefinedParams.MOTHER_ID, -1L)
         val bundle = Bundle()
@@ -408,9 +408,9 @@ class CbsActivity : BaseActivity(), OnDialogDismissListener {
             MenuConstants.WORKFLOW_NAME,
             intent.getStringExtra(MenuConstants.WORKFLOW_NAME),
         )
-        bundle.putLong(AssessmentId, intent.getLongExtra(AssessmentId, 0L))
-        bundle.putBoolean(deathOfNewborn, intent.getBooleanExtra(deathOfNewborn, false))
-        bundle.putBoolean(DeathOfMother, intent.getBooleanExtra(DeathOfMother, false))
+        bundle.putLong(ASSESSMENT_ID, intent.getLongExtra(ASSESSMENT_ID, 0L))
+        bundle.putBoolean(DEATH_OF_NEWBORN, intent.getBooleanExtra(DEATH_OF_NEWBORN, false))
+        bundle.putBoolean(DEATH_OF_MOTHER, intent.getBooleanExtra(DEATH_OF_MOTHER, false))
         setTitle(getString(R.string.cbs_register))
         replaceFragmentInId<CbsFragment>(
             binding.formsFragmentContainer.id,

@@ -328,6 +328,7 @@
     <string name="neonate_outcome">matokeo ya neonate</string>
     <string name="male">Mwanaume</string>
     <string name="female">Mwanamke</string>
+    <string name="gender_other">Nyingine</string>
     <string name="state_of_baby">Hali ya Mtoto</string>
     <string name="abnormal">Sio kawaida</string>
     <string name="signs_symptoms_observed">Ishara/Dalili zilizoonekana</string>

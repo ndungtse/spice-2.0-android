@@ -61,7 +61,7 @@ class SingleSelectionCustomView : LinearLayout {
         this.optionList?.forEachIndexed { index, optionValue ->
             val name = optionValue[DefinedParams.NAME]
             val idValue = optionValue[DefinedParams.ID]
-            val translatedName = optionValue[DefinedParams.cultureValue]
+            val translatedName = optionValue[DefinedParams.CULTURE_VALUE]
             val textView = TextView(viewContext, null, 0, R.style.Form_MH_Style_with_padding)
             val param = LayoutParams(
                 0,

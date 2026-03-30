@@ -6,17 +6,17 @@ object DefinedParams {
     const val ZERO = "0"
 
     const val ID = "id"
-    const val male = "male"
-    const val female = "female"
-    const val both = "both"
+    const val GENDER_MALE = "male"
+    const val GENDER_FEMALE = "female"
+    const val GENDER_OTHER = "Other"
+    const val BOTH = "both"
     const val AT_CHAR = "@"
     const val span_count_1 = 1
     const val span_count_3 = 3
     const val isMemberRegistration = "isMemberRegistration"
     const val MEMBER_ID = "memberID"
-    const val MenuId = "MenuId"
+    const val MENU_ID = "MenuId"
     const val NAME = "name"
-    const val cultureValue = "cultureValue"
     const val CULTURE_VALUE = "cultureValue"
     const val id = "id"
     const val ICCM = "ICCM"
@@ -127,7 +127,7 @@ object DefinedParams {
 
     const val NeonatePatientIdPrefix = "HM-"
     const val NeonateBabyNamePrefix = "Baby of"
-    const val FollowUpId = "FollowUpId"
+    const val FOLLOW_UP_ID = "FollowUpId"
     const val IsReferredScreen = "isReferredScreen"
     const val SearchLength = 2
     const val SearchLengthPrescription = 1
@@ -203,7 +203,6 @@ object DefinedParams {
     const val Africa = "AFRICA"
     const val PatientVisitId = "PatientVisitId"
     const val TYPE_REFILL = "REFILL"
-    const val displayValue = "displayValue"
     const val Activity = "Activity"
     const val Title = "Title"
     const val Count = "Count"
@@ -277,7 +276,7 @@ object DefinedParams {
     const val isDefault = "isDefault"
     const val phoneNumber = "phoneNumber"
     const val surveillanceDetails = "surveillanceDetails"
-    const val AssessmentId = "AssessmentId"
+    const val ASSESSMENT_ID = "AssessmentId"
     const val type = "type"
     const val ps = "ps"
     const val phu = "phu"

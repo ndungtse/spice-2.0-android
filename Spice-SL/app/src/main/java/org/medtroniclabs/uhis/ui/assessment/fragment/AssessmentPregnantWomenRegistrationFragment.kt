@@ -300,7 +300,7 @@ class AssessmentPregnantWomenRegistrationFragment :
         val gravidaParityDiff = getGravidaParityDiff()
         if (gravidaParityDiff <= PregnantWomen.GRAVIDA_PARITY_IGNORE_DIFF) {
             resultMap.removeIf {
-                PregnantWomen.OBSTETRIC_COMPLICATIONS_TO_IGNORE.contains(it[DefinedParams.Value])
+                PregnantWomen.OBSTETRIC_COMPLICATIONS_TO_IGNORE.contains(it[DefinedParams.VALUE])
             }
         }
         formGenerator.validateCheckboxDialogue(id, formLayout, resultMap, false)

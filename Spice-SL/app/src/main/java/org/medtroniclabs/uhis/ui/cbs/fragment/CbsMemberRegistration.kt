@@ -193,14 +193,14 @@ class CbsMemberRegistration :
             when (it.lowercase()) {
                 DefinedParams.BOY.lowercase() -> {
                     singleSelectValueOption(
-                        DefinedParams.male,
+                        DefinedParams.GENDER_MALE,
                         MemberRegistration.gender,
                     )
                 }
 
                 DefinedParams.GIRL.lowercase() -> {
                     singleSelectValueOption(
-                        DefinedParams.female,
+                        DefinedParams.GENDER_FEMALE,
                         MemberRegistration.gender,
                     )
                 }

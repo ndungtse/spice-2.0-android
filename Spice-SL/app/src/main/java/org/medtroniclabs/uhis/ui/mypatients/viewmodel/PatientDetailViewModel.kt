@@ -140,7 +140,7 @@ class PatientDetailViewModel @Inject constructor(
         patientDetailsLiveData.value
             ?.data
             ?.gender
-            ?.equals(DefinedParams.female, ignoreCase = true) == true
+            ?.equals(DefinedParams.GENDER_FEMALE, ignoreCase = true) == true
 
     fun getGender(): String? = patientDetailsLiveData.value?.data?.gender
 

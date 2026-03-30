@@ -18,13 +18,13 @@ import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.ChildPatientId
 import org.medtroniclabs.uhis.common.DefinedParams.DOB
 import org.medtroniclabs.uhis.common.DefinedParams.DateOfDelivery
+import org.medtroniclabs.uhis.common.DefinedParams.GENDER_FEMALE
+import org.medtroniclabs.uhis.common.DefinedParams.GENDER_MALE
 import org.medtroniclabs.uhis.common.DefinedParams.Gender
 import org.medtroniclabs.uhis.common.DefinedParams.ID
 import org.medtroniclabs.uhis.common.DefinedParams.MEMBER_ID
 import org.medtroniclabs.uhis.common.DefinedParams.NeonateOutcome
 import org.medtroniclabs.uhis.common.DefinedParams.PatientId
-import org.medtroniclabs.uhis.common.DefinedParams.female
-import org.medtroniclabs.uhis.common.DefinedParams.male
 import org.medtroniclabs.uhis.common.DefinedParams.villageId
 import org.medtroniclabs.uhis.databinding.FragmentPatientMenuBinding
 import org.medtroniclabs.uhis.db.entity.MenuEntity
@@ -111,8 +111,8 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             when (menuItem.name) {
                 (MenuConstants.MOTHER_AND_NEONATE_ID) -> {
                     menuItem.isDisabled = when {
-                        gender.equals(male, true) -> true
-                        gender.equals(female, true) && !dob.isNullOrBlank() -> {
+                        gender.equals(GENDER_MALE, true) -> true
+                        gender.equals(GENDER_FEMALE, true) && !dob.isNullOrBlank() -> {
                             val ageAndWeek = DateUtils.getV2YearMonthAndWeek(dob)
                             val ageYears = ageAndWeek.years
                             val ageMonths = ageAndWeek.months
@@ -123,9 +123,9 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                         }
 
                         (
-                            gender.equals(female, true) ||
+                            gender.equals(GENDER_FEMALE, true) ||
                                 gender.equals(
-                                    male,
+                                    GENDER_MALE,
                                     true,
                                 )
                         ) &&

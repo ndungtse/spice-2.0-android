@@ -127,6 +127,7 @@
     <string name="member_deceased">Member Deceased</string>
     <string name="male_prefix">M</string>
     <string name="female_prefix">F</string>
+    <string name="gender_other_prefix" translatable="false">O</string>
     <string name="iccm">ICCM</string>
     <string name="rmnch">RMNCH</string>
     <string name="tb">TB</string>
@@ -363,6 +364,7 @@
     <string name="neonate_outcome" translatable="false">Neonate Outcome</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
+    <string name="gender_other">Other</string>
     <string name="state_of_baby">State of Baby</string>
     <string name="abnormal">Abnormal</string>
     <string name="birth_weight">Birth Weight</string>

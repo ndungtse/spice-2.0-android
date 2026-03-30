@@ -331,7 +331,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 .apply {
                     put(DefinedParams.ID, symptoms.id)
                     put(DefinedParams.NAME, symptoms.name)
-                    symptoms.displayValue?.let { put(DefinedParams.cultureValue, it) }
+                    symptoms.displayValue?.let { put(DefinedParams.CULTURE_VALUE, it) }
                     symptoms.value?.let { put(DefinedParams.Value, it) }
                 }.takeIf { it.isNotEmpty() }
         }

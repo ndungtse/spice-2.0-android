@@ -68,7 +68,7 @@ object FormSupport {
         translate: Boolean,
     ): CharSequence? =
         if (translate) {
-            val translatedName = map[DefinedParams.cultureValue]
+            val translatedName = map[DefinedParams.CULTURE_VALUE]
             translateName(translatedName, name)
         } else {
             name

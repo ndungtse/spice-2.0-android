@@ -259,7 +259,7 @@ class FormSummaryReporter(
             val id = map[DefinedParams.ID]
             id?.let {
                 if (it == value) {
-                    return map[DefinedParams.cultureValue] as? String ?: map[DefinedParams.NAME] as String
+                    return map[DefinedParams.CULTURE_VALUE] as? String ?: map[DefinedParams.NAME] as String
                 }
             }
         }
