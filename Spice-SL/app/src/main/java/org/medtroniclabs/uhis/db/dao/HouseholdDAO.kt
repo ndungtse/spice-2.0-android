@@ -189,8 +189,9 @@ interface HouseholdDAO {
         val conditions = mutableListOf<String>()
 
         if (searchTerm.isNotBlank()) {
-            conditions += "(hh.name LIKE ? OR hh.household_no LIKE ?)"
+            conditions += "(hh.name LIKE ? OR hh.household_no LIKE ? OR EXISTS (SELECT 1 FROM HouseholdMember hm WHERE hm.household_id = hh.id AND hm.phone_number LIKE ?))"
             val pattern = "%${searchTerm.trim()}%"
+            args += pattern
             args += pattern
             args += pattern
         }
@@ -255,7 +256,7 @@ interface HouseholdDAO {
             INNER JOIN SubVillageEntity AS sv
                 ON sv.id = hh.sub_village_id
 
-            LEFT JOIN (
+            INNER JOIN (
                 SELECT
                     household_id,
                     MAX(updated_at) AS last_member_registered_at

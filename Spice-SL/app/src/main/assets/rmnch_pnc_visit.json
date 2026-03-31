@@ -10,6 +10,18 @@
             "visibility": "gone"
         },
         {
+            "condition": [
+                {
+                    "greaterThanOrEqual": "2",
+                    "targetId": "parity",
+                    "visibility": "visible"
+                },
+                {
+                    "lessThanOrEqual": "1",
+                    "targetId": "livingChildren",
+                    "visibility": "gone"
+                }
+            ],
             "family": "pregnancyHistory",
             "hint": "[Enter number]",
             "hintCulture": "[সংখ্যা লিখুন]",
@@ -27,6 +39,13 @@
             "visibility": "gone"
         },
         {
+            "condition": [
+                {
+                    "greaterThanOrEqual": "1",
+                    "targetId": "livingChildren",
+                    "visibility": "visible"
+                }
+            ],
             "family": "pregnancyHistory",
             "hint": "[Enter number]",
             "hintCulture": "[সংখ্যা লিখুন]",

@@ -564,7 +564,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         val gapsList = (pncMap?.get(RMNCH.ID_PNC_GAPS) as? List<String>)
         if (!gapsList.isNullOrEmpty()) {
             val gapsCardBinding = getCounsellingCardBinding()
-            gapsCardBinding.cardTitle.setText(R.string.gaps_in_anc)
+            gapsCardBinding.cardTitle.setText(R.string.gaps_in_pnc)
             gapsList.forEach { condition ->
                 with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                     root.setPadding(0)

@@ -1,5 +1,7 @@
 package org.medtroniclabs.uhis.ui.assessment.referrallogic
 
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.CONDITION_ANY_OTHER
+
 /**
  * Enum class representing the danger signs that can occur after childbirth.
  * These signs are used for assessment during postnatal care (PNC).
@@ -45,7 +47,7 @@ enum class PNCNonUrgentReferral(val value: String) {
     FEVER("Fever"),
     HTN_ECLAMPSIA_ON_TREATMENT("On treatment for HTN or Pre-eclampsia / Eclampsia"),
     DM_GDM_ON_TREATMENT("On treatment for DM/GDM"),
-    OTHER("Other"),
+    OTHER(CONDITION_ANY_OTHER),
 }
 
 /**

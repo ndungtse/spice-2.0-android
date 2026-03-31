@@ -40,6 +40,7 @@ import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.ui.FormResultComposer
 import org.medtroniclabs.uhis.formgeneration.utility.CheckBoxDialog
 import org.medtroniclabs.uhis.formgeneration.utility.InformationLayoutFragment
+import org.medtroniclabs.uhis.mappingkey.PregnantWomen
 import org.medtroniclabs.uhis.mappingkey.Screening
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseFragment
@@ -787,9 +788,7 @@ class AssessmentRMNCHFragment :
         // The user is visiting the member for the first time, no PW Profile, no ANC.
         if (pncVisitCount <= 1L && (details?.gravida ?: 0) == 0) {
             pregnancyHistoryCardView?.visible()
-            pregnancyHistoryView?.children?.forEach { pregnancyField ->
-                pregnancyField.visible()
-            }
+            formGenerator.getViewByTag(PregnantWomen.ID_GRAVIDA + formGenerator.rootSuffix)?.visible()
         } else {
             pregnancyHistoryCardView?.gone()
             pregnancyHistoryView?.children?.forEach { pregnancyField ->
