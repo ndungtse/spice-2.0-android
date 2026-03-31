@@ -214,12 +214,14 @@ class AssessmentActivity : BaseActivity() {
                 -> {
                     finishSuccessFlow()
                 }
+
                 is AssessmentNCDSummaryFragment -> {
                     val intent = Intent(this, LandingActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                     startActivity(intent)
                     finish()
                 }
+
                 else -> {
                     this@AssessmentActivity.finish()
                 }
@@ -232,18 +234,23 @@ class AssessmentActivity : BaseActivity() {
             is AssessmentICCMFragment -> {
                 AnalyticsDefinedParams.ICCMAssessment
             }
+
             is AssessmentRMNCHFragment -> {
                 viewModel.workflowName.plus(AnalyticsDefinedParams.RMNCHAssessment)
             }
+
             is AssessmentOtherSymptomsFragment -> {
                 AnalyticsDefinedParams.OtherSymptoms
             }
+
             is AssessmentPregnantWomenRegistrationFragment -> {
                 AnalyticsDefinedParams.PREGNANT_WOMEN_PROFILE
             }
+
             is AssessmentPregnancyOutcomeFragment -> {
                 AnalyticsDefinedParams.PREGNANCY_OUTCOME
             }
+
             else -> {
                 ""
             }
@@ -342,6 +349,7 @@ class AssessmentActivity : BaseActivity() {
                     tag = AssessmentFamilyPlanningSummaryFragment::class.simpleName,
                 )
             }
+
             MenuConstants.PREGNANT_WOMEN_PROFILE -> {
                 setTitle(getString(R.string.summary))
                 hideBackButton()
@@ -350,6 +358,7 @@ class AssessmentActivity : BaseActivity() {
                     tag = AssessmentPregnantWomenRegistrationSummaryFragment.TAG,
                 )
             }
+
             MenuConstants.PREGNANCY_OUTCOME -> {
                 setTitle(Summary.capitalizeFirstChar())
                 hideBackButton()
@@ -502,6 +511,7 @@ class AssessmentActivity : BaseActivity() {
                     tag = AssessmentPregnantWomenRegistrationFragment.TAG,
                 )
             }
+
             MenuConstants.PREGNANCY_OUTCOME -> {
                 setTitle(getString(R.string.pregnancy_outcome))
                 replaceFragmentInId<AssessmentPregnancyOutcomeFragment>(
@@ -559,6 +569,7 @@ class AssessmentActivity : BaseActivity() {
                 ResourceState.LOADING -> {
                     showLoading()
                 }
+
                 ResourceState.ERROR -> {
                     hideLoading()
                     resourceState.message?.let {
@@ -569,6 +580,7 @@ class AssessmentActivity : BaseActivity() {
                         ) {}
                     }
                 }
+
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     loadSummaryFragment()
@@ -581,6 +593,7 @@ class AssessmentActivity : BaseActivity() {
                 ResourceState.LOADING -> {
                     showLoading()
                 }
+
                 ResourceState.ERROR -> {
                     hideLoading()
                     resourceState.message?.let {
@@ -591,6 +604,7 @@ class AssessmentActivity : BaseActivity() {
                         ) {}
                     }
                 }
+
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     setTitle(Summary.capitalizeFirstChar())
@@ -608,6 +622,7 @@ class AssessmentActivity : BaseActivity() {
                 ResourceState.LOADING -> {
                     showLoading()
                 }
+
                 ResourceState.ERROR -> {
                     hideLoading()
                     resourceState.message?.let {
@@ -618,6 +633,7 @@ class AssessmentActivity : BaseActivity() {
                         ) {}
                     }
                 }
+
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     val bundle = Bundle().apply {
@@ -661,29 +677,27 @@ class AssessmentActivity : BaseActivity() {
         val intent = if (viewModel.followUpId != null) {
             Intent(this, FollowUpMyPatientActivity::class.java)
         } else {
-            // Check if member is external (householdId is null or householdLocalId is 0)
-            val isExternalMember = viewModel.memberDetailsLiveData.value
-                ?.data
-                ?.householdId == null ||
-                viewModel.memberDetailsLiveData.value
-                    ?.data
-                    ?.householdLocalId == 0L
-
-            if (isExternalMember) {
-                Intent(this, ServicesActivity::class.java).apply {
-                    putExtra("isExternalMember", true)
+            // For pregnant women after click done navigate user to tools screen
+            if (viewModel.menuId == MenuConstants.PREGNANT_WOMEN_PROFILE) {
+                Intent(this, AssessmentToolsActivity::class.java).apply {
+                    putExtra(DefinedParams.HOUSEHOLD_ID, viewModel.selectedHouseholdId)
+                    putExtra(DefinedParams.MEMBER_ID, viewModel.selectedHouseholdMemberId)
+                    putExtra(DefinedParams.FOLLOW_UP_ID, viewModel.followUpId)
+                    putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
+                    putExtra(DefinedParams.FhirId, viewModel.memberFhirId)
+                    putExtra(DefinedParams.ORIGIN, this@AssessmentActivity.intent.getStringExtra(DefinedParams.ORIGIN))
+                    putExtra(MenuConstants.FOLLOW_UP, this@AssessmentActivity.intent.getBooleanExtra(MenuConstants.FOLLOW_UP, false))
                 }
             } else {
-                // For pregnant women after click done navigate user to tools screen
-                if (viewModel.menuId == MenuConstants.PREGNANT_WOMEN_PROFILE) {
-                    Intent(this, AssessmentToolsActivity::class.java).apply {
-                        putExtra(DefinedParams.HOUSEHOLD_ID, viewModel.selectedHouseholdId)
-                        putExtra(DefinedParams.MEMBER_ID, viewModel.selectedHouseholdMemberId)
-                        putExtra(DefinedParams.FOLLOW_UP_ID, viewModel.followUpId)
-                        putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
-                        putExtra(DefinedParams.FhirId, viewModel.memberFhirId)
-                        putExtra(DefinedParams.ORIGIN, this@AssessmentActivity.intent.getStringExtra(DefinedParams.ORIGIN))
-                        putExtra(MenuConstants.FOLLOW_UP, this@AssessmentActivity.intent.getBooleanExtra(MenuConstants.FOLLOW_UP, false))
+                // Check if member is external (householdLocalId is null or householdLocalId is 0)
+                val householdLocalId = viewModel.memberDetailsLiveData.value
+                    ?.data
+                    ?.householdLocalId
+                val isExternalMember = householdLocalId == null || householdLocalId == 0L
+
+                if (isExternalMember) {
+                    Intent(this, ServicesActivity::class.java).apply {
+                        putExtra("isExternalMember", true)
                     }
                 } else {
                     Intent(this, HouseholdSearchActivity::class.java)
