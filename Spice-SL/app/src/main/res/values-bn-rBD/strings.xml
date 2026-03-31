@@ -127,7 +127,7 @@
     <string name="rmnch">RMNCH</string>
     <string name="tb">TB</string>
     <string name="national_id">জাতীয় আইডি</string>
-    <string name="bio_data">জৈব তথ্য</string>
+    <string name="bio_data">বায়োডাটা</string>
     <string name="name">নাম</string>
     <string name="gender">লিঙ্গ</string>
     <string name="no_of_months">%1$s মাস</string>
@@ -177,7 +177,7 @@
     <string name="email_cap">ইমেইল</string>
     <string name="username">ইউজারনেম</string>
     <string name="phone_no">ফোন নম্বর</string>
-    <string name="assigned_health_facility">নির্ধারিত স্বাস্থ্য সুবিধা</string>
+    <string name="assigned_health_facility">নির্ধারিত স্বাস্থ্যসেবা কেন্দ্র</string>
     <string name="suite_access" translatable="false">SPICE Suite Access</string>
     <string name="back">পিছনে</string>
     <string name="firstname_lastname" translatable="false">%1$s %2$s</string>
@@ -189,7 +189,9 @@
     <string name="sort_count">সাজান (%1d)</string>
     <string name="villages">গ্রাম</string>
     <string name="start_with_validation">ফোন নম্বর %1$s দিয়ে শুরু হতে হবে</string>
-    <string name="or">or</string>
+    <string name="or">অথবা</string>
+    <string name="OR">অথবা</string>
+    <string name="dob">জন্ম তারিখ</string>
     <string name="edit_household">পরিবার সম্পাদনা</string>
     <string name="edit_member">সদস্য সম্পাদনা</string>
     <string name="select_member">সদস্য নির্বাচন করুন</string>
@@ -214,7 +216,7 @@
     <string name="household_registered">খানা পরিদর্শন</string>
     <string name="pregnancy_outcome_dashboard">ডেলিভারি রেজিস্ট্রেশন</string>
     <string name="family_planning_dashboard">পরিবার পরিকল্পনা কাউন্সেলিংয়ের সংখ্যা</string>
-    <string name="child_hood_visit">শৈশব সাক্ষাৎ</string>
+    <string name="child_hood_visit">শিশু ফলোআপ</string>
     <string name="other_value" translatable="false">%1$s - %2$s</string>
     <string name="gps_disabled_title">লোকেশন সেবা বন্ধ!</string>
     <string name="gps_disabled_message">অগ্রসর হতে আপনার বর্তমান অবস্থান পেতে দয়া করে লোকেশন সেবা চালু করুন</string>
@@ -849,7 +851,7 @@
     <string name="other_lowercase">অন্যান্য</string>
     <string name="separator_hyphen_space" translatable="false"> - </string>
     <string name="empty" translatable="false" />
-    <string name="n_a">N/A</string>
+    <string name="n_a">প্রযোজ্য নয়</string>
     <string name="pregnant">গর্ভবতী</string>
     <string name="not_pregnant">গর্ভবতী নয়</string>
     <string name="neonatal_outcomes">নবজাতকের ফলাফল</string>
@@ -901,7 +903,8 @@
     <string name="complications">জটিলতা</string>
     <string name="conditions">অবস্থা</string>
     <string name="offline_data">অফলাইন ডেটা</string>
-    <string name="language_preference">ভাষা পছন্দ</string>
+    <string name="language_preference">পছন্দীয় ভাষা</string>
+    <string name="total_anc_services_received">সর্বমোট ANC সেবার সংখ্যা</string>
     <string name="assessment_label">মূল্যায়ন</string>
     <string name="upload">আপলোড</string>
     <string name="offline_screened_data">অফলাইন স্ক্রিন করা ডেটা</string>
@@ -1609,4 +1612,8 @@
     <string name="high_risk_indicators">⚠️ উচ্চ ঝুঁকির নির্দেশকসমূহ</string>
     <string name="non_emergency_referral">ⓘ জরুরি নয় এমন রেফারেল</string>
     <string name="assessment_result">মূল্যায়নের ফলাফল</string>
+
+    <string name="external_member">বহিরাগত সদস্য</string>
+    <string name="external_member_registration">বহিরাগত সদস্য নিবন্ধন</string>
+    <string name="add_external_member">বহিরাগত সদস্য যোগ করুন </string>
 </resources>

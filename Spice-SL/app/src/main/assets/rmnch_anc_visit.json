@@ -286,14 +286,14 @@
             "optionsList":
             [
                 {
-                    "id": "present",
                     "name": "Present",
-                    "cultureValue": " হ্যাঁ"
+                    "cultureValue": "রয়েছে",
+                    "id": "present"
                 },
                 {
-                    "id": "absent",
                     "name": "Absent",
-                    "cultureValue": "না"
+                    "cultureValue": "নেই",
+                    "id": "absent"
                 }
             ],
             "condition":
@@ -469,19 +469,19 @@
             "optionsList":
             [
                 {
-                    "id": "present",
                     "name": "Present",
-                    "cultureValue": "হ্যাঁ"
+                    "cultureValue": "রয়েছে",
+                    "id": "present"
                 },
                 {
-                    "id": "absent",
                     "name": "Absent",
-                    "cultureValue": "না"
+                    "cultureValue": "নেই",
+                    "id": "absent"
                 },
                 {
                     "id": "NA",
                     "name": "N/A",
-                    "cultureValue": "N/A"
+                    "cultureValue": "প্রযোজ্য নয়"
                 }
             ]
         },
@@ -501,19 +501,19 @@
             "optionsList":
             [
                 {
-                    "id": "present",
                     "name": "Present",
-                    "cultureValue": "হ্যাঁ"
+                    "cultureValue": "রয়েছে",
+                    "id": "present"
                 },
                 {
-                    "id": "absent",
                     "name": "Absent",
-                    "cultureValue": "না"
+                    "cultureValue": "নেই",
+                    "id": "absent"
                 },
                 {
                     "id": "NA",
                     "name": "N/A",
-                    "cultureValue": "N/A"
+                    "cultureValue": "প্রযোজ্য নয়"
                 }
             ]
         },
@@ -533,19 +533,19 @@
             "optionsList":
             [
                 {
-                    "id": "present",
                     "name": "Present",
-                    "cultureValue": "হ্যাঁ"
+                    "cultureValue": "রয়েছে",
+                    "id": "present"
                 },
                 {
-                    "id": "absent",
                     "name": "Absent",
-                    "cultureValue": "না"
+                    "cultureValue": "নেই",
+                    "id": "absent"
                 },
                 {
                     "id": "NA",
                     "name": "N/A",
-                    "cultureValue": "N/A"
+                    "cultureValue": "প্রযোজ্য নয়"
                 }
             ]
         },

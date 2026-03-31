@@ -2208,7 +2208,7 @@ class FormGenerator(
             binding.tvErrorMessage.tag = id + errorSuffix
             binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
             binding.tvAgeLabel.text = getString(R.string.age)
-            binding.tvDobLabel.text = "DOB"
+            binding.tvDobLabel.text = getString(R.string.dob)
 
             // Configure Age EditText
             binding.etAge.inputType = InputType.TYPE_CLASS_NUMBER

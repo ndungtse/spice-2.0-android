@@ -64,7 +64,6 @@
             "fieldName": "What was fed in the last 24 hours",
             "orderId": 4,
             "viewType": "DialogCheckbox",
-            "localDataCache": "childFeedLast24Hrs",
             "isEnabled": true,
             "isMandatory": true,
             "hint": "Food",
@@ -72,6 +71,39 @@
             "errorMessage": "Please select a valid option",
             "title": "What was the child fed in the last 24 hours?",
             "titleCulture": "গত ২৪ ঘন্টায় শিশুকে কি কি খাওয়ানো হয়েছে?",
+            "optionsList":
+            [
+                {
+                    "id": "mothersBreastMilk",
+                    "name": "Mother's breast milk",
+                    "cultureValue": "মায়ের দুধ "
+                },
+                {
+                    "id": "cowgoatMilk",
+                    "name": "Cow/Goat milk",
+                    "cultureValue": "গরু-ছাগলের দুধ"
+                },
+                {
+                    "id": "formulaMilk",
+                    "name": "Formula milk",
+                    "cultureValue": "ফর্মুলা দুধ "
+                },
+                {
+                    "id": "semolina",
+                    "name": "Semolina",
+                    "cultureValue": "সুজি"
+                },
+                {
+                    "id": "ricePowder",
+                    "name": "Rice powder",
+                    "cultureValue": "চালের গুঁড়া "
+                },
+                {
+                    "id": "other",
+                    "name": "Other",
+                    "cultureValue": "অন্যান্য "
+                }
+            ],
             "visibility": "visible",
             "isSummary": true
         },

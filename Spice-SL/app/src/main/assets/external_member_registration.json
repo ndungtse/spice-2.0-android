@@ -106,7 +106,7 @@
         {
           "id": "na",
           "name": "Not Available",
-          "cultureValue": "জন্ম নিবন্ধন নম্বর"
+          "cultureValue": "প্রযোজ্য নয়"
         }
       ],
       "title": "ID Type",
@@ -269,12 +269,12 @@
       "optionsList": [
           {
               "name": "Present",
-              "cultureValue": "Present",
+              "cultureValue": "রয়েছে",
               "id": "present"
           },
           {
               "name": "Absent",
-              "cultureValue": "Absent",
+              "cultureValue": "নেই",
               "id": "absent"
           }
       ],

@@ -196,6 +196,7 @@
     <string name="start_with_validation">Phone number should starts with %1$s </string>
     <string name="or">or</string>
     <string name="OR">OR</string>
+    <string name="dob">Date of Birth</string>
     <string name="edit_household">Edit Household</string>
     <string name="edit_member">Edit Member</string>
     <string name="select_member">Select Member</string>

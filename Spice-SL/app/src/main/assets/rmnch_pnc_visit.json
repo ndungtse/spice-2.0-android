@@ -260,14 +260,14 @@
             "optionsList":
             [
                 {
-                    "cultureValue": "হ্যাঁ",
-                    "id": "present",
-                    "name": "Present"
+                    "name": "Present",
+                    "cultureValue": "রয়েছে",
+                    "id": "present"
                 },
                 {
-                    "cultureValue": "না",
-                    "id": "absent",
-                    "name": "Absent"
+                    "name": "Absent",
+                    "cultureValue": "নেই",
+                    "id": "absent"
                 }
             ],
             "orderId": 9,
@@ -284,17 +284,17 @@
             "optionsList":
             [
                 {
-                    "cultureValue": "১।হ্যাঁ",
-                    "id": "Present",
-                    "name": "Present"
+                    "name": "Present",
+                    "cultureValue": "রয়েছে",
+                    "id": "present"
                 },
                 {
-                    "cultureValue": "২। না",
-                    "id": "Absent",
-                    "name": "Absent"
+                    "name": "Absent",
+                    "cultureValue": "নেই",
+                    "id": "absent"
                 },
                 {
-                    "cultureValue": "N/A",
+                    "cultureValue": "প্রযোজ্য নয়",
                     "id": "NA",
                     "name": "N/A"
                 }
@@ -313,17 +313,17 @@
             "optionsList":
             [
                 {
-                    "cultureValue": "হ্যাঁ",
-                    "id": "present",
-                    "name": "Present"
+                    "name": "Present",
+                    "cultureValue": "রয়েছে",
+                    "id": "present"
                 },
                 {
-                    "cultureValue": "না",
-                    "id": "absent",
-                    "name": "Absent"
+                    "name": "Absent",
+                    "cultureValue": "নেই",
+                    "id": "absent"
                 },
                 {
-                    "cultureValue": "N/A",
+                    "cultureValue": "প্রযোজ্য নয়",
                     "id": "na",
                     "name": "N/A"
                 }
