@@ -3470,10 +3470,7 @@ class FormGenerator(
                         requestFocusView(data)
                     } else {
                         actualValue?.let {
-                            if ("0" == actualValue) {
-                                // If the member doesn't have any number, they need to enter zero.
-                                isValid = true
-                            } else if (!startsWith.isNullOrEmpty() &&
+                            if (!startsWith.isNullOrEmpty() &&
                                 !checkPhoneNumberValidOrNot(
                                     it,
                                     startsWith,

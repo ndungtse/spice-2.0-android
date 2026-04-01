@@ -295,6 +295,9 @@
         <error line="14" column="9" source="standard:property-naming" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/FormGenerator.kt">
+        <error line="4064" column="1" source="standard:if-else-wrapping" />
+        <error line="4065" column="1" source="standard:if-else-wrapping" />
+        <error line="4066" column="1" source="standard:if-else-wrapping" />
         <error line="4067" column="1" source="standard:if-else-wrapping" />
         <error line="4068" column="1" source="standard:if-else-wrapping" />
         <error line="4069" column="1" source="standard:if-else-wrapping" />
@@ -306,9 +309,6 @@
         <error line="4075" column="1" source="standard:if-else-wrapping" />
         <error line="4076" column="1" source="standard:if-else-wrapping" />
         <error line="4077" column="1" source="standard:if-else-wrapping" />
-        <error line="4078" column="1" source="standard:if-else-wrapping" />
-        <error line="4079" column="1" source="standard:if-else-wrapping" />
-        <error line="4080" column="1" source="standard:if-else-wrapping" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/config/DefinedParams.kt">
         <error line="11" column="15" source="standard:property-naming" />

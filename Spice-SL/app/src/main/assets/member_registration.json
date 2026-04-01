@@ -89,23 +89,12 @@
             "visibility": "visible"
         },
         {
-            "condition":
-            [
-                {
-                    "eq": "0",
-                    "targetId": "phone_number_category",
-                    "visibility": "gone"
-                }
-            ],
             "family": "bioData",
             "fieldName": "Mobile Number",
             "hint": "Enter Mobile Number",
             "hintCulture": "মোবাইল নম্বর লিখুন",
             "id": "phone_number",
             "inputType": 3,
-            "isInfo": "visible",
-            "infoTitle": "0 - If member doesn't have any mobile number",
-            "infoTitleCulture": "0 - যদি সদস্যের কোনো মোবাইল নম্বর না থাকে",
             "isEnabled": true,
             "maxLength": 11,
             "minLength": 1,
