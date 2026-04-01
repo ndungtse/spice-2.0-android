@@ -21,6 +21,8 @@ data class HouseHoldMember(
     val dateOfBirth: String,
     @ColumnInfo("phone_number")
     val phoneNumber: String,
+    @ColumnInfo("phone_number_category")
+    var phoneNumberCategory: String? = "",
     @ColumnInfo("patient_id")
     val patientId: String? = null,
     @ColumnInfo("gender")
@@ -87,6 +89,7 @@ data class HouseHoldMember(
             id = id,
             name = this.name,
             phoneNumber = this.phoneNumber,
+            phoneNumberCategory = this.phoneNumberCategory,
             dateOfBirth = this.dateOfBirth,
             gender = this.gender,
             householdId = hhId,

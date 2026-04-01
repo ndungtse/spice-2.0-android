@@ -26,7 +26,6 @@ import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.ui.SingleSelectionCustomView
 import org.medtroniclabs.uhis.formgeneration.utility.CustomSpinnerAdapter
-import org.medtroniclabs.uhis.mappingkey.MemberRegistration.gender
 import org.medtroniclabs.uhis.model.medicalreview.WazWhzScoreRequest
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseFragment

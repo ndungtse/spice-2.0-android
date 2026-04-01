@@ -122,7 +122,7 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
                     when (item.id) {
                         RelationshipToIC -> {
                             val displayValue = when {
-                                it.equals(MemberRegistration.OtherRelation, ignoreCase = true) -> {
+                                it.equals(MemberRegistration.OTHER_RELATION, ignoreCase = true) -> {
                                     val data =
                                         listSummaryData.firstOrNull { data -> data.id == otherRelationshipIC }
                                     val title = data?.title?.takeIf { title -> title.isNotBlank() }

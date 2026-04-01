@@ -1,6 +1,7 @@
 package org.medtroniclabs.uhis.db
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -101,7 +102,10 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentNCDEntity
         SubVillageEntity::class, ShasthyaShebikaEntity::class, ShasthyaShebikaLinkedVillageEntity::class,
         MemberAssessmentHistoryEntity::class,
     ],
-    version = 1,
+    version = 2,
+    autoMigrations = [
+        AutoMigration(1, 2),
+    ],
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
 abstract class SpiceDataBase : RoomDatabase() {

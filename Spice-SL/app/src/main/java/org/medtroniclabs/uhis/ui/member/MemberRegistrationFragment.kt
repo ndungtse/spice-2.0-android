@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
+import androidx.core.view.isGone
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.google.gson.Gson
@@ -53,11 +54,7 @@ import org.medtroniclabs.uhis.formgeneration.model.FormResponse
 import org.medtroniclabs.uhis.formgeneration.utility.CustomSpinnerAdapter
 import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.villageId
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration
-import org.medtroniclabs.uhis.mappingkey.MemberRegistration.dateOfBirth
-import org.medtroniclabs.uhis.mappingkey.MemberRegistration.gender
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration.isValidMinAge
-import org.medtroniclabs.uhis.mappingkey.MemberRegistration.name
-import org.medtroniclabs.uhis.mappingkey.MemberRegistration.phoneNumber
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.BaseFragment
@@ -174,7 +171,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                             } else {
                                 AddNewMember
                             }
-                        type to (UserDetail.startDateTime ?: "")
+                        type to UserDetail.startDateTime
                     } else {
                         AnalyticsDefinedParams.HouseholdCreation to (
                             arguments?.getString(
@@ -233,11 +230,11 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                             (activity as? HouseholdActivity)?.setTitle(getString(R.string.household_head_registration))
 
                             // Update name field label to "Household head name"
-                            formGenerator.getViewByTag(MemberRegistration.name + titleSuffix)?.let { view ->
+                            formGenerator.getViewByTag(MemberRegistration.NAME + titleSuffix)?.let { view ->
                                 if (view is TextView) {
                                     view.text = getString(R.string.household_head_name)
                                     // Check if the field is mandatory and add asterisk if needed
-                                    val nameFieldLayout = formGenerator.getServerData()?.find { it.id == MemberRegistration.name }
+                                    val nameFieldLayout = formGenerator.getServerData()?.find { it.id == MemberRegistration.NAME }
                                     if (nameFieldLayout?.isMandatory == true) {
                                         view.markMandatory()
                                     }
@@ -245,17 +242,17 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                             }
 
                             // Auto-check isHouseholdHead checkbox and add to result map
-                            formGenerator.getViewByTag(MemberRegistration.isHouseholdHead)?.let { view ->
+                            formGenerator.getViewByTag(MemberRegistration.IS_HOUSEHOLD_HEAD)?.let { view ->
                                 if (view is CheckBox) {
                                     view.isChecked = true
                                     // Add the value to the result map
-                                    formGenerator.getResultMap()[MemberRegistration.isHouseholdHead] = true
+                                    formGenerator.getResultMap()[MemberRegistration.IS_HOUSEHOLD_HEAD] = true
                                 }
                             }
                         }
 
                         // Set up id_type listener to enable national_id
-                        formGenerator.getViewByTag(MemberRegistration.idType)?.let { view ->
+                        formGenerator.getViewByTag(MemberRegistration.ID_TYPE)?.let { view ->
                             if (view is AppCompatSpinner) {
                                 val existingListener = view.onItemSelectedListener
                                 view.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -275,7 +272,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                                             selectedItem?.let { item ->
                                                 val selectedId = item[org.medtroniclabs.uhis.formgeneration.config.DefinedParams.ID]
                                                 val isDefaultOption = selectedId == "-1" || selectedId == org.medtroniclabs.uhis.common.DefinedParams.DefaultID
-                                                formGenerator.getViewByTag(MemberRegistration.nationalId)?.let { nationalIdView ->
+                                                formGenerator.getViewByTag(MemberRegistration.NATIONAL_ID)?.let { nationalIdView ->
                                                     nationalIdView.isEnabled = !isDefaultOption
                                                 }
                                             }
@@ -416,33 +413,32 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
         }
     }
 
-    private fun launchHouseholdSummary() {
-        (activity as HouseholdActivity).finish()
-    }
-
     private fun autoPopulateDetails(details: HouseholdMemberEntity) {
         details.householdId?.let { id ->
             householdRegistrationViewModel.householdId = id
         }
-        formGenerator.getViewByTag(name)?.let { view ->
+        formGenerator.getViewByTag(MemberRegistration.NAME)?.let { view ->
             formGenerator.setValueForView(details.name, view)
         }
 
-        formGenerator.getViewByTag(phoneNumber)?.let { view ->
+        formGenerator.getViewByTag(MemberRegistration.PHONE_NUMBER)?.let { view ->
             formGenerator.setValueForView(details.phoneNumber, view)
         }
+        formGenerator.getViewByTag(MemberRegistration.PHONE_NUMBER_CATEGORY)?.let { view ->
+            formGenerator.setValueForView(details.phoneNumberCategory, view)
+        }
 
-        formGenerator.getViewByTag(MemberRegistration.idType)?.let { view ->
+        formGenerator.getViewByTag(MemberRegistration.ID_TYPE)?.let { view ->
             formGenerator.setValueForView(details.idType, view)
         }
 
-        formGenerator.getViewByTag(MemberRegistration.nationalId)?.let { view ->
+        formGenerator.getViewByTag(MemberRegistration.NATIONAL_ID)?.let { view ->
             formGenerator.setValueForView(details.nationalId, view)
             // Enable if idType is set
             view.isEnabled = details.idType.isNotEmpty()
         }
 
-        formGenerator.getViewByTag(MemberRegistration.isHouseholdHead)?.let { view ->
+        formGenerator.getViewByTag(MemberRegistration.IS_HOUSEHOLD_HEAD)?.let { view ->
             if (view is CheckBox) {
                 view.isChecked = details.isHouseholdHead
             }
@@ -453,40 +449,40 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                 GENDER_MALE -> {
                     singleSelectValueOption(
                         GENDER_MALE,
-                        gender,
+                        MemberRegistration.GENDER,
                     )
                 }
 
                 GENDER_FEMALE -> {
                     singleSelectValueOption(
                         GENDER_FEMALE,
-                        gender,
+                        MemberRegistration.GENDER,
                     )
                 }
 
                 GENDER_OTHER -> {
                     singleSelectValueOption(
                         GENDER_OTHER,
-                        gender,
+                        MemberRegistration.GENDER,
                     )
                 }
 
                 else -> {}
             }
             if (details.gender.isNotBlank()) {
-                formGenerator.disableSingleSelection(gender)
+                formGenerator.disableSingleSelection(MemberRegistration.GENDER)
             }
         }
         details.dateOfBirth.let { originalDobUtc ->
             val dateOfBirth =
                 DateUtils.convertDateFormat(originalDobUtc, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
             val dateDob = DateUtils.convertStringToDate(originalDobUtc, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
-            formGenerator.getViewByTag(MemberRegistration.dateOfBirth)?.let { view ->
+            formGenerator.getViewByTag(MemberRegistration.DATE_OF_BIRTH)?.let { view ->
                 if (memberRegistrationViewModel.isPhuWalkInsFlow == false && dateOfBirth.isNotBlank()) {
                     formGenerator.disableView(view)
                 }
                 // Store original UTC value before setting view value for AgeOrDob edit mode
-                formGenerator.setDobValueForAgeOrDob(MemberRegistration.dateOfBirth, originalDobUtc, dateOfBirth, view)
+                formGenerator.setDobValueForAgeOrDob(MemberRegistration.DATE_OF_BIRTH, originalDobUtc, dateOfBirth, view)
             }
 
             dateDob?.let { dob ->
@@ -696,7 +692,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             }
 
             // Household Member Create or Edit
-            val dob = map[dateOfBirth] as String
+            val dob = map[MemberRegistration.DATE_OF_BIRTH] as String
             if (!householdRegistrationViewModel.isCreateHouseholdForPhu &&
                 (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L)
             ) {
@@ -844,7 +840,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
         bottomNavigationView.viewTreeObserver.addOnGlobalLayoutListener {
             val layoutParams = scrollView.layoutParams as ConstraintLayout.LayoutParams
 
-            if (bottomNavigationView.visibility == View.GONE) {
+            if (bottomNavigationView.isGone) {
                 layoutParams.bottomToTop = bottomNavigationViewPhuSubmit.id
             } else {
                 layoutParams.bottomToTop = bottomNavigationView.id

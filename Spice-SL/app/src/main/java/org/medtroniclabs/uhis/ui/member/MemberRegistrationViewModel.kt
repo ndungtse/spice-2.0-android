@@ -95,11 +95,11 @@ class MemberRegistrationViewModel @Inject constructor(
                 }
 
                 // Update household name with member name if it's the household head
-                val memberName = memberResultMap[MemberRegistration.name]
+                val memberName = memberResultMap[MemberRegistration.NAME]
                 if (memberName != null) {
                     householdEntity.name = CommonUtils.getStringOrEmptyString(memberName)
                     // Set isHouseholdHead to true when updating household name with member name
-                    memberResultMap[MemberRegistration.isHouseholdHead] = true
+                    memberResultMap[MemberRegistration.IS_HOUSEHOLD_HEAD] = true
                 }
 
                 val houseHoldId = houseHoldRepository.insertHouseHoldEntity(householdEntity)
@@ -132,8 +132,8 @@ class MemberRegistrationViewModel @Inject constructor(
         try {
             viewModelScope.launch(dispatcherIO) {
                 selectedHouseholdId = householdId ?: -1L
-                memberDob = if (map.containsKey(MemberRegistration.dateOfBirth)) {
-                    CommonUtils.getStringOrEmptyString(map[MemberRegistration.dateOfBirth])
+                memberDob = if (map.containsKey(MemberRegistration.DATE_OF_BIRTH)) {
+                    CommonUtils.getStringOrEmptyString(map[MemberRegistration.DATE_OF_BIRTH])
                 } else {
                     null
                 }
@@ -165,17 +165,17 @@ class MemberRegistrationViewModel @Inject constructor(
         location: Location?,
     ) {
         if (map == null) return
-        val villageId = map[MemberRegistration.villageId]?.toString()?.toIntOrNull()
+        val villageId = map[MemberRegistration.VILLAGE_ID]?.toString()?.toIntOrNull()
         val addMemberRegRequest = AddMemberRegRequest().apply {
-            name = map[MemberRegistration.name]?.toString().orEmpty()
+            name = map[MemberRegistration.NAME]?.toString().orEmpty()
             this.villageId = villageId?.toString().orEmpty()
             village = villageId
                 ?.let { id ->
                     villageDetails?.find { it.id == id.toLong() }?.name.orEmpty()
                 }.orEmpty()
-            dateOfBirth = map[MemberRegistration.dateOfBirth]?.toString().orEmpty()
-            gender = map[MemberRegistration.gender]?.toString().orEmpty()
-            phoneNumber = map[MemberRegistration.phoneNumber]?.toString().orEmpty()
+            dateOfBirth = map[MemberRegistration.DATE_OF_BIRTH]?.toString().orEmpty()
+            gender = map[MemberRegistration.GENDER]?.toString().orEmpty()
+            phoneNumber = map[MemberRegistration.PHONE_NUMBER]?.toString().orEmpty()
             phoneNumberCategory = null
             provenance = ProvanceDto()
             isPregnant = null

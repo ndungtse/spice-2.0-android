@@ -23,6 +23,8 @@ data class HouseholdMemberEntity(
     var name: String = "",
     @ColumnInfo("phone_number")
     var phoneNumber: String? = "",
+    @ColumnInfo("phone_number_category")
+    var phoneNumberCategory: String? = "",
     @ColumnInfo("date_of_birth")
     var dateOfBirth: String = "",
     @ColumnInfo("gender")

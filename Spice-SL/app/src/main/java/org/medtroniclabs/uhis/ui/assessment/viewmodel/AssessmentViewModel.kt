@@ -516,10 +516,10 @@ class AssessmentViewModel @Inject constructor(
                     if (isBabyAlive.equals(DefinedParams.yes, ignoreCase = true)) {
                         val babyNumber = index + 1
                         val babyMap = HashMap<String, Any>()
-                        babyMap[MemberRegistration.name] = "Baby $babyNumber of ${details.name}"
-                        babyMap[MemberRegistration.dateOfBirth] = dateOfDelivery
-                        babyMap[MemberRegistration.gender] = babyData["sex"]?.toString() ?: ""
-                        babyMap[MemberRegistration.isHouseholdHead] = false
+                        babyMap[MemberRegistration.NAME] = "Baby $babyNumber of ${details.name}"
+                        babyMap[MemberRegistration.DATE_OF_BIRTH] = dateOfDelivery
+                        babyMap[MemberRegistration.GENDER] = babyData["sex"]?.toString() ?: ""
+                        babyMap[MemberRegistration.IS_HOUSEHOLD_HEAD] = false
                         babyMap[MemberRegistration.ID_GUARDIAN] = details.id
 
                         // For external mothers, carry location from mother member itself.

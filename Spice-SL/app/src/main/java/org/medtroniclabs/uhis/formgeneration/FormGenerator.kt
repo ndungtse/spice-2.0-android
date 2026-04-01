@@ -140,8 +140,8 @@ import org.medtroniclabs.uhis.formgeneration.utility.PersonNameFilter
 import org.medtroniclabs.uhis.mappingkey.CommunityDetails
 import org.medtroniclabs.uhis.mappingkey.CommunityDetails.SelectedNetwork
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration
-import org.medtroniclabs.uhis.mappingkey.MemberRegistration.dateOfBirth
-import org.medtroniclabs.uhis.mappingkey.MemberRegistration.phoneNumber
+import org.medtroniclabs.uhis.mappingkey.MemberRegistration.DATE_OF_BIRTH
+import org.medtroniclabs.uhis.mappingkey.MemberRegistration.PHONE_NUMBER
 import org.medtroniclabs.uhis.mappingkey.RxBuddy
 import org.medtroniclabs.uhis.mappingkey.Screening
 import org.medtroniclabs.uhis.mappingkey.Screening.DateOfBirth
@@ -2489,7 +2489,7 @@ class FormGenerator(
     fun fillDetailsOnDatePickerSet(
         date: Date,
         isEnabled: Boolean,
-        id: String = dateOfBirth,
+        id: String = DATE_OF_BIRTH,
     ) {
         val yearView = getViewByTag(id + Year)
         val monthView = getViewByTag(id + Month)
@@ -3459,7 +3459,7 @@ class FormGenerator(
                 ) {
                     isValid = false
                     requestFocusView(data)
-                } else if (isPhoneNumberField(id)) {
+                } else if (viewType == VIEW_TYPE_FORM_EDITTEXT && isPhoneNumberField(id)) {
                     val actualValue = if (resultHashMap.containsKey(id)) {
                         resultHashMap[id] as? String
                     } else {
@@ -3470,7 +3470,10 @@ class FormGenerator(
                         requestFocusView(data)
                     } else {
                         actualValue?.let {
-                            if (!startsWith.isNullOrEmpty() &&
+                            if ("0" == actualValue) {
+                                // If the member doesn't have any number, they need to enter zero.
+                                isValid = true
+                            } else if (!startsWith.isNullOrEmpty() &&
                                 !checkPhoneNumberValidOrNot(
                                     it,
                                     startsWith,
@@ -3505,7 +3508,7 @@ class FormGenerator(
                             }
                         }
                     }
-                } else if ((id == dateOfBirth || id == DateOfBirth) &&
+                } else if ((id == DATE_OF_BIRTH || id == DateOfBirth) &&
                     !data.viewType.equals(VIEW_TYPE_FORM_AGE_OR_DOB, true) &&
                     isMandatory &&
                     resultHashMap.containsKey(id)
@@ -4231,7 +4234,7 @@ class FormGenerator(
 
     fun handlePregnancyCardBasedOnAge() {
         val dateOfBirthView =
-            getViewByTag(dateOfBirth) as? AppCompatTextView ?: return
+            getViewByTag(DATE_OF_BIRTH) as? AppCompatTextView ?: return
         val dateOfBirth = dateOfBirthView.text?.toString()?.trim() ?: return
 
         if (DateUtils.calculateAge(
@@ -4247,7 +4250,7 @@ class FormGenerator(
 
     fun handlePregnancyCardBasedOnAgeAndWeeks() {
         val dateOfBirthView =
-            getViewByTag(dateOfBirth) as? AppCompatTextView ?: return
+            getViewByTag(DATE_OF_BIRTH) as? AppCompatTextView ?: return
         val dateOfBirth = dateOfBirthView.text?.toString()?.trim()
         if (!dateOfBirth.isNullOrEmpty()) {
             val ageAndWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth, DATE_ddMMyyyy)
@@ -4791,7 +4794,7 @@ class FormGenerator(
      */
     fun isPhoneNumberField(id: String): Boolean =
         id.contains(Screening.phoneNumber) ||
-            id.contains(phoneNumber) ||
+            id.contains(PHONE_NUMBER) ||
             id.contains(CommunityDetails.EmergencyContactPhu) ||
             id.contains(CommunityDetails.EmergencyTransportContactNo) ||
             id.contains(CommunityDetails.AmbulanceDriverContactNo) ||

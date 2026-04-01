@@ -155,7 +155,7 @@ class ExaminationGenerator(
             binding.tvTitle.text =
                 FormSupport.updateTitle(title, translate, titleCulture, unitMeasurement)
 
-            if (formLayout.id.contains(MemberRegistration.phoneNumber)) {
+            if (formLayout.id.contains(MemberRegistration.PHONE_NUMBER)) {
                 SecuredPreference.getPhoneNumberCode()?.let { phoneNumberCode ->
                     binding.llCountryCode.visibility = View.VISIBLE
                     binding.tvCountryCode.text = phoneNumberCode

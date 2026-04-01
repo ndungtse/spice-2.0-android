@@ -51,7 +51,7 @@
             ],
             "title": "ID Type",
             "titleCulture": "আইডির ধরন",
-            "orderId": 1,
+            "orderId": 0,
             "viewType": "Spinner",
             "visibility": "visible"
         },
@@ -65,7 +65,7 @@
             "isEnabled": true,
             "isMandatory": true,
             "isNeededDefault": true,
-            "orderId": 2,
+            "orderId": 1,
             "title": "National ID",
             "titleCulture": "জাতীয় পরিচয়পত্র (NID) (≥১৮ বছর)",
             "viewType": "EditText",
@@ -81,7 +81,7 @@
             "isEnabled": true,
             "isMandatory": true,
             "isNeededDefault": true,
-            "orderId": 3,
+            "orderId": 2,
             "title": "Name",
             "titleCulture": "নাম",
             "optionType": "personName",
@@ -89,18 +89,29 @@
             "visibility": "visible"
         },
         {
+            "condition":
+            [
+                {
+                    "eq": "0",
+                    "targetId": "phone_number_category",
+                    "visibility": "gone"
+                }
+            ],
             "family": "bioData",
             "fieldName": "Mobile Number",
             "hint": "Enter Mobile Number",
             "hintCulture": "মোবাইল নম্বর লিখুন",
             "id": "phone_number",
             "inputType": 3,
+            "isInfo": "visible",
+            "infoTitle": "0 - If member doesn't have any mobile number",
+            "infoTitleCulture": "0 - যদি সদস্যের কোনো মোবাইল নম্বর না থাকে",
             "isEnabled": true,
             "maxLength": 11,
             "minLength": 1,
             "isMandatory": true,
             "isNeededDefault": true,
-            "orderId": 9,
+            "orderId": 3,
             "title": "Mobile Number",
             "titleCulture": "মোবাইল নম্বর",
             "viewType": "EditText",
@@ -110,6 +121,40 @@
             [
                 "01"
             ]
+        },
+        {
+            "errorMessage": "Please select mobile number category",
+            "cultureErrorMessage": "অনুগ্রহ করে মোবাইল নম্বরের ধরন নির্বাচন করুন",
+            "family": "bioData",
+            "fieldName": "phone_number_category",
+            "id": "phone_number_category",
+            "isEditable": true,
+            "isEnabled": true,
+            "isMandatory": true,
+            "isNeededDefault": true,
+            "optionsList":
+            [
+                {
+                    "id": "personal",
+                    "name": "Personal (Self)",
+                    "cultureValue": "ব্যক্তিগত (নিজস্ব)"
+                },
+                {
+                    "id": "family",
+                    "name": "Family Member",
+                    "cultureValue": "পরিবারের সদস্য"
+                },
+                {
+                    "id": "friend",
+                    "name": "Friend",
+                    "cultureValue": "বন্ধু"
+                }
+            ],
+            "title": "Mobile number category",
+            "titleCulture": "মোবাইল নম্বরের ধরন",
+            "orderId": 4,
+            "viewType": "Spinner",
+            "visibility": "visible"
         },
         {
             "disableFutureDate": true,
@@ -126,7 +171,7 @@
             "hint": "DD/MM/YYYY",
             "hintCulture": "দিন/মাস/বছর",
             "viewType": "AgeOrDob",
-            "orderId": 4,
+            "orderId": 5,
             "visibility": "visible"
         },
         {
@@ -139,7 +184,7 @@
             "isMandatory": true,
             "isNeededDefault": true,
             "isSummary": true,
-            "orderId": 5,
+            "orderId": 6,
             "optionsList":
             [
                 {
@@ -168,7 +213,7 @@
             "id": "guardian",
             "isEnabled": true,
             "isMandatory": true,
-            "orderId": 6,
+            "orderId": 7,
             "title": "Guardian Name",
             "titleCulture": "মাতা/ অভিভাবকের নাম",
             "hint": "Drop down list of all registered members from the house",
@@ -187,7 +232,7 @@
             "isMandatory": true,
             "isNeededDefault": true,
             "isSummary": true,
-            "orderId": 7,
+            "orderId": 8,
             "optionsList":
             [
                 {
@@ -224,7 +269,7 @@
             "isMandatory": true,
             "isNeededDefault": true,
             "isSummary": true,
-            "orderId": 8,
+            "orderId": 9,
             "optionsList":
             [
                 {

@@ -40,7 +40,7 @@ import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.shasthyaShebikaId
 import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.subVillageId
 import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.villageId
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration
-import org.medtroniclabs.uhis.mappingkey.MemberRegistration.name
+import org.medtroniclabs.uhis.mappingkey.MemberRegistration.NAME
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.BaseFragment
@@ -287,25 +287,28 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
 
     private fun autoPopulateDetails(details: HouseholdMemberEntity) {
         // Simple fields
-        formGenerator.getViewByTag(name)?.let { view ->
+        formGenerator.getViewByTag(NAME)?.let { view ->
             formGenerator.setValueForView(details.name, view)
         }
-        formGenerator.getViewByTag(MemberRegistration.phoneNumber)?.let { view ->
+        formGenerator.getViewByTag(MemberRegistration.PHONE_NUMBER)?.let { view ->
             formGenerator.setValueForView(details.phoneNumber, view)
         }
-        formGenerator.getViewByTag(MemberRegistration.idType)?.let { view ->
+        formGenerator.getViewByTag(MemberRegistration.PHONE_NUMBER_CATEGORY)?.let { view ->
+            formGenerator.setValueForView(details.phoneNumberCategory, view)
+        }
+        formGenerator.getViewByTag(MemberRegistration.ID_TYPE)?.let { view ->
             formGenerator.setValueForView(details.idType, view)
         }
-        formGenerator.getViewByTag(MemberRegistration.nationalId)?.let { view ->
+        formGenerator.getViewByTag(MemberRegistration.NATIONAL_ID)?.let { view ->
             formGenerator.setValueForView(details.nationalId, view)
             view.isEnabled = details.idType.isNotEmpty()
         }
 
         // Gender: select then disable like normal edit
         details.gender.let { gender ->
-            formGenerator.getViewByTag("${gender}_${MemberRegistration.gender}")?.performClick()
+            formGenerator.getViewByTag("${gender}_${MemberRegistration.GENDER}")?.performClick()
             if (!gender.isNullOrBlank()) {
-                formGenerator.disableSingleSelection(MemberRegistration.gender)
+                formGenerator.disableSingleSelection(MemberRegistration.GENDER)
             }
         }
 
@@ -323,12 +326,12 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                 DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
             )
 
-        formGenerator.getViewByTag(MemberRegistration.dateOfBirth)?.let { view ->
+        formGenerator.getViewByTag(MemberRegistration.DATE_OF_BIRTH)?.let { view ->
             if (!dateOfBirth.isNullOrBlank()) {
                 formGenerator.disableView(view)
             }
             formGenerator.setDobValueForAgeOrDob(
-                MemberRegistration.dateOfBirth,
+                MemberRegistration.DATE_OF_BIRTH,
                 originalDobUtc,
                 dateOfBirth,
                 view,

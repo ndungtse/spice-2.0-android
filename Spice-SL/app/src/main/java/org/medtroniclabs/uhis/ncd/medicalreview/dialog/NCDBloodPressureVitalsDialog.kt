@@ -511,7 +511,7 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
                         .toDouble(),
                 )
 
-                put(MemberRegistration.gender, patientData.gender ?: "")
+                put(MemberRegistration.GENDER, patientData.gender ?: "")
                 // Add individual parameters
                 put(
                     Screening.Weight,
@@ -602,7 +602,7 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
                 Screening.Avg_Diastolic,
                 Screening.BMI_CATEGORY,
                 Screening.Avg_Systolic,
-                MemberRegistration.gender,
+                MemberRegistration.GENDER,
             ),
         )
 

@@ -46,7 +46,7 @@ class HouseholdMemberRepository @Inject constructor(
 //         }
 
         // If updating a member and isHouseholdHead is not explicitly set in the map, preserve the old value
-        if (entity != null && !map.containsKey(MemberRegistration.isHouseholdHead)) {
+        if (entity != null && !map.containsKey(MemberRegistration.IS_HOUSEHOLD_HEAD)) {
             val oldMemberEntity = roomHelper.getMemberDetailsByID(memberEntity.id)
             memberEntity.isHouseholdHead = oldMemberEntity.isHouseholdHead
         }
@@ -94,12 +94,12 @@ class HouseholdMemberRepository @Inject constructor(
         householdId: Long,
         map: HashMap<String, Any>,
     ) {
-        val isHouseholdHead = map[MemberRegistration.isHouseholdHead]
+        val isHouseholdHead = map[MemberRegistration.IS_HOUSEHOLD_HEAD]
         if (CommonUtils.getIsBooleanFromString(isHouseholdHead)) {
             // Updating in HouseHoldMEMBER
             roomHelper.updatePhoneNumberForHouseholdHead(
                 householdId,
-                map[MemberRegistration.phoneNumber]?.toString(),
+                map[MemberRegistration.PHONE_NUMBER]?.toString(),
                 null, // phoneNumberCategory parameter kept for interface compatibility
             )
         }
@@ -114,32 +114,35 @@ class HouseholdMemberRepository @Inject constructor(
     ): HouseholdMemberEntity {
         val householdMemberEntity = entity ?: HouseholdMemberEntity()
 
-        val name = map[MemberRegistration.name]
+        val name = map[MemberRegistration.NAME]
         householdMemberEntity.name = getStringOrEmptyString(name)
 
         parentReferenceId?.let {
             householdMemberEntity.motherReferenceId = it
         }
 
-        val phoneNumber = map[MemberRegistration.phoneNumber]
+        val phoneNumber = map[MemberRegistration.PHONE_NUMBER]
         householdMemberEntity.phoneNumber = getStringOrEmptyString(phoneNumber)
 
-        val dateOfBirth = map[MemberRegistration.dateOfBirth]
+        val phoneNumberCategory = map[MemberRegistration.PHONE_NUMBER_CATEGORY]
+        householdMemberEntity.phoneNumberCategory = getStringOrEmptyString(phoneNumberCategory)
+
+        val dateOfBirth = map[MemberRegistration.DATE_OF_BIRTH]
         householdMemberEntity.dateOfBirth = getStringOrEmptyString(dateOfBirth)
 
-        val gender = map[MemberRegistration.gender]
+        val gender = map[MemberRegistration.GENDER]
         householdMemberEntity.gender = getStringOrEmptyString(gender)
 
-        val idType = map[MemberRegistration.idType]
+        val idType = map[MemberRegistration.ID_TYPE]
         householdMemberEntity.idType = getStringOrEmptyString(idType)
 
-        val nationalId = map[MemberRegistration.nationalId]
+        val nationalId = map[MemberRegistration.NATIONAL_ID]
         householdMemberEntity.nationalId = nationalId?.toString()?.takeIf { it.isNotEmpty() }
 
-        val isHouseholdHead = map[MemberRegistration.isHouseholdHead]
+        val isHouseholdHead = map[MemberRegistration.IS_HOUSEHOLD_HEAD]
         householdMemberEntity.isHouseholdHead = isHouseholdHead == true
 
-        val householdFhirId = map[MemberRegistration.householdFhirId]
+        val householdFhirId = map[MemberRegistration.HOUSEHOLD_FHIR_ID]
         householdMemberEntity.householdFhirId = householdFhirId?.toString()?.takeIf { it.isNotEmpty() }
 
         val isDeceased = map[isDeceased]

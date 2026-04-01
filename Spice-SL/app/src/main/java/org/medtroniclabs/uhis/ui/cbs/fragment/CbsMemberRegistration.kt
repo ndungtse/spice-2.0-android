@@ -127,7 +127,7 @@ class CbsMemberRegistration :
                 return
             }
 
-            val dob = map[MemberRegistration.dateOfBirth] as String
+            val dob = map[MemberRegistration.DATE_OF_BIRTH] as String
             if (!MemberRegistration.isValidMinAgeForCbsMemberAdd(dob)) {
                 showInValidDob(getString(R.string.please_select_a_valid_value_age_cbs))
                 return
@@ -194,20 +194,20 @@ class CbsMemberRegistration :
                 DefinedParams.BOY.lowercase() -> {
                     singleSelectValueOption(
                         DefinedParams.GENDER_MALE,
-                        MemberRegistration.gender,
+                        MemberRegistration.GENDER,
                     )
                 }
 
                 DefinedParams.GIRL.lowercase() -> {
                     singleSelectValueOption(
                         DefinedParams.GENDER_FEMALE,
-                        MemberRegistration.gender,
+                        MemberRegistration.GENDER,
                     )
                 }
 
                 else -> {}
             }
-            childFormGenerator.disableSingleSelection(MemberRegistration.gender)
+            childFormGenerator.disableSingleSelection(MemberRegistration.GENDER)
         }
     }
 

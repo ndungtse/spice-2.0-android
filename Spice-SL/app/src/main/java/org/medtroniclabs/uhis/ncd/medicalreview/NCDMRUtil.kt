@@ -329,7 +329,7 @@ object NCDMRUtil {
             )
 
             val bioMetricsData = hashMapOf(
-                MemberRegistration.gender to patientData.gender,
+                MemberRegistration.GENDER to patientData.gender,
                 Screening.Age to patientData.age,
             )
             if (!isGlucose) {
