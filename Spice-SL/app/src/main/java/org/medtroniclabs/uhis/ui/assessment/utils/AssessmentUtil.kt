@@ -158,6 +158,10 @@ object AssessmentUtil {
                 }
             }
 
+            MenuConstants.NCD_MENU_ID -> {
+                referralStatus ?: context.getString(R.string.na)
+            }
+
             else -> context.getString(R.string.na)
         } ?: run { context.getString(R.string.separator_double_hyphen) }
 
@@ -253,6 +257,19 @@ object AssessmentUtil {
 
             AssessmentStatus.GAPS_IN_PNC -> {
                 "Gaps IN PNC"
+            }
+
+            AssessmentStatus.CONTROLLED_BP -> {
+                "Controlled BP"
+            }
+            AssessmentStatus.CONTROLLED_BG -> {
+                "Controlled BG"
+            }
+            AssessmentStatus.UNCONTROLLED_BP -> {
+                "Uncontrolled BP"
+            }
+            AssessmentStatus.UNCONTROLLED_BG -> {
+                "Uncontrolled BG"
             }
 
             AssessmentStatus.DEFAULT -> {

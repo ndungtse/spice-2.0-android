@@ -14,6 +14,7 @@ import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.DefinedParams
+import org.medtroniclabs.uhis.common.DefinedParams.CVD_RISK_SCORE_DISPLAY
 import org.medtroniclabs.uhis.common.DefinedParams.DefaultID
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.databinding.FragmentBdNcdSummaryBinding
@@ -27,6 +28,7 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BMI
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BMI_CATEGORY
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BP_LOG_DETAILS
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.CULTURE_VALUE
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.CVD_RISK
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FACILITY_TYPE_UPAZILA
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.GLUCOSE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.GLUCOSE_TYPE
@@ -222,6 +224,15 @@ class BDNCDAssessmentSummaryFragment : BaseFragment() {
             BP_LOG_DETAILS -> {
                 val bp = findValueByKey(jsonObject, AVG_BLOOD_PRESSURE) as? String
                 return "$bp $MMHG"
+            }
+
+            CVD_RISK -> {
+                val cvdRiskLevel = findValueByKey(jsonObject, CVD_RISK_SCORE_DISPLAY)
+                return if (cvdRiskLevel != null) {
+                    cvdRiskLevel as String
+                } else {
+                    null
+                }
             }
 
             else -> findValueByKey(jsonObject, id)?.toString()

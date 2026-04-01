@@ -89,16 +89,29 @@ import org.medtroniclabs.uhis.ui.BaseViewModel
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.MenuConstants.EYE_CARE_MENU_ID
 import org.medtroniclabs.uhis.ui.MenuConstants.ICCM_MENU_ID
+import org.medtroniclabs.uhis.ui.MenuConstants.NCD_MENU_ID
 import org.medtroniclabs.uhis.ui.MenuConstants.OTHER_SYMPTOMS
 import org.medtroniclabs.uhis.ui.MenuConstants.PREGNANCY_OUTCOME
 import org.medtroniclabs.uhis.ui.MenuConstants.PREGNANT_WOMEN_PROFILE
 import org.medtroniclabs.uhis.ui.MenuConstants.TB_MENU_ID
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BIO_METRICS
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BP_LOG
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.EYE_CARE
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.EYE_DISEASE_
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FACILITY_TYPE_COMMUNITY_CLINIC
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FACILITY_TYPE_UPAZILA
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FamilyPlanning
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FamilyPlanningDetails
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.GLUCOSE_LOG
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.HISTORY_OF_OTHER_DISEASES_
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.IsClinicTaken
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.OPERATION_NAME_
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.REASON_
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.REFERRAL_FACILITY_TYPE
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.REFERRED_SITE
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.STATUS_FACILITY_TYPE_COMMUNITY_CLINIC
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.STATUS_FACILITY_TYPE_UPAZILA
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.TBContactTracing
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.TBRxBuddyFollowUp
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.TBRxBuddyRegister
@@ -322,7 +335,7 @@ class AssessmentViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             memberDetailsLiveData.value?.data?.let { details ->
                 referralStatus = referralResult?.first
-                val status = AssessmentStatusGenerator.evaluateStatus(assessmentMap, details)
+                val status = AssessmentStatusGenerator.evaluateStatus(assessmentMap, details, referralResult)
                 val assessmentDetail =
                     getAssessmentDetails(serverData, assessmentMap as HashMap<Any, Any>)
                 assessmentStringLiveData.postValue(assessmentDetail.first)
@@ -352,7 +365,7 @@ class AssessmentViewModel @Inject constructor(
                         serviceProvided = menuId?.uppercase(Locale.ENGLISH),
                         customStatus = status,
                         latestVisit = true,
-                        referralStatus = referralStatus,
+                        referralStatus = getReferralStatus(referralStatus, assessmentMap),
                         referralReason = referralReason.toString(),
                     )
                     assessmentHistoryResultLiveData.postValue(assessmentRepository.saveAssessmentHistory(history))
@@ -678,6 +691,7 @@ class AssessmentViewModel @Inject constructor(
     ): HashMap<String, Any>? {
         var otherDetails = HashMap<String, Any>()
 
+        SecuredPreference.getOrganizationId()
         if (menuId == ICCM_MENU_ID) {
             otherDetails = otherAssessmentDetails
         }
@@ -717,6 +731,10 @@ class AssessmentViewModel @Inject constructor(
             val ncdAsst = assessmentMap[ncd] as HashMap<String, Any>
             val facilityType = ncdAsst[REFERRAL_FACILITY_TYPE] as String
             otherDetails[REFERRAL_FACILITY_TYPE] = facilityType
+        }
+
+        if (menuId == EYE_CARE_MENU_ID) {
+            otherDetails[REFERRED_SITE] = SecuredPreference.getOrganizationFhirId()
         }
 
         if (menuId == RMNCH.CHILD_MENU.uppercase(Locale.getDefault())) {
@@ -876,6 +894,50 @@ class AssessmentViewModel @Inject constructor(
             }
         }
 
+        if (map.containsKey(MenuConstants.CATARACT_MENU_ID)) {
+            val cataract = map[MenuConstants.CATARACT_MENU_ID] as HashMap<Any, Any>
+
+            cataract.remove(HISTORY_OF_OTHER_DISEASES_)
+            cataract.remove(OPERATION_NAME_)
+            cataract.remove(EYE_DISEASE_)
+            cataract.remove(REASON_)
+
+            val bioMetrics = cataract[BIO_METRICS] as? HashMap<*, *>
+            val bmiCategory = cataract[BMI_CATEGORY] as? String
+            val glucoseLog = cataract[GLUCOSE_LOG] as? HashMap<*, *>
+            val bpLog = cataract[BP_LOG] as? HashMap<*, *>
+
+            if (bioMetrics != null ||
+                bmiCategory != null ||
+                glucoseLog != null ||
+                bpLog != null
+            ) {
+                val ncdMap = mutableMapOf<String, Any>()
+
+                bioMetrics?.let {
+                    ncdMap[BIO_METRICS] = it
+                }
+
+                bmiCategory?.let {
+                    ncdMap[BMI_CATEGORY] = it
+                }
+
+                glucoseLog?.let {
+                    ncdMap[GLUCOSE_LOG] = it
+                }
+
+                bpLog?.let {
+                    ncdMap[BP_LOG] = it
+                }
+
+                cataract[NCD_MENU_ID] = ncdMap
+            }
+            cataract.remove(BIO_METRICS)
+            cataract.remove(BMI_CATEGORY)
+            cataract.remove(GLUCOSE_LOG)
+            cataract.remove(BP_LOG)
+        }
+
         val assessmentDetailBE = StringConverter.convertGivenMapToString(map) ?: ""
         return Pair(assessmentDetail, assessmentDetailBE)
     }
@@ -906,6 +968,7 @@ class AssessmentViewModel @Inject constructor(
                         ?: "-1"
                 otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSiteID)
             }
+
             assessmentUpdateLiveData.postValue(
                 assessmentRepository.updateOtherAssessmentDetails(
                     assessmentSaveLiveData.value?.data?.second,
@@ -1385,6 +1448,22 @@ class AssessmentViewModel @Inject constructor(
                     ResourceState.SUCCESS -> Resource(state = assessmentResult.state, data = Pair(serverData, assessmentResult.data!!))
                 },
             )
+        }
+    }
+
+    private fun getReferralStatus(
+        status: String?,
+        assessmentMap: HashMap<String, Any>,
+    ): String? {
+        if (status != ReferralStatus.Referred.name) return status
+
+        val type = (assessmentMap[NCD_MENU_ID] as? Map<*, *>)
+            ?.get(REFERRAL_FACILITY_TYPE) as? String
+
+        return when (type) {
+            FACILITY_TYPE_UPAZILA -> STATUS_FACILITY_TYPE_UPAZILA
+            FACILITY_TYPE_COMMUNITY_CLINIC -> STATUS_FACILITY_TYPE_COMMUNITY_CLINIC
+            else -> status
         }
     }
 

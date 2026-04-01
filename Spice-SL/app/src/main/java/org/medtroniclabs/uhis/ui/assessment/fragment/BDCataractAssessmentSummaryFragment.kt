@@ -14,6 +14,7 @@ import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.DefinedParams
+import org.medtroniclabs.uhis.common.DefinedParams.CVD_RISK_SCORE_DISPLAY
 import org.medtroniclabs.uhis.common.DefinedParams.DefaultID
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.databinding.FragmentBdNcdSummaryBinding
@@ -26,7 +27,7 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.AVG_BLOOD_PR
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BMI
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BMI_CATEGORY
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BP_LOG_DETAILS
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.CULTURE_VALUE
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.CVD_RISK
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FACILITY_TYPE_UPAZILA
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.GLUCOSE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.GLUCOSE_TYPE
@@ -34,16 +35,12 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.GLUCOSE_UNIT
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.HBA1CUnit
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.HEIGHT
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.MMHG
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.NCD_SYMPTOMS
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.REFERRAL_FACILITY_TYPE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.WEIGHT
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.hba1c
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
-import kotlin.collections.forEach
-import kotlin.collections.set
-import kotlin.getValue
 
 class BDCataractAssessmentSummaryFragment : BaseFragment() {
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -171,23 +168,6 @@ class BDCataractAssessmentSummaryFragment : BaseFragment() {
         jsonObject: JSONObject,
     ): String? {
         return when (id) {
-            NCD_SYMPTOMS -> {
-                val list = mutableListOf<String>()
-                findValueByKey(jsonObject, id)?.let {
-                    val jsonArray = it as JSONArray
-
-                    for (i in 0 until jsonArray.length()) {
-                        val sign = jsonArray.getJSONObject(i)
-
-                        sign.optString(CULTURE_VALUE).let { value ->
-                            list.add(value)
-                        }
-                    }
-
-                    return list.joinToString(",")
-                }
-            }
-
             HEIGHT, WEIGHT -> findValueByKey(jsonObject, id)?.toString()
 
             GLUCOSE -> {
@@ -221,6 +201,15 @@ class BDCataractAssessmentSummaryFragment : BaseFragment() {
                 val bmiCategory = findValueByKey(jsonObject, BMI_CATEGORY)
                 return if (bmiCategory != null && bmi != null) {
                     "${bmi as Double} (${bmiCategory as String})"
+                } else {
+                    null
+                }
+            }
+
+            CVD_RISK -> {
+                val cvdRiskLevel = findValueByKey(jsonObject, CVD_RISK_SCORE_DISPLAY)
+                return if (cvdRiskLevel != null) {
+                    cvdRiskLevel as String
                 } else {
                     null
                 }

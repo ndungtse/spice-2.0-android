@@ -79,5 +79,13 @@ enum class AssessmentStatus {
      */
     NOT_USING_MODERN_FP,
 
+    CONTROLLED_BP,
+
+    CONTROLLED_BG,
+
+    UNCONTROLLED_BP,
+
+    UNCONTROLLED_BG,
+
     DEFAULT,
 }

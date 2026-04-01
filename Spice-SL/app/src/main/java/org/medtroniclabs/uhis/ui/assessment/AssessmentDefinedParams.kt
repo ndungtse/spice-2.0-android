@@ -470,6 +470,8 @@ object AssessmentDefinedParams {
     const val BP_LOG_DETAILS = "bpLogDetails"
     const val AVG_BLOOD_PRESSURE = "avgBloodPressure"
 
+    const val CVD_RISK = "cvdRisk"
+
     const val GLUCOSE_LOG = "glucoseLog"
     const val SYMPTOMS_LOG = "symptomsLog"
 
@@ -488,9 +490,15 @@ object AssessmentDefinedParams {
 
     const val REFERRAL_FACILITY_TYPE = "referralFacilityType"
 
+    const val REFERRED_SITE = "referredSite"
+
     const val FACILITY_TYPE_UPAZILA = "Upazila Health Complex"
 
     const val FACILITY_TYPE_COMMUNITY_CLINIC = "Community Clinic"
+
+    const val STATUS_FACILITY_TYPE_UPAZILA = "Referred To Upazila Health Complex"
+
+    const val STATUS_FACILITY_TYPE_COMMUNITY_CLINIC = "Referred To Community Clinic"
 
     const val CULTURE_VALUE = DefinedParams.CULTURE_VALUE
 
@@ -586,4 +594,18 @@ object AssessmentDefinedParams {
     const val EYE_CARE = "eyeCare"
 
     const val CATARACT = "cataract"
+
+    const val EYE_TEST_OUTCOME = "eyeTestOutcome"
+
+    const val TYPE_OF_GLASS = "typeOfGlass"
+
+    const val HISTORY_OF_OTHER_DISEASES_ = "historyOfOtherDiseases_"
+
+    const val OPERATION_NAME_ = "operationName_"
+
+    const val EYE_DISEASE_ = "eyeDisease_"
+
+    const val REASON_ = "reason_"
+
+    const val BIO_METRICS = "bioMetrics"
 }

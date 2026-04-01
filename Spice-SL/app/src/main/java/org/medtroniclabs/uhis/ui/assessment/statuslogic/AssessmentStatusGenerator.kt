@@ -4,6 +4,8 @@ import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.mappingkey.PregnantWomen
 import org.medtroniclabs.uhis.model.assessment.AssessmentMemberDetails
+import org.medtroniclabs.uhis.ncd.screening.utils.ReferredReason.bloodGlucose
+import org.medtroniclabs.uhis.ncd.screening.utils.ReferredReason.bloodPressure
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
@@ -16,6 +18,7 @@ object AssessmentStatusGenerator {
     fun evaluateStatus(
         map: HashMap<String, Any>,
         memberDetails: AssessmentMemberDetails?,
+        referralResult: Pair<String?, ArrayList<String>>? = null,
     ): ArrayList<String>? {
         val statusList = when {
             map.containsKey(MenuConstants.PREGNANT_WOMEN_PROFILE) -> {
@@ -111,6 +114,21 @@ object AssessmentStatusGenerator {
                     arrayListOf(AssessmentStatus.NOT_USING_MODERN_FP)
                 } else {
                     arrayListOf(AssessmentStatus.USING_MODERN_FP)
+                }
+            }
+
+            map.containsKey(MenuConstants.NCD_MENU_ID) -> {
+                val results = referralResult?.second ?: listOf()
+                if (results.isNotEmpty()) {
+                    if (results.contains(bloodPressure) && results.contains(bloodGlucose)) {
+                        arrayListOf(AssessmentStatus.UNCONTROLLED_BP, AssessmentStatus.UNCONTROLLED_BG)
+                    } else if (results.contains(bloodPressure)) {
+                        arrayListOf(AssessmentStatus.UNCONTROLLED_BP)
+                    } else {
+                        arrayListOf(AssessmentStatus.UNCONTROLLED_BG)
+                    }
+                } else {
+                    arrayListOf(AssessmentStatus.CONTROLLED_BP, AssessmentStatus.CONTROLLED_BG)
                 }
             }
 
