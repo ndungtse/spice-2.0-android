@@ -186,10 +186,8 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.DASHBOARD -> {
-                withNetworkAvailability(online = {
-                    val intent = Intent(requireContext(), NCDDashboardViewActivity::class.java)
-                    startActivity(intent)
-                })
+                val intent = Intent(requireContext(), NCDDashboardViewActivity::class.java)
+                startActivity(intent)
             }
 
             MenuConstants.LIFESTYLE -> {

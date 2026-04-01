@@ -26,10 +26,10 @@ class NCDDashboardViewActivity : BaseActivity() {
             title = getString(R.string.dashboard),
             homeAndBackVisibility = Pair(false, true),
         )
-        loadSearchFragment()
+        loadDashboardFragment()
     }
 
-    private fun loadSearchFragment() {
+    private fun loadDashboardFragment() {
         replaceFragmentInId<DashboardFragment>(
             R.id.fragmentContainerView,
             bundle = intent.extras,
