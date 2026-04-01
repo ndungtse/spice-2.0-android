@@ -129,4 +129,6 @@
     <color name="background_job_aid_">#1AEB956A</color>
     <color name="bg_peer_notification_card">#EFEDFF</color>
     <color name="bg_gaps_color">#F5F5FF</color>
+    <color name="tailwind_stone_50">#FAFAF9</color>
+    <color name="base_muted_foreground">#71717A</color>
 </resources>

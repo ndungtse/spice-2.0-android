@@ -34,19 +34,30 @@ interface MemberDAO {
     @Query(
         """
                     SELECT
-                        hhm.*, td.diagnoses,
-                        mah.serviceProvided AS recent_service,
-                        (strftime('%s', mah.visitDate) * 1000) AS recent_service_date
+                        hhm.*,
+                        td.diagnoses,
+                        mahAgg.services AS services,
+                        mahAgg.recent_service_date
                     FROM householdmember AS hhm
                     LEFT JOIN TreatmentDetailsEntity AS td ON hhm.fhir_id = td.memberId
 
-                    LEFT JOIN MemberAssessmentHistory AS mah
-                        ON mah.memberId = hhm.id
-                        AND mah.visitDate = (
-                            SELECT MAX(mah2.visitDate)
-                            FROM MemberAssessmentHistory AS mah2
-                            WHERE mah2.memberId = hhm.id
+                    LEFT JOIN (
+                        SELECT
+                            memberId,
+                            '[' || GROUP_CONCAT('"' || serviceProvided || '"') || ']' AS services,
+                            MAX(last_visit) AS recent_service_date
+                        FROM (
+                            SELECT
+                                mah.memberId,
+                                mah.serviceProvided,
+                                MAX(strftime('%s', mah.visitDate) * 1000) AS last_visit
+                            FROM MemberAssessmentHistory mah
+                            GROUP BY mah.memberId, mah.serviceProvided
+                            ORDER BY last_visit DESC
                         )
+                        GROUP BY memberId
+                    ) AS mahAgg
+                    ON mahAgg.memberId = hhm.id
 
                     WHERE hhm.household_id = :houseHoldId
     """,
@@ -494,8 +505,8 @@ interface MemberDAO {
             """
             SELECT
                 hhm.*, td.diagnoses,
-                mah.serviceProvided AS recent_service,
-                (strftime('%s', mah.visitDate) * 1000) AS recent_service_date,
+                mahAgg.services AS services,
+                mahAgg.recent_service_date,
                 COALESCE(ss.name, '') AS shasthya_shebika_name,
                 COALESCE(ss.ssId, '') AS shasthya_shebika_ssId,
                 COALESCE(sv.name, '') AS sub_village_name
@@ -510,13 +521,23 @@ interface MemberDAO {
             LEFT JOIN TreatmentDetailsEntity AS td
                 ON hhm.fhir_id = td.memberId
 
-            LEFT JOIN MemberAssessmentHistory AS mah
-                ON mah.memberId = hhm.id
-                AND mah.visitDate = (
-                    SELECT MAX(mah2.visitDate)
-                    FROM MemberAssessmentHistory AS mah2
-                    WHERE mah2.memberId = hhm.id
+            LEFT JOIN (
+                SELECT
+                    memberId,
+                    '[' || GROUP_CONCAT('"' || serviceProvided || '"') || ']' AS services,
+                    MAX(last_visit) AS recent_service_date
+                FROM (
+                    SELECT
+                        mah.memberId,
+                        mah.serviceProvided,
+                        MAX(strftime('%s', mah.visitDate) * 1000) AS last_visit
+                    FROM MemberAssessmentHistory mah
+                    GROUP BY mah.memberId, mah.serviceProvided
+                    ORDER BY last_visit DESC
                 )
+                GROUP BY memberId
+            ) AS mahAgg
+            ON mahAgg.memberId = hhm.id
 
             $whereClause
             ORDER BY hhm.id DESC

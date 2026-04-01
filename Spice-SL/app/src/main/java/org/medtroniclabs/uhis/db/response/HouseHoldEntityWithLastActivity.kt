@@ -19,4 +19,5 @@ data class HouseHoldEntityWithLastActivity(
     /** Epoch-ms of the most recently registered household member. */
     @ColumnInfo("last_member_registered_at")
     val lastMemberRegisteredAt: Long,
+    val services: ArrayList<String>? = null,
 )

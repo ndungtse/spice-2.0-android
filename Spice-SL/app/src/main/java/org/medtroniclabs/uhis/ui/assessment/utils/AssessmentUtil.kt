@@ -1,6 +1,7 @@
 package org.medtroniclabs.uhis.ui.assessment.utils
 
 import android.content.Context
+import android.view.View
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -276,4 +277,20 @@ object AssessmentUtil {
         }
         return null
     }
+
+    /**
+     * Returns services icon for the given service
+     */
+    fun mapServiceToServiceIcon(service: String): Int =
+        when (service.lowercase()) {
+            MenuConstants.PREGNANT_WOMEN_PROFILE.lowercase() -> R.drawable.ic_services_anc
+            RMNCH.ANC.lowercase() -> R.drawable.ic_services_anc
+            MenuConstants.FP_MENU_ID.lowercase() -> R.drawable.ic_services_family_planning
+            RMNCH.CHILD_MENU.lowercase() -> R.drawable.ic_services_child_health
+            MenuConstants.PREGNANCY_OUTCOME.lowercase() -> R.drawable.ic_services_pnc
+            RMNCH.PNC_MOTHER_MENU.lowercase() -> R.drawable.ic_services_pnc
+            else -> {
+                View.NO_ID
+            }
+        }
 }

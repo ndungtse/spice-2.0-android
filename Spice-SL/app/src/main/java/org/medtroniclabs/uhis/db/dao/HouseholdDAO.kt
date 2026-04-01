@@ -16,6 +16,7 @@ import org.medtroniclabs.uhis.db.entity.AssessmentEntity
 import org.medtroniclabs.uhis.db.entity.EntitiesName
 import org.medtroniclabs.uhis.db.entity.HouseholdEntity
 import org.medtroniclabs.uhis.db.entity.HouseholdMemberEntity
+import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
 import org.medtroniclabs.uhis.db.response.HouseHoldEntityWithLastActivity
 import org.medtroniclabs.uhis.db.response.HouseholdMemberCount
 
@@ -160,7 +161,7 @@ interface HouseholdDAO {
      * **observedEntities** ensures Room re-delivers LiveData whenever any of the
      * three underlying tables change.
      */
-    @RawQuery(observedEntities = [HouseholdEntity::class, HouseholdMemberEntity::class, AssessmentEntity::class])
+    @RawQuery(observedEntities = [HouseholdEntity::class, HouseholdMemberEntity::class, AssessmentEntity::class, MemberAssessmentHistoryEntity::class])
     fun getHouseholdsRaw(query: SimpleSQLiteQuery): LiveData<List<HouseHoldEntityWithLastActivity>>
 
     /**
@@ -239,6 +240,7 @@ interface HouseholdDAO {
                 ss.name                  AS shasthya_shebika_name,
                 sv.name                  AS sub_village_name,
                 memberAgg.last_member_registered_at,
+                assessmentAgg.services,
                 MAX(
                     COALESCE(hh.updated_at, 0),
                     COALESCE(memberAgg.last_member_registered_at, 0),
@@ -267,12 +269,21 @@ interface HouseholdDAO {
 
             LEFT JOIN (
                 SELECT
-                    hm.household_id,
-                    MAX(strftime('%s', mah.visitDate) * 1000) AS last_assessment_at
-                FROM MemberAssessmentHistory mah
-                INNER JOIN HouseholdMember hm
-                    ON hm.id = mah.memberId
-                GROUP BY hm.household_id
+                    household_id,
+                    MAX(last_assessment_at) AS last_assessment_at,
+                    '[' || GROUP_CONCAT('"' || serviceProvided || '"') || ']' AS services
+                FROM (
+                    SELECT
+                        hm.household_id,
+                        mah.serviceProvided,
+                        MAX(strftime('%s', mah.visitDate) * 1000) AS last_assessment_at
+                    FROM MemberAssessmentHistory mah
+                    INNER JOIN HouseholdMember hm
+                        ON hm.id = mah.memberId
+                    GROUP BY hm.household_id, mah.serviceProvided
+                    ORDER BY last_assessment_at DESC
+                )
+                GROUP BY household_id
             ) AS assessmentAgg
                 ON assessmentAgg.household_id = hh.id
 

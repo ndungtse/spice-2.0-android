@@ -36,8 +36,8 @@ data class HouseholdMemberWithTb(
     @ColumnInfo("fhir_id")
     val fhirId: String? = null,
     val diagnoses: String? = null,
-    @ColumnInfo("recent_service")
-    val recentService: String? = null,
+    @ColumnInfo("services")
+    val services: ArrayList<String>? = null,
     @ColumnInfo("recent_service_date")
     val recentServiceDate: Long? = null,
     @ColumnInfo("shasthya_shebika_name")

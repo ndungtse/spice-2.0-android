@@ -19,25 +19,32 @@
         android:layout_width="match_parent"
         android:padding="@dimen/_15sdp">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/TextStyle_Bold_16_NoBG"
-            android:gravity="start"
-            android:id="@+id/tvMemberName"
-            android:layout_height="wrap_content"
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/flexTitle"
             android:layout_width="0dp"
-            android:textColor="@color/grey_black"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_8sdp"
+            app:dividerDrawable="@drawable/divider_transparent_8"
+            app:flexWrap="wrap"
+            app:layout_constraintEnd_toStartOf="@id/forwardIcon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/forwardIcon"/>
+            app:showDivider="middle" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/forwardIcon"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:src="@drawable/ic_arrow_forward"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvMemberName"
-            app:layout_constraintBottom_toBottomOf="@id/tvMemberName"/>
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrierTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="flexTitle,forwardIcon" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvRecentService"
@@ -49,8 +56,8 @@
             android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@id/tvPatientIDSeparator"
             app:layout_constraintHorizontal_weight="0.3"
-            app:layout_constraintStart_toStartOf="@id/tvMemberName"
-            app:layout_constraintTop_toBottomOf="@id/tvMemberName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barrierTitle"
             tools:visibility="visible" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -76,7 +83,7 @@
             android:textSize="@dimen/_16ssp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/tvRecentServiceSeparator"
-            app:layout_constraintEnd_toEndOf="@id/tvMemberName"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="0.6"
             app:layout_constraintStart_toEndOf="@id/tvRecentServiceSeparator"
             app:layout_constraintTop_toTopOf="@id/tvRecentServiceSeparator"
@@ -93,7 +100,7 @@
             android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@id/tvPatientIDSeparator"
             app:layout_constraintHorizontal_weight="0.3"
-            app:layout_constraintStart_toStartOf="@id/tvMemberName"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvRecentService"
             tools:visibility="visible" />
 
@@ -120,7 +127,7 @@
             android:textSize="@dimen/_16ssp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/tvRecentServiceDateSeparator"
-            app:layout_constraintEnd_toEndOf="@id/tvMemberName"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="0.6"
             app:layout_constraintStart_toEndOf="@id/tvRecentServiceDateSeparator"
             app:layout_constraintTop_toTopOf="@id/tvRecentServiceDateSeparator"
@@ -136,7 +143,7 @@
             android:textColor="@color/table_title"
             app:layout_constraintEnd_toStartOf="@id/tvPatientIDSeparator"
             app:layout_constraintHorizontal_weight="0.3"
-            app:layout_constraintStart_toStartOf="@id/tvMemberName"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvRecentServiceDate" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -159,7 +166,7 @@
             android:gravity="start"
             android:layout_width="@dimen/_0dp"
             tools:text="Trug sensitive TB"
-            app:layout_constraintEnd_toEndOf="@id/tvMemberName"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="0.6"
             app:layout_constraintBottom_toBottomOf="@id/tvDiagnosisSeparator"
             app:layout_constraintStart_toEndOf="@id/tvDiagnosisSeparator"
@@ -174,7 +181,7 @@
             android:textColor="@color/table_title"
             app:layout_constraintEnd_toStartOf="@id/tvPatientIDSeparator"
             app:layout_constraintHorizontal_weight="0.3"
-            app:layout_constraintStart_toStartOf="@id/tvMemberName"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvDiagnosis" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -197,7 +204,7 @@
             android:gravity="start"
             tools:text="--"
             android:layout_width="@dimen/_0dp"
-            app:layout_constraintEnd_toEndOf="@id/tvMemberName"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="0.6"
             app:layout_constraintBottom_toBottomOf="@id/tvPatientIDLabel"
             app:layout_constraintStart_toEndOf="@id/tvPatientIDSeparator"
@@ -224,7 +231,7 @@
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/tvMemberName"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvContactTracingStatus">
 
             <androidx.appcompat.widget.AppCompatTextView

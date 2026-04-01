@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:clickable="false"
     android:focusable="false">
 
@@ -30,17 +31,46 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvCardHouseholdName"
                 style="@style/TextStyle_Bold_16_NoBG"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:drawableEnd="@drawable/ic_arrow_forward"
+                android:layout_marginEnd="@dimen/_8sdp"
                 android:ellipsize="end"
                 android:gravity="start"
                 android:maxLines="2"
-                android:text="Moho Household"
                 android:textColor="@color/secondary_black"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/forwardIcon"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Moho Household" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/flexTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:visibility="gone"
+                app:dividerDrawable="@drawable/divider_transparent_8"
+                app:flexWrap="wrap"
+                app:layout_constraintEnd_toStartOf="@id/forwardIcon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:showDivider="middle"
+                tools:visibility="visible" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/forwardIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_forward"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrierTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="flexTitle,tvCardHouseholdName,forwardIcon" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/startGuideline"
@@ -66,7 +96,7 @@
                 android:textColor="@color/charcoal_grey"
                 app:layout_constraintEnd_toStartOf="@id/startGuideline"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvCardHouseholdName" />
+                app:layout_constraintTop_toBottomOf="@+id/barrierTitle" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvLblHouseholdNoSeperator"
