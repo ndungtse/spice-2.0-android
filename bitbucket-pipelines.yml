@@ -25,7 +25,7 @@ pipelines:
       - step:
           name: Build Android App
           oidc: true
-          size: 2x
+          size: 4x
           caches:
             - gradle
             - gradle-wrapper
