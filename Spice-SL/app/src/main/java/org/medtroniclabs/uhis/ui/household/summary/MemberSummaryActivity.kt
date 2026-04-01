@@ -119,6 +119,7 @@ class MemberSummaryActivity : BaseActivity(), View.OnClickListener {
                 intent.putExtra(DefinedParams.HOUSEHOLD_ID, memberSummaryViewModel.householdId)
                 intent.putExtra(DefinedParams.MEMBER_ID, memberSummaryViewModel.memberId)
                 intent.putExtra(DefinedParams.DOB, memberSummaryViewModel.dateOfBirth)
+                intent.putExtra(DefinedParams.ENTRY_POINT, memberSummaryViewModel.entryPoint)
                 startActivity(intent)
             }
 

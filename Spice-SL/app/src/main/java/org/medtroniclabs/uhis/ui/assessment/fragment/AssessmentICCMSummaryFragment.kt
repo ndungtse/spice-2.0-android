@@ -47,6 +47,7 @@ import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.MenuConstants
+import org.medtroniclabs.uhis.ui.assessment.AssessmentActivity
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils.getNutritionStatus
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils.getValueOfKeyFromMap
@@ -88,8 +89,6 @@ import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.otherSigns
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import org.medtroniclabs.uhis.ui.cbs.fragment.CbsCallResultFragment
-import org.medtroniclabs.uhis.ui.household.HouseholdSearchActivity
-import org.medtroniclabs.uhis.ui.services.ServicesActivity
 
 class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -934,25 +933,11 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             )
         }
         if (viewModel.otherAssessmentDetails.isEmpty()) {
-            // Check if member is external (householdId is null or householdLocalId is 0)
-            val isExternalMember = viewModel.memberDetailsLiveData.value
-                ?.data
-                ?.householdId == null ||
-                viewModel.memberDetailsLiveData.value
-                    ?.data
-                    ?.householdLocalId == 0L
-
-            val intent = if (isExternalMember) {
-                Intent(requireActivity(), ServicesActivity::class.java).apply {
-                    putExtra("isExternalMember", true)
-                }
-            } else {
-                Intent(requireActivity(), HouseholdSearchActivity::class.java)
-            }
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-            requireActivity().finish()
+            val currentActivity = requireActivity()
             requireActivity().startBackgroundOfflineSync()
+            if (currentActivity is AssessmentActivity) {
+                currentActivity.finishSuccessFlow()
+            }
         } else {
             viewModel.updateOtherAssessmentDetails()
         }

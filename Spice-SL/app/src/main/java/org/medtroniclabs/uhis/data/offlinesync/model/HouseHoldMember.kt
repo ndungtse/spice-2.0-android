@@ -20,7 +20,7 @@ data class HouseHoldMember(
     @ColumnInfo("date_of_birth")
     val dateOfBirth: String,
     @ColumnInfo("phone_number")
-    val phoneNumber: String,
+    val phoneNumber: String?,
     @ColumnInfo("phone_number_category")
     var phoneNumberCategory: String? = "",
     @ColumnInfo("patient_id")

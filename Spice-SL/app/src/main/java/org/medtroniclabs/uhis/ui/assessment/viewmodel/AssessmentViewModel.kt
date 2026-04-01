@@ -151,6 +151,7 @@ class AssessmentViewModel @Inject constructor(
     var selectedHouseholdMemberId = -1L
     var memberFhirId: String? = null
     var selectedHouseholdId = -1L
+    var entryPoint: String? = null
     var followUpId: Long? = null
     val assessmentSaveLiveData = MutableLiveData<Resource<Pair<List<FormLayout>?, AssessmentEntity>>>()
     val assessmentHistoryResultLiveData = MutableLiveData<Resource<MemberAssessmentHistoryEntity>>()

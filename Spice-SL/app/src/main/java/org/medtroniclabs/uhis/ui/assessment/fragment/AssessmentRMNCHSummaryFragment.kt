@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.core.view.updateMarginsRelative
 import androidx.core.widget.addTextChangedListener
@@ -42,6 +43,7 @@ import org.medtroniclabs.uhis.formgeneration.utility.CustomSpinnerAdapterCustomL
 import org.medtroniclabs.uhis.formgeneration.utility.InformationLayoutFragment
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.MenuConstants
+import org.medtroniclabs.uhis.ui.assessment.AssessmentActivity
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
@@ -52,8 +54,6 @@ import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DEATH_OF_MOTHER
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.getValueFromMap
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import org.medtroniclabs.uhis.ui.cbs.activity.CbsActivity
-import org.medtroniclabs.uhis.ui.household.HouseholdSearchActivity
-import org.medtroniclabs.uhis.ui.services.ServicesActivity
 import java.util.Calendar
 import kotlin.collections.get
 
@@ -812,7 +812,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun handleDoneButtonClick() {
         viewModel.fetchCurrentLocation(requireContext())
-        if (binding.etNextFollowUpDate.visibility == View.VISIBLE && binding.etNextFollowUpDate.text.isNotEmpty()) {
+        if (binding.etNextFollowUpDate.isVisible && binding.etNextFollowUpDate.text.isNotEmpty()) {
             updateFollowUpDate(
                 binding.etNextFollowUpDate.text
                     .trim()
@@ -820,25 +820,11 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             )
         }
         if (viewModel.otherAssessmentDetails.isEmpty()) {
-            // Check if member is external (householdId is null or householdLocalId is 0)
-            val isExternalMember = viewModel.memberDetailsLiveData.value
-                ?.data
-                ?.householdId == null ||
-                viewModel.memberDetailsLiveData.value
-                    ?.data
-                    ?.householdLocalId == 0L
-
-            val intent = if (isExternalMember) {
-                Intent(requireActivity(), ServicesActivity::class.java).apply {
-                    putExtra("isExternalMember", true)
-                }
-            } else {
-                Intent(requireActivity(), HouseholdSearchActivity::class.java)
-            }
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-            requireActivity().finish()
+            val currentActivity = requireActivity()
             requireActivity().startBackgroundOfflineSync()
+            if (currentActivity is AssessmentActivity) {
+                currentActivity.finishSuccessFlow()
+            }
         } else {
             viewModel.updateOtherAssessmentDetails()
         }

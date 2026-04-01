@@ -673,7 +673,7 @@ class AssessmentActivity : BaseActivity() {
         startActivity(intent)
     }
 
-    private fun finishSuccessFlow() {
+    fun finishSuccessFlow() {
         val intent = if (viewModel.followUpId != null) {
             Intent(this, FollowUpMyPatientActivity::class.java)
         } else {
@@ -694,8 +694,9 @@ class AssessmentActivity : BaseActivity() {
                     ?.data
                     ?.householdLocalId
                 val isExternalMember = householdLocalId == null || householdLocalId == 0L
-
-                if (isExternalMember) {
+                if (viewModel.entryPoint == ServicesActivity.ENTRY_POINT_SERVICES) {
+                    Intent(this, ServicesActivity::class.java)
+                } else if (isExternalMember) {
                     Intent(this, ServicesActivity::class.java).apply {
                         putExtra("isExternalMember", true)
                     }
@@ -717,6 +718,7 @@ class AssessmentActivity : BaseActivity() {
         viewModel.memberFhirId = intent.getStringExtra(DefinedParams.FhirId)
         viewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
         viewModel.selectedHouseholdId = intent.getLongExtra(DefinedParams.HOUSEHOLD_ID, -1L)
+        viewModel.entryPoint = intent.getStringExtra(DefinedParams.ENTRY_POINT)
         val followUpId = intent.getLongExtra(DefinedParams.FOLLOW_UP_ID, -1L)
         if (followUpId != -1L) {
             viewModel.followUpId = followUpId

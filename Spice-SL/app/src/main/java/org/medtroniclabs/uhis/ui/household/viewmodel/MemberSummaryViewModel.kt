@@ -24,6 +24,8 @@ class MemberSummaryViewModel @Inject constructor(
         private set
     var dateOfBirth: String = ""
         private set
+    var entryPoint: String? = null
+        private set
 
     val memberDetails = MediatorLiveData<MemberAssessmentHistoryResponse?>()
 
@@ -31,6 +33,7 @@ class MemberSummaryViewModel @Inject constructor(
         householdId = intent.getLongExtra(DefinedParams.HOUSEHOLD_ID, -1)
         memberId = intent.getLongExtra(DefinedParams.MEMBER_ID, -1)
         dateOfBirth = intent.getStringExtra(DefinedParams.DOB) ?: ""
+        entryPoint = intent.getStringExtra(DefinedParams.ENTRY_POINT)
         fetchMemberDetails()
     }
 

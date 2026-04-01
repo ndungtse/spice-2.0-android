@@ -219,6 +219,7 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         intent.putExtra(DefinedParams.MENU_ID, menuId)
         intent.putExtra(DefinedParams.FhirId, getMemberReference())
         intent.putExtra(DefinedParams.ORIGIN, getOrigin())
+        intent.putExtra(DefinedParams.ENTRY_POINT, viewModel.entryPoint)
         workFlowName?.let { name ->
             intent.putExtra(WORKFLOW_NAME, name)
         }

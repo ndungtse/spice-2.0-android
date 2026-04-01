@@ -49,6 +49,7 @@ class AssessmentToolsActivity : BaseActivity() {
         toolsViewModel.selectedHouseholdMemberID = intent.getLongExtra(DefinedParams.MEMBER_ID, -1)
         toolsViewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
         toolsViewModel.followUpId = intent.getLongExtra(DefinedParams.FOLLOW_UP_ID, -1)
+        toolsViewModel.entryPoint = intent.getStringExtra(DefinedParams.ENTRY_POINT)
         val isDeepLink = intent.getBooleanExtra(DefinedParams.IsDeepLink, false)
         val bundle = Bundle()
         bundle.putString(DefinedParams.FhirId, intent.getStringExtra(DefinedParams.FhirId))

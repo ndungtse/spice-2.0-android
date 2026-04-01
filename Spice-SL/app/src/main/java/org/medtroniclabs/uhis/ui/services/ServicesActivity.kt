@@ -286,6 +286,15 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
         intent.putExtra(CommonDefinedParams.HOUSEHOLD_ID, houseHoldId)
         intent.putExtra(CommonDefinedParams.MEMBER_ID, item)
         intent.putExtra(CommonDefinedParams.DOB, dateOfBirth)
+        // Add entry point for navigation only if not external member,
+        // for external members navigation has been handled differently
+        if (!isExternalMember) {
+            intent.putExtra(CommonDefinedParams.ENTRY_POINT, ENTRY_POINT_SERVICES)
+        }
         startActivity(intent)
+    }
+
+    companion object {
+        const val ENTRY_POINT_SERVICES = "Services"
     }
 }
