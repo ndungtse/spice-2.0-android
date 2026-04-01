@@ -2,10 +2,8 @@ package org.medtroniclabs.uhis.ui.household.viewmodel
 
 import android.content.Intent
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.db.local.RoomHelper
 import org.medtroniclabs.uhis.db.response.MemberAssessmentHistoryResponse
@@ -40,11 +38,10 @@ class MemberSummaryViewModel @Inject constructor(
     /**
      * Fetches member details with assessment history from the DB
      */
-    private fun fetchMemberDetails() =
-        viewModelScope.launch(dispatcherIO) {
-            val source = roomHelper.getMemberWithAssessmentHistory(memberId)
-            memberDetails.addSource(source) { value ->
-                memberDetails.value = value
-            }
+    private fun fetchMemberDetails() {
+        val source = roomHelper.getMemberWithAssessmentHistory(memberId)
+        memberDetails.addSource(source) { value ->
+            memberDetails.value = value
         }
+    }
 }
