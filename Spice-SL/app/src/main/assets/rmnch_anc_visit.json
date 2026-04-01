@@ -409,7 +409,7 @@
                 {
                     "id": "random",
                     "name": "Random",
-                    "cultureValue": "রেন্ডম"
+                    "cultureValue": "র‍্যান্ডম"
                 }
             ]
         },
@@ -447,7 +447,7 @@
             "isMandatory": true,
             "isEnabled": true,
             "title": "Random",
-            "titleCulture": "রেন্ডম",
+            "titleCulture": "র‍্যান্ডম",
             "errorMessage": "Please enter a valid random blood sugar value",
             "visibility": "gone",
             "maxLength": 5,

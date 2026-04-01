@@ -1033,8 +1033,6 @@ class MetaRepository @Inject constructor(
         val daysFromLmp = getDayCountFromLMP(pregnancyDetail)
         if ((daysFromLmp != null && daysFromLmp >= 42) && (daysFromDelivery == null)) {
             return true
-        } else {
-            if (daysFromDelivery != null && daysFromDelivery <= 42) return true
         }
         return false
     }

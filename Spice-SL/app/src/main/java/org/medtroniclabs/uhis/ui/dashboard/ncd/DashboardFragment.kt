@@ -241,10 +241,10 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                     CARD_HIGH_RISK_PREGNANT_WOMEN,
                     getString(R.string.highrisk_pregnant_women),
                     it.highRiskPregnantWomenCount ?: 0,
-                    R.drawable.ic_rmnch_tool,
+                    R.drawable.ic_referred,
                 ),
             )
-            userDashboardList.add(DashboardCardItem(CARD_CHILD_VISIT, getString(R.string.child_visit), it.childVisitCount ?: 0, R.drawable.ic_rmnch_tool))
+            userDashboardList.add(DashboardCardItem(CARD_CHILD_VISIT, getString(R.string.child_visit), it.childVisitCount ?: 0, R.drawable.ic_child_under_5))
             userDashboardList.add(
                 DashboardCardItem(
                     CARD_HOUSEHOLD_REGISTERED,
@@ -293,6 +293,11 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                 GridLayoutManager(
                     requireContext(),
                     if (requireContext().isTablet()) 3 else 1,
+                    // when {
+                    //     resources.getBoolean(R.bool.isLargeTablet) -> 3
+                    //     resources.getBoolean(R.bool.isTablet) -> 2
+                    //     else -> 1
+                    // },
                 )
             adapter = UserDashboardAdapter(customize, userDashboardList) {
                 // Navigation from dashboard cards is intentionally disabled.

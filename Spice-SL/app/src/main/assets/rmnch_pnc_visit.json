@@ -472,7 +472,7 @@
                     "name": "Fasting"
                 },
                 {
-                    "cultureValue": "বা র‍্যান্ডম",
+                    "cultureValue": "র‍্যান্ডম",
                     "id": "random",
                     "name": "Random"
                 }
@@ -520,7 +520,7 @@
             "maxLength": 5,
             "orderId": 18,
             "title": "Random",
-            "titleCulture": "বা র‍্যান্ডম",
+            "titleCulture": "র‍্যান্ডম ",
             "unitMeasurement": "mmol/L",
             "viewType": "EditText",
             "visibility": "gone"
