@@ -52,9 +52,13 @@ android {
         val prodKeyPassword = envProperties["PROD_JKS_KEY_PASSWORD"].toString()
         val prodStorePassword = envProperties["PROD_JKS_STORE_PASSWORD"].toString()
 
-        val devKeyAlias = envProperties["STAGE_JKS_ALIAS"].toString()
-        val devKeyPassword = envProperties["STAGE_JKS_KEY_PASSWORD"].toString()
-        val devStorePassword = envProperties["STAGE_JKS_STORE_PASSWORD"].toString()
+        val stagingKeyAlias = envProperties["STAGE_JKS_ALIAS"].toString()
+        val stagingKeyPassword = envProperties["STAGE_JKS_KEY_PASSWORD"].toString()
+        val stagingStorePassword = envProperties["STAGE_JKS_STORE_PASSWORD"].toString()
+
+        val nonProdKeyAlias = envProperties["NON_PROD_JKS_ALIAS"].toString()
+        val nonProdKeyPassword = envProperties["NON_PROD_JKS_PASSWORD"].toString()
+        val nonProdStorePassword = envProperties["NON_PROD_JKS_STORE_PASSWORD"].toString()
 
         // Signing Key for Prod Release
         create("production") {
@@ -65,10 +69,17 @@ android {
         }
         // Signing Key for Staging Release
         create("staging") {
-            keyAlias = devKeyAlias
-            keyPassword = devKeyPassword
-            storePassword = devStorePassword
+            keyAlias = stagingKeyAlias
+            keyPassword = stagingKeyPassword
+            storePassword = stagingStorePassword
             storeFile = file("uhis_staging.jks")
+        }
+        // Signing key for Dev/QA
+        create("nonProd") {
+            keyAlias = nonProdKeyAlias
+            keyPassword = nonProdKeyPassword
+            storePassword = nonProdStorePassword
+            storeFile = file("uhis_non_prod.jks")
         }
     }
 
@@ -78,11 +89,13 @@ android {
             dimension = "version"
 //            applicationIdSuffix = ".dev"
             resValue("string", "app_name", "UHIS Dev")
+            signingConfig = signingConfigs.getByName("nonProd")
         }
         create("qa") {
 //            applicationIdSuffix = ".dev"
             dimension = "version"
             resValue("string", "app_name", "UHIS QA")
+            signingConfig = signingConfigs.getByName("nonProd")
         }
         create("staging") {
             dimension = "version"
@@ -111,7 +124,6 @@ android {
 
     buildTypes {
         debug {
-            signingConfig = signingConfigs.getByName("debug")
             isDebuggable = true
             applicationVariants.all {
                 when (productFlavors[0].name) {
