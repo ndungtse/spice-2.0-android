@@ -27,8 +27,8 @@ android {
         applicationId = "org.medtroniclabs.uhis"
         minSdk = 23
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.0.0"
+        versionCode = 8
+        versionName = "1.0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
         missingDimensionStrategy("version", "production")
@@ -61,7 +61,7 @@ android {
             keyAlias = prodKeyAlias
             keyPassword = prodKeyPassword
             storePassword = prodStorePassword
-            storeFile = file("spice_prod.jks")
+            storeFile = file("uhis_production.jks")
         }
         // Signing Key for Staging Release
         create("staging") {
