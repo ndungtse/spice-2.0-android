@@ -2,8 +2,6 @@ package org.medtroniclabs.uhis.di
 
 import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import dagger.Module
 import dagger.Provides
@@ -114,7 +112,8 @@ object AppModule {
                 ).header("client", AppConstants.CLIENT_CONSTANT)
                 .header("organizationId", SecuredPreference.getOrganizationFhirId())
                 .header("tenantId", SecuredPreference.getTenantId().toString())
-                .header("App-Version", getAppPackageInfo())
+                .header("App-Version", getAppVersionName())
+                .header("App-Version-Code", getAppVersionCode().toString())
 
             SecuredPreference
                 .getString(SecuredPreference.EnvironmentKey.TENANT_ID.toString())
@@ -133,20 +132,6 @@ object AppModule {
             }
             return response
         }
-
-        private fun isNetworkAvailable(): Boolean {
-            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-            val network = connectivityManager.activeNetwork ?: return false
-            val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
-
-            return when {
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-                else -> false
-            }
-        }
     }
 
     private fun redirectLogin(context: Context) {
@@ -157,10 +142,7 @@ object AppModule {
     }
 
     @Provides
-    fun provideBaseUrl(): String {
-        // return BaseUrlProvider.dynamicURL()
-        return BuildConfig.API_BASE_URL
-    }
+    fun provideBaseUrl(): String = BuildConfig.API_BASE_URL
 
     @Singleton
     @Provides
@@ -275,7 +257,9 @@ object AppModule {
     @Provides
     fun provideFrequencyDAO(db: SpiceDataBase): FrequencyDAO = db.frequencyDao()
 
-    private fun getAppPackageInfo(): String = BuildConfig.VERSION_NAME
+    private fun getAppVersionName(): String = BuildConfig.VERSION_NAME
+
+    private fun getAppVersionCode(): Int = BuildConfig.VERSION_CODE
 
     // NCD WorkFlow
     @Singleton
