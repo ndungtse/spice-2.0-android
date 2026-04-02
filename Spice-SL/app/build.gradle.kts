@@ -87,13 +87,13 @@ android {
     productFlavors {
         create("dev") {
             dimension = "version"
-//            applicationIdSuffix = ".dev"
+            applicationIdSuffix = ".dev"
             resValue("string", "app_name", "UHIS Dev")
             signingConfig = signingConfigs.getByName("nonProd")
         }
         create("qa") {
-//            applicationIdSuffix = ".dev"
             dimension = "version"
+            applicationIdSuffix = ".dev"
             resValue("string", "app_name", "UHIS QA")
             signingConfig = signingConfigs.getByName("nonProd")
         }

@@ -26,6 +26,25 @@
         },
         {
             "client_info": {
+                "mobilesdk_app_id": "1:142060141576:android:ab12e46061e199a42b65bd",
+                "android_client_info": {
+                    "package_name": "org.medtroniclabs.uhis.dev"
+                }
+            },
+            "oauth_client": [],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyDOscFmFewTw20KR3enzzoEnisROnznWrI"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": []
+                }
+            }
+        },
+        {
+            "client_info": {
                 "mobilesdk_app_id": "1:142060141576:android:3d4f1dcffd10bd142b65bd",
                 "android_client_info": {
                     "package_name": "org.medtroniclabs.uhis.staging"
