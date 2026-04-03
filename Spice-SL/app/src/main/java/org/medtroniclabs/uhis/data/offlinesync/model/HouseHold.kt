@@ -75,10 +75,12 @@ data class HouseHold(
             householdHeadOccupation = this.householdHeadOccupation,
             otherOccupation = this.otherOccupation,
         ).apply {
+            val newCreateAt = if (this@HouseHold.createdAt == null || this@HouseHold.createdAt == 0L) System.currentTimeMillis() else this@HouseHold.createdAt
+            val newUpdatedAt = if (this@HouseHold.updatedAt == null || this@HouseHold.updatedAt < newCreateAt) newCreateAt else this@HouseHold.updatedAt
             fhirId = this@HouseHold.id.toString()
             sync_status = status
-            createdAt = this@HouseHold.createdAt
-            updatedAt = this@HouseHold.updatedAt
+            createdAt = newCreateAt
+            updatedAt = newUpdatedAt
         }
 
     private fun toRegularCase(sentence: String?): String =

@@ -206,16 +206,23 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                 DashboardCardItem(
                     CARD_PREGNANT_WOMEN_REGISTRATION,
                     getString(R.string.pregnant_women_registration),
-                    it.pregnantWomenRegistrationCount ?: 0,
+                    it.pregnantWomenRegistrationCount,
                     R.drawable.ic_rmnch_tool,
                 ),
             )
-            userDashboardList.add(DashboardCardItem(CARD_ANC, getString(R.string.anc_dashboard), it.ancCount ?: 0, R.drawable.ic_rmnch_tool))
+            userDashboardList.add(
+                DashboardCardItem(
+                    CARD_ANC,
+                    getString(R.string.anc_dashboard),
+                    it.ancCount,
+                    R.drawable.ic_rmnch_tool,
+                ),
+            )
             userDashboardList.add(
                 DashboardCardItem(
                     CARD_PW_IDENTIFIED_4_MONTHS_ANC,
                     getString(R.string.pw_identified_first_4_months_received_anc),
-                    it.pwIdentifiedFirst4MonthsWithAncCount ?: 0,
+                    it.pwIdentifiedFirst4MonthsWithAncCount,
                     R.drawable.ic_rmnch_tool,
                 ),
             )
@@ -223,7 +230,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                 DashboardCardItem(
                     CARD_ANC_3_PLUS,
                     getString(R.string.anc_3_plus_services),
-                    it.anc3PlusCount ?: 0,
+                    it.anc3PlusCount,
                     R.drawable.ic_rmnch_tool,
                 ),
             )
@@ -231,25 +238,39 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                 DashboardCardItem(
                     CARD_PREGNANCY_OUTCOME,
                     getString(R.string.pregnancy_outcome_dashboard),
-                    it.pregnancyOutcomeCount ?: 0,
+                    it.pregnancyOutcomeCount,
                     R.drawable.ic_rmnch_tool,
                 ),
             )
-            userDashboardList.add(DashboardCardItem(CARD_PNC, getString(R.string.pnc_dashboard), it.pncCount ?: 0, R.drawable.ic_rmnch_tool))
+            userDashboardList.add(
+                DashboardCardItem(
+                    CARD_PNC,
+                    getString(R.string.pnc_dashboard),
+                    it.pncCount,
+                    R.drawable.ic_rmnch_tool,
+                ),
+            )
             userDashboardList.add(
                 DashboardCardItem(
                     CARD_HIGH_RISK_PREGNANT_WOMEN,
                     getString(R.string.highrisk_pregnant_women),
-                    it.highRiskPregnantWomenCount ?: 0,
+                    it.highRiskPregnantWomenCount,
                     R.drawable.ic_referred,
                 ),
             )
-            userDashboardList.add(DashboardCardItem(CARD_CHILD_VISIT, getString(R.string.child_visit), it.childVisitCount ?: 0, R.drawable.ic_child_under_5))
+            userDashboardList.add(
+                DashboardCardItem(
+                    CARD_CHILD_VISIT,
+                    getString(R.string.child_visit),
+                    it.childVisitCount,
+                    R.drawable.ic_child_under_5,
+                ),
+            )
             userDashboardList.add(
                 DashboardCardItem(
                     CARD_HOUSEHOLD_REGISTERED,
                     getString(R.string.household_registered),
-                    it.householdRegisteredCount ?: 0,
+                    it.householdRegisteredCount,
                     R.drawable.ic_registration,
                 ),
             )
@@ -257,7 +278,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                 DashboardCardItem(
                     CARD_FAMILY_PLANNING,
                     getString(R.string.family_planning_dashboard),
-                    it.familyPlanningCount ?: 0,
+                    it.familyPlanningCount,
                     R.drawable.ic_family_planning,
                 ),
             )
@@ -362,7 +383,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         if (fetchDates == false) {
             val selectedItem = cgCalender.getSelectedTags()
             if (selectedItem.isNotEmpty()) {
-                (selectedItem[0] as? ChipViewItemModel)?.let { model ->
+                selectedItem[0].let { model ->
                     if (model.name == getString(R.string.customize)) {
                         showDatePickers()
                     } else {
@@ -436,7 +457,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.etFromDate.id -> {
-                showDatePickerDialog(true, binding.etFromDate.toString())
+                showDatePickerDialog(true, binding.etFromDate.text.toString())
             }
 
             binding.etToDate.id -> {

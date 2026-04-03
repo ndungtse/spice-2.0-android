@@ -15,6 +15,7 @@ import org.medtroniclabs.uhis.data.model.ChipViewItemModel
 import org.medtroniclabs.uhis.di.IoDispatcher
 import org.medtroniclabs.uhis.model.household.HouseHoldFilterUiData
 import org.medtroniclabs.uhis.network.resource.Resource
+import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.repo.HouseHoldRepository
 import org.medtroniclabs.uhis.ui.BaseViewModel
 import org.medtroniclabs.uhis.ui.boarding.repo.MetaRepository
@@ -45,7 +46,7 @@ class NCDDashBoardViewModel @Inject constructor(
             )
             // Use local dashboard counts from MemberAssessmentHistory instead of API
             val local = dashboardLocalRepository.getLocalDashboardDetails(request)
-            userDashboardDetails.postValue(Resource(state = org.medtroniclabs.uhis.network.resource.ResourceState.SUCCESS, data = local))
+            userDashboardDetails.postValue(Resource(state = ResourceState.SUCCESS, data = local))
         }
     }
 

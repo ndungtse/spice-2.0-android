@@ -113,9 +113,23 @@ data class HouseHoldMember(
             maritalStatus = this.maritalStatus,
             disability = this.disability,
         ).apply {
+            val newCreateAt = if (this@HouseHoldMember.createdAt == null ||
+                this@HouseHoldMember.createdAt == 0L
+            ) {
+                System.currentTimeMillis()
+            } else {
+                this@HouseHoldMember.createdAt
+            }
+            val newUpdatedAt = if (this@HouseHoldMember.updatedAt == null ||
+                this@HouseHoldMember.updatedAt < newCreateAt
+            ) {
+                newCreateAt
+            } else {
+                this@HouseHoldMember.updatedAt
+            }
             fhirId = this@HouseHoldMember.id.toString()
             sync_status = status
-            createdAt = this@HouseHoldMember.createdAt
-            updatedAt = this@HouseHoldMember.updatedAt
+            createdAt = newCreateAt
+            updatedAt = newUpdatedAt
         }
 }

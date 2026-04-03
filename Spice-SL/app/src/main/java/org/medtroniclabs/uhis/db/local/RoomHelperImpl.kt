@@ -406,13 +406,12 @@ class RoomHelperImpl @Inject constructor(
             null
         }
 
-    override suspend fun getHouseholdMemberIdByFhirId(fhirId: String?): Long? {
-        return if (fhirId != null) {
+    override suspend fun getHouseholdMemberIdByFhirId(fhirId: String?): Long? =
+        if (fhirId != null) {
             memberDAO.getHouseholdMemberIdByFhirId(fhirId)
         } else {
-            return null
+            null
         }
-    }
 
     override suspend fun getExaminationsComplaintByType(type: String): List<MedicalReviewMetaItems> =
         examinationsComplaintsDAO.getExaminationsComplaintByType(type)
@@ -590,13 +589,13 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun updateOnTreatmentStatus(
         id: Long,
         followUp: FollowUp,
-        updateAt: Long,
+        updatedAt: Long,
     ) {
         followUpDao.updateOnTreatmentStatus(
             id,
             followUp.memberId,
             followUp.type,
-            updateAt,
+            updatedAt,
             followUp.encounterType,
             followUp.reason,
         )
@@ -885,8 +884,8 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getSymptomList(): List<SignsAndSymptomsEntity> = assessmentDAO.getSymptomList()
 
-    override suspend fun saveAssessmentInformation(assessmentOfflineEntity: AssessmentNCDEntity): AssessmentNCDEntity {
-        val id = assessmentDAO.saveAssessmentInformation(assessmentOfflineEntity)
+    override suspend fun saveAssessmentInformation(assessmentEntity: AssessmentNCDEntity): AssessmentNCDEntity {
+        val id = assessmentDAO.saveAssessmentInformation(assessmentEntity)
         return assessmentDAO.getAssessmentById(id)
     }
 
@@ -1258,7 +1257,7 @@ class RoomHelperImpl @Inject constructor(
         endDate: String?,
         ssIds: List<Long>,
         subVillageIds: List<Long>,
-    ): org.medtroniclabs.uhis.db.response.DashboardCountsRow? {
+    ): DashboardCountsRow {
         val base = memberAssessmentHistoryDao.getDashboardCounts(
             startDate,
             endDate,
@@ -1283,39 +1282,35 @@ class RoomHelperImpl @Inject constructor(
             subVillageIds,
             subVillageIds.size,
         )
-        return if (base != null) {
-            base.copy(
-                householdRegisteredCount = hhCount,
-                pwIdentifiedFirst4MonthsWithAncCount = maternal?.pwIdentifiedFirst4MonthsWithAncCount ?: 0,
-                anc3PlusCount = maternal?.anc3PlusCount ?: 0,
-                highRiskPregnantWomenCount = maternal?.highRiskPregnantWomenCount ?: 0,
-            )
-        } else {
-            DashboardCountsRow(
-                screened = 0,
-                referred = 0,
-                registered = 0,
-                assessed = 0,
-                dispensed = 0,
-                investigated = 0,
-                nutritionistLifestyleCount = 0,
-                psychologicalNotesCount = 0,
-                familyPlanningCount = 0,
-                pregnantWomenRegistrationCount = 0,
-                pregnancyOutcomeCount = 0,
-                ancCount = 0,
-                pncCount = 0,
-                childVisitCount = 0,
-                tbAssessmentCount = 0,
-                tbContactTracingCount = 0,
-                eyeCareCount = 0,
-                cataractCount = 0,
-                householdRegisteredCount = hhCount,
-                pwIdentifiedFirst4MonthsWithAncCount = maternal?.pwIdentifiedFirst4MonthsWithAncCount ?: 0,
-                anc3PlusCount = maternal?.anc3PlusCount ?: 0,
-                highRiskPregnantWomenCount = maternal?.highRiskPregnantWomenCount ?: 0,
-            )
-        }
+        return base?.copy(
+            householdRegisteredCount = hhCount,
+            pwIdentifiedFirst4MonthsWithAncCount = maternal?.pwIdentifiedFirst4MonthsWithAncCount ?: 0,
+            anc3PlusCount = maternal?.anc3PlusCount ?: 0,
+            highRiskPregnantWomenCount = maternal?.highRiskPregnantWomenCount ?: 0,
+        ) ?: DashboardCountsRow(
+            screened = 0,
+            referred = 0,
+            registered = 0,
+            assessed = 0,
+            dispensed = 0,
+            investigated = 0,
+            nutritionistLifestyleCount = 0,
+            psychologicalNotesCount = 0,
+            familyPlanningCount = 0,
+            pregnantWomenRegistrationCount = 0,
+            pregnancyOutcomeCount = 0,
+            ancCount = 0,
+            pncCount = 0,
+            childVisitCount = 0,
+            tbAssessmentCount = 0,
+            tbContactTracingCount = 0,
+            eyeCareCount = 0,
+            cataractCount = 0,
+            householdRegisteredCount = hhCount,
+            pwIdentifiedFirst4MonthsWithAncCount = maternal?.pwIdentifiedFirst4MonthsWithAncCount ?: 0,
+            anc3PlusCount = maternal?.anc3PlusCount ?: 0,
+            highRiskPregnantWomenCount = maternal?.highRiskPregnantWomenCount ?: 0,
+        )
     }
 
     override suspend fun insertMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity) =

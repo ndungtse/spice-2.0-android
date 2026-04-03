@@ -69,7 +69,7 @@ interface AssessmentDAO {
     suspend fun getSymptomList(): List<SignsAndSymptomsEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveAssessmentInformation(assessmentOfflineEntity: AssessmentNCDEntity): Long
+    suspend fun saveAssessmentInformation(assessmentEntity: AssessmentNCDEntity): Long
 
     @Query("SELECT * FROM AssessmentNCDEntity WHERE id = :id")
     suspend fun getAssessmentById(id: Long): AssessmentNCDEntity

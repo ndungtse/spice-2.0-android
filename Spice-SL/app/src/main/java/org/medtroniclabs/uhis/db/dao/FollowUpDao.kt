@@ -73,14 +73,14 @@ interface FollowUpDao {
     )
 
     @Query(
-        "UPDATE FollowUp SET updatedAt = :updateAt, calledAt = :updateAt, syncStatus = :syncStatus WHERE memberId = :fhirId AND id != :id AND type = :type AND " +
+        "UPDATE FollowUp SET updatedAt = :updatedAt, calledAt = :updatedAt, syncStatus = :syncStatus WHERE memberId = :fhirId AND id != :id AND type = :type AND " +
             "CASE WHEN :type = 'HH_VISIT' THEN (encounterType = :encounterType AND reason= :reason) ELSE encounterType= :encounterType END",
     )
     suspend fun updateOnTreatmentStatus(
         id: Long,
         fhirId: String,
         type: String,
-        updateAt: Long,
+        updatedAt: Long,
         encounterType: String? = null,
         reason: String? = null,
         syncStatus: String = OfflineSyncStatus.NotSynced.name,

@@ -287,7 +287,7 @@ interface RoomHelper {
 
     suspend fun deleteExaminationsList(menuType: String)
 
-    suspend fun saveExaminationsList(diagnosisList: ArrayList<ExaminationListItems>)
+    suspend fun saveExaminationsList(examinationList: ArrayList<ExaminationListItems>)
 
     suspend fun insertLabourDelivery(symptomEntity: List<LabourDeliveryMetaEntity>)
 
@@ -424,7 +424,7 @@ interface RoomHelper {
 
     suspend fun deleteAllFrequencyList()
 
-    suspend fun saveFrequencyList(villageEntityList: List<FrequencyEntity>): List<Long>
+    suspend fun saveFrequencyList(frequencyList: List<FrequencyEntity>): List<Long>
 
     suspend fun saveUnitMetric(list: ArrayList<UnitMetricEntity>)
 
@@ -506,7 +506,7 @@ interface RoomHelper {
 
     suspend fun deleteMedicalCompliance()
 
-    suspend fun saveDistricts(counties: List<DistrictEntity>)
+    suspend fun saveDistricts(districts: List<DistrictEntity>)
 
     suspend fun getDistricts(countryId: Long): List<DistrictEntity>
 
@@ -593,7 +593,7 @@ interface RoomHelper {
 
     suspend fun getSymptomList(): List<SignsAndSymptomsEntity>
 
-    suspend fun saveAssessmentInformation(request: AssessmentNCDEntity): AssessmentNCDEntity
+    suspend fun saveAssessmentInformation(assessmentEntity: AssessmentNCDEntity): AssessmentNCDEntity
 
     suspend fun getAllAssessmentRecords(uploadStatus: Boolean): List<AssessmentNCDEntity>
 
@@ -888,7 +888,7 @@ interface RoomHelper {
         endDate: String?,
         ssIds: List<Long>,
         subVillageIds: List<Long>,
-    ): DashboardCountsRow?
+    ): DashboardCountsRow
 
     suspend fun insertMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity): Long
 
