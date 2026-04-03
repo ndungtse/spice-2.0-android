@@ -72,13 +72,13 @@ import org.medtroniclabs.uhis.ui.MenuConstants.ICCM_MENU_ID
 import org.medtroniclabs.uhis.ui.MenuConstants.PREGNANCY_OUTCOME
 import org.medtroniclabs.uhis.ui.MenuConstants.PREGNANT_WOMEN_PROFILE
 import org.medtroniclabs.uhis.ui.MenuConstants.TB_MENU_ID
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ANC
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.CHILD_MENU
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ChildHoodVisit
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.NeonatePatientId
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.NeonatePatientReferenceId
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PNC
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PNCNeonatal
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PNC_MOTHER_MENU
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PNC_NEONATE_KEY
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.visitNo
 import retrofit2.Response
 import timber.log.Timber
@@ -103,7 +103,7 @@ class OfflineSyncRepository @Inject constructor(
      */
     private suspend fun getPregnancyEpisodeId(entity: AssessmentDetails): String? {
         val assessmentType = entity.assessmentType
-        val assessmentTypes = listOf(PREGNANT_WOMEN_PROFILE, PREGNANCY_OUTCOME, RMNCH.ANC, RMNCH.PNC, ChildHoodVisit)
+        val assessmentTypes = listOf(PREGNANT_WOMEN_PROFILE, PREGNANCY_OUTCOME, ANC, PNC_MOTHER_MENU, CHILD_MENU)
         val isPregnancyRelated = assessmentTypes.any { it.equals(assessmentType, true) }
 
         return if (isPregnancyRelated) {
@@ -174,12 +174,12 @@ class OfflineSyncRepository @Inject constructor(
 //        }
 
         // CBS changes for PNC Neonate
-        if (assessmentType == RMNCH.PNC_NEONATE_KEY.lowercase()) {
+        if (assessmentType == PNC_NEONATE_KEY.lowercase()) {
             updateCbsForRMNCH(assessmentDetails, followUpDetails, PNCNeonatal)
         }
 
         // CBS changes for Childhood Visit
-        if (assessmentType == RMNCH.CHILD_MENU.lowercase()) {
+        if (assessmentType == CHILD_MENU.lowercase()) {
             updateCbsForRMNCH(assessmentDetails, followUpDetails, ChildHoodVisit)
         }
 
@@ -209,10 +209,10 @@ class OfflineSyncRepository @Inject constructor(
         assessmentDetails: JsonElement,
     ): Long? =
         when (assessmentType.lowercase()) {
-            RMNCH.ANC.lowercase() -> getRMNCHVisitNumber(ANC, assessmentDetails)
-            RMNCH.PNC_MOTHER_MENU.lowercase() -> getRMNCHVisitNumber(PNC, assessmentDetails)
-            RMNCH.PNC_NEONATE_KEY.lowercase() -> getRMNCHVisitNumber(PNCNeonatal, assessmentDetails)
-            RMNCH.CHILD_MENU.lowercase() -> getRMNCHVisitNumber(ChildHoodVisit, assessmentDetails)
+            ANC.lowercase() -> getRMNCHVisitNumber(ANC, assessmentDetails)
+            PNC_MOTHER_MENU.lowercase() -> getRMNCHVisitNumber(PNC, assessmentDetails)
+            PNC_NEONATE_KEY.lowercase() -> getRMNCHVisitNumber(PNCNeonatal, assessmentDetails)
+            CHILD_MENU.lowercase() -> getRMNCHVisitNumber(ChildHoodVisit, assessmentDetails)
             else -> null
         }
 
@@ -225,18 +225,6 @@ class OfflineSyncRepository @Inject constructor(
             .asJsonObject
             .get(visitNo)
             .asLong
-
-    private fun getRMNCHPNCVisitNumber(
-        key: String,
-        assessmentDetails: JsonElement,
-        neonatePatientId: String?,
-        neonatePatientReferenceId: Long?,
-    ): Long {
-        val assessmentObject = assessmentDetails.asJsonObject.get(key).asJsonObject
-        assessmentObject.addProperty(NeonatePatientId, neonatePatientId)
-        assessmentObject.addProperty(NeonatePatientReferenceId, neonatePatientReferenceId)
-        return assessmentObject.get(visitNo).asLong
-    }
 
     suspend fun getSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse> = apiHelper.getOfflineSyncStatus(request)
 
@@ -270,7 +258,7 @@ class OfflineSyncRepository @Inject constructor(
             // Fetch Synced Data
             val isInitialDataSuccess = fetchSyncedData(villageIds, null)
 
-            // Need to check this to be added for downloading error and inprogress data
+            // Need to check this to be added for downloading error and in progress data
             // if (!fetchUnSyncedData()) {
             //  liveData.postError("Something went wrong")
             // }
@@ -636,7 +624,7 @@ class OfflineSyncRepository @Inject constructor(
         villageList: List<Long>,
         lastSyncedAt: String? = null,
     ): Response<ResponseBody> {
-        // Getting village name only. For mapping I have used following code
+        // Getting village name only. For mapping, I have used following code
         val request = RequestAllEntities(villageList, lastSyncedAt)
         return apiHelper.fetchSyncedData(request)
     }
@@ -686,7 +674,7 @@ class OfflineSyncRepository @Inject constructor(
                 deleteAllSyncedImages()
             }
             true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }
@@ -875,7 +863,7 @@ class OfflineSyncRepository @Inject constructor(
         // Construct Rx Buddy details
         // 1. Get Un Synced Rx Buddy Register
         // 2. Construct Register object with member id / new rx buddy details
-        // 3. Get Un Synced Rx Buddy Followup with Rx Buddy Id
+        // 3. Get Un Synced Rx Buddy Followup with Rx Buddy ID
         val rxBuddies = mutableListOf<RxBuddy>()
         val rxBuddyRegisters = roomHelper.getAllUnSyncedRxBuddyRegister()
         for (rx in rxBuddyRegisters) {
@@ -949,7 +937,7 @@ class OfflineSyncRepository @Inject constructor(
      * 2. List size == 0 -> There are no local changes to post
      * 3. List is null -> Post un-synced local changes and API is failed
      * */
-    private suspend fun postOfflineUnSyncedChanges(syncMode: String): List<String>? {
+    private suspend fun postOfflineUnSyncedChanges(syncMode: String): List<String> {
         val householdIds = mutableListOf<String>()
         val householdMemberIds = mutableListOf<String>()
         val assessmentIds = mutableListOf<String>()
@@ -1114,7 +1102,7 @@ class OfflineSyncRepository @Inject constructor(
         }
     }
 
-    suspend fun postOfflineUnSyncedChangesWithMutex(syncMode: String): List<String>? {
+    suspend fun postOfflineUnSyncedChangesWithMutex(syncMode: String): List<String> {
         mutex.withLock {
             return postOfflineUnSyncedChanges(syncMode)
         }

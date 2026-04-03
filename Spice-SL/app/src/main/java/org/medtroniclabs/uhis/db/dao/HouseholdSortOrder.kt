@@ -1,19 +1,21 @@
 package org.medtroniclabs.uhis.db.dao
 
+import org.medtroniclabs.uhis.db.response.HouseHoldEntityWithLastActivity
+
 /**
  * Controls how [HouseholdDAO.getHouseholdsWithLastActivity] orders its results.
  *
  * All directions are **descending** (most recent / largest value first).
  */
 enum class HouseholdSortOrder {
-    /** Sort by [HouseHoldEntityWithMemberCount.householdNo] DESC */
+    /** Sort by [HouseHoldEntityWithLastActivity.householdNo] DESC */
     HOUSEHOLD_NO,
 
-    /** Sort by [HouseHoldEntityWithMemberCount.lastActivityAt] DESC
+    /** Sort by [HouseHoldEntityWithLastActivity.lastActivityAt] DESC
      *  (latest member registration OR assessment, whichever is newer) */
     LAST_VISIT_DATE,
 
-    /** Sort by [HouseHoldEntityWithMemberCount.lastMemberRegisteredAt] DESC
+    /** Sort by [HouseHoldEntityWithLastActivity.lastMemberRegisteredAt] DESC
      *  (only household-member registrations) */
     LAST_MEMBER_REGISTRATION,
 

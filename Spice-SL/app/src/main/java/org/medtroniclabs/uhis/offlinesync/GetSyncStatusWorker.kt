@@ -76,7 +76,7 @@ class GetSyncStatusWorker @AssistedInject constructor(
                     }*/
 
                     // Upload images here
-                    offlineSyncRepository.uploadAllSignatures()
+//                    offlineSyncRepository.uploadAllSignatures()
 
                     val villageIds = roomHelper.getAllVillageIds()
                     val lastSyncedAt =

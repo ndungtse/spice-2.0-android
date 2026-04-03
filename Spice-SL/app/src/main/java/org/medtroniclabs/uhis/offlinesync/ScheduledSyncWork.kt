@@ -170,7 +170,7 @@ class ScheduledSyncWork @AssistedInject constructor(
             }*/
 
             // Upload images here
-            offlineSyncRepository.uploadAllSignatures()
+//            offlineSyncRepository.uploadAllSignatures()
         }
 
         return true
