@@ -352,16 +352,20 @@ class AssessmentPregnantWomenRegistrationFragment :
         resultMap: HashMap<String, Any>?,
         serverData: List<FormLayout>?,
     ) {
-        resultMap?.let {
-            val result = serverData?.let {
-                FormResultComposer().groupValues(
-                    serverData = it,
-                    resultMap,
-                    MenuConstants.PREGNANT_WOMEN_PROFILE,
-                )
-            }
-            result?.second?.let {
-                viewModel.saveAssessment(serverData, it, null, viewModel.menuId)
+        if (viewModel.isPregnancyTooEarlyToAccess) {
+            viewModel.updatePregnantWomanAssessmentDetails()
+        } else {
+            resultMap?.let {
+                val result = serverData?.let {
+                    FormResultComposer().groupValues(
+                        serverData = it,
+                        resultMap,
+                        MenuConstants.PREGNANT_WOMEN_PROFILE,
+                    )
+                }
+                result?.second?.let {
+                    viewModel.saveAssessment(serverData, it, null, viewModel.menuId)
+                }
             }
         }
         viewModel.setAnalyticsData(
@@ -406,13 +410,8 @@ class AssessmentPregnantWomenRegistrationFragment :
             binding.btnSubmit.id -> {
                 withLocationCheck({
                     viewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
-                    // Since it is early pregnancy no need to access anything. Just stop the flow
-                    if (viewModel.isPregnancyTooEarlyToAccess) {
-                        viewModel.updatePregnantWomanAssessmentDetails()
-                    } else {
-                        viewModel.fetchCurrentLocation(requireContext())
-                        formGenerator.formSubmitAction(view)
-                    }
+                    viewModel.fetchCurrentLocation(requireContext())
+                    formGenerator.formSubmitAction(view)
                 })
             }
         }
