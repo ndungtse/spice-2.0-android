@@ -168,22 +168,22 @@ class FormGenerator(
 ) : ContextWrapper(context) {
     private var serverData: List<FormLayout>? = null
     val rootSuffix = AssessmentDefinedParams.rootSuffix
-    val titleSuffix = "titleTextView"
-    private val errorSuffix = "errorMessageView"
+    val titleSuffix = AssessmentDefinedParams.TITLE_SUFFIX
+    private val errorSuffix = AssessmentDefinedParams.errorSuffix
     private val resultHashMap = HashMap<String, Any>()
-    private val tvKey = "summaryKey"
-    private val tvValue = "summaryValue"
-    private val rootSummary = "summaryRoot"
+    private val tvKey = AssessmentDefinedParams.summaryKey
+    private val tvValue = AssessmentDefinedParams.SUMMARY_VALUE
+    private val rootSummary = AssessmentDefinedParams.SUMMARY_ROOT
     private var editScreen: Boolean? = null
     private var focusNeeded: View? = null
-    private val infoSuffix = "information"
-    private val infoSuffixText = "informationSuffixText"
+    private val infoSuffix = DefinedParams.Information
+    private val infoSuffixText = AssessmentDefinedParams.infoSuffixText
     private val generateNationalIdSuffix = "generateNationalId"
     private val diastolicSuffix = "DiastolicSuffix"
     private val systolicSuffix = "SystolicSuffix"
     private val pulseSuffix = "PulseSuffix"
-    val lastMealTypeMeridiem = "Meridiem"
-    val lastMealTypeDateSuffix = "Date"
+    val lastMealTypeMeridiem = Screening.lastMealTypeMeridiem
+    val lastMealTypeDateSuffix = Screening.lastMealTypeDateSuffix
     private var mentalHealthQuestions: HashMap<String, ArrayList<MentalHealthOption>>? = null
     private var mentalHealthEditList: ArrayList<Map<String, Any>>? = null
 
@@ -2470,7 +2470,7 @@ class FormGenerator(
         hideError(id)
     }
 
-    private fun showError(
+    fun showError(
         id: String,
         message: String,
     ) {
@@ -2481,7 +2481,7 @@ class FormGenerator(
         }
     }
 
-    private fun hideError(id: String) {
+    fun hideError(id: String) {
         val errorView = getViewByTag(id + errorSuffix)
         errorView?.visibility = View.GONE
     }

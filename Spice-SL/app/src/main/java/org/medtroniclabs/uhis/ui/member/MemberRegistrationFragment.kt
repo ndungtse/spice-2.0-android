@@ -3,15 +3,17 @@ package org.medtroniclabs.uhis.ui.member
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
+import android.text.InputFilter
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.CheckBox
+import android.widget.EditText
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatSpinner
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
+import androidx.core.text.isDigitsOnly
 import androidx.core.view.isGone
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
@@ -46,20 +48,16 @@ import org.medtroniclabs.uhis.databinding.FragmentMemberRegistrationBinding
 import org.medtroniclabs.uhis.db.entity.HouseholdMemberEntity
 import org.medtroniclabs.uhis.db.entity.VillageEntity
 import org.medtroniclabs.uhis.formgeneration.FormGenerator
-import org.medtroniclabs.uhis.formgeneration.config.DefinedParams.titleSuffix
 import org.medtroniclabs.uhis.formgeneration.extension.markMandatory
 import org.medtroniclabs.uhis.formgeneration.listener.FormEventListener
 import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.model.FormResponse
-import org.medtroniclabs.uhis.formgeneration.utility.CustomSpinnerAdapter
 import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.villageId
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration.isValidMinAge
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.BaseFragment
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.DateOfBirth
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.errorSuffix
 import org.medtroniclabs.uhis.ui.dialog.SuccessDialogFragment
 import org.medtroniclabs.uhis.ui.home.AssessmentToolsActivity
 import org.medtroniclabs.uhis.ui.household.HouseholdActivity
@@ -230,7 +228,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                             (activity as? HouseholdActivity)?.setTitle(getString(R.string.household_head_registration))
 
                             // Update name field label to "Household head name"
-                            formGenerator.getViewByTag(MemberRegistration.NAME + titleSuffix)?.let { view ->
+                            formGenerator.getViewByTag(MemberRegistration.NAME + formGenerator.titleSuffix)?.let { view ->
                                 if (view is TextView) {
                                     view.text = getString(R.string.household_head_name)
                                     // Check if the field is mandatory and add asterisk if needed
@@ -247,41 +245,6 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                                     view.isChecked = true
                                     // Add the value to the result map
                                     formGenerator.getResultMap()[MemberRegistration.IS_HOUSEHOLD_HEAD] = true
-                                }
-                            }
-                        }
-
-                        // Set up id_type listener to enable national_id
-                        formGenerator.getViewByTag(MemberRegistration.ID_TYPE)?.let { view ->
-                            if (view is AppCompatSpinner) {
-                                val existingListener = view.onItemSelectedListener
-                                view.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                                    override fun onItemSelected(
-                                        parent: AdapterView<*>?,
-                                        view: View?,
-                                        position: Int,
-                                        id: Long,
-                                    ) {
-                                        // Call existing listener first
-                                        existingListener?.onItemSelected(parent, view, position, id)
-
-                                        // Enable/disable national_id based on selection
-                                        val adapter = parent?.adapter
-                                        if (adapter is CustomSpinnerAdapter) {
-                                            val selectedItem = adapter.getData(position)
-                                            selectedItem?.let { item ->
-                                                val selectedId = item[org.medtroniclabs.uhis.formgeneration.config.DefinedParams.ID]
-                                                val isDefaultOption = selectedId == "-1" || selectedId == org.medtroniclabs.uhis.common.DefinedParams.DefaultID
-                                                formGenerator.getViewByTag(MemberRegistration.NATIONAL_ID)?.let { nationalIdView ->
-                                                    nationalIdView.isEnabled = !isDefaultOption
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                                        existingListener?.onNothingSelected(parent)
-                                    }
                                 }
                             }
                         }
@@ -491,9 +454,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                     memberRegistrationViewModel.isPhuWalkInsFlow == true,
                 )
             }
-            formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
-                visibility = View.GONE
-            }
+            formGenerator.hideError(MemberRegistration.DATE_OF_BIRTH)
             handleDob(details.dateOfBirth)
         }
         details.maritalStatus?.let {
@@ -546,11 +507,9 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled(),
         ) { map, id ->
-            if (id == DateOfBirth) {
+            if (id == MemberRegistration.DATE_OF_BIRTH) {
                 // This is AgeOrDob component - hide error (validation handled elsewhere)
-                formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
-                    visibility = View.GONE
-                }
+                formGenerator.hideError(id)
                 val dateOfBirth = map[id] as? String
                 handleDob(dateOfBirth)
             } else if (id == MemberRegistration.ID_GUARDIAN && formGenerator.isViewVisible(id) && formGenerator.isViewEnabled(id)) {
@@ -558,6 +517,27 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                 if (selectedId == MemberRegistration.ADD_GUARDIAN_ID) {
                     handleAddGuardian()
                 }
+            } else if (id == MemberRegistration.ID_TYPE) {
+                val selectedId = map[id] as? String
+                val nationalIdView = formGenerator.getViewByTag(MemberRegistration.NATIONAL_ID) as? EditText
+                nationalIdView?.let {
+                    if (MemberRegistration.IdType.NATIONAL_ID.value == selectedId) {
+                        nationalIdView.inputType = InputType.TYPE_CLASS_NUMBER
+                        val filters = nationalIdView.filters.toMutableList()
+                        filters.add(InputFilter.LengthFilter(MemberRegistration.MAX_LENGTH_NATIONAL_ID))
+                        nationalIdView.filters = filters.toTypedArray()
+                    } else {
+                        nationalIdView.inputType = InputType.TYPE_CLASS_TEXT
+                        val filters = nationalIdView.filters.toMutableList()
+                        filters.removeIf {
+                            it is InputFilter.LengthFilter
+                        }
+                        nationalIdView.filters = filters.toTypedArray()
+                    }
+                }
+            } else if (id == MemberRegistration.NATIONAL_ID) {
+                // This is national id component - hide error (validation handled elsewhere)
+                formGenerator.hideError(id)
             }
         }
     }
@@ -654,18 +634,6 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
     ) {
     }
 
-    private fun showInValidDob(message: String) {
-        formGenerator
-            .getViewByTag(DateOfBirth + errorSuffix)
-            ?.apply {
-                visibility = View.VISIBLE
-            }.takeIf { it is TextView }
-            ?.let { textView ->
-                (textView as TextView).text =
-                    message
-            }
-    }
-
     override fun onFormSubmit(
         resultMap: HashMap<String, Any>?,
         serverData: List<FormLayout>?,
@@ -677,8 +645,17 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                 memberRegistrationViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
             }
             // Hide Error message
-            formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
-                visibility = View.GONE
+            formGenerator.hideError(MemberRegistration.DATE_OF_BIRTH)
+
+            if (formGenerator.isViewVisible(MemberRegistration.NATIONAL_ID)) {
+                val nationalId = map[MemberRegistration.NATIONAL_ID] as? String
+                val idType = map[MemberRegistration.ID_TYPE] as? String
+                if (MemberRegistration.IdType.NATIONAL_ID.value == idType &&
+                    (nationalId == null || !nationalId.isDigitsOnly() || !MemberRegistration.NATIONAL_ID_LENGTH.contains(nationalId.length))
+                ) {
+                    formGenerator.showError(MemberRegistration.NATIONAL_ID, getString(R.string.national_id_validation))
+                    return
+                }
             }
 
             // Add member from medical review
@@ -721,7 +698,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             val memberDOB =
                 LocalDate.parse(dob, DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmssZZZZZ))
             if (!isValidMinAge(memberDOB)) {
-                showInValidDob(getString(R.string.age_validation_household_head, MemberRegistration.MIN_AGE_HH_HEAD))
+                formGenerator.showError(MemberRegistration.DATE_OF_BIRTH, getString(R.string.age_validation_household_head, MemberRegistration.MIN_AGE_HH_HEAD))
                 return
             }
 

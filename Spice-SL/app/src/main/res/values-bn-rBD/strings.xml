@@ -1622,5 +1622,6 @@
     <string name="preterm_birth">অকাল প্রসব</string>
     <string name="tb_assessment">টিবি মূল্যায়ন</string>
     <string name="tb_contact_tracing">টিবি সংস্পর্শ অনুসরণ</string>
+    <string name="national_id_validation">জাতীয় পরিচয়পত্র নম্বর অবশ্যই ১০, ১৩ অথবা ১৭ ডিজিটের হতে হবে</string>
 
 </resources>

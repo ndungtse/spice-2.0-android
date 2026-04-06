@@ -3,10 +3,14 @@ package org.medtroniclabs.uhis.ui.externalmember
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
+import android.text.InputFilter
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.appcompat.widget.AppCompatSpinner
+import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -44,8 +48,6 @@ import org.medtroniclabs.uhis.mappingkey.MemberRegistration.NAME
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.BaseFragment
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.DateOfBirth
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.errorSuffix
 import org.medtroniclabs.uhis.ui.dialog.SuccessDialogFragment
 import org.medtroniclabs.uhis.ui.home.AssessmentToolsActivity
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseRegistrationViewModel
@@ -99,12 +101,31 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
             this,
             binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled(),
-        ) { _, id ->
-            if (id == DateOfBirth) {
+        ) { map, id ->
+            if (id == MemberRegistration.DATE_OF_BIRTH) {
                 // This is AgeOrDob component - hide error (validation handled elsewhere)
-                formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
-                    visibility = View.GONE
+                formGenerator.hideError(id)
+            } else if (id == MemberRegistration.ID_TYPE) {
+                val selectedId = map[id] as? String
+                val nationalIdView = formGenerator.getViewByTag(MemberRegistration.NATIONAL_ID) as? EditText
+                nationalIdView?.let {
+                    if (MemberRegistration.IdType.NATIONAL_ID.value == selectedId) {
+                        nationalIdView.inputType = InputType.TYPE_CLASS_NUMBER
+                        val filters = nationalIdView.filters.toMutableList()
+                        filters.add(InputFilter.LengthFilter(MemberRegistration.MAX_LENGTH_NATIONAL_ID))
+                        nationalIdView.filters = filters.toTypedArray()
+                    } else {
+                        nationalIdView.inputType = InputType.TYPE_CLASS_TEXT
+                        val filters = nationalIdView.filters.toMutableList()
+                        filters.removeIf {
+                            it is InputFilter.LengthFilter
+                        }
+                        nationalIdView.filters = filters.toTypedArray()
+                    }
                 }
+            } else if (id == MemberRegistration.NATIONAL_ID) {
+                // This is national id component - hide error (validation handled elsewhere)
+                formGenerator.hideError(id)
             }
         }
     }
@@ -340,9 +361,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
         dateDob?.let { dob ->
             formGenerator.fillDetailsOnDatePickerSet(dob, false)
         }
-        formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
-            visibility = View.GONE
-        }
+        formGenerator.hideError(MemberRegistration.DATE_OF_BIRTH)
         memberRegistrationViewModel.memberDob = originalDobUtc
 
         // Marital status & disability
@@ -565,9 +584,16 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                 memberRegistrationViewModel.setUserJourney(AnalyticsDefinedParams.SUBMITBUTTONTRIGGERED)
             }
 
-            // Hide Error message
-            formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
-                visibility = View.GONE
+            formGenerator.hideError(MemberRegistration.DATE_OF_BIRTH)
+            if (formGenerator.isViewVisible(MemberRegistration.NATIONAL_ID)) {
+                val nationalId = map[MemberRegistration.NATIONAL_ID] as? String
+                val idType = map[MemberRegistration.ID_TYPE] as? String
+                if (MemberRegistration.IdType.NATIONAL_ID.value == idType &&
+                    (nationalId == null || !nationalId.isDigitsOnly() || !MemberRegistration.NATIONAL_ID_LENGTH.contains(nationalId.length))
+                ) {
+                    formGenerator.showError(MemberRegistration.NATIONAL_ID, getString(R.string.national_id_validation))
+                    return
+                }
             }
 
             // Register external member (householdId = null)

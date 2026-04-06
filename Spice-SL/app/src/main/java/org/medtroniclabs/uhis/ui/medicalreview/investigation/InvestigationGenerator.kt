@@ -54,6 +54,7 @@ import org.medtroniclabs.uhis.formgeneration.utility.CustomSpinnerAdapter
 import org.medtroniclabs.uhis.formgeneration.utility.DigitsInputFilter
 import org.medtroniclabs.uhis.model.LabTestResultModel
 import org.medtroniclabs.uhis.model.medicalreview.InvestigationModel
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import java.util.Calendar
 import kotlin.math.roundToInt
 
@@ -65,9 +66,9 @@ class InvestigationGenerator(
     val listener: InvestigationListener,
 ) : ContextWrapper(context) {
     private var serverData: List<InvestigationModel>? = null
-    private val rootSuffix = "rootView"
-    private val titleSuffix = "titleTextView"
-    private val errorSuffix = "errorMessageView"
+    private val rootSuffix = AssessmentDefinedParams.rootSuffix
+    private val titleSuffix = AssessmentDefinedParams.TITLE_SUFFIX
+    private val errorSuffix = AssessmentDefinedParams.errorSuffix
     private val unitSuffix = "_unit"
     private var Gender: String? = null
 
