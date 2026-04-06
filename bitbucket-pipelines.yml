@@ -7,7 +7,7 @@ definitions:
 
 pipelines:
   custom:
-    custom-build:
+    android-build:
       - variables:
           - name: FLAVOR
             default: dev
@@ -21,6 +21,11 @@ pipelines:
             allowed-values:
               - debug
               - release
+          - name: IS_BUNDLE
+            default: false
+            allowed-values:
+              - true
+              - false
 
       - step:
           name: Build Android App
@@ -51,20 +56,34 @@ pipelines:
               echo "Environment properties generated."
               FLAVOR_CAP="$(tr '[:lower:]' '[:upper:]' <<< ${FLAVOR:0:1})${FLAVOR:1}"
               BUILD_TYPE_CAP="$(tr '[:lower:]' '[:upper:]' <<< ${BUILD_TYPE:0:1})${BUILD_TYPE:1}"
-              TASK_NAME="assemble${FLAVOR_CAP}${BUILD_TYPE_CAP}"
+              if [ "$IS_BUNDLE" = "true" ]; then
+                TASK_NAME="clean bundle${FLAVOR_CAP}${BUILD_TYPE_CAP}"
+              else
+                TASK_NAME="assemble${FLAVOR_CAP}${BUILD_TYPE_CAP}"
+              fi
               echo "Running Gradle task: $TASK_NAME"
               export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx3g -Dkotlin.daemon.jvm.options=-Xmx1g -Dfile.encoding=UTF-8"
               export _JAVA_OPTIONS="-Xmx3g"
-              ./gradlew --no-daemon --stacktrace --info --max-workers=2 "$TASK_NAME"
+              ./gradlew --no-daemon --stacktrace --info --max-workers=2 $TASK_NAME
               mkdir -p ../artifacts
-              find app/build/outputs/apk -type f -name "*.apk" -print -exec cp {} ../artifacts/ \;
+              if [ "$IS_BUNDLE" = "true" ]; then
+                find app/build/outputs/bundle -type f -name "*.aab" -print -exec cp {} ../artifacts/ \;
+              else
+                find app/build/outputs/apk -type f -name "*.apk" -print -exec cp {} ../artifacts/ \;
+              fi
 
             # Upload to S3 by flavor and build type
             - echo "Uploading build ${BITBUCKET_BUILD_NUMBER} - ${FLAVOR}/${BUILD_TYPE}"
             - aws s3 cp ../artifacts s3://spice-mobile-apk-bitbucket/${FLAVOR}/${BUILD_TYPE}/build-${BITBUCKET_BUILD_NUMBER}/ --recursive
 
             # Overwrite latest so there's always a stable URL for the most recent build
-            - aws s3 cp ../artifacts s3://spice-mobile-apk-bitbucket/${FLAVOR}/${BUILD_TYPE}/latest/ --recursive
+            - |
+              if [ "$IS_BUNDLE" = "true" ]; then
+                echo "Skipping latest artifact update for bundle generation"
+              else
+                aws s3 cp ../artifacts s3://spice-mobile-apk-bitbucket/${FLAVOR}/${BUILD_TYPE}/latest/ --recursive
+              fi
 
           artifacts:
             - artifacts/*.apk
+            - artifacts/*.aab
