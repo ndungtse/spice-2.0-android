@@ -202,7 +202,7 @@ class AssessmentRMNCHFragment :
         }
 
         // Child symptoms filter
-        viewModel.symptomTypeListResponse.observe(this) { options ->
+        viewModel.symptomTypeListResponse.observe(viewLifecycleOwner) { options ->
             val fragment = childFragmentManager.findFragmentByTag(CheckBoxDialog.TAG)
             // Fragment is already displayed, just return
             if (fragment != null) {
@@ -307,11 +307,20 @@ class AssessmentRMNCHFragment :
                 }
             }
 
-            AssessmentDefinedParams.SYSTOLIC, AssessmentDefinedParams.DIASTOLIC -> {
+            AssessmentDefinedParams.SYSTOLIC -> {
                 // Update BP-related fields when systolic or diastolic changes
                 handleAncFieldStatusUpdate(AssessmentDefinedParams.SYSTOLIC)
+                updateAllFieldStatuses() // BP affects multiple fields (edema, urinaryAlbumin)
+            }
+
+            AssessmentDefinedParams.DIASTOLIC -> {
                 handleAncFieldStatusUpdate(AssessmentDefinedParams.DIASTOLIC)
                 updateAllFieldStatuses() // BP affects multiple fields (edema, urinaryAlbumin)
+                val diastolicValue = CommonUtils.getDoubleOrNull(map[id])
+                // Systolic value entered should always be greater than Diastolic value
+                diastolicValue?.let {
+                    formGenerator.getFormLayout(AssessmentDefinedParams.SYSTOLIC)?.minValue = diastolicValue + 1
+                }
             }
 
             AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS -> {
@@ -472,10 +481,16 @@ class AssessmentRMNCHFragment :
                 handlePncBloodSugarHighRiskHighlight()
             }
 
-            RMNCH.ID_SYSTOLIC,
-            RMNCH.ID_DIASTOLIC,
-            -> {
+            RMNCH.ID_SYSTOLIC -> {
                 handlePncBpHighRiskHighlight()
+            }
+            RMNCH.ID_DIASTOLIC -> {
+                handlePncBpHighRiskHighlight()
+                val diastolicValue = CommonUtils.getIntegerOrNull(resultMap[id])?.toDouble()
+                // Systolic value entered should always be greater than Diastolic value
+                diastolicValue?.let {
+                    formGenerator.getFormLayout(RMNCH.ID_SYSTOLIC)?.minValue = diastolicValue + 1
+                }
             }
         }
     }

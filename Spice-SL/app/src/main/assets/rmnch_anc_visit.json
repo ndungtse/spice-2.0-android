@@ -185,6 +185,9 @@
             "errorMessage": "Please enter a valid height",
             "visibility": "visible",
             "maxLength": 5,
+            "minValue": 50,
+            "maxValue": 300,
+            "naValue": 0,
             "unitMeasurement": "cm"
         },
         {
@@ -205,6 +208,9 @@
             "errorMessage": "Please enter a valid weight",
             "visibility": "visible",
             "maxLength": 5,
+            "minValue": 10,
+            "maxValue": 250,
+            "naValue": 0,
             "unitMeasurement": "kg"
         },
         {
@@ -248,6 +254,9 @@
             "errorMessage": "Please enter a valid systolic value",
             "visibility": "visible",
             "maxLength": 3,
+            "minValue": 30,
+            "maxValue": 300,
+            "naValue": 0,
             "unitMeasurement": "mmHg"
         },
         {
@@ -268,6 +277,8 @@
             "errorMessage": "Please enter a valid diastolic value",
             "visibility": "visible",
             "maxLength": 3,
+            "maxValue": 300,
+            "naValue": 0,
             "unitMeasurement": "mmHg"
         },
         {
@@ -317,6 +328,9 @@
             "errorMessage": "Please enter a valid temperature",
             "visibility": "visible",
             "maxLength": 5,
+            "minValue": 86,
+            "maxValue": 113,
+            "naValue": 0,
             "unitMeasurement": "°F"
         },
         {
@@ -337,6 +351,9 @@
             "errorMessage": "Please enter a valid pulse",
             "visibility": "visible",
             "maxLength": 5,
+            "minValue": 30,
+            "maxValue": 200,
+            "naValue": 0,
             "unitMeasurement": "bpm"
         },
         {
@@ -357,6 +374,8 @@
             "errorMessage": "Please enter a valid fundal height",
             "visibility": "visible",
             "maxLength": 3,
+            "minValue": 0,
+            "maxValue": 50,
             "unitMeasurement": "cm"
         },
         {
@@ -384,6 +403,8 @@
             "errorMessage": "Please enter a valid hemoglobin value",
             "visibility": "visible",
             "maxLength": 5,
+            "minValue": 0,
+            "maxValue": 25,
             "unitMeasurement": "g/dL"
         },
         {
@@ -431,6 +452,9 @@
             "errorMessage": "Please enter a valid fasting blood sugar value",
             "visibility": "gone",
             "maxLength": 5,
+            "minValue": 0.6,
+            "maxValue": 33,
+            "naValue": 0,
             "unitMeasurement": "mmol/L"
         },
         {
@@ -451,6 +475,9 @@
             "errorMessage": "Please enter a valid random blood sugar value",
             "visibility": "gone",
             "maxLength": 5,
+            "minValue": 0.6,
+            "maxValue": 33,
+            "naValue": 0,
             "unitMeasurement": "mmol/L"
         },
         {
@@ -612,7 +639,8 @@
             "hintCulture": "গতমাসে মোট খাওয়া হয়েছে",
             "errorMessage": "Please enter a valid number",
             "visibility": "visible",
-            "maxLength": 4
+            "maxLength": 2,
+            "maxValue": "31"
         },
         {
             "family": "vaccinationAndSupplements",
@@ -630,7 +658,7 @@
             "hintCulture": "এই ভিজিটের সময় প্রদানকৃত",
             "errorMessage": "Please enter a valid number",
             "visibility": "visible",
-            "maxLength": 4
+            "maxLength": 3
         },
         {
             "family": "vaccinationAndSupplements",
@@ -661,7 +689,8 @@
             "hintCulture": "গতমাসে মোট খাওয়া হয়েছে",
             "errorMessage": "Please enter a valid number",
             "visibility": "visible",
-            "maxLength": 4
+            "maxLength": 2,
+            "maxValue": "31"
         },
         {
             "family": "vaccinationAndSupplements",
@@ -677,7 +706,7 @@
             "titleCulture": "এই ভিজিটের সময় প্রদানকৃত –",
             "errorMessage": "Please enter a valid number",
             "visibility": "visible",
-            "maxLength": 4
+            "maxLength": 3
         },
         {
             "family": "vaccinationAndSupplements",
@@ -706,7 +735,8 @@
             "titleCulture": "গতমাসে কয়টি ক্যালসিয়াম বড়ি খেয়েছেন?",
             "errorMessage": "Please enter a valid number",
             "visibility": "visible",
-            "maxLength": 4
+            "maxLength": 2,
+            "maxValue": "31"
         },
         {
             "family": "vaccinationAndSupplements",
@@ -722,7 +752,7 @@
             "titleCulture": "এই ভিজিটের সময় প্রদান করা হয়েছে –",
             "errorMessage": "Please enter a valid number",
             "visibility": "visible",
-            "maxLength": 4
+            "maxLength": 3
         },
         {
             "familyOrder": 3,

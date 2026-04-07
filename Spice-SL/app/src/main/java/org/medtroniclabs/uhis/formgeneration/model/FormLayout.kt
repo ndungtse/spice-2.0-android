@@ -103,6 +103,7 @@ import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
  * @param infoTitle Info title for view types **EditText**, **NoOfDaysView**, **SingleSelectionView**, **Spinner**. If [isInfo] is not given then this field is of no use.
  * @param infoTitleCulture Info title in second language for view types **EditText**, **NoOfDaysView**, **SingleSelectionView**, **Spinner**. If [isInfo] is not given then this field is of no use.
  * @param hideDob Boolean for whether to hide date picker for view type **AgeYMD**.
+ * @param naValue A value the user can enter when the field is not applicable or cannot be measured. If the input matches [naValue], it is treated as a default value and excluded from [minValue] and [maxValue] validation.
  */
 data class FormLayout(
     override val viewType: String,
@@ -202,6 +203,7 @@ data class FormLayout(
     var infoTitle: String? = null,
     var infoTitleCulture: String? = null,
     var hideDob: Boolean? = null,
+    var naValue: Double? = null,
 ) : BaseViewParams {
     /**
      * Returns info title
