@@ -410,4 +410,12 @@ class HouseholdMemberRepository @Inject constructor(
         filterBySubVillages: List<Long> = emptyList(),
         staticFilter: ServiceStaticFilter,
     ) = roomHelper.getServiceMembers(searchInput, filterBySs, filterBySubVillages, staticFilter)
+
+    /**
+     * Retrieves all National IDs for the specified ID type from the Room database.
+     *
+     * @param idType The type of ID to filter by.
+     * @return A list of National IDs.
+     */
+    suspend fun getAllNationalIds(idType: String): List<String> = roomHelper.getAllNationalIds(idType)
 }

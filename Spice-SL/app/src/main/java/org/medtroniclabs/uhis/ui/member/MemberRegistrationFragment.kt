@@ -91,6 +91,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        memberRegistrationViewModel.prefetchNationalIds()
         initializeView()
         setListener()
         initializeFlow()
@@ -656,6 +657,18 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                     formGenerator.showError(MemberRegistration.NATIONAL_ID, getString(R.string.national_id_validation))
                     return
                 }
+
+                // Unique validation for National ID
+                val originalNationalId = memberRegistrationViewModel.memberDetailsLiveData.value
+                    ?.data
+                    ?.nationalId
+                if (MemberRegistration.IdType.NATIONAL_ID.value == idType &&
+                    nationalId != originalNationalId &&
+                    memberRegistrationViewModel.nationalIdsSet.contains(nationalId)
+                ) {
+                    formGenerator.showError(MemberRegistration.NATIONAL_ID, getString(R.string.national_id_already_exists))
+                    return
+                }
             }
 
             // Add member from medical review
@@ -677,7 +690,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                     val memberLocalId = memberRegistrationViewModel.memberDetailsLiveData.value
                         ?.data
                         ?.id
-                    val fhirMemberId = arguments?.getLong(org.medtroniclabs.uhis.common.DefinedParams.FhirMemberID)
+                    val fhirMemberId = arguments?.getLong(DefinedParams.FhirMemberID)
                     householdRegistrationViewModel.updateMemberAsAssigned(fhirMemberId, memberLocalId, householdRegistrationViewModel.householdId)
                 }
 
@@ -706,7 +719,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                 if (memberRegistrationViewModel.isPhuWalkInsFlow == true) {
                     householdRegistrationViewModel.updateMemberAsAssigned(
                         arguments?.getLong(
-                            org.medtroniclabs.uhis.common.DefinedParams.FhirMemberID,
+                            DefinedParams.FhirMemberID,
                         ),
                     )
                 }

@@ -171,6 +171,8 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getLastPatientId(patientIdStarts: String): String? = memberDAO.getLastPatientId(patientIdStarts)
 
+    override suspend fun getAllNationalIds(idType: String): List<String> = memberDAO.getAllNationalIds(idType)
+
     override suspend fun getAllUnSyncedHouseHolds(hhIds: List<String>): List<HouseHold> = householdDAO.getAllUnSyncedHouseHolds(hhIds)
 
     override suspend fun getAllUnSyncedHouseHoldMembers(

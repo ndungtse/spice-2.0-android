@@ -79,6 +79,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        memberRegistrationViewModel.prefetchNationalIds()
         initializeView()
         setListener()
         initializeFlow()
@@ -592,6 +593,18 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                     (nationalId == null || !nationalId.isDigitsOnly() || !MemberRegistration.NATIONAL_ID_LENGTH.contains(nationalId.length))
                 ) {
                     formGenerator.showError(MemberRegistration.NATIONAL_ID, getString(R.string.national_id_validation))
+                    return
+                }
+
+                // Unique validation for National ID
+                val originalNationalId = memberRegistrationViewModel.memberDetailsLiveData.value
+                    ?.data
+                    ?.nationalId
+                if (MemberRegistration.IdType.NATIONAL_ID.value == idType &&
+                    nationalId != originalNationalId &&
+                    memberRegistrationViewModel.nationalIdsSet.contains(nationalId)
+                ) {
+                    formGenerator.showError(MemberRegistration.NATIONAL_ID, getString(R.string.national_id_already_exists))
                     return
                 }
             }
