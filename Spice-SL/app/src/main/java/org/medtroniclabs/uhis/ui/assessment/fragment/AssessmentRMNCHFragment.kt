@@ -331,6 +331,21 @@ class AssessmentRMNCHFragment :
                 handleAncFieldStatusUpdate(AssessmentDefinedParams.DIASTOLIC)
                 handleAncFieldStatusUpdate(AssessmentDefinedParams.BLOOD_SUGAR_FASTING)
                 handleAncFieldStatusUpdate(AssessmentDefinedParams.BLOOD_SUGAR_RANDOM)
+                val selectedData = map[AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS] as ArrayList<HashMap<String, Any>>
+                val isNoneSelected = selectedData.any { DefinedParams.None.equals(it[DefinedParams.Value] as? String, true) }
+                if (isNoneSelected) {
+                    // If none selected, then hide on treatment
+                    formGenerator.getViewByTag(AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT + formGenerator.rootSuffix)?.gone()
+                } else {
+                    // If none not selected, then show on treatment
+                    formGenerator.getViewByTag(AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT + formGenerator.rootSuffix)?.visible()
+                }
+                // Reset anc selected treatment flag
+                ancSelectedTreatment = false
+                // Reset value when we change existing illness
+                formGenerator.getFormLayout(AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT)?.let {
+                    formGenerator.validateCheckboxDialogue(AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT, it, arrayListOf(), true)
+                }
                 handleAncFieldStatusUpdate(AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT)
             }
 
@@ -484,6 +499,7 @@ class AssessmentRMNCHFragment :
             RMNCH.ID_SYSTOLIC -> {
                 handlePncBpHighRiskHighlight()
             }
+
             RMNCH.ID_DIASTOLIC -> {
                 handlePncBpHighRiskHighlight()
                 val diastolicValue = CommonUtils.getIntegerOrNull(resultMap[id])?.toDouble()
@@ -553,9 +569,14 @@ class AssessmentRMNCHFragment :
                 }.filterNot { it.equals(DefinedParams.None, true) }
 
             // Filter selected illness sections
-            val filteredSelections = illnessOptions.filter { illnessItem ->
-                val value = illnessItem[DefinedParams.Value]?.toString()?.lowercase(Locale.ENGLISH) ?: ""
-                illnessSelectionsValues.contains(value)
+            val filteredSelections = illnessOptions
+                .filter { illnessItem ->
+                    val value = illnessItem[DefinedParams.Value]?.toString()?.lowercase(Locale.ENGLISH) ?: ""
+                    illnessSelectionsValues.contains(value)
+                }.toMutableList()
+            // Add not taking any treatment option from JSON
+            formLayout.optionsList?.let {
+                filteredSelections.addAll(it)
             }
 
             val inputData = EntityMapper.mapToSignsAndSymptomsEntity(filteredSelections, dialogKey)
@@ -770,8 +791,6 @@ class AssessmentRMNCHFragment :
         if (viewModel.workflowName == RMNCH.ANC || viewModel.workflowName == RMNCH.PNC) {
             binding.pregnancyDetailsFragmentContainer.visible()
         }
-        // Store original titles for fields that have status conditions
-        storeOriginalTitles()
         if (viewModel.pregnancyDetailLiveData.isInitialized) {
             when (viewModel.workflowName) {
                 RMNCH.PNC -> {
@@ -1161,52 +1180,6 @@ class AssessmentRMNCHFragment :
     }
 
     /**
-     * Stores original titles (without status) for fields that have status conditions
-     */
-    private fun storeOriginalTitles() {
-        val fieldsToStore = listOf(
-            AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT,
-            AssessmentDefinedParams.SYSTOLIC,
-            AssessmentDefinedParams.DIASTOLIC,
-            AssessmentDefinedParams.EDEMA,
-            AssessmentDefinedParams.TEMPERATURE,
-            AssessmentDefinedParams.PULSE,
-            AssessmentDefinedParams.FUNDAL_HEIGHT,
-            AssessmentDefinedParams.HEMOGLOBIN,
-            AssessmentDefinedParams.URINARY_ALBUMIN,
-            AssessmentDefinedParams.URINARY_SUGAR,
-            AssessmentDefinedParams.URINARY_BILIRUBIN,
-            AssessmentDefinedParams.FOLIC_ACID_TABLETS,
-            AssessmentDefinedParams.IFA_TABLETS,
-            AssessmentDefinedParams.CALCIUM_TABLETS,
-            AssessmentDefinedParams.ANC_FROM_MEDICAL_DOCTOR,
-            AssessmentDefinedParams.ULTRASOUND,
-            AssessmentDefinedParams.FACILITY_IDENTIFIED_FOR_DELIVERY,
-        )
-
-        val textLabelFields = listOf(AssessmentDefinedParams.FOLIC_ACID_TABLETS, AssessmentDefinedParams.IFA_TABLETS, AssessmentDefinedParams.CALCIUM_TABLETS)
-
-        fieldsToStore.forEach { fieldId ->
-            // TextLabel fields use just 'id' as tag, others use 'id + titleSuffix'
-            val tag = if (fieldId in textLabelFields) {
-                fieldId
-            } else {
-                fieldId + formGenerator.titleSuffix
-            }
-
-            val titleView = formGenerator.getViewByTag(tag) as? TextView
-            titleView?.let {
-                val currentText = it.text.toString()
-                // Remove only the last status pattern at the end: " (Status Text)"
-                // Since status is always added last, this will remove only the status, keeping the rest of the title intact
-                val statusPattern = "\\s+\\([^)]+\\)\\s*$".toRegex()
-                val original = currentText.replace(statusPattern, "")
-                originalTitles[fieldId] = original
-            }
-        }
-    }
-
-    /**
      * ANC : Evaluates status condition for a field and returns status text if condition matches
      * Returns Pair<statusText, statusTextCulture> or null if no condition matches
      */
@@ -1377,22 +1350,28 @@ class AssessmentRMNCHFragment :
     ): Pair<String?, String?>? {
         // If user hasn't selected any treatment already, then ignore highlighting
         if (!ancSelectedTreatment) return null
-        val selectedOptions = value as? ArrayList<HashMap<String, Any>> ?: ArrayList()
+        val treatmentOptions = value as? ArrayList<HashMap<String, Any>> ?: arrayListOf()
         val existingIllnessOptions = resultMap[AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS] as? ArrayList<HashMap<String, Any>> ?: return null
 
         // Filter out "none" option from existing illness options for count calculation
-        val filteredExistingIllnessOptions = existingIllnessOptions.filter { illnessItem ->
-            val value = illnessItem[DefinedParams.Value]?.toString()?.lowercase() ?: ""
-            val name = illnessItem[DefinedParams.NAME]?.toString()?.lowercase() ?: ""
-            value != DefinedParams.None.lowercase() &&
-                name != DefinedParams.None.lowercase()
-        }
+        val filteredExistingIllnessOptions = existingIllnessOptions
+            .filterNot { illnessItem ->
+                val value = illnessItem[DefinedParams.Value]?.toString()
+                DefinedParams.None.equals(value, true)
+            }.mapNotNull { illnessItem ->
+                illnessItem[DefinedParams.Value]?.toString()
+            }.toSet()
 
-        // Get total available options from filtered existing illness (excluding "none")
-        val totalAvailableOptions = filteredExistingIllnessOptions.size
-        val selectedCount = selectedOptions.size
+        // Filter out "none" option from treatment options for count calculation
+        val filteredIllnessTreatmentOptions = treatmentOptions
+            .filterNot { treatmentItem ->
+                val value = treatmentItem[DefinedParams.Value]?.toString()
+                DefinedParams.None.equals(value, true)
+            }.mapNotNull { treatmentItem ->
+                treatmentItem[DefinedParams.Value]?.toString()
+            }.toSet()
 
-        return if (totalAvailableOptions > 0 && selectedCount < totalAvailableOptions) {
+        return if (filteredExistingIllnessOptions.isNotEmpty() && filteredExistingIllnessOptions.minus(filteredIllnessTreatmentOptions).isNotEmpty()) {
             Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
             null
@@ -1831,7 +1810,7 @@ class AssessmentRMNCHFragment :
         val titleView = formGenerator.getViewByTag(tag) as? TextView
         titleView?.let { tv ->
             // Get original title (store it first time if not stored)2
-            val originalTitle = originalTitles[fieldId] ?: run {
+            var originalTitle = originalTitles[fieldId] ?: run {
                 // Since status is always added last, this will only remove the status, preserving unit measurements
                 val currentText = tv.text.toString()
                 // Remove only the last status pattern at the end: " (Status Text)"
@@ -1841,25 +1820,33 @@ class AssessmentRMNCHFragment :
                 originalTitles[fieldId] = original
                 original
             }
+            val displayStatus = if (isTranslationEnabled && !statusTextCulture.isNullOrBlank()) {
+                statusTextCulture
+            } else {
+                statusText
+            }
 
-            // Build title with status
-            if (!statusText.isNullOrEmpty()) {
-                val displayStatus = if (isTranslationEnabled && !statusTextCulture.isNullOrBlank()) {
-                    statusTextCulture
-                } else {
-                    statusText
-                }
+            // Find if the title contains *(mandatory) mark
+            val starIndex = originalTitle.lastIndexOf(" *")
+            // If mandatory mark is there remove it from title
+            // We will append it later with red color.
+            if (starIndex != -1) {
+                originalTitle = originalTitle.substring(0, starIndex)
+            }
 
-                tv.text = buildSpannedString {
-                    append(originalTitle)
-                    append(" ")
+            tv.text = buildSpannedString {
+                append(originalTitle)
+                if (starIndex != -1) {
                     color(Color.RED) {
-                        append("($displayStatus)")
+                        append(" *")
                     }
                 }
-            } else {
-                // No status, show original title
-                tv.text = originalTitle
+                // Append status
+                if (!displayStatus.isNullOrBlank()) {
+                    color(Color.RED) {
+                        append(" ($displayStatus)")
+                    }
+                }
             }
         }
     }
@@ -2191,12 +2178,18 @@ class AssessmentRMNCHFragment :
                     if (dangerSignValue is ArrayList<*>) {
                         dangerSignValue.forEach { item ->
                             if (item is Map<*, *>) {
-                                val value = item[DefinedParams.Value]?.toString()?.lowercase() ?: ""
-                                val name = item[DefinedParams.NAME]?.toString()?.lowercase() ?: ""
+                                val value = item[DefinedParams.Value]?.toString()
+                                val name = item[DefinedParams.NAME]?.toString() ?: ""
                                 // Check if "other" option is selected, then don't add other to the list
-                                if (value == DefinedParams.Other.lowercase() || name == DefinedParams.Other.lowercase()) {
+                                if (DefinedParams.Other.equals(value, true) ||
+                                    DefinedParams.Other.equals(name, true)
+                                ) {
                                     hasOtherSelected = true
-                                } else if (!(value == DefinedParams.None.lowercase() || name == DefinedParams.None.lowercase())) {
+                                } else if (!(
+                                        DefinedParams.None.equals(value, true) ||
+                                            DefinedParams.None.equals(name, true)
+                                    )
+                                ) {
                                     // Check if none option is selected, then don't add to the list
                                     dangerSignsList.add(name)
                                 }

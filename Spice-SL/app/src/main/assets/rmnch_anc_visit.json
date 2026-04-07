@@ -160,12 +160,20 @@
             "isSummary": false,
             "hint": "Illness",
             "viewType": "DialogCheckbox",
-            "isMandatory": false,
+            "isMandatory": true,
             "isEnabled": true,
             "title": "Pregnant woman on treatment for any existing illness",
             "titleCulture": "গর্ভবতী মা কোনো আগের অসুখের জন্য চিকিৎসা নিচ্ছেন কি?",
             "errorMessage": "Please select a valid option",
-            "visibility": "visible"
+            "visibility": "gone",
+            "optionsList": [
+                {
+                    "id": -1,
+                    "value": "none",
+                    "name": "Not taking any treatment",
+                    "cultureValue": "কোনো চিকিৎসা নিচ্ছেন না"
+                }
+            ]
         },
         {
             "family": "medicalHistoryPhysicalExamination",

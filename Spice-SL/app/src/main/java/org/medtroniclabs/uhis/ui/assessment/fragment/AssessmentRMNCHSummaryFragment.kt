@@ -210,7 +210,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                     root.setPadding(0)
                     with(tvTitle) {
-                        setText(R.string.high_risk_indicators)
+                        setText(R.string.emergency_referral)
                         setTypeface(null, Typeface.BOLD)
                     }
                     binding.parentLayout.addView(root)
@@ -518,7 +518,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                     root.setPadding(0)
                     with(tvTitle) {
-                        setText(R.string.high_risk_indicators)
+                        setText(R.string.emergency_referral)
                         setTypeface(null, Typeface.BOLD)
                     }
                     binding.parentLayout.addView(root)

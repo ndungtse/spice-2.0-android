@@ -32,5 +32,5 @@ data class SignsAndSymptomsEntity(
     /**
      * Refer : [DefinedParams.isNoSymptom]
      */
-    fun isNone(): Boolean = DefinedParams.isNoSymptom(symptom)
+    fun isNone(): Boolean = DefinedParams.isNoSymptom(symptom) || DefinedParams.isNoSymptom(value ?: "")
 }

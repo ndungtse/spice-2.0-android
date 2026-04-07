@@ -382,7 +382,6 @@ object AssessmentDefinedParams {
 
     const val ILLNESS_HEART_DISEASE = "heartDisease"
     const val ILLNESS_TUBERCULOSIS = "tuberculosis"
-    const val ILLNESS_TB = "TB"
     const val ILLNESS_ASTHMA = "asthma"
     const val ILLNESS_THYROID = "thyroidDisease"
     const val ILLNESS_KIDNEY_DISEASE = "kidneyDisease"

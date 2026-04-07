@@ -44,11 +44,9 @@ object RMNCHAssessmentEvaluator {
         return illnessList.filter { illness ->
             val illnessMap = illness as? Map<*, *> ?: return@filter true
             val value = illnessMap[DefinedParams.Value]?.toString()?.lowercase() ?: ""
-            val name = illnessMap[DefinedParams.NAME]?.toString()?.lowercase() ?: ""
 
-            // Filter out if id is "none" or name is "None"
-            value != DefinedParams.None.lowercase() &&
-                name != DefinedParams.None.lowercase()
+            // Filter out if id is "none"
+            value != DefinedParams.None.lowercase()
         } as ArrayList<*>
     }
 
@@ -61,9 +59,7 @@ object RMNCHAssessmentEvaluator {
         return filteredIllness.any { illness ->
             val illnessMap = illness as? Map<*, *> ?: return@any false
             val value = illnessMap[DefinedParams.Value]?.toString() ?: ""
-            val name = illnessMap[DefinedParams.name]?.toString() ?: ""
-            value.equals(AssessmentDefinedParams.ILLNESS_HTN, ignoreCase = true) ||
-                name.equals(AssessmentDefinedParams.ILLNESS_HTN, ignoreCase = true)
+            value.equals(AssessmentDefinedParams.ILLNESS_HTN, ignoreCase = true)
         }
     }
 
@@ -76,9 +72,7 @@ object RMNCHAssessmentEvaluator {
         return filteredIllness.any { illness ->
             val illnessMap = illness as? Map<*, *> ?: return@any false
             val value = illnessMap[DefinedParams.Value]?.toString() ?: ""
-            val name = illnessMap[DefinedParams.name]?.toString() ?: ""
-            value.equals(AssessmentDefinedParams.ILLNESS_DM, ignoreCase = true) ||
-                name.equals(AssessmentDefinedParams.ILLNESS_DM, ignoreCase = true)
+            value.equals(AssessmentDefinedParams.ILLNESS_DM, ignoreCase = true)
         }
     }
 
@@ -94,8 +88,7 @@ object RMNCHAssessmentEvaluator {
         return filteredIllness.any { illness ->
             val illnessMap = illness as? Map<*, *> ?: return@any false
             val value = illnessMap[DefinedParams.Value]?.toString() ?: ""
-            val name = illnessMap[DefinedParams.name]?.toString() ?: ""
-            value.contains(illnessName, ignoreCase = true) || name.contains(illnessName, ignoreCase = true)
+            value.contains(illnessName, ignoreCase = true)
         }
     }
 
@@ -110,8 +103,7 @@ object RMNCHAssessmentEvaluator {
         return treatmentList.any { treatment ->
             val treatmentMap = treatment as? Map<*, *> ?: return@any false
             val value = treatmentMap[DefinedParams.Value]?.toString() ?: ""
-            val name = treatmentMap[DefinedParams.name]?.toString() ?: ""
-            value.contains(illnessName, ignoreCase = true) || name.contains(illnessName, ignoreCase = true)
+            value.contains(illnessName, ignoreCase = true)
         }
     }
 
@@ -122,7 +114,6 @@ object RMNCHAssessmentEvaluator {
         hasExistingDMIllness(resultMap) ||
             hasChronicIllness(resultMap, AssessmentDefinedParams.ILLNESS_HEART_DISEASE) ||
             hasChronicIllness(resultMap, AssessmentDefinedParams.ILLNESS_TUBERCULOSIS) ||
-            hasChronicIllness(resultMap, AssessmentDefinedParams.ILLNESS_TB) ||
             hasChronicIllness(resultMap, AssessmentDefinedParams.ILLNESS_ASTHMA) ||
             hasChronicIllness(resultMap, AssessmentDefinedParams.ILLNESS_THYROID) ||
             hasChronicIllness(resultMap, AssessmentDefinedParams.ILLNESS_KIDNEY_DISEASE)
@@ -138,7 +129,6 @@ object RMNCHAssessmentEvaluator {
             AssessmentDefinedParams.ILLNESS_DM,
             AssessmentDefinedParams.ILLNESS_HEART_DISEASE,
             AssessmentDefinedParams.ILLNESS_TUBERCULOSIS,
-            AssessmentDefinedParams.ILLNESS_TB,
             AssessmentDefinedParams.ILLNESS_ASTHMA,
             AssessmentDefinedParams.ILLNESS_THYROID,
             AssessmentDefinedParams.ILLNESS_KIDNEY_DISEASE,
@@ -160,7 +150,6 @@ object RMNCHAssessmentEvaluator {
             AssessmentDefinedParams.ILLNESS_DM,
             AssessmentDefinedParams.ILLNESS_HEART_DISEASE,
             AssessmentDefinedParams.ILLNESS_TUBERCULOSIS,
-            AssessmentDefinedParams.ILLNESS_TB,
             AssessmentDefinedParams.ILLNESS_ASTHMA,
             AssessmentDefinedParams.ILLNESS_THYROID,
             AssessmentDefinedParams.ILLNESS_KIDNEY_DISEASE,
@@ -183,7 +172,7 @@ object RMNCHAssessmentEvaluator {
         ageOfLastChild?.let {
             try {
                 DateUtils.calculateAge(it).toDouble()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
@@ -229,9 +218,7 @@ object RMNCHAssessmentEvaluator {
 
         // Check blood sugar random
         val bloodSugarRandom = (getValueFromNestedMap(resultMap, AssessmentDefinedParams.BLOOD_SUGAR_RANDOM) as? Number)?.toDouble()
-        if (bloodSugarRandom != null && bloodSugarRandom >= AssessmentDefinedParams.BLOOD_SUGAR_RANDOM_THRESHOLD) return true
-
-        return false
+        return bloodSugarRandom != null && bloodSugarRandom >= AssessmentDefinedParams.BLOOD_SUGAR_RANDOM_THRESHOLD
     }
 
     /**

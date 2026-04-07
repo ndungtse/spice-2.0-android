@@ -1608,7 +1608,7 @@
     <string name="service_date">সেবার তারিখ</string>
     <string name="referral_status">রেফারেলের অবস্থা</string>
     <string name="error_person_name">অনুগ্রহ করে সঠিক নাম লিখুন</string>
-    <string name="high_risk_indicators">⚠️ উচ্চ ঝুঁকির নির্দেশকসমূহ</string>
+    <string name="emergency_referral">⚠️ জরুরি রেফারেল</string>
     <string name="non_emergency_referral">ⓘ জরুরি নয় এমন রেফারেল</string>
     <string name="assessment_result">মূল্যায়নের ফলাফল</string>
 
