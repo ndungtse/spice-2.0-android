@@ -392,7 +392,7 @@
             [],
             "defaultValue": null,
             "errorMessage": "Please select Referral Facility",
-            "cultureErrorMessage": "অনুগ্রহ করে রেফারেল সুবিধার ধরন নির্বাচন করুন",
+            "cultureErrorMessage": "অনুগ্রহ করে রেফারের জন্য স্বাস্থ্যকেন্দ্র নির্বাচন করুন",
             "family": "pncChild",
             "fieldName": "Referral place",
             "id": "childReferralFacilityType",

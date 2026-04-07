@@ -7,19 +7,19 @@
     <string name="password">পাসওয়ার্ড</string>
     <string name="email_place_holder">ইউজারনেম / ইমেইল / ফোন নম্বর লিখুন</string>
     <string name="password_place_holder">পাসওয়ার্ড লিখুন</string>
-    <string name="remember_me">আমাকে মনে রাখুন</string>
+    <string name="remember_me">লগইন তথ্য মনে রাখুন</string>
     <string name="forgot_password">পাসওয়ার্ড ভুলে গেছেন?</string>
     <string name="login">লগইন</string>
-    <string name="hide">লুকান</string>
-    <string name="email_cannot_be_empty">দয়া করে ইউজারনেম / ইমেইল / ফোন নম্বর লিখুন।</string>
-    <string name="password_cannot_be_empty">দয়া করে পাসওয়ার্ড লিখুন।</string>
-    <string name="email_phone_invalid">দয়া করে একটি বৈধ ইউজারনেম/ইমেইল/ফোন নম্বর লিখুন।</string>
-    <string name="navigation_drawer_open">নেভিগেশন ড্রয়ার খুলুন</string>
-    <string name="navigation_drawer_close">নেভিগেশন ড্রয়ার বন্ধ করুন</string>
+    <string name="hide">গোপন করুন</string>
+    <string name="email_cannot_be_empty">অনুগ্রহ করে ইউজারনেম / ইমেইল / ফোন নম্বর লিখুন।</string>
+    <string name="password_cannot_be_empty">অনুগ্রহ করে পাসওয়ার্ড লিখুন।</string>
+    <string name="email_phone_invalid">অনুগ্রহ করে একটি সঠিক ইউজার নেম/ইমেল/ফোন নম্বর লিখুন।</string>
+    <string name="navigation_drawer_open">নেভিগেশন মেনু খুলুন</string>
+    <string name="navigation_drawer_close">নেভিগেশন মেনু বন্ধ করুন</string>
     <string name="logout">লগআউট</string>
     <string name="home">হোম</string>
     <string name="home_title">হোম</string>
-    <string name="app_version">অ্যাপ্লিকেশন সংস্করণ</string>
+    <string name="app_version">অ্যাপ ভার্সন</string>
     <string name="profile">প্রোফাইল</string>
     <string name="privacy_policy">গোপনীয়তা নীতি</string>
     <string name="offline_sync">অফলাইন সিঙ্ক</string>
@@ -29,7 +29,7 @@
     <string name="search">খুঁজুন</string>
     <string name="search_name_patient_id">নাম / রোগী আইডি দিয়ে খুঁজুন</string>
     <string name="add_household">পরিবার যোগ করুন</string>
-    <string name="household_no">পরিবার নম্বর</string>
+    <string name="household_no">খানা নম্বর</string>
     <string name="no_of_people">লোক সংখ্যা</string>
     <string name="members_registered">নিবন্ধিত সদস্য</string>
     <string name="filters">ফিল্টার</string>
@@ -42,21 +42,21 @@
     <string name="counselling">পরামর্শ</string>
     <string name="submit_caps">জমা দিন</string>
     <string name="household_name_no">পরিবারের নাম / নম্বর</string>
-    <string name="diagnoses">নির্ণয়</string>
-    <string name="confirm_diagnoses">নির্ণয় নিশ্চিত করুন</string>
-    <string name="edit_diagnosis">নির্ণয় সম্পাদনা করুন</string>
+    <string name="diagnoses">রোগ নির্ণয়</string>
+    <string name="confirm_diagnoses">রোগ নির্ণয় নিশ্চিত করুন</string>
+    <string name="edit_diagnosis">রোগনির্ণয় এডিট করুন</string>
     <string name="patient_status">রোগীর অবস্থা</string>
     <string name="child_status">শিশুর অবস্থা</string>
     <string name="referred">রেফার করা হয়েছে</string>
-    <string name="edit_diagnoses">নির্ণয় সম্পাদনা করুন</string>
+    <string name="edit_diagnoses">রোগনির্ণয় এডিট করুন</string>
     <string name="edit_status">অবস্থা সম্পাদনা করুন</string>
-    <string name="patient_category">রোগী বিভাগ</string>
+    <string name="patient_category">রোগীর ধরন</string>
     <string name="general">সাধারণ</string>
-    <string name="edit_category">বিভাগ সম্পাদনা করুন</string>
+    <string name="edit_category">ক্যাটাগরি এডিট করুন</string>
     <string name="presenting_complaints">বর্তমান অভিযোগ</string>
     <string name="type_notes">আপনার নোট লিখুন</string>
     <string name="clinical_notes">ক্লিনিকাল নোট</string>
-    <string name="systemic_examinations">সিস্টেমিক পরীক্ষা</string>
+    <string name="systemic_examinations">সার্বিক স্বাস্থ্য পরীক্ষা</string>
     <string name="other">অন্যান্য</string>
     <string name="none">কিছুই না</string>
     <string name="assessment">মূল্যায়ন</string>
@@ -68,7 +68,7 @@
     <string name="village">গ্রাম</string>
     <string name="household_location">পরিবারের অবস্থান</string>
     <string name="landmark">ল্যান্ডমার্ক</string>
-    <string name="hh_mobile_number">পরিবারের প্রধানের মোবাইল নম্বর</string>
+    <string name="hh_mobile_number">খানা প্রধানের মোবাইল নম্বর</string>
     <string name="household_summary_member_info">%1$s - %2$s - %3$s</string>
     <string name="patient_medical_review">রোগীর চিকিৎসা পর্যালোচনা</string>
     <string name="sugar_append" translatable="false">%1$.0f mmHg</string>
@@ -95,15 +95,15 @@
     <string name="hyphen_symbol" translatable="false">-</string>
     <string name="hash_symbol" translatable="false">#</string>
     <string name="next">পরবর্তী</string>
-    <string name="default_user_input_error">দয়া করে একটি বৈধ মান লিখুন</string>
+    <string name="default_user_input_error">অনুগ্রহ করে একটি বৈধ মান লিখুন</string>
     <string name="arrow_back">পিছনে</string>
     <string name="more">আরও</string>
     <string name="arrow_home">হোম</string>
-    <string name="red_alert">(লাল সতর্কতা)</string>
+    <string name="red_alert">(ঝুঁকিপূর্ণ)</string>
     <string name="scroll_view">স্ক্রল ভিউ</string>
     <string name="household_registration">পরিবার নিবন্ধন</string>
-    <string name="household_head_registration">পরিবারের প্রধান নিবন্ধন</string>
-    <string name="household_head_name">পরিবারের প্রধান নাম</string>
+    <string name="household_head_registration">খানা প্রধানের নিবন্ধন</string>
+    <string name="household_head_name">খানা প্রধানের নাম</string>
     <string name="household_family">%1$s এর পরিবার</string>
     <string name="cancel">বাতিল</string>
     <string name="member_registration">সদস্য নিবন্ধন</string>
@@ -164,14 +164,14 @@
     <string name="no_s">কোন %s করা হয়নি</string>
     <string name="select_symptoms">লক্ষণ নির্বাচন করুন</string>
     <string name="ok">ঠিক আছে</string>
-    <string name="no_internet_error">আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন।</string>
+    <string name="no_internet_error">আপনার ইন্টারনেট সংযোগ চালু করুন।</string>
     <string name="incorrect_username_password">ভুল ইমেইল বা পাসওয়ার্ড</string>
     <string name="close">বন্ধ</string>
     <string name="error">ত্রুটি</string>
     <string name="alert">সতর্কতা</string>
     <string name="retry">পুনরায় চেষ্টা করুন</string>
     <string name="session_expired">সেশন মেয়াদ শেষ! অনুগ্রহ করে আবার লগইন করুন।</string>
-    <string name="offline_login_message">আপনার কাছে আমাদের সিস্টেমে সংযোগ করার জন্য ইন্টারনেট নেই। যদিও আপনি অফলাইন বৈশিষ্ট্যের জন্য অফলাইনে লগইন করতে পারেন। আপনি কি চালিয়ে যেতে চান?</string>
+    <string name="offline_login_message">ইন্টারনেট সংযোগ পাওয়া যাচ্ছে না। অফলাইন ফিচারের জন্য অফলাইনে লগইন করুন। আপনি কি চালিয়ে যেতে চান?</string>
     <string name="role">ভূমিকা</string>
     <string name="email_cap">ইমেইল</string>
     <string name="username">ইউজারনেম</string>
@@ -218,9 +218,9 @@
     <string name="child_hood_visit">শিশু ফলোআপ</string>
     <string name="other_value" translatable="false">%1$s - %2$s</string>
     <string name="gps_disabled_title">লোকেশন সেবা বন্ধ!</string>
-    <string name="gps_disabled_message">অগ্রসর হতে আপনার বর্তমান অবস্থান পেতে দয়া করে লোকেশন সেবা চালু করুন</string>
+    <string name="gps_disabled_message">সামনে এগোতে আপনার ফোনের লোকেশন সার্ভিস চালু করুন।</string>
     <string name="search_patient">রোগী খুঁজুন</string>
-    <string name="advanced_search">উন্নত খুঁজুন</string>
+    <string name="advanced_search">বিস্তারিত অনুসন্ধান</string>
     <string name="first_name">প্রথম নাম</string>
     <string name="last_name">পদবি</string>
     <string name="mobile_number">মোবাইল নম্বর</string>
@@ -228,7 +228,7 @@
     <string name="patients_found">%1d জন রোগী পাওয়া গেছে</string>
     <string name="zero_patients_found">%1d জন রোগী</string>
     <string name="no_patients_found">কোন রোগী পাওয়া যায়নি</string>
-    <string name="no_patients_found_perform_screening">কোন রোগী পাওয়া যায়নি। অগ্রসর হতে দয়া করে স্ক্রিনিং করুন।</string>
+    <string name="no_patients_found_perform_screening">কোন রোগী পাওয়া যায়নি। অগ্রসর হতে অনুগ্রহ করে স্ক্রিনিং করুন।</string>
     <string name="no_records_found">কোন রেকর্ড পাওয়া যায়নি।</string>
     <string name="search_by_national_id">নাম / আইডি / মোবাইল নম্বর লিখুন</string>
     <string name="search_by_patient_id_name" translatable="false">Enter Patient ID/Name</string>
@@ -236,10 +236,10 @@
     <string name="cost">খরচ</string>
     <string name="next_medical_review">পরবর্তী চিকিৎসা পর্যালোচনা</string>
     <string name="summary">সারসংক্ষেপ</string>
-    <string name="pregnancy_summary">গর্ভাবস্থার সারাংশ</string>
-    <string name="pregnancy_history">গর্ভাবস্থার ইতিহাস</string>
-    <string name="diagnosis">নির্ণয়</string>
-    <string name="disease_category">রোগ বিভাগ</string>
+    <string name="pregnancy_summary">গর্ভাবস্থার সংক্ষিপ্ত তথ্য</string>
+    <string name="pregnancy_history">গর্ভাবস্থার পূর্বের তথ্য</string>
+    <string name="diagnosis">রোগ নির্ণয়</string>
+    <string name="disease_category">রোগের ধরণ</string>
     <string name="disease_condition">রোগের অবস্থা</string>
     <string name="prescriptions">প্রেসক্রিপশন</string>
     <string name="medical_supplies">চিকিৎসা সরঞ্জাম</string>
@@ -255,10 +255,10 @@
     <string name="hh_id">পরিবার আইডি</string>
     <string name="date_of_onset">শুরুর তারিখ</string>
     <string name="date_of_review">পর্যালোচনার তারিখ</string>
-    <string name="warning_different_login_title">ভিন্ন লগইন!</string>
-    <string name="warning_different_login_message">শেষ ব্যবহারকারীর (%1$s) কিছু অসিঙ্ক্রোনাইজড ডেটা আছে। দয়া করে ডেটা সিঙ্ক করুন।</string>
+    <string name="warning_different_login_title">অন্য অ্যাকাউন্টে লগইন!</string>
+    <string name="warning_different_login_message">শেষ ব্যবহারকারীর (%1$s) কিছু অসিঙ্ক্রোনাইজড ডেটা আছে। অনুগ্রহ করে ডেটা সিঙ্ক করুন।</string>
     <string name="title_sync_status">সিঙ্ক অবস্থা</string>
-    <string name="message_sync_error">আপলোডের সময় কিছু ভুল হয়েছে। দয়া করে পরে আবার চেষ্টা করুন</string>
+    <string name="message_sync_error">আপলোডের সময় কিছু ভুল হয়েছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন</string>
     <string name="display_un_synced_count">%1$d রেকর্ড এখনও সিঙ্ক হয়নি</string>
     <string name="instructions">নির্দেশাবলী</string>
     <string name="measuring_muac">MUAC মাপা হচ্ছে</string>
@@ -306,18 +306,18 @@
     <string name="referral_by">রেফার করেছেন</string>
     <string name="date_of_delivery_label">প্রসবের তারিখ</string>
     <string name="date_type">প্রসবের ধরন</string>
-    <string name="labour_delivery">Labour/Delivery</string>
-    <string name="date_of_delivery">Date of Delivery</string>
-    <string name="date_of_labour_onset">Date of Labour Onset</string>
-    <string name="delivery_type">Delivery Type</string>
-    <string name="delivery_at">Delivery At</string>
-    <string name="no_of_neonates">No of Neonates</string>
-    <string name="time_of_delivery">Time of Delivery</string>
-    <string name="time_of_labour_onset">Time of Labour Onset</string>
-    <string name="delivery_by">Delivery By</string>
-    <string name="delivery_by_others">Delivery By (Others)</string>
+    <string name="labour_delivery">প্রসব/ডেলিভারি</string>
+    <string name="date_of_delivery">ডেলিভারির তারিখ</string>
+    <string name="date_of_labour_onset">প্রসব বেদনা শুরুর তারিখ</string>
+    <string name="delivery_type">প্রসবের ধরন</string>
+    <string name="delivery_at">প্রসবের স্থান</string>
+    <string name="no_of_neonates">নবজাতকের সংখ্যা</string>
+    <string name="time_of_delivery">প্রসবের সময়</string>
+    <string name="time_of_labour_onset">প্রসব বেদনা শুরুর সময়</string>
+    <string name="delivery_by">প্রসবের সহায়তাকারী</string>
+    <string name="delivery_by_others">প্রসবের সহায়তাকারী (অন্যান্য)</string>
     <string name="delivery_status">প্রসবের অবস্থা</string>
-    <string name="error_label">দয়া করে বৈধ ইনপুট লিখুন</string>
+    <string name="error_label">অনুগ্রহ করে বৈধ ইনপুট লিখুন</string>
     <string name="select_date">তারিখ নির্বাচন করুন</string>
     <string name="number">নম্বর</string>
     <string name="hour">ঘন্টা</string>
@@ -347,7 +347,7 @@
     <string name="immunisation_status">টিকাদান অবস্থা</string>
     <string name="repeat_if_60" translatable="false">Repeat (if &gt;60)</string>
     <string name="breast_feeding">Breast Feeding</string>
-    <string name="exclusive_breast_feeding">একান্ত বুকের দুধ খাওয়ানো</string>
+    <string name="exclusive_breast_feeding">শুধু বুকের দুধ খাওয়ানো</string>
     <string name="vitamin_a_for_mother">মায়ের জন্য ভিটামিন এ</string>
     <string name="title_mother">মা</string>
     <string name="signs_Symptoms_observed">পর্যবেক্ষিত লক্ষণ/উপসর্গ</string>
@@ -365,7 +365,7 @@
     <string name="gender_other">অন্যান্য</string>
     <string name="state_of_baby">শিশুর অবস্থা</string>
     <string name="abnormal">অস্বাভাবিক</string>
-    <string name="birth_weight">জন্ম ওজন</string>
+    <string name="birth_weight">জন্মকালীন ওজন</string>
     <string name="signs_symptoms_observed">পর্যবেক্ষিত লক্ষণ/উপসর্গ</string>
     <string name="state_of_the_baby">শিশুর অবস্থা</string>
     <string name="apgar_score">অ্যাপগার স্কোর</string>
@@ -393,11 +393,11 @@
     <string name="diastolic">ডায়াস্টোলিক</string>
     <string name="plus" translatable="false">+</string>
     <string name="parity">প্রসব সংখ্যা</string>
-    <string name="weight_error">দয়া করে ওজন 10 থেকে 400 এর মধ্যে লিখুন</string>
-    <string name="weight_error_0_400">দয়া করে ওজন 0.1 থেকে 400 এর মধ্যে লিখুন</string>
-    <string name="height_error_0_300">দয়া করে উচ্চতা 10 থেকে 300 এর মধ্যে লিখুন</string>
-    <string name="height_error">দয়া করে উচ্চতা 50 থেকে 300 এর মধ্যে লিখুন</string>
-    <string name="gestational_error">দয়া করে গর্ভাবস্থার বয়স 60 এর নিচে লিখুন</string>
+    <string name="weight_error">অনুগ্রহ করে ওজন 10 থেকে 400 এর মধ্যে লিখুন</string>
+    <string name="weight_error_0_400">অনুগ্রহ করে ওজন 0.1 থেকে 400 এর মধ্যে লিখুন</string>
+    <string name="height_error_0_300">অনুগ্রহ করে উচ্চতা 10 থেকে 300 এর মধ্যে লিখুন</string>
+    <string name="height_error">অনুগ্রহ করে উচ্চতা 50 থেকে 300 এর মধ্যে লিখুন</string>
+    <string name="gestational_error">অনুগ্রহ করে গর্ভাবস্থার বয়স 60 এর নিচে লিখুন</string>
     <string name="patient_blood_group">রোগীর রক্তের গ্রুপ</string>
     <string name="diastolic_error">ডায়াস্টোলিক চাপ 30 এর উপরে হতে হবে</string>
     <string name="pulse_error">নাড়ি 35 এর উপরে হতে হবে</string>
@@ -428,7 +428,7 @@
     <string name="to">প্রতি</string>
     <string name="un_reachable">পৌঁছানো যায় না</string>
     <string name="wrong_number">ভুল নম্বর</string>
-    <string name="Select_Date">দয়া করে তারিখ থেকে নির্বাচন করুন</string>
+    <string name="Select_Date">অনুগ্রহ করে তারিখ থেকে নির্বাচন করুন</string>
     <string name="medical_review">চিকিৎসা পর্যালোচনা সাক্ষাৎ</string>
     <string name="hh_visit">পরিবার সাক্ষাৎ</string>
     <string name="no_patient_found">কোন রোগী পাওয়া যায়নি।</string>
@@ -450,7 +450,7 @@
     <string name="save">সংরক্ষণ</string>
     <string name="select_disease_category">রোগ বিভাগ নির্বাচন করুন</string>
     <string name="select_disease_condition">রোগের অবস্থা নির্বাচন করুন</string>
-    <string name="add_diagnosis">নির্ণয় যোগ করুন</string>
+    <string name="add_diagnosis">রোগনির্ণয় যোগ করুন</string>
     <string name="jaundice">জন্ডিস</string>
     <string name="gene_expert">জিন এক্সপার্ট</string>
     <string name="_1_jaundice">1.Jaundice</string>
@@ -484,18 +484,18 @@
     <string name="Offline_data">অফলাইন ডেটা</string>
     <string name="syncing_offline_data">অফলাইন ডেটা সিঙ্ক করা হচ্ছে</string>
     <string name="offline_data_completion">আপনার অফলাইন ডেটা সিঙ্ক সফলভাবে সম্পন্ন হয়েছে!</string>
-    <string name="offline_data_failed">অফলাইন ডেটা সিঙ্ক ব্যর্থ। দয়া করে পরে আবার চেষ্টা করুন!</string>
+    <string name="offline_data_failed">অফলাইন ডেটা সিঙ্ক ব্যর্থ। অনুগ্রহ করে পরে আবার চেষ্টা করুন!</string>
     <string name="offline_sync_started">অফলাইন ডেটা সিঙ্ক শুরু হয়েছে</string>
     <string name="offline_sync_start">এখন অফলাইন সিঙ্ক শুরু করবেন?</string>
     <string name="offline_sync_small">অফলাইন সিঙ্ক</string>
-    <string name="title_no_network">নেটওয়ার্ক উপলব্ধ নয়</string>
-    <string name="message_no_network">দয়া করে আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন।</string>
+    <string name="title_no_network">ইন্টারনেট সংযোগ নেই</string>
+    <string name="message_no_network">অনুগ্রহ করে আপনার ইন্টারনেট সংযোগ চালু করুন এবং পুনরায় চেষ্টা করুন</string>
     <string name="min_char_length_validation">কমপক্ষে %1$s অক্ষর প্রয়োজন</string>
     <string name="general_min_max_validation">মান %1$s থেকে %2$s এর মধ্যে হতে হবে</string>
     <string name="general_min_validation">মান %1$s এর সমান বা তার চেয়ে বড় হতে হবে</string>
     <string name="general_max_validation">মান %1$s এর সমান বা তার চেয়ে ছোট হতে হবে</string>
     <string name="household">পরিবার</string>
-    <string name="please_select_a_site">দয়া করে একটি বৈধ সাইট নির্বাচন করুন</string>
+    <string name="please_select_a_site">অনুগ্রহ করে একটি বৈধ সাইট নির্বাচন করুন</string>
     <string name="nutrition_summary_without_signs" translatable="false">%1$s</string>
     <string name="tomorrow">আগামীকাল</string>
     <string name="title_pregnancy_summary">গর্ভাবস্থার সারাংশ</string>
@@ -522,14 +522,14 @@
     <string name="fb_info_5">When ready to count, press the centre of your timer (Note that the timer beeps every second for 60 seconds; will alarm in 30 seconds and then in 60 seconds before stopping beeping)</string>
     <string name="fb_info_6">Keep counting until the timer stops beeping</string>
     <string name="fast_breathing">দ্রুত শ্বাস</string>
-    <string name="phone_number_invalid">দয়া করে একটি বৈধ মোবাইল নম্বর লিখুন</string>
-    <string name="dob_invalid">দয়া করে 0 থেকে %1$d এর মধ্যে বয়স লিখুন</string>
+    <string name="phone_number_invalid">অনুগ্রহ করে একটি বৈধ মোবাইল নম্বর লিখুন</string>
+    <string name="dob_invalid">অনুগ্রহ করে 0 থেকে %1$d এর মধ্যে বয়স লিখুন</string>
     <string name="zinc_ors_status" translatable="false">(Zinc - %1$s), (ORS - %2$s)</string>
     <string name="physical_examinations">শারীরিক পরীক্ষা</string>
     <string name="congenital_detect">জন্মগত সনাক্তকরণ</string>
     <string name="cord_examination">নাভিরজ্জু পরীক্ষা</string>
     <string name="healing_satisfactorily">সন্তোষজনকভাবে সেরে উঠছে</string>
-    <string name="poor_healing">খারাপ নিরাময়</string>
+    <string name="poor_healing">ক্ষত শুকাতে দেরি হওয়া</string>
     <string name="infected">সংক্রমিত</string>
     <string name="filter">ফিল্টার</string>
     <string name="refer_to">রেফার করুন</string>
@@ -566,16 +566,16 @@
     <string name="general_systemic_examinations">সাধারণ ও সিস্টেমিক পরীক্ষা</string>
     <string name="referral_by_phone_number" translatable="false">%1$s (%2$s)</string>
     <string name="select_diagnosis_found_on_the_patient">রোগীর উপর পাওয়া নির্ণয় নির্বাচন করুন</string>
-    <string name="something_went_wrong_try_later">কিছু ভুল হয়েছে। দয়া করে আবার চেষ্টা করুন</string>
+    <string name="something_went_wrong_try_later">কিছু ভুল হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন</string>
     <string name="is_the_baby_alive">শিশু কি বেঁচে আছে?</string>
-    <string name="view_discontinued_medication">বন্ধ ওষুধ দেখুন</string>
-    <string name="hide_discontinued_medication">বন্ধ ওষুধ লুকান</string>
+    <string name="view_discontinued_medication">স্থগিতকৃত ওষুধের তালিকা দেখুন</string>
+    <string name="hide_discontinued_medication">স্থগিতকৃত ওষুধ সরিয়ে রাখুন</string>
     <string name="no_data_found">কোন ডেটা পাওয়া যায়নি</string>
     <string name="edit">সম্পাদনা</string>
     <string name="confirmation">নিশ্চিতকরণ</string>
     <string name="delete_confirmation">আপনি কি নিশ্চিত যে আপনি এটি মুছতে চান?</string>
     <string name="prescribed_since">যেদিন থেকে প্রেসক্রাইব</string>
-    <string name="value_range_error">দয়া করে 1 থেকে %1$d এর মধ্যে মান লিখুন</string>
+    <string name="value_range_error">অনুগ্রহ করে 1 থেকে %1$d এর মধ্যে মান লিখুন</string>
     <string name="no_discontinued_medication">কোন বন্ধ ওষুধ নেই</string>
     <string name="no_medication_prescribed">কোন ওষুধ প্রেসক্রাইব করা হয়নি</string>
     <string name="discontinued_on">বন্ধ করার তারিখ</string>
@@ -604,9 +604,9 @@
     <string name="low_birth_weight">" (Low birth weight)"</string>
     <string name="_kg">" Kg"</string>
     <string name="week_baby">" week"</string>
-    <string name="please_enter_temperature_between_10_to_200">দয়া করে তাপমাত্রা 10 থেকে 200 এর মধ্যে লিখুন</string>
-    <string name="respiratory_error">দয়া করে শ্বাসের হার 1 থেকে 99 এর মধ্যে লিখুন</string>
-    <string name="please_enter_repeat_between_0_to_100">দয়া করে 1 থেকে 99 এর মধ্যে পুনরাবৃত্তি লিখুন</string>
+    <string name="please_enter_temperature_between_10_to_200">অনুগ্রহ করে তাপমাত্রা 10 থেকে 200 এর মধ্যে লিখুন</string>
+    <string name="respiratory_error">অনুগ্রহ করে শ্বাসের হার 1 থেকে 99 এর মধ্যে লিখুন</string>
+    <string name="please_enter_repeat_between_0_to_100">অনুগ্রহ করে 1 থেকে 99 এর মধ্যে পুনরাবৃত্তি লিখুন</string>
     <string name="sy" translatable="false">:</string>
     <string name="albendazole">অ্যালবেনডাজোল</string>
     <string name="muac_in_cm">MUAC (সেমিতে)</string>
@@ -618,7 +618,7 @@
     <string name="yellow">হলুদ</string>
     <string name="red">লাল</string>
     <string name="severe_malnutrition">গুরুতর অপুষ্টি</string>
-    <string name="background_sync_in_progress">ব্যাকগ্রাউন্ড সিঙ্ক চলছে। দয়া করে পরে আবার চেষ্টা করুন</string>
+    <string name="background_sync_in_progress">ব্যাকগ্রাউন্ড সিঙ্ক চলছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন</string>
     <string name="syncing_is_in_progress">সিঙ্ক করা হচ্ছে</string>
     <string name="treatment_start_date">চিকিৎসা শুরুর তারিখ</string>
     <string name="referred_date">রেফারের তারিখ</string>
@@ -638,7 +638,7 @@
     <string name="breast_condition">স্তনের অবস্থা</string>
     <string name="five_minutes">" (Five minutes)"</string>
     <string name="tested_on">পরীক্ষা করা হয়েছে</string>
-    <string name="birth_weight_in_kg">জন্ম ওজন (কেজিতে)</string>
+    <string name="birth_weight_in_kg">জন্মকালীন ওজন (কেজিতে)</string>
     <string name="performance_monitoring">কর্মক্ষমতা পর্যবেক্ষণ</string>
     <string name="year_colon">বছর:</string>
     <string name="month_colon">মাস:</string>
@@ -648,7 +648,7 @@
     <string name="from_date_colon">থেকে:</string>
     <string name="toDate_colon">পর্যন্ত:</string>
     <string name="_36_weeks">" (&lt;36 weeks)"</string>
-    <string name="time_meal_error">দয়া করে ঘন্টা %1$d থেকে %2$d এবং মিনিট %3$d থেকে %4$d এর মধ্যে লিখুন</string>
+    <string name="time_meal_error">অনুগ্রহ করে ঘন্টা %1$d থেকে %2$d এবং মিনিট %3$d থেকে %4$d এর মধ্যে লিখুন</string>
     <string name="change_facility">সুবিধা পরিবর্তন</string>
     <string name="change_health_facility" translatable="false">CHANGE HEALTH FACILITY</string>
     <string name="choose_site">স্বাস্থ্য সুবিধা পরিবর্তন</string>
@@ -683,7 +683,7 @@
     <string name="new_password">নতুন পাসওয়ার্ড</string>
     <string name="email_registered_successfully">রিসেট পাসওয়ার্ড লিঙ্ক ইউজারনেম / ইমেইল / ফোন নম্বরে পাঠানো হয়েছে।</string>
     <string name="reset_password">পাসওয়ার্ড রিসেট করুন</string>
-    <string name="confirm_password_cannot_be_empty">দয়া করে পাসওয়ার্ড লিখুন।</string>
+    <string name="confirm_password_cannot_be_empty">অনুগ্রহ করে পাসওয়ার্ড লিখুন।</string>
     <string name="password_does_not_match">পাসওয়ার্ড মিলছে না</string>
     <string name="password_registered_successfully">পাসওয়ার্ড সফলভাবে রিসেট করা হয়েছে।</string>
     <string name="password_error_message">পাসওয়ার্ডে কমপক্ষে একটি সংখ্যা, ছোট হাতের অক্ষর, বড় হাতের অক্ষর এবং কমপক্ষে ৬টি অক্ষর থাকতে হবে</string>
@@ -715,10 +715,10 @@
     <string name="nbw">"Normal Birth Weight"</string>
     <string name="hbw">"High Birth Weight"</string>
     <string name="upload_log">আপলোড লগ</string>
-    <string name="enter_less_than_2">দয়া করে 2 এর চেয়ে কম বা সমান মান লিখুন</string>
+    <string name="enter_less_than_2">অনুগ্রহ করে 2 এর চেয়ে কম বা সমান মান লিখুন</string>
     <string name="phu_walk_ins">পিএইচইউ ওয়াক-ইন</string>
     <string name="link_patient">রোগী লিংক করুন</string>
-    <string name="please_select_valid_input">দয়া করে একটি বৈধ ইনপুট নির্বাচন করুন</string>
+    <string name="please_select_valid_input">অনুগ্রহ করে সঠিক তথ্য নির্বাচন করুন</string>
     <string name="search_by_hh_name_hh_no_mobile">পরিবারের নাম, নম্বর, মোবাইল দিয়ে খুঁজুন</string>
     <string name="are_you_sure_you_want_to_link_this_patient_to_this_household">আপনি কি নিশ্চিত এই রোগীকে এই পরিবারের সাথে লিংক করতে চান?</string>
     <string name="link">লিংক</string>
@@ -727,7 +727,7 @@
     <string name="households_in">" Households in "</string>
     <string name="no_household_found">কোন পরিবার পাওয়া যায়নি।</string>
     <string name="open_play_store">প্লে স্টোর খুলুন</string>
-    <string name="please_check_if_play_store_available">দয়া করে পরীক্ষা করুন ডিভাইসে Google Play Store ইনস্টল আছে কিনা</string>
+    <string name="please_check_if_play_store_available">অনুগ্রহ করে যাচাই করুন মোবাইলে Google Play Store ইনস্টল আছে কিনা</string>
     <string name="register">নিবন্ধন</string>
     <string name="registration">নিবন্ধন</string>
     <string name="registered">নিবন্ধিত</string>
@@ -755,12 +755,12 @@
     <string name="outpatient">আউটপেশেন্ট</string>
     <string name="inpatient">ইনপেশেন্ট</string>
     <string name="opd_triage">ট্রায়েজ</string>
-    <string name="facility_error">দয়া করে একটি সুবিধা নির্বাচন করুন।</string>
+    <string name="facility_error">অনুগ্রহ করে একটি সুবিধা নির্বাচন করুন।</string>
     <string name="people_screened">স্ক্রিন করা হয়েছে</string>
     <string name="people_referred">রেফার করা হয়েছে</string>
     <string name="screening_category">স্ক্রিনিং বিভাগ</string>
     <string name="screen_next_patient">রোগী স্ক্রিন করুন</string>
-    <string name="today_s_stats">Today’s Screening Stats</string>
+    <string name="today_s_stats">আজকের স্ক্রিনিং তথ্য</string>
     <string name="zero_label" translatable="false">0</string>
     <string name="dot" translatable="false">•</string>
     <string name="under_weight">ওজন কম</string>
@@ -814,13 +814,13 @@
     <string name="new_or_worsening_hypertension">নতুন বা খারাপ হওয়া উচ্চ রক্তচাপ উপসর্গ</string>
     <string name="empty_space" translatable="false">" "</string>
     <string name="other_selected">উপসর্গ এবং অন্যান্য</string>
-    <string name="error_message_spinner">দয়া করে একটি বৈধ বিকল্প নির্বাচন করুন</string>
+    <string name="error_message_spinner">সঠিক অপশন নির্বাচন করুন</string>
     <string name="comma_symbol" translatable="false">, </string>
     <string name="average_bp_text">গড় রক্তচাপ</string>
     <string name="bg_with_type">রক্তের গ্লুকোজ (%1$s)</string>
     <string name="pregnancy_signs">গর্ভাবস্থার বিপদ লক্ষণ</string>
     <string name="gestational_period">গর্ভাবস্থার বয়স</string>
-    <string name="red_risk">লাল ঝুঁকি</string>
+    <string name="red_risk">উচ্চ ঝুঁকি</string>
     <string name="find_help">সাহায্য খুঁজুন?</string>
     <string name="prescribe">প্রেসক্রাইব</string>
     <string name="back_to_medical_review">চিকিৎসা পর্যালোচনায় ফিরে যান</string>
@@ -832,7 +832,7 @@
     <string name="started_from">শুরু হয়েছে</string>
     <string name="days_prescribed">প্রেসক্রাইব করা দিন</string>
     <string name="enter_instruction">নির্দেশ লিখুন</string>
-    <string name="please_check_your_inputs">আপনার ইনপুটগুলি পরীক্ষা করুন</string>
+    <string name="please_check_your_inputs">আপনার প্রদত্ত তথ্যগুলো যাচাই করুণ</string>
     <string name="Instructions">নির্দেশনা</string>
     <string name="close_dialog">ডায়ালগ বন্ধ করুন</string>
     <string name="delete_alert">আপনি কি নিশ্চিত যে আপনি মুছতে চান?</string>
@@ -842,7 +842,7 @@
     <string name="reset_medication">ওষুধ রিসেট</string>
     <string name="edit_medication">ওষুধ সম্পাদনা</string>
     <string name="delete_medication">ওষুধ মুছুন</string>
-    <string name="please_enter_details">দয়া করে এর জন্য একটি বৈধ মান লিখুন</string>
+    <string name="please_enter_details">অনুগ্রহ করে এর জন্য একটি বৈধ মান লিখুন</string>
     <string name="positive">পজিটিভ</string>
     <string name="negative">নেগেটিভ</string>
     <string name="gestational_weeks">%1$d সপ্তাহ</string>
@@ -858,7 +858,7 @@
     <string name="enter_number">সংখ্যা লিখুন</string>
     <string name="maternal_outcomes">মাতৃ ফলাফল</string>
     <string name="ncd">এনসিডি</string>
-    <string name="pregnancy_diagnosis">আপনার কি কখনও নিম্নলিখিত কোনটির সাথে নির্ণয় করা হয়েছে?</string>
+    <string name="pregnancy_diagnosis">আপনার কি নিচের কোনো রোগ আগে নির্ণয় করা হয়েছে?</string>
     <string name="eclampsia">এক্লাম্পসিয়া</string>
     <string name="pre_eclampsia">প্রি-এক্লাম্পসিয়া</string>
     <string name="gestational_diabetes_id">gestationalDiabetes</string>
@@ -888,17 +888,17 @@
     <string name="comorbidities">সহ-রোগ</string>
     <string name="lifestyle_assessment">জীবনযাত্রার মূল্যায়ন</string>
     <string name="lifestyle_assessment_mandatory">জীবনযাত্রার মূল্যায়ন</string>
-    <string name="tobacoo_question_child_one">নেওয়া তামাক পণ্যের পরিমাণ</string>
-    <string name="tobacoo_question_child_one_smoke">দয়া করে বন্ধ করার তারিখ লিখুন</string>
+    <string name="tobacoo_question_child_one">ব্যবহৃত তামাকের পরিমাণ</string>
+    <string name="tobacoo_question_child_one_smoke">অনুগ্রহ করে বন্ধ করার তারিখ লিখুন</string>
     <string name="tobacoo_question_comment">তামাক ব্যবহারের মন্তব্য</string>
     <string name="alcohol_question_comment">মদ্যপান সম্পর্কে মন্তব্য</string>
     <string name="drinks_per_week">প্রতি সপ্তাহে পানীয়</string>
     <string name="comments_diet_nutrition">খাদ্য ও পুষ্টি সম্পর্কে মন্তব্য</string>
     <string name="write_comments">মন্তব্য লিখুন</string>
-    <string name="subjective_validation">দয়া করে প্রশ্নের উত্তর দিন</string>
-    <string name="validation_message_lifestyle">দয়া করে সব প্রশ্নের উত্তর দিন</string>
-    <string name="please_specify_the_complication">দয়া করে জটিলতা নির্দিষ্ট করুন</string>
-    <string name="please_specify_the_comorbidity">দয়া করে সহ-রোগ নির্দিষ্ট করুন</string>
+    <string name="subjective_validation">অনুগ্রহ করে প্রশ্নের উত্তর দিন</string>
+    <string name="validation_message_lifestyle">অনুগ্রহ করে সব প্রশ্নের উত্তর দিন</string>
+    <string name="please_specify_the_complication">অনুগ্রহ করে জটিলতা নির্দিষ্ট করুন</string>
+    <string name="please_specify_the_comorbidity">অনুগ্রহ করে সহ-রোগ নির্দিষ্ট করুন</string>
     <string name="complications">জটিলতা</string>
     <string name="conditions">অবস্থা</string>
     <string name="offline_data">অফলাইন ডেটা</string>
@@ -924,7 +924,7 @@
     <string name="blood_glucose_check_frequency">রক্তের গ্লুকোজ পরীক্ষার ফ্রিকোয়েন্সি</string>
     <string name="hba1c_frequency">HbA1c Frequency</string>
     <string name="cho_check_frequency">CHO Check Frequency</string>
-    <string name="no_confirm_diagnosis_warning">রোগীর নির্ণয় নিশ্চিত না করেই কি আপনি রিপোর্ট জমা দিয়ে এগিয়ে যেতে নিশ্চিত?</string>
+    <string name="no_confirm_diagnosis_warning">রোগীর রোগ নিশ্চিত না করেই কি আপনি রিপোর্ট জমা দিতে চান?</string>
     <string name="no_confirm_diagnosis_prescribed_medication_warning">Are you sure want to continue submitting the report without confirming diagnoses and prescribing medicine for the patient?</string>
     <string name="no_confirm_diagnosis_mandatory_warning">Please confirm diagnoses since known patient has been selected</string>
     <string name="edit_confirm_diagnosis_mandatory_warning">Patient Diagnoses and Confirmed Diagnoses are mismatched</string>
@@ -1018,12 +1018,12 @@
     <string name="or_label"> (OR) </string>
     <string name="high_risk_confirmation">Are you sure you want to flag this as a High Risk Pregnancy?</string>
     <string name="no_new_medicines_prescribed_warning">Are you sure you want to continue submitting the report without prescribing medicine for the patient?</string>
-    <string name="please_enter_valid_value_between_45_to_120">দয়া করে 45 থেকে 120 এর মধ্যে বৈধ মান লিখুন</string>
-    <string name="please_enter_muac_between_0_to_26">দয়া করে 0 থেকে 26.5 এর মধ্যে মান লিখুন</string>
+    <string name="please_enter_valid_value_between_45_to_120">অনুগ্রহ করে 45 থেকে 120 এর মধ্যে বৈধ মান লিখুন</string>
+    <string name="please_enter_muac_between_0_to_26">অনুগ্রহ করে 0 থেকে 26.5 এর মধ্যে মান লিখুন</string>
     <string name="tobacoo_question">Are you a regular smoker or have you been a regular smoker in the past 12 months?</string>
     <string name="enter_height">Enter Height</string>
     <string name="enter_weight">Enter Weight</string>
-    <string name="validation_error">দয়া করে একটি বৈধ %1$s লিখুন</string>
+    <string name="validation_error">অনুগ্রহ করে একটি বৈধ %1$s লিখুন</string>
     <string name="height_value">height value</string>
     <string name="weight_value">weight value</string>
     <string name="valid_assessment_date">Please select Assessment Date</string>
@@ -1077,15 +1077,15 @@
     <string name="rejected_message_format">%1$s এর %2$s এ স্থানান্তর অনুরোধ প্রত্যাখ্যান করা হয়েছে।</string>
     <string name="accepted_message_format">%1$s এর %2$s এ স্থানান্তর অনুরোধ গৃহীত হয়েছে।</string>
     <string name="information_message_template">%1$s এর %2$s এ স্থানান্তর অনুরোধ %3$s।</string>
-    <string name="reject_confirmation">Are you sure you want to reject it?</string>
+    <string name="reject_confirmation">আপনি কি সত্যিই এটি বাতিল করতে চান?</string>
     <string name="notification_plus">99+</string>
     <string name="enrollment_date">নিবন্ধনের তারিখ</string>
     <string name="provisional_text">(Provisional)</string>
-    <string name="latest_screening_date">Latest Screening Date</string>
-    <string name="oldest_screening_date">Oldest Screening Date</string>
-    <string name="assessment_due_date">Assessment Due Date</string>
-    <string name="medical_review_due_date">Medical Review Due Date</string>
-    <string name="high_bp_to_low_bg">High BP to Low BP</string>
+    <string name="latest_screening_date">সর্বশেষ স্ক্রিনিং তারিখ</string>
+    <string name="oldest_screening_date">সবচেয়ে পুরানো স্ক্রিনিং তারিখ</string>
+    <string name="assessment_due_date">মূল্যায়নের শেষ তারিখ</string>
+    <string name="medical_review_due_date">মেডিকেল রিভিউ শেষ তারিখ</string>
+    <string name="high_bp_to_low_bg">উচ্চ রক্তচাপ থেকে নিম্ন রক্তচাপ</string>
     <string name="high_bg_to_low_bg">High BG to Low BG</string>
     <string name="latest_assessment_on_that_day_in_that_respective_facility">BP Assessment Date</string>
     <string name="sort_by">দ্বারা সাজান</string>
@@ -1564,7 +1564,7 @@
     <string name="gestational_week">📅 গর্ভকালীন সপ্তাহ</string>
     <string name="pregnancy_too_early_access_title">⚠️ গর্ভাবস্থা মূল্যায়নের জন্য খুব প্রাথমিক পর্যায়</string>
     <string name="pregnancy_too_early_access_desc_1">এলএমপি থেকে ৬ সপ্তাহ পরেই কেবল গর্ভাবস্থা মূল্যায়ন করা সম্ভব।</string>
-    <string name="pregnancy_too_early_access_desc_2">সম্পূর্ণ গর্ভাবস্থা প্রোফাইল মূল্যায়নের জন্য দয়া করে ৬ সপ্তাহ পরে আবার আসুন।</string>
+    <string name="pregnancy_too_early_access_desc_2">সম্পূর্ণ গর্ভাবস্থা প্রোফাইল মূল্যায়নের জন্য অনুগ্রহ করে ৬ সপ্তাহ পরে আবার আসুন।</string>
     <string name="risk_factors_identified">⚠️ শনাক্তকৃত ঝুঁকির কারণসমূহ</string>
 
     <string name="last_visit_date">সর্বশেষ পরিদর্শনের তারিখ</string>

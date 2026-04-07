@@ -404,9 +404,9 @@
             "isMandatory": true,
             "isEnabled": true,
             "title": "Live Birth",
-            "titleCulture": "জীবিত জন্ম",
+            "titleCulture": "জীবিত শিশুর জন্ম",
             "errorMessage": "Please enter number of live births",
-            "errorMessageCulture": "অনুগ্রহ করে জীবিত জন্মের সংখ্যা লিখুন",
+            "errorMessageCulture": "অনুগ্রহ করে জীবিত শিশু জন্মের সংখ্যা লিখুন",
             "visibility": "visible",
             "hint": "Enter number",
             "hintCulture": "সংখ্যা লিখুন",
@@ -427,9 +427,9 @@
             "isMandatory": true,
             "isEnabled": true,
             "title": "Stillbirth",
-            "titleCulture": "মৃত জন্ম",
+            "titleCulture": "মৃত শিশুর জন্ম",
             "errorMessage": "Please enter number of stillbirths",
-            "errorMessageCulture": "অনুগ্রহ করে মৃত জন্মের সংখ্যা লিখুন",
+            "errorMessageCulture": "অনুগ্রহ করে মৃত শিশু জন্মের সংখ্যা লিখুন",
             "visibility": "visible",
             "hint": "Enter number",
             "hintCulture": "সংখ্যা লিখুন",
@@ -674,7 +674,7 @@
                 {
                     "id": "retainedPlacenta",
                     "name": "Retained Placenta",
-                    "cultureValue": "গর্ভফুল আটকে গিয়েছিল"
+                    "cultureValue": "প্ল্যাসেন্টা আটকে থাকা"
                 },
                 {
                     "id": "other",
