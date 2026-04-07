@@ -50,7 +50,8 @@
                     "eqList":
                     [
                         "within42DaysAfterDelivery",
-                        "duringChildbirth"
+                        "duringChildbirth",
+                        "beforeDelivery"
                     ],
                     "targetId": "abortion",
                     "visibility": "gone"
@@ -59,7 +60,8 @@
                     "eqList":
                     [
                         "within42DaysAfterDelivery",
-                        "duringChildbirth"
+                        "duringChildbirth",
+                        "beforeDelivery"
                     ],
                     "targetId": "gestationMonthAtAbortion",
                     "visibility": "gone"
