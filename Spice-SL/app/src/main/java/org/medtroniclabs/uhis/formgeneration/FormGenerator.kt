@@ -157,6 +157,7 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
+import kotlin.text.equals
 
 class FormGenerator(
     var context: Context,
@@ -2691,8 +2692,24 @@ class FormGenerator(
             return
         }
 
-        conditionList.forEach { conditionalModel ->
-            validateConditionModel(conditionalModel, actualValue, isCheckBox, selectedValues)
+        var matchingCondition: ConditionalModel? = null
+
+        if (model.viewType == VIEW_TYPE_FORM_MULTI_SELECT_SPINNER) {
+            matchingCondition = conditionList.firstOrNull {
+                it.eqList?.contains(actualValue) == true || it.eq?.equals(actualValue) == true
+            }
+        }
+
+        if (matchingCondition != null) {
+            validateConditionModel(
+                matchingCondition,
+                actualValue,
+                isCheckBox,
+            )
+        } else {
+            conditionList.forEach { conditionalModel ->
+                validateConditionModel(conditionalModel, actualValue, isCheckBox, selectedValues)
+            }
         }
     }
 
@@ -3080,6 +3097,8 @@ class FormGenerator(
         root: View,
         resetValue: Boolean = false,
     ) {
+        val proceedChanges = continueChanges(root)
+
         if (resetValue && visibility != null && visibility != VISIBLE) {
             resetChildViews(root)
         }
@@ -3090,17 +3109,32 @@ class FormGenerator(
             }
 
             INVISIBLE -> {
-                root.invisible()
+                if (proceedChanges) {
+                    root.invisible()
+                }
             }
 
             GONE -> {
-                root.gone()
+                if (proceedChanges) {
+                    root.gone()
+                }
             }
 
             else -> {
                 root.visible()
             }
         }
+    }
+
+    private fun restrictReset(model: FormLayout?): Boolean {
+        model?.multipleParents?.let { parents ->
+            for ((key, value) in parents) {
+                if (value is List<*> && matchValues(value, resultHashMap[key])) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     fun resetChildViews(rootLyt: View) {
@@ -3154,6 +3188,7 @@ class FormGenerator(
                 VIEW_INFORMATION_LABEL -> {
                     resetInformationLabel(this, model)
                 }
+                VIEW_TYPE_FORM_CARD_FAMILY -> resetCardView(model)
                 else -> {
                     if (view.tag
                             .toString()
@@ -3203,6 +3238,7 @@ class FormGenerator(
     private fun resetChildFormViewGroupComponents(viewGroup: ViewGroup?) {
         viewGroup?.apply {
             val model = serverData?.find { it.id == tag }
+            if (restrictReset(model)) return@apply
             model?.let {
                 when (model.viewType) {
                     VIEW_TYPE_FORM_DATEPICKER,
@@ -3211,6 +3247,8 @@ class FormGenerator(
                         this,
                         model,
                     )
+                    VIEW_TYPE_FORM_CARD_FAMILY -> resetCardView(model)
+                    VIEW_TYPE_FORM_MULTI_SELECT_SPINNER -> resetMultiSelectSpinner(this)
                     VIEW_TYPE_FORM_SPINNER -> resetSpinner(this)
                     VIEW_TYPE_FORM_RADIOGROUP -> resetRadioGroup(this, model)
                     VIEW_TYPE_SINGLE_SELECTION -> {
@@ -3218,8 +3256,48 @@ class FormGenerator(
                         if (this is SingleSelectionCustomView) {
                             resetSingleSelectionChildViews()
                         }
+                        model.condition?.forEach { conditionalModel ->
+                            if (conditionalModel.targetId != null) {
+                                serverData
+                                    ?.find { it.id == conditionalModel.targetId }
+                                    ?.let { childModel ->
+                                        val targetedView =
+                                            parentLayout.findViewWithTag<View>(childModel.id + rootSuffix)
+                                        resetChildFormViewComponents(targetedView)
+                                        setViewVisibility(childModel.visibility, targetedView, true)
+                                        setViewEnableDisable(
+                                            childModel.isEnabled,
+                                            targetedView,
+                                            true,
+                                        )
+                                    }
+                            }
+                        }
                     }
                     //  VIEW_TYPE_FORM_CHECKBOX -> resetCheckbox(this, model)
+                }
+            }
+        }
+    }
+
+    private fun resetMultiSelectSpinner(spinnerView: View) {
+        if (spinnerView is Spinner) {
+            (spinnerView.adapter as? MultiSelectSpinnerAdapter)?.reset()
+            resultHashMap.remove(spinnerView.tag.toString())
+        }
+    }
+
+    private fun resetCardView(model: FormLayout?) {
+        if (model?.id == DefinedParams.BP_LOG) {
+            for (i in 0..2) {
+                getViewByTag("$i-$diastolicSuffix")?.let {
+                    resetEditTextDatePicker(it, model)
+                }
+                getViewByTag("$i-$systolicSuffix")?.let {
+                    resetEditTextDatePicker(it, model)
+                }
+                getViewByTag("$i-$pulseSuffix")?.let {
+                    resetEditTextDatePicker(it, model)
                 }
             }
         }
@@ -3542,17 +3620,19 @@ class FormGenerator(
                         hideValidationField(data)
                     }
                 } else if (data.viewType.equals(VIEW_TYPE_FORM_BP, true)) {
-                    val list = resultHashMap[id] as ArrayList<BPModel>
-                    val validationBPResultModel = Validator.checkValidBPInput(
-                        context,
-                        list,
-                        data,
-                    )
-                    if (validationBPResultModel.status) {
-                        hideValidationField(data)
-                    } else {
-                        isValid = false
-                        requestFocusView(data, validationBPResultModel.message)
+                    if (getViewByTag(AssessmentDefinedParams.BP_LOG + rootSuffix)?.visibility == View.VISIBLE) {
+                        val list = resultHashMap[id] as ArrayList<BPModel>
+                        val validationBPResultModel = Validator.checkValidBPInput(
+                            context,
+                            list,
+                            data,
+                        )
+                        if (validationBPResultModel.status) {
+                            hideValidationField(data)
+                        } else {
+                            isValid = false
+                            requestFocusView(data, validationBPResultModel.message)
+                        }
                     }
                 } else if (data.viewType.equals(VIEW_TYPE_TIME, true)) {
                     val dateKey = id + lastMealTypeDateSuffix
@@ -3690,6 +3770,35 @@ class FormGenerator(
         }
         return isValid
     }
+
+    private fun continueChanges(root: View): Boolean {
+        serverData?.firstOrNull { (it.id + rootSuffix) == root.tag }?.multipleParents?.let { parents ->
+            for ((key, value) in parents) {
+                if (value is List<*> && matchValues(value, resultHashMap[key])) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    private fun matchValues(
+        value: List<*>,
+        any: Any?,
+    ): Boolean =
+        when (any) {
+            is String -> {
+                value.contains(any)
+            }
+
+            is List<*> -> {
+                value.any { it in any }
+            }
+
+            else -> {
+                false
+            }
+        }
 
     fun isViewVisible(id: String): Boolean {
         val view = getViewByTag(id + rootSuffix)
@@ -4050,9 +4159,6 @@ class FormGenerator(
         return text
     }
 
-    /**
-     * Returns dialog text when only single item has selected
-     */
     private fun getSingleSelectedDialogText(
         mapList: java.util.ArrayList<*>,
         checkBoxText: String,
@@ -4060,22 +4166,7 @@ class FormGenerator(
     ): String =
         if (isContainsOther(mapList)) {
             "${getString(R.string.other)} $checkBoxText"
-        }
-//        else if (isNoSymptomContain(mapList)) {
-//            if (id.contains("complication", true)) {
-//                getString(R.string.no_s, getString(R.string.complications))
-//            } else if (id.contains("conditions", true)) {
-//                getString(R.string.no_s, getString(R.string.condition))
-//            } else {
-//                getString(R.string.no_symptom_selected)
-//                if (formLayout.hint != null) {
-//                    " ${formLayout.hint} ${getString((R.string.selected))}"
-//                } else {
-//                    getString(R.string.symptoms_selected)
-//                }
-//            }
-//        }
-        else {
+        } else {
             "${mapList.size} $checkBoxText"
         }
 

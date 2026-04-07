@@ -201,6 +201,7 @@ data class FormLayout(
     var titles: ArrayList<TitleModel>? = null,
     var infoTitle: String? = null,
     var infoTitleCulture: String? = null,
+    var multipleParents: Map<String, Any>? = null,
     var hideDob: Boolean? = null,
 ) : BaseViewParams {
     /**

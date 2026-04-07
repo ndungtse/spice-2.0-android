@@ -117,7 +117,7 @@ object AssessmentStatusGenerator {
                 }
             }
 
-            map.containsKey(MenuConstants.NCD_MENU_ID) -> {
+            map.containsKey(MenuConstants.NCD_MENU_ID) || map.containsKey(MenuConstants.CATARACT_MENU_ID) -> {
                 val results = referralResult?.second ?: listOf()
                 if (results.isNotEmpty()) {
                     if (results.contains(bloodPressure) && results.contains(bloodGlucose)) {

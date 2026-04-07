@@ -64,8 +64,9 @@ class BDEyeCareAssessmentSummaryFragment : BaseFragment() {
     }
 
     private fun initView() {
+        viewModel.otherAssessmentDetails[REFERRED_SITE] = SecuredPreference.getOrganizationFhirId()
+
         binding.btnDone.setOnClickListener {
-            viewModel.otherAssessmentDetails[REFERRED_SITE] = SecuredPreference.getOrganizationFhirId()
             viewModel.updateOtherAssessmentDetails()
         }
     }
@@ -230,4 +231,6 @@ class BDEyeCareAssessmentSummaryFragment : BaseFragment() {
             ),
         )
     }
+
+    fun getCurrentAnsweredStatus(): Boolean = viewModel.otherAssessmentDetails.isNotEmpty()
 }

@@ -89,6 +89,8 @@ class BDNCDAssessmentFragment() : BaseFragment(), FormEventListener {
         }
     }
 
+    fun getCurrentAnsweredStatus(): Boolean = formGenerator.getResultMap().isNotEmpty()
+
     private fun setListeners() {
         binding.btnSubmit.setOnClickListener {
             formGenerator.formSubmitAction(binding.btnSubmit)

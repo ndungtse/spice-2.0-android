@@ -158,7 +158,7 @@ object AssessmentUtil {
                 }
             }
 
-            MenuConstants.NCD_MENU_ID -> {
+            MenuConstants.NCD_MENU_ID, MenuConstants.CATARACT_MENU_ID -> {
                 referralStatus ?: context.getString(R.string.na)
             }
 
@@ -176,6 +176,8 @@ object AssessmentUtil {
         when (service.lowercase()) {
             RMNCH.ANC.lowercase(),
             RMNCH.PNC_MOTHER_MENU.lowercase(),
+            MenuConstants.NCD_MENU_ID.lowercase(),
+            MenuConstants.CATARACT_MENU_ID.lowercase(),
             -> {
                 followUpDate?.let {
                     DateUtils.convertDateFormat(

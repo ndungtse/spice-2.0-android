@@ -13,28 +13,37 @@ import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
+import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.CVD_RISK_SCORE_DISPLAY
 import org.medtroniclabs.uhis.common.DefinedParams.DefaultID
+import org.medtroniclabs.uhis.common.DefinedParams.ID
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.databinding.FragmentBdNcdSummaryBinding
+import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.utility.CustomSpinnerAdapter
 import org.medtroniclabs.uhis.model.AssessmentSummaryModel
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils.findValueByKey
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.AVG_BLOOD_PRESSURE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BMI
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BMI_CATEGORY
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BP_LOG_DETAILS
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.CULTURE_VALUE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.CVD_RISK
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.EYE_DISEASE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FACILITY_TYPE_UPAZILA
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.GLUCOSE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.GLUCOSE_TYPE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.GLUCOSE_UNIT
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.HBA1CUnit
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.HEIGHT
-import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.MMHG
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.HISTORY_OF_OTHER_DISEASES
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.NAME
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.OPERATION_NAME
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.REASON
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.REFERRAL_FACILITY_TYPE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.WEIGHT
@@ -72,6 +81,15 @@ class BDCataractAssessmentSummaryFragment : BaseFragment() {
     }
 
     private fun initView() {
+        if (viewModel.referralStatus == ReferralStatus.Referred.name) {
+            viewModel.otherAssessmentDetails[AssessmentDefinedParams.NextFollowupDate] = DateUtils.convertDateTimeToDate(
+                DateUtils.getDateAfterDays(5),
+                DateUtils.DATE_ddMMyyyy,
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                inUTC = true,
+            )
+        }
+
         binding.btnDone.setOnClickListener {
             viewModel.updateOtherAssessmentDetails()
         }
@@ -119,6 +137,7 @@ class BDCataractAssessmentSummaryFragment : BaseFragment() {
         when (viewModel.referralStatus) {
             ReferralStatus.Referred.name -> {
                 val referralTypeSite = findValueByKey(json, REFERRAL_FACILITY_TYPE) as String
+                viewModel.otherAssessmentDetails[REFERRAL_FACILITY_TYPE] = referralTypeSite
 
                 viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
                     loadPhuSitesList(siteList)
@@ -151,7 +170,7 @@ class BDCataractAssessmentSummaryFragment : BaseFragment() {
             ?.formLayout
             ?.filter { it.isSummary == true }
             ?.mapNotNull { formLayout ->
-                val value = getValueFromJson(formLayout.id, json)
+                val value = getValueFromJson(formLayout, json)
 
                 value?.let {
                     AssessmentSummaryModel(
@@ -164,9 +183,10 @@ class BDCataractAssessmentSummaryFragment : BaseFragment() {
             }?.toMutableList()
 
     private fun getValueFromJson(
-        id: String,
+        layout: FormLayout,
         jsonObject: JSONObject,
     ): String? {
+        val id = layout.id
         return when (id) {
             HEIGHT, WEIGHT -> findValueByKey(jsonObject, id)?.toString()
 
@@ -192,8 +212,12 @@ class BDCataractAssessmentSummaryFragment : BaseFragment() {
             }
 
             BP_LOG_DETAILS -> {
-                val bp = findValueByKey(jsonObject, AVG_BLOOD_PRESSURE) as? String
-                return "$bp $MMHG"
+                val bp = findValueByKey(jsonObject, AVG_BLOOD_PRESSURE)
+                return if (bp != null) {
+                    bp as String
+                } else {
+                    null
+                }
             }
 
             BMI -> {
@@ -210,6 +234,34 @@ class BDCataractAssessmentSummaryFragment : BaseFragment() {
                 val cvdRiskLevel = findValueByKey(jsonObject, CVD_RISK_SCORE_DISPLAY)
                 return if (cvdRiskLevel != null) {
                     cvdRiskLevel as String
+                } else {
+                    null
+                }
+            }
+
+            EYE_DISEASE, HISTORY_OF_OTHER_DISEASES, OPERATION_NAME, REASON -> {
+                val value = findValueByKey(jsonObject, id)
+                val list = mutableListOf<String>()
+                if (value is JSONArray) {
+                    for (i in 0 until value.length()) {
+                        val item = value.getString(i)
+                        val displayName = layout.optionsList
+                            ?.find { (it[ID] as String) == item }
+                            ?.let { item ->
+                                if (isTranslationEnabled) {
+                                    item[CULTURE_VALUE] as String
+                                } else {
+                                    item[NAME] as String
+                                }
+                            }
+                        displayName?.let {
+                            list.add(it)
+                        }
+                    }
+                }
+
+                return if (list.isNotEmpty()) {
+                    list.joinToString(", ")
                 } else {
                     null
                 }
@@ -280,4 +332,6 @@ class BDCataractAssessmentSummaryFragment : BaseFragment() {
             )
         }
     }
+
+    fun getCurrentAnsweredStatus(): Boolean = viewModel.otherAssessmentDetails.isNotEmpty()
 }

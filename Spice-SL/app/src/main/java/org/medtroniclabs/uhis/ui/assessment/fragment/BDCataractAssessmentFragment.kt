@@ -1,7 +1,6 @@
 package org.medtroniclabs.uhis.ui.assessment.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -168,8 +167,9 @@ class BDCataractAssessmentFragment() : BaseFragment(), FormEventListener {
         }
     }
 
+    fun getCurrentAnsweredStatus(): Boolean = formGenerator.getResultMap().isNotEmpty()
+
     override fun onRenderingComplete() {
-        Log.e("TEST", "Rendering Completed")
     }
 
     override fun onUpdateInstruction(

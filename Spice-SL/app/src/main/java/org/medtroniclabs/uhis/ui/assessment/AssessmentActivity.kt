@@ -187,6 +187,30 @@ class AssessmentActivity : BaseActivity() {
                 return Pair(false, true)
             }
 
+            is BDNCDAssessmentFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is BDEyeCareAssessmentFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is BDCataractAssessmentFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), false)
+            }
+
+            is BDNCDAssessmentSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is BDEyeCareAssessmentSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
+            is BDCataractAssessmentSummaryFragment -> {
+                return Pair(fragment.getCurrentAnsweredStatus(), true)
+            }
+
             else -> return Pair(false, false)
         }
     }

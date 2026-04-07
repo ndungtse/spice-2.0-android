@@ -54,6 +54,8 @@ object DefinedParams {
 
     const val OPTIONAL_DATA = "optionalData"
 
+    const val BP_LOG = "bpLog"
+
     /**
      * Returns true if a given name starts with no symptoms or equals none
      */

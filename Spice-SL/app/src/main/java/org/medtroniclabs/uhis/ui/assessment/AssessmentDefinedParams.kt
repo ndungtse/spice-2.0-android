@@ -597,6 +597,8 @@ object AssessmentDefinedParams {
 
     const val EYE_TEST_OUTCOME = "eyeTestOutcome"
 
+    const val EYE_TEST_OUTCOMES = "eyeTestOutcomes"
+
     const val TYPE_OF_GLASS = "typeOfGlass"
 
     const val HISTORY_OF_OTHER_DISEASES_ = "historyOfOtherDiseases_"
@@ -608,4 +610,16 @@ object AssessmentDefinedParams {
     const val REASON_ = "reason_"
 
     const val BIO_METRICS = "bioMetrics"
+
+    const val EYE_DISEASE = "eyeDisease"
+
+    const val HISTORY_OF_OTHER_DISEASES = "historyOfOtherDiseases"
+
+    const val OPERATION_NAME = "operationName"
+
+    const val REASON = "reason"
+
+    const val IS_BEFORE_DIABETES_DIAGNOSIS = "isBeforeDiabetesDiagnosis"
+
+    const val IS_BEFORE_HTN_DIAGNOSIS = "isBeforeHtnDiagnosis"
 }

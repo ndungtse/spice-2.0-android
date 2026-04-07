@@ -160,6 +160,8 @@ class BDEyeCareAssessmentFragment() : BaseFragment(), FormEventListener {
     ) {
     }
 
+    fun getCurrentAnsweredStatus(): Boolean = formGenerator.getResultMap().isNotEmpty()
+
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,

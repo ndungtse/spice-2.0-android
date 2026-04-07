@@ -13,6 +13,7 @@ import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
+import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.CVD_RISK_SCORE_DISPLAY
 import org.medtroniclabs.uhis.common.DefinedParams.DefaultID
@@ -23,6 +24,7 @@ import org.medtroniclabs.uhis.model.AssessmentSummaryModel
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils.findValueByKey
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.AVG_BLOOD_PRESSURE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BMI
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BMI_CATEGORY
@@ -44,6 +46,7 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.WEIGHT
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.hba1c
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
+import kotlin.collections.set
 
 class BDNCDAssessmentSummaryFragment : BaseFragment() {
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -75,6 +78,15 @@ class BDNCDAssessmentSummaryFragment : BaseFragment() {
     }
 
     private fun initView() {
+        if (viewModel.referralStatus == ReferralStatus.Referred.name) {
+            viewModel.otherAssessmentDetails[AssessmentDefinedParams.NextFollowupDate] = DateUtils.convertDateTimeToDate(
+                DateUtils.getDateAfterDays(5),
+                DateUtils.DATE_ddMMyyyy,
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                inUTC = true,
+            )
+        }
+
         binding.btnDone.setOnClickListener {
             viewModel.updateOtherAssessmentDetails()
         }
@@ -122,6 +134,7 @@ class BDNCDAssessmentSummaryFragment : BaseFragment() {
         when (viewModel.referralStatus) {
             ReferralStatus.Referred.name -> {
                 val referralTypeSite = findValueByKey(json, REFERRAL_FACILITY_TYPE) as String
+                viewModel.otherAssessmentDetails[REFERRAL_FACILITY_TYPE] = referralTypeSite
 
                 viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
                     loadPhuSitesList(siteList)
@@ -165,6 +178,8 @@ class BDNCDAssessmentSummaryFragment : BaseFragment() {
                     )
                 }
             }?.toMutableList()
+
+    fun getCurrentAnsweredStatus(): Boolean = viewModel.otherAssessmentDetails.isNotEmpty()
 
     private fun getValueFromJson(
         id: String,

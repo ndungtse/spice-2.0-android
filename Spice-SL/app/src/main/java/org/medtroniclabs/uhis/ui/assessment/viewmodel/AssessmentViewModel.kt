@@ -58,6 +58,7 @@ import org.medtroniclabs.uhis.db.entity.TreatmentDetailsEntity
 import org.medtroniclabs.uhis.di.IoDispatcher
 import org.medtroniclabs.uhis.formgeneration.FormGenerator
 import org.medtroniclabs.uhis.formgeneration.config.ViewType
+import org.medtroniclabs.uhis.formgeneration.model.BPModel
 import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.model.FormResponse
 import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration
@@ -87,6 +88,7 @@ import org.medtroniclabs.uhis.repo.RxBuddyRepository
 import org.medtroniclabs.uhis.repo.TreatmentDetailsRepository
 import org.medtroniclabs.uhis.ui.BaseViewModel
 import org.medtroniclabs.uhis.ui.MenuConstants
+import org.medtroniclabs.uhis.ui.MenuConstants.CATARACT_MENU_ID
 import org.medtroniclabs.uhis.ui.MenuConstants.EYE_CARE_MENU_ID
 import org.medtroniclabs.uhis.ui.MenuConstants.ICCM_MENU_ID
 import org.medtroniclabs.uhis.ui.MenuConstants.NCD_MENU_ID
@@ -97,14 +99,20 @@ import org.medtroniclabs.uhis.ui.MenuConstants.TB_MENU_ID
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BIO_METRICS
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BP_LOG
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.BP_LOG_DETAILS
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.EYE_CARE
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.EYE_DISEASE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.EYE_DISEASE_
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.EYE_TEST_OUTCOME
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.EYE_TEST_OUTCOMES
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FACILITY_TYPE_COMMUNITY_CLINIC
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FACILITY_TYPE_UPAZILA
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FamilyPlanning
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FamilyPlanningDetails
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.GLUCOSE_LOG
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.HISTORY_OF_OTHER_DISEASES_
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.IS_BEFORE_DIABETES_DIAGNOSIS
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.IS_BEFORE_HTN_DIAGNOSIS
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.IsClinicTaken
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.OPERATION_NAME_
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.REASON_
@@ -137,6 +145,8 @@ import java.time.LocalDate
 import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.Any
+import kotlin.collections.HashMap
 
 @HiltViewModel
 class AssessmentViewModel @Inject constructor(
@@ -368,6 +378,7 @@ class AssessmentViewModel @Inject constructor(
                         latestVisit = true,
                         referralStatus = getReferralStatus(referralStatus, assessmentMap),
                         referralReason = referralReason.toString(),
+                        nextFollowUpDate = getNextFollowUpDate(otherDetails),
                     )
                     assessmentHistoryResultLiveData.postValue(assessmentRepository.saveAssessmentHistory(history))
                 }
@@ -400,6 +411,13 @@ class AssessmentViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun getNextFollowUpDate(otherDetail: HashMap<String, Any>?): String? {
+        if (otherDetail != null && otherDetail.containsKey(AssessmentDefinedParams.NextFollowupDate)) {
+            return otherDetail[AssessmentDefinedParams.NextFollowupDate] as String
+        }
+        return null
     }
 
     /**
@@ -729,9 +747,37 @@ class AssessmentViewModel @Inject constructor(
         }
 
         if (menuId == MenuConstants.NCD_MENU_ID && otherDetails.isNotEmpty()) {
-            val ncdAsst = assessmentMap[ncd] as HashMap<String, Any>
-            val facilityType = ncdAsst[REFERRAL_FACILITY_TYPE] as String
-            otherDetails[REFERRAL_FACILITY_TYPE] = facilityType
+            if (referralStatus == ReferralStatus.Referred.name) {
+                val ncdAsst = assessmentMap[ncd] as HashMap<String, Any>
+                val facilityType = ncdAsst[REFERRAL_FACILITY_TYPE] as String
+                otherDetails[REFERRAL_FACILITY_TYPE] = facilityType
+
+                otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                    DateUtils.convertDateTimeToDate(
+                        DateUtils.getDateAfterDays(5),
+                        DateUtils.DATE_ddMMyyyy,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        inUTC = true,
+                    )
+            }
+        }
+
+        if (menuId == MenuConstants.CATARACT_MENU_ID && otherDetails.isNotEmpty()) {
+            if (referralStatus == ReferralStatus.Referred.name) {
+                val catAsst = assessmentMap[CATARACT_MENU_ID] as HashMap<String, Any>
+
+                val ncdAsst = catAsst[ncd] as HashMap<String, Any>
+                val facilityType = ncdAsst[REFERRAL_FACILITY_TYPE] as String
+                otherDetails[REFERRAL_FACILITY_TYPE] = facilityType
+
+                otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                    DateUtils.convertDateTimeToDate(
+                        DateUtils.getDateAfterDays(5),
+                        DateUtils.DATE_ddMMyyyy,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        inUTC = true,
+                    )
+            }
         }
 
         if (menuId == EYE_CARE_MENU_ID) {
@@ -838,12 +884,24 @@ class AssessmentViewModel @Inject constructor(
             if (ncdMap.containsKey(BMI_CATEGORY)) {
                 ncdMap.remove(BMI_CATEGORY)
             }
+
+            if (ncdMap.containsKey(BP_LOG)) {
+                updateBPLogs(ncdMap[BP_LOG] as HashMap<Any, Any>)
+            }
         }
 
-        // Request modification for syncing NCD Symptoms to Backend
-        (map[EYE_CARE_MENU_ID] as? HashMap<*, *>)?.get(EYE_CARE)?.let { eyeCare ->
-            map[EYE_CARE] = eyeCare
-            map.remove(EYE_CARE_MENU_ID)
+        // Request modification for syncing EyeCare Symptoms to Backend
+        if (map.containsKey(EYE_CARE_MENU_ID)) {
+            val eyeCareMainMap = map[EYE_CARE_MENU_ID] as HashMap<Any, Any>
+            if (eyeCareMainMap.containsKey(EYE_CARE)) {
+                val eyeCareMap = eyeCareMainMap[EYE_CARE] as HashMap<Any, Any>
+                val eyeTestOutCome = eyeCareMap[EYE_TEST_OUTCOME] as String
+                eyeCareMap[EYE_TEST_OUTCOMES] = listOf(eyeTestOutCome)
+
+                eyeCareMap.remove(EYE_TEST_OUTCOME)
+                map[EYE_CARE] = eyeCareMap
+                map.remove(EYE_CARE_MENU_ID)
+            }
         }
 
         // Request modification for syncing TB to Backend
@@ -895,23 +953,40 @@ class AssessmentViewModel @Inject constructor(
             }
         }
 
-        if (map.containsKey(MenuConstants.CATARACT_MENU_ID)) {
-            val cataract = map[MenuConstants.CATARACT_MENU_ID] as HashMap<Any, Any>
+        if (map.containsKey(CATARACT_MENU_ID)) {
+            val cataract = map[CATARACT_MENU_ID] as HashMap<Any, Any>
 
             cataract.remove(HISTORY_OF_OTHER_DISEASES_)
             cataract.remove(OPERATION_NAME_)
             cataract.remove(EYE_DISEASE_)
             cataract.remove(REASON_)
 
+            if (cataract.containsKey(CATARACT_MENU_ID)) {
+                val subCataract = cataract[CATARACT_MENU_ID] as HashMap<Any, Any>
+                val eyeDiseases = subCataract[EYE_DISEASE] as Any
+                subCataract[EYE_TEST_OUTCOMES] = eyeDiseases
+
+                subCataract.remove(EYE_DISEASE)
+            }
+
             val bioMetrics = cataract[BIO_METRICS] as? HashMap<*, *>
             val bmiCategory = cataract[BMI_CATEGORY] as? String
-            val glucoseLog = cataract[GLUCOSE_LOG] as? HashMap<*, *>
-            val bpLog = cataract[BP_LOG] as? HashMap<*, *>
+            val glucoseLog = cataract[GLUCOSE_LOG] as? HashMap<Any, Any>
+            val bpLog = cataract[BP_LOG] as? HashMap<Any, Any>
+            val referralFacilityType = cataract[REFERRAL_FACILITY_TYPE] as? String
+
+            val cvdScore = cataract[DefinedParams.CVD_RISK_SCORE] as? Int
+            val cvdLevel = cataract[DefinedParams.CVD_RISK_LEVEL] as? String
+            val cvdScoreDisplay = cataract[DefinedParams.CVD_RISK_SCORE_DISPLAY] as? String
 
             if (bioMetrics != null ||
                 bmiCategory != null ||
                 glucoseLog != null ||
-                bpLog != null
+                bpLog != null ||
+                referralFacilityType != null ||
+                cvdScore != null ||
+                cvdLevel != null ||
+                cvdScoreDisplay != null
             ) {
                 val ncdMap = mutableMapOf<String, Any>()
 
@@ -923,12 +998,38 @@ class AssessmentViewModel @Inject constructor(
                     ncdMap[BMI_CATEGORY] = it
                 }
 
-                glucoseLog?.let {
-                    ncdMap[GLUCOSE_LOG] = it
+                glucoseLog?.let { bg ->
+                    (bg[IS_BEFORE_DIABETES_DIAGNOSIS] as? String)?.let {
+                        bg[IS_BEFORE_DIABETES_DIAGNOSIS] = getFlagTypeValue(it)
+                    }
+
+                    ncdMap[GLUCOSE_LOG] = bg
                 }
 
-                bpLog?.let {
-                    ncdMap[BP_LOG] = it
+                bpLog?.let { bp ->
+                    updateBPLogs(bp)
+
+                    (bp[IS_BEFORE_HTN_DIAGNOSIS] as? String)?.let {
+                        bp[IS_BEFORE_HTN_DIAGNOSIS] = getFlagTypeValue(it)
+                    }
+
+                    ncdMap[BP_LOG] = bp
+                }
+
+                referralFacilityType?.let {
+                    ncdMap[REFERRAL_FACILITY_TYPE] = it
+                }
+
+                cvdScore?.let {
+                    ncdMap[DefinedParams.CVD_RISK_SCORE] = it
+                }
+
+                cvdLevel?.let {
+                    ncdMap[DefinedParams.CVD_RISK_LEVEL] = it
+                }
+
+                cvdScoreDisplay?.let {
+                    ncdMap[DefinedParams.CVD_RISK_SCORE_DISPLAY] = it
                 }
 
                 cataract[NCD_MENU_ID] = ncdMap
@@ -937,11 +1038,22 @@ class AssessmentViewModel @Inject constructor(
             cataract.remove(BMI_CATEGORY)
             cataract.remove(GLUCOSE_LOG)
             cataract.remove(BP_LOG)
+            cataract.remove(REFERRAL_FACILITY_TYPE)
+            cataract.remove(DefinedParams.CVD_RISK_SCORE)
+            cataract.remove(DefinedParams.CVD_RISK_LEVEL)
+            cataract.remove(DefinedParams.CVD_RISK_SCORE_DISPLAY)
         }
 
         val assessmentDetailBE = StringConverter.convertGivenMapToString(map) ?: ""
         return Pair(assessmentDetail, assessmentDetailBE)
     }
+
+    private fun getFlagTypeValue(value: Any): Boolean =
+        when (value) {
+            is String -> value == DefinedParams.Yes
+            is Boolean -> value
+            else -> false
+        }
 
     fun getFormatedNotifiableCondition(
         map: HashMap<*, *>,
@@ -984,6 +1096,15 @@ class AssessmentViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun updateBPLogs(bpLogMap: HashMap<Any, Any>) {
+        val filtered = (bpLogMap[BP_LOG_DETAILS] as? List<*>)
+            ?.filterIsInstance<BPModel>()
+            ?.filter { it.systolic != null && it.diastolic != null }
+            ?: return
+
+        bpLogMap[BP_LOG_DETAILS] = filtered
     }
 
     fun updateFamilyPlanningAssessmentDetails() {
@@ -1458,8 +1579,15 @@ class AssessmentViewModel @Inject constructor(
     ): String? {
         if (status != ReferralStatus.Referred.name) return status
 
-        val type = (assessmentMap[NCD_MENU_ID] as? Map<*, *>)
-            ?.get(REFERRAL_FACILITY_TYPE) as? String
+        var type: String? = null
+        if (assessmentMap.containsKey(NCD_MENU_ID)) {
+            type = (assessmentMap[NCD_MENU_ID] as? Map<*, *>)
+                ?.get(REFERRAL_FACILITY_TYPE) as? String
+        } else if (assessmentMap.containsKey(CATARACT_MENU_ID)) {
+            val catMap = assessmentMap[CATARACT_MENU_ID] as HashMap<Any, Any>
+            type = (catMap[NCD_MENU_ID] as? Map<*, *>)
+                ?.get(REFERRAL_FACILITY_TYPE) as? String
+        }
 
         return when (type) {
             FACILITY_TYPE_UPAZILA -> STATUS_FACILITY_TYPE_UPAZILA

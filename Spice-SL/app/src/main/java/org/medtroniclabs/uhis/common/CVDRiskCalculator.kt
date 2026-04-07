@@ -15,7 +15,7 @@ object CVDRiskCalculator {
         gender: String,
     ) {
         val bpLogs = map[BP_LOG] as HashMap<*, *>
-        val bmiValue = bpLogs[BMI]?.let { it as Double }
+        val bmiValue = bpLogs[BMI]?.let { it as Double } // Need to Check
         val systolicAverage = bpLogs[AVG_SYSTOLIC]?.let { it as Int }
         val isSmoker = bpLogs[IS_REGULAR_SMOKER]?.let { getSmokerType(it) }
 
