@@ -285,6 +285,7 @@
             "errorMessage": "Please enter a valid diastolic value",
             "visibility": "visible",
             "maxLength": 3,
+            "minValue": 30,
             "maxValue": 300,
             "naValue": 0,
             "unitMeasurement": "mmHg"

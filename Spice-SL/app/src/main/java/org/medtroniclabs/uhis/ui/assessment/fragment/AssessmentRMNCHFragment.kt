@@ -319,7 +319,12 @@ class AssessmentRMNCHFragment :
                 val diastolicValue = CommonUtils.getDoubleOrNull(map[id])
                 // Systolic value entered should always be greater than Diastolic value
                 diastolicValue?.let {
-                    formGenerator.getFormLayout(AssessmentDefinedParams.SYSTOLIC)?.minValue = diastolicValue + 1
+                    val minValue = if (diastolicValue < 30) {
+                        30
+                    } else {
+                        diastolicValue + 1
+                    }
+                    formGenerator.getFormLayout(AssessmentDefinedParams.SYSTOLIC)?.minValue = minValue.toDouble()
                 }
             }
 
@@ -505,7 +510,12 @@ class AssessmentRMNCHFragment :
                 val diastolicValue = CommonUtils.getIntegerOrNull(resultMap[id])?.toDouble()
                 // Systolic value entered should always be greater than Diastolic value
                 diastolicValue?.let {
-                    formGenerator.getFormLayout(RMNCH.ID_SYSTOLIC)?.minValue = diastolicValue + 1
+                    val minValue = if (diastolicValue < 30) {
+                        30
+                    } else {
+                        diastolicValue + 1
+                    }
+                    formGenerator.getFormLayout(RMNCH.ID_SYSTOLIC)?.minValue = minValue.toDouble()
                 }
             }
         }

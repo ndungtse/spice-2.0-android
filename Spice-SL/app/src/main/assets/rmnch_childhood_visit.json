@@ -74,32 +74,38 @@
             "optionsList":
             [
                 {
-                    "id": "mothersBreastMilk",
+                    "id": 0,
+                    "value": "mothersBreastMilk",
                     "name": "Mother's breast milk",
                     "cultureValue": "মায়ের দুধ "
                 },
                 {
-                    "id": "cowgoatMilk",
+                    "id": 1,
+                    "value": "cowgoatMilk",
                     "name": "Cow/Goat milk",
                     "cultureValue": "গরু-ছাগলের দুধ"
                 },
                 {
-                    "id": "formulaMilk",
+                    "id": 2,
+                    "value": "formulaMilk",
                     "name": "Formula milk",
                     "cultureValue": "ফর্মুলা দুধ "
                 },
                 {
-                    "id": "semolina",
+                    "id": 3,
+                    "value": "semolina",
                     "name": "Semolina",
                     "cultureValue": "সুজি"
                 },
                 {
-                    "id": "ricePowder",
+                    "id": 4,
+                    "value": "ricePowder",
                     "name": "Rice powder",
                     "cultureValue": "চালের গুঁড়া "
                 },
                 {
-                    "id": "other",
+                    "id": 5,
+                    "value": "other",
                     "name": "Other",
                     "cultureValue": "অন্যান্য "
                 }
