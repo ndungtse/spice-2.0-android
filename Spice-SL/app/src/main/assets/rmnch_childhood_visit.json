@@ -56,6 +56,7 @@
             "title": "Weight",
             "titleCulture": "ওজন (কেজি)",
             "viewType": "EditText",
+            "unitMeasurement": "kg",
             "visibility": "visible"
         },
         {
@@ -70,7 +71,7 @@
             "isNeededDefault": true,
             "errorMessage": "Please select a valid option",
             "title": "What was the child fed in the last 24 hours?",
-            "titleCulture": "গত ২৪ ঘন্টায় শিশুকে কি কি খাওয়ানো হয়েছে?",
+            "titleCulture": "গত ২৪ ঘন্টায় শিশুকে বাড়তি খাবার দেওয়া হয়েছে কিনা?",
             "optionsList":
             [
                 {
@@ -255,7 +256,7 @@
             "optionType": "boolean",
             "readOnly": true,
             "title": "Has the child received vaccines?",
-            "titleCulture": "শিশু টিকা নিয়েছে কি না?",
+            "titleCulture": "শিশু টিকা নিয়েছে কিনা?",
             "visibility": "gone"
         },
         {
@@ -390,7 +391,7 @@
             "optionType": "boolean",
             "readOnly": true,
             "title": "Has referral been made?",
-            "titleCulture": "রেফারেল করা হয়েছে কিনা?",
+            "titleCulture": "রেফার করা হয়েছে কিনা?",
             "visibility": "gone"
         },
         {

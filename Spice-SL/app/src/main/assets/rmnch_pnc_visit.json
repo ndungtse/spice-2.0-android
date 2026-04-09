@@ -250,8 +250,8 @@
             "isEnabled": true,
             "isInfo": "visible",
             "isMandatory": true,
-            "minValue": 30,
-            "maxValue": 300,
+            "minValue": 50,
+            "maxValue": 260,
             "naValue": 0,
             "maxLength": 3,
             "orderId": 7,
@@ -272,8 +272,8 @@
             "isEnabled": true,
             "isInfo": "visible",
             "isMandatory": true,
-            "minValue": 30,
-            "maxValue": 300,
+            "minValue": 20,
+            "maxValue": 180,
             "naValue": 0,
             "maxLength": 3,
             "orderId": 8,
@@ -492,7 +492,7 @@
             ],
             "orderId": 16,
             "title": "Blood Sugar",
-            "titleCulture": "প্রস্রাব পরীক্ষায় বিলিরুবিন আছে কি না?",
+            "titleCulture": "গ্লুকোজ(mmol/l)-রক্ত পরীক্ষা",
             "viewType": "SingleSelectionView",
             "visibility": "visible"
         },
@@ -608,7 +608,7 @@
                     "value": "none"
                 },
                 {
-                    "cultureValue": "কোনোটিই নেই",
+                    "cultureValue": "অন্যান্য",
                     "displayOrder": 8,
                     "id": 8,
                     "name": "Other",
@@ -652,7 +652,7 @@
             "isEnabled": false,
             "orderId": 21,
             "title": "IFA tables",
-            "titleCulture": "কতটি আয়রন বড়ি খেয়েছেন?",
+            "titleCulture": "আয়রন বড়ির তথ্য",
             "viewType": "TextLabel",
             "visibility": "visible"
         },
@@ -668,7 +668,7 @@
             "maxLength": 2,
             "orderId": 22,
             "title": "Total Consumed till now",
-            "titleCulture": "এ পর্যন্ত মোট সেবন",
+            "titleCulture": "পূর্ববর্তী PNC ভিজিট থেকে এ পর্যন্ত মোট সেবন",
             "viewType": "EditText",
             "visibility": "visible"
         },
@@ -684,7 +684,7 @@
             "maxLength": 2,
             "orderId": 23,
             "title": "Provided",
-            "titleCulture": "প্রদত্ত ঔষধ / সাপ্লিমেন্ট",
+            "titleCulture": "এই ভিজিটে প্রদত্ত",
             "viewType": "EditText",
             "visibility": "visible"
         },
@@ -694,7 +694,7 @@
             "isEnabled": false,
             "orderId": 24,
             "title": "Calcium tablets",
-            "titleCulture": "কতটি ক্যালসিয়াম বড়ি খেয়েছেন?",
+            "titleCulture": "ক্যালসিয়াম বড়ির তথ্য",
             "viewType": "TextLabel",
             "visibility": "visible"
         },
@@ -710,7 +710,7 @@
             "maxLength": 2,
             "orderId": 25,
             "title": "Total Consumed till now",
-            "titleCulture": "এ পর্যন্ত মোট সেবন",
+            "titleCulture": "পূর্ববর্তী PNC ভিজিট থেকে এ পর্যন্ত মোট সেবন",
             "viewType": "EditText",
             "visibility": "visible"
         },
@@ -726,7 +726,7 @@
             "maxLength": 2,
             "orderId": 26,
             "title": "Provided",
-            "titleCulture": "প্রদত্ত ঔষধ / সাপ্লিমেন্ট",
+            "titleCulture": "এই ভিজিটে প্রদত্ত",
             "viewType": "EditText",
             "visibility": "visible"
         },
@@ -825,7 +825,7 @@
             "isSummary": true,
             "orderId": 2,
             "title": "Postnatal Care of the Mother",
-            "titleCulture": "সব পরবর্তী মায়ের পরিচর্যাঃ",
+            "titleCulture": "প্রসব পরবর্তী মায়ের পরিচর্যা",
             "viewType": "Instruction",
             "visibility": "gone"
         },

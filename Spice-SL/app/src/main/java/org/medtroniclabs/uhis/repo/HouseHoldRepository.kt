@@ -19,7 +19,6 @@ import org.medtroniclabs.uhis.db.entity.SubVillageEntity
 import org.medtroniclabs.uhis.db.entity.VillageEntity
 import org.medtroniclabs.uhis.db.local.RoomHelper
 import org.medtroniclabs.uhis.db.response.HouseHoldEntityWithLastActivity
-import org.medtroniclabs.uhis.db.response.HouseholdMemberCount
 import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration
 import org.medtroniclabs.uhis.model.household.HouseHoldFilterUiData
 import org.medtroniclabs.uhis.model.medicalreview.AddMemberRegRequest
@@ -33,37 +32,9 @@ class HouseHoldRepository @Inject constructor(
     private var apiHelper: ApiHelper,
     private var roomHelper: RoomHelper,
 ) {
-    suspend fun getLastHouseholdNo(villageId: Long): Long? = roomHelper.getLastHouseholdNo(villageId)
-
-    suspend fun checkHouseholdNumberExists(householdNo: Long): Boolean = roomHelper.checkHouseholdNumberExists(householdNo)
-
-    suspend fun generateUniqueHouseholdNumber(): Long {
-        var householdNumber: Long
-        var attempts = 0
-        val maxAttempts = 100
-
-        do {
-            // Generate random 10-digit number (1000000000 to 9999999999)
-            householdNumber = (1000000000L..9999999999L).random()
-            attempts++
-        } while (checkHouseholdNumberExists(householdNumber) && attempts < maxAttempts)
-
-        if (attempts >= maxAttempts) {
-            // Fallback: use timestamp-based number if too many collisions
-            householdNumber = System.currentTimeMillis() % 10000000000L
-            if (householdNumber < 1000000000L) {
-                householdNumber += 1000000000L
-            }
-        }
-
-        return householdNumber
-    }
-
     suspend fun getHouseHoldDetailsById(houseHoldId: Long) = roomHelper.getHouseHoldDetailsById(houseHoldId)
 
     suspend fun getAllHouseHoldMemberList(houseHoldId: Long): ArrayList<HouseholdMemberEntity> = roomHelper.getAllHouseHoldMemberList(houseHoldId)
-
-    fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount> = roomHelper.getMemberCountInHouseholdLiveData(houseHoldId)
 
     fun getFilteredHouseholdsLiveData(
         searchTerm: String,
@@ -90,6 +61,12 @@ class HouseHoldRepository @Inject constructor(
                 DefinedParams.EXTERNAL_MEMBER_REGISTRATION -> {
                     CommonUtils.getStringFromAssets(
                         DefinedParams.EXTERNAL_MEMBER_REGISTRATION + ".json",
+                        context.assets,
+                    )
+                }
+                DefinedParams.HOUSEHOLD_REGISTRATION -> {
+                    CommonUtils.getStringFromAssets(
+                        DefinedParams.HOUSEHOLD_REGISTRATION + ".json",
                         context.assets,
                     )
                 }

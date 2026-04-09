@@ -3766,11 +3766,13 @@ class FormGenerator(
                     }
                 }
                 if (value != null) {
+                    var isMinMaxValid = true
                     if (naValue != null && naValue == value) {
                         // If naValue equals value that means user is not able to measure
                         hideValidationField(formLayout)
                     } else if (maxValue != null && minValue != null && (value < minValue!! || value > maxValue!!)) {
                         isValid = false
+                        isMinMaxValid = false
                         requestFocusView(
                             formLayout,
                             getString(
@@ -3785,6 +3787,7 @@ class FormGenerator(
                         )
                     } else if (minValue != null && value < minValue!!) {
                         isValid = false
+                        isMinMaxValid = false
                         requestFocusView(
                             formLayout,
                             getString(
@@ -3796,6 +3799,7 @@ class FormGenerator(
                         )
                     } else if (maxValue != null && value > maxValue!!) {
                         isValid = false
+                        isMinMaxValid = false
                         requestFocusView(
                             formLayout,
                             getString(
@@ -3807,6 +3811,24 @@ class FormGenerator(
                         )
                     } else {
                         hideValidationField(formLayout)
+                    }
+                    // Custom handling for validating systolic diastolic range
+                    if (id == AssessmentDefinedParams.SYSTOLIC && isMinMaxValid) {
+                        val diastolicValue = CommonUtils.getDoubleOrNull(resultHashMap[AssessmentDefinedParams.DIASTOLIC])
+                        if (diastolicValue != null) {
+                            val isSystolicInvalid = if (naValue != null) {
+                                naValue != value && value <= diastolicValue
+                            } else {
+                                value <= diastolicValue
+                            }
+                            if (isSystolicInvalid) {
+                                isValid = false
+                                requestFocusView(
+                                    formLayout,
+                                    getString(R.string.systolic_diastolic_error),
+                                )
+                            }
+                        }
                     }
                 } else {
                     hideValidationField(formLayout)

@@ -417,35 +417,19 @@ class AssessmentViewModel @Inject constructor(
             edd = DateUtils.getEstDeliveryDateFromLmp(lmp)
         }
 
-        // Check if existing record exists
-        val existingPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
-
-        val pregnancyDetail = if (existingPregnancyDetail != null) {
-            // Use existing record and update fields
-            existingPregnancyDetail.apply {
-                lastMenstrualPeriod = lmp
-                estimatedDeliveryDate = edd
-                pregnancyTest = pregnancy?.get(PregnantWomen.ID_PREGNANCY_TEST) as? String
-                gravida = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_GRAVIDA)).toInt()
-                parity = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_PARITY)).toInt()
-                numberOfLivingChildren = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_LIVING_CHILDREN)).toInt()
-                ageOfLastChild = pregnancy?.get(PregnantWomen.ID_AGE_OF_LAST_CHILD) as? String
-            }
-        } else {
-            // Create new record
-            PregnancyDetail(
-                householdMemberLocalId = details.id,
-                patientId = details.patientId,
-                householdMemberId = details.memberId,
-                lastMenstrualPeriod = lmp,
-                estimatedDeliveryDate = edd,
-                pregnancyTest = pregnancy?.get(PregnantWomen.ID_PREGNANCY_TEST) as? String,
-                gravida = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_GRAVIDA)).toInt(),
-                parity = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_PARITY)).toInt(),
-                numberOfLivingChildren = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_LIVING_CHILDREN)).toInt(),
-                ageOfLastChild = pregnancy?.get(PregnantWomen.ID_AGE_OF_LAST_CHILD) as? String,
-            )
-        }
+        // Create new record
+        val pregnancyDetail = PregnancyDetail(
+            householdMemberLocalId = details.id,
+            patientId = details.patientId,
+            householdMemberId = details.memberId,
+            lastMenstrualPeriod = lmp,
+            estimatedDeliveryDate = edd,
+            pregnancyTest = pregnancy?.get(PregnantWomen.ID_PREGNANCY_TEST) as? String,
+            gravida = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_GRAVIDA)).toInt(),
+            parity = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_PARITY)).toInt(),
+            numberOfLivingChildren = CommonUtils.getDouble(pregnancy?.get(PregnantWomen.ID_LIVING_CHILDREN)).toInt(),
+            ageOfLastChild = pregnancy?.get(PregnantWomen.ID_AGE_OF_LAST_CHILD) as? String,
+        )
 
         // Ensure pregnancyEpisodeId and timestamps are set
         ensurePregnancyEpisodeIdAndTimestamps(pregnancyDetail)
@@ -1149,7 +1133,6 @@ class AssessmentViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             // Get existing record to preserve pregnancyEpisodeId and startAt
             val existingRecord = memberRegistrationRepository.getPregnancyDetailByPatientId(pregnancyDetail.householdMemberLocalId)
-            val isNewRecord = existingRecord == null
 
             // If existing record found, preserve pregnancyEpisodeId and startAt
             if (existingRecord != null) {

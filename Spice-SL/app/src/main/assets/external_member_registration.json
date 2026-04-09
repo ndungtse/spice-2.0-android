@@ -194,7 +194,7 @@
                 {
                     "id": "personal",
                     "name": "Personal (Self)",
-                    "cultureValue": "ব্যক্তিগত (নিজস্ব)"
+                    "cultureValue": "ব্যাক্তিগত (নিজস্ব)"
                 },
                 {
                     "id": "family",
@@ -204,7 +204,7 @@
                 {
                     "id": "friend",
                     "name": "Friend",
-                    "cultureValue": "বন্ধু"
+                    "cultureValue": "প্রতিবেশী/বন্ধু"
                 }
             ],
             "title": "Mobile number category",
@@ -327,7 +327,7 @@
                 }
             ],
             "title": "Disability",
-            "titleCulture": "প্রতিবন্ধিতা",
+            "titleCulture": "সদস্যের কি কোনো বিশেষ শারীরিক সীমাবদ্ধতা রয়েছে?",
             "viewType": "SingleSelectionView",
             "visibility": "visible",
             "isInfo": "visible",

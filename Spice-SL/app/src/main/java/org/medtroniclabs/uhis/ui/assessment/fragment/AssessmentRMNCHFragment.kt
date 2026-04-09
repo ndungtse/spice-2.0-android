@@ -316,16 +316,6 @@ class AssessmentRMNCHFragment :
             AssessmentDefinedParams.DIASTOLIC -> {
                 handleAncFieldStatusUpdate(AssessmentDefinedParams.DIASTOLIC)
                 updateAllFieldStatuses() // BP affects multiple fields (edema, urinaryAlbumin)
-                val diastolicValue = CommonUtils.getDoubleOrNull(map[id])
-                // Systolic value entered should always be greater than Diastolic value
-                diastolicValue?.let {
-                    val minValue = if (diastolicValue < 30) {
-                        30
-                    } else {
-                        diastolicValue + 1
-                    }
-                    formGenerator.getFormLayout(AssessmentDefinedParams.SYSTOLIC)?.minValue = minValue.toDouble()
-                }
             }
 
             AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS -> {
@@ -501,22 +491,10 @@ class AssessmentRMNCHFragment :
                 handlePncBloodSugarHighRiskHighlight()
             }
 
-            RMNCH.ID_SYSTOLIC -> {
+            AssessmentDefinedParams.SYSTOLIC,
+            AssessmentDefinedParams.DIASTOLIC,
+            -> {
                 handlePncBpHighRiskHighlight()
-            }
-
-            RMNCH.ID_DIASTOLIC -> {
-                handlePncBpHighRiskHighlight()
-                val diastolicValue = CommonUtils.getIntegerOrNull(resultMap[id])?.toDouble()
-                // Systolic value entered should always be greater than Diastolic value
-                diastolicValue?.let {
-                    val minValue = if (diastolicValue < 30) {
-                        30
-                    } else {
-                        diastolicValue + 1
-                    }
-                    formGenerator.getFormLayout(RMNCH.ID_SYSTOLIC)?.minValue = minValue.toDouble()
-                }
             }
         }
     }
@@ -1883,8 +1861,8 @@ class AssessmentRMNCHFragment :
      */
     private fun handlePncBpHighRiskHighlight() {
         val resultMap = formGenerator.getResultMap()
-        val systolic = CommonUtils.getInteger(resultMap[RMNCH.ID_SYSTOLIC])
-        val diastolic = CommonUtils.getInteger(resultMap[RMNCH.ID_DIASTOLIC])
+        val systolic = CommonUtils.getInteger(resultMap[AssessmentDefinedParams.SYSTOLIC])
+        val diastolic = CommonUtils.getInteger(resultMap[AssessmentDefinedParams.DIASTOLIC])
         val isKnownHtn = isValueEquals(resultMap[RMNCH.ID_KNOWN_HTN], DefinedParams.Yes)
         val edema = resultMap[RMNCH.ID_EDEMA] as? String
         val urinaryAlbumin = resultMap[RMNCH.ID_URINARY_ALBUMIN] as? String
@@ -1898,16 +1876,16 @@ class AssessmentRMNCHFragment :
 
         // Systolic
         if (systolic > 0 && bpHighRiskTrigger) {
-            updateFieldTitleWithStatus(RMNCH.ID_SYSTOLIC, emptyList(), AssessmentDefinedParams.STATUS_HIGH_RISK, null)
+            updateFieldTitleWithStatus(AssessmentDefinedParams.SYSTOLIC, emptyList(), AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
-            updateFieldTitleWithStatus(RMNCH.ID_SYSTOLIC, emptyList(), null, null)
+            updateFieldTitleWithStatus(AssessmentDefinedParams.SYSTOLIC, emptyList(), null, null)
         }
 
         // Diastolic
         if (diastolic > 0 && bpHighRiskTrigger) {
-            updateFieldTitleWithStatus(RMNCH.ID_DIASTOLIC, emptyList(), AssessmentDefinedParams.STATUS_HIGH_RISK, null)
+            updateFieldTitleWithStatus(AssessmentDefinedParams.DIASTOLIC, emptyList(), AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
-            updateFieldTitleWithStatus(RMNCH.ID_DIASTOLIC, emptyList(), null, null)
+            updateFieldTitleWithStatus(AssessmentDefinedParams.DIASTOLIC, emptyList(), null, null)
         }
 
         // Edema (Point 2)

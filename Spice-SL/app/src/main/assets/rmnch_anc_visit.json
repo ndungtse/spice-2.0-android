@@ -5,7 +5,7 @@
             "familyOrder": 0,
             "id": "medicalHistoryPhysicalExamination",
             "title": "Medical History, Physical Examination & Vitals",
-            "titleCulture": "চিকিৎসার ইতিহাস, শারীরিক পরীক্ষা এবং গুরুত্বপূর্ণ লক্ষণ",
+            "titleCulture": "চিকিৎসার ইতিহাস, শারীরিক পরীক্ষা এবং গুরুত্বপূর্ণ লক্ষণসমূহ",
             "viewType": "CardView"
         },
         {
@@ -171,7 +171,7 @@
                     "id": -1,
                     "value": "none",
                     "name": "Not taking any treatment",
-                    "cultureValue": "কোনো চিকিৎসা নিচ্ছেন না"
+                    "cultureValue": "কোনো চিকিৎসা গ্রহণ করছেন না"
                 }
             ]
         },
@@ -262,8 +262,8 @@
             "errorMessage": "Please enter a valid systolic value",
             "visibility": "visible",
             "maxLength": 3,
-            "minValue": 30,
-            "maxValue": 300,
+            "minValue": 50,
+            "maxValue": 260,
             "naValue": 0,
             "unitMeasurement": "mmHg"
         },
@@ -285,8 +285,8 @@
             "errorMessage": "Please enter a valid diastolic value",
             "visibility": "visible",
             "maxLength": 3,
-            "minValue": 30,
-            "maxValue": 300,
+            "minValue": 20,
+            "maxValue": 180,
             "naValue": 0,
             "unitMeasurement": "mmHg"
         },
@@ -379,7 +379,7 @@
             "isMandatory": true,
             "isEnabled": true,
             "title": "Fundal Height",
-            "titleCulture": "জরায়ুর ঊচচতা (সেমি)",
+            "titleCulture": "জরায়ুর উচচতা (সেমি)",
             "errorMessage": "Please enter a valid fundal height",
             "visibility": "visible",
             "maxLength": 3,

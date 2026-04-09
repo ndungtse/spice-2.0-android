@@ -58,8 +58,8 @@ object PNCAssessmentEvaluator {
                 }
             }
 
-            val systolic = CommonUtils.getInteger(maternalAssessment[RMNCH.ID_SYSTOLIC])
-            val diastolic = CommonUtils.getInteger(maternalAssessment[RMNCH.ID_DIASTOLIC])
+            val systolic = CommonUtils.getInteger(maternalAssessment[AssessmentDefinedParams.SYSTOLIC])
+            val diastolic = CommonUtils.getInteger(maternalAssessment[AssessmentDefinedParams.DIASTOLIC])
             val isBpHigh = isHighBp(systolic, diastolic)
             val isKnownHtn = isValueEquals(maternalAssessment[RMNCH.ID_KNOWN_HTN], DefinedParams.Yes)
             val isEclampsia = isValueEquals(maternalAssessment[RMNCH.ID_ECLAMPSIA], DefinedParams.Yes)
@@ -271,7 +271,7 @@ object PNCAssessmentEvaluator {
                     hb < AssessmentDefinedParams.HEMOGLOBIN_SEVERE_ANEMIA_THRESHOLD -> {
                         level = AnemiaLevel.Severe
                     }
-                    hb <= AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD -> {
+                    hb < AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD -> {
                         level = AnemiaLevel.Moderate
                     }
                     hb < AssessmentDefinedParams.HEMOGLOBIN_MILD_ANEMIA_THRESHOLD -> {

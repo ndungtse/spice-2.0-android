@@ -360,7 +360,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
-                    } else if (hb <= AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD) {
+                    } else if (hb < AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "moderateAnemia" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")

@@ -17,6 +17,7 @@ import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams.Househo
 import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams
+import org.medtroniclabs.uhis.common.DefinedParams.HOUSEHOLD_REGISTRATION
 import org.medtroniclabs.uhis.common.DefinedParams.VillageId
 import org.medtroniclabs.uhis.common.EntityMapper.getResultSpinnerMapList
 import org.medtroniclabs.uhis.common.SecuredPreference
@@ -34,7 +35,6 @@ import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.villageId
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.BaseFragment
-import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.REGISTRATION
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseRegistrationViewModel
 import org.medtroniclabs.uhis.ui.landing.OnDialogDismissListener
 
@@ -65,7 +65,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        householdRegistrationViewModel.getFormData(REGISTRATION)
+        householdRegistrationViewModel.getFormData(HOUSEHOLD_REGISTRATION)
         initializeFormGenerator()
         setListeners()
         attachObservers()
