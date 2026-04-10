@@ -3,9 +3,6 @@ package org.medtroniclabs.uhis.ui.assessment
 import org.medtroniclabs.uhis.common.DefinedParams
 
 object AssessmentDefinedParams {
-    const val PHUSite1 = "PHU Site 1"
-    const val PHUSite2 = "PHU Site 2"
-    const val PHUSite3 = "PHU Site 3"
     const val isUnusualSleepy = "isUnusualSleepy"
     const val isConvulsionPastFewDays = "isConvulsionPastFewDays"
     const val isVomiting = "isVomiting"
@@ -150,7 +147,6 @@ object AssessmentDefinedParams {
     const val Measles2Given = "measles2Given"
 
     const val errorSuffix = "errorMessageView"
-    const val DateOfBirth = "date_of_birth"
 
     const val DEATH_OF_MOTHER_KEY = "deathOfMother"
     const val NA = "NA"
@@ -386,7 +382,6 @@ object AssessmentDefinedParams {
 
     const val ILLNESS_HEART_DISEASE = "heartDisease"
     const val ILLNESS_TUBERCULOSIS = "tuberculosis"
-    const val ILLNESS_TB = "TB"
     const val ILLNESS_ASTHMA = "asthma"
     const val ILLNESS_THYROID = "thyroidDisease"
     const val ILLNESS_KIDNEY_DISEASE = "kidneyDisease"
@@ -610,6 +605,10 @@ object AssessmentDefinedParams {
     const val REASON_ = "reason_"
 
     const val BIO_METRICS = "bioMetrics"
+
+    const val TITLE_SUFFIX = "titleTextView"
+    const val SUMMARY_VALUE = "summaryValue"
+    const val SUMMARY_ROOT = "summaryRoot"
 
     const val EYE_DISEASE = "eyeDisease"
 

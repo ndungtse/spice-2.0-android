@@ -1,26 +1,23 @@
 package org.medtroniclabs.uhis.mappingkey
 
 object HouseHoldRegistration {
-    const val householdName = "householdName"
-    const val noOfPeople = "no_of_people"
-    const val villageId = "village_id"
-    const val shasthyaShebikaId = "shasthya_shebika_id"
-    const val subVillageId = "sub_village_id"
-    const val householdType = "household_type"
-    const val monthlyIncome = "monthly_income"
-    const val householdNumber = "household_number"
-    const val totalMembers = "total_members"
-    const val BRAC_VO = "BRACVO"
-    const val BRAC_NVO = "BRACNVO"
-    const val isPregnant = "isPregnant"
-    const val yes = "yes"
-    const val no = "no"
+    const val HOUSEHOLD_NAME = "householdName"
+    const val NO_OF_PEOPLE = "no_of_people"
+    const val VILLAGE_ID = "village_id"
+    const val SHASTHYA_SHEBIKA_ID = "shasthya_shebika_id"
+    const val SUB_VILLAGE_ID = "sub_village_id"
+    const val HOUSEHOLD_TYPE = "household_type"
+    const val MONTHLY_INCOME = "monthly_income"
+    const val HOUSEHOLD_NUMBER = "household_number"
+    const val TOTAL_MEMBERS = "total_members"
+    const val YES = "yes"
+    const val NO = "no"
 
     /**
      * EditText : Disability persons count
      */
     const val ID_DISABILITY_PERSONS_COUNT = "disability_persons_count"
 
-    const val householdHeadOccupation = "householdHeadOccupation"
-    const val otherOccupation = "otherOccupation"
+    const val HOUSEHOLD_HEAD_OCCUPATION = "householdHeadOccupation"
+    const val OTHER_OCCUPATION = "otherOccupation"
 }

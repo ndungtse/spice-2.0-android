@@ -93,16 +93,6 @@ object RMNCH {
     const val ID_PULSE = "pulse"
 
     /**
-     * EditText : Systolic
-     */
-    const val ID_SYSTOLIC = "systolic"
-
-    /**
-     * EditText : Diastolic
-     */
-    const val ID_DIASTOLIC = "diastolic"
-
-    /**
      * SingleSelectionView : Edema
      */
     const val ID_EDEMA = "edema"

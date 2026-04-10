@@ -12,9 +12,9 @@ import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
+import org.medtroniclabs.uhis.appextensions.WORKER_UNIQUE_NAME
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
-import org.medtroniclabs.uhis.appextensions.workerUniqueName
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import org.medtroniclabs.uhis.databinding.FragmentOfflineSyncBinding
@@ -47,7 +47,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
 
     private fun checkBGSyncStatus() {
         val workManager = WorkManager.getInstance(this)
-        workManager.getWorkInfosForUniqueWorkLiveData(workerUniqueName).observe(this) {
+        workManager.getWorkInfosForUniqueWorkLiveData(WORKER_UNIQUE_NAME).observe(this) {
             isBackgroundSyncRunning = !it.isNullOrEmpty() && it[0].state == WorkInfo.State.RUNNING
         }
     }

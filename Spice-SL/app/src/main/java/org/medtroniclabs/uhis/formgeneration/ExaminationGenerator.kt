@@ -27,6 +27,7 @@ import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.ui.SingleSelectionCustomView
 import org.medtroniclabs.uhis.formgeneration.utility.DigitsInputFilter
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 
 class ExaminationGenerator(
     val context: Context,
@@ -35,12 +36,12 @@ class ExaminationGenerator(
     var scrollView: NestedScrollView? = null,
     val translate: Boolean = false,
 ) : ContextWrapper(context) {
-    private val rootSuffix = "rootView"
-    private val titleSuffix = "titleTextView"
-    private val errorSuffix = "errorMessageView"
-    private val tvKey = "summaryKey"
-    private val tvValue = "summaryValue"
-    private val rootSummary = "summaryRoot"
+    private val rootSuffix = AssessmentDefinedParams.rootSuffix
+    private val titleSuffix = AssessmentDefinedParams.TITLE_SUFFIX
+    private val errorSuffix = AssessmentDefinedParams.errorSuffix
+    private val tvKey = AssessmentDefinedParams.summaryKey
+    private val tvValue = AssessmentDefinedParams.SUMMARY_VALUE
+    private val rootSummary = AssessmentDefinedParams.SUMMARY_ROOT
     private val resultHashMap = HashMap<String, Any>()
 
     fun populateExaminationView(examinations: ArrayList<ExaminationModel>) {

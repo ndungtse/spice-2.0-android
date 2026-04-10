@@ -38,6 +38,8 @@ import org.medtroniclabs.uhis.app.analytics.upload.UploadWorker
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsUtils.getAppVersion
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsUtils.updateUserIdIfEmpty
+import org.medtroniclabs.uhis.appextensions.WORKER_UNIQUE_NAME
+import org.medtroniclabs.uhis.appextensions.WORKER_UNIQUE_NAME_FOR_NCD
 import org.medtroniclabs.uhis.appextensions.cancelAllWorker
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.isVisible
@@ -45,8 +47,6 @@ import org.medtroniclabs.uhis.appextensions.setError
 import org.medtroniclabs.uhis.appextensions.startBackgroundOfflineSync
 import org.medtroniclabs.uhis.appextensions.triggerOneTimeWorker
 import org.medtroniclabs.uhis.appextensions.visible
-import org.medtroniclabs.uhis.appextensions.workerUniqueName
-import org.medtroniclabs.uhis.appextensions.workerUniqueNameForNCD
 import org.medtroniclabs.uhis.common.ApiManager
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams
@@ -964,7 +964,7 @@ class LandingActivity :
 
     private fun checkBGSyncStatus() {
         val workManager = WorkManager.getInstance(this)
-        workManager.getWorkInfosForUniqueWorkLiveData(workerUniqueName).observe(this) {
+        workManager.getWorkInfosForUniqueWorkLiveData(WORKER_UNIQUE_NAME).observe(this) {
             if (!it.isNullOrEmpty() && it[0].state == WorkInfo.State.RUNNING) {
                 binding.appBarMain.includeMainContent.syncingHolder
                     .visible()
@@ -1019,7 +1019,7 @@ class LandingActivity :
 
     private fun checkBGSyncStatusForNCD() {
         val workManager = WorkManager.getInstance(this)
-        workManager.getWorkInfosForUniqueWorkLiveData(workerUniqueNameForNCD).observe(this) {
+        workManager.getWorkInfosForUniqueWorkLiveData(WORKER_UNIQUE_NAME_FOR_NCD).observe(this) {
             if (!it.isNullOrEmpty() && it[0].state == WorkInfo.State.RUNNING) {
                 binding.appBarMain.includeMainContent.syncingHolder
                     .visible()

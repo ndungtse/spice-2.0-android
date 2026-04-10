@@ -14,6 +14,10 @@ object MemberRegistration {
     const val VILLAGE_ID = "village_id"
     const val DATE_OF_BIRTH = "date_of_birth"
     const val GENDER = "gender"
+
+    /**
+     * Spinner : ID Type
+     */
     const val ID_TYPE = "id_type"
     const val NATIONAL_ID = "national_id"
     const val IS_HOUSEHOLD_HEAD = "is_house_hold_head"
@@ -72,10 +76,16 @@ object MemberRegistration {
      */
     const val MAX_AGE_PREGNANCY = 50
 
+    const val MAX_LENGTH_NATIONAL_ID = 17
+
+    val NATIONAL_ID_LENGTH = listOf(10, 13, 17)
+
     enum class MaritalStatus(val value: String) {
         MARRIED("married"),
-        SINGLE("single"),
-        UNMARRIED("unmarried"),
+    }
+
+    enum class IdType(val value: String) {
+        NATIONAL_ID("nid"),
     }
 
     fun isValidRelationAge(

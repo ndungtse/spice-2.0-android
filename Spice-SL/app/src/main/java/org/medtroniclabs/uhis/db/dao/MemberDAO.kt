@@ -28,6 +28,15 @@ interface MemberDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMember(memberEntity: HouseholdMemberEntity): Long
 
+    /**
+     * Retrieves all national IDs that are not null and match the specified ID type.
+     *
+     * @param idType The type of ID to filter by (e.g., National ID).
+     * @return A list of matching national IDs.
+     */
+    @Query("SELECT national_id FROM HouseHoldMember WHERE national_id IS NOT NULL AND id_type = :idType")
+    suspend fun getAllNationalIds(idType: String): List<String>
+
     @Query("SELECT * FROM HouseHoldMember WHERE household_id = :houseHoldId")
     suspend fun getAllHouseHoldMemberList(houseHoldId: Long): List<HouseholdMemberEntity>
 

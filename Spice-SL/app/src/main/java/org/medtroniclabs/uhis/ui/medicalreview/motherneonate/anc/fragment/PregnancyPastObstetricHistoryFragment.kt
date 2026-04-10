@@ -15,7 +15,7 @@ import org.medtroniclabs.uhis.data.model.ChipViewItemModel
 import org.medtroniclabs.uhis.databinding.FragmentPregnancyPastObstetricHistoryBinding
 import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.ui.SingleSelectionCustomView
-import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.yes
+import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.YES
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.TagListCustomView
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
@@ -117,7 +117,7 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
         { selectedID, _, _, _ ->
             viewModel.resultFlowHashMap[TAG] = selectedID as String
             val flowValue = viewModel.resultFlowHashMap[TAG] as? String
-            viewModel.deliveryKit = flowValue?.equals(yes, ignoreCase = true) ?: false
+            viewModel.deliveryKit = flowValue?.equals(YES, ignoreCase = true) ?: false
             viewModel.checkSubmitBtn()
         }
 

@@ -114,7 +114,7 @@ class CbsMemberRegistration :
         resultMap?.let { map ->
             // Hide Error message
             childFormGenerator
-                .getViewByTag(AssessmentDefinedParams.DateOfBirth + AssessmentDefinedParams.errorSuffix)
+                .getViewByTag(MemberRegistration.DATE_OF_BIRTH + AssessmentDefinedParams.errorSuffix)
                 ?.apply {
                     visibility = View.GONE
                 }
@@ -148,7 +148,7 @@ class CbsMemberRegistration :
 
     private fun showInValidDob(message: String) {
         childFormGenerator
-            .getViewByTag(AssessmentDefinedParams.DateOfBirth + AssessmentDefinedParams.errorSuffix)
+            .getViewByTag(MemberRegistration.DATE_OF_BIRTH + AssessmentDefinedParams.errorSuffix)
             ?.apply {
                 visibility = View.VISIBLE
             }.takeIf { it is TextView }

@@ -112,7 +112,7 @@ class PhysicalExaminationFragment : BaseFragment() {
             val flowValue =
                 viewModel.congenitalDefectMap[DefinedParams.CongenitalDetect] as? String
             viewModel.congenitalDefect =
-                flowValue?.equals(HouseHoldRegistration.yes, ignoreCase = true) ?: false
+                flowValue?.equals(HouseHoldRegistration.YES, ignoreCase = true) ?: false
         }
 
     private fun getCongenitalDetectFlowData(): ArrayList<Map<String, Any>> {
@@ -188,7 +188,7 @@ class PhysicalExaminationFragment : BaseFragment() {
             val flowValue =
                 viewModel.breastCondition[DefinedParams.BreastCondition] as? String
             viewModel.breastFeeding =
-                flowValue?.equals(HouseHoldRegistration.yes, ignoreCase = true) ?: false
+                flowValue?.equals(HouseHoldRegistration.YES, ignoreCase = true) ?: false
             if (selectedID == getString(R.string.yes)) {
                 binding.BreastFeedingGroup.visible()
             } else {
@@ -228,7 +228,7 @@ class PhysicalExaminationFragment : BaseFragment() {
             val flowValue =
                 viewModel.exclusiveBreastCondition[DefinedParams.ExclusiveBreastCondition] as? String
             viewModel.exclusiveBreastFeeding =
-                flowValue?.equals(HouseHoldRegistration.yes, ignoreCase = true) ?: false
+                flowValue?.equals(HouseHoldRegistration.YES, ignoreCase = true) ?: false
         }
 
     private fun getExclusiveBreastConditionFlowData(): ArrayList<Map<String, Any>> {

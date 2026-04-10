@@ -99,17 +99,18 @@ object CommonUtils {
     ): String = assets.open(fileName).bufferedReader().use { it.readText() }
 
     fun getIntegerOrNull(answer: Any?): Int? =
-        if (answer is Int) {
-            answer
-        } else if (answer is String) {
-            val answerNumber = answer.toIntOrNull()
-            if (answerNumber is Int) {
-                answerNumber
-            } else {
+        when (answer) {
+            is Int -> {
+                answer
+            }
+
+            is String -> {
+                answer.toIntOrNull()
+            }
+
+            else -> {
                 null
             }
-        } else {
-            null
         }
 
     /**
@@ -120,55 +121,43 @@ object CommonUtils {
         defaultValue: Int = 0,
     ): Int = getIntegerOrNull(answer) ?: defaultValue
 
-    fun getLongOrNull(answer: Any?): Long? {
+    fun getLongOrNull(answer: Any?): Long? =
         when (answer) {
-            is Long -> return answer
+            is Long -> answer
             is String -> {
-                val answerNumber = answer.toLongOrNull()
-                return if (answerNumber is Long) {
-                    answerNumber
-                } else {
-                    null
-                }
+                answer.toLongOrNull()
             }
 
             is Double -> {
-                return answer.toLong()
+                answer.toLong()
             }
 
             else -> {
-                return null
+                null
             }
         }
-    }
 
-    fun getBooleanFromString(answer: Any): Boolean? = (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
+    fun getBooleanFromString(answer: Any): Boolean = (answer is String) && answer.equals(HouseHoldRegistration.YES, true)
 
-    fun getDoubleOrNull(answer: Any?): Double? {
+    fun getDoubleOrNull(answer: Any?) =
         when (answer) {
-            is Double -> return answer
+            is Double -> answer
             is String -> {
-                val answerNumber = answer.toDoubleOrNull()
-                return if (answerNumber is Double) {
-                    answerNumber
-                } else {
-                    null
-                }
+                answer.toDoubleOrNull()
             }
 
             is Int -> {
-                return answer.toDouble()
+                answer.toDouble()
             }
 
             is Long -> {
-                return answer.toDouble()
+                answer.toDouble()
             }
 
             else -> {
-                return null
+                null
             }
         }
-    }
 
     /**
      * Returns double value from the answer else [defaultValue]
@@ -178,14 +167,9 @@ object CommonUtils {
         defaultValue: Double = 0.0,
     ): Double = getDoubleOrNull(answer) ?: defaultValue
 
-    fun getStringOrEmptyString(answer: Any?): String =
-        if (answer is String) {
-            answer
-        } else {
-            ""
-        }
+    fun getStringOrEmptyString(answer: Any?): String = answer as? String ?: ""
 
-    fun getIsBooleanFromString(answer: Any?): Boolean = (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
+    fun getIsBooleanFromString(answer: Any?): Boolean = (answer is String) && answer.equals(HouseHoldRegistration.YES, true)
 
     fun displayAge(
         dobString: String,
@@ -424,7 +408,7 @@ object CommonUtils {
             context.getString(R.string.gender_other)
         }
 
-    fun getBooleanAsString(value: Boolean): String = if (value) HouseHoldRegistration.yes else HouseHoldRegistration.no
+    fun getBooleanAsString(value: Boolean): String = if (value) HouseHoldRegistration.YES else HouseHoldRegistration.NO
 
     fun getBMI(
         heightInCM: Double,
@@ -466,7 +450,7 @@ object CommonUtils {
             } else {
                 days.toString()
             }
-        } catch (e: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             enteredDays
         }
 

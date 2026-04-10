@@ -4,7 +4,7 @@
       "familyOrder": 0,
       "id": "clientProfileAssessment",
       "title": "Client Profile & Assessment",
-      "titleCulture": "ক্লায়েন্ট প্রোফাইল এবং মূল্যায়ন",
+      "titleCulture": "সক্ষম দম্পতি প্রোফাইল এবং মূল্যায়ন",
       "viewType": "CardView"
     },
     {
@@ -98,7 +98,7 @@
       ],
       "defaultValue": null,
       "errorMessage": "Please select Current use of modern methods of Family Planning",
-      "cultureErrorMessage": "অনুগ্রহ করে পরিবার পরিকল্পনার আধুনিক পদ্ধতির বর্তমান ব্যবহার নির্বাচন করুন",
+      "cultureErrorMessage": "অনুগ্রহ করে বর্তমানে ব্যবহৃত আধুনিক পরিবার পরিকল্পনার পদ্ধতি নির্বাচন করুন",
       "family": "clientProfileAssessment",
       "fieldName": "Current use of modern methods of Family Planning",
       "id": "familyPlanningMethods",
@@ -131,7 +131,7 @@
         {
           "id": "condoms",
           "name": "Condoms",
-          "cultureValue": "কন্ডম"
+          "cultureValue": "কনডম"
         },
         {
           "id": "sterilizationFemale",

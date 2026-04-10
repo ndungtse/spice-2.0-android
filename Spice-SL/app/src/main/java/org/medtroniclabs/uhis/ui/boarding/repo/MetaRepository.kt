@@ -50,6 +50,7 @@ import org.medtroniclabs.uhis.db.entity.SubVillageEntity
 import org.medtroniclabs.uhis.db.entity.UserProfileEntity
 import org.medtroniclabs.uhis.db.entity.VillageEntity
 import org.medtroniclabs.uhis.db.local.RoomHelper
+import org.medtroniclabs.uhis.mappingkey.PregnantWomen
 import org.medtroniclabs.uhis.mappingkey.Screening
 import org.medtroniclabs.uhis.model.CultureLocaleModel
 import org.medtroniclabs.uhis.ncd.data.DeviceDetails
@@ -916,7 +917,7 @@ class MetaRepository @Inject constructor(
             if (memberPregnancyDetail.typeOfAbortion.isNullOrBlank() && (ddDay == null || ddDay <= 42)) {
                 val dd = getDayCountFromDD(memberPregnancyDetail)
                 val lmp = getDayCountFromLMP(memberPregnancyDetail)
-                if (lmp != null && lmp > 42 && dd == null) {
+                if (lmp != null && lmp >= PregnantWomen.LMP_THRESHOLD_DAYS && dd == null) {
                     return RMNCH.ANC
                 } else if (dd != null && dd <= 42) {
                     return RMNCH.PNC

@@ -56,6 +56,7 @@
             "title": "Weight",
             "titleCulture": "ওজন (কেজি)",
             "viewType": "EditText",
+            "unitMeasurement": "kg",
             "visibility": "visible"
         },
         {
@@ -70,36 +71,42 @@
             "isNeededDefault": true,
             "errorMessage": "Please select a valid option",
             "title": "What was the child fed in the last 24 hours?",
-            "titleCulture": "গত ২৪ ঘন্টায় শিশুকে কি কি খাওয়ানো হয়েছে?",
+            "titleCulture": "গত ২৪ ঘন্টায় শিশুকে বাড়তি খাবার দেওয়া হয়েছে কিনা?",
             "optionsList":
             [
                 {
-                    "id": "mothersBreastMilk",
+                    "id": 0,
+                    "value": "mothersBreastMilk",
                     "name": "Mother's breast milk",
                     "cultureValue": "মায়ের দুধ "
                 },
                 {
-                    "id": "cowgoatMilk",
+                    "id": 1,
+                    "value": "cowgoatMilk",
                     "name": "Cow/Goat milk",
                     "cultureValue": "গরু-ছাগলের দুধ"
                 },
                 {
-                    "id": "formulaMilk",
+                    "id": 2,
+                    "value": "formulaMilk",
                     "name": "Formula milk",
                     "cultureValue": "ফর্মুলা দুধ "
                 },
                 {
-                    "id": "semolina",
+                    "id": 3,
+                    "value": "semolina",
                     "name": "Semolina",
                     "cultureValue": "সুজি"
                 },
                 {
-                    "id": "ricePowder",
+                    "id": 4,
+                    "value": "ricePowder",
                     "name": "Rice powder",
                     "cultureValue": "চালের গুঁড়া "
                 },
                 {
-                    "id": "other",
+                    "id": 5,
+                    "value": "other",
                     "name": "Other",
                     "cultureValue": "অন্যান্য "
                 }
@@ -249,7 +256,7 @@
             "optionType": "boolean",
             "readOnly": true,
             "title": "Has the child received vaccines?",
-            "titleCulture": "শিশু টিকা নিয়েছে কি না?",
+            "titleCulture": "শিশু টিকা নিয়েছে কিনা?",
             "visibility": "gone"
         },
         {
@@ -384,7 +391,7 @@
             "optionType": "boolean",
             "readOnly": true,
             "title": "Has referral been made?",
-            "titleCulture": "রেফারেল করা হয়েছে কিনা?",
+            "titleCulture": "রেফার করা হয়েছে কিনা?",
             "visibility": "gone"
         },
         {
@@ -392,7 +399,7 @@
             [],
             "defaultValue": null,
             "errorMessage": "Please select Referral Facility",
-            "cultureErrorMessage": "অনুগ্রহ করে রেফারেল সুবিধার ধরন নির্বাচন করুন",
+            "cultureErrorMessage": "অনুগ্রহ করে রেফারের জন্য স্বাস্থ্যকেন্দ্র নির্বাচন করুন",
             "family": "pncChild",
             "fieldName": "Referral place",
             "id": "childReferralFacilityType",

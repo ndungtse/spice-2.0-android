@@ -12,12 +12,10 @@ import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
  * @param title Title for the particular field
  * @param family On which card family the field to be rendered
  * @param visibility Default visibility of the field
- * @param prefixText *Unused right now*
  * @param isMandatory Whether adding some input is mandatory for the field or not
  * @param displayAsterisk Used in view type **TextLabel** to display * at the end of the title
  * @param minLength Validation for minimum length input for view type **EditText**
  * @param maxLength Max length for input field for view types **NoOfDaysView**, **EditText**, **BP**, **EditTextArea**
- * @param blockedCharacterSet *Unused right now*
  * @param inputType Input type for view type **EditText**. Refer [android.text.InputType] for more info.
  * If nothing is passed, it takes the default whatever is there for [android.widget.EditText]
  * @param orientation Orientation for view type **RadioGroup**. For horizontal 0, for vertical 1. If nothing provided default orientation is horizontal.
@@ -32,10 +30,8 @@ import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
  * @param isEnabled Flag whether the field is enabled or not
  * @param defaultValue Default value for a field for view types **EditText**, **EditTextArea**, **Spinner**, **InformationLabel**, **RadioGroup**.
  * @param condition Based on current field value, it will enable or disable other fields which are passed in the conditions
- * @param action *Unused right now*
  * @param hint Hint for the particular field
  * @param isNeedAction Used for view type **EditText** & id **identityValue** to generate national id
- * @param actionTitle *Unused right now*
  * @param instructions Used to display instructions for view type **Instruction**
  * @param instructionsCulture Used to display instructions for view type **Instruction** in second language
  * @param isSummary Flag to decide whether a particular field needs to be displayed in summary screens
@@ -56,28 +52,20 @@ import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
  * For view type **InformationLabel**, it is used to display the unit measurement in the key with title. If view type is **EditText**, it is getting stored in resultmap with key **id+Unit**
  * @param isEditable Used in case of NCD flows mostly. If the field is editable, then the field gets rendered in NCD edit flow.
  * @param isCustomWorkflow TODO
- * @param customWorkflowId *Unused right now*
- * @param startValue *Unused right now*
- * @param endValue *Unused right now*
- * @param interval *Unused right now*
- * @param isAboveUpperLimit *Unused right now*
  * @param optionType Used to decide option type for view type **EditText**. Options can be from [org.medtroniclabs.uhis.formgeneration.config.EditTextOptionType]
  * @param mandatoryCount Mandatory number of BP readings to take for view type **BP**.
  * @param titleCulture Title for the particular field in second language
  * @param hintCulture Hint for the particular field in second language
  * @param disableSpinner Whether to disable spinner for view type **Spinner**.
  * @param startsWith Ideally used for phone number fields to check, whether the given phone number starting with the given list or not.
- * @param isEnrollment *Unused right now*
- * @param isReferred *Unused right now*
  * @param onlyAlphabets Used for validating the field whether the value is only alphabet or not for view type **EditText**.
  * @param applyDecimalFilter Used for applying decimal filter for view type **EditText**, **EditTextArea**.
  * @param applyTwoDigitPrecision Used for applying decimal filter max up-to 2 digits for view type **EditText**, **EditTextArea**.
  * @param backgroundColor Background color for view type **InformationLabel**
- * @param information TODO
+ * @param information Info for view type **NoOfDaysView**.
  * @param titleSummary Used for showing title in summary screen
  * @param noOfDays TODO
- * @param informationVisibility TODO
- * @param isBooleanAnswer TODO
+ * @param informationVisibility Should be one of [org.medtroniclabs.uhis.formgeneration.config.DefinedParams.VISIBLE], [org.medtroniclabs.uhis.formgeneration.config.DefinedParams.INVISIBLE], [org.medtroniclabs.uhis.formgeneration.config.DefinedParams.GONE] to display info [information] for view type **NoOfDaysView**.
  * @param isInfo Should be one of [org.medtroniclabs.uhis.formgeneration.config.DefinedParams.VISIBLE], [org.medtroniclabs.uhis.formgeneration.config.DefinedParams.INVISIBLE], [org.medtroniclabs.uhis.formgeneration.config.DefinedParams.GONE] to display info [infoTitle] / [infoTitle] for view types **EditText**, **NoOfDaysView**, **SingleSelectionView**, **Spinner**. If nothing provided default is gone.
  * @param dosageListItems TODO
  * @param maxDecimalPlaces Maximum number of decimal filter for view type **EditText**, **EditTextArea**. If [applyDecimalFilter] or [applyTwoDigitPrecision] are given then that precedes.
@@ -95,14 +83,15 @@ import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
  * @param category TODO
  * @param textLabelColor If valid color given, then it applies the text color to the label/title for view type **TextLabel**.
  * @param textLabelStyle If given, then it applies text style to the label/title for view type **TextLabel**. One of [org.medtroniclabs.uhis.common.DefinedParams.BOLD], [org.medtroniclabs.uhis.common.DefinedParams.ITALIC], , [org.medtroniclabs.uhis.common.DefinedParams.BOLD_ITALIC]
- * @param familyOrder TODO
+ * @param familyOrder A unique number for each of the family (**CardView**)
  * @param ageCondition TODO
  * @param workflowType TODO
- * @param orderId TODO
+ * @param orderId A unique number for each of the field.
  * @param customizedWorkflowId TODO
  * @param infoTitle Info title for view types **EditText**, **NoOfDaysView**, **SingleSelectionView**, **Spinner**. If [isInfo] is not given then this field is of no use.
  * @param infoTitleCulture Info title in second language for view types **EditText**, **NoOfDaysView**, **SingleSelectionView**, **Spinner**. If [isInfo] is not given then this field is of no use.
  * @param hideDob Boolean for whether to hide date picker for view type **AgeYMD**.
+ * @param naValue A value the user can enter when the field is not applicable or cannot be measured. If the input matches [naValue], it is treated as a default value and excluded from [minValue] and [maxValue] validation.
  */
 data class FormLayout(
     override val viewType: String,
@@ -110,12 +99,10 @@ data class FormLayout(
     override val title: String,
     var family: String? = null,
     var visibility: String?,
-    var prefixText: String? = null,
     var isMandatory: Boolean = false,
     var displayAsterisk: Boolean = false,
     var maxLength: Int? = null,
     var minLength: Int? = null,
-    var blockedCharacterSet: String? = null,
     var inputType: Int? = null,
     var orientation: Int? = null,
     var errorMessage: String? = null,
@@ -129,10 +116,8 @@ data class FormLayout(
     var isEnabled: Boolean? = null,
     var defaultValue: String? = null,
     var condition: ArrayList<ConditionalModel>? = null,
-    var action: String? = null,
     var hint: String? = null,
     var isNeedAction: Boolean = false,
-    var actionTitle: String? = null,
     var instructions: ArrayList<String>? = null,
     var instructionsCulture: ArrayList<String>? = null,
     var isSummary: Boolean? = null,
@@ -152,19 +137,12 @@ data class FormLayout(
     var unitMeasurement: String? = null,
     var isEditable: Boolean = false,
     var isCustomWorkflow: Boolean = false,
-    var customWorkflowId: String? = null,
-    var startValue: Double? = null,
-    var endValue: Double? = null,
-    var interval: Double? = null,
-    var isAboveUpperLimit: Boolean = false,
     var optionType: String? = null,
     var mandatoryCount: Int? = null,
     var titleCulture: String? = null,
     var hintCulture: String? = null,
     var disableSpinner: Boolean? = null,
     var startsWith: ArrayList<String>? = null,
-    var isEnrollment: Boolean? = true,
-    var isReferred: Boolean? = null,
     var onlyAlphabets: Boolean? = null,
     var applyDecimalFilter: Boolean? = null,
     var applyTwoDigitPrecision: Boolean? = null,
@@ -174,7 +152,6 @@ data class FormLayout(
     var titleSummaryCulture: String? = null,
     var noOfDays: Int? = null,
     var informationVisibility: String? = null,
-    var isBooleanAnswer: Boolean = false,
     var isInfo: String? = null,
     var dosageListItems: ArrayList<RecommendedDosageListModel>? = null,
     var maxDecimalPlaces: Int? = null,
@@ -203,6 +180,7 @@ data class FormLayout(
     var infoTitleCulture: String? = null,
     var multipleParents: Map<String, Any>? = null,
     var hideDob: Boolean? = null,
+    var naValue: Double? = null,
 ) : BaseViewParams {
     /**
      * Returns info title

@@ -210,7 +210,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                     root.setPadding(0)
                     with(tvTitle) {
-                        setText(R.string.high_risk_indicators)
+                        setText(R.string.emergency_referral)
                         setTypeface(null, Typeface.BOLD)
                     }
                     binding.parentLayout.addView(root)
@@ -360,7 +360,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
-                    } else if (hb <= AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD) {
+                    } else if (hb < AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "moderateAnemia" }
                         option?.let {
                             instructions.add(option[DefinedParams.name] as? String ?: "")
@@ -518,7 +518,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                     root.setPadding(0)
                     with(tvTitle) {
-                        setText(R.string.high_risk_indicators)
+                        setText(R.string.emergency_referral)
                         setTypeface(null, Typeface.BOLD)
                     }
                     binding.parentLayout.addView(root)
