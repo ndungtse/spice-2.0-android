@@ -52,7 +52,7 @@ import org.medtroniclabs.uhis.formgeneration.extension.markMandatory
 import org.medtroniclabs.uhis.formgeneration.listener.FormEventListener
 import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.model.FormResponse
-import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.villageId
+import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.VILLAGE_ID
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration.isValidMinAge
 import org.medtroniclabs.uhis.network.resource.ResourceState
@@ -740,7 +740,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
     }
 
     override fun onRenderingComplete() {
-        val view = formGenerator.getViewByTag(villageId + formGenerator.rootSuffix)
+        val view = formGenerator.getViewByTag(VILLAGE_ID + formGenerator.rootSuffix)
         val relationSipView =
             formGenerator.getViewByTag(MedicalReviewDefinedParams.HH_RELATIONSHIP + formGenerator.rootSuffix)
         if (memberRegistrationViewModel.medicalReviewFlow) {

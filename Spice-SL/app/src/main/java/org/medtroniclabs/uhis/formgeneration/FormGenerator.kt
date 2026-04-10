@@ -3266,6 +3266,11 @@ class FormGenerator(
         }
     }
 
+    /**
+     * Returns the view with specific tag within [parentLayout].
+     *
+     * Most likely the fields and their childs have some tags.
+     */
     fun getViewByTag(tag: Any): View? = parentLayout.findViewWithTag(tag)
 
     private fun resetRadioGroup(

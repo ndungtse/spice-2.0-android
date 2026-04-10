@@ -522,9 +522,9 @@ class AssessmentViewModel @Inject constructor(
 
                         // For external mothers, carry location from mother member itself.
                         if (isExternalMother) {
-                            motherMember.villageId?.let { babyMap[HouseHoldRegistration.villageId] = it }
-                            motherMember.shasthyaShebikaId?.let { babyMap[HouseHoldRegistration.shasthyaShebikaId] = it }
-                            motherMember.subVillageId?.let { babyMap[HouseHoldRegistration.subVillageId] = it }
+                            motherMember.villageId?.let { babyMap[HouseHoldRegistration.VILLAGE_ID] = it }
+                            motherMember.shasthyaShebikaId?.let { babyMap[HouseHoldRegistration.SHASTHYA_SHEBIKA_ID] = it }
+                            motherMember.subVillageId?.let { babyMap[HouseHoldRegistration.SUB_VILLAGE_ID] = it }
                         }
 
                         val memberId = memberRegistrationRepository.registerMember(

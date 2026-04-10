@@ -40,9 +40,9 @@ import org.medtroniclabs.uhis.formgeneration.listener.FormEventListener
 import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.model.FormResponse
 import org.medtroniclabs.uhis.formgeneration.utility.CustomSpinnerAdapter
-import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.shasthyaShebikaId
-import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.subVillageId
-import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.villageId
+import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.SHASTHYA_SHEBIKA_ID
+import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.SUB_VILLAGE_ID
+import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.VILLAGE_ID
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration.NAME
 import org.medtroniclabs.uhis.network.resource.ResourceState
@@ -149,7 +149,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                             formGenerator.spinnerDataInjection(data, mapList)
 
                             // Verify data was set - if not, set it directly
-                            formGenerator.getViewByTag(villageId)?.let { view ->
+                            formGenerator.getViewByTag(VILLAGE_ID)?.let { view ->
                                 if (view is AppCompatSpinner) {
                                     val adapter = view.adapter
                                     if (adapter is CustomSpinnerAdapter) {
@@ -157,7 +157,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                                         if (adapter.count <= 1) {
                                             // Data wasn't set, set it directly
                                             val finalMapList = ArrayList(mapList)
-                                            val mandatory = formGenerator.getServerData()?.find { it.id == villageId }?.isMandatory ?: false
+                                            val mandatory = formGenerator.getServerData()?.find { it.id == VILLAGE_ID }?.isMandatory ?: false
                                             if (!mandatory || finalMapList.size != 1) {
                                                 finalMapList.add(
                                                     0,
@@ -174,7 +174,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                             }
 
                             // If we have a pending village ID from edit-mode, apply it now
-                            applyPendingSelectionIfReady(villageId, pendingVillageId) {
+                            applyPendingSelectionIfReady(VILLAGE_ID, pendingVillageId) {
                                 pendingVillageId = null
                             }
 
@@ -186,7 +186,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                                     val mapItem = mapList.firstOrNull()
                                     mapItem?.let { map ->
                                         val id = map[DefinedParams.ID]
-                                        formGenerator.getViewByTag(villageId)?.let { spinnerView ->
+                                        formGenerator.getViewByTag(VILLAGE_ID)?.let { spinnerView ->
                                             // Post to ensure adapter data is set
                                             spinnerView.post {
                                                 formGenerator.setValueForView(id, spinnerView)
@@ -199,7 +199,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
 
                         // Show village/union field if we have more than 1
                         if (data.response is List<*> && data.response.size > 1) {
-                            formGenerator.getViewByTag(villageId)?.visible()
+                            formGenerator.getViewByTag(VILLAGE_ID + formGenerator.rootSuffix)?.visible()
                         }
                     }
                 }
@@ -215,7 +215,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
                         // Apply pending SS selection after data injection
-                        applyPendingSelectionIfReady(shasthyaShebikaId, pendingSsId) {
+                        applyPendingSelectionIfReady(SHASTHYA_SHEBIKA_ID, pendingSsId) {
                             pendingSsId = null
                         }
                     }
@@ -232,7 +232,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                     resourceState.data?.let { data ->
                         formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
                         // Apply pending Sub-village selection after data injection
-                        applyPendingSelectionIfReady(subVillageId, pendingSubVillageId) {
+                        applyPendingSelectionIfReady(SUB_VILLAGE_ID, pendingSubVillageId) {
                             pendingSubVillageId = null
                         }
                     }
@@ -329,7 +329,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
         // Gender: select then disable like normal edit
         details.gender.let { gender ->
             formGenerator.getViewByTag("${gender}_${MemberRegistration.GENDER}")?.performClick()
-            if (!gender.isNullOrBlank()) {
+            if (gender.isNotBlank()) {
                 formGenerator.disableSingleSelection(MemberRegistration.GENDER)
             }
         }
@@ -349,7 +349,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
             )
 
         formGenerator.getViewByTag(MemberRegistration.DATE_OF_BIRTH)?.let { view ->
-            if (!dateOfBirth.isNullOrBlank()) {
+            if (dateOfBirth.isNotBlank()) {
                 formGenerator.disableView(view)
             }
             formGenerator.setDobValueForAgeOrDob(
@@ -379,13 +379,13 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
         pendingSubVillageId = details.subVillageId
 
         // If dropdown data already loaded before member-details response, apply immediately
-        applyPendingSelectionIfReady(villageId, pendingVillageId) {
+        applyPendingSelectionIfReady(VILLAGE_ID, pendingVillageId) {
             pendingVillageId = null
         }
-        applyPendingSelectionIfReady(shasthyaShebikaId, pendingSsId) {
+        applyPendingSelectionIfReady(SHASTHYA_SHEBIKA_ID, pendingSsId) {
             pendingSsId = null
         }
-        applyPendingSelectionIfReady(subVillageId, pendingSubVillageId) {
+        applyPendingSelectionIfReady(SUB_VILLAGE_ID, pendingSubVillageId) {
             pendingSubVillageId = null
         }
 
@@ -435,15 +435,15 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
 
     private fun disableLocationFieldsInEditMode() {
         if (editMemberId == -1L) return
-        formGenerator.getViewByTag(villageId)?.isEnabled = false
-        formGenerator.getViewByTag(shasthyaShebikaId)?.isEnabled = false
-        formGenerator.getViewByTag(subVillageId)?.isEnabled = false
+        formGenerator.getViewByTag(VILLAGE_ID)?.isEnabled = false
+        formGenerator.getViewByTag(SHASTHYA_SHEBIKA_ID)?.isEnabled = false
+        formGenerator.getViewByTag(SUB_VILLAGE_ID)?.isEnabled = false
     }
 
     override fun onRenderingComplete() {
         // Trigger initial load for Union dropdown after form is rendered
         householdRegistrationViewModel.loadDataCacheByType(
-            villageId,
+            VILLAGE_ID,
             "",
         )
     }
@@ -454,37 +454,37 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
     ) {
         // Handle dropdown dependencies for external members
         when (id) {
-            villageId -> {
+            VILLAGE_ID -> {
                 // Union selected - load SS list
                 val villageIdLong = CommonUtils.getLongOrNull(selectedId) ?: 0L
                 if (villageIdLong != 0L) {
                     householdRegistrationViewModel.loadShasthyaShebikaDataCacheByType(
-                        shasthyaShebikaId,
+                        SHASTHYA_SHEBIKA_ID,
                         "",
                     )
                     // During edit prefill, preserve pending child values and avoid clearing.
                     if (pendingSsId == null && pendingSubVillageId == null) {
-                        formGenerator.getViewByTag(shasthyaShebikaId)?.let { view ->
+                        formGenerator.getViewByTag(SHASTHYA_SHEBIKA_ID)?.let { view ->
                             formGenerator.setValueForView(null, view)
                         }
-                        formGenerator.getViewByTag(subVillageId)?.let { view ->
+                        formGenerator.getViewByTag(SUB_VILLAGE_ID)?.let { view ->
                             formGenerator.setValueForView(null, view)
                         }
                     }
                 }
             }
-            shasthyaShebikaId -> {
+            SHASTHYA_SHEBIKA_ID -> {
                 // SS selected - load Village list
                 val shasthyaShebikaIdLong = CommonUtils.getLongOrNull(selectedId) ?: 0L
                 if (shasthyaShebikaIdLong != 0L) {
                     householdRegistrationViewModel.loadSubVillageDataCacheByType(
-                        subVillageId,
+                        SUB_VILLAGE_ID,
                         "",
                         shasthyaShebikaIdLong,
                     )
                     // During edit prefill, preserve pending sub-village and avoid clearing.
                     if (pendingSubVillageId == null) {
-                        formGenerator.getViewByTag(subVillageId)?.let { view ->
+                        formGenerator.getViewByTag(SUB_VILLAGE_ID)?.let { view ->
                             formGenerator.setValueForView(null, view)
                         }
                     }
@@ -500,13 +500,13 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
     ) {
         if (localDataCache is String) {
             when (id) {
-                villageId -> {
+                VILLAGE_ID -> {
                     householdRegistrationViewModel.loadDataCacheByType(id, localDataCache)
                 }
-                shasthyaShebikaId -> {
+                SHASTHYA_SHEBIKA_ID -> {
                     householdRegistrationViewModel.loadShasthyaShebikaDataCacheByType(id, localDataCache)
                 }
-                subVillageId -> {
+                SUB_VILLAGE_ID -> {
                     selectedParent?.let {
                         householdRegistrationViewModel.loadSubVillageDataCacheByType(id, localDataCache, it)
                     }

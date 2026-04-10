@@ -179,17 +179,17 @@ class HouseholdMemberRepository @Inject constructor(
         if (entity == null) {
             // If householdId is null, get location fields from form map
             if (householdId == null) {
-                val villageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.villageId])
+                val villageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.VILLAGE_ID])
                 if (villageIdFromMap != null) {
                     householdMemberEntity.villageId = villageIdFromMap
                 }
 
-                val shasthyaShebikaIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.shasthyaShebikaId])
+                val shasthyaShebikaIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.SHASTHYA_SHEBIKA_ID])
                 if (shasthyaShebikaIdFromMap != null) {
                     householdMemberEntity.shasthyaShebikaId = shasthyaShebikaIdFromMap
                 }
 
-                val subVillageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.subVillageId])
+                val subVillageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.SUB_VILLAGE_ID])
                 if (subVillageIdFromMap != null) {
                     householdMemberEntity.subVillageId = subVillageIdFromMap
                 }
@@ -228,17 +228,17 @@ class HouseholdMemberRepository @Inject constructor(
         householdMemberEntity: HouseholdMemberEntity,
         map: HashMap<String, Any>,
     ) {
-        val villageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.villageId])
+        val villageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.VILLAGE_ID])
         if (villageIdFromMap != null) {
             householdMemberEntity.villageId = villageIdFromMap
         }
 
-        val shasthyaShebikaIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.shasthyaShebikaId])
+        val shasthyaShebikaIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.SHASTHYA_SHEBIKA_ID])
         if (shasthyaShebikaIdFromMap != null) {
             householdMemberEntity.shasthyaShebikaId = shasthyaShebikaIdFromMap
         }
 
-        val subVillageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.subVillageId])
+        val subVillageIdFromMap = CommonUtils.getLongOrNull(map[HouseHoldRegistration.SUB_VILLAGE_ID])
         if (subVillageIdFromMap != null) {
             householdMemberEntity.subVillageId = subVillageIdFromMap
         }

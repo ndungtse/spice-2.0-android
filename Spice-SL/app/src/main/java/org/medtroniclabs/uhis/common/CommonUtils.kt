@@ -137,7 +137,7 @@ object CommonUtils {
             }
         }
 
-    fun getBooleanFromString(answer: Any): Boolean = (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
+    fun getBooleanFromString(answer: Any): Boolean = (answer is String) && answer.equals(HouseHoldRegistration.YES, true)
 
     fun getDoubleOrNull(answer: Any?) =
         when (answer) {
@@ -169,7 +169,7 @@ object CommonUtils {
 
     fun getStringOrEmptyString(answer: Any?): String = answer as? String ?: ""
 
-    fun getIsBooleanFromString(answer: Any?): Boolean = (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
+    fun getIsBooleanFromString(answer: Any?): Boolean = (answer is String) && answer.equals(HouseHoldRegistration.YES, true)
 
     fun displayAge(
         dobString: String,
@@ -408,7 +408,7 @@ object CommonUtils {
             context.getString(R.string.gender_other)
         }
 
-    fun getBooleanAsString(value: Boolean): String = if (value) HouseHoldRegistration.yes else HouseHoldRegistration.no
+    fun getBooleanAsString(value: Boolean): String = if (value) HouseHoldRegistration.YES else HouseHoldRegistration.NO
 
     fun getBMI(
         heightInCM: Double,
