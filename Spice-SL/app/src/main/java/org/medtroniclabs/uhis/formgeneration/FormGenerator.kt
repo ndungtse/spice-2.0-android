@@ -3470,7 +3470,9 @@ class FormGenerator(
                         requestFocusView(data)
                     } else {
                         actualValue?.let {
-                            if (!startsWith.isNullOrEmpty() &&
+                            if (naValue == actualValue.toDoubleOrNull()) {
+                                hideValidationField(data)
+                            } else if (!startsWith.isNullOrEmpty() &&
                                 !checkPhoneNumberValidOrNot(
                                     it,
                                     startsWith,

@@ -89,6 +89,14 @@
             "visibility": "visible"
         },
         {
+            "condition":
+            [
+                {
+                    "eq": "0",
+                    "targetId": "phone_number_category",
+                    "visibility": "gone"
+                }
+            ],
             "family": "bioData",
             "fieldName": "Mobile Number",
             "hint": "Enter Mobile Number",
@@ -98,6 +106,7 @@
             "isEnabled": true,
             "maxLength": 11,
             "minLength": 1,
+            "naValue": 0,
             "isMandatory": true,
             "isNeededDefault": true,
             "orderId": 3,
