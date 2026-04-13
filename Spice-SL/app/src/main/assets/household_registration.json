@@ -109,13 +109,13 @@
             "isNotDefault": false,
             "orderId": 5,
             "title": "Household Number",
-            "titleCulture": "খানা নাম্বার",
+            "titleCulture": "খানা নম্বর",
             "viewType": "EditText",
             "visibility": "visible"
         },
         {
             "family": "householdInformation",
-            "fieldName": "Total Members",
+            "fieldName": "Total Household Members",
             "hint": "Enter Total Members",
             "hintCulture": "মোট সদস্য সংখ্যা লিখুন",
             "id": "total_members",
@@ -128,7 +128,7 @@
             "orderId": 6,
             "maxLength": 2,
             "minValue": 1,
-            "title": "Total Members",
+            "title": "Total Household Members",
             "titleCulture": "খানার মোট সদস্য সংখ্যা",
             "viewType": "EditText",
             "visibility": "visible"
@@ -156,7 +156,7 @@
                 {
                     "id": "Agriculture",
                     "name": "Agriculture",
-                    "cultureValue": "কৃষি"
+                    "cultureValue": "কৃষি কাজ"
                 },
                 {
                     "id": "Garments worker",
@@ -166,12 +166,12 @@
                 {
                     "id": "Service/Job",
                     "name": "Service/Job",
-                    "cultureValue": "চাকরি"
+                    "cultureValue": "চাকুরি"
                 },
                 {
                     "id": "Technical worker",
                     "name": "Technical worker",
-                    "cultureValue": "কারিগরি কর্মী"
+                    "cultureValue": "প্র্রযুক্তিগত কর্মী (যেমনঃ ড্রাইভার/ ইলেকট্রিশিয়ান/ ওয়েলডিং/ মেকানিকস/ রঙ মিস্ত্রি/ রাজমিস্ত্রি)"
                 },
                 {
                     "id": "Day laborer",
@@ -258,7 +258,7 @@
         {
             "family": "householdInformation",
             "fieldName": "Persons with disability in the HH",
-            "hintCulture": "সংখ্যা যোগ করুন",
+            "hintCulture": "সংখ্যা লিখুন",
             "id": "disability_persons_count",
             "inputType": 3,
             "isEnabled": true,
@@ -269,7 +269,7 @@
             "orderId": 10,
             "minValue": 0,
             "title": "Persons with disability in the HH",
-            "titleCulture": "খানায় প্রতিবন্ধী ব্যক্তির সংখ্যা",
+            "titleCulture": "খানায় বিশেষ চাহিদা সম্পন্ন ব্যক্তির সংখ্যা",
             "viewType": "EditText",
             "visibility": "visible",
             "isInfo": "visible",

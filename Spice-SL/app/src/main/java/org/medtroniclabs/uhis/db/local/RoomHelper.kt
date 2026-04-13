@@ -92,6 +92,14 @@ interface RoomHelper {
 
     suspend fun registerMember(householdMemberEntity: HouseholdMemberEntity): Long
 
+    /**
+     * Retrieves all unique National IDs from the database for the given ID type.
+     *
+     * @param idType The type of ID to filter by.
+     * @return A list of unique National IDs.
+     */
+    suspend fun getAllNationalIds(idType: String): List<String>
+
     suspend fun getAllHouseHoldMemberList(houseHoldId: Long): ArrayList<HouseholdMemberEntity>
 
     suspend fun getMemberDetailsByID(memberId: Long): HouseholdMemberEntity

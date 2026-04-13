@@ -51,6 +51,11 @@ class MemberRegistrationViewModel @Inject constructor(
 
     val householdMembersLiveData = MutableLiveData<List<HouseholdMemberWithTb>>()
 
+    /**
+     * Set of National IDs already registered in the database.
+     */
+    val nationalIdsSet = HashSet<String>()
+
     fun getHouseholdHeadDob(householdId: Long?) {
         if (householdId != null && householdId != -1L) {
             viewModelScope.launch(dispatcherIO) {
@@ -194,4 +199,15 @@ class MemberRegistrationViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             householdMembersLiveData.postValue(houseHoldRepository.getAllHouseHoldMembersLiveData(householdId).value)
         }
+
+    /**
+     * Fetches all National IDs from the database and updates [nationalIdsSet].
+     */
+    fun prefetchNationalIds() {
+        viewModelScope.launch(dispatcherIO) {
+            val ids = memberRegistrationRepository.getAllNationalIds(MemberRegistration.IdType.NATIONAL_ID.value)
+            nationalIdsSet.clear()
+            nationalIdsSet.addAll(ids)
+        }
+    }
 }

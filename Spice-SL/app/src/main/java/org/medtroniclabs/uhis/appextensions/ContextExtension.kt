@@ -8,15 +8,12 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.LocationManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import org.medtroniclabs.uhis.R
@@ -28,14 +25,12 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-const val syncWorkerName = "SyncWorker"
-private const val durationGap = 30L // 1 * 60L - 1 hour once. Need to give in minutes
-private const val notificationId = 99 // Unique ID for the notification
-const val signatureFolder = "signatures"
-const val imgFileNameExtension = "JPEG"
+private const val NOTIFICATION_ID = 99 // Unique ID for the notification
+const val SIGNATURE_FOLDER = "signatures"
+const val IMG_FILE_NAME_EXTENSION = "JPEG"
 
-const val workerUniqueName = "spicePostWorker"
-const val workerUniqueNameForNCD = "spicePostWorkerForNCD"
+const val WORKER_UNIQUE_NAME = "spicePostWorker"
+const val WORKER_UNIQUE_NAME_FOR_NCD = "spicePostWorkerForNCD"
 
 fun Context.isGpsEnabled(): Boolean {
     val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -80,28 +75,6 @@ fun Context.changePatientStatus(input: String): String {
     return input.replace(regex, onTreatmentString)
 }
 
-fun Context.scheduleSyncWorker() {
-    val workManager = WorkManager.getInstance(this)
-
-    val constraint = Constraints
-        .Builder()
-        .setRequiredNetworkType(NetworkType.CONNECTED)
-        .build()
-
-    val periodicWorkRequest =
-        PeriodicWorkRequestBuilder<ScheduledSyncWork>(durationGap, TimeUnit.MINUTES)
-            .setInitialDelay(0, TimeUnit.SECONDS)
-            .setConstraints(constraint)
-            .build()
-
-    // Enqueue the periodic work request with a unique name and policy
-    workManager.enqueueUniquePeriodicWork(
-        syncWorkerName,
-        ExistingPeriodicWorkPolicy.KEEP,
-        periodicWorkRequest,
-    )
-}
-
 fun Context.triggerOneTimeWorker() {
     val workManager = WorkManager.getInstance(this)
     // Only work that is in a terminal state (SUCCEEDED, FAILED, or CANCELLED) and has no unfinished dependent work will be pruned.
@@ -114,38 +87,19 @@ fun Context.triggerOneTimeWorker() {
     val workRequest = OneTimeWorkRequestBuilder<GetSyncStatusWorker>()
         .setConstraints(constraints)
         .build()
-    val workerInfos = workManager.getWorkInfosForUniqueWork(workerUniqueNameForNCD).get()
+    val workerInfos = workManager.getWorkInfosForUniqueWork(WORKER_UNIQUE_NAME_FOR_NCD).get()
     val noPendingWorker =
         workerInfos
             ?.filter { it.state == WorkInfo.State.ENQUEUED || it.state == WorkInfo.State.BLOCKED }
             .isNullOrEmpty()
     val existingWorkPolicy =
         if (noPendingWorker) ExistingWorkPolicy.APPEND else ExistingWorkPolicy.KEEP
-    workManager.enqueueUniqueWork(workerUniqueNameForNCD, existingWorkPolicy, workRequest)
-}
-
-private fun observerStatus(workManager: WorkManager) {
-    workManager.getWorkInfosForUniqueWorkLiveData(syncWorkerName).observeForever {
-        for (woker in it) {
-            Log.e("WORKER_TEST", "Id " + woker.id)
-            Log.e("WORKER_TEST", "Status " + woker.state.name)
-        }
-    }
-}
-
-fun Context.isBackgroundWorkerRunning(): Boolean {
-    val workManager = WorkManager.getInstance(this)
-    val list = workManager.getWorkInfosForUniqueWork(syncWorkerName).get()
-    if (list.isNotEmpty()) {
-        return list[0].state == WorkInfo.State.RUNNING
-    }
-    return false
+    workManager.enqueueUniqueWork(WORKER_UNIQUE_NAME_FOR_NCD, existingWorkPolicy, workRequest)
 }
 
 fun Context.cancelAllWorker() {
     val workManager = WorkManager.getInstance(this)
-    workManager.cancelUniqueWork(syncWorkerName) // For old Worker
-    workManager.cancelUniqueWork(workerUniqueName) // For Automatic sync worker
+    workManager.cancelUniqueWork(WORKER_UNIQUE_NAME) // For Automatic sync worker
 }
 
 fun Context.showNotification(
@@ -167,12 +121,12 @@ fun Context.showNotification(
         .setSmallIcon(R.drawable.ic_splash_icon)
         .build()
 
-    notificationManager.notify(notificationId, notification)
+    notificationManager.notify(NOTIFICATION_ID, notification)
 }
 
 fun Context.hideNotification() {
     val notificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    notificationManager.cancel(notificationId)
+    notificationManager.cancel(NOTIFICATION_ID)
 }
 
 fun Context.saveBitmapAsJpeg(
@@ -180,12 +134,12 @@ fun Context.saveBitmapAsJpeg(
     fileName: String,
 ): Boolean {
     // Get the directory for the app's private files directory
-    val directory = File(this.filesDir, signatureFolder)
+    val directory = File(this.filesDir, SIGNATURE_FOLDER)
     if (!directory.exists()) {
         directory.mkdir()
     }
 
-    val fileNameWithExtension = "$fileName.$imgFileNameExtension"
+    val fileNameWithExtension = "$fileName.$IMG_FILE_NAME_EXTENSION"
 
     // Create a file to save the image
     val imageFile = File(directory, fileNameWithExtension)
@@ -223,13 +177,13 @@ fun Context.startBackgroundOfflineSync() {
         .setConstraints(constraint)
         .build()
 
-    val workerInfos = workManager.getWorkInfosForUniqueWork(workerUniqueName).get()
+    val workerInfos = workManager.getWorkInfosForUniqueWork(WORKER_UNIQUE_NAME).get()
     val noPendingWorker = workerInfos?.filter { it.state == WorkInfo.State.ENQUEUED || it.state == WorkInfo.State.BLOCKED }.isNullOrEmpty()
 
     val existingWorkPolicy =
         if (noPendingWorker) ExistingWorkPolicy.APPEND else ExistingWorkPolicy.KEEP
 
-    workManager.enqueueUniqueWork(workerUniqueName, existingWorkPolicy, postWorker)
+    workManager.enqueueUniqueWork(WORKER_UNIQUE_NAME, existingWorkPolicy, postWorker)
 }
 
 fun Double.toCleanString(): String = if (this % 1.0 == 0.0) this.toInt().toString() else this.toString()

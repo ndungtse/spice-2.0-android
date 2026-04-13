@@ -17,7 +17,6 @@ import org.medtroniclabs.uhis.appextensions.hideKeyboard
 import org.medtroniclabs.uhis.common.AppConstants.isDifferentLogin
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.EncryptionUtil
-import org.medtroniclabs.uhis.common.RegexConstants.Contains_Number
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.databinding.ActivityLoginBinding
 import org.medtroniclabs.uhis.formgeneration.extension.markMandatory
@@ -256,42 +255,46 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             return
         }
 
-        isDifferentUseLogin = false
-        // Check different account login
-        val oldUserName =
-            SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
-        val oldPhoneNumber =
-            SecuredPreference.getString(SecuredPreference.EnvironmentKey.PHONE_NUMBER.name)
-        val isNumber = userName.matches(Regex(Contains_Number))
-        if (oldUserName != null &&
-            validateNameOrNumber(
-                isNumber,
-                oldPhoneNumber,
-                oldUserName,
-                userName,
-            )
-        ) {
-            if (unSyncedDataCount > 0) {
-                /*showErrorDialogue(
-                    title = getString(R.string.warning_different_login_title),
-                    message = getString(R.string.warning_different_login_message, oldUserName),
-                    positiveButtonName = getString(R.string.okay),
-                    okayBtnEnable = true,
-                ) {
+        // Since we are not allowing to change username.
+        // It is unnecessary to check whether same user getting logged in or different user
+        // Hence commenting below code.
 
-                }*/
-                isDifferentUseLogin = true
-                val spiceUserId = SecuredPreference.getUserId()
-                SecuredPreference.putLong(SecuredPreference.EnvironmentKey.OLD_USER_ID.name, spiceUserId)
-                viewModel.doLogin(this, userName, password)
-            } else { // Different user login so clear last synced at
-                SecuredPreference.remove(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
-                viewModel.doLogin(this, userName, password)
-            }
-        } else {
-            // Same user login in online
-            viewModel.doLogin(this, userName, password)
-        }
+//        isDifferentUseLogin = false
+//        // Check different account login
+//        val oldUserName =
+//            SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
+//        val oldPhoneNumber =
+//            SecuredPreference.getString(SecuredPreference.EnvironmentKey.PHONE_NUMBER.name)
+//        val isNumber = userName.matches(Regex(CONTAINS_NUMBER))
+//        if (oldUserName != null &&
+//            validateNameOrNumber(
+//                isNumber,
+//                oldPhoneNumber,
+//                oldUserName,
+//                userName,
+//            )
+//        ) {
+//            if (unSyncedDataCount > 0) {
+//                /*showErrorDialogue(
+//                    title = getString(R.string.warning_different_login_title),
+//                    message = getString(R.string.warning_different_login_message, oldUserName),
+//                    positiveButtonName = getString(R.string.okay),
+//                    okayBtnEnable = true,
+//                ) {
+//
+//                }*/
+//                isDifferentUseLogin = true
+//                val spiceUserId = SecuredPreference.getUserId()
+//                SecuredPreference.putLong(SecuredPreference.EnvironmentKey.OLD_USER_ID.name, spiceUserId)
+//                viewModel.doLogin(this, userName, password)
+//            } else { // Different user login so clear last synced at
+//                SecuredPreference.remove(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
+//                viewModel.doLogin(this, userName, password)
+//            }
+//        } else {
+        // Same user login in online
+        viewModel.doLogin(this, userName, password)
+//        }
     }
 
     private fun validateNameOrNumber(

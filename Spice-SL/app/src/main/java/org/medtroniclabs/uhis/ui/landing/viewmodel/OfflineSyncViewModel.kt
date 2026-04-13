@@ -16,12 +16,12 @@ import org.medtroniclabs.uhis.di.IoDispatcher
 import org.medtroniclabs.uhis.model.landing.OfflineSyncEntityDetail
 import org.medtroniclabs.uhis.network.utils.ConnectivityManager
 import org.medtroniclabs.uhis.repo.AssessmentRepository
-import org.medtroniclabs.uhis.repo.CommunityProfileRepository
-import org.medtroniclabs.uhis.repo.FollowUpRepository
+// import org.medtroniclabs.uhis.repo.CommunityProfileRepository
+// import org.medtroniclabs.uhis.repo.FollowUpRepository
 import org.medtroniclabs.uhis.repo.HouseHoldRepository
 import org.medtroniclabs.uhis.repo.HouseholdMemberRepository
 import org.medtroniclabs.uhis.repo.OfflineSyncRepository
-import org.medtroniclabs.uhis.repo.RxBuddyRepository
+// import org.medtroniclabs.uhis.repo.RxBuddyRepository
 import org.medtroniclabs.uhis.ui.BaseViewModel
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -32,21 +32,21 @@ import javax.inject.Inject
 class OfflineSyncViewModel @Inject constructor(
     private val houseHoldRepository: HouseHoldRepository,
     private val assessmentRepository: AssessmentRepository,
-    private val followUpRepository: FollowUpRepository,
+    // private val followUpRepository: FollowUpRepository,
     private val householdMemberRepository: HouseholdMemberRepository,
-    private val communityProfileRepository: CommunityProfileRepository,
+    // private val communityProfileRepository: CommunityProfileRepository,
     private val offlineSyncRepository: OfflineSyncRepository,
-    private val rxBuddyRepository: RxBuddyRepository,
+    // private val rxBuddyRepository: RxBuddyRepository,
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
     private val entityList = mutableListOf(
         OfflineSyncEntityDetail("Households", 0),
         OfflineSyncEntityDetail("Household Member", 0),
         OfflineSyncEntityDetail("Assessments", 0),
-        OfflineSyncEntityDetail("Follow-Up", 0),
-        OfflineSyncEntityDetail("Community Profile", 0),
-        OfflineSyncEntityDetail("RxBuddy Register", 0),
-        OfflineSyncEntityDetail("RxBuddy FollowUp", 0),
+        // OfflineSyncEntityDetail("Follow-Up", 0),
+        // OfflineSyncEntityDetail("Community Profile", 0),
+        // OfflineSyncEntityDetail("RxBuddy Register", 0),
+        // OfflineSyncEntityDetail("RxBuddy FollowUp", 0),
     )
 
     @Inject
@@ -108,10 +108,10 @@ class OfflineSyncViewModel @Inject constructor(
             updateSyncedCount(0, houseHoldRepository.getUnSyncedHouseholdCount())
             updateSyncedCount(1, houseHoldRepository.getUnSyncedHouseholdMemberCount())
             updateSyncedCount(2, assessmentRepository.getUnSyncedAssessmentCount())
-            updateSyncedCount(3, followUpRepository.getUnSyncedFollowUpCount())
-            updateSyncedCount(4, communityProfileRepository.getUnSyncedCommunityProfileCount())
-            updateSyncedCount(5, rxBuddyRepository.getUnSyncedRxBuddyRegisterCount())
-            updateSyncedCount(6, rxBuddyRepository.getUnSyncedRxBuddyFollowUpCount())
+            // updateSyncedCount(3, followUpRepository.getUnSyncedFollowUpCount())
+            // updateSyncedCount(4, communityProfileRepository.getUnSyncedCommunityProfileCount())
+            // updateSyncedCount(5, rxBuddyRepository.getUnSyncedRxBuddyRegisterCount())
+            // updateSyncedCount(6, rxBuddyRepository.getUnSyncedRxBuddyFollowUpCount())
         }
     }
 

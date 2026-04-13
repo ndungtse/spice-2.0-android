@@ -41,7 +41,7 @@
                 {
                     "id": "brn",
                     "name": "BRN",
-                    "cultureValue": "জন্ম নিবন্ধন আইডি (Birth Reg ID) (<১৮ বছর)"
+                    "cultureValue": "জন্ম নিবন্ধন নম্বর (Birth Reg No) (<১৮ বছর)"
                 },
                 {
                     "id": "na",
@@ -89,6 +89,14 @@
             "visibility": "visible"
         },
         {
+            "condition":
+            [
+                {
+                    "eq": "0",
+                    "targetId": "phone_number_category",
+                    "visibility": "gone"
+                }
+            ],
             "family": "bioData",
             "fieldName": "Mobile Number",
             "hint": "Enter Mobile Number",
@@ -98,6 +106,7 @@
             "isEnabled": true,
             "maxLength": 11,
             "minLength": 1,
+            "naValue": 0,
             "isMandatory": true,
             "isNeededDefault": true,
             "orderId": 3,
@@ -126,7 +135,7 @@
                 {
                     "id": "personal",
                     "name": "Personal (Self)",
-                    "cultureValue": "ব্যক্তিগত (নিজস্ব)"
+                    "cultureValue": "ব্যাক্তিগত (নিজস্ব)"
                 },
                 {
                     "id": "family",
@@ -136,7 +145,7 @@
                 {
                     "id": "friend",
                     "name": "Friend",
-                    "cultureValue": "বন্ধু"
+                    "cultureValue": "প্রতিবেশী/বন্ধু"
                 }
             ],
             "title": "Mobile number category",
@@ -273,7 +282,7 @@
                 }
             ],
             "title": "Disability",
-            "titleCulture": "বিকলাঙ্গতা",
+            "titleCulture": "সদস্যের কি কোনো বিশেষ শারীরিক সীমাবদ্ধতা রয়েছে?",
             "viewType": "SingleSelectionView",
             "visibility": "visible",
             "isInfo": "visible",
@@ -289,7 +298,7 @@
             "isNeededDefault": true,
             "orderId": 10,
             "title": "Is Household Head",
-            "titleCulture": "পরিবারের প্রধান কি না",
+            "titleCulture": "খানা প্রধান কিনা",
             "viewType": "CheckBox",
             "visibility": "gone"
         }

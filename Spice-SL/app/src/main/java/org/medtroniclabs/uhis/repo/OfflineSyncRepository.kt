@@ -14,11 +14,11 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.ResponseBody
 import org.medtroniclabs.uhis.BuildConfig
+import org.medtroniclabs.uhis.appextensions.IMG_FILE_NAME_EXTENSION
+import org.medtroniclabs.uhis.appextensions.SIGNATURE_FOLDER
 import org.medtroniclabs.uhis.appextensions.convertToUtcDateTime
-import org.medtroniclabs.uhis.appextensions.imgFileNameExtension
 import org.medtroniclabs.uhis.appextensions.postError
 import org.medtroniclabs.uhis.appextensions.postSuccess
-import org.medtroniclabs.uhis.appextensions.signatureFolder
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.CBS
 import org.medtroniclabs.uhis.common.DefinedParams.COMMUNITY_REGISTERED_DATE
@@ -683,12 +683,12 @@ class OfflineSyncRepository @Inject constructor(
         oldFileName: String,
         newFileName: String,
     ): File? {
-        val signatureDirPath = "/data/data/${BuildConfig.APPLICATION_ID}/files/$signatureFolder"
+        val signatureDirPath = "/data/data/${BuildConfig.APPLICATION_ID}/files/$SIGNATURE_FOLDER"
         val signatureDir = File(signatureDirPath)
 
         if (signatureDir.exists()) {
-            val oldFileNameWithExtension = "$oldFileName.$imgFileNameExtension"
-            val newFileNameWithExtension = "$newFileName.$imgFileNameExtension"
+            val oldFileNameWithExtension = "$oldFileName.$IMG_FILE_NAME_EXTENSION"
+            val newFileNameWithExtension = "$newFileName.$IMG_FILE_NAME_EXTENSION"
             val oldFile = File(signatureDir, oldFileNameWithExtension)
             val newFile = File(signatureDir, newFileNameWithExtension)
             if (oldFile.exists()) {
@@ -701,7 +701,7 @@ class OfflineSyncRepository @Inject constructor(
     }
 
     private fun deleteAllSyncedImages(): Boolean {
-        val imagesDirPath = "/data/data/${BuildConfig.APPLICATION_ID}/files/$signatureFolder"
+        val imagesDirPath = "/data/data/${BuildConfig.APPLICATION_ID}/files/$SIGNATURE_FOLDER"
         val imagesDir = File(imagesDirPath)
         return deleteDirectory(imagesDir)
     }

@@ -1,7 +1,6 @@
 package org.medtroniclabs.uhis.ui.household
 
 object HouseholdDefinedParams {
-    const val REGISTRATION = "household_registration"
     const val IS_FROM_HOUSEHOLD_REGISTRATION = "isFromHouseHoldRegistration"
     const val IS_PHU_WALK_INS_FLOW = "isPhuWalkInsFlow"
     const val IS_HOUSEHOLD = "IsHousehold"

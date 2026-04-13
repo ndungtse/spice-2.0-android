@@ -14,7 +14,7 @@ import org.medtroniclabs.uhis.data.LocalSpinnerResponse
 import org.medtroniclabs.uhis.data.offlinesync.utils.OfflineConstant
 import org.medtroniclabs.uhis.db.entity.HouseholdEntity
 import org.medtroniclabs.uhis.di.IoDispatcher
-import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.villageId
+import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.VILLAGE_ID
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration.ID_GUARDIAN
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.repo.HouseHoldRepository
@@ -79,7 +79,7 @@ class HouseRegistrationViewModel @Inject constructor(
     ) {
         viewModelScope.launch(dispatcherIO) {
             when (type) {
-                villageId -> {
+                VILLAGE_ID -> {
                     villageListResponse.postLoading()
                     villageListResponse.postValue(houseHoldRepository.getUserVillages(tag))
                 }
@@ -93,7 +93,7 @@ class HouseRegistrationViewModel @Inject constructor(
     ) {
         viewModelScope.launch(dispatcherIO) {
             when (type) {
-                villageId -> {
+                VILLAGE_ID -> {
                     memberVillageListResponse.postLoading()
                     memberVillageListResponse.postValue(houseHoldRepository.getUserLinkedVillages(tag))
                 }

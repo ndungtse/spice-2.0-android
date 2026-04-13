@@ -40,7 +40,7 @@
             "orderId": 3,
             "textLabelColor": "#7f1d1d",
             "title": "Pregnancy assessment can only be conducted after 6 weeks from LMP.",
-            "titleCulture": "এলএমপি থেকে ৬ সপ্তাহ পরেই কেবল গর্ভাবস্থা মূল্যায়ন করা সম্ভব।",
+            "titleCulture": "শেষ মাসিক শুরুর তারিখ থেকে ৬ সপ্তাহ পরেই কেবল গর্ভাবস্থা মূল্যায়ন করা সম্ভব।",
             "viewType": "TextLabel",
             "visibility": "gone"
         },

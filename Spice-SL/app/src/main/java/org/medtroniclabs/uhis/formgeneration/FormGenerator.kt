@@ -169,22 +169,22 @@ class FormGenerator(
 ) : ContextWrapper(context) {
     private var serverData: List<FormLayout>? = null
     val rootSuffix = AssessmentDefinedParams.rootSuffix
-    val titleSuffix = "titleTextView"
-    private val errorSuffix = "errorMessageView"
+    val titleSuffix = AssessmentDefinedParams.TITLE_SUFFIX
+    private val errorSuffix = AssessmentDefinedParams.errorSuffix
     private val resultHashMap = HashMap<String, Any>()
-    private val tvKey = "summaryKey"
-    private val tvValue = "summaryValue"
-    private val rootSummary = "summaryRoot"
+    private val tvKey = AssessmentDefinedParams.summaryKey
+    private val tvValue = AssessmentDefinedParams.SUMMARY_VALUE
+    private val rootSummary = AssessmentDefinedParams.SUMMARY_ROOT
     private var editScreen: Boolean? = null
     private var focusNeeded: View? = null
-    private val infoSuffix = "information"
-    private val infoSuffixText = "informationSuffixText"
+    private val infoSuffix = DefinedParams.Information
+    private val infoSuffixText = AssessmentDefinedParams.infoSuffixText
     private val generateNationalIdSuffix = "generateNationalId"
     private val diastolicSuffix = "DiastolicSuffix"
     private val systolicSuffix = "SystolicSuffix"
     private val pulseSuffix = "PulseSuffix"
-    val lastMealTypeMeridiem = "Meridiem"
-    val lastMealTypeDateSuffix = "Date"
+    val lastMealTypeMeridiem = Screening.lastMealTypeMeridiem
+    val lastMealTypeDateSuffix = Screening.lastMealTypeDateSuffix
     private var mentalHealthQuestions: HashMap<String, ArrayList<MentalHealthOption>>? = null
     private var mentalHealthEditList: ArrayList<Map<String, Any>>? = null
 
@@ -2471,7 +2471,7 @@ class FormGenerator(
         hideError(id)
     }
 
-    private fun showError(
+    fun showError(
         id: String,
         message: String,
     ) {
@@ -2482,7 +2482,7 @@ class FormGenerator(
         }
     }
 
-    private fun hideError(id: String) {
+    fun hideError(id: String) {
         val errorView = getViewByTag(id + errorSuffix)
         errorView?.visibility = View.GONE
     }
@@ -3344,6 +3344,11 @@ class FormGenerator(
         }
     }
 
+    /**
+     * Returns the view with specific tag within [parentLayout].
+     *
+     * Most likely the fields and their childs have some tags.
+     */
     fun getViewByTag(tag: Any): View? = parentLayout.findViewWithTag(tag)
 
     private fun resetRadioGroup(
@@ -3548,7 +3553,9 @@ class FormGenerator(
                         requestFocusView(data)
                     } else {
                         actualValue?.let {
-                            if (!startsWith.isNullOrEmpty() &&
+                            if (naValue == actualValue.toDoubleOrNull()) {
+                                hideValidationField(data)
+                            } else if (!startsWith.isNullOrEmpty() &&
                                 !checkPhoneNumberValidOrNot(
                                     it,
                                     startsWith,
@@ -3861,126 +3868,86 @@ class FormGenerator(
                     ),
                 )
             } else if (maxValue != null || minValue != null) {
-                if (maxValue != null && minValue != null) {
-                    if (actualValue is String) {
-                        actualValue.toDoubleOrNull()?.let { value ->
-                            if (value < minValue!! || value > maxValue!!) {
-                                isValid = false
-                                requestFocusView(
-                                    formLayout,
-                                    getString(
-                                        R.string.general_min_max_validation,
-                                        CommonUtils.getDecimalFormatted(
-                                            minValue!!,
-                                        ),
-                                        CommonUtils.getDecimalFormatted(
-                                            maxValue!!,
-                                        ),
-                                    ),
-                                )
-                            } else {
-                                hideValidationField(formLayout)
-                            }
-                        }
-                    } else if (actualValue is Number) {
-                        actualValue.toDouble().let { value ->
-                            if (value < minValue!! || value > maxValue!!) {
-                                isValid = false
-                                requestFocusView(
-                                    formLayout,
-                                    getString(
-                                        R.string.general_min_max_validation,
-                                        CommonUtils.getDecimalFormatted(
-                                            minValue!!,
-                                        ),
-                                        CommonUtils.getDecimalFormatted(
-                                            maxValue!!,
-                                        ),
-                                    ),
-                                )
-                            } else {
-                                hideValidationField(formLayout)
-                            }
-                        }
+                val value = when (actualValue) {
+                    is String -> {
+                        actualValue.toDoubleOrNull()
+                    }
+
+                    is Number -> {
+                        actualValue.toDouble()
+                    }
+
+                    else -> {
+                        null
+                    }
+                }
+                if (value != null) {
+                    var isMinMaxValid = true
+                    if (naValue != null && naValue == value) {
+                        // If naValue equals value that means user is not able to measure
+                        hideValidationField(formLayout)
+                    } else if (maxValue != null && minValue != null && (value < minValue!! || value > maxValue!!)) {
+                        isValid = false
+                        isMinMaxValid = false
+                        requestFocusView(
+                            formLayout,
+                            getString(
+                                R.string.general_min_max_validation,
+                                CommonUtils.getDecimalFormatted(
+                                    minValue!!,
+                                ),
+                                CommonUtils.getDecimalFormatted(
+                                    maxValue!!,
+                                ),
+                            ),
+                        )
+                    } else if (minValue != null && value < minValue!!) {
+                        isValid = false
+                        isMinMaxValid = false
+                        requestFocusView(
+                            formLayout,
+                            getString(
+                                R.string.general_min_validation,
+                                CommonUtils.getDecimalFormatted(
+                                    minValue!!,
+                                ),
+                            ),
+                        )
+                    } else if (maxValue != null && value > maxValue!!) {
+                        isValid = false
+                        isMinMaxValid = false
+                        requestFocusView(
+                            formLayout,
+                            getString(
+                                R.string.general_max_validation,
+                                CommonUtils.getDecimalFormatted(
+                                    maxValue!!,
+                                ),
+                            ),
+                        )
                     } else {
                         hideValidationField(formLayout)
                     }
-                } else if (minValue != null) {
-                    if (actualValue is String) {
-                        actualValue.toDoubleOrNull()?.let { value ->
-                            if (value < minValue!!) {
+                    // Custom handling for validating systolic diastolic range
+                    if (id == AssessmentDefinedParams.SYSTOLIC && isMinMaxValid) {
+                        val diastolicValue = CommonUtils.getDoubleOrNull(resultHashMap[AssessmentDefinedParams.DIASTOLIC])
+                        if (diastolicValue != null) {
+                            val isSystolicInvalid = if (naValue != null) {
+                                naValue != value && value <= diastolicValue
+                            } else {
+                                value <= diastolicValue
+                            }
+                            if (isSystolicInvalid) {
                                 isValid = false
                                 requestFocusView(
                                     formLayout,
-                                    getString(
-                                        R.string.general_min_validation,
-                                        CommonUtils.getDecimalFormatted(
-                                            minValue!!,
-                                        ),
-                                    ),
+                                    getString(R.string.systolic_diastolic_error),
                                 )
-                            } else {
-                                hideValidationField(formLayout)
                             }
                         }
-                    } else if (actualValue is Number) {
-                        actualValue.toDouble().let { value ->
-                            if (value < minValue!!) {
-                                isValid = false
-                                requestFocusView(
-                                    formLayout,
-                                    getString(
-                                        R.string.general_min_validation,
-                                        CommonUtils.getDecimalFormatted(
-                                            minValue!!,
-                                        ),
-                                    ),
-                                )
-                            } else {
-                                hideValidationField(formLayout)
-                            }
-                        }
-                    } else {
-                        hideValidationField(formLayout)
                     }
-                } else if (maxValue != null) {
-                    if (actualValue is String) {
-                        actualValue.toDoubleOrNull()?.let { value ->
-                            if (value > maxValue!!) {
-                                isValid = false
-                                requestFocusView(
-                                    formLayout,
-                                    getString(
-                                        R.string.general_max_validation,
-                                        CommonUtils.getDecimalFormatted(
-                                            maxValue!!,
-                                        ),
-                                    ),
-                                )
-                            } else {
-                                hideValidationField(formLayout)
-                            }
-                        }
-                    } else if (actualValue is Number) {
-                        actualValue.toDouble().let { value ->
-                            if (value > maxValue!!) {
-                                isValid = false
-                                requestFocusView(
-                                    formLayout,
-                                    getString(
-                                        R.string.general_max_validation,
-                                        CommonUtils.getDecimalFormatted(
-                                            maxValue!!,
-                                        ),
-                                    ),
-                                )
-                            } else {
-                                hideValidationField(formLayout)
-                            }
-                        }
-                    } else {
-                        hideValidationField(formLayout)
-                    }
+                } else {
+                    hideValidationField(formLayout)
                 }
             } else if (contentLength != null) {
                 if (actualValue is Number) {

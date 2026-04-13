@@ -36,6 +36,7 @@ object DefinedParams {
     const val HOUSEHOLD_MEMBER_REGISTRATION = "household_member_registration"
     const val HOUSEHOLD_MEMBER_REGISTRATION_FORM = "member_registration"
     const val EXTERNAL_MEMBER_REGISTRATION = "external_member_registration"
+    const val HOUSEHOLD_REGISTRATION = "household_registration"
     const val DefaultSelectID = -1L
     const val DefaultID = "-1"
     const val DefaultIDLabel = "--Select--"

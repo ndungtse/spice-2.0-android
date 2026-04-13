@@ -19,7 +19,6 @@ import org.medtroniclabs.uhis.db.entity.SubVillageEntity
 import org.medtroniclabs.uhis.db.entity.VillageEntity
 import org.medtroniclabs.uhis.db.local.RoomHelper
 import org.medtroniclabs.uhis.db.response.HouseHoldEntityWithLastActivity
-import org.medtroniclabs.uhis.db.response.HouseholdMemberCount
 import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration
 import org.medtroniclabs.uhis.model.household.HouseHoldFilterUiData
 import org.medtroniclabs.uhis.model.medicalreview.AddMemberRegRequest
@@ -33,37 +32,9 @@ class HouseHoldRepository @Inject constructor(
     private var apiHelper: ApiHelper,
     private var roomHelper: RoomHelper,
 ) {
-    suspend fun getLastHouseholdNo(villageId: Long): Long? = roomHelper.getLastHouseholdNo(villageId)
-
-    suspend fun checkHouseholdNumberExists(householdNo: Long): Boolean = roomHelper.checkHouseholdNumberExists(householdNo)
-
-    suspend fun generateUniqueHouseholdNumber(): Long {
-        var householdNumber: Long
-        var attempts = 0
-        val maxAttempts = 100
-
-        do {
-            // Generate random 10-digit number (1000000000 to 9999999999)
-            householdNumber = (1000000000L..9999999999L).random()
-            attempts++
-        } while (checkHouseholdNumberExists(householdNumber) && attempts < maxAttempts)
-
-        if (attempts >= maxAttempts) {
-            // Fallback: use timestamp-based number if too many collisions
-            householdNumber = System.currentTimeMillis() % 10000000000L
-            if (householdNumber < 1000000000L) {
-                householdNumber += 1000000000L
-            }
-        }
-
-        return householdNumber
-    }
-
     suspend fun getHouseHoldDetailsById(houseHoldId: Long) = roomHelper.getHouseHoldDetailsById(houseHoldId)
 
     suspend fun getAllHouseHoldMemberList(houseHoldId: Long): ArrayList<HouseholdMemberEntity> = roomHelper.getAllHouseHoldMemberList(houseHoldId)
-
-    fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount> = roomHelper.getMemberCountInHouseholdLiveData(houseHoldId)
 
     fun getFilteredHouseholdsLiveData(
         searchTerm: String,
@@ -90,6 +61,12 @@ class HouseHoldRepository @Inject constructor(
                 DefinedParams.EXTERNAL_MEMBER_REGISTRATION -> {
                     CommonUtils.getStringFromAssets(
                         DefinedParams.EXTERNAL_MEMBER_REGISTRATION + ".json",
+                        context.assets,
+                    )
+                }
+                DefinedParams.HOUSEHOLD_REGISTRATION -> {
+                    CommonUtils.getStringFromAssets(
+                        DefinedParams.HOUSEHOLD_REGISTRATION + ".json",
                         context.assets,
                     )
                 }
@@ -120,7 +97,7 @@ class HouseHoldRepository @Inject constructor(
     ): HouseholdEntity {
         val householdEntity = entity ?: HouseholdEntity()
 
-        val householdName = map[HouseHoldRegistration.householdName]
+        val householdName = map[HouseHoldRegistration.HOUSEHOLD_NAME]
         var nameFromMap = CommonUtils.getStringOrEmptyString(householdName)
         // If updating and household name is not provided or empty, get it from household head member
         if (entity != null && nameFromMap.isEmpty()) {
@@ -132,26 +109,26 @@ class HouseHoldRepository @Inject constructor(
         }
         householdEntity.name = nameFromMap
 
-        val villageID = map[HouseHoldRegistration.villageId]
+        val villageID = map[HouseHoldRegistration.VILLAGE_ID]
         val villageLongID = CommonUtils.getLongOrNull(villageID) ?: 0
         householdEntity.villageId = villageLongID
 
-        val shasthyaShebikaId = map[HouseHoldRegistration.shasthyaShebikaId]
+        val shasthyaShebikaId = map[HouseHoldRegistration.SHASTHYA_SHEBIKA_ID]
         householdEntity.shasthyaShebikaId = CommonUtils.getLongOrNull(shasthyaShebikaId)
 
-        val subVillageId = map[HouseHoldRegistration.subVillageId]
+        val subVillageId = map[HouseHoldRegistration.SUB_VILLAGE_ID]
         householdEntity.subVillageId = CommonUtils.getLongOrNull(subVillageId)
 
-        val householdType = map[HouseHoldRegistration.householdType]
+        val householdType = map[HouseHoldRegistration.HOUSEHOLD_TYPE]
         householdEntity.householdType = CommonUtils.getStringOrEmptyString(householdType).takeIf { it.isNotEmpty() }
 
-        val monthlyIncome = map[HouseHoldRegistration.monthlyIncome]
+        val monthlyIncome = map[HouseHoldRegistration.MONTHLY_INCOME]
         householdEntity.monthlyIncome = CommonUtils.getDoubleOrNull(monthlyIncome)
 
-        val occupation = map[HouseHoldRegistration.householdHeadOccupation]
+        val occupation = map[HouseHoldRegistration.HOUSEHOLD_HEAD_OCCUPATION]
         householdEntity.householdHeadOccupation = CommonUtils.getStringOrEmptyString(occupation).takeIf { it.isNotEmpty() }
 
-        val otherOccupation = map[HouseHoldRegistration.otherOccupation]
+        val otherOccupation = map[HouseHoldRegistration.OTHER_OCCUPATION]
         householdEntity.otherOccupation = CommonUtils.getStringOrEmptyString(otherOccupation).takeIf { it.isNotEmpty() }
 
         val currentTime = System.currentTimeMillis()
@@ -159,7 +136,7 @@ class HouseHoldRepository @Inject constructor(
         if (entity != null) {
             householdEntity.sync_status = OfflineSyncStatus.NotSynced
 
-            val noOfPeople = map[HouseHoldRegistration.noOfPeople] ?: map[HouseHoldRegistration.totalMembers]
+            val noOfPeople = map[HouseHoldRegistration.NO_OF_PEOPLE] ?: map[HouseHoldRegistration.TOTAL_MEMBERS]
             householdEntity.noOfPeople = checkHeadCountOfHouseHold(CommonUtils.getIntegerOrNull(noOfPeople) ?: 0, getMemberCountPerHouseHold(entity.id))
 
             val disabilityPersonsCount = map[HouseHoldRegistration.ID_DISABILITY_PERSONS_COUNT]
@@ -168,11 +145,11 @@ class HouseHoldRepository @Inject constructor(
         } else {
             householdEntity.createdAt = currentTime
             // Use household number from form if provided, otherwise generate new one
-            val householdNumberFromForm = map[HouseHoldRegistration.householdNumber]
+            val householdNumberFromForm = map[HouseHoldRegistration.HOUSEHOLD_NUMBER]
             householdEntity.householdNo = householdNumberFromForm as? String
                 ?: // Fallback: generate if not provided (shouldn't happen if form is populated correctly)
                 "HH${System.currentTimeMillis()}"
-            val noOfPeople = map[HouseHoldRegistration.noOfPeople] ?: map[HouseHoldRegistration.totalMembers]
+            val noOfPeople = map[HouseHoldRegistration.NO_OF_PEOPLE] ?: map[HouseHoldRegistration.TOTAL_MEMBERS]
             householdEntity.noOfPeople = CommonUtils.getIntegerOrNull(noOfPeople) ?: 0
 
             val disabilityPersonsCount = map[HouseHoldRegistration.ID_DISABILITY_PERSONS_COUNT]
