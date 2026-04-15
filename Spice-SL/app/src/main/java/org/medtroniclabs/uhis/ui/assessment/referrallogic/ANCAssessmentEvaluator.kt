@@ -1,15 +1,16 @@
-package org.medtroniclabs.uhis.ui.assessment.rmnch
+package org.medtroniclabs.uhis.ui.assessment.referrallogic
 
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.db.entity.PregnancyDetail
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
+import kotlin.collections.get
 
 /**
- * Utility class for evaluating RMNCH assessment conditions
+ * Utility class for evaluating ANC assessment conditions
  * Provides reusable helper functions for both AssessmentRMNCHFragment and AssessmentRMNCHSummaryFragment
  */
-object RMNCHAssessmentEvaluator {
+object ANCAssessmentEvaluator {
     /**
      * Helper method to get value from nested structure
      * Checks all ANC form groups first, then top level
@@ -51,32 +52,6 @@ object RMNCHAssessmentEvaluator {
     }
 
     /**
-     * Helper method to check if existing HTN illness is present
-     */
-    fun hasExistingHTNIllness(resultMap: HashMap<String, Any>): Boolean {
-        val existingIllness = getValueFromNestedMap(resultMap, AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS) as? ArrayList<*> ?: return false
-        val filteredIllness = filterOutNoneOption(existingIllness)
-        return filteredIllness.any { illness ->
-            val illnessMap = illness as? Map<*, *> ?: return@any false
-            val value = illnessMap[DefinedParams.Value]?.toString() ?: ""
-            value.equals(AssessmentDefinedParams.ILLNESS_HTN, ignoreCase = true)
-        }
-    }
-
-    /**
-     * Helper method to check if existing DM illness is present
-     */
-    fun hasExistingDMIllness(resultMap: HashMap<String, Any>): Boolean {
-        val existingIllness = getValueFromNestedMap(resultMap, AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS) as? ArrayList<*> ?: return false
-        val filteredIllness = filterOutNoneOption(existingIllness)
-        return filteredIllness.any { illness ->
-            val illnessMap = illness as? Map<*, *> ?: return@any false
-            val value = illnessMap[DefinedParams.Value]?.toString() ?: ""
-            value.equals(AssessmentDefinedParams.ILLNESS_DM, ignoreCase = true)
-        }
-    }
-
-    /**
      * Generic helper method to check if a specific chronic illness exists
      */
     fun hasChronicIllness(
@@ -111,7 +86,7 @@ object RMNCHAssessmentEvaluator {
      * Check if any chronic illness (Diabetes, Heart Disease, TB, Asthma, Thyroid, Kidney Disease) exists
      */
     fun hasAnyChronicIllness(resultMap: HashMap<String, Any>): Boolean =
-        hasExistingDMIllness(resultMap) ||
+        hasChronicIllness(resultMap, AssessmentDefinedParams.ILLNESS_DM) ||
             hasChronicIllness(resultMap, AssessmentDefinedParams.ILLNESS_HEART_DISEASE) ||
             hasChronicIllness(resultMap, AssessmentDefinedParams.ILLNESS_TUBERCULOSIS) ||
             hasChronicIllness(resultMap, AssessmentDefinedParams.ILLNESS_ASTHMA) ||
@@ -201,13 +176,9 @@ object RMNCHAssessmentEvaluator {
     }
 
     /**
-     * Check if suspected diabetes condition is met
      * Suspected/Existing Case of Diabetes (urine sugar/blood sugar/ known patient)
      */
     fun isSuspectedDiabetes(resultMap: HashMap<String, Any>): Boolean {
-        // Check if known DM patient
-        if (hasExistingDMIllness(resultMap)) return true
-
         // Check urine sugar
         val urinarySugar = getValueFromNestedMap(resultMap, AssessmentDefinedParams.URINARY_SUGAR) as? String
         if (urinarySugar == AssessmentDefinedParams.VALUE_PRESENT) return true
@@ -223,7 +194,7 @@ object RMNCHAssessmentEvaluator {
 
     /**
      * Check if suspected pre-eclampsia condition is met
-     * Suspected Pre-eclampsia (Urine Albumin or Edema WITH BP≥140/90 or existing HTN patient even with normal values <140/90)/High BP
+     * Suspected Pre-eclampsia (Urine Albumin or Edema WITH BP≥140/90)/High BP
      */
     fun isSuspectedPreEclampsia(resultMap: HashMap<String, Any>): Boolean {
         // Get BP values
@@ -233,10 +204,6 @@ object RMNCHAssessmentEvaluator {
             ?: (getValueFromNestedMap(resultMap, AssessmentDefinedParams.DIASTOLIC) as? Number)?.toDouble() ?: 0.0
         val isHighBP = systolic >= AssessmentDefinedParams.BP_SYSTOLIC_THRESHOLD || diastolic >= AssessmentDefinedParams.BP_DIASTOLIC_THRESHOLD
 
-        // Check existing HTN
-        val hasHTN = hasExistingHTNIllness(resultMap)
-        val isNormalBP = !isHighBP
-
         // Check urinary albumin
         val urinaryAlbumin = getValueFromNestedMap(resultMap, AssessmentDefinedParams.URINARY_ALBUMIN) as? String
 
@@ -245,9 +212,8 @@ object RMNCHAssessmentEvaluator {
 
         // Condition: (Urine Albumin OR Edema) WITH (BP≥140/90 OR existing HTN with normal BP)
         val hasUrineAlbuminOrEdema = urinaryAlbumin == AssessmentDefinedParams.VALUE_PRESENT || edema == AssessmentDefinedParams.VALUE_PRESENT
-        val hasHighBPOrHTN = isHighBP || (hasHTN && isNormalBP)
 
-        return hasUrineAlbuminOrEdema && hasHighBPOrHTN
+        return hasUrineAlbuminOrEdema && isHighBP
     }
 
     /**

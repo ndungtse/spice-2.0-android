@@ -128,6 +128,7 @@
             "orderId": 6,
             "maxLength": 2,
             "minValue": 1,
+            "maxValue": 20,
             "title": "Total Household Members",
             "titleCulture": "খানার মোট সদস্য সংখ্যা",
             "viewType": "EditText",

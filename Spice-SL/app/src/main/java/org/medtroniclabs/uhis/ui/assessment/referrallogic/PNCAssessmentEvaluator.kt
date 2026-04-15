@@ -77,13 +77,13 @@ object PNCAssessmentEvaluator {
                 urgentReferral.add(PNCUrgentReferrals.HTN_ECLAMPSIA_NOT_ON_TREATMENT.value)
             }
 
-            // 8. Edema + (BP≥140/90 OR known HTN or Urine Albumin present)
-            if (isEdemaPresent && (isBpHigh || isKnownHtn || isUrineAlbuminPresent)) {
+            // 8. Edema + (BP≥140/90 or Urine Albumin present)
+            if (isEdemaPresent && (isBpHigh || isUrineAlbuminPresent)) {
                 urgentReferral.add(PNCUrgentReferrals.EDEMA_PLUS_RISK.value)
             }
 
-            // 9. Urine Albumin Positive + (BP≥140/90 OR known HTN or Edema present)
-            if (isUrineAlbuminPresent && (isBpHigh || isKnownHtn || isEdemaPresent)) {
+            // 9. Urine Albumin Positive + (BP≥140/90 or Edema present)
+            if (isUrineAlbuminPresent && (isBpHigh || isEdemaPresent)) {
                 urgentReferral.add(PNCUrgentReferrals.URINE_ALBUMIN_PLUS_RISK.value)
             }
 
