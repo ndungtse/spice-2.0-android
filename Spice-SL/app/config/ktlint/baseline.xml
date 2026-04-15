@@ -282,22 +282,6 @@
     <file name="src/main/java/org/medtroniclabs/uhis/db/entity/BaseEntity.kt">
         <error line="14" column="9" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/FormGenerator.kt">
-        <error line="4031" column="1" source="standard:if-else-wrapping" />
-        <error line="4032" column="1" source="standard:if-else-wrapping" />
-        <error line="4033" column="1" source="standard:if-else-wrapping" />
-        <error line="4034" column="1" source="standard:if-else-wrapping" />
-        <error line="4035" column="1" source="standard:if-else-wrapping" />
-        <error line="4036" column="1" source="standard:if-else-wrapping" />
-        <error line="4037" column="1" source="standard:if-else-wrapping" />
-        <error line="4038" column="1" source="standard:if-else-wrapping" />
-        <error line="4039" column="1" source="standard:if-else-wrapping" />
-        <error line="4040" column="1" source="standard:if-else-wrapping" />
-        <error line="4041" column="1" source="standard:if-else-wrapping" />
-        <error line="4042" column="1" source="standard:if-else-wrapping" />
-        <error line="4043" column="1" source="standard:if-else-wrapping" />
-        <error line="4044" column="1" source="standard:if-else-wrapping" />
-    </file>
     <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/config/DefinedParams.kt">
         <error line="11" column="15" source="standard:property-naming" />
         <error line="20" column="15" source="standard:property-naming" />

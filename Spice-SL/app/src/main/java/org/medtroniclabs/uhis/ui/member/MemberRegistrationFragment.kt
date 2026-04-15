@@ -770,7 +770,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
     }
 
     override fun onAgeCheckForPregnancy() {
-        formGenerator.handlePregnancyCardBasedOnAgeAndWeeks()
+//        formGenerator.handlePregnancyCardBasedOnAgeAndWeeks()
     }
 
     override fun handleMandatoryCondition(formLayout: FormLayout?) {

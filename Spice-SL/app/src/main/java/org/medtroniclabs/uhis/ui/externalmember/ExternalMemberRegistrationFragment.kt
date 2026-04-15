@@ -543,7 +543,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
     }
 
     override fun onAgeCheckForPregnancy() {
-        formGenerator.handlePregnancyCardBasedOnAgeAndWeeks()
+//        formGenerator.handlePregnancyCardBasedOnAgeAndWeeks()
     }
 
     override fun handleMandatoryCondition(formLayout: FormLayout?) {

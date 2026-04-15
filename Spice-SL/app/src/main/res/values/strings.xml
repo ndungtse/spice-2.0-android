@@ -220,7 +220,7 @@
     <string name="child_health">Child Health</string>
     <string name="household_registered">Households Registered</string>
     <string name="pregnancy_outcome_dashboard">Pregnancy Outcome</string>
-    <string name="family_planning_dashboard">Family plannig counselled</string>
+    <string name="family_planning_dashboard">Family planning counselled</string>
     <string name="tb_assessment">TB Assessment</string>
     <string name="tb_contact_tracing">TB Contact Tracing</string>
     <string name="eye_care">Eye Care</string>
@@ -1317,8 +1317,8 @@
     <string name="no_of_households_count" translatable="false">: %1$d</string>
     <string name="market_days" translatable="false">Market Days</string>
     <string name="market_days_key" translatable="false">marketDays</string>
-    <string name="market_day_selected" translatable="false">day selected</string>
-    <string name="market_days_selected" translatable="false">days selected</string>
+    <string name="market_day_selected" translatable="false">%d day selected</string>
+    <string name="market_days_selected" translatable="false">%d days selected</string>
     <string name="registered_completed_on" translatable="false">Register Completed on %1$s</string>
     <string name="water_and_sanitation_facilities" translatable="false">Water &amp; Sanitation Facilities</string>
     <string name="no_of_improved_water_sources" translatable="false">Number of improved water resources</string>
@@ -1477,8 +1477,8 @@
     <string name="quantity_microlut" translatable="false">Quantity (Microlut)</string>
     <string name="methods" translatable="false">Methods</string>
     <string name="methods_selected" translatable="false">Methods Selected</string>
-    <string name="networks_selected" translatable="false">Networks Selected</string>
-    <string name="network_selected" translatable="false">Network Selected</string>
+    <string name="networks_selected" translatable="false">%d Networks Selected</string>
+    <string name="network_selected" translatable="false">%d Network Selected</string>
     <string name="referred_for_ncd_assessment" translatable="false">Referred for NCD Assessment</string>
     <string name="was_the_member_taken_to_clinic" translatable="false">Was the member taken to the Clinic</string>
     <string name="ncd_risk_factor" translatable="false">NCD Risk Factors</string>
@@ -1694,4 +1694,6 @@
     <string name="assessment_result">Assessment Result</string>
     <string name="national_id_validation">National ID must be 10, 13, or 17 digits</string>
     <string name="national_id_already_exists">National ID is already assigned to another member</string>
+    <string name="selected_signs">selected</string>
+    <string name="checkbox_selected_text">%1$d %2$s</string>
 </resources>
