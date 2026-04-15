@@ -134,10 +134,38 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
 
         // Keep a single RMNCH tile and only update its display label based on active workflow.
         return menus.map { menu ->
-            if (menu.menuId.equals(MenuConstants.RMNCH_MENU_ID, true)) {
-                menu.copy(name = rmnchTitle, displayValue = null)
-            } else {
-                menu
+            when (menu.menuId.lowercase()) {
+                MenuConstants.RMNCH_MENU_ID.lowercase() -> {
+                    menu.copy(name = rmnchTitle, displayValue = null)
+                }
+
+                MenuConstants.PREGNANCY_OUTCOME.lowercase() -> {
+                    menu.copy(name = getString(R.string.pregnancy_outcome), displayValue = null)
+                }
+
+                MenuConstants.PREGNANT_WOMEN_PROFILE.lowercase() -> {
+                    menu.copy(name = getString(R.string.pregnant_women_profile), displayValue = null)
+                }
+
+                MenuConstants.FP_MENU_ID.lowercase() -> {
+                    menu.copy(name = getString(R.string.family_planning), displayValue = null)
+                }
+
+                MenuConstants.NCD_MENU_ID.lowercase() -> {
+                    menu.copy(name = getString(R.string.ncd), displayValue = null)
+                }
+
+                MenuConstants.EYE_CARE_MENU_ID.lowercase() -> {
+                    menu.copy(name = getString(R.string.eye_care), displayValue = null)
+                }
+
+                MenuConstants.CATARACT_MENU_ID.lowercase() -> {
+                    menu.copy(name = getString(R.string.cataract), displayValue = null)
+                }
+
+                else -> {
+                    menu
+                }
             }
         }
     }

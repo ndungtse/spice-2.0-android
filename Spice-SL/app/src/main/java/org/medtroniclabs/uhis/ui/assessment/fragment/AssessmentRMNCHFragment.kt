@@ -220,8 +220,13 @@ class AssessmentRMNCHFragment :
                         mutableOptions.removeIf {
                             listOfOptionsNotEligible.contains(it.value)
                         }
+                        val title = if (isTranslationEnabled && !formLayout?.hintCulture.isNullOrBlank()) {
+                            formLayout?.hintCulture
+                        } else {
+                            formLayout?.hint
+                        }
                         CheckBoxDialog
-                            .newInstance(dialogKey, resultMap, title = formLayout?.hint, inputData = mutableOptions) { map ->
+                            .newInstance(dialogKey, resultMap, title = title, inputData = mutableOptions) { map ->
                                 formLayout?.let { formLayout ->
                                     formGenerator.validateCheckboxDialogue(id, formLayout, map)
                                 }
@@ -537,6 +542,12 @@ class AssessmentRMNCHFragment :
         // Use localDataCache if available, otherwise use id (for database loading)
         dialogKey = formLayout.localDataCache ?: id
 
+        val title = if (isTranslationEnabled && !formLayout.hintCulture.isNullOrBlank()) {
+            formLayout.hintCulture
+        } else {
+            formLayout.hint
+        }
+
         // If type is child illness the prefetch the data as
         // we want to manipulate it based on some conditions
         if (id == AssessmentDefinedParams.ID_CHILD_ILLNESS_TYPE) {
@@ -573,7 +584,7 @@ class AssessmentRMNCHFragment :
                 .newInstance(
                     dialogKey,
                     resultMap,
-                    title = formLayout.hint,
+                    title = title,
                     inputData = inputData,
                 ) { map ->
                     ancSelectedTreatment = true
@@ -582,13 +593,13 @@ class AssessmentRMNCHFragment :
         } else {
             if (formLayout.localDataCache != null) {
                 CheckBoxDialog
-                    .newInstance(dialogKey, resultMap, title = formLayout.hint) { map ->
+                    .newInstance(dialogKey, resultMap, title = title) { map ->
                         formGenerator.validateCheckboxDialogue(id, formLayout, map)
                     }.show(childFragmentManager, CheckBoxDialog.TAG)
             } else {
                 val inputData = EntityMapper.mapToSignsAndSymptomsEntity(formLayout.optionsList)
                 CheckBoxDialog
-                    .newInstance(dialogKey, resultMap, title = formLayout.hint, inputData = inputData) { map ->
+                    .newInstance(dialogKey, resultMap, title = title, inputData = inputData) { map ->
                         formGenerator.validateCheckboxDialogue(id, formLayout, map)
                     }.show(childFragmentManager, CheckBoxDialog.TAG)
             }

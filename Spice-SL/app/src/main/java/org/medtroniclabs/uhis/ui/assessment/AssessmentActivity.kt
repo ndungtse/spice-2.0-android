@@ -45,9 +45,10 @@ import org.medtroniclabs.uhis.ui.assessment.fragment.BDEyeCareAssessmentSummaryF
 import org.medtroniclabs.uhis.ui.assessment.fragment.BDNCDAssessmentFragment
 import org.medtroniclabs.uhis.ui.assessment.fragment.BDNCDAssessmentSummaryFragment
 import org.medtroniclabs.uhis.ui.assessment.fragment.RxBuddySummaryFragment
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ANC
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DEATH_OF_MOTHER
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.DEATH_OF_NEWBORN
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PNC
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import org.medtroniclabs.uhis.ui.cbs.activity.CbsActivity
@@ -524,9 +525,9 @@ class AssessmentActivity : BaseActivity() {
 
     private fun getRMNCHScreenTitle(): String =
         when (viewModel.workflowName) {
-            RMNCH.ANC -> getString(R.string.anc)
-            RMNCH.PNC -> getString(R.string.pnc)
-            RMNCH.ChildHoodVisit -> getString(R.string.child_health)
+            ANC -> getString(R.string.anc)
+            PNC -> getString(R.string.pnc)
+            ChildHoodVisit -> getString(R.string.child_health)
             else -> MenuConstants.RMNCH_MENU_ID.uppercase()
         }
 
@@ -668,7 +669,7 @@ class AssessmentActivity : BaseActivity() {
             putExtra(DefinedParams.MOTHER_ID, motherId)
             if (assessmentId != null) putExtra(DefinedParams.ASSESSMENT_ID, assessmentId)
             if (deathOfMother) putExtra(DEATH_OF_MOTHER, true)
-            if (deathOfNewborn) putExtra(RMNCH.DEATH_OF_NEWBORN, true)
+            if (deathOfNewborn) putExtra(DEATH_OF_NEWBORN, true)
         }
         startActivity(intent)
     }
