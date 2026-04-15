@@ -51,6 +51,7 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.MUAC
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.muacStatus
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.rootSuffix
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.summaryKey
+import org.medtroniclabs.uhis.ui.assessment.referrallogic.ANCAssessmentEvaluator
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.AnemiaLevel
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCAssessmentEvaluator
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCAssessmentEvaluator.isValueEquals
@@ -58,7 +59,6 @@ import org.medtroniclabs.uhis.ui.assessment.referrallogic.PostpartumDangerSigns
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.ReferralResultGenerator
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.AncPncReferralType
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCHAssessmentEvaluator
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import java.util.Calendar
 import java.util.Locale
@@ -220,8 +220,13 @@ class AssessmentRMNCHFragment :
                         mutableOptions.removeIf {
                             listOfOptionsNotEligible.contains(it.value)
                         }
+                        val title = if (isTranslationEnabled && !formLayout?.hintCulture.isNullOrBlank()) {
+                            formLayout?.hintCulture
+                        } else {
+                            formLayout?.hint
+                        }
                         CheckBoxDialog
-                            .newInstance(dialogKey, resultMap, title = formLayout?.hint, inputData = mutableOptions) { map ->
+                            .newInstance(dialogKey, resultMap, title = title, inputData = mutableOptions) { map ->
                                 formLayout?.let { formLayout ->
                                     formGenerator.validateCheckboxDialogue(id, formLayout, map)
                                 }
@@ -537,6 +542,12 @@ class AssessmentRMNCHFragment :
         // Use localDataCache if available, otherwise use id (for database loading)
         dialogKey = formLayout.localDataCache ?: id
 
+        val title = if (isTranslationEnabled && !formLayout.hintCulture.isNullOrBlank()) {
+            formLayout.hintCulture
+        } else {
+            formLayout.hint
+        }
+
         // If type is child illness the prefetch the data as
         // we want to manipulate it based on some conditions
         if (id == AssessmentDefinedParams.ID_CHILD_ILLNESS_TYPE) {
@@ -573,7 +584,7 @@ class AssessmentRMNCHFragment :
                 .newInstance(
                     dialogKey,
                     resultMap,
-                    title = formLayout.hint,
+                    title = title,
                     inputData = inputData,
                 ) { map ->
                     ancSelectedTreatment = true
@@ -582,13 +593,13 @@ class AssessmentRMNCHFragment :
         } else {
             if (formLayout.localDataCache != null) {
                 CheckBoxDialog
-                    .newInstance(dialogKey, resultMap, title = formLayout.hint) { map ->
+                    .newInstance(dialogKey, resultMap, title = title) { map ->
                         formGenerator.validateCheckboxDialogue(id, formLayout, map)
                     }.show(childFragmentManager, CheckBoxDialog.TAG)
             } else {
                 val inputData = EntityMapper.mapToSignsAndSymptomsEntity(formLayout.optionsList)
                 CheckBoxDialog
-                    .newInstance(dialogKey, resultMap, title = formLayout.hint, inputData = inputData) { map ->
+                    .newInstance(dialogKey, resultMap, title = title, inputData = inputData) { map ->
                         formGenerator.validateCheckboxDialogue(id, formLayout, map)
                     }.show(childFragmentManager, CheckBoxDialog.TAG)
             }
@@ -1179,8 +1190,8 @@ class AssessmentRMNCHFragment :
 
         return when (fieldId) {
             AssessmentDefinedParams.PREGNANT_WOMAN_ON_TREATMENT -> evaluatePregnantWomanOnTreatmentStatus(value, resultMap)
-            AssessmentDefinedParams.SYSTOLIC -> evaluateSystolicStatus(value, resultMap)
-            AssessmentDefinedParams.DIASTOLIC -> evaluateDiastolicStatus(value, resultMap)
+            AssessmentDefinedParams.SYSTOLIC -> evaluateSystolicStatus(value)
+            AssessmentDefinedParams.DIASTOLIC -> evaluateDiastolicStatus(value)
             AssessmentDefinedParams.EDEMA -> evaluateEdemaStatus(value, resultMap)
             AssessmentDefinedParams.TEMPERATURE -> evaluateTemperatureStatus(value)
             AssessmentDefinedParams.PULSE -> evaluatePulseStatus(value)
@@ -1194,8 +1205,8 @@ class AssessmentRMNCHFragment :
             AssessmentDefinedParams.CALCIUM_TABLETS -> evaluateCalciumStatus(resultMap)
             AssessmentDefinedParams.ANC_FROM_MEDICAL_DOCTOR -> evaluateANCFromMedicalDoctorStatus(value)
             AssessmentDefinedParams.ULTRASOUND -> evaluateUltrasoundStatus(value)
-            AssessmentDefinedParams.BLOOD_SUGAR_FASTING -> evaluateBloodSugarFastingStatus(value, resultMap)
-            AssessmentDefinedParams.BLOOD_SUGAR_RANDOM -> evaluateBloodSugarRandomStatus(value, resultMap)
+            AssessmentDefinedParams.BLOOD_SUGAR_FASTING -> evaluateBloodSugarFastingStatus(value)
+            AssessmentDefinedParams.BLOOD_SUGAR_RANDOM -> evaluateBloodSugarRandomStatus(value)
             AssessmentDefinedParams.FACILITY_IDENTIFIED_FOR_DELIVERY -> evaluateFacilityIdentifiedForDeliveryStatus(value)
             Screening.Weight -> evaluateAncWeightStatus(value)
             else -> null
@@ -1367,22 +1378,11 @@ class AssessmentRMNCHFragment :
     }
 
     /**
-     * 2. Systolic - High Risk if >= 140 OR if existing HTN illness is present
+     * 2. Systolic - High Risk if >= 140
      */
-    private fun evaluateSystolicStatus(
-        value: Any?,
-        resultMap: HashMap<String, Any>,
-    ): Pair<String?, String?>? {
-        // Check if there's existing HTN illness first
-        val hasHTN = RMNCHAssessmentEvaluator.hasExistingHTNIllness(resultMap)
+    private fun evaluateSystolicStatus(value: Any?): Pair<String?, String?>? {
         val systolic = CommonUtils.getDoubleOrNull(value) ?: return null
         if (systolic == 0.0) return null
-        if (hasHTN) {
-            return Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
-        }
-
-        // If no HTN, check value threshold
-
         return if (systolic >= AssessmentDefinedParams.BP_SYSTOLIC_THRESHOLD) {
             Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
@@ -1391,22 +1391,11 @@ class AssessmentRMNCHFragment :
     }
 
     /**
-     * 2. Diastolic - High Risk if >= 90 OR if existing HTN illness is present
+     * 2. Diastolic - High Risk if >= 90
      */
-    private fun evaluateDiastolicStatus(
-        value: Any?,
-        resultMap: HashMap<String, Any>,
-    ): Pair<String?, String?>? {
-        // Check if there's existing HTN illness first
+    private fun evaluateDiastolicStatus(value: Any?): Pair<String?, String?>? {
         val diastolic = CommonUtils.getDoubleOrNull(value) ?: return null
         if (diastolic == 0.0) return null
-        val hasHTN = RMNCHAssessmentEvaluator.hasExistingHTNIllness(resultMap)
-        if (hasHTN) {
-            return Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
-        }
-
-        // If no HTN, check value threshold
-
         return if (diastolic >= AssessmentDefinedParams.BP_DIASTOLIC_THRESHOLD) {
             Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
@@ -1415,7 +1404,7 @@ class AssessmentRMNCHFragment :
     }
 
     /**
-     * 3. Edema - (edema=present AND BP >= 140/90) OR (existing HTN illness with normal bp <140/90) OR (urine albumin = present)
+     * 3. Edema - (edema=present AND BP >= 140/90) OR (urine albumin = present)
      */
     private fun evaluateEdemaStatus(
         value: Any?,
@@ -1429,17 +1418,12 @@ class AssessmentRMNCHFragment :
         val diastolic = (resultMap[AssessmentDefinedParams.DIASTOLIC] as? String)?.toDouble() ?: 0.0
         val isHighBP = systolic >= AssessmentDefinedParams.BP_SYSTOLIC_THRESHOLD || diastolic >= AssessmentDefinedParams.BP_DIASTOLIC_THRESHOLD
 
-        // Check existing HTN
-        val hasHTN = RMNCHAssessmentEvaluator.hasExistingHTNIllness(resultMap)
-        val isNormalBP = !isHighBP
-
         // Check urinary albumin
         val urinaryAlbumin = resultMap[AssessmentDefinedParams.URINARY_ALBUMIN] as? String
 
-        val condition2 = hasHTN && isNormalBP
-        val condition3 = urinaryAlbumin == AssessmentDefinedParams.VALUE_PRESENT
+        val condition2 = urinaryAlbumin == AssessmentDefinedParams.VALUE_PRESENT
 
-        return if (isHighBP || condition2 || condition3) {
+        return if (isHighBP || condition2) {
             Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
             null
@@ -1513,7 +1497,7 @@ class AssessmentRMNCHFragment :
     }
 
     /**
-     * 8. Urinary Albumin - Positive AND (BP≥140/90 OR existing HTN patient even with normal values <140/90 OR edema=present)
+     * 8. Urinary Albumin - Positive AND (BP≥140/90 OR edema=present)
      */
     private fun evaluateUrinaryAlbuminStatus(
         value: Any?,
@@ -1527,17 +1511,11 @@ class AssessmentRMNCHFragment :
         val diastolic = (resultMap[AssessmentDefinedParams.DIASTOLIC] as? String)?.toDouble() ?: 0.0
         val isHighBP = systolic >= AssessmentDefinedParams.BP_SYSTOLIC_THRESHOLD || diastolic >= AssessmentDefinedParams.BP_DIASTOLIC_THRESHOLD
 
-        // Check existing HTN
-        val hasHTN = RMNCHAssessmentEvaluator.hasExistingHTNIllness(resultMap)
-        val isNormalBP = !isHighBP
-
         // Check edema
         val edema = resultMap[AssessmentDefinedParams.EDEMA] as? String
+        val condition2 = edema == AssessmentDefinedParams.VALUE_PRESENT
 
-        val condition2 = hasHTN && isNormalBP
-        val condition3 = edema == AssessmentDefinedParams.VALUE_PRESENT
-
-        return if (isHighBP || condition2 || condition3) {
+        return if (isHighBP || condition2) {
             Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
             null
@@ -1641,20 +1619,11 @@ class AssessmentRMNCHFragment :
     }
 
     /**
-     * Blood Sugar Fasting - High Risk if >= 5.1 OR if existing DM illness is present
+     * Blood Sugar Fasting - High Risk if >= 5.1
      */
-    private fun evaluateBloodSugarFastingStatus(
-        value: Any?,
-        resultMap: HashMap<String, Any>,
-    ): Pair<String?, String?>? {
-        // Check if there's existing DM illness first
-        val hasDM = RMNCHAssessmentEvaluator.hasExistingDMIllness(resultMap)
+    private fun evaluateBloodSugarFastingStatus(value: Any?): Pair<String?, String?>? {
         val fastingValue = (value as? Number)?.toDouble()
         if (fastingValue == null || fastingValue == 0.0) return null
-        if (hasDM) {
-            return Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
-        }
-        // If no DM, check value threshold
 
         return if (fastingValue >= AssessmentDefinedParams.BLOOD_SUGAR_FASTING_THRESHOLD) {
             Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
@@ -1664,21 +1633,11 @@ class AssessmentRMNCHFragment :
     }
 
     /**
-     * Blood Sugar Random - High Risk if >= 8.5 OR if existing DM illness is present
+     * Blood Sugar Random - High Risk if >= 8.5
      */
-    private fun evaluateBloodSugarRandomStatus(
-        value: Any?,
-        resultMap: HashMap<String, Any>,
-    ): Pair<String?, String?>? {
-        // Check if there's existing DM illness first
-        val hasDM = RMNCHAssessmentEvaluator.hasExistingDMIllness(resultMap)
+    private fun evaluateBloodSugarRandomStatus(value: Any?): Pair<String?, String?>? {
         val randomValue = (value as? Number)?.toDouble()
         if (randomValue == null || randomValue == 0.0) return null
-        if (hasDM) {
-            return Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
-        }
-        // If no DM, check value threshold
-
         return if (randomValue >= AssessmentDefinedParams.BLOOD_SUGAR_RANDOM_THRESHOLD) {
             Pair(AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
@@ -1863,7 +1822,6 @@ class AssessmentRMNCHFragment :
         val resultMap = formGenerator.getResultMap()
         val systolic = CommonUtils.getInteger(resultMap[AssessmentDefinedParams.SYSTOLIC])
         val diastolic = CommonUtils.getInteger(resultMap[AssessmentDefinedParams.DIASTOLIC])
-        val isKnownHtn = isValueEquals(resultMap[RMNCH.ID_KNOWN_HTN], DefinedParams.Yes)
         val edema = resultMap[RMNCH.ID_EDEMA] as? String
         val urinaryAlbumin = resultMap[RMNCH.ID_URINARY_ALBUMIN] as? String
 
@@ -1872,7 +1830,7 @@ class AssessmentRMNCHFragment :
         val isAlbuminPositive = isValueEquals(urinaryAlbumin)
 
         // Common high risk triggers for BP (Point 1, 2, 3)
-        val bpHighRiskTrigger = isHighBp || isKnownHtn || (isEdemaPresent && isAlbuminPositive)
+        val bpHighRiskTrigger = isHighBp || (isEdemaPresent && isAlbuminPositive)
 
         // Systolic
         if (systolic > 0 && bpHighRiskTrigger) {
@@ -1889,14 +1847,14 @@ class AssessmentRMNCHFragment :
         }
 
         // Edema (Point 2)
-        if (isEdemaPresent && (isHighBp || isKnownHtn || isAlbuminPositive)) {
+        if (isEdemaPresent && (isHighBp || isAlbuminPositive)) {
             updateFieldTitleWithStatus(RMNCH.ID_EDEMA, emptyList(), AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
             updateFieldTitleWithStatus(RMNCH.ID_EDEMA, emptyList(), null, null)
         }
 
         // Urinary Albumin (Point 3)
-        if (isAlbuminPositive && (isHighBp || isKnownHtn || isEdemaPresent)) {
+        if (isAlbuminPositive && (isHighBp || isEdemaPresent)) {
             updateFieldTitleWithStatus(RMNCH.ID_URINARY_ALBUMIN, emptyList(), AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
             updateFieldTitleWithStatus(RMNCH.ID_URINARY_ALBUMIN, emptyList(), null, null)
@@ -1910,19 +1868,16 @@ class AssessmentRMNCHFragment :
         val resultMap = formGenerator.getResultMap()
         val fastingSugar = CommonUtils.getDouble(resultMap[RMNCH.ID_FASTING_BLOOD_SUGAR])
         val randomSugar = CommonUtils.getDouble(resultMap[RMNCH.ID_RANDOM_BLOOD_SUGAR])
-        val isDmPatient = isValueEquals(resultMap[RMNCH.ID_DM_PATIENT], DefinedParams.Yes)
-        val isGdmPatient = isValueEquals(resultMap[RMNCH.ID_GDM_PATIENT], DefinedParams.Yes)
-        val isDmOrGdm = isDmPatient || isGdmPatient
 
         // Fasting (Point 1)
-        if (fastingSugar > 0 && (fastingSugar >= 7.0 || isDmOrGdm)) {
+        if (fastingSugar >= 7.0) {
             updateFieldTitleWithStatus(RMNCH.ID_FASTING_BLOOD_SUGAR, emptyList(), AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
             updateFieldTitleWithStatus(RMNCH.ID_FASTING_BLOOD_SUGAR, emptyList(), null, null)
         }
 
         // Random (Point 2)
-        if (randomSugar > 0 && (randomSugar >= 11.1 || isDmOrGdm)) {
+        if (randomSugar >= 11.1) {
             updateFieldTitleWithStatus(RMNCH.ID_RANDOM_BLOOD_SUGAR, emptyList(), AssessmentDefinedParams.STATUS_HIGH_RISK, null)
         } else {
             updateFieldTitleWithStatus(RMNCH.ID_RANDOM_BLOOD_SUGAR, emptyList(), null, null)
@@ -2030,7 +1985,7 @@ class AssessmentRMNCHFragment :
         val conditions = mutableListOf<String>()
 
         // 1. Suspected Pre-eclampsia
-        if (RMNCHAssessmentEvaluator.isSuspectedPreEclampsia(resultMap)) {
+        if (ANCAssessmentEvaluator.isSuspectedPreEclampsia(resultMap)) {
             conditions.add(AssessmentDefinedParams.CONDITION_SUSPECTED_PRE_ECLAMPSIA)
         }
 
@@ -2071,7 +2026,7 @@ class AssessmentRMNCHFragment :
         }
 
         // 8. PW with existing chronic illnesses and not on treatment
-        if (RMNCHAssessmentEvaluator.hasChronicIllnessNotOnTreatment(resultMap)) {
+        if (ANCAssessmentEvaluator.hasChronicIllnessNotOnTreatment(resultMap)) {
             conditions.add(AssessmentDefinedParams.CONDITION_CHRONIC_ILLNESS_NOT_ON_TREATMENT)
         }
 
@@ -2091,7 +2046,7 @@ class AssessmentRMNCHFragment :
         val conditions = mutableListOf<String>()
 
         // 1. High risk pregnancy (short birth spacing <2 years/Age <18 years or >35 years/Multipara>3)
-        if (RMNCHAssessmentEvaluator.isHighRiskPregnancy(dateOfBirth, viewModel.pregnancyDetailLiveData.value)) {
+        if (ANCAssessmentEvaluator.isHighRiskPregnancy(dateOfBirth, viewModel.pregnancyDetailLiveData.value)) {
             conditions.add(AssessmentDefinedParams.CONDITION_HIGH_RISK_PREGNANCY)
         }
 
@@ -2113,12 +2068,12 @@ class AssessmentRMNCHFragment :
         }
 
         // 4. Suspected/Existing Case of Diabetes
-        if (RMNCHAssessmentEvaluator.isSuspectedDiabetes(resultMap)) {
+        if (ANCAssessmentEvaluator.isSuspectedDiabetes(resultMap)) {
             conditions.add(AssessmentDefinedParams.CONDITION_SUSPECTED_DIABETES)
         }
 
         // 5. PW with existing chronic illnesses with treatment
-        if (RMNCHAssessmentEvaluator.hasChronicIllnessWithTreatment(resultMap)) {
+        if (ANCAssessmentEvaluator.hasChronicIllnessWithTreatment(resultMap)) {
             conditions.add(AssessmentDefinedParams.CONDITION_CHRONIC_ILLNESS_WITH_TREATMENT)
         }
 
@@ -2132,7 +2087,7 @@ class AssessmentRMNCHFragment :
         }
 
         // 7. H/O Preg related medical complications (H/O Convulsions/ H/O Postpartum hemorrhage/H/O Severe Anemia /H/O GDM)
-        if (RMNCHAssessmentEvaluator.hasPregnancyRelatedMedicalComplications(resultMap)) {
+        if (ANCAssessmentEvaluator.hasPregnancyRelatedMedicalComplications(resultMap)) {
             conditions.add(AssessmentDefinedParams.CONDITION_PREGNANCY_RELATED_MEDICAL_COMPLICATIONS)
         }
 

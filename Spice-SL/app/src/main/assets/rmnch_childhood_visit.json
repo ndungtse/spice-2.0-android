@@ -68,6 +68,7 @@
             "isEnabled": true,
             "isMandatory": true,
             "hint": "Food",
+            "hintCulture": "খাবার",
             "isNeededDefault": true,
             "errorMessage": "Please select a valid option",
             "title": "What was the child fed in the last 24 hours?",

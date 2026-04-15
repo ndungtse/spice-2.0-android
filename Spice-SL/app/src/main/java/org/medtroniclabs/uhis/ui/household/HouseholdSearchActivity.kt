@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -78,15 +78,6 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
         binding.llFilter.btnSort.visible()
         binding.llFilter.btnSort.setText(R.string.sort)
         binding.llExactSearch.etSearchTerm.hint = getString(R.string.household_name_or_no)
-        val tabletSize =
-            resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)
-        val spanCount = if (tabletSize) {
-//            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            DefinedParams.span_count_3
-        } else {
-//            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            DefinedParams.span_count_1
-        }
 
         householdListAdapter = HouseholdListAdapter {
             val intent = Intent(this@HouseholdSearchActivity, HouseholdSummaryActivity::class.java)
@@ -96,11 +87,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
         }
 
         binding.rvHouseholdList.apply {
-            layoutManager =
-                GridLayoutManager(
-                    this@HouseholdSearchActivity,
-                    DefinedParams.span_count_1,
-                )
+            layoutManager = LinearLayoutManager(this@HouseholdSearchActivity)
             adapter = householdListAdapter
         }
     }
@@ -190,9 +177,6 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
                     val searchTerm = binding.llExactSearch.etSearchTerm.text
                         .toString()
                     householdListViewModel.setFilterLiveData(search = searchTerm)
-//                if (!searchTerm.isNullOrBlank()) {
-//                    householdListViewModel.searchByHouseholdNameOrNo(searchTerm.toString())
-//                }
                 })
             }
 
