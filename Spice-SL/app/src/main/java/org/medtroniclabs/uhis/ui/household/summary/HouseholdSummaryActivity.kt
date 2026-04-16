@@ -11,7 +11,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.GridLayoutManager
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
-import org.medtroniclabs.uhis.appextensions.isVisible
+import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.TB
 import org.medtroniclabs.uhis.common.DefinedParams.isMemberRegistration
@@ -71,7 +71,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             initializeAdapter(data)
             if (!intent.getBooleanExtra(HouseholdDefinedParams.IS_PHU_WALK_INS_FLOW, false)) {
                 if (householdSummaryViewModel.previousCount != 0 && (householdSummaryViewModel.previousCount < data.size)) {
-                    data.last().id?.let {
+                    data.last().id.let {
                         val existingFragment =
                             supportFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
                         if (existingFragment == null) {
@@ -161,7 +161,8 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             binding.bottomNavigationView.visibility = View.VISIBLE
             showHideVerticalIcon(false)
         } else {
-            binding.bottomNavigationView.visibility = View.GONE
+            binding.bottomNavigationView.visibility = View.VISIBLE
+            binding.btnFinishRegistration.gone()
             showHideVerticalIcon(true)
         }
         if (householdSummaryViewModel.isPhuWalkInsFlow) {
@@ -172,7 +173,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             showHideVerticalIcon(false)
         }
 
-        if (!binding.bottomNavigationView.isVisible() && !binding.bottomNavigationViewLinkPatient.isVisible()) {
+        if (!householdSummaryViewModel.isFromHouseHoldRegistration && !householdSummaryViewModel.isPhuWalkInsFlow) {
             showHideVerticalIcon(true)
         }
     }
