@@ -4014,7 +4014,7 @@ class FormGenerator(
                     } else if (mapList.size > 1) {
                         if (isContainsOther(mapList)) {
                             count = mapList.size - 1
-                            " ${getString(R.string.and)} ${getString(R.string.other)} $checkBoxText"
+                            "${getString(R.string.and)} ${getString(R.string.other)} $checkBoxText"
                         } else {
                             count = mapList.size
                             checkBoxText
