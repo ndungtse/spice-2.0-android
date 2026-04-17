@@ -329,7 +329,9 @@
     <string name="result_mother">ফলাফল - মা</string>
     <string name="result_neonate">ফলাফল - নবজাতক</string>
     <string name="anc_visit">গর্ভবতী ভিজিট</string>
+    <string name="current_anc_visit">বর্তমান গর্ভবতী ভিজিট</string>
     <string name="pnc_visit">প্রসবোত্তর সাক্ষাৎ</string>
+    <string name="current_pnc_visit">বর্তমান প্রসবোত্তর সাক্ষাৎ</string>
     <string name="exit_reason">আপনি এই স্ক্রিন ছেড়ে গেলে আপনার প্রবেশ করা ডেটা সংরক্ষণ হবে না।</string>
     <string name="add_new_member_small">নতুন সদস্য যোগ করুন</string>
     <string name="birth_history">জন্ম ইতিহাস</string>
@@ -1573,6 +1575,7 @@
     <string name="last_member_registration_date">সর্বশেষ সদস্য নিবন্ধনের তারিখ</string>
     <string name="add_guardian">+ অভিভাবক যোগ করুন</string>
     <string name="date_of_visit">ভিজিটের তারিখ</string>
+    <string name="current_date_of_visit">বর্তমান ভিজিটের তারিখ</string>
     <string name="age_of_last_child">সবচেয়ে ছোট সন্তানের বয়স কত?</string>
     <string name="days_since_delivery">প্রসবের পর কততম দিন হয়েছে?</string>
     <string name="high_risk_mother">উচ্চ ঝুঁকিপূর্ণ মা-  রেফারালের কারণ</string>
@@ -1626,4 +1629,6 @@
     <string name="national_id_already_exists">এই জাতীয় পরিচয়পত্রটি ইতিমধ্যে অন্য সদস্যের সাথে সংযুক্ত করা হয়েছে</string>
     <string name="selected_signs">চিহ্নিত করা হয়েছে</string>
     <string name="checkbox_selected_text">%1$d টি %2$s</string>
+    <string name="rmnch_emergency_referral_message">যত তাড়াতাড়ি সম্ভব একজন ডাক্তারের পরামর্শ নিন অথবা নিকটস্থ উপজেলা স্বাস্থ্য কমপ্লেক্সে যান।</string>
+    <string name="rmnch_non_emergency_referral_message">আপনার শরীরের অবস্থার উন্নতির জন্য অনুগ্রহ করে নিকটস্থ স্বাস্থ্যকেন্দ্র বা ডাক্তারের কাছে গিয়ে পরীক্ষা ও চিকিৎসা গ্রহণ করুন।</string>
 </resources>

@@ -1678,7 +1678,9 @@ class AssessmentRMNCHFragment :
                 ?.let { DateUtils.parseDate(it) }
                 ?.getLongTime()
                 ?.let { DateUtils.getDaysDifference(it) }
-            val previousWeight = viewModel.pregnancyDetailLiveData.value?.ancWeight
+            val previousWeight = viewModel.pregnancyDetailLiveData.value
+                ?.ancWeight
+                ?.takeIf { it > 0 }
             if (weight == null || daysSinceLastVisit == null || previousWeight == null) {
                 null
             } else {
