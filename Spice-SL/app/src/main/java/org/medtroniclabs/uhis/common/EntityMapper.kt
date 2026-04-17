@@ -58,7 +58,7 @@ object EntityMapper {
             is ShasthyaShebikaEntity -> {
                 // Format as "[ssid] [name]" if ssId exists, otherwise just use name
                 val displayName = if (!properties.ssId.isNullOrBlank()) {
-                    "${properties.ssId}-${properties.name}"
+                    "${properties.ssId} - ${properties.name}"
                 } else {
                     properties.name
                 }
