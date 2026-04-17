@@ -631,6 +631,7 @@
             "isMandatory": false,
             "isEnabled": true,
             "title": "Folic Acid Tablets",
+            "titleCulture": "ফলিক এসিড বড়ি",
             "visibility": "visible",
             "readOnly": true
         },
