@@ -37,7 +37,24 @@ pipelines:
 
           script:
             - apt-get update
-            - apt-get install -y awscli
+            - apt-get install -y unzip curl
+
+            # Install AWS CLI v2
+            - |
+              if ! command -v aws &> /dev/null; then
+                echo "Installing AWS CLI v2..."
+                curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                unzip -q awscliv2.zip
+                ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+              else
+                echo "AWS CLI already installed"
+              fi
+
+            # Ensure PATH
+            - export PATH=$PATH:/usr/local/bin
+
+            # Verify installation
+            - aws --version
 
             # OIDC Authentication
             - echo "$BITBUCKET_STEP_OIDC_TOKEN" > /tmp/web-identity-token
