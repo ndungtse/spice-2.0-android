@@ -553,7 +553,7 @@ class AssessmentViewModel @Inject constructor(
                         )
 
                         // Store first baby's member ID
-                        if (firstBabyMemberId == null && memberId != null) {
+                        if (firstBabyMemberId == null) {
                             firstBabyMemberId = memberId
                         }
                     }
@@ -1210,6 +1210,9 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Gets triggered for updating pregnancy details for PNC and ChildVisit
+     */
     fun handlePregnancy(
         details: HashMap<String, Any>,
         workflowName: String,
@@ -1279,6 +1282,9 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Updates details of pregnancy detail from the map
+     */
     private fun getClinicalDateAndVisitCount(
         details: HashMap<String, Any>,
         workflowName: String,
@@ -1292,9 +1298,6 @@ class AssessmentViewModel @Inject constructor(
                 details[RMNCH.visitNo] = pregnancyDetail.pncVisitNo ?: 0L
                 val pregnancyHistory = details[RMNCH.ID_PREGNANCY_HISTORY] as? HashMap<String, Any>
                 if (pregnancyHistory != null) {
-                    if (pregnancyHistory.containsKey(PregnantWomen.ID_GRAVIDA)) {
-                        pregnancyDetail.gravida = CommonUtils.getDouble(pregnancyHistory[PregnantWomen.ID_GRAVIDA]).toInt()
-                    }
                     if (pregnancyHistory.containsKey(PregnantWomen.ID_PARITY)) {
                         pregnancyDetail.parity = CommonUtils.getDouble(pregnancyHistory[PregnantWomen.ID_PARITY]).toInt()
                     }
@@ -1302,9 +1305,6 @@ class AssessmentViewModel @Inject constructor(
                         pregnancyDetail.numberOfLivingChildren = CommonUtils.getDouble(pregnancyHistory[PregnantWomen.ID_LIVING_CHILDREN]).toInt()
                     }
                 }
-                pregnancyDetail.ancVisitNo = 0
-                pregnancyDetail.lastMenstrualPeriod = null
-                pregnancyDetail.estimatedDeliveryDate = null
                 (details[RMNCH.ID_PNC_GAPS] as? List<*>)?.let {
                     pregnancyDetail.gapsInPnc = StringConverter.convertListToString(it)
                 }
@@ -1333,37 +1333,6 @@ class AssessmentViewModel @Inject constructor(
         visitNo: Long = 1,
     ): Long {
         existingCount?.let { return (it + 1) } ?: return visitNo.let { it }
-    }
-
-    private fun getClinicalDate(
-        existingDate: String?,
-        date: Any?,
-    ): String? {
-        existingDate?.let { return it } ?: return date?.let { it as String }
-    }
-
-    private fun getNumberOfNeonates(
-        existingCount: Int?,
-        noOfNeonate: Any?,
-    ): Int? =
-        existingCount ?: when (noOfNeonate) {
-            is Int -> noOfNeonate
-            is String -> noOfNeonate.toIntOrNull()
-            else -> null
-        }
-
-    fun updateMemberClinicalData(
-        hhmLocalId: Long,
-        visitCount: Long,
-        clinicalDate: String?,
-    ) {
-        viewModelScope.launch(dispatcherIO) {
-            assessmentRepository.updatePregnancyAncDetail(
-                hhmLocalId,
-                visitCount,
-                clinicalDate,
-            )
-        }
     }
 
     fun updateMemberDeceasedStatus(
@@ -1492,7 +1461,7 @@ class AssessmentViewModel @Inject constructor(
                     )
 
                 mentalHealthQuestions.postValue(Resource(ResourceState.SUCCESS, mhResponse))
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 mentalHealthQuestions.postValue(Resource(ResourceState.ERROR))
             }
         }
@@ -1619,7 +1588,7 @@ class AssessmentViewModel @Inject constructor(
     }
 
     var assessmentMap: HashMap<String, Any> = hashMapOf()
-    var referralResult: Pair<String?, ArrayList<String>>? = Pair(null, ArrayList<String>())
+    var referralResult: Pair<String?, ArrayList<String>>? = Pair(null, ArrayList())
     val birthLiveData = MutableLiveData<Resource<Triple<String, Boolean, Boolean>>>()
     var cbsMemberIDAndPregnancyDetail: Pair<Long?, PregnancyDetail?> = Pair(null, null)
 
@@ -1680,7 +1649,7 @@ class AssessmentViewModel @Inject constructor(
             )
             // Update Mother member details to NotSynced for PNC Flow
             memberRegistrationRepository.changeMemberDetailsToNotSynced(motherID)
-            id?.let {
+            id.let {
                 val result = memberRegistrationRepository.getAssessmentMemberDetails(id)
                 memberCbsDetailsLiveData.postValue(
                     when (result.state) {

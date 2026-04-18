@@ -39,7 +39,7 @@ class ResourceLoadingScreen : BaseActivity() {
     }
 
     private fun syncAndDownloadInitialData() {
-        val isDifferentLogin = intent.getBooleanExtra(AppConstants.isDifferentLogin, false)
+        val isDifferentLogin = intent.getBooleanExtra(AppConstants.IS_DIFFERENT_LOGIN, false)
         if (isDifferentLogin) {
             viewModel.syncOldUserData()
         } else {

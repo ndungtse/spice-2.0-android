@@ -332,8 +332,10 @@
     <string name="result_mother">Result - Mother</string>
     <string name="result_neonate">Result - Neonate</string>
     <string name="anc_visit">ANC Visit</string>
+    <string name="current_anc_visit">Current ANC visit</string>
     <string name="total_anc_services_received">Total ANC services received</string>
     <string name="pnc_visit">PNC Visit</string>
+    <string name="current_pnc_visit">Current PNC visit</string>
     <string name="exit_reason">If you leave this screen, your entered data will not be saved.</string>
     <string name="add_new_member_small">Add New Member</string>
     <string name="birth_history">Birth History</string>
@@ -1656,6 +1658,7 @@
     <string name="last_member_registration_date">Last member registration date</string>
     <string name="add_guardian">+ Add Guardian</string>
     <string name="date_of_visit">Date of Visit</string>
+    <string name="current_date_of_visit">Current date of visit</string>
     <string name="age_of_last_child">Age of Last Child</string>
     <string name="days_since_delivery">Days Since Delivery</string>
     <string name="high_risk_mother">High Risk Mother</string>
@@ -1696,4 +1699,6 @@
     <string name="national_id_already_exists">National ID is already assigned to another member</string>
     <string name="selected_signs">selected</string>
     <string name="checkbox_selected_text">%1$d %2$s</string>
+    <string name="rmnch_emergency_referral_message">Emergency Referral : Consult a doctor or visit the nearest Upazila Health Complex as soon as possible.</string>
+    <string name="rmnch_non_emergency_referral_message">Please visit a nearby health facility or doctor for check-up and treatment to improve your health condition.</string>
 </resources>

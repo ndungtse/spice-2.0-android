@@ -203,6 +203,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         val ancMap = map[RMNCH.ANC] as? Map<*, *>
         val summaryGroup = ancMap?.get(AssessmentDefinedParams.GROUP_SUMMARY) as? Map<*, *>
         val highRiskList = (summaryGroup?.get(AssessmentDefinedParams.HIGH_RISK_PREGNANT_WOMAN) as? Map<*, *>)
+        var riskText = ""
         if (!highRiskList.isNullOrEmpty()) {
             val urgentReferralList = highRiskList[RMNCH.AncPncReferralType.URGENT.name] as? List<String>
             val nonUrgentReferralList = highRiskList[RMNCH.AncPncReferralType.NON_URGENT.name] as? List<String>
@@ -215,6 +216,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     }
                     binding.parentLayout.addView(root)
                 }
+                riskText = getString(R.string.rmnch_emergency_referral_message)
                 urgentReferralList.forEach { condition ->
                     with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                         root.setPadding(0)
@@ -236,6 +238,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         setTypeface(null, Typeface.BOLD)
                     }
                     binding.parentLayout.addView(root)
+                }
+                if (riskText.isBlank()) {
+                    riskText = getString(R.string.rmnch_non_emergency_referral_message)
                 }
                 nonUrgentReferralList.forEach { condition ->
                     with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
@@ -278,6 +283,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 binding.scrollViewLL.addView(gapsCardBinding.root, layoutParams)
             }
             insertIndex += 1
+        }
+        if (riskText.isNotBlank()) {
+            binding.riskResultLayout.text = riskText
         }
         bindAncInstructions(ancMap, insertIndex)
     }
@@ -509,8 +517,8 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         val followUpDate = DateUtils.formatDateToDisplayFormat(nextVisitDate.timeInMillis)
         binding.etNextFollowUpDate.text = followUpDate
         updateFollowUpDate(followUpDate ?: "")
-
         val highRiskList = (pncMap?.get(RMNCH.ID_MOTHER_RISKS) as? Map<*, *>)
+        var riskText = ""
         if (!highRiskList.isNullOrEmpty()) {
             val urgentReferralList = highRiskList[RMNCH.AncPncReferralType.URGENT.name] as? List<String>
             val nonUrgentReferralList = highRiskList[RMNCH.AncPncReferralType.NON_URGENT.name] as? List<String>
@@ -523,6 +531,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     }
                     binding.parentLayout.addView(root)
                 }
+                riskText = getString(R.string.rmnch_emergency_referral_message)
                 urgentReferralList.forEach { condition ->
                     with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                         root.setPadding(0)
@@ -544,6 +553,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         setTypeface(null, Typeface.BOLD)
                     }
                     binding.parentLayout.addView(root)
+                }
+                if (riskText.isBlank()) {
+                    riskText = getString(R.string.rmnch_non_emergency_referral_message)
                 }
                 nonUrgentReferralList.forEach { condition ->
                     with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
@@ -586,6 +598,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 binding.scrollViewLL.addView(gapsCardBinding.root, layoutParams)
             }
             insertIndex += 1
+        }
+        if (riskText.isNotBlank()) {
+            binding.riskResultLayout.text = riskText
         }
         bindPNCInstructions(insertIndex)
     }

@@ -66,7 +66,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    private const val TIMEOUT_SECONDS = 60L // 3 Minutes to 1 Minutes
+    private const val TIMEOUT_SECONDS = 5 * 60L // 15 Minutes to 5 Minutes
 
     @Singleton
     @Provides
