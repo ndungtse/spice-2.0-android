@@ -77,7 +77,17 @@ class DashboardFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vi
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resource.data?.let { data ->
-                        val ssList = data.ssList.map { ChipViewItemModel(id = it.id, name = it.name) }
+                        val ssList = data.ssList.map {
+                            val name = if (it.ssId.isNullOrBlank()) {
+                                it.name
+                            } else {
+                                "${it.ssId} - ${it.name}"
+                            }
+                            ChipViewItemModel(
+                                id = it.id,
+                                name = name,
+                            )
+                        }
                         ssListTagView.addChipItemList(ssList, viewModel.getFilterLiveData().value?.filterBySs)
                         val subVillageList = data.subVillages.map { ChipViewItemModel(id = it.id, name = it.name) }
                         subVillageListTagView.addChipItemList(

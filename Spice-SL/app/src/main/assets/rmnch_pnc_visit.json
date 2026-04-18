@@ -12,35 +12,6 @@
         {
             "condition": [
                 {
-                    "greaterThanOrEqual": "2",
-                    "targetId": "parity",
-                    "visibility": "visible"
-                },
-                {
-                    "lessThanOrEqual": "1",
-                    "targetId": "livingChildren",
-                    "visibility": "gone"
-                }
-            ],
-            "family": "pregnancyHistory",
-            "hint": "[Enter number]",
-            "hintCulture": "[সংখ্যা লিখুন]",
-            "id": "gravida",
-            "inputType": 2,
-            "isEnabled": true,
-            "isMandatory": true,
-            "minValue": 1,
-            "maxLength": 2,
-            "maxValue": 30,
-            "orderId": 0,
-            "title": "Gravida",
-            "titleCulture": "সর্বমোট গর্ভসংখ্যা (এই গর্ভ সহ)",
-            "viewType": "EditText",
-            "visibility": "gone"
-        },
-        {
-            "condition": [
-                {
                     "greaterThanOrEqual": "1",
                     "targetId": "livingChildren",
                     "visibility": "visible"

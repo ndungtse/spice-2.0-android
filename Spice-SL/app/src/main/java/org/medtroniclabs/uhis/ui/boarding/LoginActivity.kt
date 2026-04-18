@@ -6,17 +6,21 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.net.toUri
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.BuildConfig
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.appextensions.hideKeyboard
-import org.medtroniclabs.uhis.common.AppConstants.isDifferentLogin
+import org.medtroniclabs.uhis.common.AppConstants
+import org.medtroniclabs.uhis.common.AppConstants.IS_DIFFERENT_LOGIN
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.EncryptionUtil
+import org.medtroniclabs.uhis.common.MultiClickListener
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.databinding.ActivityLoginBinding
 import org.medtroniclabs.uhis.formgeneration.extension.markMandatory
@@ -126,7 +130,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
     private fun triggerResourceLoading() {
         val intent = Intent(this@LoginActivity, ResourceLoadingScreen::class.java)
-        intent.putExtra(isDifferentLogin, isDifferentUseLogin)
+        intent.putExtra(IS_DIFFERENT_LOGIN, isDifferentUseLogin)
         startAsNewActivity(intent)
     }
 
@@ -146,6 +150,17 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     private fun setListeners() {
         binding.btnLogin.safeClickListener(this)
         binding.tvForgotPassword.safeClickListener(this)
+        if (BuildConfig.FLAVOR != AppConstants.FLAVOUR_PROD) {
+            binding.ivPrevious.setOnClickListener(
+                MultiClickListener(
+                    targetClicks = 5,
+                    interval = 1000L,
+                ) {
+                    val uri = BuildConfig.API_BASE_URL.toUri()
+                    Toast.makeText(this, uri.host?.substringBefore('.') ?: "", Toast.LENGTH_SHORT).show()
+                },
+            )
+        }
     }
 
     private fun initView() {

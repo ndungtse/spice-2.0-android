@@ -659,15 +659,18 @@ class AssessmentRMNCHFragment :
                 }
 
                 else -> {
-                    if (second.containsKey(name) && second[name] is Map<*, *>) {
-                        val clinicalMap = second[name] as HashMap<String, Any>
-                        clinicalMap[RMNCH.visitNo] = getANCVisitNumber()
-                    }
-
                     // Evaluate and add highRiskPregnantWoman and gapsInAnc to result map for ANC workflow
                     if (name == RMNCH.ANC) {
+                        if (second.containsKey(name) && second[name] is Map<*, *>) {
+                            val clinicalMap = second[name] as HashMap<String, Any>
+                            clinicalMap[RMNCH.visitNo] = getANCVisitNumber()
+                        }
                         evaluateAndAddAncSummaryData(second)
                     } else {
+                        if (second.containsKey(name) && second[name] is Map<*, *>) {
+                            val clinicalMap = second[name] as HashMap<String, Any>
+                            clinicalMap[RMNCH.visitNo] = getChildVisitNumber()
+                        }
                         // Save visit detail into the pregnancy table
                         viewModel.memberDetailsLiveData.value?.data?.let { memberDetail ->
                             viewModel.handlePregnancy(
@@ -817,11 +820,11 @@ class AssessmentRMNCHFragment :
         val pncVisitCount = getPncVisitNumber()
         val ancVisitCountForPnc = getAncVisitNumberForPnc()
 
-        // For first PNC visit only, if gravida is not set, then ask for pregnancy history
+        // For first PNC visit only, if parity is not set, then ask for pregnancy history
         // The user is visiting the member for the first time, no PW Profile, no ANC.
-        if (pncVisitCount <= 1L && (details?.gravida ?: 0) == 0) {
+        if (pncVisitCount <= 1L && ancVisitCountForPnc < 1) {
             pregnancyHistoryCardView?.visible()
-            formGenerator.getViewByTag(PregnantWomen.ID_GRAVIDA + formGenerator.rootSuffix)?.visible()
+            formGenerator.getViewByTag(PregnantWomen.ID_PARITY + formGenerator.rootSuffix)?.visible()
         } else {
             pregnancyHistoryCardView?.gone()
             pregnancyHistoryView?.children?.forEach { pregnancyField ->
@@ -1675,7 +1678,9 @@ class AssessmentRMNCHFragment :
                 ?.let { DateUtils.parseDate(it) }
                 ?.getLongTime()
                 ?.let { DateUtils.getDaysDifference(it) }
-            val previousWeight = viewModel.pregnancyDetailLiveData.value?.ancWeight
+            val previousWeight = viewModel.pregnancyDetailLiveData.value
+                ?.ancWeight
+                ?.takeIf { it > 0 }
             if (weight == null || daysSinceLastVisit == null || previousWeight == null) {
                 null
             } else {

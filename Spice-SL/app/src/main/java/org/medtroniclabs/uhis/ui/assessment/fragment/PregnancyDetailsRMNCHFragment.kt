@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.activityViewModels
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.getLongTime
@@ -19,6 +20,7 @@ import org.medtroniclabs.uhis.common.DateUtils.getV2YearMonthAndWeek
 import org.medtroniclabs.uhis.common.StringConverter
 import org.medtroniclabs.uhis.databinding.FragmentPregnancyDetailsRmnchBinding
 import org.medtroniclabs.uhis.db.entity.PregnancyDetail
+import org.medtroniclabs.uhis.formgeneration.extension.px
 import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
@@ -107,7 +109,7 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
                             getString(R.string.gestational_age),
                             gestationalAgeWeekString,
                         )
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         // Skip if calculation fails
                     }
                 }
@@ -172,7 +174,7 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
                                     val ageOfLastChildColor = try {
                                         val ageInYears = calculateAge(dobString)
                                         if (ageInYears < AssessmentDefinedParams.AGE_OF_LAST_CHILD_HIGH_RISK_YEARS) Color.RED else null
-                                    } catch (e: Exception) {
+                                    } catch (_: Exception) {
                                         null
                                     }
 
@@ -181,7 +183,7 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
                                         ageOfLastChildDisplay,
                                         ageOfLastChildColor,
                                     )
-                                } catch (e: Exception) {
+                                } catch (_: Exception) {
                                     // Skip if calculation fails
                                 }
                             }
@@ -237,28 +239,34 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
                 }
             }
 
+            binding.llPregnancyInfo.addView(
+                ImageView(requireContext()).apply {
+                    layoutParams = ViewGroup
+                        .MarginLayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            1.px,
+                        ).apply {
+                            topMargin = 8.px
+                            bottomMargin = 8.px
+                        }
+                    setBackgroundResource(R.color.edittext_stroke)
+                },
+            )
+
             // Date of Visit always shows current date (shown after High risk and Gaps)
             createSummary(
-                getString(R.string.date_of_visit),
+                getString(R.string.current_date_of_visit),
                 formattedCurrentDate,
             )
 
             // ANC Visit (shown after date of visit, only for ANC workflow)
             createSummary(
-                getString(R.string.anc_visit),
+                getString(R.string.current_anc_visit),
                 visitCount.toString(),
             )
         } else {
             // Calculate visit count once for PNC workflow
             val visitCount = getVisitCount(pregnancyDetail?.pncVisitNo)
-            createSummary(
-                getString(R.string.date_of_visit),
-                formattedCurrentDate,
-            )
-            createSummary(
-                getString(R.string.pnc_visit),
-                visitCount.toString(),
-            )
             if (visitCount > 1) {
                 val gapsInPnc = pregnancyDetail?.gapsInPnc
                 val highRiskMother = pregnancyDetail?.highRiskMother
@@ -309,6 +317,27 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
                     )
                 }
             }
+            binding.llPregnancyInfo.addView(
+                ImageView(requireContext()).apply {
+                    layoutParams = ViewGroup
+                        .MarginLayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            1.px,
+                        ).apply {
+                            topMargin = 8.px
+                            bottomMargin = 8.px
+                        }
+                    setBackgroundResource(R.color.edittext_stroke)
+                },
+            )
+            createSummary(
+                getString(R.string.current_date_of_visit),
+                formattedCurrentDate,
+            )
+            createSummary(
+                getString(R.string.current_pnc_visit),
+                visitCount.toString(),
+            )
         }
     }
 
@@ -331,6 +360,14 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
                 valueTextColor = valueTextColor,
                 context = binding.llPregnancyInfo.context,
             ),
+            ViewGroup
+                .MarginLayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                ).apply {
+                    marginStart = 8.px
+                    marginEnd = 8.px
+                },
         )
     }
 }

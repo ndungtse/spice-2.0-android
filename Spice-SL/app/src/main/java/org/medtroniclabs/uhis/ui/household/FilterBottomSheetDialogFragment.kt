@@ -82,9 +82,14 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
                     hideLoading()
                     resource.data?.let { data ->
                         val ssList = data.ssList.map {
+                            val name = if (it.ssId.isNullOrBlank()) {
+                                it.name
+                            } else {
+                                "${it.ssId} - ${it.name}"
+                            }
                             ChipViewItemModel(
                                 id = it.id,
-                                name = it.name,
+                                name = name,
                             )
                         }
                         ssListTagView.addChipItemList(
