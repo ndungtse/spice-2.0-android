@@ -244,7 +244,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                 val sleepLocationId = resultMap?.get(SleepLocation)
                 option?.forEach { item ->
                     if (item[DefinedParams.id] == sleepLocationId) {
-                        item[DefinedParams.name]?.let {
+                        item[DefinedParams.NAME]?.let {
                             resultMap?.put(SleepLocation, it)
                         }
                     }

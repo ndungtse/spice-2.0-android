@@ -279,10 +279,10 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)
         if (tabletSize) {
             requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-            patientListViewModel.spanCount = DefinedParams.span_count_3
+            patientListViewModel.spanCount = DefinedParams.SPAN_COUNT_3
         } else {
             requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            patientListViewModel.spanCount = DefinedParams.span_count_1
+            patientListViewModel.spanCount = DefinedParams.SPAN_COUNT_1
         }
 
         if (CommonUtils.isNonCommunity()) {

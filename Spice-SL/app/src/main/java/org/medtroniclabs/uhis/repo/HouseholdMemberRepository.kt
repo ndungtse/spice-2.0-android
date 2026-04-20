@@ -418,4 +418,6 @@ class HouseholdMemberRepository @Inject constructor(
      * @return A list of National IDs.
      */
     suspend fun getAllNationalIds(idType: String): List<String> = roomHelper.getAllNationalIds(idType)
+
+    suspend fun getPregnancyDetails(id: Long) = roomHelper.getPregnancyDetailByPatientId(id)
 }

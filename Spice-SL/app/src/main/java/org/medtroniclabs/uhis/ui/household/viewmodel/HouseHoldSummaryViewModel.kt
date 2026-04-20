@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.data.offlinesync.model.HouseholdMemberWithTb
+import org.medtroniclabs.uhis.db.entity.PregnancyDetail
 import org.medtroniclabs.uhis.db.response.HouseHoldEntityWithLastActivity
 import org.medtroniclabs.uhis.di.IoDispatcher
 import org.medtroniclabs.uhis.repo.HouseHoldRepository
@@ -24,11 +25,11 @@ class HouseHoldSummaryViewModel @Inject constructor(
     var houseHoldId: Long = -1L
     var isFromHouseHoldRegistration: Boolean = false
     var selectedMemberId = -1L
+    var selectedTypeOfDeath = emptyMap<String, Any>()
     var villageId: Long = -1L
     var previousCount: Int = 0
     var selectedMemberDob: String? = null
     var isPhuWalkInsFlow: Boolean = false
-    var hasDeceasedReason: Boolean = false
 
     private val houseHoldNoLiveData = MutableLiveData<Long>()
     val householdCardDetailLiveData: LiveData<List<HouseHoldEntityWithLastActivity>> =
@@ -59,4 +60,12 @@ class HouseHoldSummaryViewModel @Inject constructor(
             )
         }
     }
+
+    /**
+     * Returns the most recent pregnancy detail for the given member, if available.
+     *
+     * This is used by deceased member flow to determine whether latest delivery
+     * is within maternal-death option window.
+     */
+    suspend fun getLatestPregnancyDetail(memberId: Long): PregnancyDetail? = memberRegistrationRepository.getPregnancyDetails(memberId)
 }

@@ -336,25 +336,25 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     if (bmi < AssessmentDefinedParams.BMI_NORMAL_WEIGHT_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "underWeight" }
                         option?.let {
-                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructions.add(option[DefinedParams.NAME] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else if (bmi < AssessmentDefinedParams.BMI_OVER_WEIGHT_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "normalWeight" }
                         option?.let {
-                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructions.add(option[DefinedParams.NAME] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else if (bmi < AssessmentDefinedParams.BMI_OBSESS_WEIGHT_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "overWeight" }
                         option?.let {
-                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructions.add(option[DefinedParams.NAME] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else {
                         val option = options.firstOrNull { it[DefinedParams.id] == "obsess" }
                         option?.let {
-                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructions.add(option[DefinedParams.NAME] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     }
@@ -365,19 +365,19 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     if (hb < AssessmentDefinedParams.HEMOGLOBIN_SEVERE_ANEMIA_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "severeAnemia" }
                         option?.let {
-                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructions.add(option[DefinedParams.NAME] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else if (hb < AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "moderateAnemia" }
                         option?.let {
-                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructions.add(option[DefinedParams.NAME] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else if (hb < AssessmentDefinedParams.HEMOGLOBIN_MILD_ANEMIA_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "mildAnemia" }
                         option?.let {
-                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructions.add(option[DefinedParams.NAME] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else {
@@ -391,7 +391,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 ) {
                     val option = options.firstOrNull { it[DefinedParams.id] == "lowSugar" }
                     option?.let {
-                        instructions.add(option[DefinedParams.name] as? String ?: "")
+                        instructions.add(option[DefinedParams.NAME] as? String ?: "")
                         instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                     }
                 }
@@ -683,7 +683,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         optionsList.forEach { option ->
             val optionMap = HashMap<String, Any>()
             optionMap[DefinedParams.id] = option["id"]?.toString() ?: ""
-            optionMap[DefinedParams.name] = option["name"]?.toString() ?: ""
+            optionMap[DefinedParams.NAME] = option["name"]?.toString() ?: ""
             siteList.add(optionMap)
         }
 

@@ -11,6 +11,7 @@ import java.text.DecimalFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.collections.mapOf
 import kotlin.math.abs
 
 object RMNCH {
@@ -47,6 +48,11 @@ object RMNCH {
     const val DEATH_OF_NEWBORN = "deathOfNewborn"
     const val isDeceased = "isDeceased"
     const val deceasedReason = "deceasedReason"
+    const val DEATH_TYPE_NEONATAL = "neonatal"
+    const val DEATH_TYPE_MOTHER = "mother"
+    const val DEATH_TYPE_OTHER = "other"
+    const val DECEASED_REASON_PREFIX_NEONATAL = "__neonatal__"
+    const val DECEASED_REASON_PREFIX_MOTHER = "__mother__"
 
     const val otherPlaceOfDelivery = "otherPlaceOfDelivery"
 
@@ -442,6 +448,49 @@ object RMNCH {
         }
         return deathOfMother
     }
+
+    // Neonatal death cause options
+    val neonatalDeathCauseOptions: ArrayList<Map<String, Any>> = arrayListOf(
+        mapOf("id" to "asphyxia", "name" to "Asphyxia", "cultureValue" to "শ্বাসরোধ"),
+        mapOf("id" to "abnormallyLowTemperature", "name" to "Abnormally low temperature", "cultureValue" to "অস্বাভাবিক কম তাপমাত্রা"),
+        mapOf("id" to "lowBirthWeight", "name" to "Low birth weight", "cultureValue" to "কম জন্ম ওজন"),
+        mapOf("id" to "convulsions", "name" to "Convulsions", "cultureValue" to "খিঁচুনি"),
+        mapOf("id" to "prematureBirth", "name" to "Premature birth", "cultureValue" to "অপরিণত জন্ম"),
+        mapOf("id" to "sepsisUmbilicalSepsis", "name" to "Sepsis/ Umbilical sepsis", "cultureValue" to "নাভির সংক্রমণ / সংক্রমণ"),
+        mapOf("id" to "pneumonia", "name" to "Pneumonia", "cultureValue" to "নিউমোনিয়া"),
+        mapOf("id" to "congenitalAnomaly", "name" to "Congenital Anomaly", "cultureValue" to "জন্মগত ত্রুটি"),
+        mapOf("id" to "unknown", "name" to "Unknown", "cultureValue" to "জানা নেই"),
+    )
+
+    /**
+     * Shared type-of-death options for neonatal path.
+     */
+    val neonatalDeathTypeOptions: List<Map<String, Any>> =
+        listOf(
+            mapOf("id" to DEATH_TYPE_NEONATAL, "name" to "Neo Natal", "cultureValue" to "নবজাতকের মৃত্যু"),
+            mapOf("id" to DEATH_TYPE_OTHER, "name" to "Other", "cultureValue" to "অন্যান্য"),
+        )
+
+    /**
+     * Shared type-of-death options for maternal path.
+     */
+    val maternalDeathTypeOptions: List<Map<String, Any>> =
+        listOf(
+            mapOf("id" to DEATH_TYPE_MOTHER, "name" to "Maternal", "cultureValue" to "মাতৃ"),
+            mapOf("id" to DEATH_TYPE_OTHER, "name" to "Other", "cultureValue" to "অন্যান্য"),
+        )
+
+    // Maternal death cause options
+    val maternalDeathCauseOptions = arrayListOf(
+        mapOf("id" to "excessiveBleeding", "name" to "Excessive bleeding", "cultureValue" to "অতিরিক্ত রক্তক্ষরণ"),
+        mapOf("id" to "infection", "name" to "Infection", "cultureValue" to "সংক্রমণ"),
+        mapOf("id" to "hypertensiveDisorder", "name" to "Hypertensive disorder (Eclampsia)", "cultureValue" to "উচ্চ রক্তচাপজনিত জটিলতা (ইক্ল্যাম্পসিয়া)"),
+        mapOf("id" to "obstructedLabor", "name" to "Obstructed labor", "cultureValue" to "বাধাগ্রস্থ প্রসব"),
+        mapOf("id" to "uterineRupture", "name" to "Uterine rupture", "cultureValue" to "জরায়ু ফেটে যাওয়া"),
+        mapOf("id" to "unsafeAbortion", "name" to "Unsafe abortion", "cultureValue" to "অনিরাপদ গর্ভপাত"),
+        mapOf("id" to "severeAnemia", "name" to "Severe Anemia", "cultureValue" to "মারাত্মক রক্তস্বল্পতা"),
+        mapOf("id" to "otherMedicalComplications", "name" to "Other medical complications", "cultureValue" to "অন্যান্য চিকিৎসাজনিত জটিলতা"),
+    )
 
     /**
      * ANC/PNC referral type

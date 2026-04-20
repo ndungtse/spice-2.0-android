@@ -11,14 +11,14 @@ object DefinedParams {
     const val GENDER_OTHER = "Other"
     const val BOTH = "both"
     const val AT_CHAR = "@"
-    const val span_count_1 = 1
-    const val span_count_3 = 3
+    const val SPAN_COUNT_1 = 1
+    const val SPAN_COUNT_3 = 3
     const val isMemberRegistration = "isMemberRegistration"
     const val MEMBER_ID = "memberID"
     const val MENU_ID = "MenuId"
     const val NAME = "name"
     const val CULTURE_VALUE = "cultureValue"
-    const val id = "id"
+    const val id = ID
     const val ICCM = "ICCM"
     const val TB = "TB"
     const val TbScreening = "tbScreening"
@@ -164,8 +164,6 @@ object DefinedParams {
     const val UnAssigned = "Unassigned"
 
     const val FhirMemberID = "FhirmemberID"
-
-    const val name = "name"
 
     const val Age = "age"
 

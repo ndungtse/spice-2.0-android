@@ -120,7 +120,6 @@ class LoginRepository @Inject constructor(
             true,
         )
         FirebaseCrashlytics.getInstance().setUserId(userName)
-
     }
 
     private fun saveTokenInformation(headers: Map<String, List<String>>) {

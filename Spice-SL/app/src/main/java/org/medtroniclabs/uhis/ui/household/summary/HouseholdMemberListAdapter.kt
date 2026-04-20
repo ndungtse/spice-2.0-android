@@ -24,6 +24,7 @@ import org.medtroniclabs.uhis.data.offlinesync.model.HouseholdMemberWithTb
 import org.medtroniclabs.uhis.databinding.MembersSummaryListItemBinding
 import org.medtroniclabs.uhis.formgeneration.extension.px
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.utils.AssessmentUtil
 import org.medtroniclabs.uhis.ui.household.MemberSelectionListener
 
@@ -31,6 +32,7 @@ class HouseholdMemberListAdapter(
     private val houseHoldMembersList: List<HouseholdMemberWithTb>,
     private val listener: MemberSelectionListener,
     private val phuWalkInsFlow: Boolean,
+    private val isTranslationEnabled: Boolean,
 ) : RecyclerView.Adapter<HouseholdMemberListAdapter.HouseholdListViewHolder>(),
     View.OnClickListener {
     inner class HouseholdListViewHolder(val binding: MembersSummaryListItemBinding) :
@@ -93,7 +95,10 @@ class HouseholdMemberListAdapter(
             holder.binding.clReasonOfDeath.visible()
             holder.binding.forwardIcon.invisible()
             holder.binding.tvReasonForDeath.text =
-                item.deceasedReason ?: context.getString(R.string.separator_double_hyphen)
+                item.deceasedReason
+                    ?.let(::formatDeceasedReasonForDisplay)
+                    ?.takeIf { it.isNotBlank() }
+                    ?: context.getString(R.string.separator_double_hyphen)
             disableAllChildren(holder.binding.root, 1f, false)
         }
 
@@ -193,6 +198,90 @@ class HouseholdMemberListAdapter(
                 getGenderText(item.gender, context),
             ),
         )
+
+    /**
+     * Formats deceased reason for UI, mapping encoded neonatal/maternal cause ids to labels.
+     *
+     * Supported encoded formats:
+     * - `__neonatal__:<id1,id2>`
+     * - `__mother__:<id1,id2>`
+     */
+    private fun formatDeceasedReasonForDisplay(reason: String): String {
+        val trimmedReason = reason.trim()
+        val (type, causeIds) = parseEncodedDeceasedReason(trimmedReason) ?: return trimmedReason
+        val mappedReasons = mapCauseIdsToDisplayValues(type, causeIds)
+        if (mappedReasons.isBlank()) return trimmedReason
+        val typeLabel = getTypeLabel(type).ifBlank { type }
+        return "$typeLabel($mappedReasons)"
+    }
+
+    /**
+     * Parses type and cause ids from encoded deceased reason value.
+     */
+    private fun parseEncodedDeceasedReason(reason: String): Pair<String, List<String>>? {
+        val parts = reason.split(":", limit = 2)
+        if (parts.size != 2) return null
+        val typePrefix = parts[0].trim()
+        val normalizedType =
+            when (typePrefix.lowercase()) {
+                RMNCH.DECEASED_REASON_PREFIX_NEONATAL -> RMNCH.DEATH_TYPE_NEONATAL
+                RMNCH.DECEASED_REASON_PREFIX_MOTHER -> RMNCH.DEATH_TYPE_MOTHER
+                else -> return null
+            }
+        val causeIds =
+            parts[1]
+                .split(",")
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+        return normalizedType to causeIds
+    }
+
+    /**
+     * Maps cause ids to translated or default labels based on app language setting.
+     */
+    private fun mapCauseIdsToDisplayValues(
+        type: String,
+        causeIds: List<String>,
+    ): String {
+        if (causeIds.isEmpty()) return ""
+        val options =
+            if (type == RMNCH.DEATH_TYPE_NEONATAL) {
+                RMNCH.neonatalDeathCauseOptions
+            } else {
+                RMNCH.maternalDeathCauseOptions
+            }
+        val optionMap =
+            options.associateBy(
+                keySelector = { it["id"]?.toString().orEmpty().lowercase() },
+                valueTransform = {
+                    if (isTranslationEnabled) {
+                        it["cultureValue"]?.toString().orEmpty().ifBlank { it["name"]?.toString().orEmpty() }
+                    } else {
+                        it["name"]?.toString().orEmpty()
+                    }
+                },
+            )
+        return causeIds.joinToString(", ") { causeId ->
+            optionMap[causeId.lowercase()] ?: causeId
+        }
+    }
+
+    /**
+     * Resolves translated/non-translated type label from shared RMNCH options.
+     */
+    private fun getTypeLabel(type: String): String {
+        val option =
+            when (type) {
+                RMNCH.DEATH_TYPE_NEONATAL -> RMNCH.neonatalDeathTypeOptions.firstOrNull { it["id"] == RMNCH.DEATH_TYPE_NEONATAL }
+                RMNCH.DEATH_TYPE_MOTHER -> RMNCH.maternalDeathTypeOptions.firstOrNull { it["id"] == RMNCH.DEATH_TYPE_MOTHER }
+                else -> null
+            } ?: return ""
+        return if (isTranslationEnabled) {
+            option["cultureValue"]?.toString().orEmpty().ifBlank { option["name"]?.toString().orEmpty() }
+        } else {
+            option["name"]?.toString().orEmpty()
+        }
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,

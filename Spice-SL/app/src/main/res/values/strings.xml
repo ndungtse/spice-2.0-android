@@ -1701,4 +1701,6 @@
     <string name="checkbox_selected_text">%1$d %2$s</string>
     <string name="rmnch_emergency_referral_message">Emergency Referral : Consult a doctor or visit the nearest Upazila Health Complex as soon as possible.</string>
     <string name="rmnch_non_emergency_referral_message">Please visit a nearby health facility or doctor for check-up and treatment to improve your health condition.</string>
+    <string name="type_of_death">Type of death</string>
+    <string name="select_all_that_apply">Select all that apply</string>
 </resources>

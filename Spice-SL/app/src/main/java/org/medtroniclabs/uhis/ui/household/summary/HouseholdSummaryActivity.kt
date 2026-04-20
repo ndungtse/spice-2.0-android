@@ -8,7 +8,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.gone
@@ -88,10 +88,9 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
 
     private fun initializeAdapter(data: List<HouseholdMemberWithTb>) {
         val householdListAdapter =
-            HouseholdMemberListAdapter(data, this, householdSummaryViewModel.isPhuWalkInsFlow)
+            HouseholdMemberListAdapter(data, this, householdSummaryViewModel.isPhuWalkInsFlow, isTranslationEnabled)
         binding.rvHouseholdList.apply {
-            layoutManager =
-                GridLayoutManager(this@HouseholdSummaryActivity, DefinedParams.span_count_1)
+            layoutManager = LinearLayoutManager(this@HouseholdSummaryActivity)
             adapter = householdListAdapter
             adapter?.let {
                 hideLoading()
@@ -208,7 +207,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
 
                     R.id.memberDeceased -> {
                         MemberDeceasedDialogFragment
-                            .newInstance(this@HouseholdSummaryActivity)
+                            .newInstance()
                             .show(supportFragmentManager, MemberDeceasedDialogFragment.TAG)
                     }
                 }

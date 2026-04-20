@@ -32,7 +32,7 @@
             android:layout_marginTop="@dimen/_20sdp"
             android:text="@string/member_deceased"
             android:textColor="@color/house_hold_title"
-            android:textSize="@dimen/_20sdp"
+            android:textSize="@dimen/_20ssp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@id/leftGuideline"
             app:layout_constraintTop_toTopOf="parent" />
@@ -52,7 +52,7 @@
             android:id="@+id/divider"
             android:layout_width="0dp"
             android:layout_height="@dimen/_1sdp"
-            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_18sdp"
             android:background="@color/edittext_stroke"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +62,7 @@
             android:id="@+id/tvSelectMember"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_25sdp"
+            android:layout_marginTop="@dimen/_18sdp"
             android:text="@string/select_member_deceased"
             android:textColor="@color/b_w_black"
             android:textSize="@dimen/_18ssp"
@@ -75,55 +75,112 @@
             style="@style/Form_Spinner_Style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/_8sdp"
+            android:layout_marginTop="@dimen/_8sdp"
             android:minHeight="@dimen/_30sdp"
             app:layout_constraintEnd_toEndOf="@id/rightGuideline"
             app:layout_constraintStart_toStartOf="@id/leftGuideline"
             app:layout_constraintTop_toBottomOf="@+id/tvSelectMember" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvTypeOfDeath"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_18sdp"
+            android:text="@string/type_of_death"
+            android:textColor="@color/b_w_black"
+            android:textSize="@dimen/_18ssp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/rightGuideline"
+            app:layout_constraintStart_toStartOf="@id/leftGuideline"
+            app:layout_constraintTop_toBottomOf="@+id/etMemberInput" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/etTypeOfDeath"
+            style="@style/Form_Spinner_Style"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:minHeight="@dimen/_30sdp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/rightGuideline"
+            app:layout_constraintStart_toStartOf="@id/leftGuideline"
+            app:layout_constraintTop_toBottomOf="@+id/tvTypeOfDeath" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvReason"
             android:layout_width="0dp"
-            android:layout_marginTop="@dimen/_8sdp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
             android:text="@string/reason"
             android:textColor="@color/b_w_black"
             android:textSize="@dimen/_18ssp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/rightGuideline"
             app:layout_constraintStart_toStartOf="@+id/leftGuideline"
-            app:layout_constraintTop_toBottomOf="@+id/etMemberInput" />
+            app:layout_constraintTop_toBottomOf="@+id/etTypeOfDeath" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvReasonHint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:text="@string/select_all_that_apply"
+            android:textColor="@color/b_w_black"
+            android:textSize="@dimen/_12ssp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/rightGuideline"
+            app:layout_constraintStart_toStartOf="@+id/leftGuideline"
+            app:layout_constraintTop_toBottomOf="@+id/tvReason" />
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etReason"
             style="@style/Form_Input_Style_BG"
             android:layout_width="@dimen/_0dp"
+            android:layout_height="@dimen/_100sdp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:ellipsize="none"
+            android:gravity="top|start"
             android:inputType="textMultiLine"
             android:maxLines="5"
             android:minLines="5"
-            android:gravity="top|start"
-            android:ellipsize="none"
-            android:scrollHorizontally="false"
-            android:scrollbars="vertical"
-            android:layout_height="@dimen/_100sdp"
-            android:layout_weight="0.8"
             android:paddingHorizontal="@dimen/_12sdp"
             android:paddingVertical="@dimen/_10sdp"
-            app:layout_constraintTop_toBottomOf="@id/tvReason"
+            android:scrollbars="vertical"
+            android:scrollHorizontally="false"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/rightGuideline"
-            app:layout_constraintStart_toStartOf="@+id/leftGuideline"/>
+            app:layout_constraintStart_toStartOf="@+id/leftGuideline"
+            app:layout_constraintTop_toBottomOf="@id/tvReasonHint" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvItems"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="@dimen/_240sdp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:background="@drawable/edittext_background"
+            android:padding="@dimen/_10sdp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/rightGuideline"
+            app:layout_constraintStart_toStartOf="@+id/leftGuideline"
+            app:layout_constraintTop_toBottomOf="@id/tvReasonHint" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrierContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="etReason,rvItems" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/bottomDivider"
             android:layout_width="0dp"
             android:layout_height="@dimen/_1sdp"
-            android:layout_marginTop="@dimen/_40sdp"
-            android:layout_marginBottom="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_24sdp"
             android:background="@color/edittext_stroke"
             app:cardElevation="@dimen/_4sdp"
-            app:layout_constraintBottom_toTopOf="@id/btnOkay"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etReason" />
+            app:layout_constraintTop_toBottomOf="@id/barrierContent" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnOkay"
@@ -132,9 +189,9 @@
             android:layout_marginHorizontal="@dimen/_24sdp"
             android:layout_marginVertical="@dimen/_16sdp"
             android:background="@drawable/button_selector_cobalt"
+            android:enabled="false"
             android:text="@string/submit"
             android:textStyle="bold"
-            android:enabled="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/rightGuideline"
             app:layout_constraintStart_toStartOf="@id/leftGuideline"

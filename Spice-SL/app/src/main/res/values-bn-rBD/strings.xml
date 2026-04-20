@@ -1631,4 +1631,6 @@
     <string name="checkbox_selected_text">%1$d টি %2$s</string>
     <string name="rmnch_emergency_referral_message">যত তাড়াতাড়ি সম্ভব একজন ডাক্তারের পরামর্শ নিন অথবা নিকটস্থ উপজেলা স্বাস্থ্য কমপ্লেক্সে যান।</string>
     <string name="rmnch_non_emergency_referral_message">আপনার শরীরের অবস্থার উন্নতির জন্য অনুগ্রহ করে নিকটস্থ স্বাস্থ্যকেন্দ্র বা ডাক্তারের কাছে গিয়ে পরীক্ষা ও চিকিৎসা গ্রহণ করুন।</string>
+    <string name="type_of_death">মৃত্যুর ধরন</string>
+    <string name="select_all_that_apply">প্রযোজ্য সবগুলি নির্বাচন করুন</string>
 </resources>

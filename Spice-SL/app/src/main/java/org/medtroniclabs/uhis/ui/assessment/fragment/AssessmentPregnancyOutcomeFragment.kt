@@ -40,6 +40,7 @@ import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.ReferralResultGenerator
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 
 /**
@@ -54,8 +55,6 @@ class AssessmentPregnancyOutcomeFragment :
     private val viewModel: AssessmentViewModel by activityViewModels()
     private lateinit var formGenerator: FormGenerator
 
-    private val MAX_BABIES = 5
-    private val NEWBORN_CONTAINER_TAG = "newbornDynamicContainer"
     private var currentBabyCount = 0
 
     // Store baby data: babyIndex (1-based) -> fieldId -> value
@@ -63,19 +62,6 @@ class AssessmentPregnancyOutcomeFragment :
 
     // Store original field titles (without status) for fields that have status conditions
     private val originalTitles = HashMap<String, String>()
-
-    // Neonatal death cause options
-    private val neonatalDeathCauseOptions: ArrayList<Map<String, Any>> = arrayListOf(
-        mapOf("id" to "asphyxia", "name" to "Asphyxia", "cultureValue" to "শ্বাসরোধ"),
-        mapOf("id" to "abnormallyLowTemperature", "name" to "Abnormally low temperature", "cultureValue" to "অস্বাভাবিক কম তাপমাত্রা"),
-        mapOf("id" to "lowBirthWeight", "name" to "Low birth weight", "cultureValue" to "কম জন্ম ওজন"),
-        mapOf("id" to "convulsions", "name" to "Convulsions", "cultureValue" to "খিঁচুনি"),
-        mapOf("id" to "prematureBirth", "name" to "Premature birth", "cultureValue" to "অপরিণত জন্ম"),
-        mapOf("id" to "sepsisUmbilicalSepsis", "name" to "Sepsis/ Umbilical sepsis", "cultureValue" to "নাভির সংক্রমণ / সংক্রমণ"),
-        mapOf("id" to "pneumonia", "name" to "Pneumonia", "cultureValue" to "নিউমোনিয়া"),
-        mapOf("id" to "congenitalAnomaly", "name" to "Congenital Anomaly", "cultureValue" to "জন্মগত ত্রুটি"),
-        mapOf("id" to "unknown", "name" to "Unknown", "cultureValue" to "জানা নেই"),
-    )
 
     // Sex options
     private val sexOptions: ArrayList<Map<String, Any>> = arrayListOf(
@@ -432,7 +418,7 @@ class AssessmentPregnancyOutcomeFragment :
     ) {
         val dialogKey = "${AssessmentDefinedParams.CAUSE_OF_NEONATAL_DEATH}_$babyIndex"
         val inputData = arrayListOf<SignsAndSymptomsEntity>()
-        neonatalDeathCauseOptions.forEachIndexed { index, it ->
+        RMNCH.neonatalDeathCauseOptions.forEachIndexed { index, it ->
             val name = it[DefinedParams.NAME] as String
             val value = it[DefinedParams.ID] as String
             inputData.add(
@@ -1082,5 +1068,7 @@ class AssessmentPregnancyOutcomeFragment :
 
     companion object {
         const val TAG = "AssessmentPregnancyOutcomeFragment"
+        private const val MAX_BABIES = 5
+        private const val NEWBORN_CONTAINER_TAG = "newbornDynamicContainer"
     }
 }

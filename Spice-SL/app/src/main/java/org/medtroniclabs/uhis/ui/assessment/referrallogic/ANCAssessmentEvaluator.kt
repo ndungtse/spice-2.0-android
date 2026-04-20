@@ -243,7 +243,7 @@ object ANCAssessmentEvaluator {
                 is Map<*, *> -> {
                     // Handle map structure with id/name
                     val value = complication[DefinedParams.Value]?.toString() ?: ""
-                    val name = complication[DefinedParams.name]?.toString() ?: ""
+                    val name = complication[DefinedParams.NAME]?.toString() ?: ""
                     targetComplicationIds.any { targetId ->
                         value.equals(targetId, ignoreCase = true) || name.contains(targetId, ignoreCase = true)
                     }
