@@ -51,16 +51,14 @@ class MemberDetailsFragment : Fragment(), View.OnClickListener {
             val recentHistoryDate = memberDetails.history.firstOrNull()?.let {
                 DateUtils.getLastMenstrualDate(it.visitDate ?: "").timeInMillis
             } ?: 0
-            val lastUpdated = memberDetails.member.lastUpdated?.let {
-                DateUtils.getLastMenstrualDate(it).timeInMillis
-            } ?: 0
+            val updatedAt = memberDetails.member.updatedAt
             val lastActivity = when {
-                recentHistoryDate == 0L && lastUpdated == 0L -> {
+                recentHistoryDate == 0L && updatedAt == 0L -> {
                     null
                 }
 
-                recentHistoryDate < lastUpdated -> {
-                    DateUtils.formatDateToDisplayFormat(lastUpdated)
+                recentHistoryDate < updatedAt -> {
+                    DateUtils.formatDateToDisplayFormat(updatedAt)
                 }
 
                 else -> {
