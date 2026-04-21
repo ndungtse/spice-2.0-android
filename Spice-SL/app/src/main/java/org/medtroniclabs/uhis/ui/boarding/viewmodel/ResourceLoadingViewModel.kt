@@ -20,6 +20,7 @@ import org.medtroniclabs.uhis.network.DeviceInformation
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.network.utils.ConnectivityManager
 import org.medtroniclabs.uhis.repo.OfflineSyncRepository
+import org.medtroniclabs.uhis.ui.boarding.ResourceLoadingSyncProgress
 import org.medtroniclabs.uhis.ui.boarding.repo.MetaRepository
 import javax.inject.Inject
 
@@ -36,11 +37,18 @@ class ResourceLoadingViewModel @Inject constructor(
     val deviceDetailsLiveData = MutableLiveData<Resource<DeviceDetails>>()
     val householdsLiveData = MutableLiveData<Resource<Boolean>>()
     val ncdFollowUpLiveData = MutableLiveData<Resource<Boolean>>()
+    /** 0–100 cumulative sync progress for the resource loading screen. */
+    val syncProgressPercent = MutableLiveData(0)
 
     private val workflowNames = mutableListOf<Long>()
     private val meta = mutableListOf<String>()
     private val syncDelay = 20 * 1000L // 20 Sec
     var changeFacility = false
+
+    /** Single callback for repositories; avoids repeating `{ …(it) }` at every call site. */
+    private val onSyncProgress: (Int) -> Unit = { percent ->
+        syncProgressPercent.postValue(percent.coerceIn(0, 100))
+    }
 
     fun syncOldUserData() {
         viewModelScope.launch(dispatcherIO) {
@@ -57,7 +65,9 @@ class ResourceLoadingViewModel @Inject constructor(
     fun getMetaDataInformation() {
         viewModelScope.launch(dispatcherIO) {
             metaDataCompleteLiveData.postLoading()
+            onSyncProgress(ResourceLoadingSyncProgress.USER_DATA_REQUEST_PENDING)
             if (!connectivityManager.isNetworkAvailable()) {
+                onSyncProgress(0)
                 metaDataCompleteLiveData.postError()
                 return@launch
             }
@@ -66,6 +76,7 @@ class ResourceLoadingViewModel @Inject constructor(
                     workflowNames,
                     meta,
                     changeFacility,
+                    onSyncProgress,
                 ),
             )
         }
@@ -74,7 +85,9 @@ class ResourceLoadingViewModel @Inject constructor(
     fun updateDeviceDetails(context: Context) {
         viewModelScope.launch(dispatcherIO) {
             deviceDetailsLiveData.postLoading()
+            onSyncProgress(ResourceLoadingSyncProgress.USER_DATA_REQUEST_PENDING)
             if (!connectivityManager.isNetworkAvailable()) {
+                onSyncProgress(0)
                 deviceDetailsLiveData.postError()
                 return@launch
             }
@@ -88,19 +101,18 @@ class ResourceLoadingViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             householdsLiveData.postLoading()
 
-            // 1. Update status for old request Id
             if (!getSyncStatus()) {
                 householdsLiveData.postError()
                 return@launch
             }
+            onSyncProgress(ResourceLoadingSyncProgress.SYNC_STATUS_COMPLETE)
 
-            // 2. Check Village check
             if (!checkAndProceedVillageChange()) {
                 return@launch
             }
+            onSyncProgress(ResourceLoadingSyncProgress.VILLAGE_CHECK_COMPLETE)
 
-            // 2. Get Fetch sync
-            offlineSyncRepository.getInsertOrUpdateLocalData(householdsLiveData)
+            offlineSyncRepository.getInsertOrUpdateLocalData(householdsLiveData, onSyncProgress)
         }
     }
 
@@ -145,6 +157,7 @@ class ResourceLoadingViewModel @Inject constructor(
                     householdsLiveData.postError()
                     return false
                 }
+                onSyncProgress(ResourceLoadingSyncProgress.PARTIAL_VILLAGE_SYNC_DONE)
             }
         }
 
@@ -161,8 +174,7 @@ class ResourceLoadingViewModel @Inject constructor(
             if (villageIds.isEmpty()) {
                 return@launch
             }
-            // 2. Get Fetch sync
-            followUpRepo.getNcdFollowUpData(ncdFollowUpLiveData)
+            followUpRepo.getNcdFollowUpData(ncdFollowUpLiveData, onSyncProgress)
         }
     }
 
@@ -170,5 +182,9 @@ class ResourceLoadingViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             followUpRepo.createCallDetails()
         }
+    }
+
+    fun markSyncProgressComplete() {
+        onSyncProgress(ResourceLoadingSyncProgress.LOCAL_PERSIST_COMPLETE)
     }
 }

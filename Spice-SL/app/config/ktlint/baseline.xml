@@ -638,7 +638,7 @@
         <error line="569" column="163" source="standard:property-wrapping" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/ncd/followup/repo/NCDFollowUpRepo.kt">
-        <error line="103" column="9" source="standard:no-consecutive-comments" />
+        <error line="111" column="9" source="standard:no-consecutive-comments" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/ncd/landing/dialog/NCDSupportDialogFragment.kt">
         <error line="25" column="17" source="standard:backing-property-naming" />
@@ -1007,6 +1007,15 @@
     <file name="src/main/java/org/medtroniclabs/uhis/ui/boarding/MenuTypeEnums.kt">
         <error line="4" column="5" source="standard:enum-entry-name-case" />
         <error line="5" column="5" source="standard:enum-entry-name-case" />
+    </file>
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/boarding/ResourceLoadingSyncProgress.kt">
+        <error line="18" column="5" source="standard:spacing-between-declarations-with-comments" />
+    </file>
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/boarding/repo/MetaRepository.kt">
+        <error line="3" column="1" source="standard:import-ordering" />
+    </file>
+    <file name="src/main/java/org/medtroniclabs/uhis/ui/boarding/viewmodel/ResourceLoadingViewModel.kt">
+        <error line="40" column="5" source="standard:spacing-between-declarations-with-comments" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/ui/common/composeui/DialogComposeUtils.kt">
         <error line="29" column="9" source="standard:function-naming" />

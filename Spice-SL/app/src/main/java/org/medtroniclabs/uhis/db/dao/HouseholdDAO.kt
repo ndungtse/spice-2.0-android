@@ -63,7 +63,7 @@ interface HouseholdDAO {
                 no_of_people = (
                     SELECT COUNT(id)
                         FROM ${EntitiesName.HOUSEHOLD_MEMBER} AS member
-                    WHERE member.household_id = id
+                    WHERE member.household_id = :householdId
                 ),
                 sync_status =:syncStatus,
                 updated_at =:updatedAt
@@ -71,7 +71,7 @@ interface HouseholdDAO {
         AND no_of_people < (
                 SELECT COUNT(member.id)
                         FROM ${EntitiesName.HOUSEHOLD_MEMBER} AS member
-                WHERE member.household_id = id
+                WHERE member.household_id = :householdId
         )
         """,
     )

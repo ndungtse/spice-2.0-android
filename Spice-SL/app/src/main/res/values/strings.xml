@@ -489,6 +489,8 @@
     <string name="start">start</string>
     <string name="Offline_data">Offline data</string>
     <string name="syncing_offline_data">Syncing Offline data</string>
+    <string name="sync_progress_percent">%1$d%%</string>
+    <string name="resource_loading_download_message">Downloading data… Please wait.</string>
     <string name="offline_data_completion">Your offline data sync has successfully completed!</string>
     <string name="offline_data_failed">Failed to sync offline data now. Please try again later!</string>
     <string name="offline_sync_started">Offline data has started to sync</string>

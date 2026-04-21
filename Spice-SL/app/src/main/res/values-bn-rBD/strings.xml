@@ -485,6 +485,8 @@
     <string name="start">শুরু</string>
     <string name="Offline_data">অফলাইন ডেটা</string>
     <string name="syncing_offline_data">অফলাইন ডেটা সিঙ্ক করা হচ্ছে</string>
+    <string name="sync_progress_percent">%1$d%%</string>
+    <string name="resource_loading_download_message">ডেটা ডাউনলোড করা হচ্ছে… অনুগ্রহ করে অপেক্ষা করুন।</string>
     <string name="offline_data_completion">আপনার অফলাইন ডেটা সিঙ্ক সফলভাবে সম্পন্ন হয়েছে!</string>
     <string name="offline_data_failed">অফলাইন ডেটা সিঙ্ক ব্যর্থ। অনুগ্রহ করে পরে আবার চেষ্টা করুন!</string>
     <string name="offline_sync_started">অফলাইন ডেটা সিঙ্ক শুরু হয়েছে</string>

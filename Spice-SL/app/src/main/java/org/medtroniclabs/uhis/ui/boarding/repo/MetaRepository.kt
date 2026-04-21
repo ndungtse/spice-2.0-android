@@ -66,6 +66,7 @@ import org.medtroniclabs.uhis.network.ApiHelper
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.MenuConstants
+import org.medtroniclabs.uhis.ui.boarding.ResourceLoadingSyncProgress
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FamilyPlanningMethods
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
@@ -100,6 +101,7 @@ class MetaRepository @Inject constructor(
         workflowNames: MutableList<Long>,
         meta: MutableList<String>,
         changeFacility: Boolean,
+        onProgress: ((Int) -> Unit)? = null,
     ): Resource<Boolean> {
         return try {
             withContext(Dispatchers.IO) {
@@ -196,6 +198,7 @@ class MetaRepository @Inject constructor(
                                 insertExaminationsComplaint(insertPrescriptionInstruction(items))
                             }
                         }
+                        onProgress?.invoke(ResourceLoadingSyncProgress.USER_DATA_COMPLETE)
 
                         val formsResponse = async {
                             apiHelper.getForms(
@@ -227,6 +230,7 @@ class MetaRepository @Inject constructor(
                                     return@with Resource(state = ResourceState.ERROR)
                                 }
                             }
+                            onProgress?.invoke(ResourceLoadingSyncProgress.FORMS_COMPLETE)
                         } else {
                             return@with Resource(state = ResourceState.ERROR)
                         }
@@ -267,6 +271,7 @@ class MetaRepository @Inject constructor(
                                 return@with Resource(state = ResourceState.ERROR)
                             }
                         }
+                        onProgress?.invoke(ResourceLoadingSyncProgress.TB_SEGMENT_COMPLETE)
                         if (meta.isNotEmpty()) {
                             val metadataResponse =
                                 async { apiHelper.getFormMetadata(FormMetaRequest(meta)) }.await()
@@ -342,6 +347,7 @@ class MetaRepository @Inject constructor(
                         } else {
                             roomHelper.deleteAllSymptoms()
                         }
+                        onProgress?.invoke(ResourceLoadingSyncProgress.FORM_METADATA_COMPLETE)
                         if (CommonUtils.isNonCommunity()) {
                             val userTermsAndConditionsMeta = async {
                                 apiHelper.getUserTermsAndConditions(
@@ -368,6 +374,7 @@ class MetaRepository @Inject constructor(
                                 return@with Resource(state = ResourceState.ERROR)
                             }
                         }
+                        onProgress?.invoke(ResourceLoadingSyncProgress.METADATA_PHASE_COMPLETE)
                         Resource(state = ResourceState.SUCCESS)
                     }
                 } else {

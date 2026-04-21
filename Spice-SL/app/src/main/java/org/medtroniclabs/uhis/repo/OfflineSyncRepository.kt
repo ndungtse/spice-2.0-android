@@ -80,6 +80,7 @@ import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PNCNeonatal
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PNC_MOTHER_MENU
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PNC_NEONATE_KEY
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.visitNo
+import org.medtroniclabs.uhis.ui.boarding.ResourceLoadingSyncProgress
 import retrofit2.Response
 import timber.log.Timber
 import java.io.File
@@ -237,10 +238,14 @@ class OfflineSyncRepository @Inject constructor(
         roomHelper.updateFhirId(tableName, id, fhirId, status)
     }
 
-    suspend fun getInsertOrUpdateLocalData(liveData: MutableLiveData<Resource<Boolean>>) {
+    suspend fun getInsertOrUpdateLocalData(
+        liveData: MutableLiveData<Resource<Boolean>>,
+        onProgress: ((Int) -> Unit)? = null,
+    ) {
         // Check and Delete local data
         val lastSyncedAt = SecuredPreference.getString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
         if (lastSyncedAt == null) {
+            onProgress?.invoke(ResourceLoadingSyncProgress.INITIAL_DOWNLOAD_START)
             roomHelper.deleteAllHouseholds()
             roomHelper.deleteAllHouseholdMembers()
             roomHelper.deleteAllPregnancyDetails()
@@ -256,7 +261,7 @@ class OfflineSyncRepository @Inject constructor(
 
             val villageIds = roomHelper.getAllVillageIds()
             // Fetch Synced Data
-            val isInitialDataSuccess = fetchSyncedData(villageIds, null)
+            val isInitialDataSuccess = fetchSyncedData(villageIds, null, onProgress)
 
             // Need to check this to be added for downloading error and in progress data
             // if (!fetchUnSyncedData()) {
@@ -269,6 +274,7 @@ class OfflineSyncRepository @Inject constructor(
                 liveData.postError("Something went wrong")
             }
         } else {
+            onProgress?.invoke(ResourceLoadingSyncProgress.LOCAL_PERSIST_COMPLETE)
             liveData.postSuccess(true)
         }
     }
@@ -276,29 +282,37 @@ class OfflineSyncRepository @Inject constructor(
     suspend fun fetchSyncedData(
         villageIds: List<Long> = listOf(),
         serverLastSyncedAt: String? = null,
+        onProgress: ((Int) -> Unit)? = null,
     ): Boolean {
         val syncedResponse = getSyncedEntities(villageIds, serverLastSyncedAt)
-        val assessmentHistoryResponse = fetchMemberAssessmentHistory(villageIds, serverLastSyncedAt)
-        if (syncedResponse.isSuccessful && assessmentHistoryResponse.isSuccessful) {
-            val response = syncedResponse.body()?.string()
-            response?.let {
-                try {
-                    val gson = Gson()
-                    val type: Type = object : TypeToken<ResponseInitialDownload>() {}.type
-                    val responseInitialDownload: ResponseInitialDownload? = gson.fromJson(it, type)
-                    if (responseInitialDownload == null) {
-                        return false
-                    } else {
-                        saveRequestInitialDownload(responseInitialDownload, assessmentHistoryResponse.body() ?: emptyList())
-                        return true
-                    }
-                } catch (e: Exception) {
-                    Timber.d("Exception ${e.localizedMessage}")
-                    return false
-                }
-            }
-        } else {
+        if (!syncedResponse.isSuccessful) {
             return false
+        }
+        onProgress?.invoke(ResourceLoadingSyncProgress.SYNCED_PAYLOAD_RECEIVED)
+
+        val assessmentHistoryResponse = fetchMemberAssessmentHistory(villageIds, serverLastSyncedAt)
+        if (!assessmentHistoryResponse.isSuccessful) {
+            return false
+        }
+        onProgress?.invoke(ResourceLoadingSyncProgress.ASSESSMENT_HISTORY_RECEIVED)
+
+        val response = syncedResponse.body()?.string()
+        response?.let {
+            try {
+                val gson = Gson()
+                val type: Type = object : TypeToken<ResponseInitialDownload>() {}.type
+                val responseInitialDownload: ResponseInitialDownload? = gson.fromJson(it, type)
+                if (responseInitialDownload == null) {
+                    return false
+                } else {
+                    saveRequestInitialDownload(responseInitialDownload, assessmentHistoryResponse.body() ?: emptyList())
+                    onProgress?.invoke(ResourceLoadingSyncProgress.LOCAL_PERSIST_COMPLETE)
+                    return true
+                }
+            } catch (e: Exception) {
+                Timber.d("Exception ${e.localizedMessage}")
+                return false
+            }
         }
         return false
     }
