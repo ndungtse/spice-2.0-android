@@ -62,9 +62,9 @@ class ServiceMembersAdapter(
         holder.binding.tvRecentServiceDateSeparator.visible()
         holder.binding.tvRecentServiceDateValue.visible()
 
-        holder.binding.tvRecentServiceValue.text =
-            item.services?.firstOrNull()?.let { recentService -> AssessmentUtil.mapServiceToServiceName(recentService) }
-                ?: context.resources.getString(R.string.separator_double_hyphen)
+        holder.binding.tvRecentServiceValue.text = item.services?.firstOrNull()?.let { recentService ->
+            AssessmentUtil.mapServiceToServiceName(recentService, context)
+        } ?: context.resources.getString(R.string.separator_double_hyphen)
         holder.binding.tvRecentServiceDateValue.text = item.recentServiceDate?.let {
             DateUtils.formatDateToDisplayFormat(it)
         } ?: context.resources.getString(R.string.separator_double_hyphen)

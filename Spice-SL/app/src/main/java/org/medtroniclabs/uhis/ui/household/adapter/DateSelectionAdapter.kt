@@ -46,7 +46,7 @@ class DateSelectionAdapter(
         fun bindData(history: MemberAssessmentHistoryEntity) {
             val visitDateMillis = DateUtils.getLastMenstrualDate(history.visitDate ?: "").timeInMillis
             val displayDate = DateUtils.formatDateToDisplayFormat(visitDateMillis)
-            val dataToDisplay = "$displayDate - ${AssessmentUtil.mapServiceToServiceName(history.serviceProvided ?: "")}"
+            val dataToDisplay = "$displayDate - ${AssessmentUtil.mapServiceToServiceName(history.serviceProvided ?: "", view.context)}"
             view.text = dataToDisplay
         }
     }

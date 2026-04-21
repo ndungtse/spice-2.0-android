@@ -282,13 +282,21 @@ object AssessmentDefinedParams {
 
     // RMNCH Status Values
     const val STATUS_HIGH_RISK = "High Risk"
+    const val BN_STATUS_HIGH_RISK = "উচ্চ ঝুঁকি"
     const val STATUS_HIGH_FEVER = "High Fever"
+    const val BN_STATUS_HIGH_FEVER = "তীব্র জ্বর"
     const val STATUS_FEVER = "Fever"
+    const val BN_STATUS_FEVER = "জ্বর"
     const val STATUS_ABNORMAL = "Abnormal"
+    const val BN_STATUS_ABNORMAL = "অস্বাভাবিক"
     const val STATUS_MODERATE_ANEMIA = "Moderate Anemia"
+    const val BN_STATUS_MODERATE_ANEMIA = "মাঝারি রক্তসল্পতা"
     const val STATUS_SEVERE_ANEMIA = "Severe Anemia"
+    const val BN_STATUS_SEVERE_ANEMIA = "মারাত্মক রক্তসল্পতা"
     const val STATUS_MILD_ANEMIA = "Mild Anemia"
-    const val STATUS_GAP = "gap"
+    const val BN_STATUS_MILD_ANEMIA = "মৃদু রক্তসল্পতা"
+    const val STATUS_GAP = "Gap"
+    const val BN_STATUS_GAP = "ঘাটতি"
     const val VALUE_PRESENT = "present"
     const val VALUE_NOT_DONE = "notDone"
     const val VALUE_NO = "no"
@@ -296,7 +304,6 @@ object AssessmentDefinedParams {
     const val VALUE_RANDOM = "random"
 
     // RMNCH Illness Identifiers
-    const val ILLNESS_HTN = "HTN"
     const val ILLNESS_DM = "DM"
 
     // RMNCH Blood Pressure Thresholds
@@ -373,9 +380,6 @@ object AssessmentDefinedParams {
 
     const val LABEL_GAPS_IN_PNC = "Gaps in PNC"
 
-    // RMNCH Summary Labels
-    const val LABEL_FOLLOW_UP_VISIT = "Follow up Visit"
-
     // Facility Identified For Delivery option IDs
     const val FACILITY_NOT_IDENTIFIED = "notIdentified"
     const val FACILITY_HOME_DELIVERY = "homeDelivery"
@@ -392,23 +396,8 @@ object AssessmentDefinedParams {
     const val BIRTH_SPACING_THRESHOLD_YEARS = 2
     const val MULTIPARA_THRESHOLD = 3
 
-    // Referral Condition Texts
-    const val CONDITION_SUSPECTED_PRE_ECLAMPSIA = "Suspected Pre-eclampsia"
-    const val CONDITION_HIGH_FEVER = "High Fever"
-    const val CONDITION_ABNORMAL_FUNDAL_HEIGHT = "Abnormal fundal height"
-    const val CONDITION_ABNORMAL_WEIGHT_GAIN = "Abnormal weight gain"
-    const val CONDITION_ABNORMAL_PULSE = "Abnormal Pulse"
-    const val CONDITION_SEVERE_ANEMIA = "Severe Anemia"
-    const val CONDITION_URINARY_BILIRUBIN = "Urinary Bilirubin present"
-    const val CONDITION_CHRONIC_ILLNESS_NOT_ON_TREATMENT = "PW not on treatment for existing chronic illnesses"
-    const val CONDITION_HIGH_RISK_PREGNANCY = "High risk PW due to age/birth spacing"
-    const val CONDITION_MODERATE_ANEMIA = "Moderate Anemia"
-    const val CONDITION_MILD_ANEMIA = "Mild Anemia"
-    const val CONDITION_SUSPECTED_DIABETES = "Suspected/Existing Case of Diabetes"
-    const val CONDITION_CHRONIC_ILLNESS_WITH_TREATMENT = "PW with existing chronic illnesses with treatment"
-    const val CONDITION_MILD_FEVER = "Mild Fever"
-    const val CONDITION_PREGNANCY_RELATED_MEDICAL_COMPLICATIONS = "H/O Preg related medical complications"
     const val CONDITION_ANY_OTHER = "Other Danger Signs"
+    const val BN_CONDITION_ANY_OTHER = "অন্যান্য বিপদ চিহ্ন"
 
     // Pregnancy Complication IDs
     const val COMPLICATION_CONVULSIONS = "convulsions"
@@ -442,15 +431,6 @@ object AssessmentDefinedParams {
     const val BIRTH_WEIGHT = "birthWeight"
     const val CAUSE_OF_NEONATAL_DEATH = "causeOfNeonatalDeath"
 
-    // Gap Condition Texts
-    const val GAP_TT_VACCINATION_INCOMPLETE = "TT vaccination incomplete"
-    const val GAP_USG_NOT_DONE = "USG not done >36 weeks"
-    const val GAP_ANC_WITH_DOCTOR_NOT_DONE = "ANC with Doctor not done >36 weeks"
-    const val GAP_LESS_THAN_3_ANCS = "Less than 3 ANCs completed at end of 36 weeks"
-    const val GAP_INADEQUATE_IFA = "Inadequate /Non consumption IFA"
-    const val GAP_INADEQUATE_CALCIUM = "Inadequate /Non consumption Calcium"
-    const val GAP_FACILITY_NOT_IDENTIFIED = "Facility not identified for institutional delivery"
-    const val GAP_PLANNED_HOME_DELIVERY = "Planned for Home Delivery"
     const val YES = "Yes"
     const val NO = "No"
     const val NUTRITION_COUNSELLING = "nutritionCounselling"

@@ -1705,4 +1705,19 @@
     <string name="rmnch_non_emergency_referral_message">Please visit a nearby health facility or doctor for check-up and treatment to improve your health condition.</string>
     <string name="type_of_death">Type of death</string>
     <string name="select_all_that_apply">Select all that apply</string>
+    <string name="c_section">C-Section</string>
+    <string name="assisted_delivery">Assisted Delivery</string>
+    <string name="normal_delivery">Normal Delivery</string>
+    <string name="abortion">Abortion</string>
+    <string name="normal_pregnancy">Normal Pregnancy</string>
+    <string name="high_risk_pw">High Risk PW</string>
+    <string name="using_modern_family_planning_methods">Using modern family planning methods</string>
+    <string name="not_using_modern_family_planning_methods">Not using modern family planning methods</string>
+    <string name="high_risk_pnc">High Risk PNC</string>
+    <string name="normal_pnc">Normal PNC</string>
+    <string name="controlled_bp">Controlled BP</string>
+    <string name="controlled_bg">Controlled BG</string>
+    <string name="uncontrolled_bp">Uncontrolled BP</string>
+    <string name="uncontrolled_bg">Uncontrolled BG</string>
+    <string name="follow_up_visit">Follow up Visit</string>
 </resources>

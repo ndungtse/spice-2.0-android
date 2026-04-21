@@ -47,7 +47,7 @@ class MemberAssessmentHistoryAdapter(
             val context = view.context
             addSummaryView(
                 context.getString(R.string.service_name),
-                AssessmentUtil.mapServiceToServiceName(history.serviceProvided ?: ""),
+                AssessmentUtil.mapServiceToServiceName(history.serviceProvided ?: "", context),
             )
             val visitDateMillis = DateUtils.getLastMenstrualDate(history.visitDate ?: "").timeInMillis
             addSummaryView(
@@ -55,7 +55,7 @@ class MemberAssessmentHistoryAdapter(
                 DateUtils.formatDateToDisplayFormat(visitDateMillis) ?: "",
             )
             val currentStatus = history.customStatus?.joinToString {
-                AssessmentUtil.mapAssessmentStatus(it)
+                AssessmentUtil.mapAssessmentStatus(it, context)
             } ?: context.getString(R.string.separator_double_hyphen)
             addSummaryView(
                 context.getString(R.string.current_status),

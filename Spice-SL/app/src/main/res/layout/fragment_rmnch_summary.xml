@@ -155,7 +155,7 @@
                 android:layout_marginTop="@dimen/_8sdp"
                 android:paddingHorizontal="@dimen/_16sdp"
                 android:paddingEnd="@dimen/_10sdp"
-                android:text="@string/next_follow_up_date"
+                android:text="@string/follow_up_visit"
                 tools:ignore="RtlSymmetry" />
 
 

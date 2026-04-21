@@ -68,8 +68,8 @@ class MemberDetailsFragment : Fragment(), View.OnClickListener {
 
             val registeredAt = DateUtils.formatDateToDisplayFormat(memberDetails.member.createdAt)
             val servicesProvided = if (memberDetails.history.isNotEmpty()) {
-                memberDetails.history.distinctBy { it.serviceProvided }.joinToString {
-                    AssessmentUtil.mapServiceToServiceName(it.serviceProvided ?: "")
+                memberDetails.history.distinctBy { history -> history.serviceProvided }.joinToString { history ->
+                    AssessmentUtil.mapServiceToServiceName(history.serviceProvided ?: "", requireContext())
                 }
             } else {
                 getString(R.string.separator_double_hyphen)
@@ -81,8 +81,8 @@ class MemberDetailsFragment : Fragment(), View.OnClickListener {
             addSummaryView(getString(R.string.services_provided), servicesProvided)
             addSummaryView(
                 getString(R.string.recent_status),
-                memberDetails.history.firstOrNull()?.let {
-                    AssessmentUtil.mapServiceToServiceName(it.serviceProvided ?: "")
+                memberDetails.history.firstOrNull()?.let { history ->
+                    AssessmentUtil.mapServiceToServiceName(history.serviceProvided ?: "", requireContext())
                 } ?: getString(R.string.separator_double_hyphen),
             )
             if (memberDetails.member.isActive) {

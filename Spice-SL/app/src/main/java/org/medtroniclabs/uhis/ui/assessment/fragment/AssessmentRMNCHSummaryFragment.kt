@@ -184,10 +184,6 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         updateStatusBar()
         binding.tvTitle.setText(R.string.assessment_result)
         binding.labelPhuReferred.setText(R.string.referral_health_facility)
-        // For ANC, show Next Follow-up Date with label "Follow up Visit"
-        binding.etNextFollowUpDate.visible()
-        binding.tvNextFollowupDateTitle.visible()
-        binding.tvNextFollowupDateTitle.text = AssessmentDefinedParams.LABEL_FOLLOW_UP_VISIT
 
         // Set follow-up date to 4 weeks (28 days) from current date
         val fourWeeksFromNow = DateUtils.getDateAfterDays(28)
@@ -222,7 +218,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         root.setPadding(0)
                         with(tvTitle) {
                             setPadding(8.px)
-                            text = "  • $condition" // Use bigger bullet (•)
+                            text = "  • ${RMNCH.getDisplayCondition(condition, isTranslationEnabled)}" // Use bigger bullet (•)
                             setTextColor(ContextCompat.getColor(requireContext(), R.color.red_risk))
                             setBackgroundResource(R.drawable.bg_high_risk)
                         }
@@ -247,7 +243,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         root.setPadding(0)
                         with(tvTitle) {
                             setPadding(8.px)
-                            text = "  • $condition" // Use bigger bullet (•)
+                            text = "  • ${RMNCH.getDisplayCondition(condition, isTranslationEnabled)}" // Use bigger bullet (•)
                             setTextColor(ContextCompat.getColor(requireContext(), R.color.low_risk_color))
                             setBackgroundResource(R.drawable.bg_low_risk)
                         }
@@ -267,7 +263,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     root.setPadding(0)
                     with(tvTitle) {
                         setPadding(8.px)
-                        text = "  • $condition" // Use bigger bullet (•)
+                        text = "  • ${RMNCH.getDisplayCondition(condition, isTranslationEnabled)}" // Use bigger bullet (•)
                         setBackgroundResource(R.drawable.bg_gaps)
                     }
                     gapsCardBinding.llFamilyRoot.addView(root)
@@ -485,9 +481,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         updateStatusBar()
         binding.tvTitle.setText(R.string.assessment_result)
         binding.labelPhuReferred.setText(R.string.referral_health_facility)
-        binding.etNextFollowUpDate.visible()
-        binding.tvNextFollowupDateTitle.visible()
-        binding.tvNextFollowupDateTitle.text = AssessmentDefinedParams.LABEL_FOLLOW_UP_VISIT
+
         val pncMap = map[RMNCH.PNC] as? Map<String, Any>
         val maternalHealth = pncMap?.get(RMNCH.ID_MATERNAL_HEALTH_ASSESSMENT) as? Map<*, *>
         val daysSinceDelivery = CommonUtils.getInteger(maternalHealth?.get(RMNCH.ID_DAYS_SINCE_DELIVERY))
@@ -537,7 +531,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         root.setPadding(0)
                         with(tvTitle) {
                             setPadding(8.px)
-                            text = "  • $condition" // Use bigger bullet (•)
+                            text = "  • ${RMNCH.getDisplayCondition(condition, isTranslationEnabled)}" // Use bigger bullet (•)
                             setTextColor(ContextCompat.getColor(requireContext(), R.color.red_risk))
                             setBackgroundResource(R.drawable.bg_high_risk)
                         }
@@ -562,7 +556,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         root.setPadding(0)
                         with(tvTitle) {
                             setPadding(8.px)
-                            text = "  • $condition" // Use bigger bullet (•)
+                            text = "  • ${RMNCH.getDisplayCondition(condition, isTranslationEnabled)}" // Use bigger bullet (•)
                             setTextColor(ContextCompat.getColor(requireContext(), R.color.low_risk_color))
                             setBackgroundResource(R.drawable.bg_low_risk)
                         }
@@ -582,7 +576,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     root.setPadding(0)
                     with(tvTitle) {
                         setPadding(8.px)
-                        text = "  • $condition" // Use bigger bullet (•)
+                        text = "  • ${RMNCH.getDisplayCondition(condition, isTranslationEnabled)}" // Use bigger bullet (•)
                         setBackgroundResource(R.drawable.bg_gaps)
                     }
                     gapsCardBinding.llFamilyRoot.addView(root)

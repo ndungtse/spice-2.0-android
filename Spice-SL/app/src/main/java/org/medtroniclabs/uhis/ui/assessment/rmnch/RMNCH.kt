@@ -449,7 +449,9 @@ object RMNCH {
         return deathOfMother
     }
 
-    // Neonatal death cause options
+    /**
+     * Neonatal death cause options
+     */
     val neonatalDeathCauseOptions: ArrayList<Map<String, Any>> = arrayListOf(
         mapOf("id" to "asphyxia", "name" to "Asphyxia", "cultureValue" to "শ্বাসরোধ"),
         mapOf("id" to "abnormallyLowTemperature", "name" to "Abnormally low temperature", "cultureValue" to "অস্বাভাবিক কম তাপমাত্রা"),
@@ -463,7 +465,7 @@ object RMNCH {
     )
 
     /**
-     * Shared type-of-death options for neonatal path.
+     * Neonate death options
      */
     val neonatalDeathTypeOptions: List<Map<String, Any>> =
         listOf(
@@ -472,7 +474,7 @@ object RMNCH {
         )
 
     /**
-     * Shared type-of-death options for maternal path.
+     * Maternal death options
      */
     val maternalDeathTypeOptions: List<Map<String, Any>> =
         listOf(
@@ -480,7 +482,9 @@ object RMNCH {
             mapOf("id" to DEATH_TYPE_OTHER, "name" to "Other", "cultureValue" to "অন্যান্য"),
         )
 
-    // Maternal death cause options
+    /**
+     * Maternal death cause options
+     */
     val maternalDeathCauseOptions = arrayListOf(
         mapOf("id" to "excessiveBleeding", "name" to "Excessive bleeding", "cultureValue" to "অতিরিক্ত রক্তক্ষরণ"),
         mapOf("id" to "infection", "name" to "Infection", "cultureValue" to "সংক্রমণ"),
@@ -491,6 +495,23 @@ object RMNCH {
         mapOf("id" to "severeAnemia", "name" to "Severe Anemia", "cultureValue" to "মারাত্মক রক্তস্বল্পতা"),
         mapOf("id" to "otherMedicalComplications", "name" to "Other medical complications", "cultureValue" to "অন্যান্য চিকিৎসাজনিত জটিলতা"),
     )
+
+    /**
+     * Returns display condition based split by :: to get cultural value
+     */
+    fun getDisplayCondition(
+        value: String,
+        translate: Boolean,
+    ): String {
+        val parts = value.split("::", limit = 2)
+        return if (parts.size != 2) {
+            value
+        } else if (translate && parts.last().isNotBlank()) {
+            parts.last()
+        } else {
+            parts.first()
+        }
+    }
 
     /**
      * ANC/PNC referral type
