@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.getLongTime
 import org.medtroniclabs.uhis.common.DateUtils
+import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_DD_MMMM_YYYY
 import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import org.medtroniclabs.uhis.common.DateUtils.DATE_ddMMyyyy
 import org.medtroniclabs.uhis.common.DateUtils.calculateAge
@@ -87,7 +88,7 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
                     val formattedEDD = DateUtils.convertDateFormat(
                         edd,
                         DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        DATE_ddMMyyyy,
+                        DATE_FORMAT_DD_MMMM_YYYY,
                     )
                     createSummary(
                         getString(R.string.estimated_delivery_date),

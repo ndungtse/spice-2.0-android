@@ -43,6 +43,7 @@ object DateUtils {
     const val DATE_FORMAT_ddMMyy_GRAPH = "dd-MM-yyyy"
     const val DATE_TIME_EEEMMMddHHmmsszyyyy = "EEE MMM dd HH:mm:ss z yyyy"
     const val DATE_TIME_YYYYMMDDTHHmmssSSSZ = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    const val DATE_FORMAT_DD_MMMM_YYYY = "dd-MMMM-yyyy"
 
     fun getYearMonthAndWeek(
         inputDate: String,

@@ -32,6 +32,7 @@ import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
@@ -259,8 +260,11 @@ class AssessmentPregnantWomenRegistrationFragment :
     private fun updateEDD(lastMenstrualDate: Calendar) {
         val estimatedDeliveryDate =
             DateUtils.calculateEstimatedDeliveryDate(lastMenstrualDate)
-        val formattedEstimatedDeliveryDate =
-            DateUtils.getDateFormat().format(estimatedDeliveryDate.time)
+        val eddFormat = SimpleDateFormat(
+            DateUtils.DATE_FORMAT_DD_MMMM_YYYY,
+            Locale.getDefault(),
+        )
+        val formattedEstimatedDeliveryDate = eddFormat.format(estimatedDeliveryDate.time)
         formGenerator
             .getViewByTag(
                 PregnantWomen.ID_EDD_TITLE + formGenerator.rootSuffix,
