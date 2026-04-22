@@ -35,7 +35,7 @@ class ConnectionLiveData(
     }
 
     private fun checkValidNetworks() {
-        postValue(validNetworks.size > 0)
+        postValue(validNetworks.isNotEmpty())
     }
 
     override fun onActive() {
