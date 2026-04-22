@@ -54,6 +54,8 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         UserDetail.appVersion = packageInfo.versionName ?: ""
     }
 
+    override fun consumeImeInsets(): Boolean = true
+
     private fun createAndSaveDeviceId() {
         val deviceId = SecuredPreference.getDeviceId()
         if (deviceId == null) {

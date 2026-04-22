@@ -37,6 +37,7 @@ class ResourceLoadingViewModel @Inject constructor(
     val deviceDetailsLiveData = MutableLiveData<Resource<DeviceDetails>>()
     val householdsLiveData = MutableLiveData<Resource<Boolean>>()
     val ncdFollowUpLiveData = MutableLiveData<Resource<Boolean>>()
+
     /** 0–100 cumulative sync progress for the resource loading screen. */
     val syncProgressPercent = MutableLiveData(0)
 

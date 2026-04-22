@@ -29,6 +29,8 @@ class NCDDashboardViewActivity : BaseActivity() {
         loadDashboardFragment()
     }
 
+    override fun consumeImeInsets() = true
+
     private fun loadDashboardFragment() {
         replaceFragmentInId<DashboardFragment>(
             R.id.fragmentContainerView,

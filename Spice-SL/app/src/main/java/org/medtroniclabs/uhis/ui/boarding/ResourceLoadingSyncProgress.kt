@@ -15,6 +15,7 @@ object ResourceLoadingSyncProgress {
 
     const val SYNC_STATUS_COMPLETE = 55
     const val VILLAGE_CHECK_COMPLETE = 62
+
     /** After incremental fetch for newly linked villages only. */
     const val PARTIAL_VILLAGE_SYNC_DONE = 64
     const val INITIAL_DOWNLOAD_START = 65

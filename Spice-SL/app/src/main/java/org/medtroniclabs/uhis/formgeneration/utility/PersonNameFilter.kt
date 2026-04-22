@@ -22,6 +22,6 @@ class PersonNameFilter : InputFilter {
 
     companion object {
         private const val PATTERN = "^[A-Za-z .'-]*$"
-        const val VALIDATION_PATTERN = "^[A-Za-z]+([ .'-][A-Za-z]+)*$"
+        const val VALIDATION_PATTERN = "^[A-Za-z]+([ .'-]+[A-Za-z]+)*$"
     }
 }

@@ -22,6 +22,8 @@ class PatientSearchActivity : BaseActivity() {
         loadSearchFragment()
     }
 
+    override fun consumeImeInsets() = true
+
     private fun loadSearchFragment() {
         replaceFragmentInId<PatientSearchFragment>(
             R.id.fragmentContainerView,

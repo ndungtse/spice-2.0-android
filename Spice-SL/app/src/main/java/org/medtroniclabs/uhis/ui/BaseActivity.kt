@@ -12,7 +12,6 @@ import android.provider.Settings
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -42,6 +41,7 @@ import org.medtroniclabs.uhis.appextensions.resetImageView
 import org.medtroniclabs.uhis.appextensions.setVisible
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams.REFRESH_FRAGMENT
+import org.medtroniclabs.uhis.common.ImeInset
 import org.medtroniclabs.uhis.common.LocaleHelper
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.databinding.ActivityBaseBinding
@@ -55,7 +55,7 @@ import org.medtroniclabs.uhis.ui.landing.LandingActivity
 import kotlin.math.abs
 
 @AndroidEntryPoint
-open class BaseActivity : SpiceRootActivity() {
+open class BaseActivity : SpiceRootActivity(), ImeInset {
     private lateinit var binding: ActivityBaseBinding
 
     private val baseViewModel: BaseViewModel by viewModels()
@@ -79,6 +79,7 @@ open class BaseActivity : SpiceRootActivity() {
             binding.fakeStatusBar,
             binding.fakeNavBar,
             false,
+            imeInset = this,
         )
         UserDetail.startDateTime = AnalyticsUtils.getCurrentDateTimeInLocalTime()
         setListener()
@@ -296,7 +297,7 @@ open class BaseActivity : SpiceRootActivity() {
             }
             if (!touchTargetIsEditText) {
                 val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+                imm.hideSoftInputFromWindow(v.windowToken, 0)
             }
         }
     }
@@ -511,8 +512,6 @@ open class BaseActivity : SpiceRootActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = super.onOptionsItemSelected(item)
-
     fun onHomeClick(callbackHome: (() -> Unit?)? = null) {
         binding.ivHome.safeClickListener {
             if (callbackHome == null) {
@@ -604,8 +603,7 @@ open class BaseActivity : SpiceRootActivity() {
                 newBase?.let {
                     LocaleHelper.onAttach(
                         it,
-                        org.medtroniclabs.uhis.common.CommonUtils
-                            .parseUserLocale(),
+                        CommonUtils.parseUserLocale(),
                     )
                 },
             )
@@ -686,4 +684,6 @@ open class BaseActivity : SpiceRootActivity() {
             dialogProvider().show(supportFragmentManager, tag)
         }
     }
+
+    override fun consumeImeInsets() = false
 }
