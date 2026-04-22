@@ -79,7 +79,7 @@
                     "id": 0,
                     "value": "mothersBreastMilk",
                     "name": "Mother's breast milk",
-                    "cultureValue": "মায়ের দুধ "
+                    "cultureValue": "মায়ের দুধ"
                 },
                 {
                     "id": 1,
@@ -91,7 +91,7 @@
                     "id": 2,
                     "value": "formulaMilk",
                     "name": "Formula milk",
-                    "cultureValue": "ফর্মুলা দুধ "
+                    "cultureValue": "ফর্মুলা দুধ"
                 },
                 {
                     "id": 3,
@@ -103,13 +103,19 @@
                     "id": 4,
                     "value": "ricePowder",
                     "name": "Rice powder",
-                    "cultureValue": "চালের গুঁড়া "
+                    "cultureValue": "চালের গুঁড়া"
                 },
                 {
                     "id": 5,
+                    "value": "familyFood",
+                    "name": "Family Food",
+                    "cultureValue": "পারিবারিক খাবার"
+                },
+                {
+                    "id": 6,
                     "value": "other",
                     "name": "Other",
-                    "cultureValue": "অন্যান্য "
+                    "cultureValue": "অন্যান্য"
                 }
             ],
             "visibility": "visible",
