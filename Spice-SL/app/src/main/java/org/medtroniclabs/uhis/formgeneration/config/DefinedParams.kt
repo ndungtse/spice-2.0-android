@@ -38,7 +38,7 @@ object DefinedParams {
     const val DAYS = "Days"
     const val NoSymptoms = "No symptoms"
     const val NONE = "None"
-    const val NA = "na";
+    const val NA = "na"
     const val Information = "information"
     const val HouseholdHeadRelationship = "household_head_relationship"
     const val Title = "Title"

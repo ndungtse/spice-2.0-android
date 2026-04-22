@@ -1093,9 +1093,17 @@ class AssessmentRMNCHFragment :
         if (visitNumber > 1) {
             viewModel.pregnancyDetailLiveData.value?.pregnantWomanExistingIllness?.let { existingIllness ->
                 val existingIllnessList = StringConverter.convertStringToList<String>(existingIllness)
-                val existingIllnessValue: ArrayList<HashMap<String, Any>> = ArrayList(existingIllnessList.map { hashMapOf(DefinedParams.Value to it) })
                 formGenerator.getFormLayout(AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS)?.let { formLayout ->
-                    formGenerator.validateCheckboxDialogue(AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS, formLayout, existingIllnessValue)
+                    formLayout.optionsList?.filter { existingIllnessList.contains(it[DefinedParams.Value]) }?.let { existingIllnessValue ->
+                        val existingIllnessValue = ArrayList(
+                            existingIllnessValue.map {
+                                hashMapOf<String, Any>().apply {
+                                    putAll(it)
+                                }
+                            },
+                        )
+                        formGenerator.validateCheckboxDialogue(AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS, formLayout, existingIllnessValue)
+                    }
                 }
             }
         }

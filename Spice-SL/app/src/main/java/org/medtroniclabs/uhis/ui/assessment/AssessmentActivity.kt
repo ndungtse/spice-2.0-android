@@ -680,17 +680,17 @@ class AssessmentActivity : BaseActivity() {
             Intent(this, FollowUpMyPatientActivity::class.java)
         } else {
             // For pregnant women after click done navigate user to tools screen
-           if (viewModel.menuId == MenuConstants.PREGNANT_WOMEN_PROFILE) {
-               Intent(this, AssessmentToolsActivity::class.java).apply {
-                   putExtra(DefinedParams.HOUSEHOLD_ID, viewModel.selectedHouseholdId)
-                   putExtra(DefinedParams.MEMBER_ID, viewModel.selectedHouseholdMemberId)
-                   putExtra(DefinedParams.FOLLOW_UP_ID, viewModel.followUpId)
-                   putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
-                   putExtra(DefinedParams.FhirId, viewModel.memberFhirId)
-                   putExtra(DefinedParams.ORIGIN, this@AssessmentActivity.intent.getStringExtra(DefinedParams.ORIGIN))
-                   putExtra(MenuConstants.FOLLOW_UP, this@AssessmentActivity.intent.getBooleanExtra(MenuConstants.FOLLOW_UP, false))
-               }
-           } else {
+            if (viewModel.menuId == MenuConstants.PREGNANT_WOMEN_PROFILE) {
+                Intent(this, AssessmentToolsActivity::class.java).apply {
+                    putExtra(DefinedParams.HOUSEHOLD_ID, viewModel.selectedHouseholdId)
+                    putExtra(DefinedParams.MEMBER_ID, viewModel.selectedHouseholdMemberId)
+                    putExtra(DefinedParams.FOLLOW_UP_ID, viewModel.followUpId)
+                    putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
+                    putExtra(DefinedParams.FhirId, viewModel.memberFhirId)
+                    putExtra(DefinedParams.ORIGIN, this@AssessmentActivity.intent.getStringExtra(DefinedParams.ORIGIN))
+                    putExtra(MenuConstants.FOLLOW_UP, this@AssessmentActivity.intent.getBooleanExtra(MenuConstants.FOLLOW_UP, false))
+                }
+            } else {
                 // Check if member is external (householdLocalId is null or householdLocalId is 0)
                 val householdLocalId = viewModel.memberDetailsLiveData.value
                     ?.data
@@ -708,7 +708,7 @@ class AssessmentActivity : BaseActivity() {
                         putExtra(HouseholdDefinedParams.IS_FROM_HOUSEHOLD_REGISTRATION, false)
                     }
                 }
-           }
+            }
         }
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)

@@ -140,7 +140,6 @@ import org.medtroniclabs.uhis.formgeneration.utility.DigitsInputFilter
 import org.medtroniclabs.uhis.formgeneration.utility.FormFieldValidator
 import org.medtroniclabs.uhis.formgeneration.utility.PersonNameFilter
 import org.medtroniclabs.uhis.mappingkey.CommunityDetails
-import org.medtroniclabs.uhis.mappingkey.CommunityDetails.SelectedNetwork
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration.DATE_OF_BIRTH
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration.PHONE_NUMBER
@@ -152,8 +151,6 @@ import org.medtroniclabs.uhis.mappingkey.Screening.Minute
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.MUAC
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.muacCode
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -3919,32 +3916,16 @@ class FormGenerator(
         }
         getViewByTag(id)?.let { view ->
             if (view is AppCompatTextView) {
-                val checkBoxText = if (id.contains("complication", true)) {
-                    getString(R.string.complications_selected)
-                } else if (id.contains("conditions", true)) {
-                    getString(R.string.conditions_selected)
-                } else if (id.contains("signs", true) || id.contains("illness", true)) {
-                    if (translate && !formLayout.hintCulture.isNullOrBlank()) {
-                        "${formLayout.hintCulture} ${getString(R.string.selected_signs)}"
-                    } else if (!formLayout.hint.isNullOrBlank()) {
-                        "${formLayout.hint} ${getString(R.string.selected_signs)}"
-                    } else {
-                        getString(R.string.symptoms_selected)
-                    }
+                if (resultMap.isEmpty()) {
+                    view.text = ""
                 } else {
-                    if (translate && !formLayout.hintCulture.isNullOrBlank()) {
-                        "${formLayout.hintCulture} ${getString((R.string.selected))}"
-                    } else if (!formLayout.hint.isNullOrBlank()) {
-                        "${formLayout.hint} ${getString((R.string.selected))}"
-                    } else {
-                        getString(R.string.symptoms_selected)
+                    view.text = resultMap.joinToString {
+                        if (translate && it[DefinedParams.CULTURE_VALUE]?.toString().orEmpty().isNotBlank()) {
+                            it[DefinedParams.CULTURE_VALUE].toString()
+                        } else {
+                            it[DefinedParams.NAME].toString()
+                        }
                     }
-                }
-                val dialogCheckBoxText = setCheckBoxDialogText(resultHashMap, id, checkBoxText)
-                if (dialogCheckBoxText.first == 0) {
-                    view.text = dialogCheckBoxText.second
-                } else {
-                    view.text = getString(R.string.checkbox_selected_text, dialogCheckBoxText.first, dialogCheckBoxText.second)
                 }
             }
         }
@@ -3977,69 +3958,6 @@ class FormGenerator(
             callback?.invoke(resultHashMap, id)
         }
     }
-
-    private fun setCheckBoxDialogText(
-        resultHashMap: HashMap<String, Any>,
-        id: String,
-        checkBoxText: String,
-    ): Pair<Int, String> {
-        var text = ""
-        var count = 0
-        if (id.equals(getString(R.string.market_days_key), true)) {
-            val mapList = resultHashMap[id]
-            if (mapList is ArrayList<*>) {
-                text = if (mapList.size == 1) {
-                    getString(R.string.market_day_selected, mapList.size)
-                } else {
-                    getString(R.string.market_days_selected, mapList.size)
-                }
-            }
-        } else if (id.equals(SelectedNetwork, true)) {
-            val mapList = resultHashMap[id]
-            if (mapList is ArrayList<*>) {
-                text = if (mapList.size == 1) {
-                    getString(R.string.network_selected, mapList.size)
-                } else {
-                    getString(R.string.networks_selected, mapList.size)
-                }
-            }
-        } else {
-            if (resultHashMap.containsKey(id)) {
-                val mapList = resultHashMap[id]
-                if (mapList is java.util.ArrayList<*>) {
-                    text = if (mapList.size == 1) {
-                        val singleSelectionText = getSingleSelectedDialogText(mapList, checkBoxText)
-                        count = singleSelectionText.first
-                        singleSelectionText.second
-                    } else if (mapList.size > 1) {
-                        if (isContainsOther(mapList)) {
-                            count = mapList.size - 1
-                            "${getString(R.string.and)} ${getString(R.string.other)} $checkBoxText"
-                        } else {
-                            count = mapList.size
-                            checkBoxText
-                        }
-                    } else {
-                        ""
-                    }
-                }
-            }
-        }
-        return count to text
-    }
-
-    /**
-     * Returns dialog text when only single item has selected
-     */
-    private fun getSingleSelectedDialogText(
-        mapList: ArrayList<*>,
-        checkBoxText: String,
-    ): Pair<Int, String> =
-        if (isContainsOther(mapList)) {
-            0 to "${getString(R.string.other)} $checkBoxText"
-        } else {
-            1 to checkBoxText
-        }
 
     private fun isContainsOther(mapList: ArrayList<*>): Boolean {
         var status = false
@@ -4173,70 +4091,6 @@ class FormGenerator(
                 }
             }
         }
-    }
-
-    fun handlePregnancyCardBasedOnAge() {
-        val dateOfBirthView =
-            getViewByTag(DATE_OF_BIRTH) as? AppCompatTextView ?: return
-        val dateOfBirth = dateOfBirthView.text?.toString()?.trim() ?: return
-
-        if (DateUtils.calculateAge(
-                dateOfBirth,
-                DATE_ddMMyyyy,
-            ) !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE
-        ) {
-            handleAgeBelowThreshold()
-        } else {
-            handleAgeAboveThreshold()
-        }
-    }
-
-    fun handlePregnancyCardBasedOnAgeAndWeeks() {
-        val dateOfBirthView =
-            getViewByTag(DATE_OF_BIRTH) as? AppCompatTextView ?: return
-        val dateOfBirth = dateOfBirthView.text?.toString()?.trim()
-        if (!dateOfBirth.isNullOrEmpty()) {
-            val ageAndWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth, DATE_ddMMyyyy)
-            val ageYears = ageAndWeek.years
-            val ageMonths = ageAndWeek.months
-            val ageWeeks = ageAndWeek.weeks
-            val ageDays = ageAndWeek.days
-
-            if ((ageYears !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) || (ageYears == PREGNANCY_MAX_AGE && (ageMonths + ageWeeks + ageDays) != 0)) {
-                handleAgeBelowThreshold()
-            } else {
-                handleAgeAboveThreshold()
-            }
-        } else {
-            handleAgeBelowThreshold()
-        }
-    }
-
-    private fun handleAgeBelowThreshold() {
-//        if (isResultAvailable(gender, female)) {
-//            val isPregnantRootView =
-//                getViewByTag(MemberRegistration.isPregnant + rootSuffix) as? ViewGroup
-//                    ?: return
-//            removeIfContains(MemberRegistration.isPregnant)
-//            (getViewByTag(MemberRegistration.isPregnant) as? ViewGroup)?.forEach { view ->
-//                if (view is TextView) {
-//                    view.isSelected = false
-//                }
-//            }
-//            if (isPregnantRootView.isVisible()) {
-//            }
-//        }
-    }
-
-    private fun handleAgeAboveThreshold() {
-//        if (isResultAvailable(gender, female)) {
-//            val isPregnantRootView =
-//                getViewByTag(MemberRegistration.isPregnant + rootSuffix) as? ViewGroup
-//                    ?: return
-//            if (isPregnantRootView.isGone()) {
-//                isPregnantRootView.visible()
-//            }
-//        }
     }
 
     private fun checkOnlyAlphabets(
