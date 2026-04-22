@@ -290,12 +290,13 @@
         <error line="33" column="15" source="standard:property-naming" />
         <error line="36" column="15" source="standard:property-naming" />
         <error line="39" column="15" source="standard:property-naming" />
-        <error line="41" column="15" source="standard:property-naming" />
+        <error line="41" column="24" source="standard:no-semi" />
         <error line="42" column="15" source="standard:property-naming" />
         <error line="43" column="15" source="standard:property-naming" />
         <error line="44" column="15" source="standard:property-naming" />
         <error line="45" column="15" source="standard:property-naming" />
         <error line="46" column="15" source="standard:property-naming" />
+        <error line="47" column="15" source="standard:property-naming" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/extension/SafePopupMenuClickListener.kt">
         <error line="6" column="160" source="standard:max-line-length" />

@@ -401,6 +401,10 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             // Enable if idType is set
             view.isEnabled = details.idType.isNotEmpty()
         }
+        formGenerator.updateNationalIdLabelForIdType(
+            details.idType,
+            SecuredPreference.getIsTranslationEnabled(),
+        )
 
         formGenerator.getViewByTag(MemberRegistration.IS_HOUSEHOLD_HEAD)?.let { view ->
             if (view is CheckBox) {
@@ -536,6 +540,10 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                         nationalIdView.filters = filters.toTypedArray()
                     }
                 }
+                formGenerator.updateNationalIdLabelForIdType(
+                    selectedId,
+                    SecuredPreference.getIsTranslationEnabled(),
+                )
             } else if (id == MemberRegistration.NATIONAL_ID) {
                 // This is national id component - hide error (validation handled elsewhere)
                 formGenerator.hideError(id)

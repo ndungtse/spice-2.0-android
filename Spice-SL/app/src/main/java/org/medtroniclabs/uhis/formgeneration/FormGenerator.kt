@@ -4755,4 +4755,53 @@ class FormGenerator(
             (getViewByTag(id + titleSuffix) as? TextView)?.markNonMandatory()
         }
     }
+
+    /**
+     * Updates the national ID field **title** and [EditText] hint to match the selected
+     * [MemberRegistration.ID_TYPE] option ([DefinedParams.NAME] and [DefinedParams.CULTURE_VALUE]).
+     * Falls back to the static `national_id` [FormLayout] when ID type is empty or [DefinedParams.NA].
+     * Does not mutate [FormLayout.titleCulture] on the model.
+     */
+    fun updateNationalIdLabelForIdType(
+        selectedIdType: String?,
+        translate: Boolean,
+    ) {
+        val idTypeLayout = getFormLayout(MemberRegistration.ID_TYPE) ?: return
+        val nationalIdLayout = getFormLayout(MemberRegistration.NATIONAL_ID) ?: return
+        val titleView = getViewByTag(MemberRegistration.NATIONAL_ID + titleSuffix) as? TextView
+        val nationalIdInput = getViewByTag(MemberRegistration.NATIONAL_ID) as? EditText
+
+        val options = idTypeLayout.optionsList
+        val option =
+            if (!selectedIdType.isNullOrBlank() && selectedIdType != DefinedParams.NA) {
+                options?.firstOrNull { (it[DefinedParams.ID] as? String) == selectedIdType }
+            } else {
+                null
+            }
+
+        val title: CharSequence =
+            if (option != null) {
+                val name =
+                    (option[DefinedParams.NAME] as? String)?.takeIf { it.isNotEmpty() }
+                        ?: nationalIdLayout.title
+                val cultureValue =
+                    (option[DefinedParams.CULTURE_VALUE] as? String)?.takeIf { it.isNotEmpty() }
+                        ?: nationalIdLayout.titleCulture
+                updateTitle(name, translate, cultureValue, null)
+            } else {
+                updateTitle(
+                    nationalIdLayout.title,
+                    translate,
+                    nationalIdLayout.titleCulture,
+                    null,
+                )
+            }
+        titleView?.text = title
+        nationalIdInput?.hint = title
+        if (nationalIdLayout.isMandatory) {
+            titleView?.markMandatory()
+        } else {
+            titleView?.markNonMandatory()
+        }
+    }
 }

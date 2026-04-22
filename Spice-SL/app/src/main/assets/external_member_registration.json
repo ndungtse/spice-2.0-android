@@ -108,8 +108,8 @@
                 },
                 {
                     "id": "brn",
-                    "name": "BRN",
-                    "cultureValue": "জন্ম নিবন্ধন আইডি (Birth Reg ID) (<১৮ বছর)"
+                    "name": "Birth Reg No",
+                    "cultureValue": "জন্ম নিবন্ধন নম্বর (Birth Reg No) (<১৮ বছর)"
                 },
                 {
                     "id": "na",

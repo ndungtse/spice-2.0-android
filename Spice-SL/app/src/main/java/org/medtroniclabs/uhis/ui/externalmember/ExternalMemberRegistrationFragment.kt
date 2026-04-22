@@ -124,6 +124,10 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                         nationalIdView.filters = filters.toTypedArray()
                     }
                 }
+                formGenerator.updateNationalIdLabelForIdType(
+                    selectedId,
+                    SecuredPreference.getIsTranslationEnabled(),
+                )
             } else if (id == MemberRegistration.NATIONAL_ID) {
                 // This is national id component - hide error (validation handled elsewhere)
                 formGenerator.hideError(id)
@@ -325,6 +329,10 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
             formGenerator.setValueForView(details.nationalId, view)
             view.isEnabled = details.idType.isNotEmpty()
         }
+        formGenerator.updateNationalIdLabelForIdType(
+            details.idType,
+            SecuredPreference.getIsTranslationEnabled(),
+        )
 
         // Gender: select then disable like normal edit
         details.gender.let { gender ->

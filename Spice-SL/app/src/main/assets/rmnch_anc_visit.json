@@ -865,8 +865,8 @@
             [
                 {
                     "id": "uhfwc",
-                    "name": "UHFWC (Union health and family welfare center)",
-                    "cultureValue": "ইউনিয়ন স্বাস্থ্য ও পরিবারকল্যাণ কেন্দ্র (UHFWC)"
+                    "name": "UH&FWC (Union health and family welfare center)",
+                    "cultureValue": "ইউনিয়ন স্বাস্থ্য ও পরিবার কল্যাণ কেন্দ্র"
                 },
                 {
                     "id": "mcwc",
@@ -1329,7 +1329,7 @@
             [
                 {
                     "id": "uhfwc",
-                    "name": "UHFWC (Union health and family welfare center)",
+                    "name": "UH&FWC (Union health and family welfare center)",
                     "cultureValue": "ইউনিয়ন স্বাস্থ্য ও পরিবার কল্যাণ কেন্দ্র"
                 },
                 {
