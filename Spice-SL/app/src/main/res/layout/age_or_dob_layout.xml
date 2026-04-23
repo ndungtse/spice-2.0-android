@@ -58,22 +58,50 @@
         app:layout_constraintTop_toBottomOf="@id/tvTitle"
         tools:ignore="RtlSymmetry" />
 
-    <!-- Age EditText -->
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/etAge"
-        style="@style/Form_Input_Style_BG"
+    <LinearLayout
+        android:id="@+id/ageValueRow"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_8sdp"
         android:layout_marginEnd="@dimen/_4sdp"
-        android:hint="@string/years"
-        android:inputType="number"
-        android:maxLength="3"
-        android:paddingHorizontal="@dimen/_12sdp"
+        android:background="@drawable/edittext_background"
+        android:baselineAligned="false"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingVertical="@dimen/_10sdp"
         app:layout_constraintEnd_toStartOf="@id/startGuideLine"
         app:layout_constraintStart_toStartOf="@id/tvAgeLabel"
-        app:layout_constraintTop_toBottomOf="@id/tvAgeLabel" />
+        app:layout_constraintTop_toBottomOf="@id/tvAgeLabel">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etAge"
+            style="@style/Form_Input_Style"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@null"
+            android:hint="@string/years"
+            android:inputType="number"
+            android:maxLength="3"
+            android:minWidth="0dp"
+            android:paddingHorizontal="@dimen/_12sdp"
+            android:paddingVertical="0dp"
+            tools:ignore="Autofill" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvAgeUnit"
+            style="@style/Form_Input_Style"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:minWidth="0dp"
+            android:paddingHorizontal="@dimen/_4sdp"
+            android:paddingVertical="0dp"
+            android:text="@string/years"
+            android:textSize="10sp"
+            tools:text="Years" />
+    </LinearLayout>
 
     <!-- OR Text - Fixed to prevent wrapping -->
     <TextView
@@ -83,15 +111,15 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_4sdp"
         android:gravity="center"
-        android:text="@string/OR"
-        android:textStyle="bold"
-        android:singleLine="true"
         android:maxLines="1"
         android:minWidth="@dimen/_30sdp"
-        app:layout_constraintBottom_toBottomOf="@id/etAge"
+        android:singleLine="true"
+        android:text="@string/OR"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/ageValueRow"
         app:layout_constraintEnd_toStartOf="@id/dobInputHolder"
-        app:layout_constraintStart_toEndOf="@id/etAge"
-        app:layout_constraintTop_toTopOf="@id/etAge" />
+        app:layout_constraintStart_toEndOf="@id/ageValueRow"
+        app:layout_constraintTop_toTopOf="@id/ageValueRow" />
 
     <!-- DOB Input Holder -->
     <LinearLayout
@@ -101,8 +129,8 @@
         android:layout_marginTop="@dimen/_8sdp"
         android:layout_marginStart="@dimen/_4sdp"
         android:background="@drawable/edittext_background"
-        android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="@id/tvDobLabel"
         app:layout_constraintStart_toStartOf="@id/tvDobLabel"
         app:layout_constraintTop_toBottomOf="@id/tvDobLabel">
@@ -114,41 +142,41 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="@string/dd_mm_yyyy"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:paddingHorizontal="@dimen/_12sdp"
             android:paddingVertical="@dimen/_10sdp"
-            android:singleLine="true"
-            android:maxLines="1"
-            android:ellipsize="end" />
+            android:singleLine="true" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivClearDob"
             android:layout_width="@dimen/_40sdp"
             android:layout_height="@dimen/_40sdp"
             android:layout_marginEnd="@dimen/_4sdp"
+            android:contentDescription="Clear"
             android:padding="@dimen/_8sdp"
             android:src="@drawable/ic_close"
             android:visibility="gone"
-            android:contentDescription="Clear"
             app:tint="@color/charcoal_grey" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivCalendar"
             android:layout_width="@dimen/_50sdp"
             android:layout_height="match_parent"
-            android:padding="@dimen/_8sdp"
             android:background="@drawable/blue_rectangle"
-            android:src="@drawable/ic_baseline_calendar_today_24"
-            android:contentDescription="@string/dateofbirth" />
+            android:contentDescription="@string/dateofbirth"
+            android:padding="@dimen/_8sdp"
+            android:src="@drawable/ic_baseline_calendar_today_24" />
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/tvErrorMessage"
         style="@style/TextStyle_Error_14"
-        android:visibility="gone"
         android:paddingHorizontal="@dimen/_16sdp"
         android:paddingVertical="@dimen/_8sdp"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etAge" />
+        app:layout_constraintTop_toBottomOf="@id/ageValueRow" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -47,6 +47,7 @@ import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.invisible
 import org.medtroniclabs.uhis.appextensions.visible
+import org.medtroniclabs.uhis.common.AgeOrDobDisplay
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.CommonUtils.displayAge
 import org.medtroniclabs.uhis.common.CommonUtils.getMaxDateLimit
@@ -151,7 +152,11 @@ import org.medtroniclabs.uhis.mappingkey.Screening.Minute
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.MUAC
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.muacCode
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
+import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.time.Period
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
@@ -2221,7 +2226,14 @@ class FormGenerator(
                 if (binding.etAge.isEnabled) {
                     val ageText = editable?.toString()?.trim() ?: ""
                     if (ageText.isEmpty()) {
-                        clearAgeOrDobFields(id, binding.etAge, binding.etDob, binding.ivClearDob, binding.dobInputHolder)
+                        clearAgeOrDobFields(
+                            id,
+                            binding.etAge,
+                            binding.tvAgeUnit,
+                            binding.etDob,
+                            binding.ivClearDob,
+                            binding.dobInputHolder,
+                        )
                     } else {
                         val age = ageText.toIntOrNull()
                         if (age != null) {
@@ -2229,7 +2241,7 @@ class FormGenerator(
                             if (age > maxAge) {
                                 showError(id, "Age cannot exceed $maxAge years")
                             } else {
-                                fillDOBFromAge(age, id, binding.etDob)
+                                fillDOBFromAge(age, id, binding.etDob, binding.tvAgeUnit)
                             }
                         }
                     }
@@ -2259,7 +2271,14 @@ class FormGenerator(
                             val stringDate = String.format(Locale.getDefault(), "%02d-%02d-%d", dayOfMonth, month, year)
                             val parsedDate = DateUtils.getDatePatternDDMMYYYY().parse(stringDate)
                             parsedDate?.let {
-                                fillAgeFromDOB(it, id, binding.etAge, binding.etDob, ageListener)
+                                fillAgeFromDOB(
+                                    it,
+                                    id,
+                                    binding.etAge,
+                                    binding.tvAgeUnit,
+                                    binding.etDob,
+                                    ageListener,
+                                )
                                 callback?.invoke(resultHashMap, id)
                             }
                         }
@@ -2277,6 +2296,7 @@ class FormGenerator(
             binding.etAge.isEnabled = true
             binding.etAge.isFocusable = true
             binding.etAge.alpha = 1.0f
+            binding.tvAgeUnit.alpha = 1.0f
             binding.dobInputHolder.isEnabled = true
             binding.dobInputHolder.isClickable = true
             binding.dobInputHolder.isFocusable = true
@@ -2294,6 +2314,7 @@ class FormGenerator(
             if (binding.etDob.text.isNullOrBlank()) {
                 binding.etAge.isEnabled = true
                 binding.etAge.alpha = 1.0f
+                binding.tvAgeUnit.alpha = 1.0f
                 binding.dobInputHolder.isEnabled = true
                 binding.dobInputHolder.alpha = 1.0f
             }
@@ -2304,6 +2325,7 @@ class FormGenerator(
         age: Int,
         id: String,
         etDob: AppCompatTextView,
+        tvAgeUnit: TextView,
     ) {
         try {
             val dobInUTC = DateUtils.calculateDOBFromAge(age)
@@ -2316,6 +2338,11 @@ class FormGenerator(
             val dobFormatted = localDate.format(outputFormatter)
 
             etDob.text = dobFormatted
+            tvAgeUnit.text = if (age == 1) {
+                context.getString(R.string.year)
+            } else {
+                context.getString(R.string.years)
+            }
             addOrUpdateDOB(dobInUTC, id)
             // Keep DOB field enabled (no longer disabling after age input)
             // Clear icon remains hidden
@@ -2330,6 +2357,7 @@ class FormGenerator(
         dob: Date,
         id: String,
         etAge: AppCompatEditText,
+        tvAgeUnit: TextView,
         etDob: AppCompatTextView,
         ageListener: TextWatcher?,
     ) {
@@ -2346,14 +2374,17 @@ class FormGenerator(
             )
             addOrUpdateDOB(dobInUTC, id)
 
-            // Calculate age
-            var age = CommonUtils.getAgeInYearsByDOB(dobFormatted)
-            // If age is less than 1 year, show 1
-            if (age < 1) {
-                age = 1
-            }
+            val display =
+                DateUtils.getAgeOrDobDisplayFromDdMmYyyy(dobFormatted) ?: run {
+                    showError(id, "Error calculating age")
+                    return
+                }
+            val birthDate = LocalDate.parse(
+                dobFormatted,
+                DateTimeFormatter.ofPattern(DATE_ddMMyyyy).withLocale(Locale.ENGLISH),
+            )
             val maxAge = serverData?.find { it.id == id }?.maxValue?.toInt() ?: 120
-            if (age > maxAge) {
+            if (Period.between(birthDate, LocalDate.now()).years > maxAge) {
                 showError(id, "Age cannot exceed $maxAge years")
                 return
             }
@@ -2362,7 +2393,8 @@ class FormGenerator(
                 etAge.removeTextChangedListener(ageListener)
             }
             // Keep age field enabled (no longer disabling after DOB input)
-            etAge.setText(age.toString())
+            etAge.setText(display.value.toString())
+            applyAgeOrDobUnitToView(tvAgeUnit, display)
             // Add listener once data is set
             ageListener?.let {
                 etAge.addTextChangedListener(ageListener)
@@ -2373,6 +2405,34 @@ class FormGenerator(
         } catch (_: Exception) {
             showError(id, "Error calculating age")
         }
+    }
+
+    private fun applyAgeOrDobUnitToView(
+        tvAgeUnit: TextView,
+        display: AgeOrDobDisplay,
+    ) {
+        val v = display.value
+        tvAgeUnit.text =
+            when (display.unit) {
+                AgeOrDobDisplay.AgeOrDobUnit.DAY ->
+                    if (v == 1) {
+                        context.getString(R.string.day)
+                    } else {
+                        context.getString(R.string.days)
+                    }
+                AgeOrDobDisplay.AgeOrDobUnit.MONTH ->
+                    if (v == 1) {
+                        context.getString(R.string.month)
+                    } else {
+                        context.getString(R.string.months)
+                    }
+                AgeOrDobDisplay.AgeOrDobUnit.YEAR ->
+                    if (v == 1) {
+                        context.getString(R.string.year)
+                    } else {
+                        context.getString(R.string.years)
+                    }
+            }
     }
 
     private fun handleAgeOrDobEditMode(
@@ -2395,6 +2455,7 @@ class FormGenerator(
 
             // Find child views using findViewById (they have resource IDs)
             val etAge = rootView.findViewById<AppCompatEditText>(R.id.etAge) ?: return
+            val tvAgeUnit = rootView.findViewById<TextView>(R.id.tvAgeUnit) ?: return
             val ivClearDob = rootView.findViewById<View>(R.id.ivClearDob) ?: return
             val dobInputHolder = rootView.findViewById<View>(R.id.dobInputHolder) ?: return
 
@@ -2405,14 +2466,24 @@ class FormGenerator(
             // DOB value is already in dd/MM/yyyy format from setValueForView
             val dobFormatted = dobValue
 
-            // Auto-calculate age from DOB
-            var age = CommonUtils.getAgeInYearsByDOB(dobFormatted)
-            // If age is less than 1 year, show 1
-            if (age < 1) {
-                age = 1
+            val display = DateUtils.getAgeOrDobDisplayFromDdMmYyyy(dobFormatted)
+            if (display != null) {
+                etAge.setText(display.value.toString())
+                applyAgeOrDobUnitToView(tvAgeUnit, display)
+            } else {
+                var age = CommonUtils.getAgeInYearsByDOB(dobFormatted)
+                if (age < 1) {
+                    age = 1
+                }
+                etAge.setText(age.toString())
+                tvAgeUnit.text = if (age == 1) {
+                    context.getString(R.string.year)
+                } else {
+                    context.getString(R.string.years)
+                }
             }
-            etAge.setText(age.toString())
             etAge.alpha = 0.6f
+            tvAgeUnit.alpha = 0.6f
 
             // Disable DOB field in edit mode
             dobInputHolder.isEnabled = false
@@ -2456,14 +2527,17 @@ class FormGenerator(
     private fun clearAgeOrDobFields(
         id: String,
         etAge: AppCompatEditText,
+        tvAgeUnit: TextView,
         etDob: AppCompatTextView,
         ivClearDob: View,
         dobInputHolder: View,
     ) {
         etAge.text?.clear()
         etDob.text = ""
+        tvAgeUnit.text = context.getString(R.string.years)
         etAge.isEnabled = true
         etAge.alpha = 1.0f
+        tvAgeUnit.alpha = 1.0f
         dobInputHolder.isEnabled = true
         dobInputHolder.alpha = 1.0f
         ivClearDob.visibility = View.GONE
@@ -3354,6 +3428,7 @@ class FormGenerator(
         rootView?.let {
             val etAge = it.findViewWithTag<AppCompatEditText>(model.id + "_age")
             val etDob = it.findViewWithTag<AppCompatTextView>(model.id)
+            val tvAgeUnit = it.findViewById<TextView>(R.id.tvAgeUnit)
             val ivClearDob = it.findViewById<View>(R.id.ivClearDob)
             val dobInputHolder = it.findViewById<View>(R.id.dobInputHolder)
 
@@ -3362,6 +3437,8 @@ class FormGenerator(
                 ageView.isEnabled = true
                 ageView.alpha = 1.0f
             }
+            tvAgeUnit?.text = context.getString(R.string.years)
+            tvAgeUnit?.alpha = 1.0f
             etDob?.text = ""
             ivClearDob?.visibility = View.GONE
             dobInputHolder?.let { holder ->

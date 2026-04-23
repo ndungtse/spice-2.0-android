@@ -27,6 +27,18 @@ import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
+/**
+ * UI display for age-or-DOB: a single value and unit. Calendar years/months when applicable;
+ * below one full month the remainder is shown in **days** (not weeks). From the fifth birthday
+ * onward, years only.
+ */
+data class AgeOrDobDisplay(
+    val value: Int,
+    val unit: AgeOrDobUnit,
+) {
+    enum class AgeOrDobUnit { DAY, MONTH, YEAR }
+}
+
 object DateUtils {
     const val DATE_ddMMyyyy = "dd/MM/yyyy"
     const val DATE_FORMAT_ddMMyyyy = "dd-MM-yyyy"
@@ -92,6 +104,50 @@ object DateUtils {
         val days = (daysBetween % 7).toInt()
 
         return CalendarPeriod(years, months, weeks, days)
+    }
+
+    /**
+     * @param birthDate Date of birth (date-only, same zone as [today]).
+     */
+    fun getAgeOrDobDisplay(
+        birthDate: LocalDate,
+        today: LocalDate = LocalDate.now(),
+    ): AgeOrDobDisplay {
+        if (birthDate.isAfter(today)) {
+            return AgeOrDobDisplay(0, AgeOrDobDisplay.AgeOrDobUnit.DAY)
+        }
+        // Same period breakdown as getV2YearMonthAndWeek / getAgeFromDOB
+        val period = Period.between(birthDate, today)
+        val years = period.years
+        val months = period.months
+        val daysInRemainder = ChronoUnit.DAYS.between(
+            birthDate,
+            today.minusYears(years.toLong()).minusMonths(months.toLong()),
+        )
+        val daysTotal = daysInRemainder.toInt()
+        if (years >= 5) {
+            return AgeOrDobDisplay(years, AgeOrDobDisplay.AgeOrDobUnit.YEAR)
+        }
+        val totalMonths = (years * 12) + months
+        if (totalMonths > 0) {
+            return AgeOrDobDisplay(totalMonths, AgeOrDobDisplay.AgeOrDobUnit.MONTH)
+        }
+        return AgeOrDobDisplay(daysTotal, AgeOrDobDisplay.AgeOrDobUnit.DAY)
+    }
+
+    fun getAgeOrDobDisplayFromDdMmYyyy(
+        dobFormatted: String,
+        today: LocalDate = LocalDate.now(),
+    ): AgeOrDobDisplay? {
+        return try {
+            val birthDate = LocalDate.parse(
+                dobFormatted,
+                DateTimeFormatter.ofPattern(DATE_ddMMyyyy).withLocale(Locale.ENGLISH),
+            )
+            getAgeOrDobDisplay(birthDate, today)
+        } catch (_: Exception) {
+            null
+        }
     }
 
     fun getYearMonthAndDate(

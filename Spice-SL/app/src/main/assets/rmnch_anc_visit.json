@@ -530,7 +530,7 @@
             "orderId": 6,
             "isSummary": false,
             "viewType": "SingleSelectionView",
-            "isMandatory": true,
+            "isMandatory": false,
             "isEnabled": true,
             "title": "Urinary Sugar",
             "titleCulture": "প্রস্রাব পরীক্ষায় গ্লুকোজ আছে কিনা",
