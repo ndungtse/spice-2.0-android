@@ -33,6 +33,16 @@ interface MemberAssessmentHistoryDao {
 
     @Query(
         """
+        SELECT * FROM memberassessmenthistory
+        WHERE memberId = :memberLocalId
+        ORDER BY visitDate DESC, id DESC
+        LIMIT 1
+        """,
+    )
+    suspend fun getLatestMemberAssessmentHistoryByMemberLocalId(memberLocalId: Long): MemberAssessmentHistoryEntity?
+
+    @Query(
+        """
         SELECT
             SUM(CASE WHEN LOWER(h.serviceProvided) IN ('screened') THEN 1 ELSE 0 END) AS screened,
             SUM(CASE WHEN LOWER(h.serviceProvided) IN ('referred','referral') THEN 1 ELSE 0 END) AS referred,

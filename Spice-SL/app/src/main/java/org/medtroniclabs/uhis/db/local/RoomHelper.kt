@@ -913,4 +913,7 @@ interface RoomHelper {
     suspend fun insertMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity): Long
 
     suspend fun updateMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity)
+
+    /** [Pair.first] = service type ([MemberAssessmentHistoryEntity.serviceProvided]); [Pair.second] = visit date. */
+    suspend fun getLastServiceHistoryTypeAndVisitDate(memberLocalId: Long): Pair<String?, String?>?
 }

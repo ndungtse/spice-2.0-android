@@ -1136,4 +1136,22 @@ object DateUtils {
             null
         }
     }
+
+    /**
+     * True when [isoDateTimeString] is ISO-8601 with offset (e.g. `2025-12-23T18:30:00+00:00`)
+     * and its calendar day in the system default zone equals today.
+     */
+    fun isIsoOffsetDateTimeOnLocalCalendarToday(isoDateTimeString: String?): Boolean {
+        if (isoDateTimeString.isNullOrBlank()) return false
+        return try {
+            val visitLocalDate =
+                OffsetDateTime
+                    .parse(isoDateTimeString)
+                    .atZoneSameInstant(ZoneId.systemDefault())
+                    .toLocalDate()
+            visitLocalDate == LocalDate.now(ZoneId.systemDefault())
+        } catch (_: DateTimeParseException) {
+            false
+        }
+    }
 }

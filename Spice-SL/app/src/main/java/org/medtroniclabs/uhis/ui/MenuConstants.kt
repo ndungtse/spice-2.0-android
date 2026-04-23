@@ -1,5 +1,7 @@
 package org.medtroniclabs.uhis.ui
 
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
+
 object MenuConstants {
     const val HOUSEHOLD_MENU_ID = "HOUSEHOLDS"
     const val MY_PATIENTS_MENU_ID = "MY PATIENTS"
@@ -44,8 +46,10 @@ object MenuConstants {
 
     const val COMMUNITY_PROFILE = "COMMUNITY PROFILE"
     const val FP_MENU_ID = "family_planning"
-    const val PO_MENU_ID = "pregnancyOutcome"
     const val FP_MENU_MR = "FAMILY PLANNING"
     const val HIV = "HIV"
     const val PREGNANCY_OUTCOME = "pregnancyOutcome"
+    const val PNC_MOTHER: String = RMNCH.PNC_MOTHER_MENU
+    const val CHILDHOOD_VISIT: String = RMNCH.CHILD_MENU
+    const val ANC: String = RMNCH.ANC
 }

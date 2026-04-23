@@ -745,47 +745,9 @@ class MetaRepository @Inject constructor(
         roomHelper.deleteAllForms()
         roomHelper.saveForms(
             formData.map { data ->
-                // Override formInput for specific form types from assets
-                val formInput = when (data.formType) {
-//                    "household_registration" -> {
-//                        try {
-//                            CommonUtils.getStringFromAssets("household_registration.json", context.assets)
-//                        } catch (e: Exception) {
-//                            // If asset file not found, use server formInput
-//                            data.formInput
-//                        }
-//                    }
-//                    "household_member_registration" -> {
-//                        try {
-//                            CommonUtils.getStringFromAssets("member_registration.json", context.assets)
-//                        } catch (e: Exception) {
-//                            // If asset file not found, use server formInput
-//                            data.formInput
-//                        }
-//                    }
-//                    "family_planning_form", "family_planning_review" -> {
-//                        try {
-//                            CommonUtils.getStringFromAssets("family_planning_form.json", context.assets)
-//                        } catch (e: Exception) {
-//                            // If asset file not found, use server formInput
-//                            data.formInput
-//                        }
-//                    }
-//                    RMNCH.PNC -> {
-//                        try {
-//                            CommonUtils.getStringFromAssets("rmnch_pnc_visit.json", context.assets)
-//                        } catch (e: Exception) {
-//                            // If asset file not found, use server formInput
-//                            data.formInput
-//                        }
-//                    }
-
-                    else -> data.formInput
-                }
-
                 FormEntity(
                     id = data.id,
-                    formInput = formInput,
+                    formInput = data.formInput,
                     formType = data.formType,
                     workflowName = data.workflowName,
                     clinicalWorkflowId = data.clinicalWorkflowId,
@@ -955,6 +917,8 @@ class MetaRepository @Inject constructor(
 
                 if (months > 24) {
                     setCustomStatus(menuList, selectedHouseholdMemberID)
+                } else {
+                    setChildCustomStatus(menuList, selectedHouseholdMemberID)
                 }
 
                 Resource(
@@ -989,19 +953,32 @@ class MetaRepository @Inject constructor(
         menu.forEach { item ->
             when (item.menuId) {
                 MenuConstants.FP_MENU_ID -> {
-                    item.isDisabled = isFPMenuDisable(memberPregnancyDetail)
+                    item.isDisabled = isFPMenuDisable(memberPregnancyDetail, selectedHouseholdMemberID)
                 }
 
                 MenuConstants.PREGNANT_WOMEN_PROFILE -> {
-                    item.isDisabled = isPWProfileMenuDisable(memberPregnancyDetail)
+                    item.isDisabled = isPWProfileMenuDisable(memberPregnancyDetail, selectedHouseholdMemberID)
                 }
 
-                MenuConstants.PO_MENU_ID -> {
-                    item.isDisabled = isPOMenuDisable(memberPregnancyDetail)
+                MenuConstants.PREGNANCY_OUTCOME -> {
+                    item.isDisabled = isPOMenuDisable(memberPregnancyDetail, selectedHouseholdMemberID)
                 }
 
                 MenuConstants.RMNCH_MENU_ID -> {
-                    item.isDisabled = isRMNCHMenuDisable(memberPregnancyDetail)
+                    item.isDisabled = isRMNCHMenuDisable(memberPregnancyDetail, selectedHouseholdMemberID)
+                }
+            }
+        }
+    }
+
+    private suspend fun setChildCustomStatus(
+        menu: List<MenuEntity>,
+        selectedHouseholdMemberID: Long,
+    ) {
+        menu.forEach { item ->
+            when (item.menuId) {
+                MenuConstants.RMNCH_MENU_ID -> {
+                    item.isDisabled = isChildVisitMenuDisable(selectedHouseholdMemberID)
                 }
             }
         }
@@ -1035,17 +1012,26 @@ class MetaRepository @Inject constructor(
             ?: DateUtils.convertStringToDate(dateStr, DateUtils.DATE_FORMAT_yyyyMMdd)
     }
 
-    private fun isFPMenuDisable(pregnancyDetail: PregnancyDetail?): Boolean {
+    private suspend fun isFPMenuDisable(
+        pregnancyDetail: PregnancyDetail?,
+        selectedHouseholdMemberID: Long,
+    ): Boolean {
+        if (checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.FP_MENU_ID)) {
+            return true
+        }
         if (pregnancyDetail == null) return false
         val daysFromDelivery = getDayCountFromDD(pregnancyDetail)
         val daysFromLmp = getDayCountFromLMP(pregnancyDetail)
-        if ((daysFromLmp != null && daysFromLmp >= 42) && (daysFromDelivery == null)) {
-            return true
-        }
-        return false
+        return (daysFromLmp != null && daysFromLmp >= 42) && (daysFromDelivery == null)
     }
 
-    private fun isPWProfileMenuDisable(pregnancyDetail: PregnancyDetail?): Boolean {
+    private suspend fun isPWProfileMenuDisable(
+        pregnancyDetail: PregnancyDetail?,
+        selectedHouseholdMemberID: Long,
+    ): Boolean {
+        if (checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.PREGNANT_WOMEN_PROFILE)) {
+            return true
+        }
         if (pregnancyDetail == null) return false
         val daysFromDelivery = getDayCountFromDD(pregnancyDetail)
         val daysFromLmp = getDayCountFromLMP(pregnancyDetail)
@@ -1057,9 +1043,30 @@ class MetaRepository @Inject constructor(
         return false
     }
 
-    private fun isRMNCHMenuDisable(pregnancyDetail: PregnancyDetail?): Boolean = pregnancyDetail == null
+    private suspend fun isRMNCHMenuDisable(
+        pregnancyDetail: PregnancyDetail?,
+        selectedHouseholdMemberID: Long,
+    ): Boolean {
+        getANCPNCStatus(selectedHouseholdMemberID)?.let {
+            if (it == RMNCH.ANC && checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.ANC)) {
+                return true
+            } else if (it == RMNCH.PNC && checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.PNC_MOTHER)) {
+                return true
+            }
+        }
+        return pregnancyDetail == null
+    }
 
-    private fun isPOMenuDisable(pregnancyDetail: PregnancyDetail?): Boolean {
+    private suspend fun isChildVisitMenuDisable(selectedHouseholdMemberID: Long): Boolean =
+        checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.CHILDHOOD_VISIT)
+
+    private suspend fun isPOMenuDisable(
+        pregnancyDetail: PregnancyDetail?,
+        selectedHouseholdMemberID: Long,
+    ): Boolean {
+        if (checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.PREGNANCY_OUTCOME)) {
+            return true
+        }
         if (pregnancyDetail == null) return false
         val daysFromDelivery = getDayCountFromDD(pregnancyDetail)
         return daysFromDelivery != null && daysFromDelivery <= 42
@@ -1113,6 +1120,19 @@ class MetaRepository @Inject constructor(
         }
 
     suspend fun getAllVillageIds(): List<Long> = roomHelper.getAllVillageIds()
+
+    suspend fun checkIfLastServiceProvidedIsToday(
+        memberLocalId: Long,
+        serviceTypeFor: String,
+    ): Boolean {
+        val (serviceType, visitDate) = getLastServiceHistoryTypeAndVisitDate(memberLocalId) ?: return false
+        return serviceType?.equals(serviceTypeFor, ignoreCase = true) == true &&
+            DateUtils.isIsoOffsetDateTimeOnLocalCalendarToday(visitDate)
+    }
+
+    /** [Pair.first] = service type; [Pair.second] = visit date. */
+    suspend fun getLastServiceHistoryTypeAndVisitDate(memberLocalId: Long): Pair<String?, String?>? =
+        roomHelper.getLastServiceHistoryTypeAndVisitDate(memberLocalId)
 
     suspend fun getUserHealthFacility(): Resource<ArrayList<HealthFacilityEntity>> =
         try {
