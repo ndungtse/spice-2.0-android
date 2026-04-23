@@ -131,7 +131,6 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                                 }
                             }
                         }
-
                     }
                 }
                 else -> {

@@ -1,7 +1,6 @@
 package org.medtroniclabs.uhis.ui.services
 
 import android.content.Intent
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -14,12 +13,15 @@ import org.medtroniclabs.uhis.appextensions.hideKeyboard
 import org.medtroniclabs.uhis.appextensions.setTextChangeListener
 import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.SecuredPreference
+import org.medtroniclabs.uhis.data.model.ChipViewItemModel
 import org.medtroniclabs.uhis.data.offlinesync.model.HouseholdMemberWithTb
 import org.medtroniclabs.uhis.databinding.ActivityServicesBinding
 import org.medtroniclabs.uhis.formgeneration.config.DefinedParams
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.formgeneration.utility.CustomSpinnerAdapter
+import org.medtroniclabs.uhis.model.services.ServiceMemberCounts
 import org.medtroniclabs.uhis.model.services.ServiceStaticFilter
+import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.dashboard.ncd.DashboardConstants
 import org.medtroniclabs.uhis.ui.externalmember.ExternalMemberRegistrationActivity
@@ -46,6 +48,15 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
     private var preSelectedSsIds: LongArray = longArrayOf()
     private var preSelectedSubVillageIds: LongArray = longArrayOf()
     private var preSelectedStaticFilter: ServiceStaticFilter? = null
+
+    private var isPreselectedFilterAlreadySet = false
+
+    /**
+     * Spinner adapter holding filters
+     */
+    private lateinit var spinnerAdapter: CustomSpinnerAdapter
+
+    private var lastPosition = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,21 +118,17 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
             servicesViewModel.setFilterLiveData(staticFilter = ServiceStaticFilter.EXTERNAL_MEMBERS)
         } else {
             binding.bottomNavigationView.gone()
-            setDropdown()
         }
         applyPrefiltersFromDashboard()
-        showLoading()
     }
 
     private fun applyPrefiltersFromDashboard() {
         if (preSelectedSsIds.isEmpty() && preSelectedSubVillageIds.isEmpty() && preSelectedStaticFilter == null) return
         val ssFilters = preSelectedSsIds.map {
-            org.medtroniclabs.uhis.data.model
-                .ChipViewItemModel(id = it, name = "")
+            ChipViewItemModel(id = it, name = "")
         }
         val subVillageFilters = preSelectedSubVillageIds.map {
-            org.medtroniclabs.uhis.data.model
-                .ChipViewItemModel(id = it, name = "")
+            ChipViewItemModel(id = it, name = "")
         }
         servicesViewModel.setFilterLiveData(
             ssFilter = ssFilters,
@@ -130,64 +137,84 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
         )
     }
 
-    private fun setDropdown() {
-        (binding.tvMemberTypes.background as? GradientDrawable)?.apply {
-            setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), getColor(R.color.edittext_stroke))
+    /**
+     * Listener for member type spinner
+     */
+    private val dropdownListener = object : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(
+            adapterView: AdapterView<*>?,
+            itemView: View?,
+            position: Int,
+            itemId: Long,
+        ) {
+            lastPosition = position
+            val item = spinnerAdapter.getData(position)
+            val id = item?.get(DefinedParams.ID) as? ServiceStaticFilter
+            if (id != null) {
+                servicesViewModel.setFilterLiveData(staticFilter = id)
+            }
         }
-        val dropDownList = buildDropDownList()
-        val adapter = CustomSpinnerAdapter(this, SecuredPreference.getIsTranslationEnabled())
 
-        adapter.setData(dropDownList)
-        binding.tvMemberTypes.adapter = adapter
-
-        // When opened from Dashboard, make the spinner reflect the same static filter explicitly.
-        val initialFilter = preSelectedStaticFilter ?: ServiceStaticFilter.ALL_MEMBERS
-        val initialPosition = dropDownList
-            .indexOfFirst { item ->
-                (item[DefinedParams.ID] as? ServiceStaticFilter) == initialFilter
-            }.takeIf { it >= 0 } ?: 0
-        binding.tvMemberTypes.setSelection(initialPosition, false)
-
-        binding.tvMemberTypes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                adapterView: AdapterView<*>?,
-                itemView: View?,
-                position: Int,
-                itemId: Long,
-            ) {
-                val item = adapter.getData(position)
-                val id = item?.get(DefinedParams.ID) as? ServiceStaticFilter
-                if (id != null) {
-                    servicesViewModel.setFilterLiveData(staticFilter = id)
-                }
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-                // Do Nothing
-            }
+        override fun onNothingSelected(p0: AdapterView<*>?) {
+            // Do Nothing
         }
     }
 
-    private fun buildDropDownList(): ArrayList<Map<String, Any>> {
+    /**
+     * Sets member type spinner data with count for each dropdown element
+     */
+    private fun setDropDownData(counts: ServiceMemberCounts) {
+        // Remove any existing listener, so that the filter won't get triggered
+        binding.tvMemberTypes.onItemSelectedListener = null
+        val dropDownList = buildDropDownList(counts)
+        spinnerAdapter = CustomSpinnerAdapter(this, SecuredPreference.getIsTranslationEnabled())
+        spinnerAdapter.setData(dropDownList)
+        binding.tvMemberTypes.adapter = spinnerAdapter
+        // Set listener after setting adapter, so that the filter works
+        binding.tvMemberTypes.post {
+            binding.tvMemberTypes.onItemSelectedListener = dropdownListener
+        }
+
+        if (!isPreselectedFilterAlreadySet) {
+            isPreselectedFilterAlreadySet = true
+            // When opened from Dashboard, make the spinner reflect the same static filter explicitly.
+            val initialFilter = preSelectedStaticFilter ?: ServiceStaticFilter.ALL_MEMBERS
+            val initialPosition = dropDownList
+                .indexOfFirst { item ->
+                    (item[DefinedParams.ID] as? ServiceStaticFilter) == initialFilter
+                }.takeIf { it >= 0 } ?: 0
+            lastPosition = initialPosition
+        }
+        if (lastPosition != -1) {
+            binding.tvMemberTypes.setSelection(lastPosition, false)
+        }
+    }
+
+    /**
+     * Builds list for member type spinner
+     */
+    private fun buildDropDownList(counts: ServiceMemberCounts): ArrayList<Map<String, Any>> {
         val dropdownList = arrayListOf<Map<String, Any>>()
-        val staticFilters = listOf(
-            ServiceStaticFilter.ALL_MEMBERS,
-            ServiceStaticFilter.FAMILY_PLANNING_COUNSELLING_ELIGIBLE,
-            ServiceStaticFilter.PREGNANT_WOMEN,
-            ServiceStaticFilter.HIGH_RISK_PREGNANT_WOMEN,
-            ServiceStaticFilter.POSTNATAL_CARE_MOTHERS,
-            ServiceStaticFilter.CHILDREN_UNDER_TWO_YEARS,
-            ServiceStaticFilter.EXPECTED_DELIVERIES,
-            ServiceStaticFilter.PENDING_DELIVERIES,
-            ServiceStaticFilter.EXTERNAL_MEMBERS,
-            ServiceStaticFilter.EXTERNAL_PREGNANT_WOMEN,
+        val staticFilters = mapOf(
+            ServiceStaticFilter.ALL_MEMBERS to counts.allMembers,
+            ServiceStaticFilter.FAMILY_PLANNING_COUNSELLING_ELIGIBLE to counts.familyPlanning,
+            ServiceStaticFilter.PREGNANT_WOMEN to counts.pregnantWomen,
+            ServiceStaticFilter.HIGH_RISK_PREGNANT_WOMEN to counts.highRiskPregnant,
+            ServiceStaticFilter.POSTNATAL_CARE_MOTHERS to counts.postnatalMothers,
+            ServiceStaticFilter.CHILDREN_UNDER_TWO_YEARS to counts.childrenUnderTwo,
+            ServiceStaticFilter.EXPECTED_DELIVERIES to counts.expectedDeliveries,
+            ServiceStaticFilter.PENDING_DELIVERIES to counts.pendingDeliveries,
+            ServiceStaticFilter.EXTERNAL_MEMBERS to counts.externalMembers,
+            ServiceStaticFilter.EXTERNAL_PREGNANT_WOMEN to counts.externalPregnant,
         )
-        staticFilters.forEach {
+        staticFilters.forEach { filterEntry ->
+            val filter = filterEntry.key
+            val filterCount = filterEntry.value
             dropdownList.add(
                 mapOf(
-                    DefinedParams.CULTURE_VALUE to it.culturalValue,
-                    DefinedParams.NAME to it.value,
-                    DefinedParams.ID to it,
+                    DefinedParams.CULTURE_VALUE to filter.culturalValue + " ($filterCount)",
+                    DefinedParams.NAME to filter.value + " ($filterCount)",
+                    DefinedParams.ID to filter,
                 ),
             )
         }
@@ -225,9 +252,26 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
                 binding.llFilter.btnFilter.text = getString(R.string.filter)
             }
         }
-        servicesViewModel.filteredMembersLiveData.observe(this) {
-            hideLoading()
-            setMembers(it)
+        servicesViewModel.filteredMembersLiveData.observe(this) { filteredMembersResource ->
+            when (filteredMembersResource.state) {
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    // Do Nothing
+                }
+                ResourceState.LOADING -> {
+                    hideKeyboard(binding.llExactSearch.etSearchTerm)
+                    showLoading()
+                }
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    filteredMembersResource.data?.let { filteredMembersUiData ->
+                        if (!isExternalMember) {
+                            setDropDownData(filteredMembersUiData.counts)
+                        }
+                        setMembers(filteredMembersUiData.members)
+                    }
+                }
+            }
         }
     }
 
