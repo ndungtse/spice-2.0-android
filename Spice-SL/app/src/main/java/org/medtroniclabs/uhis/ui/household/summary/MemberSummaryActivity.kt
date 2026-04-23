@@ -6,6 +6,7 @@ import android.text.SpannableStringBuilder
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.GravityCompat
 import androidx.core.widget.PopupWindowCompat
@@ -20,6 +21,7 @@ import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.CommonUtils.getAgeFromDOB
 import org.medtroniclabs.uhis.common.CommonUtils.getGenderText
 import org.medtroniclabs.uhis.common.DefinedParams
+import org.medtroniclabs.uhis.common.MultiClickListener
 import org.medtroniclabs.uhis.databinding.ActivityMemberSummaryBinding
 import org.medtroniclabs.uhis.databinding.PopupMemberSummaryDateSelectionBinding
 import org.medtroniclabs.uhis.db.entity.HouseholdMemberEntity
@@ -110,6 +112,14 @@ class MemberSummaryActivity : BaseActivity(), View.OnClickListener {
         binding.ivLeftArrow.setOnClickListener(this)
         binding.ivDate.setOnClickListener(this)
         binding.ivRightArrow.setOnClickListener(this)
+        if (memberSummaryViewModel.isNonProdEnv()) {
+            getTitleToolbar().setOnClickListener(
+                MultiClickListener(5, interval = 1000L) {
+                    Toast.makeText(this@MemberSummaryActivity, "Updating date", Toast.LENGTH_SHORT).show()
+                    memberSummaryViewModel.decrementAssessmentHistoryDate()
+                },
+            )
+        }
     }
 
     override fun onClick(view: View) {

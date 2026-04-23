@@ -179,6 +179,8 @@ open class BaseActivity : SpiceRootActivity(), ImeInset {
 
     fun getString(): String = binding.titleToolbar.text.toString()
 
+    fun getTitleToolbar() = binding.titleToolbar
+
     fun hideHomeButton(status: Boolean) {
         if (status) {
             binding.ivHome.visibility = View.INVISIBLE

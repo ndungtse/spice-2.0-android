@@ -157,4 +157,25 @@ interface MemberAssessmentHistoryDao {
         subVillageIds: List<Long>,
         subVillageIdsSize: Int,
     ): MaternalDashboardCountsRow?
+
+    /**
+     * Method updates and sets visit date as visit date - [noOfDays] for given member [memberId]
+     */
+    @Query(
+        """
+            UPDATE memberassessmenthistory
+                SET visitDate = strftime(
+                    '%Y-%m-%dT%H:%M:%S+00:00',
+                    datetime(
+                        visitDate,
+                        '-' || :noOfDays || ' day'
+                    )
+                )
+            WHERE memberId = :memberId
+        """,
+    )
+    suspend fun decrementDateByDays(
+        memberId: Long,
+        noOfDays: Int,
+    )
 }

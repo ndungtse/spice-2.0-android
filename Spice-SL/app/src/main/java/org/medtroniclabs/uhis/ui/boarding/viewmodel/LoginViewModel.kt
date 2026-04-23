@@ -26,6 +26,7 @@ class LoginViewModel @Inject constructor(
     private val assessmentRepository: AssessmentRepository,
     private val followUpRepository: FollowUpRepository,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    private val isNonProd: Boolean,
 ) : ViewModel() {
     @Inject
     lateinit var connectivityManager: ConnectivityManager
@@ -57,4 +58,6 @@ class LoginViewModel @Inject constructor(
             unSyncedDataCountLiveData.postValue(count)
         }
     }
+
+    fun isNonProdEnv() = isNonProd
 }

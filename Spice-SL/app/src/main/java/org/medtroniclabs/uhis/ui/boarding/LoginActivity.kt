@@ -2,7 +2,6 @@ package org.medtroniclabs.uhis.ui.boarding
 
 import android.Manifest
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -16,7 +15,6 @@ import org.medtroniclabs.uhis.BuildConfig
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.appextensions.hideKeyboard
-import org.medtroniclabs.uhis.common.AppConstants
 import org.medtroniclabs.uhis.common.AppConstants.IS_DIFFERENT_LOGIN
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.EncryptionUtil
@@ -102,13 +100,11 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                                     try {
                                         startActivity(
                                             Intent(Intent.ACTION_VIEW).apply {
-                                                data = Uri.parse(
-                                                    "https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID,
-                                                )
+                                                data = ("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID).toUri()
                                                 setPackage("com.android.vending")
                                             },
                                         )
-                                    } catch (e: Exception) {
+                                    } catch (_: Exception) {
                                         showErrorDialogue(message = getString(R.string.please_check_if_play_store_available)) {}
                                     }
                                 }
@@ -152,7 +148,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     private fun setListeners() {
         binding.btnLogin.safeClickListener(this)
         binding.tvForgotPassword.safeClickListener(this)
-        if (BuildConfig.FLAVOR != AppConstants.FLAVOUR_PROD) {
+        if (viewModel.isNonProdEnv()) {
             binding.ivPrevious.setOnClickListener(
                 MultiClickListener(
                     targetClicks = 5,

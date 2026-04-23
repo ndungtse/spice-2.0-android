@@ -1335,4 +1335,9 @@ class RoomHelperImpl @Inject constructor(
         memberAssessmentHistoryDao
             .getLatestMemberAssessmentHistoryByMemberLocalId(memberLocalId)
             ?.let { Pair(it.serviceProvided, it.visitDate) }
+
+    override suspend fun decrementAssessmentHistoryVisitDate(
+        memberId: Long,
+        noOfDays: Int,
+    ) = memberAssessmentHistoryDao.decrementDateByDays(memberId, noOfDays)
 }
