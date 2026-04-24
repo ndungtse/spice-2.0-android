@@ -312,6 +312,13 @@ interface MemberDAO {
             staticFilter == ServiceStaticFilter.EXTERNAL_MEMBERS ||
                 staticFilter == ServiceStaticFilter.EXTERNAL_PREGNANT_WOMEN
 
+        if (staticFilter != ServiceStaticFilter.EXTERNAL_MEMBERS &&
+            staticFilter != ServiceStaticFilter.ALL_MEMBERS &&
+            staticFilter != ServiceStaticFilter.CHILDREN_UNDER_TWO_YEARS
+        ) {
+            conditions += ServiceFilterConditions.IS_ACTIVE
+        }
+
         if (searchInput.isNotBlank()) {
             conditions += "(hhm.name LIKE ? OR hhm.phone_number LIKE ?)"
             val pattern = "%${searchInput.trim()}%"
@@ -366,7 +373,6 @@ interface MemberDAO {
             }
             ServiceStaticFilter.EXTERNAL_PREGNANT_WOMEN -> {
                 conditions += ServiceFilterConditions.EXTERNAL_MEMBER
-                conditions += ServiceFilterConditions.IS_ACTIVE
                 conditions += ServiceFilterConditions.PREGNANT_WOMEN
             }
             else -> {}
@@ -522,6 +528,7 @@ interface MemberDAO {
                     ${ServiceFilterConditions.HAS_HOUSEHOLD}
                     $householdSsFilter
                     $householdSvFilter
+                    AND ${ServiceFilterConditions.IS_ACTIVE}
                     AND ${ServiceFilterConditions.FAMILY_PLANNING}
                 THEN 1 ELSE 0 END) AS family_planning,
 
@@ -529,6 +536,7 @@ interface MemberDAO {
                     ${ServiceFilterConditions.HAS_HOUSEHOLD}
                     $householdSsFilter
                     $householdSvFilter
+                    AND ${ServiceFilterConditions.IS_ACTIVE}
                     AND ${ServiceFilterConditions.PREGNANT_WOMEN}
                 THEN 1 ELSE 0 END) AS pregnant_women,
 
@@ -536,6 +544,7 @@ interface MemberDAO {
                     ${ServiceFilterConditions.HAS_HOUSEHOLD}
                     $householdSsFilter
                     $householdSvFilter
+                    AND ${ServiceFilterConditions.IS_ACTIVE}
                     AND ${ServiceFilterConditions.HIGH_RISK_PREGNANT_WOMEN}
                 THEN 1 ELSE 0 END) AS high_risk_pregnant,
 
@@ -543,6 +552,7 @@ interface MemberDAO {
                     ${ServiceFilterConditions.HAS_HOUSEHOLD}
                     $householdSsFilter
                     $householdSvFilter
+                    AND ${ServiceFilterConditions.IS_ACTIVE}
                     AND ${ServiceFilterConditions.POSTNATAL_MOTHERS}
                 THEN 1 ELSE 0 END) AS postnatal_mothers,
 
@@ -571,6 +581,7 @@ interface MemberDAO {
                     ${ServiceFilterConditions.HAS_HOUSEHOLD}
                     $householdSsFilter
                     $householdSvFilter
+                    AND ${ServiceFilterConditions.IS_ACTIVE}
                     AND ${ServiceFilterConditions.EXPECTED_DELIVERIES}
                 THEN 1 ELSE 0 END) AS expected_deliveries,
 
@@ -578,6 +589,7 @@ interface MemberDAO {
                     ${ServiceFilterConditions.HAS_HOUSEHOLD}
                     $householdSsFilter
                     $householdSvFilter
+                    AND ${ServiceFilterConditions.IS_ACTIVE}
                     AND ${ServiceFilterConditions.PENDING_DELIVERIES}
                 THEN 1 ELSE 0 END) AS pending_deliveries
 

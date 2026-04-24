@@ -138,8 +138,8 @@ object DateUtils {
     fun getAgeOrDobDisplayFromDdMmYyyy(
         dobFormatted: String,
         today: LocalDate = LocalDate.now(),
-    ): AgeOrDobDisplay? {
-        return try {
+    ): AgeOrDobDisplay? =
+        try {
             val birthDate = LocalDate.parse(
                 dobFormatted,
                 DateTimeFormatter.ofPattern(DATE_ddMMyyyy).withLocale(Locale.ENGLISH),
@@ -148,7 +148,6 @@ object DateUtils {
         } catch (_: Exception) {
             null
         }
-    }
 
     fun getYearMonthAndDate(
         dateString: String,

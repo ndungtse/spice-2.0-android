@@ -152,8 +152,6 @@ import org.medtroniclabs.uhis.mappingkey.Screening.Minute
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.MUAC
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.muacCode
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.Period

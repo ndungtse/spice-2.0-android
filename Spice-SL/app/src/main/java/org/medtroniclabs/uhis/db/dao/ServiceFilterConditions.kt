@@ -13,10 +13,10 @@ object ServiceFilterConditions {
      * Used by [PREGNANT_WOMEN], [HIGH_RISK_PREGNANT_WOMEN], and related conditions.
      */
     private const val LATEST_PREGNANCY_SUBQUERY = """
-        SELECT pd.dateOfDelivery, pd.lastMenstrualPeriod, pd.estimatedDeliveryDate, pd.highRiskPregnantWoman
+        SELECT pd.id, pd.dateOfDelivery, pd.lastMenstrualPeriod, pd.estimatedDeliveryDate, pd.highRiskPregnantWoman, pd.typeOfAbortion, pd.endAt
         FROM PregnancyDetail AS pd
         WHERE pd.householdMemberLocalId = hhm.id
-        ORDER BY pd.id DESC
+        ORDER BY pd.endAt DESC, pd.id DESC
         LIMIT 1
     """
 
@@ -24,9 +24,10 @@ object ServiceFilterConditions {
      * Base conditions for an active pregnancy (no delivery, valid LMP, within EDD window).
      */
     private const val ACTIVE_PREGNANCY_CONDITIONS = """
-            (lp.dateOfDelivery IS NULL OR lp.dateOfDelivery = '')
-            AND (lp.lastMenstrualPeriod IS NOT NULL AND lp.lastMenstrualPeriod != '')
+            (lp.lastMenstrualPeriod IS NOT NULL AND lp.lastMenstrualPeriod != '')
+            AND (lp.dateOfDelivery IS NULL OR lp.dateOfDelivery = '')
             AND (lp.estimatedDeliveryDate IS NULL OR substr(lp.estimatedDeliveryDate, 1, 10) >= date('now', '-45 days'))
+            AND (lp.typeOfAbortion IS NULL OR lp.typeOfAbortion = '')
     """
 
     /**
@@ -67,6 +68,7 @@ object ServiceFilterConditions {
      */
     private const val AWAITING_DELIVERY_CONDITIONS = """
             (lp.dateOfDelivery IS NULL OR lp.dateOfDelivery = '')
+            AND (lp.typeOfAbortion IS NULL OR lp.typeOfAbortion = '')
             AND (lp.estimatedDeliveryDate IS NOT NULL AND lp.estimatedDeliveryDate != '')
     """
 
