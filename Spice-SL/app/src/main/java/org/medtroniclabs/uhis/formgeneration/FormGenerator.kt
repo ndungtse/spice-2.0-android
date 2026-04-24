@@ -12,10 +12,13 @@ import android.graphics.drawable.GradientDrawable
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
+import android.text.SpannableString
+import android.text.Spanned
 import android.text.TextPaint
 import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
+import android.text.style.RelativeSizeSpan
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -2202,6 +2205,24 @@ class FormGenerator(
         }
     }
 
+    /**
+     * Smaller hint for AgeOrDob [AppCompatEditText] only; entered age keeps [Form_Input_Style] size.
+     */
+    private fun ageOrDobSmallHintText(
+        stringId: Int,
+        relativeScale: Float = 0.75f,
+    ): CharSequence {
+        val text = context.getString(stringId)
+        return SpannableString(text).apply {
+            setSpan(
+                RelativeSizeSpan(relativeScale),
+                0,
+                text.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+            )
+        }
+    }
+
     private fun createAgeOrDobView(formLayout: FormLayout) {
         val binding = AgeOrDobLayoutBinding.inflate(LayoutInflater.from(context))
         var ageListener: TextWatcher?
@@ -2217,6 +2238,7 @@ class FormGenerator(
             // Configure Age EditText
             binding.etAge.inputType = InputType.TYPE_CLASS_NUMBER
             binding.etAge.filters = arrayOf(InputFilter.LengthFilter(3))
+            binding.etAge.hint = ageOrDobSmallHintText(R.string.age)
 
             // Always set up listeners - they will be disabled in edit mode when value is set
             ageListener = binding.etAge.addTextChangedListener { editable ->
@@ -2531,6 +2553,7 @@ class FormGenerator(
         dobInputHolder: View,
     ) {
         etAge.text?.clear()
+        etAge.hint = ageOrDobSmallHintText(R.string.age)
         etDob.text = ""
         tvAgeUnit.text = context.getString(R.string.years)
         etAge.isEnabled = true
@@ -3432,6 +3455,7 @@ class FormGenerator(
 
             etAge?.let { ageView ->
                 ageView.text?.clear()
+                ageView.hint = ageOrDobSmallHintText(R.string.age)
                 ageView.isEnabled = true
                 ageView.alpha = 1.0f
             }
