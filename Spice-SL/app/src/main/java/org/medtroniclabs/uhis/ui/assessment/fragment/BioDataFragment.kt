@@ -58,6 +58,7 @@ class BioDataFragment : BaseFragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        stabilizePregnancyOutcomeLayout()
         initView()
         attachObserver()
     }
@@ -142,7 +143,7 @@ class BioDataFragment : BaseFragment() {
             binding.gender.tvKey.text = getString(R.string.gender)
             binding.gender.tvValue.text = gender.capitalizeFirstChar()
             binding.dobAge.tvKey.text = getString(R.string.age)
-            var age = CommonUtils.getAgeFromDOB(
+            val age = CommonUtils.getAgeFromDOB(
                 dateOfBirth,
                 requireContext(),
             )
@@ -179,6 +180,11 @@ class BioDataFragment : BaseFragment() {
 
                 viewModel.ageInMonth.postValue(age)
                 viewModel.workflowName?.let { viewModel.getPatientVisitCountByType(it, id) }
+            }
+
+            if (viewModel.menuId == MenuConstants.PREGNANCY_OUTCOME) {
+                binding.gender.root.gone()
+                binding.mobileNumber.root.gone()
             }
         }
     }
@@ -233,5 +239,20 @@ class BioDataFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    private fun stabilizePregnancyOutcomeLayout() {
+        if (!viewModel.menuId.equals(MenuConstants.PREGNANCY_OUTCOME, ignoreCase = true)) {
+            return
+        }
+        val patientInfoParent = binding.llPatientInfo.parent as? ViewGroup
+        patientInfoParent?.layoutTransition = null
+        binding.llPatientInfo.layoutTransition = null
+
+        // Pre-apply final visibility state to avoid animated height jumps across initial async updates.
+        binding.gender.root.gone()
+        binding.mobileNumber.root.gone()
+        binding.totalAncServices.root.visible()
+        binding.totalAncServices.tvValue.text = getString(R.string.separator_double_hyphen)
     }
 }
