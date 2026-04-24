@@ -35,7 +35,6 @@ import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsUtils
 import org.medtroniclabs.uhis.appextensions.isFineAndCoarseLocationPermissionGranted
-import org.medtroniclabs.uhis.appextensions.isGpsEnabled
 import org.medtroniclabs.uhis.appextensions.loadAsGif
 import org.medtroniclabs.uhis.appextensions.resetImageView
 import org.medtroniclabs.uhis.appextensions.setVisible
@@ -616,38 +615,39 @@ open class BaseActivity : SpiceRootActivity(), ImeInset {
 
     fun withLocationCheck(
         onLocationAvailable: () -> Unit,
-        onLocationNotAvailable: (() -> Unit)? = null,
+//        onLocationNotAvailable: (() -> Unit)? = null,
     ) {
         when {
-            !isGpsEnabled() -> {
-                showTurnOnGPSDialog()
-                onLocationNotAvailable?.invoke()
-            }
+//            !isGpsEnabled() -> {
+//                showTurnOnGPSDialog()
+//                onLocationNotAvailable?.invoke()
+//            }
 
             !isFineAndCoarseLocationPermissionGranted() -> {
                 requestLocationPermissions { permissionsGranted ->
                     if (permissionsGranted) {
                         onLocationAvailable()
                     } else {
-                        showErrorDialogue(
-                            title = getString(R.string.gps_disabled_title),
-                            message = getString(R.string.gps_disabled_message),
-                            positiveButtonName = getString(R.string.ok),
-                        ) {
-                            if (it) {
-                                val intent = Intent()
-                                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                                val uri = Uri.fromParts(
-                                    "package",
-                                    BuildConfig.APPLICATION_ID,
-                                    null,
-                                )
-                                intent.data = uri
-                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                                startActivity(intent)
-                                onLocationNotAvailable?.invoke()
-                            }
-                        }
+                        onLocationAvailable()
+//                        showErrorDialogue(
+//                            title = getString(R.string.gps_disabled_title),
+//                            message = getString(R.string.gps_disabled_message),
+//                            positiveButtonName = getString(R.string.ok),
+//                        ) {
+//                            if (it) {
+//                                val intent = Intent()
+//                                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+//                                val uri = Uri.fromParts(
+//                                    "package",
+//                                    BuildConfig.APPLICATION_ID,
+//                                    null,
+//                                )
+//                                intent.data = uri
+//                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//                                startActivity(intent)
+//                                onLocationNotAvailable?.invoke()
+//                            }
+//                        }
                     }
                 }
             }
